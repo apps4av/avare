@@ -1,0 +1,90 @@
+<!--  
+Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<resources>
+    <string name="app_name">&quot;Avare&quot;</string>
+    <string name="title_activity_main">&quot;Avare&quot;</string>
+    <string name="MissingMaps">&quot;Download Charts&quot;</string>
+    <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
+    <string name="OK">&quot;OK&quot;</string>
+    <string name="Nearest">&quot;Nearest&quot;</string>
+    <string name="Success">&quot;Success&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;Warning&quot;</string>
+    <string name="AirportDia">&quot;Airport Diagram - Touch to open&quot;</string>
+    <string name="DestinationPrompt">&quot;Enter Destination Code&quot;</string>
+    <string name="DestinationNF">&quot;Destination Not Found&quot;</string>
+    <string name="AirDiaNF">&quot;Airport diagram not found&quot;</string>
+    <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
+    <string name="Cancel">&quot;Cancel&quot;</string>
+    <string name="ADS">&quot;Airport Diagrams&quot;</string>
+    <string name="To">&quot;To&quot;</string>
+    <string name="Base">&quot;Base&quot;</string>
+    <string name="Maps">&quot;Maps&quot;</string>
+    <string name="MapsLabel">&quot;Charts storage folder&quot;</string>
+    <string name="MapsSummary">&quot;Location where charts are stored&quot;</string>
+    <string name="MapSize">&quot;MapSize&quot;</string>
+    <string name="MapSizeLabel">&quot;Large Map Size&quot;</string>
+    <string name="MapSizeSummary">&quot;Select for larger map area, but slower performance (change requires app restart)&quot;</string>
+    <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="SimulationModeLabel">&quot;Enable Simulation Mode&quot;</string>
+    <string name="SimulationModeSummary">&quot;Enable simulation mode for planning&quot;</string>
+    <string name="OrientationP">&quot;Orientation&quot;</string>
+    <string name="OrientationPLabel">&quot;Portrait Mode&quot;</string>
+    <string name="OrientationPSummary">&quot;Enable for portrait mode operation&quot;</string>
+    <string name="GpsTime">&quot;GpsTime&quot;</string>
+    <string name="GpsTimeLabel">&quot;Short GPS Update Period&quot;</string>
+    <string name="GpsTimeSummary">&quot;Select for shorter GPS update period&quot;</string>
+    <string name="GpsOffWarn">&quot;GpsOffWarn&quot;</string>
+    <string name="GpsOffWarnLabel">&quot;Warn GPS Disabled&quot;</string>
+    <string name="GpsOffWarnSummary">&quot;Select to warn frequently when GPS is disabled&quot;</string>
+    <string name="ShowTrack">&quot;ShowTrack&quot;</string>
+    <string name="ShowTrackLabel">&quot;Destination Track Line&quot;</string>
+    <string name="ShowTrackSummary">&quot;Select for showing track to destination&quot;</string>
+    <string name="BaseId">&quot;BOS&quot;</string>
+    <string name="Help">&quot;Help&quot;</string>
+    <string name="Destination">&quot;Destination&quot;</string>
+    <string name="Settings">&quot;Preferences&quot;</string>
+    <string name="AFD">&quot;AFD&quot;</string>
+    <string name="BasePrompt">&quot;Enter base airport code&quot;</string>
+    <string name="Downloading">&quot;Downloading&quot;</string>
+    <string name="download">&quot;Download&quot;</string>
+    <string name="Failed">&quot;Failed&quot;</string>
+    <string name="Extracting">&quot;Extracting&quot;</string>
+    <string name="Yes">&quot;Yes&quot;</string>
+    <string name="No">&quot;No&quot;</string>
+    <string name="ReturnOriginal">&quot;Double tap to return to current location&quot;</string>
+    <string name="GPSLost">&quot;No GPS Signal&quot;</string>
+    <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
+    <string name="Init">&quot;Initializing&quot;</string>
+    <string name="Warning">&quot;This is not a FAA certified GPS. \nUse at your own risk. \nThe author of this software is not liable for any injuries or damages caused by its use. \n&quot;</string>
+    <string name="Recent">&quot;recent&quot;</string>
+   	<string name="ChartType">&quot;Chart Type&quot;</string>
+	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
+	<string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
+    <string name="weather">&quot;Weather&quot;</string>
+    <string name="TFRAndMETAR">&quot;TFRs and METARs&quot;</string>
+    <string name="TFRAndMETARLabel">&quot;Enable TFRs and METARs&quot;</string>
+    <string name="TFRAndMETARSummary">&quot;Select to show TFR graphics and METAR text (require Internet connection)&quot;</string>
+    <string name="TFRReceived">&quot;TFR Received&quot;</string>
+    <string name="databases">&quot;Databases (Required)&quot;</string>
+    <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>
+    <string name="AreaNF">&quot;Nearest airports shown when GPS locked&quot;</string>
+    <string name="ScreenOn">&quot;Screen Timeout&quot;</string>
+    <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
+    <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
+    <string name="update">&quot;Update&quot;</string>
+    <string name="gps">&quot;GPS&quot;</string>
+    <string name="longitude">&quot;Longitude&quot;</string>
+    <string name="latitude">&quot;Latitude&quot;</string>
+    <string name="accuracy">&quot;Accuracy (meters)&quot;</string>
+    <string name="ttf">&quot;Time to first fix (ms)&quot;</string>
+</resources>

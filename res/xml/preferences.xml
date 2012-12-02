@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  
+Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<ListPreference
+	    android:key="@string/ChartType"
+	    android:title="@string/ChartTypeLabel"
+		android:summary="@string/ChartTypeSummary"
+		android:entries="@array/ChartType"
+		android:defaultValue="0"
+		android:entryValues="@array/ChartTypeValues"/>
+	<EditTextPreference xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:key="@string/Maps"
+	    android:title="@string/MapsLabel"
+	    android:summary="@string/MapsSummary"
+	    android:dialogTitle="@string/MapsLabel"
+	    android:dialogMessage="@string/MapsSummary"/>
+    <CheckBoxPreference
+        android:key="@string/ScreenOn"
+        android:title="@string/ScreenOnLabel"
+        android:summary="@string/ScreenOnSummary"
+        android:defaultValue="true"/>
+    <CheckBoxPreference
+        android:key="@string/GpsTime"
+        android:title="@string/GpsTimeLabel"
+        android:summary="@string/GpsTimeSummary"
+        android:defaultValue="false"/>
+    	<CheckBoxPreference
+	    android:key="@string/MapSize"
+	    android:title="@string/MapSizeLabel"
+	    android:summary="@string/MapSizeSummary"
+	    android:defaultValue="false"/>
+	<CheckBoxPreference
+	    android:key="@string/GpsOffWarn"
+	    android:title="@string/GpsOffWarnLabel"
+	    android:summary="@string/GpsOffWarnSummary"
+	    android:defaultValue="true"/>
+	<CheckBoxPreference
+	    android:key="@string/ShowTrack"
+	    android:title="@string/ShowTrackLabel"
+	    android:summary="@string/ShowTrackSummary"
+	    android:defaultValue="true"/>
+	<CheckBoxPreference
+	    android:key="@string/SimulationMode"
+	    android:title="@string/SimulationModeLabel"
+	    android:summary="@string/SimulationModeSummary"
+	    android:defaultValue="false"/>
+	<CheckBoxPreference
+	    android:key="@string/OrientationP"
+	    android:title="@string/OrientationPLabel"
+	    android:summary="@string/OrientationPSummary"
+	    android:defaultValue="false"/>
+	<CheckBoxPreference
+	    android:key="@string/TFRAndMETAR"
+	    android:title="@string/TFRAndMETARLabel"
+	    android:summary="@string/TFRAndMETARSummary"
+	    android:defaultValue="true"/>
+	<EditTextPreference xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="@string/Base"
+        android:title="@string/Base"
+        android:summary="@string/BasePrompt"
+        android:dialogTitle="@string/Base"
+        android:dialogMessage="@string/BasePrompt"   
+        android:defaultValue="@string/BaseId"/>
+</PreferenceScreen>
+    

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+
+Translated by Francois Dinel
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<resources>
+    <string name="app_name">&quot;Avare&quot;</string>
+    <string name="title_activity_main">&quot;Avare&quot;</string>
+    <string name="MissingMaps">&quot;Télécharger les cartes&quot;</string>
+    <string name="LoadingMaps">&quot;Charger les cartes&quot;</string>
+    <string name="OK">&quot;OK&quot;</string>
+    <string name="Nearest">&quot;Le plus près&quot;</string>
+    <string name="Success">&quot;Réussi&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;Avertissement&quot;</string>
+    <string name="AirportDia">&quot;Diagramme d'aéroport - Toucher pour ouvrir&quot;</string>
+    <string name="DestinationPrompt">&quot;Entrez code de destination&quot;</string>
+    <string name="DestinationNF">&quot;Destination non trouvée&quot;</string>
+    <string name="AirDiaNF">&quot;Diagramme de l'aéroport non trouvé&quot;</string>
+    <string name="InstallPDF">&quot;Pour visionner, installer un visionneur de PDF sur Google Play&quot;</string>
+    <string name="Cancel">&quot;Annulé&quot;</string>
+    <string name="ADS">&quot;Diagrammes d'aéroports&quot;</string>
+    <string name="To">&quot;Vers&quot;</string>
+    <string name="Base">&quot;Base de départ&quot;</string>
+    <string name="Maps">&quot;Cartes&quot;</string>
+    <string name="MapsLabel">&quot;Répertoire des cartes&quot;</string>
+    <string name="MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
+    <string name="MapSize">&quot;Dimension&quot;</string>
+    <string name="MapSizeLabel">&quot;Cartes grand format&quot;</string>
+    <string name="MapSizeSummary">&quot;Sélectionner pour les cartes surdimensionnées mais celà réduira la performance (devez redémarrer l'application)&quot;</string>
+    <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="SimulationModeLabel">&quot;Activation du mode simulation&quot;</string>
+    <string name="SimulationModeSummary">&quot;Activation du mode simulation pour la planification&quot;</string>
+    <string name="OrientationP">&quot;Orientation&quot;</string>
+    <string name="OrientationPLabel">&quot;Mode portrait&quot;</string>
+    <string name="OrientationPSummary">&quot;Activation du visionnement en mode portrait&quot;</string>
+    <string name="GpsTime">&quot;Heure du GPS&quot;</string>
+    <string name="GpsTimeLabel">&quot;Position GPS plus fréquente&quot;</string>
+    <string name="GpsTimeSummary">&quot;Affichage plus fréquent de votre position GPS&quot;</string>
+    <string name="GpsOffWarn">&quot;GPS désactivé&quot;</string>
+    <string name="GpsOffWarnLabel">&quot;Avertissement lorsque le GPS est désactivé&quot;</string>
+    <string name="GpsOffWarnSummary">&quot;Sélectionner pour afficher plus souvent l'avis du GPS désactivé&quot;</string>
+    <string name="ShowTrack">&quot;Afficher le tracé&quot;</string>
+    <string name="ShowTrackLabel">&quot;Afficher le tracé vers la destination&quot;</string>
+    <string name="ShowTrackSummary">&quot;Sélectionner pour afficher le tracé vers la destination&quot;</string>
+    <string name="BaseId">&quot;BOS&quot;</string>
+    <string name="Help">&quot;Aide&quot;</string>
+    <string name="Destination">&quot;Destination&quot;</string>
+    <string name="Settings">&quot;Préférences&quot;</string>
+    <string name="AFD">&quot;Diagramme aéroport&quot;</string>
+    <string name="BasePrompt">&quot;Entrer le code de l'aéroport de départ&quot;</string>
+    <string name="Downloading">&quot;En téléchargement&quot;</string>
+    <string name="download">&quot;Télécharger&quot;</string>
+    <string name="Failed">&quot;Échec&quot;</string>
+    <string name="Extracting">&quot;Extraction&quot;</string>
+    <string name="Yes">&quot;Oui&quot;</string>
+    <string name="No">&quot;Non&quot;</string>
+    <string name="ReturnOriginal">&quot;Tapper 2 fois l'écran pour retourner à votre position actuelle&quot;</string>
+    <string name="GPSLost">&quot;Aucun signal GPS&quot;</string>
+    <string name="GPSEnable">&quot;Activer le GPS&quot;</string>
+    <string name="Init">&quot;Initialisation&quot;</string>
+    <string name="Warning">&quot;Ce logiciel n'est pas certifié pour utilisation en vol par les autorités légales.\nUtilisez à vos propres risques. \nLe créateur de ce logiciel ne peut être tenu responsable de toutes blessures ou dommages causés par son utilisation. \n&quot;</string>
+    <string name="Recent">&quot;recent&quot;</string>
+    <string name="ChartType">&quot;Type de cartes&quot;</string>
+    <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
+    <string name="ChartTypeSummary">&quot;Sélectionner un type de carte pour la navigation&quot;</string>
+    <string name="weather">&quot;Météo&quot;</string>
+	<string name="TFRAndMETAR">&quot;TFRs and METARs&quot;</string>
+    <string name="TFRAndMETARLabel">&quot;Activer TFRs and METARs&quot;</string>
+    <string name="TFRAndMETARSummary">&quot;Sélectionner pour afficher les graphiques TFR et les textes METAR (connexion internet requise)&quot;</string>
+	<string name="TFRReceived">&quot;TFR reçus&quot;</string>
+	<string name="databases">&quot;Bases de données (requises)&quot;</string>
+    <string name="ValidDest">&quot;Entrer une destination valide&quot;</string>
+    <string name="AreaNF">&quot;Les Aéroports proches sont affichés quand le GPS a une position&quot;</string>
+	<string name="ScreenOn">&quot;Temps écoulé&quot;</string>
+    <string name="ScreenOnLabel">&quot;Garder l'écran allumé&quot;</string>
+    <string name="ScreenOnSummary">&quot;Selectioner pour garder l'écran allumé lorsque l'application roule&quot;</string>
+</resources>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<resources> 
+    
+    <string-array name="resNamesNoDb">
+        <item>@string/databases</item>
+    </string-array>
+          
+    <string-array name="resNames">
+        <item>@string/databases</item>
+        <item>@string/ADS</item>
+		<item>Albuquerque</item>
+		<item>Anchorage</item>
+		<item>Anchorage TAC</item>
+		<item>Atlanta</item>
+		<item>Atlanta TAC</item>
+		<item>Baltimore-Washington TAC</item>
+		<item>Bethel</item>
+		<item>Billings</item>
+		<item>Boston TAC</item>
+		<item>Brownsville</item>
+		<item>Cape Lisburne</item>
+		<item>Charlotte</item>
+		<item>Charlotte TAC</item>
+		<item>Cheyenne</item>
+		<item>Chicago</item>
+		<item>Chicago TAC</item>
+		<item>Cincinnati</item>
+		<item>Cincinnati TAC</item>
+		<item>Cleveland TAC</item>
+		<item>Cold Bay</item>
+		<item>Colorado Springs TAC</item>
+		<item>Dallas-FtWorth</item>
+		<item>Dallas-FtWorth TAC</item>
+		<item>Dawson</item>
+		<item>Denver</item>
+		<item>Denver TAC</item>
+		<item>Detroit</item>
+		<item>Detroit TAC</item>
+		<item>Dutch Harbor</item>
+		<item>El Paso</item>
+		<item>Fairbanks</item>
+		<item>Fairbanks TAC</item>
+		<item>Great Falls</item>
+		<item>Green Bay</item>
+		<item>Halifax</item>
+		<item>Hawaiian Islands</item>
+		<item>Houston</item>
+		<item>Houston TAC</item>
+		<item>Jacksonville</item>
+		<item>Juneau</item>
+		<item>Kansas City</item>
+		<item>Kansas City TAC</item>
+		<item>Ketchikan</item>
+		<item>Klamath Falls</item>
+		<item>Kodiak</item>
+		<item>Lake Huron</item>
+		<item>Las Vegas</item>
+		<item>Las Vegas TAC</item>
+		<item>Los Angeles</item>
+		<item>Los Angeles TAC</item>
+		<item>McGrath</item>
+		<item>Memphis</item>
+		<item>Memphis TAC</item>
+		<item>Miami</item>
+		<item>Miami TAC</item>
+		<item>Minneapolis-StPaul TAC</item>
+		<item>Montreal</item>
+		<item>New Orleans</item>
+		<item>New Orleans TAC</item>
+		<item>New York</item>
+		<item>New York TAC</item>
+		<item>Nome</item>
+		<item>Omaha</item>
+		<item>Orlando TAC</item>
+		<item>Philadelphia TAC</item>
+		<item>Phoenix</item>
+		<item>Phoenix TAC</item>
+		<item>Pittsburgh TAC</item>
+		<item>Point Barrow</item>
+		<item>PuertoRico-VI TAC</item>
+		<item>Salt Lake City</item>
+		<item>Salt Lake City TAC</item>
+		<item>San Antonio</item>
+		<item>San Diego TAC</item>
+		<item>San Francisco</item>
+		<item>San Francisco TAC</item>
+		<item>Seattle</item>
+		<item>Seattle TAC</item>
+		<item>Seward</item>
+		<item>St Louis</item>
+		<item>St Louis TAC</item>
+		<item>Tampa TAC</item>
+		<item>Twin Cities</item>
+		<item>Washington</item>
+		<item>Whitehorse</item>
+		<item>Wichita</item>
+    </string-array>
+
+    <string-array name="resFilesNoDb">
+        <item>database</item>
+    </string-array>
+    
+    <string-array name="resFiles">
+        <item>database</item>
+        <item>AirportDiagrams</item>
+		<item>Albuquerque</item>
+		<item>Anchorage</item>
+		<item>AnchorageTAC</item>
+		<item>Atlanta</item>
+		<item>AtlantaTAC</item>
+		<item>Baltimore-WashingtonTAC</item>
+		<item>Bethel</item>
+		<item>Billings</item>
+		<item>BostonTAC</item>
+		<item>Brownsville</item>
+		<item>CapeLisburne</item>
+		<item>Charlotte</item>
+		<item>CharlotteTAC</item>
+		<item>Cheyenne</item>
+		<item>Chicago</item>
+		<item>ChicagoTAC</item>
+		<item>Cincinnati</item>
+		<item>CincinnatiTAC</item>
+		<item>ClevelandTAC</item>
+		<item>ColdBay</item>
+		<item>ColoradoSpringsTAC</item>
+		<item>Dallas-FtWorth</item>
+		<item>Dallas-FtWorthTAC</item>
+		<item>Dawson</item>
+		<item>Denver</item>
+		<item>DenverTAC</item>
+		<item>Detroit</item>
+		<item>DetroitTAC</item>
+		<item>DutchHarbor</item>
+		<item>ElPaso</item>
+		<item>Fairbanks</item>
+		<item>FairbanksTAC</item>
+		<item>GreatFalls</item>
+		<item>GreenBay</item>
+		<item>Halifax</item>
+		<item>HawaiianIslands</item>
+		<item>Houston</item>
+		<item>HoustonTAC</item>
+		<item>Jacksonville</item>
+		<item>Juneau</item>
+		<item>KansasCity</item>
+		<item>KansasCityTAC</item>
+		<item>Ketchikan</item>
+		<item>KlamathFalls</item>
+		<item>Kodiak</item>
+		<item>LakeHuron</item>
+		<item>LasVegas</item>
+		<item>LasVegasTAC</item>
+		<item>LosAngeles</item>
+		<item>LosAngelesTAC</item>
+		<item>McGrath</item>
+		<item>Memphis</item>
+		<item>MemphisTAC</item>
+		<item>Miami</item>
+		<item>MiamiTAC</item>
+		<item>Minneapolis-StPaulTAC</item>
+		<item>Montreal</item>
+		<item>NewOrleans</item>
+		<item>NewOrleansTAC</item>
+		<item>NewYork</item>
+		<item>NewYorkTAC</item>
+		<item>Nome</item>
+		<item>Omaha</item>
+		<item>OrlandoTAC</item>
+		<item>PhiladelphiaTAC</item>
+		<item>Phoenix</item>
+		<item>PhoenixTAC</item>
+		<item>PittsburghTAC</item>
+		<item>PointBarrow</item>
+		<item>PuertoRico-VITAC</item>
+		<item>SaltLakeCity</item>
+		<item>SaltLakeCityTAC</item>
+		<item>SanAntonio</item>
+		<item>SanDiegoTAC</item>
+		<item>SanFrancisco</item>
+		<item>SanFranciscoTAC</item>
+		<item>Seattle</item>
+		<item>SeattleTAC</item>
+		<item>Seward</item>
+		<item>StLouis</item>
+		<item>StLouisTAC</item>
+		<item>TampaTAC</item>
+		<item>TwinCities</item>
+		<item>Washington</item>
+		<item>Whitehorse</item>
+		<item>Wichita</item>
+    </string-array>
+    
+    <string-array name="ChartType">
+        <item>Sectional</item>
+        <item>TAC</item>
+        <item>IFR Low</item>
+    </string-array>
+
+    <string-array name="ChartTypeValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+</resources>
