@@ -86,5 +86,4 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="longitude">&quot;Longitude&quot;</string>
     <string name="latitude">&quot;Latitude&quot;</string>
     <string name="accuracy">&quot;Accuracy (meters)&quot;</string>
-    <string name="ttf">&quot;Time to first fix (ms)&quot;</string>
 </resources>
