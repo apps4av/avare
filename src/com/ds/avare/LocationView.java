@@ -398,18 +398,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawTask.execute(mGpsParams.getLongitude(), mGpsParams.getLatitude());
     }
-    
+
     /**
+     * 
      * @param canvas
-     * Does pretty much all drawing on screen
      */
-    private void drawMap(Canvas canvas) {
-        mPaint.setColor(Color.WHITE);
+    private void drawTiles(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
-        mPaint.setTextSize(getHeight() / mTextDiv);
-        mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
-        mTextPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-        
+    	
         if(null != mTiles) {
             
             for(int tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
@@ -452,7 +448,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }
         }
+    }
 
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawTFR(Canvas canvas) {
+        mPaint.setColor(Color.RED);
+        mPaint.setShadowLayer(0, 0, 0, 0);
+        
         /*
          * Draw TFRs, weather
          */
@@ -476,53 +481,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     }
                 }
             }
-            
-            /*
-             * Write weather report
-             * Use a static layout for showing as overlay and formatted to fit
-             */
-            if(null != mWeatherLayout) {
-                canvas.save();
-                canvas.translate(0, getHeight() / mTextDiv);
-                mWeatherLayout.draw(canvas);
-                canvas.restore();            
-            }
         }
-        
-        if(mPref.isSimulationMode()) {
-            if(mErrorStatus != null) {
-                mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-                mPaint.setTextAlign(Align.RIGHT);
-                mPaint.setColor(Color.RED);
-                canvas.drawText(mErrorStatus,
-                        getWidth(), getHeight() / mTextDiv, mPaint);
-            }
-            return;
-        }
-        
-        mPaint.setShadowLayer(0, 0, 0, 0);
-        mPaint.setColor(Color.WHITE);
-        if(null != mAirplaneBitmap) {
-            
-            /*
-             * Rotate and move to a panned location
-             */                
-            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing(),
-                    mAirplaneBitmap.getWidth() / 2.f,
-                    mAirplaneBitmap.getHeight() / 2.f);
-            
-            mAirplaneBitmap.getTransform().postTranslate(
-                    getWidth() / 2.f
-                    - mAirplaneBitmap.getWidth()  / 2.f
-                    + mPan.getMoveX() * mScale.getScaleFactor(),
-                    getHeight() / 2.f
-                    - mAirplaneBitmap.getHeight()  / 2.f
-                    + mPan.getMoveY() * mScale.getScaleCorrected());
-    
-            canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
-        }
+    }
 
-        mPaint.setTextAlign(Align.LEFT);
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawCornerTexts(Canvas canvas) {
 
         /*
          * Misc text in the information text location on the view like GPS status,
@@ -530,17 +497,31 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Add shadows for better viewing
          */
         mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-        
+        mPaint.setColor(Color.WHITE);
+
+        mPaint.setTextAlign(Align.LEFT);
+        /*
+         * Speed
+         */
         canvas.drawText("" + Math.round(mGpsParams.getSpeed()) + "kt",
                 0, getHeight() / mTextDiv, mPaint);
+        /*
+         * Altitude
+         */
         canvas.drawText("" + Math.round(mGpsParams.getAltitude()) + "ft",
                 0, getHeight() - mFontHeight, mPaint);
         
         mPaint.setTextAlign(Align.RIGHT);
-        
+
+        /*
+         * Heading
+         */
         canvas.drawText("" + Math.round(mGpsParams.getBearing()) + '\u00B0',
                 getWidth(), getHeight() - mFontHeight, mPaint);
 
+        /*
+         * Status/destination top right
+         */
         if(mErrorStatus != null) {
             mPaint.setColor(Color.RED);
             canvas.drawText(mErrorStatus,
@@ -562,8 +543,93 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }            
             }
+        }    	
+    }
+    
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawTrack(Canvas canvas) {
+        mPaint.setStrokeWidth(4);
+        mPaint.setColor(Color.MAGENTA);
+        mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+        if(mDestination != null) {
+            if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
+                if(null != mTrackShape) {
+                    mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                }            
+            }
+        }    	
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawMETARText(Canvas canvas) {
+        /*
+         * Draw TFRs, weather
+         */
+        if(mPref.shouldTFRAndMETARShow()) {
+            /*
+             * Write weather report
+             * Use a static layout for showing as overlay and formatted to fit
+             */
+            if(null != mWeatherLayout) {
+                canvas.save();
+                canvas.translate(0, getHeight() / mTextDiv);
+                mWeatherLayout.draw(canvas);
+                canvas.restore();            
+            }
         }
-     
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawAircraft(Canvas canvas) {
+        mPaint.setShadowLayer(0, 0, 0, 0);
+        mPaint.setColor(Color.WHITE);
+        if(null != mAirplaneBitmap) {
+            
+            /*
+             * Rotate and move to a panned location
+             */                
+            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing(),
+                    mAirplaneBitmap.getWidth() / 2.f,
+                    mAirplaneBitmap.getHeight() / 2.f);
+            
+            mAirplaneBitmap.getTransform().postTranslate(
+                    getWidth() / 2.f
+                    - mAirplaneBitmap.getWidth()  / 2.f
+                    + mPan.getMoveX() * mScale.getScaleFactor(),
+                    getHeight() / 2.f
+                    - mAirplaneBitmap.getHeight()  / 2.f
+                    + mPan.getMoveY() * mScale.getScaleCorrected());
+    
+            canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
+        }	
+    }
+
+
+    /**
+     * @param canvas
+     * Does pretty much all drawing on screen
+     */
+    private void drawMap(Canvas canvas) {
+    	
+    	mPaint.setTextSize(getHeight() / mTextDiv);
+        mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
+    	
+    	drawTiles(canvas);
+    	drawTFR(canvas);
+    	drawAircraft(canvas);
+    	drawTrack(canvas);
+
+    	drawMETARText(canvas);
+    	drawCornerTexts(canvas);
     }    
     
     /**

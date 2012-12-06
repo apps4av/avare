@@ -74,4 +74,5 @@ public class WeatherView extends View {
     private void drawMap(Canvas canvas) {
     }
     
+    
 }

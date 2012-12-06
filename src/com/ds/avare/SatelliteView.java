@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 import android.content.Context;
@@ -37,14 +39,17 @@ public class SatelliteView extends View {
     /*
      * Satellite view
      */
-    private GpsStatus      mGpsStatus;
+    private GpsStatus       mGpsStatus;
     private double         mLatitude;
     private double         mLongitude;
-    private Paint          mPaint;
-    private float          min;
-    private Context        mContext;
-    private float          mFontHeight;
-    private float          mAccuracy;
+    private Paint           mPaint;
+    private float           min;
+    private Context          mContext;
+    private float           mFontHeight;
+    private float           mAccuracy;
+    private long  			  mTTF;
+    private SimpleDateFormat mSdf;
+    String 				      mLastTime;
 
     /**
      * 
@@ -59,6 +64,8 @@ public class SatelliteView extends View {
         mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setStrokeWidth(4);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
+        mSdf = new SimpleDateFormat("HH:mm");
+        mLastTime = "@";
     }
     
     /**
@@ -96,6 +103,9 @@ public class SatelliteView extends View {
     public void updateGpsStatus(GpsStatus status) {
         mGpsStatus = status;
         postInvalidate();
+        if(null != mGpsStatus) {
+        	mTTF = mGpsStatus.getTimeToFirstFix();
+        }
     }
 
     /**
@@ -119,6 +129,29 @@ public class SatelliteView extends View {
         mLatitude = round(location.getLatitude(), 8);
         mLongitude = round(location.getLongitude(), 8);
         mAccuracy = location.getAccuracy();
+        mLastTime = mSdf.format(new Date(System.currentTimeMillis()));
+    }
+    
+    /**
+     * 
+     * @param num
+     * @param ttf
+     * @param lon
+     * @param lat
+     * @param accuracy
+     */
+    private void drawParamsText(Canvas canvas, String num, String ttf, String lon, String lat, String accuracy) {
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.WHITE);
+
+        /*
+         * Now draw stats text
+         */
+        canvas.drawText(mContext.getString(R.string.gps) + "(@" + mLastTime + ")" + ":" + num, 4, mFontHeight, mPaint);
+        canvas.drawText(mContext.getString(R.string.ttf) + ":" + ttf, 4, mFontHeight * 2, mPaint);
+        canvas.drawText(mContext.getString(R.string.longitude) + ":" + lon, 4, mFontHeight * 3, mPaint);
+        canvas.drawText(mContext.getString(R.string.latitude) + ":" + lat, 4, mFontHeight * 4, mPaint);
+        canvas.drawText(mContext.getString(R.string.accuracy) + ":" + accuracy, 4, mFontHeight * 5, mPaint);    	
     }
 
     /* (non-Javadoc)
@@ -127,18 +160,11 @@ public class SatelliteView extends View {
     @Override
     public void onDraw(Canvas canvas) {
 
-        if(mGpsStatus == null) {
-            return;
-        }
-        min = Math.min(getWidth(), getHeight()) - 8;
-        Iterable<GpsSatellite>satellites = mGpsStatus.getSatellites();
-        Iterator<GpsSatellite>sat = satellites.iterator();
-        mPaint.setColor(Color.WHITE);
-        mPaint.setStyle(Paint.Style.STROKE);
         /*
          * Move the GPS circle pic on corner so we have space for text
          */
         canvas.save();
+        min = Math.min(getWidth(), getHeight()) - 8;
         if(min == (getHeight() - 8)) {
             canvas.translate(getWidth() / 2 - min / 2 - 8, 0);
         }
@@ -149,6 +175,7 @@ public class SatelliteView extends View {
         /*
          * Now draw the target cross hair
          */
+        mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawLine(getWidth() / 2 - min / 2, getHeight() / 2, getWidth() / 2 + min / 2, getHeight() / 2, mPaint);
         canvas.drawLine(getWidth() / 2, getHeight() / 2 - min / 2, getWidth() / 2, getHeight() / 2 + min / 2, mPaint);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, min / 2, mPaint);
@@ -157,41 +184,53 @@ public class SatelliteView extends View {
         FontMetrics fm = mPaint.getFontMetrics();
         mFontHeight =  fm.bottom - fm.top;
 
-        /*
-         * Now draw a circle for each satellite, use simple projections of x = sin(theta), y = cos(theta)
-         * Arm for each projection is sin(elevation). Theta = azimuth.
-         */
-        mPaint.setStyle(Paint.Style.STROKE);
-        int i = 0;
-        while (sat.hasNext()) {
-            i++;
-            GpsSatellite satellite = sat.next();
-            if(satellite.usedInFix()) {
-                mPaint.setColor(Color.GREEN);
-            }
-            else {
-                mPaint.setColor(Color.RED);
-            }
-            
-            double angle = Math.toRadians(satellite.getAzimuth());
-            double e = Math.cos(Math.toRadians(satellite.getElevation())) * min / 2;
-            canvas.drawCircle(
-                    (float)(getWidth() / 2 + e * Math.sin(angle)), 
-                    (float)(getHeight() / 2 - e * Math.cos(angle)),
-                    (satellite.getSnr() / 100) * min / 16,
-                    mPaint);
+        if(mGpsStatus != null) {
+	        Iterable<GpsSatellite>satellites = mGpsStatus.getSatellites();
+	        Iterator<GpsSatellite>sat = satellites.iterator();
+	        mPaint.setColor(Color.WHITE);
+	        mPaint.setStyle(Paint.Style.STROKE);
+	
+	        /*
+	         * Now draw a circle for each satellite, use simple projections of x = sin(theta), y = cos(theta)
+	         * Arm for each projection is sin(elevation). Theta = azimuth.
+	         */
+            int i = 0;
+	        while (sat.hasNext()) {
+	            i++;
+	            GpsSatellite satellite = sat.next();
+	            if(satellite.usedInFix()) {
+	                mPaint.setColor(Color.GREEN);
+	            }
+	            else {
+	                mPaint.setColor(Color.RED);
+	            }
+	            
+	            double angle = Math.toRadians(satellite.getAzimuth());
+	            double e = Math.cos(Math.toRadians(satellite.getElevation())) * min / 2;
+	            canvas.drawCircle(
+	                    (float)(getWidth() / 2 + e * Math.sin(angle)), 
+	                    (float)(getHeight() / 2 - e * Math.cos(angle)),
+	                    (satellite.getSnr() / 100) * min / 16,
+	                    mPaint);
+	        }
+	        canvas.restore();
+
+	        /*
+	         * Now draw stats text
+	         */
+	        drawParamsText(canvas, Integer.toString(i), Long.toString(mTTF),
+	        		Double.toString(mLongitude), Double.toString(mLatitude),
+	        		Double.toString(mAccuracy));
+	        
         }
         
-        /*
-         * Now draw stats text
-         */
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.WHITE);
-        canvas.restore();
-        canvas.drawText(mContext.getString(R.string.gps) + ":" + i, 4, mFontHeight, mPaint);
-        canvas.drawText(mContext.getString(R.string.ttf) + ":" + mGpsStatus.getTimeToFirstFix(), 4, mFontHeight * 2, mPaint);
-        canvas.drawText(mContext.getString(R.string.longitude) + ":" + mLongitude, 4, mFontHeight * 3, mPaint);
-        canvas.drawText(mContext.getString(R.string.latitude) + ":" + mLatitude, 4, mFontHeight * 4, mPaint);
-        canvas.drawText(mContext.getString(R.string.accuracy) + ":" + mAccuracy, 4, mFontHeight * 5, mPaint);
+        else {
+        	
+            canvas.restore();
+	        /*
+	         * Now draw stats text
+	         */
+	        drawParamsText(canvas, "?", "?", "?", "?", "?");
+        }
     }
 }

@@ -869,8 +869,11 @@ public class MainActivity extends Activity implements LocationListener, Observer
     @Override
     public void onGpsStatusChanged(int event) {
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
-        if(gpsStatus != null) {
-            mSatelliteView.updateGpsStatus(gpsStatus);
-         }
+        if(GpsStatus.GPS_EVENT_STOPPED == event) {
+        	mSatelliteView.updateGpsStatus(null);        	
+        }
+        else {
+        	mSatelliteView.updateGpsStatus(gpsStatus);
+        }
     }
 }
