@@ -110,6 +110,29 @@ public class BitmapHolder {
     }
 
     /**
+     * @param name
+     * Get bitmap from a zip file
+     */
+    public BitmapHolder(String name) {
+        try {
+            mBitmap = BitmapFactory.decodeFile(name);
+        }
+        catch(OutOfMemoryError e){
+            System.gc();
+        }
+        if(null != mBitmap) {
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mName = name;
+        }
+        else {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+        }
+    }
+
+    /**
      * @param context
      * @param id
      * Get bitmap from resources

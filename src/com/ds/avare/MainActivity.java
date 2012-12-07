@@ -25,14 +25,12 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -203,6 +201,9 @@ public class MainActivity extends Activity implements LocationListener, Observer
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
 
+            if(mService.getDBResource().isOpen()) {
+            	mService.getDBResource().close();
+            }
             mService.getDBResource().open(mPreferences.mapsFolder() + "/" + getString(R.string.DatabaseName));
             if(!mService.getDBResource().isOpen()) {
                 /*
@@ -647,21 +648,10 @@ public class MainActivity extends Activity implements LocationListener, Observer
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        
-                        File file = new File(mDestination.getDiagram());
-
-                        Uri path = Uri.fromFile(file);
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(path, "application/pdf");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                        try{
-                            startActivity(intent);
-                        }
-                        catch (ActivityNotFoundException e) {
-                            Toast.makeText(MainActivity.this, getString(R.string.InstallPDF), 
-                                    Toast.LENGTH_SHORT).show();
-                        } 
+                       
+                        Intent intent = new Intent(MainActivity.this, PlatesActivity.class);
+                        intent.putExtra("name", mDestination.getDiagram());
+                        startActivity(intent);
                     }
                 });
                 dlg.setTitle(mDestination.getFacilityName());

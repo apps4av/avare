@@ -63,9 +63,15 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     public synchronized void close() {
    
         if(mDataBase != null) {
-            mDataBase.close();
+        	try {
+        		mDataBase.close();
+                super.close();
+        	}
+        	catch (Exception e) {
+        		
+        	}
+        	mDataBase = null;
         }
-        super.close();
     }
    
     /* (non-Javadoc)

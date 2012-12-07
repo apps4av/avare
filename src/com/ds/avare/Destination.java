@@ -185,7 +185,7 @@ public class Destination extends Observable {
 	            /*
 	             * Found destination extract its airport diagram
 	             */
-	            String file = mPref.mapsFolder() + "/plates/" + mName + ".pdf";
+	            String file = mPref.mapsFolder() + "/plates/" + mName + ".jpg";
 	            File f = new File(file);
 	            if(f.exists()) {
 	                mDiagramFound = file;

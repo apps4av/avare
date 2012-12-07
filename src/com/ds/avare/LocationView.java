@@ -79,7 +79,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * Gesture like long press, double touch outside of multi-touch
      */
-    private GestureDetector             gestureDetector;
+    private GestureDetector             mGestureDetector;
     /**
      * Cache
      */
@@ -208,7 +208,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         
-        gestureDetector = new GestureDetector(context, new GestureListener());
+        mGestureDetector = new GestureDetector(context, new GestureListener());
     }
     
     /**
@@ -282,7 +282,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPoint = null;
             mWeatherLayout = null;
         }
-        gestureDetector.onTouchEvent(e);
+        mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
     }
 
@@ -535,11 +535,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(mDestination.toString(),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
-                mPaint.setShadowLayer(0, 0, 0, 0);
                 if(null != mTrackShape) {
                     mPaint.setColor(Color.MAGENTA);
-                    mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
                     mPaint.setStrokeWidth(4);
+                    mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
                     mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }            
             }
@@ -576,6 +575,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Write weather report
              * Use a static layout for showing as overlay and formatted to fit
              */
+            mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
             if(null != mWeatherLayout) {
                 canvas.save();
                 canvas.translate(0, getHeight() / mTextDiv);

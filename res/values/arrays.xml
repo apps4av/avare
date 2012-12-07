@@ -114,7 +114,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFiles">
         <item>database</item>
-        <item>AirportDiagrams</item>
+        <item>AirportDiagramsj</item>
 		<item>Albuquerque</item>
 		<item>Anchorage</item>
 		<item>AnchorageTAC</item>
