@@ -13,9 +13,19 @@ package com.ds.avare;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * @author zkhan
@@ -25,6 +35,7 @@ public class PlatesActivity extends Activity {
     
     private Preferences mPref;
     private PlatesView mPlatesView;
+    private BitmapHolder mBitmap;
     
     /**
      * 
@@ -54,15 +65,17 @@ public class PlatesActivity extends Activity {
 			/*
 			 * Image for plate from intent
 			 */
-	        mPlatesView.setBitmap(extras.getString("name"));
+			mBitmap = new BitmapHolder(extras.getString("name"));
+	        mPlatesView.setBitmap(mBitmap);
 		}
 
 		setContentView(mPlatesView);
     }
-   
+
     /**
      * 
      */
+    @Override
     public void onResume() {
         super.onResume();
         
@@ -71,4 +84,115 @@ public class PlatesActivity extends Activity {
         }
     }
 
+    /**
+     * 
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(null != mBitmap) {
+        	mBitmap.recycle();
+        }
+    }
+
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_plates, menu);
+        return true;
+    }
+
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()) {
+        
+            case R.id.mark:
+            	
+            	/*
+            	 * Present a dialog to add a point and ask user for lon/lat
+            	 */
+                final AlertDialog dialogd = new AlertDialog.Builder(this).create();
+                dialogd.setTitle(getString(R.string.markthis));
+                dialogd.setCancelable(false);
+                
+                LayoutInflater inflater = getLayoutInflater();
+                final View dv = inflater.inflate(R.layout.lonlat, (ViewGroup)getCurrentFocus());
+                dialogd.setView(dv);
+                dialogd.show();
+                Button ok = (Button)dv.findViewById(R.id.lonlatbuttonOK);
+                ok.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                    	/*
+                    	 * On OK click, save pixel points in the view's coordinate
+                    	 */
+                    	mPlatesView.runState();
+                    	PixelCoordinates pc = mPlatesView.getPoints();
+                    	/*
+                    	 * Also save lon/lat
+                    	 */
+                    	if(pc.firstPointAcquired()) {
+                			pc.setLatitude0(
+                					((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
+                					((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
+                					);
+                			pc.setLongitude0(
+                					((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
+                					((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
+                					);
+                    	}
+                    	else if(pc.secondPointAcquired()) {
+                    		/*
+                    		 * Do the same for second point
+                    		 */
+                			pc.setLatitude1(
+                					((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
+                					((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
+                					);
+                			pc.setLongitude1(
+                					((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
+                					((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
+                					);
+                    		if(!pc.isPixelDimensionAcceptable()) {
+                    			/*
+                    			 * Min dim so calculation is correct. Warn user.
+                    			 */
+	                    		Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();
+	                		}
+                    		if(!pc.gpsCoordsCorrect()) {
+                    			/*
+                    			 * Bad coordinates for GPS.
+                    			 */
+	                    		Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                    		}
+                    	}
+                    	dialogd.dismiss();
+                    }
+                });
+                Button cancel = (Button)dv.findViewById(R.id.lonlatbuttonCancel);
+                cancel.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                    	dialogd.dismiss();
+                    }
+                });
+
+            	break;
+            	
+            case R.id.cancel:
+            	/*
+            	 * Start again
+            	 */
+            	mPlatesView.cancelState();
+            	
+            	break;
+        }
+		return true;
+    }
 }

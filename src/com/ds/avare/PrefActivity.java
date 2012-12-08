@@ -46,6 +46,7 @@ public class PrefActivity extends PreferenceActivity {
     /**
      * 
      */
+    @Override
     public void onResume() {
         super.onResume();
         

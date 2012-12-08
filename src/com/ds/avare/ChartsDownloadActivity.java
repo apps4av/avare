@@ -95,6 +95,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     /**
      * 
      */
+    @Override
     public void onResume() {
         super.onResume();
         

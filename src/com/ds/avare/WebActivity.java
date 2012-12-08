@@ -52,6 +52,7 @@ public class WebActivity extends Activity  {
     /**
      * 
      */
+    @Override
     public void onResume() {
         super.onResume();
         
