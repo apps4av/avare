@@ -166,11 +166,17 @@ public class PlatesActivity extends Activity {
                     			 */
 	                    		Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();
 	                		}
-                    		if(!pc.gpsCoordsCorrect()) {
+                    		else if(!pc.gpsCoordsCorrect()) {
                     			/*
                     			 * Bad coordinates for GPS.
                     			 */
 	                    		Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                    		}
+                    		else {
+                    		    /*
+                    		     * If everything is good, save the just recieved params
+                    		     */
+                    			mPlatesView.setParams(pc.get());
                     		}
                     	}
                     	dialogd.dismiss();

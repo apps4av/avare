@@ -12,10 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.text.DecimalFormat;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.Paint.FontMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,6 +46,12 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private BitmapHolder                 mBitmap;
     private PixelCoordinates             mPixels;
     private boolean                     mDrag;
+    private double                      mPx;
+    private double                      mPy;
+    private double                      mOLon;
+    private double                      mOLat;
+    private boolean                     mDrawLonLat;
+    private DecimalFormat 				  mFormat;
     
     /**
      * 
@@ -50,16 +60,19 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 	public PlatesView(Context context) {
 		super(context);
 		mPaint = new Paint();
+        mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
 		mPan = new Pan();
 		mDrag = false;
 		mPixels = new PixelCoordinates(0, 0);
+		mDrawLonLat = false;
 		
 		mScale = new Scale();
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
-        this.setBackgroundColor(Color.BLACK);
+        setBackgroundColor(Color.BLACK);
+        mFormat = new DecimalFormat("##.##");
 	}
 
     /* (non-Javadoc)
@@ -129,6 +142,19 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public PixelCoordinates getPoints() {
     	return mPixels;
     }
+
+    /**
+     * Set params to show lon/lat 
+     */
+    public void setParams(double[] params) {
+    	mDrawLonLat = true;
+    	
+    	mOLon = params[0];
+    	mOLat = params[1];
+    	mPx = params[2];
+    	mPy = params[3];
+    	postInvalidate();
+    }
     
     /**
      * Cancel point aquisition state machine and bring to init state. 
@@ -179,6 +205,12 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	if(mBitmap.getBitmap() == null) {
     		return;
     	}
+    	
+        float min = Math.min(getWidth(), getHeight()) - 8;
+        mPaint.setTextSize(min / 20);
+        FontMetrics fm = mPaint.getFontMetrics();
+        float fh =  fm.bottom - fm.top;
+        
     	/*
     	 * Plate
     	 */
@@ -205,6 +237,27 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	 */
     	canvas.drawLine(getWidth() / 2, getHeight() / 2 - 16, getWidth() / 2, getHeight() / 2 + 16, mPaint);
     	canvas.drawLine(getWidth() / 2 - 16, getHeight() / 2, getWidth() / 2 + 16, getHeight() / 2, mPaint);
+ 
+    	/*
+    	 * This will show lon/lat under current cross hair
+    	 */
+    	if(mDrawLonLat) {
+    		double lonms = mOLon - mPx * mPan.getMoveX();
+    		double latms = mOLat - mPy * mPan.getMoveY();
+    		int lon = (int)lonms;
+    		int lat = (int)latms;
+    		double lonl = Math.abs((lonms - (double)lon) * 60);
+    		if(60 == lonl) {
+    		    lon--;
+    		    lonl = 0;
+    		}
+    		double latl = Math.abs((latms - (double)lat) * 60);
+            if(60 == latl) {
+                lat++;
+                latl = 0;
+            }
+    		canvas.drawText("" + lon + '\u00B0' + mFormat.format(lonl) + "'" + ", " + lat + '\u00B0' + mFormat.format(latl) + "'", fh, fh, mPaint);
+    	}
     }
     
     /**
