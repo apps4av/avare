@@ -238,4 +238,22 @@ public class Preferences {
         return(path);
     }
 
+    /**
+     * 
+     * @return
+     */
+    public void saveString(String name, String value) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(name, value);
+        editor.commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String loadString(String name) {
+        return(mPref.getString(name, null));
+    }
+
 }

@@ -36,6 +36,7 @@ public class PlatesActivity extends Activity {
     private Preferences mPref;
     private PlatesView mPlatesView;
     private BitmapHolder mBitmap;
+    private String mName;
     
     /**
      * 
@@ -65,11 +66,39 @@ public class PlatesActivity extends Activity {
 			/*
 			 * Image for plate from intent
 			 */
-			mBitmap = new BitmapHolder(extras.getString("name"));
+            mName = extras.getString("name");
+			mBitmap = new BitmapHolder(mName);
 	        mPlatesView.setBitmap(mBitmap);
 		}
 
 		setContentView(mPlatesView);
+		
+		/*
+		 * This should be true. Get plate coords if stored
+		 */
+        if(null != mName) {
+            String value = mPref.loadString(mName);
+            if(null != value) {
+                /*
+                 * mOLon, mOLat, mPx, mPy
+                 */
+                String[] vals = value.split(",");
+                double valsDouble[] = new double[5];
+                try {
+                    if(5 == vals.length) {
+                        valsDouble[0] = Double.parseDouble(vals[0]);
+                        valsDouble[1] = Double.parseDouble(vals[1]);
+                        valsDouble[2] = Double.parseDouble(vals[2]);
+                        valsDouble[3] = Double.parseDouble(vals[3]);
+                        valsDouble[4] = Double.parseDouble(vals[4]);
+                        mPlatesView.setParams(valsDouble);
+                    }
+                }
+                catch (Exception e) {
+                    
+                }
+            }
+        }
     }
 
     /**
@@ -162,7 +191,7 @@ public class PlatesActivity extends Activity {
                 					);
                     		if(!pc.isPixelDimensionAcceptable()) {
                     			/*
-                    			 * Min dim so calculation is correct. Warn user.
+                    			 * Min dim required so calculation is correct. Warn user.
                     			 */
 	                    		Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();
 	                		}
@@ -174,9 +203,14 @@ public class PlatesActivity extends Activity {
                     		}
                     		else {
                     		    /*
-                    		     * If everything is good, save the just recieved params
+                    		     * If everything is good, save the just received params
                     		     */
-                    			mPlatesView.setParams(pc.get());
+                    		    double[] params = pc.get();
+                    		    if(null != params) {
+                    		        mPlatesView.setParams(params);
+                    		        String value = "" + params[0] + "," + params[1] + "," + params[2] + "," + params[3] + "," + params[4];
+                                    mPref.saveString(mName, value);
+                    		    }
                     		}
                     	}
                     	dialogd.dismiss();

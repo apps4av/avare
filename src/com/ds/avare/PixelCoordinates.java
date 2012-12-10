@@ -32,6 +32,7 @@ public class PixelCoordinates {
 	private double mHeight;
 	private double mOLon;
 	private double mOLat;	
+    private double mRotated;
     private int mPointsAcquired;
 
 
@@ -47,6 +48,7 @@ public class PixelCoordinates {
 		mPointsAcquired = 0;
 		mWidth = width;
 		mHeight = height;
+		mRotated = 0;
 	}
 
 	/**
@@ -250,27 +252,87 @@ public class PixelCoordinates {
 	public double[] get() {
 		if(secondPointAcquired() && gpsCoordsCorrect() && isPixelDimensionAcceptable()) {
 			
-			double difflon = mLon0 - mLon1;
-			double difflat = mLat0 - mLat1;			
-			double diffx = mX0 - mX1;
-			double diffy = mY0 - mY1;
-			mPx = Math.abs(difflon / diffx); /* lon / pixel */
-			mPy = -Math.abs(difflat / diffy); /* lat / pixel */
-			
-			/*
-			 * Find lon/lat of origin now
-			 */
-			mOLon = mLon0 + mX0 * mPx;
-			mOLat = mLat0 + mY0 * mPy;
+		    
+		    /*
+		     * Do the math to find origin and px, py
+		     */
+		    String moved = "";
+		    
+		    /*
+		     * Which direction did the mark move from point 1 to 2
+		     */
+		    if((mX0 > mX1) && (mY0 < mY1)) {
+		        moved = "ne";
+		    }
+		    else if((mX0 > mX1) && (mY0 > mY1)) {
+                moved = "se";
+            }
+		    else if((mX0 < mX1) && (mY0 < mY1)) {
+                moved = "nw";
+            }
+		    else if((mX0 < mX1) && (mY0 > mY1)) {
+                moved = "sw";
+            }
+            
+		    /*
+		     * Now if lon increases from left to right and lat increases from bottom to up then not rotated
+		     */
+            if(
+                    (moved.equals("sw") && (mLon0 > mLon1) && (mLat0 > mLat1)) ||
+                    (moved.equals("nw") && (mLon0 > mLon1) && (mLat0 < mLat1)) ||
+                    (moved.equals("se") && (mLon0 < mLon1) && (mLat0 > mLat1)) ||
+                    (moved.equals("ne") && (mLon0 < mLon1) && (mLat0 < mLat1))                                       
+                    ) {
+                mRotated = 0;
+            }
+            else {
+                /*
+                 * Rotated plate
+                 */
+                mRotated = 90;
+            }
+		    
+            if(0 == mRotated) {
+    			double difflon = mLon0 - mLon1;
+    			double difflat = mLat0 - mLat1;			
+    			double diffx = mX0 - mX1;
+    			double diffy = mY0 - mY1;
+    			mPx = Math.abs(difflon / diffx); /* lon / pixel */
+    			mPy = -Math.abs(difflat / diffy); /* lat / pixel */
+    			
+    			/*
+    			 * Find lon/lat of origin now
+    			 */
+    			mOLon = mLon0 + mX0 * mPx;
+    			mOLat = mLat0 + mY0 * mPy;
+            }
+            else {
+                /*
+                 * x is y, y is x
+                 */
+                double difflon = mLon0 - mLon1;
+                double difflat = mLat0 - mLat1;         
+                double diffx = mX0 - mX1;
+                double diffy = mY0 - mY1;
+                mPx = -Math.abs(difflat / diffx); /* lat / pixel */
+                mPy = -Math.abs(difflon / diffy); /* lon / pixel */
+                
+                /*
+                 * Find lon/lat of origin now
+                 */
+                mOLon = mLon0 + mY0 * mPy;
+                mOLat = mLat0 + mX0 * mPx;
+            }
 						
 			/*
 			 * Return for storage
 			 */
-			double ret[] = new double[4];
+			double ret[] = new double[5];
 			ret[0] = mOLon;
 			ret[1] = mOLat;
 			ret[2] = mPx;
 			ret[3] = mPy;
+			ret[4] = mRotated;
 			return ret;
 		}
 		return null;

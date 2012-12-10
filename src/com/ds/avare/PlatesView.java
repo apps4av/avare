@@ -51,6 +51,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private double                      mOLon;
     private double                      mOLat;
     private boolean                     mDrawLonLat;
+    private double                      mRotated;
     private DecimalFormat 				  mFormat;
     
     /**
@@ -65,6 +66,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 		mDrag = false;
 		mPixels = new PixelCoordinates(0, 0);
 		mDrawLonLat = false;
+		mRotated = 0;
 		
 		mScale = new Scale();
         setOnTouchListener(this);
@@ -153,6 +155,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	mOLat = params[1];
     	mPx = params[2];
     	mPy = params[3];
+    	mRotated = params[4];
     	postInvalidate();
     }
     
@@ -242,8 +245,19 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	 * This will show lon/lat under current cross hair
     	 */
     	if(mDrawLonLat) {
-    		double lonms = mOLon - mPx * mPan.getMoveX();
-    		double latms = mOLat - mPy * mPan.getMoveY();
+    	    double lonms;
+    	    double latms;
+    	    if(mRotated == 0) {
+                lonms = mOLon - mPx * mPan.getMoveX();
+                latms = mOLat - mPy * mPan.getMoveY();              
+    	    }
+    	    else {
+    	        /*
+    	         * Rotated plate
+    	         */
+                lonms = mOLon - mPy * mPan.getMoveY();
+                latms = mOLat - mPx * mPan.getMoveX();
+    	    }
     		int lon = (int)lonms;
     		int lat = (int)latms;
     		double lonl = Math.abs((lonms - (double)lon) * 60);
@@ -256,7 +270,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 lat++;
                 latl = 0;
             }
-    		canvas.drawText("" + lon + '\u00B0' + mFormat.format(lonl) + "'" + ", " + lat + '\u00B0' + mFormat.format(latl) + "'", fh, fh, mPaint);
+    		canvas.drawText("" + lon + '\u00B0' + mFormat.format(lonl) + "'" + ", "
+    		        + lat + '\u00B0' + mFormat.format(latl) + "'", fh, fh, mPaint);
     	}
     }
     
