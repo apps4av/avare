@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Paint.FontMetrics;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -58,24 +59,50 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * 
      * @param context
      */
-	public PlatesView(Context context) {
-		super(context);
-		mPaint = new Paint();
+    private void  setup(Context context) {
+        mPaint = new Paint();
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
-		mPan = new Pan();
-		mDrag = false;
-		mPixels = new PixelCoordinates(0, 0);
-		mDrawLonLat = false;
-		mRotated = 0;
-		
-		mScale = new Scale();
+        mPan = new Pan();
+        mDrag = false;
+        mPixels = new PixelCoordinates(0, 0);
+        mDrawLonLat = false;
+        mRotated = 0;
+        
+        mScale = new Scale();
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mFormat = new DecimalFormat("##.##");
+        mFormat = new DecimalFormat("##.##");        
+    }
+    
+    /**
+     * 
+     * @param context
+     */
+	public PlatesView(Context context) {
+		super(context);
+		setup(context);
 	}
+
+    /**
+     * 
+     * @param context
+     */
+    public PlatesView(Context context, AttributeSet set) {
+        super(context, set);
+        setup(context);
+    }
+
+    /**
+     * 
+     * @param context
+     */
+    public PlatesView(Context context, AttributeSet set, int arg) {
+        super(context, set, arg);
+        setup(context);
+    }
 
     /* (non-Javadoc)
      * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)

@@ -53,7 +53,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Help">&quot;Help&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Preferences&quot;</string>
-    <string name="AFD">&quot;AFD&quot;</string>
+    <string name="AFD">&quot;Airport&quot;</string>
     <string name="BasePrompt">&quot;Enter base airport code&quot;</string>
     <string name="Downloading">&quot;Downloading&quot;</string>
     <string name="download">&quot;Download&quot;</string>

@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -598,65 +597,11 @@ public class MainActivity extends Activity implements LocationListener, Observer
                     Toast.makeText(MainActivity.this, getString(R.string.ValidDest), 
                             Toast.LENGTH_SHORT).show();
                     return false;
-                }
-                
-                /*
-                 * Put list view in a dialog
-                 */
-                Dialog dlg = new Dialog(this);
-                ListView v = new ListView(this);
-
-                LinkedHashMap <String, String>map = mDestination.getParams();
-                String[] views = new String[map.size()];
-                String[] values = new String[map.size()];
-                int iterator = 0;
-                for(String key : map.keySet()){
-                    views[iterator] = key;
-                    values[iterator] = map.get(key);
-                    iterator++;
-                }
-                /*
-                 * Switch value/type for airport diagram
-                 */
-                views[0] = values[0];
-                values[0] = MainActivity.this.getString(R.string.AirportDia);
-                v.setClickable(true);
-                v.setCacheColorHint(Color.WHITE);
-                v.setDividerHeight(10);
-                v.setBackgroundColor(Color.WHITE);
-                v.setAdapter(new TypeValueAdapter(this, views, values));
-                v.setOnItemClickListener(new OnItemClickListener() {
-
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-
-                    @Override
-                    public void onItemClick(AdapterView<?> arg0, View arg1,
-                            int position, long id) {
-                        
-                        if(0 != position) {
-                            return;
-                        }
-                        
-                        /*
-                         * If user clicks on airport ID, open its PDF
-                         */
-                        
-                        if(null == mDestination.getDiagram()) {
-                            Toast.makeText(MainActivity.this, getString(R.string.AirDiaNF), 
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                }                
                        
-                        Intent intent = new Intent(MainActivity.this, PlatesActivity.class);
-                        intent.putExtra("name", mDestination.getDiagram());
-                        startActivity(intent);
-                    }
-                });
-                dlg.setTitle(mDestination.getFacilityName());
-                dlg.setContentView(v);
-                dlg.show();
+                Intent intent0 = new Intent(MainActivity.this, PlatesActivity.class);
+                startActivity(intent0);
+                
                 break;
                 
             case R.id.pref:

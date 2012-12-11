@@ -12,10 +12,18 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.util.LinkedHashMap;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -37,6 +46,9 @@ public class PlatesActivity extends Activity {
     private PlatesView mPlatesView;
     private BitmapHolder mBitmap;
     private String mName;
+    private StorageService mService;
+    private Destination mDestination;
+    private ListView mAfd;
     
     /**
      * 
@@ -55,50 +67,110 @@ public class PlatesActivity extends Activity {
         else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        this.setTitle(this.getString(R.string.app_name));
 
+        
         /*
-         * View for plate
+         * Get views from XML
          */
-        mPlatesView = new PlatesView(getApplicationContext());
-		Bundle extras = getIntent().getExtras();
-		if(extras != null) {
-			/*
-			 * Image for plate from intent
-			 */
-            mName = extras.getString("name");
-			mBitmap = new BitmapHolder(mName);
-	        mPlatesView.setBitmap(mBitmap);
-		}
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.sliderafd, null);
+        setContentView(view);
+        mPlatesView = (PlatesView)view.findViewById(R.id.plates);
+        mAfd = (ListView)view.findViewById(R.id.listafd);
 
-		setContentView(mPlatesView);
-		
-		/*
-		 * This should be true. Get plate coords if stored
-		 */
-        if(null != mName) {
-            String value = mPref.loadString(mName);
-            if(null != value) {
-                /*
-                 * mOLon, mOLat, mPx, mPy
-                 */
-                String[] vals = value.split(",");
-                double valsDouble[] = new double[5];
-                try {
-                    if(5 == vals.length) {
-                        valsDouble[0] = Double.parseDouble(vals[0]);
-                        valsDouble[1] = Double.parseDouble(vals[1]);
-                        valsDouble[2] = Double.parseDouble(vals[2]);
-                        valsDouble[3] = Double.parseDouble(vals[3]);
-                        valsDouble[4] = Double.parseDouble(vals[4]);
-                        mPlatesView.setParams(valsDouble);
+        mService = null;
+    }
+    
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+
+
+            /*
+             * Now get all stored data
+             */
+            mDestination = mService.getDestination();
+            mName = mDestination.getDiagram();
+            mBitmap = new BitmapHolder(mName);
+            mPlatesView.setBitmap(mBitmap);
+            PlatesActivity.this.setTitle(mDestination.getFacilityName());
+
+            LinkedHashMap <String, String>map = mDestination.getParams();
+            String[] views = new String[map.size()];
+            String[] values = new String[map.size()];
+            int iterator = 0;
+            for(String key : map.keySet()){
+                views[iterator] = key;
+                values[iterator] = map.get(key);
+                iterator++;
+            }
+            mAfd.setClickable(false);
+            mAfd.setCacheColorHint(Color.WHITE);
+            mAfd.setDividerHeight(10);
+            mAfd.setBackgroundColor(Color.WHITE);
+            mAfd.setAdapter(new TypeValueAdapter(PlatesActivity.this, views, values));
+
+            /*
+             * This should be true. Get plate coords if stored
+             */
+            if(null != mName) {
+                String value = mPref.loadString(mName);
+                if(null != value) {
+                    /*
+                     * mOLon, mOLat, mPx, mPy
+                     */
+                    String[] vals = value.split(",");
+                    double valsDouble[] = new double[5];
+                    try {
+                        if(5 == vals.length) {
+                            valsDouble[0] = Double.parseDouble(vals[0]);
+                            valsDouble[1] = Double.parseDouble(vals[1]);
+                            valsDouble[2] = Double.parseDouble(vals[2]);
+                            valsDouble[3] = Double.parseDouble(vals[3]);
+                            valsDouble[4] = Double.parseDouble(vals[4]);
+                            mPlatesView.setParams(valsDouble);
+                        }
+                    }
+                    catch (Exception e) {
+                        
                     }
                 }
-                catch (Exception e) {
-                    
-                }
             }
+        }    
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
         }
+    };
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onPause()
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        
+        /*
+         * Clean up on pause that was started in on resume
+         */
+        unbindService(mConnection);
     }
 
     /**
@@ -108,6 +180,13 @@ public class PlatesActivity extends Activity {
     public void onResume() {
         super.onResume();
         
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
         if(mPref.shouldScreenStayOn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
         }
@@ -131,6 +210,9 @@ public class PlatesActivity extends Activity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
+        if(null == mService || null == mName) {
+            return false;
+        }
         getMenuInflater().inflate(R.menu.menu_plates, menu);
         return true;
     }
@@ -140,7 +222,12 @@ public class PlatesActivity extends Activity {
      * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        
+        /*
+         * We dont have a diagram?
+         */
+        
         switch(item.getItemId()) {
         
             case R.id.mark:
@@ -235,4 +322,5 @@ public class PlatesActivity extends Activity {
         }
 		return true;
     }
+    
 }
