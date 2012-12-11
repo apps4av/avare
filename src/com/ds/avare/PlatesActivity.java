@@ -249,58 +249,89 @@ public class PlatesActivity extends Activity {
                     	/*
                     	 * On OK click, save pixel points in the view's coordinate
                     	 */
-                    	mPlatesView.runState();
                     	PixelCoordinates pc = mPlatesView.getPoints();
+                    	
+                    	/*
+                    	 * This will reset in case we are doing mark input again
+                    	 */
+                        if(pc.secondPointAcquired()) {
+                            pc.resetPoints();
+                        }
+
                     	/*
                     	 * Also save lon/lat
                     	 */
+                    	if(pc.noPointAcquired()) {
+                            /*
+                             * Acquire first point
+                             */
+                            if(!pc.setLatitude0(
+                                    ((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
+                                    ((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
+                                    )) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                dialogd.dismiss();
+                                return;
+                            }
+                            if(!pc.setLongitude0(
+                                    ((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
+                                    ((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
+                                    )) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                dialogd.dismiss();
+                                return;
+                            }
+                            pc.setX0(mPlatesView.getX());
+                            pc.setY0(mPlatesView.getY());
+                            dialogd.dismiss();
+                            return;
+                    	}
+                    	
                     	if(pc.firstPointAcquired()) {
-                			pc.setLatitude0(
+                            /*
+                             * Do the same for second point
+                             */
+                			if(!pc.setLatitude1(
                 					((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
                 					((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
-                					);
-                			pc.setLongitude0(
+                					)) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                dialogd.dismiss();
+                                return;
+                			}
+                			if(!pc.setLongitude1(
                 					((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
                 					((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
-                					);
+                					)) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                dialogd.dismiss();
+                                return;
+                			}
+                            if(!pc.setX1(mPlatesView.getX())) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
+                                dialogd.dismiss();
+                                return;
+                            }
+                            if(!pc.setY1(mPlatesView.getY())) {
+                                Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
+                                dialogd.dismiss();
+                                return;
+                            }
                     	}
-                    	else if(pc.secondPointAcquired()) {
-                    		/*
-                    		 * Do the same for second point
-                    		 */
-                			pc.setLatitude1(
-                					((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
-                					((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
-                					);
-                			pc.setLongitude1(
-                					((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
-                					((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
-                					);
-                    		if(!pc.isPixelDimensionAcceptable()) {
-                    			/*
-                    			 * Min dim required so calculation is correct. Warn user.
-                    			 */
-	                    		Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();
-	                		}
-                    		else if(!pc.gpsCoordsCorrect()) {
-                    			/*
-                    			 * Bad coordinates for GPS.
-                    			 */
-	                    		Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                    		}
-                    		else {
-                    		    /*
-                    		     * If everything is good, save the just received params
-                    		     */
-                    		    double[] params = pc.get();
-                    		    if(null != params) {
-                    		        mPlatesView.setParams(params);
-                    		        String value = "" + params[0] + "," + params[1] + "," + params[2] + "," + params[3] + "," + params[4];
-                                    mPref.saveString(mName, value);
-                    		    }
-                    		}
+                    	
+                    	if(pc.secondPointAcquired()) {
+                		    /*
+                		     * If everything is good, save the just received params
+                		     */
+                		    double[] params = pc.get();
+                		    if(null != params) {
+                		        mPlatesView.setParams(params);
+                		        String value = "" + params[0] + "," + params[1] + "," + params[2] + "," + params[3] + "," + params[4];
+                                mPref.saveString(mName, value);
+                                Toast.makeText(getApplicationContext(), getString(R.string.GoodCoords), Toast.LENGTH_LONG).show();                                
+                		    }
                     	}
-                    	dialogd.dismiss();
+                        dialogd.dismiss();
                     }
                 });
                 Button cancel = (Button)dv.findViewById(R.id.lonlatbuttonCancel);
@@ -316,7 +347,9 @@ public class PlatesActivity extends Activity {
             	/*
             	 * Start again
             	 */
-            	mPlatesView.cancelState();
+                PixelCoordinates pc = mPlatesView.getPoints();
+                pc.resetPoints();
+                mPlatesView.postInvalidate();
             	
             	break;
         }

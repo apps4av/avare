@@ -46,7 +46,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private PixelCoordinates             mPixels;
-    private boolean                     mDrag;
     private double                      mPx;
     private double                      mPy;
     private double                      mOLon;
@@ -63,8 +62,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint = new Paint();
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPan = new Pan();
-        mDrag = false;
-        mPixels = new PixelCoordinates(0, 0);
+        mPixels = new PixelCoordinates();
         mDrawLonLat = false;
         mRotated = 0;
         
@@ -186,34 +184,21 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	postInvalidate();
     }
     
+
     /**
-     * Cancel point aquisition state machine and bring to init state. 
+     * 
+     * @return
      */
-    public void cancelState() {
-    	mDrag = false;
-    	postInvalidate();
+    public double getX() {
+        return(mPan.getMoveX());
     }
 
     /**
-     * Run point acquire state machine to get two points on chart 
+     * 
+     * @return
      */
-    public void runState() {
-    	if(mDrag == false) {
-    		if(null != mBitmap) {
-        		mPixels = new PixelCoordinates(mBitmap.getWidth(), mBitmap.getHeight());
-    		}
-    		mPixels.setX0(mPan.getMoveX());
-    		mPixels.setY0(mPan.getMoveY());
-    		mPixels.addPoint();
-	    	mDrag = true;
-    	}
-    	else {
-    		mPixels.addPoint();
-    		mPixels.setX1(mPan.getMoveX());
-    		mPixels.setY1(mPan.getMoveY());
-    		mDrag = false;
-    	}
-    	postInvalidate();
+    public double getY() {
+        return(mPan.getMoveY());
     }
 
     /**
@@ -249,12 +234,20 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     			mPan.getMoveX() * mScale.getScaleFactor() + getWidth() / 2 - mBitmap.getWidth() / 2 * mScale.getScaleFactor(),
     			mPan.getMoveY() * mScale.getScaleFactor() + getHeight() / 2 - mBitmap.getHeight() / 2 * mScale.getScaleFactor());
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
-    	mPaint.setColor(Color.RED);
     	mPaint.setStrokeWidth(4);
     	/*
     	 * Drag line for points
     	 */
-    	if(mDrag) {
+    	if(mPixels.firstPointAcquired()) {
+    	    if(
+    	            (Math.abs(mPixels.getX0() - mPan.getMoveX()) < PixelCoordinates.POINTS_MIN_PIXELS) ||
+    	            (Math.abs(mPixels.getY0() - mPan.getMoveY()) < PixelCoordinates.POINTS_MIN_PIXELS)
+    	            ) {
+    	        mPaint.setColor(Color.RED);    	        
+    	    }
+    	    else {
+                mPaint.setColor(Color.GREEN);    	        
+    	    }
         	canvas.drawLine(
         			getWidth() / 2,
         			getHeight() / 2,
@@ -262,9 +255,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         			getHeight() / 2 + mPan.getMoveY() * mScale.getScaleFactor() - (float)mPixels.getY0() * mScale.getScaleCorrected(),
         			mPaint);    		
     	}
+    	
     	/*
     	 * Cross hair
     	 */
+        mPaint.setColor(Color.RED);
     	canvas.drawLine(getWidth() / 2, getHeight() / 2 - 16, getWidth() / 2, getHeight() / 2 + 16, mPaint);
     	canvas.drawLine(getWidth() / 2 - 16, getHeight() / 2, getWidth() / 2 + 16, getHeight() / 2, mPaint);
  

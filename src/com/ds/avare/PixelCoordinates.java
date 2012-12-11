@@ -14,7 +14,8 @@ package com.ds.avare;
 
 /**
  * @author zkhan
- *
+ * This class does all work and implements state machine to deal with user input on
+ * the plates screen to calibrate plates.
  */
 public class PixelCoordinates {
 	
@@ -28,29 +29,35 @@ public class PixelCoordinates {
 	private double mPy;
 	private double mLon1;
 	private double mLat1;
-	private double mWidth;
-	private double mHeight;
 	private double mOLon;
 	private double mOLat;	
     private double mRotated;
-    private int mPointsAcquired;
+    private boolean mLat0Set;
+    private boolean mLon0Set;
+    private boolean mLat1Set;
+    private boolean mLon1Set;
 
 
-    private static final int POINTS_MIN_PIXELS = 300;
+    public static final int POINTS_MIN_PIXELS = 300;
     
 
 	/**
 	 * 
 	 */
-	public PixelCoordinates(double width, double height) {
-		mX0 = mY0 = mX1 = mY1 = mLon0 = mLat0 = mLon1 = mLat1 = 0;
-		mOLon = mOLat = mPx = mPy = 0;
-		mPointsAcquired = 0;
-		mWidth = width;
-		mHeight = height;
-		mRotated = 0;
+	public PixelCoordinates() {
+	    resetPoints();
 	}
 
+	/**
+	 * 
+	 */
+	public void resetPoints() {
+	    mX0 = mY0 = mX1 = mY1 = mLon0 = mLat0 = mLon1 = mLat1 = 0;
+	    mOLon = mOLat = mPx = mPy = 0;
+	    mLon0Set = mLat0Set = mLon1Set = mLat1Set = false;
+	    mRotated = 0;
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -87,28 +94,26 @@ public class PixelCoordinates {
 	 * 
 	 * @param x
 	 */
-	public void setX1(double x) {
+	public boolean setX1(double x) {
 		mX1 = x;
+		if(Math.abs(mX0 - mX1) < POINTS_MIN_PIXELS) {
+		    mLon1Set = mLat1Set = false;
+		    return false;
+		}
+		return true;
 	}
-
+	
 	/**
 	 * 
 	 * @param y
 	 */
-	public void setY1(double y) {
+	public boolean setY1(double y) {
 		mY1 = y;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isPixelDimensionAcceptable() {
-    	if((Math.abs(mX0 - mX1) < POINTS_MIN_PIXELS) || 
-    			(Math.abs(mY0 - mY1) < POINTS_MIN_PIXELS) || mWidth == 0 || mHeight == 0) {
-    		return false;
-		}
-		return true;
+        if(Math.abs(mY0 - mY1) < POINTS_MIN_PIXELS) {
+            mLon1Set = mLat1Set = false;
+            return false;
+        }
+        return true;		
 	}
 	
 	/**
@@ -116,7 +121,8 @@ public class PixelCoordinates {
 	 * @param lon
 	 * @param minsec
 	 */
-	public void setLongitude0(String lon, String minsec) {
+	public boolean setLongitude0(String lon, String minsec) {
+        mLon0Set = false;
 		try {
 			mLon0 = Double.parseDouble(lon);
 			if(mLon0 < 0) {
@@ -125,10 +131,17 @@ public class PixelCoordinates {
 			else {
 				 mLon0 = mLon0 + Double.parseDouble(minsec) / 60;				
 			}
+			
+			if(mLon0 >= 0 || mLon0 < -180) {
+			    return false;
+			}
+			mLon0Set = true;
+			return true;
 		}
 		catch (Exception e) {
 			mLon0 = 0;
 		}
+		return false;
 	}
 	
 	/**
@@ -136,7 +149,8 @@ public class PixelCoordinates {
 	 * @param lat
 	 * @param minsec
 	 */
-	public void setLatitude0(String lat, String minsec) {
+	public boolean setLatitude0(String lat, String minsec) {
+        mLat0Set = false;
 		try {
 			mLat0 = Double.parseDouble(lat);
 			if(mLat0 < 0) {
@@ -145,10 +159,16 @@ public class PixelCoordinates {
 			else {
 				mLat0 = mLat0 + Double.parseDouble(minsec) / 60;				
 			}
+            if(mLat0 <= 0 || mLat0 > 90) {
+                return false;
+            }
+            mLat0Set = true;
+			return true;
 		}
 		catch (Exception e) {
 			mLat0 = 0;
 		}
+        return false;
 	}
 
 	/**
@@ -156,7 +176,8 @@ public class PixelCoordinates {
 	 * @param lon
 	 * @param minsec
 	 */
-	public void setLongitude1(String lon, String minsec) {
+	public boolean setLongitude1(String lon, String minsec) {
+        mLon1Set = false;
 		try {
 			mLon1 = Double.parseDouble(lon);
 			if(mLon1 < 0) {
@@ -165,10 +186,19 @@ public class PixelCoordinates {
 			else {
 				 mLon1 = mLon1 + Double.parseDouble(minsec) / 60;				
 			}
+	        if(mLon1 >= 0 || mLon1 < -180) {
+	            return false;
+	        }
+	        if((mLon0 - mLon1) == 0) {
+                return false;	            
+	        }
+	        mLon1Set = true;
+			return true;
 		}
 		catch (Exception e) {
 			mLon1 = 0;
 		}
+        return false;
 	}
 	
 	/**
@@ -176,7 +206,8 @@ public class PixelCoordinates {
 	 * @param lat
 	 * @param minsec
 	 */
-	public void setLatitude1(String lat, String minsec) {
+	public boolean setLatitude1(String lat, String minsec) {
+        mLat1Set = false;
 		try {
 			mLat1 = Double.parseDouble(lat);
 			if(mLat1 < 0) {
@@ -185,27 +216,27 @@ public class PixelCoordinates {
 			else {
 				mLat1 = mLat1 + Double.parseDouble(minsec) / 60;				
 			}
+            if(mLat1 <= 0 || mLat1 > 90) {
+                return false;
+            }
+            if((mLat0 - mLat1) == 0) {
+                return false;               
+            }
+            mLat1Set = true;
+	        return true;
 		}
 		catch (Exception e) {
 			mLat1 = 0;
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void addPoint() {
-		if(mPointsAcquired == 2) {
-			mPointsAcquired = 0;
-		}
-		mPointsAcquired++;
+        return false;
 	}
 	
 	/**
 	 * @return
 	 */
 	public boolean secondPointAcquired() {
-		if(mPointsAcquired == 2) {
+	    
+		if(mLon0Set && mLat0Set && mLon1Set && mLat1Set) {
 			return true;
 		}
 		return false;
@@ -215,42 +246,28 @@ public class PixelCoordinates {
 	 * @return
 	 */
 	public boolean firstPointAcquired() {
-		if(mPointsAcquired == 1) {
-			return true;
-		}
+        if(mLon0Set && mLat0Set && (!mLon1Set) && (!mLat1Set)) {
+            return true;
+        }
 		return false;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean gpsCoordsCorrect() {
-		
-		/*
-		 * For US only. Does not accept E lon, and S lat.
-		 */
-		if(
-				mLon0 >= 0 || mLon0 < -180 || mLat0 <= 0 || mLat0 > 90 ||
-				mLon1 >= 0 || mLon1 < -180 || mLat1 <= 0 || mLat1 > 90) {
-			return false;		
-		}
-		
-		/*
-		 * Save divide by zero
-		 */
-		if((mLon0 - mLon1) == 0 || (mLat0 - mLat1) == 0) {
-			return false;
-		}
-		
-		return true;
-	}
-	
+   /**
+     * @return
+     */
+    public boolean noPointAcquired() {
+        
+        if((!mLon0Set) && (!mLat0Set) && (!mLon1Set) && (!mLat1Set)) {
+            return true;
+        }
+        return false;
+    }
+
 	/**
 	 * @return return origin, lat/lon of origin and px, py
 	 */
 	public double[] get() {
-		if(secondPointAcquired() && gpsCoordsCorrect() && isPixelDimensionAcceptable()) {
+		if(secondPointAcquired()) {
 			
 		    
 		    /*

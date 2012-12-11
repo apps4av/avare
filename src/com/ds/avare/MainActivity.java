@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import java.io.File;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -106,6 +105,8 @@ public class MainActivity extends Activity implements LocationListener, Observer
     
     private static final int GPS_PERIOD_LONG_MS = 8000;
     
+    private Gps mGps;
+    
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
@@ -122,6 +123,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
         mLocationView = (LocationView)view.findViewById(R.id.location);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
 
+        mGps = new Gps(this);
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
@@ -140,7 +142,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if(null != mLocationManager) {
                 
-            if(isGpsAvailable()) {
+            if(mGps.isGpsAvailable()) {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
@@ -221,7 +223,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 /*
                  * Go to last known location till GPS locks.
                  */
-                Location l = getLastLocation();
+                Location l = mGps.getLastLocation();
                 if(null != l) {
                     mService.setGpsParams(new GpsParams(l));
                 }
@@ -231,7 +233,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
             /*
              * Go to last known location till GPS locks.
              */
-            Location l = getLastLocation();
+            Location l = mGps.getLastLocation();
             if(null != l) {
                 mLocationView.updateParams(new GpsParams(l));
             }
@@ -311,101 +313,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
         
     }
 
-    /**
-     * 
-     * @return
-     */
-    private boolean isGpsAvailable() {
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);  
-        List<String> providers = lm.getProviders(true);
-        for (int i = providers.size() - 1; i >= 0; i--) {
-            if(providers.get(i).equals(LocationManager.GPS_PROVIDER)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    private Location getLastLocation() {
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);  
-        List<String> providers = lm.getProviders(true);
 
-        Location l = null;
-        for (int i = providers.size() - 1; i >= 0; i--) {
-            l = lm.getLastKnownLocation(providers.get(i));
-            if (l != null) {
-                break;
-            }
-        }
-        if(null != l) {
-            mLastLocation = l;
-        }
-        return l;
-    }
-    
-    /** Determines whether one Location reading is better than the current Location fix
-     * @param location  The new Location that you want to evaluate
-     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-     */
-    private boolean isBetterLocation(Location location, Location currentBestLocation) {
-       
-       final int TWO_MINUTES = 1000 * 60 * 2;
-       
-       if (currentBestLocation == null) {
-           // A new location is always better than no location
-           return true;
-       }
-
-       // Check whether the new location fix is newer or older
-       long timeDelta = location.getTime() - currentBestLocation.getTime();
-       boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-       boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-       boolean isNewer = timeDelta > 0;
-
-       // If it's been more than two minutes since the current location, use the new location
-       // because the user has likely moved
-       if (isSignificantlyNewer) {
-           // If the new location is more than two minutes older, it must be worse
-           return true;
-       } 
-       else if (isSignificantlyOlder) {
-           return false;
-       }
-
-       // Check whether the new location fix is more or less accurate
-       int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-       boolean isLessAccurate = accuracyDelta > 0;
-       boolean isMoreAccurate = accuracyDelta < 0;
-       boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-       // Check if the old and new location are from the same provider
-       boolean isFromSameProvider = isSameProvider(location.getProvider(),
-               currentBestLocation.getProvider());
-
-       // Determine location quality using a combination of timeliness and accuracy
-       if (isMoreAccurate) {
-           return true;
-       } 
-       else if (isNewer && !isLessAccurate) {
-           return true;
-       } 
-       else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-           return true;
-       }
-       return false;
-   }
-
-   /** Checks whether two providers are the same */
-   private boolean isSameProvider(String provider1, String provider2) {
-       if (provider1 == null) {
-         return provider2 == null;
-       }
-       return provider1.equals(provider2);
-   }
     
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
@@ -481,7 +389,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
             /*
              * Called by GPS. Update everything driven by GPS.
              */
-            if(isBetterLocation(location, mLastLocation)) {
+            if(mGps.isBetterLocation(location, mLastLocation)) {
                 mLastLocation = location;
             }
             GpsParams params = new GpsParams(mLastLocation); 

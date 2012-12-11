@@ -90,6 +90,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="markthis">&quot;Mark this point&quot;</string>
     <string name="Done">&quot;Done&quot;</string>
     <string name="Mark">&quot;Mark&quot;</string>
-    <string name="PointsTooClose">&quot;Points are too close. Mark two points, a few inches apart in both dimensions&quot;</string>
+    <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: -180 to 0\nLatitude Range 0 to 90&quot;</string>
+    <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
 </resources>
