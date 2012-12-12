@@ -31,7 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".PlatesActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LocationActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

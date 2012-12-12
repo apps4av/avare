@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -49,6 +51,8 @@ public class PlatesActivity extends Activity {
     private StorageService mService;
     private Destination mDestination;
     private ListView mAfd;
+    private Gps mGps;
+
     
     /**
      * 
@@ -77,6 +81,60 @@ public class PlatesActivity extends Activity {
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
         mAfd = (ListView)view.findViewById(R.id.listafd);
+
+        /*
+         * Start GPS
+         */
+        GpsInterface intf = new GpsInterface() {
+
+            @Override
+            public void statusCallback(GpsStatus gpsStatus) {
+            }
+
+            @Override
+            public void locationCallback(Location location) {
+                if(location != null) {
+
+                    /*
+                     * Called by GPS. Update everything driven by GPS.
+                     */
+                    GpsParams params = new GpsParams(location); 
+                    
+                    /*
+                     * Store GPS last location in case activity dies, we want to start from same loc
+                     */
+                    mPlatesView.updateParams(params); 
+                }
+            }
+
+            @Override
+            public void timeoutCallback(boolean timeout) {
+                /*
+                 *  No GPS signal
+                 *  Tell location view to show GPS status
+                 */
+                if(mPref.isSimulationMode()) {
+                    mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
+                }
+                else if(mGps.isGpsDisabled()) {
+                    /*
+                     * Prompt user to enable GPS.
+                     */
+                    mPlatesView.updateErrorStatus(getString(R.string.GPSEnable)); 
+                }
+                else if(timeout) {
+                    mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
+                }
+                else {
+                    /*
+                     *  GPS kicking.
+                     */
+                    mPlatesView.updateErrorStatus(null);
+                }           
+            }          
+        };
+        mGps = new Gps(this, intf);
+        mGps.start();
 
         mService = null;
     }

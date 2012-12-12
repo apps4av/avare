@@ -15,17 +15,12 @@ package com.ds.avare;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Timer;
-import java.util.TimerTask;
 import com.ds.avare.R;
 
 import android.location.GpsStatus;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -57,7 +52,7 @@ import android.graphics.Color;
  * @author zkhan
  * Main activity
  */
-public class MainActivity extends Activity implements LocationListener, Observer, android.location.GpsStatus.Listener{
+public class LocationActivity extends Activity implements Observer {
 
     /**
      * This view display location on the map.
@@ -72,21 +67,9 @@ public class MainActivity extends Activity implements LocationListener, Observer
      */
     private AlertDialog mGpsWarnDialog;
     /**
-     * GPS manager
-     */
-    private LocationManager mLocationManager;
-    /**
      * Current destination info
      */
     private Destination mDestination;
-    /**
-     * A timer that clicks to check GPS status
-     */
-    private Timer mTimer;
-    /**
-     * Time of last GPS message
-     */
-    private long mGpsLastUpdate;
     /**
      * Service that keeps state even when activity is dead
      */
@@ -97,14 +80,14 @@ public class MainActivity extends Activity implements LocationListener, Observer
      */
     private Preferences mPreferences;
 
-    private Location mLastLocation;
-    
-    private int mGpsPeriod;
-    
+    /**
+     * Shows satellites
+     */
     private SatelliteView mSatelliteView;
     
-    private static final int GPS_PERIOD_LONG_MS = 8000;
-    
+    /**
+     * GPS class
+     */
     private Gps mGps;
     
     /* (non-Javadoc)
@@ -123,43 +106,87 @@ public class MainActivity extends Activity implements LocationListener, Observer
         mLocationView = (LocationView)view.findViewById(R.id.location);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
 
-        mGps = new Gps(this);
-        /*
-         * Start service now, bind later. This will be no-op if service is already running
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        startService(intent);
-
-        if(mPreferences.isGpsUpdatePeriodShort()) {
-            mGpsPeriod = 0;
-        }
-        else {
-            mGpsPeriod = GPS_PERIOD_LONG_MS;
-        }
         /*
          * Start GPS
          */
-        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        if(null != mLocationManager) {
-                
-            if(mGps.isGpsAvailable()) {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        mGpsPeriod / 4, 0, this);
-                mLocationManager.addGpsStatusListener(this);
+        GpsInterface intf = new GpsInterface() {
+
+            @Override
+            public void statusCallback(GpsStatus gpsStatus) {
+                mSatelliteView.updateGpsStatus(gpsStatus);                
             }
-            /*
-             * Also obtain GSM based locations
-             */
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-                    0, 0, this);
-        }
-        
+
+            @Override
+            public void locationCallback(Location location) {
+                if(location != null && mService != null) {
+
+                    mSatelliteView.updateLocation(location);
+
+                    /*
+                     * Called by GPS. Update everything driven by GPS.
+                     */
+                    GpsParams params = new GpsParams(location); 
+                    
+                    if(mDestination != null) {
+                        mDestination.updateTo(params);
+                    }
+                    /*
+                     * Store GPS last location in case activity dies, we want to start from same loc
+                     */
+                    mLocationView.updateParams(params); 
+                    mService.setGpsParams(params);
+                    
+                    /*
+                     * Update distances/bearing to all airports in the area
+                     */
+                    mService.getArea().updateLocation(params);
+                }
+            }
+
+            @Override
+            public void timeoutCallback(boolean timeout) {
+                /*
+                 *  No GPS signal
+                 *  Tell location view to show GPS status
+                 */
+                if(null == mService) {
+                    mLocationView.updateErrorStatus(getString(R.string.Init));
+                }
+                else if(!mService.getDBResource().isOpen()) {
+                    mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
+                }
+                else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
+                    mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
+                    startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+                }
+                else if(mPreferences.isSimulationMode()) {
+                    mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
+                }
+                else if(mGps.isGpsDisabled()) {
+                    /*
+                     * Prompt user to enable GPS.
+                     */
+                    mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
+                }
+                else if(timeout) {
+                    mLocationView.updateErrorStatus(getString(R.string.GPSLost));
+                }
+                else {
+                    /*
+                     *  GPS kicking.
+                     */
+                    mLocationView.updateErrorStatus(null);
+                }           
+            }          
+        };
+        mGps = new Gps(this, intf);
+        mGps.start();
         
         /*
          * Throw this in case GPS is disabled.
          */
-        if(mPreferences.shouldGpsWarn() && (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
-            mGpsWarnDialog = new AlertDialog.Builder(MainActivity.this).create();
+        if(mGps.isGpsDisabled()) {
+            mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setButton(getString(R.string.Yes),  new DialogInterface.OnClickListener() {
                 /* (non-Javadoc)
@@ -180,8 +207,15 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 }
             });
             mGpsWarnDialog.show();
-        }        
+        }
         
+        mService = null;
+
+        /*
+         * Start service now, bind later. This will be no-op if service is already running
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        startService(intent);
     }
     
     /** Defines callbacks for service binding, passed to bindService() */
@@ -210,7 +244,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 /*
                  * If could not open database then bring up download activity.
                  */
-                startActivity(new Intent(MainActivity.this, ChartsDownloadActivity.class));
+                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
                 return;
             }
 
@@ -243,7 +277,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
              */
             if(mService.shouldWarn()) {
              
-                mAlertDialogWarn = new AlertDialog.Builder(MainActivity.this).create();
+                mAlertDialogWarn = new AlertDialog.Builder(LocationActivity.this).create();
                 mAlertDialogWarn.setTitle(getString(R.string.WarningMsg));
                 mAlertDialogWarn.setMessage(getString(R.string.Warning));
                 mAlertDialogWarn.setCanceledOnTouchOutside(true);
@@ -295,15 +329,6 @@ public class MainActivity extends Activity implements LocationListener, Observer
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-        mGpsLastUpdate = SystemClock.uptimeMillis();
-        mTimer = new Timer();
-        TimerTask gpsTime = new UpdateGps();
-        /*
-         * Give some delay for check start
-         */
-        mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
-                GPS_PERIOD_LONG_MS / 4);
-
         /*
          * Registering our receiver
          * Bind now.
@@ -312,8 +337,6 @@ public class MainActivity extends Activity implements LocationListener, Observer
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         
     }
-
-
     
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
@@ -326,7 +349,6 @@ public class MainActivity extends Activity implements LocationListener, Observer
          * Clean up on pause that was started in on resume
          */
         unbindService(mConnection);
-        mTimer.cancel();
 
         if(null != mAlertDialogWarn) {
             try {
@@ -369,49 +391,11 @@ public class MainActivity extends Activity implements LocationListener, Observer
             }
         }
 
-        if(null != mLocationManager) {
-            mLocationManager.removeUpdates(this);
-            mLocationManager.removeGpsStatusListener(this);
-        }
+        mGps.stop();
 
         super.onDestroy();
     }
 
-    /* (non-Javadoc)
-     * @see android.location.LocationListener#onLocationChanged(android.location.Location)
-     */
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location != null && mService != null && (!mPreferences.isSimulationMode())) {
-
-            mSatelliteView.updateLocation(location);
-
-            /*
-             * Called by GPS. Update everything driven by GPS.
-             */
-            if(mGps.isBetterLocation(location, mLastLocation)) {
-                mLastLocation = location;
-            }
-            GpsParams params = new GpsParams(mLastLocation); 
-            
-            if(mDestination != null) {
-                mDestination.updateTo(params);
-            }
-            mGpsLastUpdate = SystemClock.uptimeMillis();
-            /*
-             * Store GPS last location in case activity dies, we want to start from same loc
-             */
-            mLocationView.updateParams(params); 
-            mService.setGpsParams(params);
-            
-            /*
-             * Update distances/bearing to all airports in the area
-             */
-            mService.getArea().updateLocation(params);
-            
-        }
-    }
-    
     /* (non-Javadoc)
      * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
      */
@@ -443,7 +427,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
 
                 int airportnum = mService.getArea().getAirportsNumber();
                 if(0 == airportnum) {
-                    Toast.makeText(MainActivity.this, getString(R.string.AreaNF), 
+                    Toast.makeText(LocationActivity.this, getString(R.string.AreaNF), 
                             Toast.LENGTH_SHORT).show();
                     return false;
                 }
@@ -480,7 +464,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                             int position, long id) {
                         String dst = airport[position];
                         mDestination = new Destination(dst, mPreferences, mService.getDBResource());
-                        mDestination.addObserver(MainActivity.this);
+                        mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         dlgn.dismiss();
                     }
@@ -497,17 +481,17 @@ public class MainActivity extends Activity implements LocationListener, Observer
                  * Present a list view of all fields about a destination
                  */
                 if(null == mDestination) {
-                    Toast.makeText(MainActivity.this, getString(R.string.ValidDest), 
+                    Toast.makeText(LocationActivity.this, getString(R.string.ValidDest), 
                             Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 if(!mDestination.isFound()) {
-                    Toast.makeText(MainActivity.this, getString(R.string.ValidDest), 
+                    Toast.makeText(LocationActivity.this, getString(R.string.ValidDest), 
                             Toast.LENGTH_SHORT).show();
                     return false;
                 }                
                        
-                Intent intent0 = new Intent(MainActivity.this, PlatesActivity.class);
+                Intent intent0 = new Intent(LocationActivity.this, PlatesActivity.class);
                 startActivity(intent0);
                 
                 break;
@@ -526,7 +510,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 break;
 
             case R.id.download:
-                startActivity(new Intent(MainActivity.this, ChartsDownloadActivity.class));
+                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
                 break;
                 
             case R.id.newdestination:
@@ -557,7 +541,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 tv.setText(mPreferences.getBase());
                 tv.selectAll();
                 tv.setThreshold(0);
-                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
                         R.layout.input_field, mPreferences.getRecent());
 
                 tv.setAdapter(adapter);
@@ -579,7 +563,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                             long id) {
                         String dst = adapter.getItem(pos);
                         mDestination = new Destination(dst, mPreferences, mService.getDBResource());
-                        mDestination.addObserver(MainActivity.this);
+                        mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         dialogd.dismiss();
                     }
@@ -593,7 +577,7 @@ public class MainActivity extends Activity implements LocationListener, Observer
                     public void onClick(View arg0) {
                         String dst = tv.getText().toString();
                         mDestination = new Destination(dst, mPreferences, mService.getDBResource());
-                        mDestination.addObserver(MainActivity.this);
+                        mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         dialogd.dismiss();
                         
@@ -614,55 +598,11 @@ public class MainActivity extends Activity implements LocationListener, Observer
                 break;
         }
         return true;
-    }
-        
+    }    
     
     /**
-     * @author zkhan
-     *
+     * 
      */
-    private class UpdateGps extends TimerTask {
-        
-        /* (non-Javadoc)
-         * @see java.util.TimerTask#run()
-         */
-        public void run() {
-            /*
-             *  No GPS signal
-             *  Tell location view to show GPS status
-             */
-            if(null == mService) {
-                mLocationView.updateErrorStatus(getString(R.string.Init));
-            }
-            else if(!mService.getDBResource().isOpen()) {
-                mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
-            }
-            else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
-                mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
-                startActivity(new Intent(MainActivity.this, ChartsDownloadActivity.class));
-            }
-            else if(mPreferences.isSimulationMode()) {
-                mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
-            }
-            else if(mPreferences.shouldGpsWarn() && (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
-                /*
-                 * Prompt user to enable GPS.
-                 */
-                mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
-            }
-            else if((SystemClock.uptimeMillis() - mGpsLastUpdate) > 
-                    (GPS_PERIOD_LONG_MS * 2)) {
-                mLocationView.updateErrorStatus(getString(R.string.GPSLost));
-            }
-            else {
-                /*
-                 *  GPS kicking.
-                 */
-                mLocationView.updateErrorStatus(null);
-            }
-        }
-    }
-
     @Override
     public void update(Observable arg0, Object arg1) {
         /*
@@ -685,38 +625,6 @@ public class MainActivity extends Activity implements LocationListener, Observer
             else {
                 Toast.makeText(this, getString(R.string.DestinationNF), Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see android.location.LocationListener#onProviderDisabled(java.lang.String)
-     */
-    public void onProviderDisabled(String provider) {
-    }
-
-    /* (non-Javadoc)
-     * @see android.location.LocationListener#onProviderEnabled(java.lang.String)
-     */
-    public void onProviderEnabled(String provider) {
-    }
-
-    /* (non-Javadoc)
-     * @see android.location.LocationListener#onStatusChanged(java.lang.String, int, android.os.Bundle)
-     */
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-    }
-
-    /**
-     * 
-     */
-    @Override
-    public void onGpsStatusChanged(int event) {
-        GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
-        if(GpsStatus.GPS_EVENT_STOPPED == event) {
-        	mSatelliteView.updateGpsStatus(null);        	
-        }
-        else {
-        	mSatelliteView.updateGpsStatus(gpsStatus);
         }
     }
 }

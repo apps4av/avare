@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetrics;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -53,6 +54,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private boolean                     mDrawLonLat;
     private double                      mRotated;
     private DecimalFormat 				  mFormat;
+    private GpsParams                    mGpsParams;
+    private String                       mErrorStatus;
+    private float                       mTextDiv;
+    private Preferences                  mPref;
+    private BitmapHolder                 mAirplaneBitmap;
     
     /**
      * 
@@ -61,18 +67,22 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private void  setup(Context context) {
         mPaint = new Paint();
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setAntiAlias(true);
         mPan = new Pan();
         mPixels = new PixelCoordinates();
         mDrawLonLat = false;
         mRotated = 0;
-        
+        mGpsParams = new GpsParams(null);
+        mPref = new Preferences(context);
+        mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
         mScale = new Scale();
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mFormat = new DecimalFormat("##.##");        
+        mFormat = new DecimalFormat("00.00");
+        mAirplaneBitmap = new BitmapHolder(context, R.drawable.planegreen);
     }
     
     /**
@@ -102,6 +112,31 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         setup(context);
     }
 
+    
+    /**
+     * @param params
+     */
+    public void updateParams(GpsParams params) {
+        /*
+         * Comes from location manager
+         */
+        mGpsParams = params;
+        postInvalidate();
+    }
+
+    
+    /**
+     * @param status
+     */
+    public void updateErrorStatus(String status) {
+        /*
+         * Comes from timer of activity
+         */
+        mErrorStatus = status;
+        postInvalidate();
+    }
+
+    
     /* (non-Javadoc)
      * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
      */
@@ -225,6 +260,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setTextSize(min / 20);
         FontMetrics fm = mPaint.getFontMetrics();
         float fh =  fm.bottom - fm.top;
+        mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
     	/*
     	 * Plate
@@ -262,7 +298,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setColor(Color.RED);
     	canvas.drawLine(getWidth() / 2, getHeight() / 2 - 16, getWidth() / 2, getHeight() / 2 + 16, mPaint);
     	canvas.drawLine(getWidth() / 2 - 16, getHeight() / 2, getWidth() / 2 + 16, getHeight() / 2, mPaint);
- 
+    	
     	/*
     	 * This will show lon/lat under current cross hair
     	 */
@@ -292,9 +328,61 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 lat++;
                 latl = 0;
             }
+            
+            mPaint.setTextAlign(Align.LEFT);
     		canvas.drawText("" + lon + '\u00B0' + mFormat.format(lonl) + "'" + ", "
-    		        + lat + '\u00B0' + mFormat.format(latl) + "'", fh, fh, mPaint);
+    		        + lat + '\u00B0' + mFormat.format(latl) + "'", 0, getHeight() - fh, mPaint);
     	}
+    	
+        if(mErrorStatus != null) {
+            mPaint.setTextAlign(Align.RIGHT);
+
+            mPaint.setColor(Color.RED);
+            canvas.drawText(mErrorStatus,
+                    getWidth(), getHeight() / mTextDiv, mPaint);
+        }
+        else {
+            
+            if(null == mGpsParams) {
+                return;
+            }
+            
+            /*
+             * Calculate offsets of our location
+             */
+            double x, y;
+            if(mRotated == 0) {
+                x = (mOLon - mGpsParams.getLongitude()) / mPx;
+                y = (mOLat - mGpsParams.getLatitude()) / mPy;              
+            }
+            else {
+                /*
+                 * Rotated plate
+                 */
+                y = (mOLon - mGpsParams.getLongitude()) / mPy;
+                x = (mOLat - mGpsParams.getLatitude()) / mPx;
+            }
+           
+            /*
+             * Draw airplane at that location
+             */
+            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() - (float)mRotated,
+                    mAirplaneBitmap.getWidth() / 2.f,
+                    mAirplaneBitmap.getHeight() / 2.f);
+            
+            mAirplaneBitmap.getTransform().postTranslate(
+                    getWidth() / 2.f
+                    - (float)x * mScale.getScaleFactor()
+                    - mAirplaneBitmap.getWidth()  / 2.f
+                    + mPan.getMoveX() * mScale.getScaleFactor(),
+                    getHeight() / 2.f
+                    - (float)y * mScale.getScaleFactor()
+                    - mAirplaneBitmap.getHeight()  / 2.f
+                    + mPan.getMoveY() * mScale.getScaleFactor());
+            canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
+        }
+        
+
     }
     
     /**
