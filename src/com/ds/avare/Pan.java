@@ -37,6 +37,9 @@ public class Pan {
     private float                      mMoveXTileOld;
     private float                      mMoveYTileOld;
 
+    /**
+     * 
+     */
     public Pan() {
         mMoveX = 0;
         mMoveY = 0;
@@ -89,28 +92,51 @@ public class Pan {
         mMoveYTile = y;
     }
     
+    /**
+     * 
+     * @return
+     */
     public float getMoveX() {
         return mMoveX;
     }
 
+    /**
+     * 
+     * @return
+     */
     public float getMoveY() {
         return mMoveY;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getTileMoveX() {
         return mMoveXTile;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getTileMoveY() {
         return mMoveYTile;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getTileMoveXWithoutTear() {
         return (int)mMoveXTileOld;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getTileMoveYWithoutTear() {
         return (int)mMoveYTileOld;
     }
-
 }

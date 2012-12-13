@@ -251,6 +251,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onGpsStatusChanged(int event) {
+        if(null == mLocationManager) {
+            return;
+        }
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
         if(GpsStatus.GPS_EVENT_STOPPED == event) {
             mGpsCallback.statusCallback(null);           

@@ -17,7 +17,9 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.widget.TabHost;
@@ -32,6 +34,9 @@ import android.widget.TextView;
 public class MainActivity extends TabActivity {
 
     TabHost mTabHost;
+    float mTabHeight;
+    
+    private static float DIV_TAB = 60;
     
     @Override
     /**
@@ -40,6 +45,29 @@ public class MainActivity extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
  
+        /*
+         * Set tabs height to something non obstructive but decent size.
+         */
+        Display display = getWindowManager().getDefaultDisplay();
+        float ar = (float)display.getHeight() / (float)display.getWidth();
+        if(ar < 1) {
+            ar = 1 / ar;
+        }
+        if(Surface.ROTATION_0 == display.getRotation() || Surface.ROTATION_180 == display.getRotation()) {
+            /*
+             * Portrait
+             * 1.5 aspect ratio assumed and magic number for tabs height
+             */
+            mTabHeight = (float)display.getHeight() / DIV_TAB;
+        }
+        else {
+            /*
+             * Landscape
+             */
+            mTabHeight = (float)display.getHeight() / (DIV_TAB / ar);
+        }
+        
+        
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.main);
@@ -84,10 +112,11 @@ public class MainActivity extends TabActivity {
      * @param text
      * @return
      */
-    private static View createTabView(Context context, String text) {
+    private View createTabView(Context context, String text) {
         View view = LayoutInflater.from(context).inflate(R.layout.tabsbg, null);
         TextView tv = (TextView) view.findViewById(R.id.tabsText);
         tv.setText(text);
+        tv.setTextSize(mTabHeight);
         return view;
     }
 }

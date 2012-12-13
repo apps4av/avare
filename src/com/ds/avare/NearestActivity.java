@@ -42,6 +42,8 @@ public class NearestActivity extends Activity {
     private ListView mNearest;
     private Gps mGps;
     private NearestAdapter mNearestAdapter;
+    private Toast mToast;
+    
 
     /**
      * 
@@ -61,6 +63,10 @@ public class NearestActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
         /*
          * Get views from XML
@@ -103,7 +109,6 @@ public class NearestActivity extends Activity {
         };
         mGps = new Gps(this, intf);
         mGps.start();
-
         
         mService = null;
     }
@@ -161,8 +166,8 @@ public class NearestActivity extends Activity {
             mService = binder.getService();
 
             if(false == prepareAdapter()) {
-                Toast.makeText(NearestActivity.this, getString(R.string.AreaNF), 
-                        Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.AreaNF));
+                mToast.show();
                 return;
             }
             mNearest.setAdapter(mNearestAdapter);

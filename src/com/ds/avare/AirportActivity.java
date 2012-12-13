@@ -39,6 +39,7 @@ public class AirportActivity extends Activity {
     private StorageService mService;
     private Destination mDestination;
     private ListView mAirport;
+    private Toast mToast;
 
     /**
      * 
@@ -58,6 +59,10 @@ public class AirportActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
         /*
          * Get views from XML
@@ -93,8 +98,8 @@ public class AirportActivity extends Activity {
              */
             mDestination = mService.getDestination();
             if(null == mDestination) {
-                Toast.makeText(AirportActivity.this, getString(R.string.ValidDest), 
-                        Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.ValidDest)); 
+                mToast.show();
                 return;
             }
 

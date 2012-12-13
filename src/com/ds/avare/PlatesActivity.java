@@ -47,6 +47,7 @@ public class PlatesActivity extends Activity {
     private Gps mGps;
     private View mMarkView;
     private AlertDialog mMarkDialog;
+    private Toast mToast;
 
     /**
      * 
@@ -81,6 +82,11 @@ public class PlatesActivity extends Activity {
         mMarkView = layoutInflater.inflate(R.layout.lonlat, null);
         mMarkDialog.setView(mMarkView);
         mMarkDialog.setCancelable(false);
+
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         /*
          * Start GPS
@@ -163,8 +169,8 @@ public class PlatesActivity extends Activity {
              */
             mDestination = mService.getDestination();
             if(null == mDestination) {
-                Toast.makeText(PlatesActivity.this, getString(R.string.ValidDest), 
-                        Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.ValidDest));
+                mToast.show();
                 mName = null;
                 return;
             }
