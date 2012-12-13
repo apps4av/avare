@@ -39,7 +39,7 @@ public class NearestAdapter extends ArrayAdapter<String> {
      */
     public NearestAdapter(Context context, String[] distance, String name[], 
             String bearing[], String[] fuel, Integer[] color) {
-        super(context, R.layout.nearest_list, distance);
+        super(context, R.layout.nearest, distance);
         mContext = context;
         mBearing = bearing;
         mDistance = distance;
@@ -48,6 +48,24 @@ public class NearestAdapter extends ArrayAdapter<String> {
         mColor = color;
     }
 
+    /**
+     * 
+     * @param distance
+     * @param name
+     * @param bearing
+     * @param fuel
+     * @param color
+     */
+    public void updateList(String[] distance, String name[], 
+            String bearing[], String[] fuel, Integer[] color) {
+        mBearing = bearing;
+        mDistance = distance;
+        mName = name;
+        mFuel = fuel;
+        mColor = color;
+        notifyDataSetChanged();
+    }
+    
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,7 +73,7 @@ public class NearestAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(R.layout.nearest_list, parent, false);
+            rowView = inflater.inflate(R.layout.nearest, parent, false);
         }
         TextView textView = (TextView)rowView.findViewById(R.id.distance);
         textView.setText(mDistance[position]);

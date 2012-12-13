@@ -27,11 +27,15 @@ Redistribution and use in source and binary forms, with or without modification,
         <service android:name=".StorageService">
         </service>
         <activity android:name=".PrefActivity" />
+        <activity android:name=".AirportActivity" />
+        <activity android:name=".SatelliteActivity" />
         <activity android:name=".WebActivity" />
+        <activity android:name=".LocationActivity" />
+        <activity android:name=".NearestActivity" />
         <activity android:name=".PlatesActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity
-            android:name=".LocationActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

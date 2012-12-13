@@ -19,13 +19,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Success">&quot;Success&quot;</string>
     <string name="DatabaseName">&quot;maps.db&quot;</string>
     <string name="WarningMsg">&quot;Warning&quot;</string>
-    <string name="AirportDia">&quot;Airport Diagram - Touch to open&quot;</string>
     <string name="DestinationPrompt">&quot;Enter Destination Code&quot;</string>
     <string name="DestinationNF">&quot;Destination Not Found&quot;</string>
     <string name="AirDiaNF">&quot;Airport diagram not found&quot;</string>
     <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
     <string name="Cancel">&quot;Cancel&quot;</string>
-    <string name="ADS">&quot;Airport Diagrams&quot;</string>
     <string name="To">&quot;To&quot;</string>
     <string name="Base">&quot;Base&quot;</string>
     <string name="Maps">&quot;Maps&quot;</string>
@@ -53,7 +51,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Help">&quot;Help&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Preferences&quot;</string>
-    <string name="AFD">&quot;Airport&quot;</string>
     <string name="BasePrompt">&quot;Enter base airport code&quot;</string>
     <string name="Downloading">&quot;Downloading&quot;</string>
     <string name="download">&quot;Download&quot;</string>
@@ -93,4 +90,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: -180 to 0\nLatitude Range 0 to 90&quot;</string>
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
+    <string name="main">&quot;Main&quot;</string>
+    <string name="plates">&quot;Plates&quot;</string>
+    <string name="airport">&quot;Airport&quot;</string>
 </resources>

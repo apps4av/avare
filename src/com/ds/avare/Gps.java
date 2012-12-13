@@ -79,6 +79,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * @return
      */
     public boolean isGpsAvailable() {
+        if(null == mLocationManager) {
+            return false;
+        }
+        
         List<String> providers = mLocationManager.getProviders(true);
         for (int i = providers.size() - 1; i >= 0; i--) {
             if(providers.get(i).equals(LocationManager.GPS_PROVIDER)) {
@@ -93,6 +97,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * @return
      */
     public Location getLastLocation() {
+        if(null == mLocationManager) {
+            return null;
+        }
+
         List<String> providers = mLocationManager.getProviders(true);
 
         Location l = null;
@@ -217,6 +225,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             mTimer.cancel();
         }
 
+        if(null == mLocationManager) {
+            return;
+        }
+        
         mLocationManager.removeUpdates(this);
         mLocationManager.removeGpsStatusListener(this);
         mLocationManager = null;
@@ -227,6 +239,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * @return
      */
     public boolean isGpsDisabled() {
+        if(null == mLocationManager) {
+            return true;
+        }
         return(mPreferences.shouldGpsWarn() && 
                 (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)));
     }

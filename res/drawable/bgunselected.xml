@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
 All rights reserved.
 
@@ -8,54 +9,9 @@ Redistribution and use in source and binary forms, with or without modification,
     *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package com.ds.avare;
-
-
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-
-/**
- * @author zkhan
- *
- */
-public class TypeValueAdapter extends ArrayAdapter<String> {
-
-    private Context  mContext;
-    private String[] mType;
-    private String[] mValue;
-    
-    
-    /**
-     * @param context
-     * @param textViewResourceId
-     */
-    public TypeValueAdapter(Context context, String[] type, String value[]) {
-        super(context, R.layout.typevalue, type);
-        mContext = context;
-        mType = type;
-        mValue = value;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View rowView = convertView;
-
-        if(null == rowView) {
-            rowView = inflater.inflate(R.layout.typevalue, parent, false);
-        }
-        TextView textView = (TextView)rowView.findViewById(R.id.type);
-        textView.setText(mType[position]);
-        textView = (TextView)rowView.findViewById(R.id.value);
-        textView.setText(mValue[position]);
-        
-        return rowView;
-    }
-    
-}
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient android:startColor="#5C5C5C" android:centerColor="#424242"
+        android:endColor="#222222" android:angle="-90" />
+</shape>

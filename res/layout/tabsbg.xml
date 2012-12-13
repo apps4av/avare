@@ -10,18 +10,18 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/newdestination" android:icon="@drawable/direct"
-        android:title="@string/Destination"></item>
-    <item android:id="@+id/destinationafd" android:icon="@drawable/afd"
-        android:title="@string/AFD"></item>
-    <item android:id="@+id/nearest" android:icon="@drawable/home"
-        android:title="@string/Nearest"></item>
-    <item android:id="@+id/pref" android:icon="@drawable/settings"
-        android:title="@string/Settings"></item>
-    <item android:id="@+id/download" android:icon="@drawable/download"
-        android:title="@string/download"></item>
-    <item android:id="@+id/help" android:icon="@drawable/help"
-        android:title="@string/Help"></item>
-    
-</menu>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabsLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bgselector"
+    android:padding="5dp"
+    android:gravity="center"
+    android:orientation="vertical">
+ 
+    <TextView android:id="@+id/tabsText" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@drawable/textselector" />
+</LinearLayout>

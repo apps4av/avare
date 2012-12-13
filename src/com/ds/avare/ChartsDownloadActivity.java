@@ -192,7 +192,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menudl, menu);
+        getMenuInflater().inflate(R.menu.download, menu);
         return true;
     }
 

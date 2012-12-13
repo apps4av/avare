@@ -50,7 +50,7 @@ public class ChartAdapter extends ArrayAdapter<String> {
      * @param textViewResourceId
      */
     public ChartAdapter(Context context, String[] values, String ids[]) {
-        super(context, R.layout.chart_list, values);
+        super(context, R.layout.chartlist, values);
         mContext = context;
         mValues = values;
         mIds = ids;
@@ -71,7 +71,7 @@ public class ChartAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(R.layout.chart_list, parent, false);
+            rowView = inflater.inflate(R.layout.chartlist, parent, false);
         }
         ImageView imgView = (ImageView)rowView.findViewById(R.id.image);
         TextView textView = (TextView)rowView.findViewById(R.id.item);

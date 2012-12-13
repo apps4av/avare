@@ -40,7 +40,7 @@ public class PrefActivity extends PreferenceActivity {
         }
 
         addPreferencesFromResource(R.xml.preferences);
-        setContentView(R.layout.pref_layout);
+        setContentView(R.layout.preferences);
     }
     
     /**

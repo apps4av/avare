@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -44,9 +42,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
-import android.graphics.Color;
 
 /**
  * @author zkhan
@@ -79,11 +75,10 @@ public class LocationActivity extends Activity implements Observer {
      * App preferences
      */
     private Preferences mPreferences;
-
-    /**
-     * Shows satellites
-     */
-    private SatelliteView mSatelliteView;
+    
+    private AlertDialog mDestDialog;
+    
+    private View mDestView;
     
     /**
      * GPS class
@@ -101,10 +96,15 @@ public class LocationActivity extends Activity implements Observer {
         mPreferences = new Preferences(this);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.slider, null);
+        View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-        mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
+
+        mDestDialog = new AlertDialog.Builder(this).create();
+        mDestDialog.setTitle(getString(R.string.DestinationPrompt));
+        
+        mDestView = layoutInflater.inflate(R.layout.destination, null);
+        mDestDialog.setView(mDestView);
 
         /*
          * Start GPS
@@ -113,14 +113,11 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void statusCallback(GpsStatus gpsStatus) {
-                mSatelliteView.updateGpsStatus(gpsStatus);                
             }
 
             @Override
             public void locationCallback(Location location) {
                 if(location != null && mService != null) {
-
-                    mSatelliteView.updateLocation(location);
 
                     /*
                      * Called by GPS. Update everything driven by GPS.
@@ -135,11 +132,6 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     mLocationView.updateParams(params); 
                     mService.setGpsParams(params);
-                    
-                    /*
-                     * Update distances/bearing to all airports in the area
-                     */
-                    mService.getArea().updateLocation(params);
                 }
             }
 
@@ -210,12 +202,6 @@ public class LocationActivity extends Activity implements Observer {
         }
         
         mService = null;
-
-        /*
-         * Start service now, bind later. This will be no-op if service is already running
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        startService(intent);
     }
     
     /** Defines callbacks for service binding, passed to bindService() */
@@ -334,7 +320,7 @@ public class LocationActivity extends Activity implements Observer {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         
     }
     
@@ -348,7 +334,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Clean up on pause that was started in on resume
          */
-        unbindService(mConnection);
+        getApplicationContext().unbindService(mConnection);
 
         if(null != mAlertDialogWarn) {
             try {
@@ -357,7 +343,23 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
-        
+
+        if(null != mGpsWarnDialog) {
+            try {
+                mGpsWarnDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        if(null != mDestDialog) {
+            try {
+                mDestDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
         mLocationView.freeTiles();
         
     }
@@ -401,7 +403,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.location, menu);
         return true;
     }
 
@@ -413,89 +415,6 @@ public class LocationActivity extends Activity implements Observer {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()) {
         
-            case R.id.nearest:
-                
-                if(null == mService) {
-                    return false;
-                }
-                
-                /*
-                 * Put list view in a dialog
-                 */
-                final Dialog dlgn = new Dialog(this);
-                ListView vn = new ListView(this);
-
-                int airportnum = mService.getArea().getAirportsNumber();
-                if(0 == airportnum) {
-                    Toast.makeText(LocationActivity.this, getString(R.string.AreaNF), 
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                final String [] airport = new String[airportnum];
-                final String [] airportname = new String[airportnum];
-                final String [] dist = new String[airportnum];
-                final String [] bearing = new String[airportnum];
-                final String [] fuel = new String[airportnum];
-                final Integer[] color = new Integer[airportnum];
-
-                for(int id = 0; id < airportnum; id++) {
-                    airport[id] = mService.getArea().getAirport(id).getId();
-                    airportname[id] = mService.getArea().getAirport(id).getName() + "(" + 
-                            mService.getArea().getAirport(id).getId() + ")";
-                    fuel[id] = mService.getArea().getAirport(id).getFuel();
-                    dist[id] = "" + (float)(Math.round(mService.getArea().getAirport(id).getDistance() * 10) / 10) + " nm";
-                    bearing[id] = "" + Math.round(mService.getArea().getAirport(id).getBearing()) + '\u00B0';
-                    color[id] = WeatherHelper.metarSquare(mService.getArea().getAirport(id).getWeather());
-                }
-
-                vn.setAdapter(new NearestAdapter(this, dist, airportname, bearing, fuel, color));
-                vn.setClickable(true);
-                vn.setDividerHeight(10);
-                vn.setCacheColorHint(Color.WHITE);
-                vn.setBackgroundColor(Color.WHITE);
-                vn.setOnItemClickListener(new OnItemClickListener() {
-
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-
-                    @Override
-                    public void onItemClick(AdapterView<?> arg0, View arg1,
-                            int position, long id) {
-                        String dst = airport[position];
-                        mDestination = new Destination(dst, mPreferences, mService.getDBResource());
-                        mDestination.addObserver(LocationActivity.this);
-                        mDestination.find();
-                        dlgn.dismiss();
-                    }
-                });
-                
-                dlgn.setTitle(getString(R.string.Nearest));
-                dlgn.setContentView(vn);
-                dlgn.show();
-                break;
-
-            case R.id.destinationafd:
-                
-                /*
-                 * Present a list view of all fields about a destination
-                 */
-                if(null == mDestination) {
-                    Toast.makeText(LocationActivity.this, getString(R.string.ValidDest), 
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                if(!mDestination.isFound()) {
-                    Toast.makeText(LocationActivity.this, getString(R.string.ValidDest), 
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }                
-                       
-                Intent intent0 = new Intent(LocationActivity.this, PlatesActivity.class);
-                startActivity(intent0);
-                
-                break;
-                
             case R.id.pref:
                 /*
                  * Bring up preferences
@@ -514,6 +433,9 @@ public class LocationActivity extends Activity implements Observer {
                 break;
                 
             case R.id.newdestination:
+                if(null == mService) {
+                    return false;                    
+                }
                 if(null == mService.getDBResource()) {
                     return false;
                 }
@@ -526,23 +448,17 @@ public class LocationActivity extends Activity implements Observer {
                  * Present an alert dialog with a text field
                  */
 
-                final AlertDialog dialogd = new AlertDialog.Builder(this).create();
-                dialogd.setTitle(getString(R.string.DestinationPrompt));
-                
-                LayoutInflater inflater = getLayoutInflater();
-                View dv = inflater.inflate(R.layout.destination_layout, (ViewGroup)getCurrentFocus());
-                dialogd.setView(dv);
 
                 /*
                  *  limit FAA/ICAO code length to 4
                  */
-                final AutoCompleteTextView tv = (AutoCompleteTextView)dv.findViewById(R.id.destautoCompleteTextView);
+                final AutoCompleteTextView tv = (AutoCompleteTextView)mDestView.findViewById(R.id.destautoCompleteTextView);
                 tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 tv.setText(mPreferences.getBase());
                 tv.selectAll();
                 tv.setThreshold(0);
                 final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
-                        R.layout.input_field, mPreferences.getRecent());
+                        R.layout.input, mPreferences.getRecent());
 
                 tv.setAdapter(adapter);
                 tv.setOnTouchListener(new View.OnTouchListener(){
@@ -565,12 +481,12 @@ public class LocationActivity extends Activity implements Observer {
                         mDestination = new Destination(dst, mPreferences, mService.getDBResource());
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
-                        dialogd.dismiss();
+                        mDestDialog.dismiss();
                     }
                 });
 
 
-                Button ok = (Button)dv.findViewById(R.id.destbuttonOK);
+                Button ok = (Button)mDestView.findViewById(R.id.destbuttonOK);
                 ok.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -579,21 +495,21 @@ public class LocationActivity extends Activity implements Observer {
                         mDestination = new Destination(dst, mPreferences, mService.getDBResource());
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
-                        dialogd.dismiss();
+                        mDestDialog.dismiss();
                         
                     }
                 });
 
-                Button cancel = (Button)dv.findViewById(R.id.destbuttonCancel);
+                Button cancel = (Button)mDestView.findViewById(R.id.destbuttonCancel);
                 cancel.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View arg0) {
-                        dialogd.dismiss();
+                        mDestDialog.dismiss();
                     }
                 });
 
-                dialogd.show();
+                mDestDialog.show();
 
                 break;
         }

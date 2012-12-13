@@ -11,9 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-
-import java.util.LinkedHashMap;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -21,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -31,11 +27,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -50,10 +44,10 @@ public class PlatesActivity extends Activity {
     private String mName;
     private StorageService mService;
     private Destination mDestination;
-    private ListView mAfd;
     private Gps mGps;
+    private View mMarkView;
+    private AlertDialog mMarkDialog;
 
-    
     /**
      * 
      */
@@ -77,10 +71,16 @@ public class PlatesActivity extends Activity {
          * Get views from XML
          */
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.sliderafd, null);
+        View view = layoutInflater.inflate(R.layout.plates, null);
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
-        mAfd = (ListView)view.findViewById(R.id.listafd);
+
+        mMarkDialog = new AlertDialog.Builder(this).create();
+        mMarkDialog.setTitle(getString(R.string.markthis));
+        
+        mMarkView = layoutInflater.inflate(R.layout.lonlat, null);
+        mMarkDialog.setView(mMarkView);
+        mMarkDialog.setCancelable(false);
 
         /*
          * Start GPS
@@ -162,25 +162,15 @@ public class PlatesActivity extends Activity {
              * Now get all stored data
              */
             mDestination = mService.getDestination();
+            if(null == mDestination) {
+                Toast.makeText(PlatesActivity.this, getString(R.string.ValidDest), 
+                        Toast.LENGTH_SHORT).show();
+                mName = null;
+                return;
+            }
             mName = mDestination.getDiagram();
             mBitmap = new BitmapHolder(mName);
             mPlatesView.setBitmap(mBitmap);
-            PlatesActivity.this.setTitle(mDestination.getFacilityName());
-
-            LinkedHashMap <String, String>map = mDestination.getParams();
-            String[] views = new String[map.size()];
-            String[] values = new String[map.size()];
-            int iterator = 0;
-            for(String key : map.keySet()){
-                views[iterator] = key;
-                values[iterator] = map.get(key);
-                iterator++;
-            }
-            mAfd.setClickable(false);
-            mAfd.setCacheColorHint(Color.WHITE);
-            mAfd.setDividerHeight(10);
-            mAfd.setBackgroundColor(Color.WHITE);
-            mAfd.setAdapter(new TypeValueAdapter(PlatesActivity.this, views, values));
 
             /*
              * This should be true. Get plate coords if stored
@@ -228,7 +218,21 @@ public class PlatesActivity extends Activity {
         /*
          * Clean up on pause that was started in on resume
          */
-        unbindService(mConnection);
+        getApplicationContext().unbindService(mConnection);
+        
+        if(null != mBitmap) {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
+
+        if(null != mMarkDialog) {
+            try {
+                mMarkDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
     }
 
     /**
@@ -243,7 +247,7 @@ public class PlatesActivity extends Activity {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if(mPref.shouldScreenStayOn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
@@ -256,10 +260,6 @@ public class PlatesActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if(null != mBitmap) {
-        	mBitmap.recycle();
-        }
     }
 
 
@@ -271,7 +271,7 @@ public class PlatesActivity extends Activity {
         if(null == mService || null == mName) {
             return false;
         }
-        getMenuInflater().inflate(R.menu.menu_plates, menu);
+        getMenuInflater().inflate(R.menu.plates, menu);
         return true;
     }
 
@@ -293,15 +293,9 @@ public class PlatesActivity extends Activity {
             	/*
             	 * Present a dialog to add a point and ask user for lon/lat
             	 */
-                final AlertDialog dialogd = new AlertDialog.Builder(this).create();
-                dialogd.setTitle(getString(R.string.markthis));
-                dialogd.setCancelable(false);
                 
-                LayoutInflater inflater = getLayoutInflater();
-                final View dv = inflater.inflate(R.layout.lonlat, (ViewGroup)getCurrentFocus());
-                dialogd.setView(dv);
-                dialogd.show();
-                Button ok = (Button)dv.findViewById(R.id.lonlatbuttonOK);
+                mMarkDialog.show();
+                Button ok = (Button)mMarkView.findViewById(R.id.lonlatbuttonOK);
                 ok.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                     	/*
@@ -324,24 +318,24 @@ public class PlatesActivity extends Activity {
                              * Acquire first point
                              */
                             if(!pc.setLatitude0(
-                                    ((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
-                                    ((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
+                                    ((EditText)mMarkView.findViewById(R.id.latitude)).getText().toString(),
+                                    ((EditText)mMarkView.findViewById(R.id.latitudems)).getText().toString()
                                     )) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                             }
                             if(!pc.setLongitude0(
-                                    ((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
-                                    ((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
+                                    ((EditText)mMarkView.findViewById(R.id.longitude)).getText().toString(),
+                                    ((EditText)mMarkView.findViewById(R.id.longitudems)).getText().toString()
                                     )) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                             }
                             pc.setX0(mPlatesView.getX());
                             pc.setY0(mPlatesView.getY());
-                            dialogd.dismiss();
+                            mMarkDialog.dismiss();
                             return;
                     	}
                     	
@@ -350,29 +344,29 @@ public class PlatesActivity extends Activity {
                              * Do the same for second point
                              */
                 			if(!pc.setLatitude1(
-                					((EditText)dv.findViewById(R.id.latitude)).getText().toString(),
-                					((EditText)dv.findViewById(R.id.latitudems)).getText().toString()
+                					((EditText)mMarkView.findViewById(R.id.latitude)).getText().toString(),
+                					((EditText)mMarkView.findViewById(R.id.latitudems)).getText().toString()
                 					)) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                 			}
                 			if(!pc.setLongitude1(
-                					((EditText)dv.findViewById(R.id.longitude)).getText().toString(),
-                					((EditText)dv.findViewById(R.id.longitudems)).getText().toString()
+                					((EditText)mMarkView.findViewById(R.id.longitude)).getText().toString(),
+                					((EditText)mMarkView.findViewById(R.id.longitudems)).getText().toString()
                 					)) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                 			}
                             if(!pc.setX1(mPlatesView.getX())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                             }
                             if(!pc.setY1(mPlatesView.getY())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
-                                dialogd.dismiss();
+                                mMarkDialog.dismiss();
                                 return;
                             }
                     	}
@@ -389,13 +383,13 @@ public class PlatesActivity extends Activity {
                                 Toast.makeText(getApplicationContext(), getString(R.string.GoodCoords), Toast.LENGTH_LONG).show();                                
                 		    }
                     	}
-                        dialogd.dismiss();
+                    	mMarkDialog.dismiss();
                     }
                 });
-                Button cancel = (Button)dv.findViewById(R.id.lonlatbuttonCancel);
+                Button cancel = (Button)mMarkView.findViewById(R.id.lonlatbuttonCancel);
                 cancel.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
-                    	dialogd.dismiss();
+                        mMarkDialog.dismiss();
                     }
                 });
 

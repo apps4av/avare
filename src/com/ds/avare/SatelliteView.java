@@ -120,6 +120,10 @@ public class SatelliteView extends View {
      * @param status
      */
     public void updateLocation(Location location) {
+        if(null == location) {
+            mGpsStatus = null;
+            return;
+        }
         mLatitude = round(location.getLatitude(), 8);
         mLongitude = round(location.getLongitude(), 8);
         mAccuracy = location.getAccuracy();
