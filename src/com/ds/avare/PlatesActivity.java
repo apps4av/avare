@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -48,6 +50,10 @@ public class PlatesActivity extends Activity {
     private View mMarkView;
     private AlertDialog mMarkDialog;
     private Toast mToast;
+    private String mLatC;
+    private String mLonC;
+    private String mLatCMin;
+    private String mLonCMin;
 
     /**
      * 
@@ -82,6 +88,7 @@ public class PlatesActivity extends Activity {
         mMarkView = layoutInflater.inflate(R.layout.lonlat, null);
         mMarkDialog.setView(mMarkView);
         mMarkDialog.setCancelable(false);
+
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -174,6 +181,33 @@ public class PlatesActivity extends Activity {
                 mName = null;
                 return;
             }
+            
+            /*
+             * Find lon/lat of the center of airport
+             */
+            Location l = mDestination.getLocation();
+            double lonc = Math.abs(l.getLongitude());
+            double latc = Math.abs(l.getLatitude());
+            latc = ((int)latc);
+            lonc = ((int)lonc);
+            double latcm = Math.abs(l.getLatitude()) - latc;
+            double loncm = Math.abs(l.getLongitude()) - lonc;
+            latcm *= 60;
+            loncm *= 60;
+            DecimalFormat f = new DecimalFormat("00.0");
+            mLatCMin = f.format(latcm);
+            mLonCMin = f.format(loncm);
+            mLatC = String.valueOf((int)latc);
+            mLonC = String.valueOf((int)lonc);
+            /*
+             * Show the lon/lat of center of airport to begin with
+             */
+            ((EditText)mMarkView.findViewById(R.id.latitude)).setText(mLatC);
+            ((EditText)mMarkView.findViewById(R.id.longitude)).setText(mLonC);
+            ((EditText)mMarkView.findViewById(R.id.latitudems)).setText(mLatCMin);
+            ((EditText)mMarkView.findViewById(R.id.longitudems)).setText(mLonCMin);
+
+            
             mName = mDestination.getDiagram();
             mBitmap = new BitmapHolder(mName);
             mPlatesView.setBitmap(mBitmap);
@@ -316,9 +350,6 @@ public class PlatesActivity extends Activity {
                             pc.resetPoints();
                         }
 
-                    	/*
-                    	 * Also save lon/lat
-                    	 */
                     	if(pc.noPointAcquired()) {
                             /*
                              * Acquire first point

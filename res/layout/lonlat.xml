@@ -12,66 +12,109 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FF000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <EditText
          android:id="@+id/longitude"
          android:layout_width="150dp"
-         android:layout_height="wrap_content"
+         android:layout_height="60dp"
          android:text="@string/longitude"
          android:selectAllOnFocus="true"
-         android:inputType="numberSigned"
+         android:inputType="number"
          android:nextFocusDown="@+id/longitudems"
          android:textSize="25dp">
     </EditText>
 
+    <TextView
+         android:id="@+id/textviewdegree0"
+         android:layout_width="20dp"
+         android:layout_height="60dp"
+         android:text="\u00B0"
+         android:textColor="#FFFFFFFF"
+         android:layout_toRightOf="@id/longitude"
+         android:textSize="25dp">
+    </TextView>
+    
     <EditText
          android:id="@+id/longitudems"
          android:layout_width="150dp"
-         android:layout_height="wrap_content"
+         android:layout_height="60dp"
          android:text="@string/minutesec"
          android:selectAllOnFocus="true"
-         android:layout_toRightOf="@id/longitude"
+         android:layout_toRightOf="@id/textviewdegree0"
          android:inputType="numberDecimal"
          android:nextFocusDown="@+id/latitude"
          android:textSize="25dp">
     </EditText>
+
+    <TextView
+         android:id="@+id/textviewdegree1"
+         android:layout_width="40dp"
+         android:layout_height="60dp"
+         android:textColor="#FFFFFFFF"
+         android:text="'W"
+         android:layout_toRightOf="@id/longitudems"
+         android:textSize="25dp">
+    </TextView>
     
     <EditText
          android:id="@+id/latitude"
          android:layout_width="150dp"
-         android:layout_height="wrap_content"
+         android:layout_height="60dp"
          android:text="@string/latitude"
          android:selectAllOnFocus="true"
-         android:inputType="numberSigned"
+         android:inputType="number"
          android:nextFocusDown="@+id/latitudems"
          android:textSize="25dp"
          android:layout_below="@+id/longitude">
     </EditText>
 
+    <TextView
+         android:id="@+id/textviewdegree2"
+         android:layout_width="20dp"
+         android:layout_height="60dp"
+         android:text="\u00B0"
+         android:textColor="#FFFFFFFF"
+         android:layout_toRightOf="@id/latitude"
+         android:layout_below="@id/textviewdegree0"
+         android:textSize="25dp">
+    </TextView>
+    
     <EditText
         android:id="@+id/latitudems"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_below="@+id/longitude"
-        android:layout_toRightOf="@+id/longitude"
+        android:layout_toRightOf="@id/textviewdegree2"
         android:inputType="numberDecimal"
         android:selectAllOnFocus="true"
         android:text="@string/minutesec"
         android:textSize="25dp" >
     </EditText>
+
+    <TextView
+         android:id="@+id/textviewdegree3"
+         android:layout_width="40dp"
+         android:layout_height="60dp"
+         android:textColor="#FFFFFFFF"
+         android:text="'N"
+         android:layout_toRightOf="@id/latitudems"
+         android:layout_below="@id/textviewdegree1"
+         android:textSize="25dp">
+    </TextView>
     
     <Button
         android:id="@+id/lonlatbuttonOK"
-        android:layout_width="150dp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/latitude"
         android:text="@string/OK" />
 
     <Button
         android:id="@+id/lonlatbuttonCancel"
-        android:layout_width="150dp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/latitude"
         android:layout_toRightOf="@+id/lonlatbuttonOK"

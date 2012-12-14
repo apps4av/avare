@@ -125,12 +125,8 @@ public class PixelCoordinates {
         mLon0Set = false;
 		try {
 			mLon0 = Double.parseDouble(lon);
-			if(mLon0 < 0) {
-				 mLon0 = mLon0 - Double.parseDouble(minsec) / 60;
-			}
-			else {
-				 mLon0 = mLon0 + Double.parseDouble(minsec) / 60;				
-			}
+			mLon0 = mLon0 + Double.parseDouble(minsec) / 60;
+			mLon0 = -mLon0;
 			
 			if(mLon0 >= 0 || mLon0 < -180) {
 			    return false;
@@ -153,12 +149,7 @@ public class PixelCoordinates {
         mLat0Set = false;
 		try {
 			mLat0 = Double.parseDouble(lat);
-			if(mLat0 < 0) {
-				mLat0 = mLat0 - Double.parseDouble(minsec) / 60;
-			}
-			else {
-				mLat0 = mLat0 + Double.parseDouble(minsec) / 60;				
-			}
+			mLat0 = mLat0 + Double.parseDouble(minsec) / 60;				
             if(mLat0 <= 0 || mLat0 > 90) {
                 return false;
             }
@@ -180,12 +171,8 @@ public class PixelCoordinates {
         mLon1Set = false;
 		try {
 			mLon1 = Double.parseDouble(lon);
-			if(mLon1 < 0) {
-				 mLon1 = mLon1 - Double.parseDouble(minsec) / 60;
-			}
-			else {
-				 mLon1 = mLon1 + Double.parseDouble(minsec) / 60;				
-			}
+			mLon1 = mLon1 + Double.parseDouble(minsec) / 60;
+			mLon1 = -mLon1;
 	        if(mLon1 >= 0 || mLon1 < -180) {
 	            return false;
 	        }
@@ -210,12 +197,7 @@ public class PixelCoordinates {
         mLat1Set = false;
 		try {
 			mLat1 = Double.parseDouble(lat);
-			if(mLat1 < 0) {
-				mLat1 = mLat1 - Double.parseDouble(minsec) / 60;
-			}
-			else {
-				mLat1 = mLat1 + Double.parseDouble(minsec) / 60;				
-			}
+			mLat1 = mLat1 + Double.parseDouble(minsec) / 60;				
             if(mLat1 <= 0 || mLat1 > 90) {
                 return false;
             }
