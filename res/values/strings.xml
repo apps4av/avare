@@ -83,15 +83,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="gps">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
     <string name="latitude">&quot;'N&quot;</string>
-    <string name="accuracy">&quot;Accuracy (meters)&quot;</string>
+    <string name="accuracy">&quot;Accuracy ft.&quot;</string>
     <string name="degree">&quot;\u00B0&quot;</string>
-    <string name="calibratethis">&quot;Calibrate this point&quot;</string>
+    <string name="calibratethis">&quot;Geo Tag this point&quot;</string>
     <string name="Done">&quot;Done&quot;</string>
-    <string name="Calibrate">&quot;Calibrate&quot;</string>
+    <string name="Calibrate">&quot;GeoTag&quot;</string>
     <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N&quot;</string>
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
     <string name="main">&quot;Main&quot;</string>
     <string name="plates">&quot;Plates&quot;</string>
-    <string name="airport">&quot;Airport&quot;</string>
+    <string name="airport">&quot;Destination&quot;</string>
 </resources>
