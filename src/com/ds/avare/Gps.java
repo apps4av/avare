@@ -64,7 +64,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     public Gps(Context ctx, GpsInterface callback) {
         mPreferences = new Preferences(ctx);
         mContext = ctx;
-        mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = null;
         mGpsCallback = callback;
         if(mPreferences.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
@@ -78,12 +78,15 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return
      */
-    public boolean isGpsAvailable() {
-        if(null == mLocationManager) {
+    public static boolean isGpsAvailable(Context ctx) {
+        
+        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+
+        if(null == lm) {
             return false;
         }
         
-        List<String> providers = mLocationManager.getProviders(true);
+        List<String> providers = lm.getProviders(true);
         for (int i = providers.size() - 1; i >= 0; i--) {
             if(providers.get(i).equals(LocationManager.GPS_PROVIDER)) {
                 return true;
@@ -96,22 +99,21 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return
      */
-    public Location getLastLocation() {
-        if(null == mLocationManager) {
+    public static Location getLastLocation(Context ctx) {
+        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+
+        if(null == lm) {
             return null;
         }
 
-        List<String> providers = mLocationManager.getProviders(true);
+        List<String> providers = lm.getProviders(true);
 
         Location l = null;
         for (int i = providers.size() - 1; i >= 0; i--) {
-            l = mLocationManager.getLastKnownLocation(providers.get(i));
+            l = lm.getLastKnownLocation(providers.get(i));
             if (l != null) {
                 break;
             }
-        }
-        if(null != l) {
-            mLastLocation = l;
         }
         return l;
     }
@@ -189,31 +191,35 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         else {
             mGpsPeriod = GPS_PERIOD_LONG_MS;
         }
+        
         /*
          * Start GPS
          */
-        if(null != mLocationManager) {
+        if(null == mLocationManager) {
                 
-            if(isGpsAvailable()) {
+            mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
+
+            if(isGpsAvailable(mContext)) {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
             }
+            
             /*
              * Also obtain GSM based locations
              */
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
                     0, 0, this);
-        }
-        
-        mGpsLastUpdate = SystemClock.uptimeMillis();
-        mTimer = new Timer();
-        TimerTask gpsTime = new UpdateGps();
-        /*
-         * Give some delay for check start
-         */
-        mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
-                GPS_PERIOD_LONG_MS / 4);
+            
+            mGpsLastUpdate = SystemClock.uptimeMillis();
+            mTimer = new Timer();
+            TimerTask gpsTime = new UpdateGps();
+            /*
+             * Give some delay for check start
+             */
+            mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
+                    GPS_PERIOD_LONG_MS / 4);
+        }        
     }
     
     /**
@@ -221,14 +227,14 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     public void stop() {
         
+        if(null == mLocationManager) {
+            return;
+        }
+
         if(null != mTimer) {
             mTimer.cancel();
         }
 
-        if(null == mLocationManager) {
-            return;
-        }
-        
         mLocationManager.removeUpdates(this);
         mLocationManager.removeGpsStatusListener(this);
         mLocationManager = null;
@@ -238,12 +244,14 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return
      */
-    public boolean isGpsDisabled() {
-        if(null == mLocationManager) {
+    public static boolean isGpsDisabled(Context ctx, Preferences pref) {
+        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+
+        if(null == lm) {
             return true;
         }
-        return(mPreferences.shouldGpsWarn() && 
-                (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)));
+        return(pref.shouldGpsWarn() && 
+                (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
     }
 
     /**

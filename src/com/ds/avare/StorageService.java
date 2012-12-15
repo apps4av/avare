@@ -11,11 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Service;
 import android.content.Intent;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -49,6 +52,11 @@ public class StorageService extends Service {
      * Store this
      */
     private Movement mMovement;
+    
+    /**
+     * GPS
+     */
+    private Gps mGps;
 
     /**
      * Store this
@@ -69,7 +77,11 @@ public class StorageService extends Service {
      * For performing periodic activities.
      */
     private Timer mTimer;
-    
+
+    /*
+     * A list of GPS listeners
+     */
+    private LinkedList<GpsInterface> mGpsCallbacks;
     
     /**
      * Local binding as this runs in same thread
@@ -80,7 +92,11 @@ public class StorageService extends Service {
      * When to show warning
      */
     private Boolean mShouldWarn = true;
-
+    
+    private boolean mIsGpsOn;
+    
+    private int mCounter;
+    
     /**
      * @author zkhan
      *
@@ -93,6 +109,7 @@ public class StorageService extends Service {
             return StorageService.this;
         }
     }
+    
     /* (non-Javadoc)
      * @see android.app.Service#onBind(android.content.Intent)
      */
@@ -124,11 +141,59 @@ public class StorageService extends Service {
         mTFRFetcher = new TFRFetcher(getApplicationContext());
         mTimer = new Timer();
         TimerTask tfrTime = new UpdateTask();
+        mIsGpsOn = false;
+        mGpsCallbacks = new LinkedList<GpsInterface>();
         
         /*
          * Monitor TFR every hour.
          */
         mTimer.scheduleAtFixedRate(tfrTime, 0, Preferences.TFR_UPDATE_PERIOD_MS);
+        
+        /*
+         * Start GPS, and call all activities registered to listen to GPS
+         */
+        GpsInterface intf = new GpsInterface() {
+
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.GpsInterface#statusCallback(android.location.GpsStatus)
+             */            
+            @Override
+            public void statusCallback(GpsStatus gpsStatus) {
+                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                while (it.hasNext()) {
+                    GpsInterface infc = it.next();
+                    infc.statusCallback(gpsStatus);
+                }
+            }
+
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.GpsInterface#locationCallback(android.location.Location)
+             */
+            @Override
+            public void locationCallback(Location location) {
+                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                while (it.hasNext()) {
+                    GpsInterface infc = it.next();
+                    infc.locationCallback(location);
+                }
+            }
+
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.GpsInterface#timeoutCallback(boolean)
+             */
+            @Override
+            public void timeoutCallback(boolean timeout) {
+                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                while (it.hasNext()) {
+                    GpsInterface infc = it.next();
+                    infc.timeoutCallback(timeout);
+                }                
+            }
+        };
+        mGps = new Gps(this, intf);
     }
         
     /* (non-Javadoc)
@@ -136,7 +201,7 @@ public class StorageService extends Service {
      */
     @Override
     public void onDestroy() {
-          super.onDestroy();
+        super.onDestroy();
     }
     
     /*
@@ -246,6 +311,17 @@ public class StorageService extends Service {
         public void run() {
 
             /*
+             * Stop the GPS delayed by 1 to 2 minutes if no other activity is registered 
+             * to it for 1 to 2 minutes.
+             */
+            synchronized(this) {
+                mCounter++;
+                if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2)) {
+                    mGps.stop();
+                }
+            }
+
+            /*
              * Comes here every TFR_UPDATE_PERIOD_MS (1 minute)
              * Try to fetch more quickly when we dont have TFRs
              * When we have TFRs, then fetch slowly for update only.
@@ -277,5 +353,39 @@ public class StorageService extends Service {
             mTFRFetcher.fetch();            
         }
     };
+
+    /**
+     * 
+     * @param gps
+     */
+    public void registerGpsListener(GpsInterface gps) {
+        /*
+         * If first listener, start GPS
+         */
+        if(mGpsCallbacks.isEmpty()) {
+            mGps.start();
+            synchronized(this) {
+                mIsGpsOn = true;
+            }
+        }
+        mGpsCallbacks.add(gps);
+    }
+
+    /**
+     * 
+     * @param gps
+     */
+    public void unregisterGpsListener(GpsInterface gps) {
+        mGpsCallbacks.remove(gps);
+        /*
+         * If no listener, relinquish GPS control
+         */
+        if(mGpsCallbacks.isEmpty()) {
+            synchronized(this) {
+                mCounter = 0;
+                mIsGpsOn = false;                
+            }            
+        }
+    }
 
 }

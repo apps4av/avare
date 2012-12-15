@@ -17,8 +17,12 @@ import com.ds.avare.R;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,10 +45,37 @@ public class SatelliteActivity extends Activity  {
      */
     private SatelliteView mSatelliteView;
     
-    /**
-     * GPS class
+    private StorageService mService;
+    
+    /*
+     * Start GPS
      */
-    private Gps mGps;
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+            mSatelliteView.updateGpsStatus(gpsStatus);                
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+            if(location != null) {
+
+                mSatelliteView.updateLocation(location);
+            }
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+            /*
+             *  No GPS signal
+             *  Tell location view to show GPS status
+             */
+            if(timeout) {
+                mSatelliteView.updateLocation(null);
+            }
+        }          
+    };
     
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -61,40 +92,38 @@ public class SatelliteActivity extends Activity  {
         setContentView(view);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
 
-        /*
-         * Start GPS
-         */
-        GpsInterface intf = new GpsInterface() {
-
-            @Override
-            public void statusCallback(GpsStatus gpsStatus) {
-                mSatelliteView.updateGpsStatus(gpsStatus);                
-            }
-
-            @Override
-            public void locationCallback(Location location) {
-                if(location != null) {
-
-                    mSatelliteView.updateLocation(location);
-                }
-            }
-
-            @Override
-            public void timeoutCallback(boolean timeout) {
-                /*
-                 *  No GPS signal
-                 *  Tell location view to show GPS status
-                 */
-                if(timeout) {
-                    mSatelliteView.updateLocation(null);
-                }
-            }          
-        };
-        mGps = new Gps(this, intf);
-        mGps.start();
+        mService = null;
         
     }
-    
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+            mService.registerGpsListener(mGpsInfc);
+        }    
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
 
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
@@ -121,6 +150,14 @@ public class SatelliteActivity extends Activity  {
         else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+        
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
     }
     
     /* (non-Javadoc)
@@ -129,6 +166,11 @@ public class SatelliteActivity extends Activity  {
     @Override
     protected void onPause() {
         super.onPause();
+        getApplicationContext().unbindService(mConnection);
+        
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
     }
     
     /* (non-Javadoc)
@@ -152,8 +194,6 @@ public class SatelliteActivity extends Activity  {
      */
     @Override
     public void onDestroy() {
-        mGps.stop();
-
         super.onDestroy();
     }
 }

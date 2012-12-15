@@ -46,7 +46,6 @@ public class PlatesActivity extends Activity {
     private String mName;
     private StorageService mService;
     private Destination mDestination;
-    private Gps mGps;
     private View mCalibrateView;
     private AlertDialog mCalibrateDialog;
     private Toast mToast;
@@ -54,6 +53,58 @@ public class PlatesActivity extends Activity {
     private String mLonC;
     private String mLatCMin;
     private String mLonCMin;
+
+    /*
+     * Start GPS
+     */
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+            if(location != null) {
+
+                /*
+                 * Called by GPS. Update everything driven by GPS.
+                 */
+                GpsParams params = new GpsParams(location); 
+                
+                /*
+                 * Store GPS last location in case activity dies, we want to start from same loc
+                 */
+                mPlatesView.updateParams(params); 
+            }
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+            /*
+             *  No GPS signal
+             *  Tell location view to show GPS status
+             */
+            if(mPref.isSimulationMode()) {
+                mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
+            }
+            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
+                /*
+                 * Prompt user to enable GPS.
+                 */
+                mPlatesView.updateErrorStatus(getString(R.string.GPSEnable)); 
+            }
+            else if(timeout) {
+                mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
+            }
+            else {
+                /*
+                 *  GPS kicking.
+                 */
+                mPlatesView.updateErrorStatus(null);
+            }           
+        }          
+    };
 
     /**
      * 
@@ -94,60 +145,6 @@ public class PlatesActivity extends Activity {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-        /*
-         * Start GPS
-         */
-        GpsInterface intf = new GpsInterface() {
-
-            @Override
-            public void statusCallback(GpsStatus gpsStatus) {
-            }
-
-            @Override
-            public void locationCallback(Location location) {
-                if(location != null) {
-
-                    /*
-                     * Called by GPS. Update everything driven by GPS.
-                     */
-                    GpsParams params = new GpsParams(location); 
-                    
-                    /*
-                     * Store GPS last location in case activity dies, we want to start from same loc
-                     */
-                    mPlatesView.updateParams(params); 
-                }
-            }
-
-            @Override
-            public void timeoutCallback(boolean timeout) {
-                /*
-                 *  No GPS signal
-                 *  Tell location view to show GPS status
-                 */
-                if(mPref.isSimulationMode()) {
-                    mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
-                }
-                else if(mGps.isGpsDisabled()) {
-                    /*
-                     * Prompt user to enable GPS.
-                     */
-                    mPlatesView.updateErrorStatus(getString(R.string.GPSEnable)); 
-                }
-                else if(timeout) {
-                    mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
-                }
-                else {
-                    /*
-                     *  GPS kicking.
-                     */
-                    mPlatesView.updateErrorStatus(null);
-                }           
-            }          
-        };
-        mGps = new Gps(this, intf);
-        mGps.start();
-
         mService = null;
     }
     
@@ -168,7 +165,7 @@ public class PlatesActivity extends Activity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
-
+            mService.registerGpsListener(mGpsInfc);
 
             /*
              * Now get all stored data
@@ -236,7 +233,7 @@ public class PlatesActivity extends Activity {
                         
                     }
                 }
-            }
+            }            
         }    
 
         /* (non-Javadoc)
@@ -254,6 +251,10 @@ public class PlatesActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */

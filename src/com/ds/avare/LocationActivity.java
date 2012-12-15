@@ -80,10 +80,68 @@ public class LocationActivity extends Activity implements Observer {
     
     private View mDestView;
     
-    /**
-     * GPS class
-     */
-    private Gps mGps;
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+            if(location != null && mService != null) {
+
+                /*
+                 * Called by GPS. Update everything driven by GPS.
+                 */
+                GpsParams params = new GpsParams(location); 
+                
+                if(mDestination != null) {
+                    mDestination.updateTo(params);
+                }
+                /*
+                 * Store GPS last location in case activity dies, we want to start from same loc
+                 */
+                mLocationView.updateParams(params); 
+                mService.setGpsParams(params);
+            }
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+            /*
+             *  No GPS signal
+             *  Tell location view to show GPS status
+             */
+            if(null == mService) {
+                mLocationView.updateErrorStatus(getString(R.string.Init));
+            }
+            else if(!mService.getDBResource().isOpen()) {
+                mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
+            }
+            else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
+                mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
+                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+            }
+            else if(mPreferences.isSimulationMode()) {
+                mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
+            }
+            else if(Gps.isGpsDisabled(getApplicationContext(), mPreferences)) {
+                /*
+                 * Prompt user to enable GPS.
+                 */
+                mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
+            }
+            else if(timeout) {
+                mLocationView.updateErrorStatus(getString(R.string.GPSLost));
+            }
+            else {
+                /*
+                 *  GPS kicking.
+                 */
+                mLocationView.updateErrorStatus(null);
+            }           
+        }          
+    };
     
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -107,77 +165,9 @@ public class LocationActivity extends Activity implements Observer {
         mDestDialog.setView(mDestView);
 
         /*
-         * Start GPS
-         */
-        GpsInterface intf = new GpsInterface() {
-
-            @Override
-            public void statusCallback(GpsStatus gpsStatus) {
-            }
-
-            @Override
-            public void locationCallback(Location location) {
-                if(location != null && mService != null) {
-
-                    /*
-                     * Called by GPS. Update everything driven by GPS.
-                     */
-                    GpsParams params = new GpsParams(location); 
-                    
-                    if(mDestination != null) {
-                        mDestination.updateTo(params);
-                    }
-                    /*
-                     * Store GPS last location in case activity dies, we want to start from same loc
-                     */
-                    mLocationView.updateParams(params); 
-                    mService.setGpsParams(params);
-                }
-            }
-
-            @Override
-            public void timeoutCallback(boolean timeout) {
-                /*
-                 *  No GPS signal
-                 *  Tell location view to show GPS status
-                 */
-                if(null == mService) {
-                    mLocationView.updateErrorStatus(getString(R.string.Init));
-                }
-                else if(!mService.getDBResource().isOpen()) {
-                    mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
-                }
-                else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
-                    mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
-                    startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
-                }
-                else if(mPreferences.isSimulationMode()) {
-                    mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
-                }
-                else if(mGps.isGpsDisabled()) {
-                    /*
-                     * Prompt user to enable GPS.
-                     */
-                    mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
-                }
-                else if(timeout) {
-                    mLocationView.updateErrorStatus(getString(R.string.GPSLost));
-                }
-                else {
-                    /*
-                     *  GPS kicking.
-                     */
-                    mLocationView.updateErrorStatus(null);
-                }           
-            }          
-        };
-        mGps = new Gps(this, intf);
-        mGps.start();
-        
-        /*
          * Throw this in case GPS is disabled.
          */
-        if(mGps.isGpsDisabled()) {
+        if(Gps.isGpsDisabled(getApplicationContext(), mPreferences)) {
             mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setButton(getString(R.string.Yes),  new DialogInterface.OnClickListener() {
@@ -221,6 +211,7 @@ public class LocationActivity extends Activity implements Observer {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+            mService.registerGpsListener(mGpsInfc);
 
             if(mService.getDBResource().isOpen()) {
             	mService.getDBResource().close();
@@ -243,7 +234,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Go to last known location till GPS locks.
                  */
-                Location l = mGps.getLastLocation();
+                Location l = Gps.getLastLocation(getApplicationContext());
                 if(null != l) {
                     mService.setGpsParams(new GpsParams(l));
                 }
@@ -253,7 +244,7 @@ public class LocationActivity extends Activity implements Observer {
             /*
              * Go to last known location till GPS locks.
              */
-            Location l = mGps.getLastLocation();
+            Location l = Gps.getLastLocation(getApplicationContext());
             if(null != l) {
                 mLocationView.updateParams(new GpsParams(l));
             }
@@ -278,7 +269,7 @@ public class LocationActivity extends Activity implements Observer {
                 });
     
                 mAlertDialogWarn.show();
-            }
+            }            
         }
 
         /* (non-Javadoc)
@@ -320,8 +311,7 @@ public class LocationActivity extends Activity implements Observer {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);   
     }
     
     /* (non-Javadoc)
@@ -331,6 +321,10 @@ public class LocationActivity extends Activity implements Observer {
     protected void onPause() {
         super.onPause();
         
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */
@@ -392,8 +386,6 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {   
             }
         }
-
-        mGps.stop();
 
         super.onDestroy();
     }

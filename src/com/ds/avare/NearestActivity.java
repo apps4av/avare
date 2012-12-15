@@ -40,10 +40,38 @@ public class NearestActivity extends Activity {
     private Preferences mPref;
     private StorageService mService;
     private ListView mNearest;
-    private Gps mGps;
     private NearestAdapter mNearestAdapter;
     private Toast mToast;
     
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+            if(location != null && mService != null) {
+
+                /*
+                 * Called by GPS. Update everything driven by GPS.
+                 */
+                GpsParams params = new GpsParams(location);
+                
+                
+                /*
+                 * Update distances/bearing to all airports in the area
+                 */
+                mService.getArea().updateLocation(params);
+                prepareAdapter();
+            }
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+        }          
+    };
+
 
     /**
      * 
@@ -76,40 +104,6 @@ public class NearestActivity extends Activity {
         setContentView(view);
         mNearest = (ListView)view.findViewById(R.id.nearestlist);
 
-        /*
-         * Start GPS
-         */
-        GpsInterface intf = new GpsInterface() {
-
-            @Override
-            public void statusCallback(GpsStatus gpsStatus) {
-            }
-
-            @Override
-            public void locationCallback(Location location) {
-                if(location != null && mService != null) {
-
-                    /*
-                     * Called by GPS. Update everything driven by GPS.
-                     */
-                    GpsParams params = new GpsParams(location);
-                    
-                    
-                    /*
-                     * Update distances/bearing to all airports in the area
-                     */
-                    mService.getArea().updateLocation(params);
-                    prepareAdapter();
-                }
-            }
-
-            @Override
-            public void timeoutCallback(boolean timeout) {
-            }          
-        };
-        mGps = new Gps(this, intf);
-        mGps.start();
-        
         mService = null;
     }
 
@@ -164,6 +158,7 @@ public class NearestActivity extends Activity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+            mService.registerGpsListener(mGpsInfc);
 
             if(false == prepareAdapter()) {
                 mToast.setText(getString(R.string.AreaNF));
@@ -188,6 +183,7 @@ public class NearestActivity extends Activity {
                     //String dst = airport[position];
                 }
             });
+            
         }    
 
         /* (non-Javadoc)
@@ -205,6 +201,10 @@ public class NearestActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */
