@@ -47,8 +47,8 @@ public class PlatesActivity extends Activity {
     private StorageService mService;
     private Destination mDestination;
     private Gps mGps;
-    private View mMarkView;
-    private AlertDialog mMarkDialog;
+    private View mCalibrateView;
+    private AlertDialog mCalibrateDialog;
     private Toast mToast;
     private String mLatC;
     private String mLonC;
@@ -72,7 +72,6 @@ public class PlatesActivity extends Activity {
         else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
         
         /*
          * Get views from XML
@@ -82,12 +81,12 @@ public class PlatesActivity extends Activity {
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
 
-        mMarkDialog = new AlertDialog.Builder(this).create();
-        mMarkDialog.setTitle(getString(R.string.markthis));
+        mCalibrateDialog = new AlertDialog.Builder(this).create();
+        mCalibrateDialog.setTitle(getString(R.string.calibratethis));
         
-        mMarkView = layoutInflater.inflate(R.layout.lonlat, null);
-        mMarkDialog.setView(mMarkView);
-        mMarkDialog.setCancelable(false);
+        mCalibrateView = layoutInflater.inflate(R.layout.lonlat, null);
+        mCalibrateDialog.setView(mCalibrateView);
+        mCalibrateDialog.setCancelable(false);
 
 
         /*
@@ -202,10 +201,10 @@ public class PlatesActivity extends Activity {
             /*
              * Show the lon/lat of center of airport to begin with
              */
-            ((EditText)mMarkView.findViewById(R.id.latitude)).setText(mLatC);
-            ((EditText)mMarkView.findViewById(R.id.longitude)).setText(mLonC);
-            ((EditText)mMarkView.findViewById(R.id.latitudems)).setText(mLatCMin);
-            ((EditText)mMarkView.findViewById(R.id.longitudems)).setText(mLonCMin);
+            ((EditText)mCalibrateView.findViewById(R.id.latitude)).setText(mLatC);
+            ((EditText)mCalibrateView.findViewById(R.id.longitude)).setText(mLonC);
+            ((EditText)mCalibrateView.findViewById(R.id.latitudems)).setText(mLatCMin);
+            ((EditText)mCalibrateView.findViewById(R.id.longitudems)).setText(mLonCMin);
 
             
             mName = mDestination.getDiagram();
@@ -265,9 +264,9 @@ public class PlatesActivity extends Activity {
             mBitmap = null;
         }
 
-        if(null != mMarkDialog) {
+        if(null != mCalibrateDialog) {
             try {
-                mMarkDialog.dismiss();
+                mCalibrateDialog.dismiss();
             }
             catch (Exception e) {
             }
@@ -334,8 +333,8 @@ public class PlatesActivity extends Activity {
             	 * Present a dialog to add a point and ask user for lon/lat
             	 */
                 
-                mMarkDialog.show();
-                Button ok = (Button)mMarkView.findViewById(R.id.lonlatbuttonOK);
+                mCalibrateDialog.show();
+                Button ok = (Button)mCalibrateView.findViewById(R.id.lonlatbuttonOK);
                 ok.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                     	/*
@@ -355,24 +354,24 @@ public class PlatesActivity extends Activity {
                              * Acquire first point
                              */
                             if(!pc.setLatitude0(
-                                    ((EditText)mMarkView.findViewById(R.id.latitude)).getText().toString(),
-                                    ((EditText)mMarkView.findViewById(R.id.latitudems)).getText().toString()
+                                    ((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
+                                    ((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
                                     )) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                             }
                             if(!pc.setLongitude0(
-                                    ((EditText)mMarkView.findViewById(R.id.longitude)).getText().toString(),
-                                    ((EditText)mMarkView.findViewById(R.id.longitudems)).getText().toString()
+                                    ((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
+                                    ((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
                                     )) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                             }
                             pc.setX0(mPlatesView.getX());
                             pc.setY0(mPlatesView.getY());
-                            mMarkDialog.dismiss();
+                            mCalibrateDialog.dismiss();
                             return;
                     	}
                     	
@@ -381,29 +380,29 @@ public class PlatesActivity extends Activity {
                              * Do the same for second point
                              */
                 			if(!pc.setLatitude1(
-                					((EditText)mMarkView.findViewById(R.id.latitude)).getText().toString(),
-                					((EditText)mMarkView.findViewById(R.id.latitudems)).getText().toString()
+                					((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
+                					((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
                 					)) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                 			}
                 			if(!pc.setLongitude1(
-                					((EditText)mMarkView.findViewById(R.id.longitude)).getText().toString(),
-                					((EditText)mMarkView.findViewById(R.id.longitudems)).getText().toString()
+                					((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
+                					((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
                 					)) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                 			}
                             if(!pc.setX1(mPlatesView.getX())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                             }
                             if(!pc.setY1(mPlatesView.getY())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
-                                mMarkDialog.dismiss();
+                                mCalibrateDialog.dismiss();
                                 return;
                             }
                     	}
@@ -420,13 +419,7 @@ public class PlatesActivity extends Activity {
                                 Toast.makeText(getApplicationContext(), getString(R.string.GoodCoords), Toast.LENGTH_LONG).show();                                
                 		    }
                     	}
-                    	mMarkDialog.dismiss();
-                    }
-                });
-                Button cancel = (Button)mMarkView.findViewById(R.id.lonlatbuttonCancel);
-                cancel.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        mMarkDialog.dismiss();
+                    	mCalibrateDialog.dismiss();
                     }
                 });
 

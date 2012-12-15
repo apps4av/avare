@@ -14,5 +14,5 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="fill_parent"
     android:layout_height="40dp"
     android:padding="5dp"
-    android:textSize="15dp" >
+    android:textSize="15sp" >
 </TextView>

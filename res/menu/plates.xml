@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/mark" android:icon="@drawable/mark"
-        android:title="@string/Mark"></item>
+        android:title="@string/Calibrate"></item>
     <item android:id="@+id/cancel" android:icon="@drawable/cancel"
         android:title="@string/Cancel"></item>
     
