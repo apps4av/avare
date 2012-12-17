@@ -968,7 +968,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 for(int shape = 0; shape < shapes.size(); shape++) {
                     TFRShape cshape = shapes.get(shape);
                     if(cshape.isVisible()) {
-                        
+
+                        /*
+                         * Hijack weather color
+                         */
+                        mWeatherColor = Color.RED;
                         text = cshape.getTextIfTouched(x, y);
                         if(null != text) {
                             break;
