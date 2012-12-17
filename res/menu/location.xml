@@ -17,6 +17,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/Settings"></item>
     <item android:id="@+id/download" android:icon="@drawable/download"
         android:title="@string/download"></item>
+    <item android:id="@+id/gps" android:icon="@drawable/gps"
+        android:title="@string/gps"></item>
     <item android:id="@+id/help" android:icon="@drawable/help"
         android:title="@string/Help"></item>
     

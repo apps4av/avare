@@ -19,7 +19,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -113,16 +111,7 @@ public class PlatesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
-         * This matches main activity.
-         */
         mPref = new Preferences(getApplicationContext());
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
         
         /*
          * Get views from XML
@@ -281,6 +270,7 @@ public class PlatesActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        Helper.setOrientationAndOn(this);
         
         /*
          * Registering our receiver
@@ -289,9 +279,6 @@ public class PlatesActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
     }
 
     /**
@@ -370,8 +357,8 @@ public class PlatesActivity extends Activity {
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
-                            pc.setX0(mPlatesView.getX());
-                            pc.setY0(mPlatesView.getY());
+                            pc.setX0(mPlatesView.getXn());
+                            pc.setY0(mPlatesView.getYn());
                             mCalibrateDialog.dismiss();
                             return;
                     	}
@@ -396,12 +383,12 @@ public class PlatesActivity extends Activity {
                                 mCalibrateDialog.dismiss();
                                 return;
                 			}
-                            if(!pc.setX1(mPlatesView.getX())) {
+                            if(!pc.setX1(mPlatesView.getXn())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
-                            if(!pc.setY1(mPlatesView.getY())) {
+                            if(!pc.setY1(mPlatesView.getYn())) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
                                 mCalibrateDialog.dismiss();
                                 return;
@@ -420,12 +407,27 @@ public class PlatesActivity extends Activity {
                                 Toast.makeText(getApplicationContext(), getString(R.string.GoodCoords), Toast.LENGTH_LONG).show();                                
                 		    }
                     	}
-                    	mCalibrateDialog.dismiss();
+                    	try {
+                    	    mCalibrateDialog.dismiss();
+                    	}
+                    	catch (Exception e) {                    	    
+                    	}
+                    }
+                });
+                
+                Button cancel = (Button)mCalibrateView.findViewById(R.id.lonlatbuttonCancel);
+                cancel.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        try {
+                            mCalibrateDialog.dismiss();
+                        }
+                        catch (Exception e) {                           
+                        }                    
                     }
                 });
 
-            	break;
-            	
+                break;
+
             case R.id.cancel:
             	/*
             	 * Start again

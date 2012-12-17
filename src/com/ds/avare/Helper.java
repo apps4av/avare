@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--  
+/*
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
 All rights reserved.
 
@@ -9,42 +8,38 @@ Redistribution and use in source and binary forms, with or without modification,
     *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FF000000"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+*/
 
-    <EditText
-        android:id="@+id/DestText"
-        android:inputType="textNoSuggestions|textCapCharacters"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:background="#FFFFFFFF"
-        android:textColor="#FF000000"
-        android:textSize="25sp" />
+package com.ds.avare;
 
-    <Button
-        android:id="@+id/destbuttonOK"
-        android:layout_marginTop="30dp"
-        android:layout_height="wrap_content"
-        android:layout_width="150dp"
-        android:layout_below="@+id/DestText"
-        android:text="@string/OK" />
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.view.WindowManager;
 
-    <Button
-        android:id="@+id/destbuttonCancel"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_width="150dp"
-        android:layout_below="@+id/DestText"
-        android:layout_toRightOf="@+id/destbuttonOK"
-        android:text="@string/Cancel" />
+/**
+ * 
+ * @author zkhan
+ *
+ */
+public class Helper {
 
-    <Spinner
-        android:id="@+id/destList"
-        android:layout_toRightOf="@+id/DestText"
-        android:layout_height="60dp"
-        android:layout_width="150dp"/>
-    
-</RelativeLayout>
+    /**
+     * Set common features of all activities in the framework
+     * @param act
+     */
+    public static void setOrientationAndOn(Activity act) {
+        
+        Preferences pref = new Preferences(act.getApplicationContext());
+        if(pref.shouldScreenStayOn()) {
+            act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
+        }
+
+        if(pref.isPortrait()) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
+        }
+        else {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+
+    } 
+}

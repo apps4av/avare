@@ -224,7 +224,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * 
      * @return
      */
-    public double getX() {
+    public double getXn() {
         return(mPan.getMoveX());
     }
 
@@ -232,7 +232,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * 
      * @return
      */
-    public double getY() {
+    public double getYn() {
         return(mPan.getMoveY());
     }
 

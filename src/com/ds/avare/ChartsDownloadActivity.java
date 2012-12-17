@@ -21,7 +21,6 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +28,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -56,19 +54,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
-         * This matches main activity.
-         */
-        mPref = new Preferences(getApplicationContext());
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-        this.setTitle(this.getString(R.string.app_name) + " " + 
-                this.getString(R.string.download));
-
+        mPref = new Preferences(this);
         File file = new File(mPref.mapsFolder() + "/" + 
                 getResources().getStringArray(R.array.resFiles)[0]);
         if(file.exists()) {
@@ -97,11 +83,8 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
      */
     @Override
     public void onResume() {
-        super.onResume();
-        
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
+        super.onResume();        
+        Helper.setOrientationAndOn(this);
     }
 
     /**

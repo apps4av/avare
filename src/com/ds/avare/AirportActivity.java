@@ -19,13 +19,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -35,7 +33,6 @@ import android.widget.Toast;
  */
 public class AirportActivity extends Activity {
     
-    private Preferences mPref;
     private StorageService mService;
     private Destination mDestination;
     private ListView mAirport;
@@ -47,17 +44,6 @@ public class AirportActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*
-         * This matches main activity.
-         */
-        mPref = new Preferences(getApplicationContext());
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -155,9 +141,7 @@ public class AirportActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
+        Helper.setOrientationAndOn(this);
     }
 
     /**

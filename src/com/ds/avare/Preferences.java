@@ -54,7 +54,7 @@ public class Preferences {
     /*
      * MAX number of elements
      */
-    public static final int MAX_RECENT = 5; 
+    public static final int MAX_RECENT = 15; 
     
     /*
      * TFR update period for slow and fast updates

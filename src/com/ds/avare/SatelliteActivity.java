@@ -23,22 +23,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 
 /**
  * @author zkhan
  * Main activity
  */
 public class SatelliteActivity extends Activity  {
-
-    /**
-     * App preferences
-     */
-    private Preferences mPreferences;
 
     /**
      * Shows satellites
@@ -67,13 +60,6 @@ public class SatelliteActivity extends Activity  {
 
         @Override
         public void timeoutCallback(boolean timeout) {
-            /*
-             *  No GPS signal
-             *  Tell location view to show GPS status
-             */
-            if(timeout) {
-                mSatelliteView.updateLocation(null);
-            }
         }          
     };
     
@@ -85,15 +71,13 @@ public class SatelliteActivity extends Activity  {
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPreferences = new Preferences(this);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.satellite, null);
         setContentView(view);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
 
-        mService = null;
-        
+        mService = null;        
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -124,32 +108,14 @@ public class SatelliteActivity extends Activity  {
         }
     };
 
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        
-        if(mPreferences.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
-
-        if(mPreferences.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+     
+        Helper.setOrientationAndOn(this);
         
         /*
          * Registering our receiver
@@ -171,29 +137,5 @@ public class SatelliteActivity extends Activity  {
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+    }    
 }

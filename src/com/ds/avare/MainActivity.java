@@ -44,6 +44,8 @@ public class MainActivity extends TabActivity {
      */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
  
         /*
          * Set tabs height to something non obstructive but decent size.
@@ -66,12 +68,9 @@ public class MainActivity extends TabActivity {
              */
             mTabHeight = (float)display.getHeight() / (DIV_TAB / ar);
         }
-        
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+                
         setContentView(R.layout.main);
- 
+        
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
@@ -88,10 +87,8 @@ public class MainActivity extends TabActivity {
          */
         setupTab(new TextView(this), getString(R.string.main), new Intent(this, LocationActivity.class));
         setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class));
-        setupTab(new TextView(this), getString(R.string.airport), new Intent(this, AirportActivity.class));
+        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class));
         setupTab(new TextView(this), getString(R.string.Nearest), new Intent(this, NearestActivity.class));
-        setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class));
-        
     }
     
     /**
@@ -118,5 +115,14 @@ public class MainActivity extends TabActivity {
         tv.setText(text);
         tv.setTextSize(mTabHeight);
         return view;
+    }
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onResume()
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        Helper.setOrientationAndOn(this);
     }
 }

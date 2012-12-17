@@ -19,6 +19,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.SystemClock;
 
@@ -316,14 +317,21 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     }
 
     @Override
-    public void onProviderDisabled(String arg0) {
+    public void onProviderDisabled(String provider) {
+        if(provider.equals(LocationManager.GPS_PROVIDER)) {
+            mGpsCallback.statusCallback(null);
+        }
     }
 
     @Override
-    public void onProviderEnabled(String arg0) {
+    public void onProviderEnabled(String provider) {
     }
 
     @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+    public void onStatusChanged(String provider, int status, Bundle arg2) {
+        if(provider.equals(LocationManager.GPS_PROVIDER) &&
+                (status != LocationProvider.AVAILABLE)) {
+            mGpsCallback.statusCallback(null);
+        }
     }
 }

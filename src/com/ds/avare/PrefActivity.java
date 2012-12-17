@@ -11,10 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.view.WindowManager;
 
 /**
  * 
@@ -23,21 +21,9 @@ import android.view.WindowManager;
  */
 public class PrefActivity extends PreferenceActivity {
 
-    private Preferences mPref;
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); 
-        /*
-         * This matches main activity.
-         */
-        mPref = new Preferences(this);
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
 
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
@@ -50,8 +36,6 @@ public class PrefActivity extends PreferenceActivity {
     public void onResume() {
         super.onResume();
         
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
+        Helper.setOrientationAndOn(this);
     }
 }

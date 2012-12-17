@@ -17,7 +17,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -25,7 +24,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -37,7 +35,6 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class NearestActivity extends Activity {
     
-    private Preferences mPref;
     private StorageService mService;
     private ListView mNearest;
     private NearestAdapter mNearestAdapter;
@@ -79,17 +76,6 @@ public class NearestActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*
-         * This matches main activity.
-         */
-        mPref = new Preferences(getApplicationContext());
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -217,6 +203,7 @@ public class NearestActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        Helper.setOrientationAndOn(this);
         
         /*
          * Registering our receiver
@@ -224,10 +211,6 @@ public class NearestActivity extends Activity {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
     }
 
     /**

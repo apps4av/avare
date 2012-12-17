@@ -28,20 +28,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -294,17 +293,7 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        
-        if(mPreferences.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
-
-        if(mPreferences.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+        Helper.setOrientationAndOn(this);
 
         /*
          * Registering our receiver
@@ -423,7 +412,11 @@ public class LocationActivity extends Activity implements Observer {
             case R.id.download:
                 startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
                 break;
-                
+
+            case R.id.gps:
+                startActivity(new Intent(LocationActivity.this, SatelliteActivity.class));
+                break;
+
             case R.id.newdestination:
                 if(null == mService) {
                     return false;                    
@@ -444,15 +437,50 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  *  limit FAA/ICAO code length to 4
                  */
-                final AutoCompleteTextView tv = (AutoCompleteTextView)mDestView.findViewById(R.id.destautoCompleteTextView);
+                final EditText tv = (EditText)mDestView.findViewById(R.id.DestText);
                 tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
                 tv.setText(mPreferences.getBase());
                 tv.selectAll();
-                tv.setThreshold(0);
-                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
-                        R.layout.input, mPreferences.getRecent());
 
-                tv.setAdapter(adapter);
+                /*
+                 * Spinner calls repeatedly location 0 even when not selected.
+                 * Make location 0 non valid.
+                 */
+                String [] vals = mPreferences.getRecent();
+                String[] valsPos0 = new String[vals.length + 1];
+                valsPos0[0] = getString(R.string.Recent);
+                for(int i = 0; i < vals.length; i++) {
+                    valsPos0[i + 1] = vals[i];
+                }
+                
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
+                        R.layout.input, valsPos0);
+
+                final Spinner lv = (Spinner)mDestView.findViewById(R.id.destList);
+               
+                lv.setAdapter(adapter);
+
+                /*
+                 * Listen to list selection, do it last spinner calls it immediately
+                 */
+                lv.setOnItemSelectedListener(new OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> arg0, View arg1,
+                            int position, long arg3) {
+                        if(0 == position) {
+                            return;
+                        }
+                        String dst = adapter.getItem(position);
+                        mDestination = new Destination(dst, mPreferences, mService.getDBResource());
+                        mDestination.addObserver(LocationActivity.this);
+                        mDestination.find();
+                        mDestDialog.dismiss();                        
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> arg0) {
+                    }
+                });
+
                 tv.setOnTouchListener(new View.OnTouchListener(){
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -461,19 +489,6 @@ public class LocationActivity extends Activity implements Observer {
                          */
                         tv.setText("");
                         return false;
-                    }
-                });
-
-                tv.setOnItemClickListener(new OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View arg1, int pos,
-                            long id) {
-                        String dst = adapter.getItem(pos);
-                        mDestination = new Destination(dst, mPreferences, mService.getDBResource());
-                        mDestination.addObserver(LocationActivity.this);
-                        mDestination.find();
-                        mDestDialog.dismiss();
                     }
                 });
 
@@ -502,6 +517,7 @@ public class LocationActivity extends Activity implements Observer {
                 });
 
                 mDestDialog.show();
+
 
                 break;
         }

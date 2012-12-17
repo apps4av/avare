@@ -64,7 +64,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
     <string name="Init">&quot;Initializing&quot;</string>
     <string name="Warning">&quot;This is not a FAA certified GPS. \nUse at your own risk. \nThe author of this software is not liable for any injuries or damages caused by its use. \n&quot;</string>
-    <string name="Recent">&quot;recent&quot;</string>
+    <string name="Recent">&quot;Recent&quot;</string>
    	<string name="ChartType">&quot;Chart Type&quot;</string>
 	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
 	<string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
@@ -93,5 +93,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
     <string name="main">&quot;Main&quot;</string>
     <string name="plates">&quot;Plates&quot;</string>
-    <string name="airport">&quot;Destination&quot;</string>
+    <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="Lon">&quot;Lon&quot;</string>
+    <string name="Lat">&quot;Lat&quot;</string>
 </resources>

@@ -13,9 +13,7 @@ package com.ds.avare;
 
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.WindowManager;
 import android.webkit.WebView;
 
 /**
@@ -23,8 +21,6 @@ import android.webkit.WebView;
  *
  */
 public class WebActivity extends Activity  {
-
-    Preferences mPref;
     
     /*
      * Show views from web
@@ -32,16 +28,6 @@ public class WebActivity extends Activity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-         * This matches main activity.
-         */
-        mPref = new Preferences(getApplicationContext());
-        if(mPref.isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
         
         WebView wv;
         wv = new WebView(this);
@@ -55,9 +41,7 @@ public class WebActivity extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-        
-        if(mPref.shouldScreenStayOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
-        }
+
+        Helper.setOrientationAndOn(this);
     }
 }
