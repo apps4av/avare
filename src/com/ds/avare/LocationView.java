@@ -160,6 +160,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private int                         mXtiles;
     private int                         mYtiles;
+    private int                         mWeatherColor;
     
     /**
      * @param context
@@ -183,6 +184,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setAntiAlias(true);
         mShown = false;
         mTrackShape = null;
+        mWeatherColor = Color.BLACK;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -575,12 +577,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Write weather report
              * Use a static layout for showing as overlay and formatted to fit
              */
-            mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
             if(null != mWeatherLayout) {
                 canvas.save();
                 canvas.translate(0, getHeight() / mTextDiv);
+                mPaint.setColor(mWeatherColor);
+                canvas.drawRect(0, 0, mWeatherLayout.getWidth(), mWeatherLayout.getHeight(), mPaint);
                 mWeatherLayout.draw(canvas);
-                canvas.restore();            
+                canvas.restore();        
             }
         }
     }
@@ -905,8 +908,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null != weather) {
                 String tokens[] = weather.split(",");
                 if(tokens.length >= 2) {
-                    mTextPaint.setColor(WeatherHelper.metarColor(tokens[0]));
-                    mTextPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+                    mWeatherColor = WeatherHelper.metarColor(tokens[0]);
+                    mTextPaint.setColor(Color.WHITE);
                     mWeatherLayout = new StaticLayout(tokens[1], mTextPaint, getWidth() / 2,
                             Layout.Alignment.ALIGN_NORMAL, 1, 0, true);               
                 }
