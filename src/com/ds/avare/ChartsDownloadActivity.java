@@ -20,7 +20,9 @@ import java.util.Observer;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -187,17 +189,17 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()) {
         
+            case R.id.help:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkHelper.getHelpDownload())));
+                break;
+
             case R.id.downloadchart:
-               
                 download();
-                
                 break;
                 
             case R.id.updatechart:
-                
                 mChartAdapter.checkOld();
                 mChartAdapter.notifyDataSetChanged();
-
                 download();
                 break;
         }

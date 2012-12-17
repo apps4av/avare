@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,12 +36,14 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author zkhan
  * An activity that deals with plates
  */
-public class NearestActivity extends Activity {
+public class NearestActivity extends Activity  implements Observer {
     
     private StorageService mService;
     private ListView mNearest;
     private NearestAdapter mNearestAdapter;
     private Toast mToast;
+    private Preferences mPref;
+    private Destination mDestination;
     
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -90,6 +95,7 @@ public class NearestActivity extends Activity {
         setContentView(view);
         mNearest = (ListView)view.findViewById(R.id.nearestlist);
 
+        mPref = new Preferences(getApplicationContext());
         mService = null;
     }
 
@@ -166,7 +172,13 @@ public class NearestActivity extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View arg1,
                         int position, long id) {
-                    //String dst = airport[position];
+                    /*
+                     * Set destination to this airport if clicked on it
+                     */
+                    mDestination = new Destination(mService.getArea().getAirport(position).getId(),
+                            mPref, mService.getDBResource());
+                    mDestination.addObserver(NearestActivity.this);
+                    mDestination.find();
                 }
             });
             
@@ -220,5 +232,27 @@ public class NearestActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
 
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public void update(Observable arg0, Object arg1) {
+        if(arg0 instanceof Destination) {
+            Boolean result = (Boolean)arg1;
+            if(result) {
+                if(null != mService) {
+                    mService.setDestination((Destination)arg0);
+                }
+                mPref.addToRecent(((Destination)arg0).getID());
+                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                mToast.show();
+            }
+            else {
+                mToast.setText(getString(R.string.DestinationNF));
+                mToast.show();
+            }
+        }
     }
 }

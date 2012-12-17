@@ -12,10 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFFFFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <TextView
+         android:background="#FFFFFFFF"
+         android:textColor="#FF000000"
          android:id="@+id/distance"
          android:layout_width="120dp"
          android:layout_height="30dp"
@@ -24,6 +27,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
+         android:background="#FFFFFFFF"
+         android:textColor="#FF000000"
          android:id="@+id/aidname"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -33,6 +38,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
+         android:background="#FFFFFFFF"
+         android:textColor="#FF000000"
         android:id="@+id/bearing"
         android:layout_width="120dp"
         android:layout_height="30dp"
@@ -43,6 +50,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
 
     <TextView
+         android:background="#FFFFFFFF"
+         android:textColor="#FF000000"
         android:id="@+id/fuel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,6 +63,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
 
     <ImageView
+        android:background="#FFFFFFFF"
         android:contentDescription="@string/desc"
         android:id="@+id/imageWeather"
         android:layout_width="wrap_content"

@@ -91,6 +91,22 @@ public class NetworkHelper {
 
     /**
      * 
+     * @return
+     */
+    public static String getHelpGeoTag() {
+        return "http://youtu.be/mKOgguJ5bpo";
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static String getHelpDownload() {
+        return "http://youtu.be/0Q0d4LIoTqY";
+    }
+
+    /**
+     * 
      * @param data
      */
     private static String readFromFile(String filename) {

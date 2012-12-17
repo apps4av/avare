@@ -15,5 +15,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/Calibrate"></item>
     <item android:id="@+id/cancel" android:icon="@drawable/cancel"
         android:title="@string/Cancel"></item>
-    
+    <item android:id="@+id/help" android:icon="@drawable/help"
+        android:title="@string/Help"></item>    
 </menu>

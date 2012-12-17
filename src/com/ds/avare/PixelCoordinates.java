@@ -115,7 +115,23 @@ public class PixelCoordinates {
         }
         return true;		
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void unsetPoint0() {
+        mLon0Set = false;
+        mLat0Set = false;
+	}
+
+	/**
+     * 
+     */
+    public void unsetPoint1() {
+        mLon1Set = false;
+        mLat1Set = false;
+    }
+
 	/**
 	 * 
 	 * @param lon

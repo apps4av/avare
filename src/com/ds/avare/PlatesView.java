@@ -319,14 +319,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     		int lon = (int)lonms;
     		int lat = (int)latms;
     		double lonl = Math.abs((lonms - (double)lon) * 60);
-    		if(60 == lonl) {
+    		if(lonl >= 60) {
     		    lon--;
-    		    lonl = 0;
+    		    lonl -= 60;
     		}
     		double latl = Math.abs((latms - (double)lat) * 60);
-            if(60 == latl) {
+            if(latl >= 60) {
                 lat++;
-                latl = 0;
+                latl -= 60;
             }
             
             mPaint.setTextAlign(Align.LEFT);

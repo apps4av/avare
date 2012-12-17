@@ -79,6 +79,8 @@ public class LocationActivity extends Activity implements Observer {
     
     private View mDestView;
     
+    private Toast mToast;
+    
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -151,6 +153,11 @@ public class LocationActivity extends Activity implements Observer {
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPreferences = new Preferences(this);
+
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.location, null);
@@ -545,9 +552,13 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mLocationView.updateDestination(mDestination);
                 mPreferences.addToRecent(mDestination.getID());
+                
+                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                mToast.show();
             }
             else {
-                Toast.makeText(this, getString(R.string.DestinationNF), Toast.LENGTH_SHORT).show();
+                mToast.setText(getString(R.string.DestinationNF));
+                mToast.show();
             }
         }
     }

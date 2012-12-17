@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -315,6 +316,10 @@ public class PlatesActivity extends Activity {
         
         switch(item.getItemId()) {
         
+            case R.id.help:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkHelper.getHelpGeoTag())));
+                break;
+
             case R.id.mark:
             	
             	/*
@@ -345,7 +350,9 @@ public class PlatesActivity extends Activity {
                                     ((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
                                     ((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
                                     )) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                pc.unsetPoint0();
+                                mToast.setText(getString(R.string.BadCoords));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
@@ -353,7 +360,9 @@ public class PlatesActivity extends Activity {
                                     ((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
                                     ((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
                                     )) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                pc.unsetPoint0();
+                                mToast.setText(getString(R.string.BadCoords));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
@@ -371,7 +380,9 @@ public class PlatesActivity extends Activity {
                 					((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
                 					((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
                 					)) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                pc.unsetPoint1();
+                                mToast.setText(getString(R.string.BadCoords));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                 			}
@@ -379,17 +390,23 @@ public class PlatesActivity extends Activity {
                 					((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
                 					((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
                 					)) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.BadCoords), Toast.LENGTH_LONG).show();
+                                pc.unsetPoint1();
+                                mToast.setText(getString(R.string.BadCoords));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                 			}
                             if(!pc.setX1(mPlatesView.getXn())) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
+                                pc.unsetPoint1();
+                                mToast.setText(getString(R.string.PointsTooClose));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
                             if(!pc.setY1(mPlatesView.getYn())) {
-                                Toast.makeText(getApplicationContext(), getString(R.string.PointsTooClose), Toast.LENGTH_LONG).show();                                
+                                pc.unsetPoint1();
+                                mToast.setText(getString(R.string.PointsTooClose));
+                                mToast.show();
                                 mCalibrateDialog.dismiss();
                                 return;
                             }
@@ -404,7 +421,8 @@ public class PlatesActivity extends Activity {
                 		        mPlatesView.setParams(params);
                 		        String value = "" + params[0] + "," + params[1] + "," + params[2] + "," + params[3] + "," + params[4];
                                 mPref.saveString(mName, value);
-                                Toast.makeText(getApplicationContext(), getString(R.string.GoodCoords), Toast.LENGTH_LONG).show();                                
+                                mToast.setText(getString(R.string.GoodCoords));
+                                mToast.show();
                 		    }
                     	}
                     	try {
