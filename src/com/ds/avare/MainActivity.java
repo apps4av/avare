@@ -125,4 +125,12 @@ public class MainActivity extends TabActivity {
         super.onResume();
         Helper.setOrientationAndOn(this);
     }
+ 
+    /**
+     * For switching tab from any tab activity
+     */
+    public void switchTab(int tab){
+        mTabHost.setCurrentTab(tab);
+    }
+
 }

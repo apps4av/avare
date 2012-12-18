@@ -141,9 +141,22 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 mLocationView.updateErrorStatus(null);
             }           
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
         }          
     };
     
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
@@ -236,23 +249,21 @@ public class LocationActivity extends Activity implements Observer {
              */
             mDestination = mService.getDestination();
             mLocationView.updateDestination(mDestination);
-            if(mService.getGpsParams() == null) {
-                /*
-                 * Go to last known location till GPS locks.
-                 */
-                Location l = Gps.getLastLocation(getApplicationContext());
-                if(null != l) {
-                    mService.setGpsParams(new GpsParams(l));
-                }
-            }
-            mLocationView.initParams(mService.getGpsParams(), mService);                
             
             /*
-             * Go to last known location till GPS locks.
+             * Now set location.
              */
             Location l = Gps.getLastLocation(getApplicationContext());
+            if(mPreferences.isSimulationMode() && (null != mDestination)) {
+                l = mDestination.getLocation();
+            }
             if(null != l) {
-                mLocationView.updateParams(new GpsParams(l));
+                mService.setGpsParams(new GpsParams(l));
+            }
+            
+            if(null != mService.getGpsParams()) {
+                mLocationView.initParams(mService.getGpsParams(), mService); 
+                mLocationView.updateParams(mService.getGpsParams());
             }
             
             /*

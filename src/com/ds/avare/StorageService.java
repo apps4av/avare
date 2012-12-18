@@ -192,6 +192,20 @@ public class StorageService extends Service {
                     infc.timeoutCallback(timeout);
                 }                
             }
+
+            @Override
+            public void enabledCallback(boolean enabled) {
+                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                while (it.hasNext()) {
+                    GpsInterface infc = it.next();
+                    infc.enabledCallback(enabled);
+                }                
+                if(enabled) {
+                    if(!mGpsCallbacks.isEmpty()) {
+                        mGps.start();
+                    }
+                }
+            }
         };
         mGps = new Gps(this, intf);
     }

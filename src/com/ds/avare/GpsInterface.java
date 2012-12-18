@@ -29,4 +29,6 @@ interface GpsInterface {
     void locationCallback(Location location);
     
     void timeoutCallback(boolean timeout);
+
+    void enabledCallback(boolean enabled);
 }

@@ -60,6 +60,13 @@ public class SatelliteActivity extends Activity  {
 
         @Override
         public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
+            if(!enabled) {
+                mSatelliteView.updateGpsStatus(null);
+            }
         }          
     };
     

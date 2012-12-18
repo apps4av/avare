@@ -319,12 +319,15 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     @Override
     public void onProviderDisabled(String provider) {
         if(provider.equals(LocationManager.GPS_PROVIDER)) {
-            mGpsCallback.statusCallback(null);
+            mGpsCallback.enabledCallback(false);
         }
     }
 
     @Override
     public void onProviderEnabled(String provider) {
+        if(provider.equals(LocationManager.GPS_PROVIDER)) {
+            mGpsCallback.enabledCallback(true);
+        }
     }
 
     @Override

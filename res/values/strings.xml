@@ -92,8 +92,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N&quot;</string>
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
-    <string name="main">&quot;Main&quot;</string>
-    <string name="plates">&quot;AD&quot;</string>
+    <string name="main">&quot;Map&quot;</string>
+    <string name="plates">&quot;Diagram&quot;</string>
     <string name="AFD">&quot;A/FD&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>

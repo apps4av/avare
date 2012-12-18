@@ -374,23 +374,23 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                      */
                     params.put("ARP Latitude", Double.toString(cursor.getDouble(1)));
                     params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
-                    params.put("Type", cursor.getString(3));
-                    params.put("Use", cursor.getString(5));
-                    params.put("Owner Phone", cursor.getString(6));
-                    params.put("Manager", cursor.getString(7));
-                    params.put("Manager Phone", cursor.getString(8));
-                    params.put("ARP Elevation", cursor.getString(9));
-                    params.put("Magnetic Variation", cursor.getString(10));
-                    params.put("Traffic Pattern Altitude", cursor.getString(11));
-                    params.put("Fuel Types", cursor.getString(12));
-                    params.put("Airframe Repair", cursor.getString(13));
-                    params.put("Power Plant Repair", cursor.getString(14));
-                    params.put("Bottled Oxygen Type", cursor.getString(15));
-                    params.put("Bulk Oxygen Type", cursor.getString(16));
-                    params.put("ATCT", cursor.getString(17));
-                    params.put("UNICOM Frequencies", cursor.getString(18));
-                    params.put("CTAF Frequency", cursor.getString(19));
-                    params.put("Non Commercial Landing Fee", cursor.getString(20));
+                    params.put("Type", cursor.getString(3).trim());
+                    params.put("Use", cursor.getString(5).trim());
+                    params.put("Owner Phone", cursor.getString(6).trim());
+                    params.put("Manager", cursor.getString(7).trim());
+                    params.put("Manager Phone", cursor.getString(8).trim());
+                    params.put("ARP Elevation", cursor.getString(9).trim());
+                    params.put("Magnetic Variation", cursor.getString(10).trim());
+                    params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
+                    params.put("Fuel Types", cursor.getString(12).trim());
+                    params.put("Airframe Repair", cursor.getString(13).trim());
+                    params.put("Power Plant Repair", cursor.getString(14).trim());
+                    params.put("Bottled Oxygen Type", cursor.getString(15).trim());
+                    params.put("Bulk Oxygen Type", cursor.getString(16).trim());
+                    params.put("ATCT", cursor.getString(17).trim());
+                    params.put("UNICOM Frequencies", cursor.getString(18).trim());
+                    params.put("CTAF Frequency", cursor.getString(19).trim());
+                    params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
                                     
                     cursor.close();
     

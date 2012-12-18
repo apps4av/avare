@@ -102,8 +102,22 @@ public class PlatesActivity extends Activity {
                  */
                 mPlatesView.updateErrorStatus(null);
             }           
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
         }          
     };
+
+    /*
+     * For being on tab this activity discards back to main activity
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        ((MainActivity)this.getParent()).switchTab(0);
+    }
 
     /**
      * 
@@ -296,9 +310,6 @@ public class PlatesActivity extends Activity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        if(null == mService || null == mName) {
-            return false;
-        }
         getMenuInflater().inflate(R.menu.plates, menu);
         return true;
     }
@@ -322,10 +333,13 @@ public class PlatesActivity extends Activity {
 
             case R.id.mark:
             	
-            	/*
-            	 * Present a dialog to add a point and ask user for lon/lat
-            	 */
+                if(null == mName) {
+                    return false;
+                }
                 
+                /*
+                 * Present a dialog to add a point and ask user for lon/lat
+                 */
                 mCalibrateDialog.show();
                 Button ok = (Button)mCalibrateView.findViewById(R.id.lonlatbuttonOK);
                 ok.setOnClickListener(new OnClickListener() {

@@ -71,9 +71,22 @@ public class NearestActivity extends Activity  implements Observer {
 
         @Override
         public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
         }          
     };
 
+    /*
+     * For being on tab this activity discards back to main activity
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        ((MainActivity)this.getParent()).switchTab(0);
+    }
 
     /**
      * 
@@ -161,7 +174,6 @@ public class NearestActivity extends Activity  implements Observer {
             
             mNearest.setClickable(true);
             mNearest.setDividerHeight(10);
-            mNearest.setCacheColorHint(Color.WHITE);
             mNearest.setBackgroundColor(Color.WHITE);
             mNearest.setOnItemClickListener(new OnItemClickListener() {
 
