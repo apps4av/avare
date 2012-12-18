@@ -568,7 +568,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 canvas.save();
                 canvas.translate(0, getHeight() / mTextDiv);
                 mPaint.setColor(mWeatherColor);
+                mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
                 canvas.drawRect(0, 0, mWeatherLayout.getWidth(), mWeatherLayout.getHeight(), mPaint);
+                mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
                 mWeatherLayout.draw(canvas);
                 canvas.restore();        
             }
