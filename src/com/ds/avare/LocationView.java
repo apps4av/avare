@@ -491,7 +491,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
-    private void drawCornerTexts(Canvas canvas) {
+    private void drawCornerTextsAndTrack(Canvas canvas) {
 
         /*
          * Misc text in the information text location on the view like GPS status,
@@ -527,9 +527,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mErrorStatus != null) {
             mPaint.setColor(Color.RED);
             canvas.drawText(mErrorStatus,
-                    getWidth(), getHeight() / mTextDiv, mPaint);
+                    getWidth(), getHeight() / mTextDiv * 2, mPaint);
         }
-        else if(mPoint != null) {
+        
+        /*
+         * Point above error status
+         */
+        mPaint.setColor(Color.WHITE);
+        if(mPoint != null) {
             canvas.drawText(mPoint,
                     getWidth(), getHeight() / mTextDiv, mPaint);            
         }
@@ -540,30 +545,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null != mTrackShape) {
                     mPaint.setColor(Color.MAGENTA);
                     mPaint.setStrokeWidth(4);
-                    mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
                     mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }            
             }
         }    	
     }
     
-    /**
-     * 
-     * @param canvas
-     */
-    private void drawTrack(Canvas canvas) {
-        mPaint.setStrokeWidth(4);
-        mPaint.setColor(Color.MAGENTA);
-        mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-        if(mDestination != null) {
-            if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
-                if(null != mTrackShape) {
-                    mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
-                }            
-            }
-        }    	
-    }
-
     /**
      * 
      * @param canvas
@@ -629,10 +616,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	drawTiles(canvas);
     	drawTFR(canvas);
     	drawAircraft(canvas);
-    	drawTrack(canvas);
 
     	drawMETARText(canvas);
-    	drawCornerTexts(canvas);
+    	drawCornerTextsAndTrack(canvas);
     }    
     
     /**
