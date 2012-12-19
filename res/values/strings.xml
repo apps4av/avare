@@ -98,4 +98,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
+    <string name="DownloadInst">&quot;Touch to select an item, then press menu to download it&quot;</string>
 </resources>

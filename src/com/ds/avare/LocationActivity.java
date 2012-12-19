@@ -244,8 +244,7 @@ public class LocationActivity extends Activity implements Observer {
              * Now get all stored data
              */
             mDestination = mService.getDestination();
-            mLocationView.updateDestination(mDestination);
-            
+
             /*
              * Now set location.
              */
@@ -261,7 +260,9 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.initParams(mService.getGpsParams(), mService); 
                 mLocationView.updateParams(mService.getGpsParams());
             }
-            
+
+            mLocationView.updateDestination(mDestination);
+
             /*
              * Show avare warning when service says so 
              */

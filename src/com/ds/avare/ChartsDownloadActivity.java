@@ -48,6 +48,8 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     private String[] resFiles;
     private Preferences mPref;
     private ChartAdapter mChartAdapter;
+    private Toast mToast;
+
 
     /**
      * 
@@ -77,6 +79,13 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
          */
         mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
         setListAdapter(mChartAdapter);
+        
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+        mToast.setText(getString(R.string.DownloadInst));
+        mToast.show();
     }
     
 
