@@ -53,13 +53,15 @@ public class SatelliteActivity extends Activity  {
         @Override
         public void locationCallback(Location location) {
             if(location != null) {
-
                 mSatelliteView.updateLocation(location);
             }
         }
 
         @Override
         public void timeoutCallback(boolean timeout) {
+            if(timeout) {
+                mSatelliteView.updateGpsStatus(null);
+            }
         }
 
         @Override

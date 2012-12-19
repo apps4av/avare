@@ -203,7 +203,6 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         }
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
         if(GpsStatus.GPS_EVENT_STOPPED == event) {
-            mGpsCallback.statusCallback(null);           
         }
         else {
             mGpsCallback.statusCallback(gpsStatus);           
@@ -219,7 +218,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 
 
-            mGpsLastUpdate = SystemClock.uptimeMillis();
+            synchronized(this) {
+                mGpsLastUpdate = SystemClock.elapsedRealtime();
+            }
 
             /*
              * Called by GPS. Update everything driven by GPS.
@@ -243,7 +244,12 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             /*
              * Check when last event was received
              */
-            if((SystemClock.elapsedRealtime() - mGpsLastUpdate) > 
+            long now = SystemClock.elapsedRealtime();
+            long last;
+            synchronized(this) {
+                last = mGpsLastUpdate;
+            }
+            if((now - last) > 
                 (GPS_PERIOD_LONG_MS * 4)) {
                 mGpsCallback.timeoutCallback(true);                
             }
@@ -270,7 +276,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     @Override
     public void onStatusChanged(String provider, int status, Bundle arg2) {
         if(provider.equals(LocationManager.GPS_PROVIDER) &&
-                (status != LocationProvider.AVAILABLE)) {
+                (status == LocationProvider.OUT_OF_SERVICE)) {
             mGpsCallback.statusCallback(null);
         }
     }
