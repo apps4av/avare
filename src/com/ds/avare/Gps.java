@@ -36,8 +36,6 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     private Preferences mPreferences;
 
-    private Location mLastLocation;
-    
     private int mGpsPeriod;
     
     private GpsInterface mGpsCallback;
@@ -118,74 +116,19 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         }
         return l;
     }
-    
-    /** 
-     * Determines whether one Location reading is better than the current Location fix
-     * @param location  The new Location that you want to evaluate
-     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-     */
-    private boolean isBetterLocation(Location location, Location currentBestLocation) {
-       
-       final int TWO_MINUTES = 1000 * 60 * 2;
-       
-       if (currentBestLocation == null) {
-           // A new location is always better than no location
-           return true;
-       }
-
-       // Check whether the new location fix is newer or older
-       long timeDelta = location.getTime() - currentBestLocation.getTime();
-       boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-       boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-       boolean isNewer = timeDelta > 0;
-
-       // If it's been more than two minutes since the current location, use the new location
-       // because the user has likely moved
-       if (isSignificantlyNewer) {
-           // If the new location is more than two minutes older, it must be worse
-           return true;
-       } 
-       else if (isSignificantlyOlder) {
-           return false;
-       }
-
-       // Check whether the new location fix is more or less accurate
-       int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-       boolean isLessAccurate = accuracyDelta > 0;
-       boolean isMoreAccurate = accuracyDelta < 0;
-       boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-       // Check if the old and new location are from the same provider
-       boolean isFromSameProvider = isSameProvider(location.getProvider(),
-               currentBestLocation.getProvider());
-
-       // Determine location quality using a combination of timeliness and accuracy
-       if (isMoreAccurate) {
-           return true;
-       } 
-       else if (isNewer && !isLessAccurate) {
-           return true;
-       } 
-       else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-           return true;
-       }
-       return false;
-   }
-
-   /** 
-    * Checks whether two providers are the same
-    */
-   private boolean isSameProvider(String provider1, String provider2) {
-       if (provider1 == null) {
-           return provider2 == null;
-       }
-       return provider1.equals(provider2);
-   }
 
     /**
      * Must be called to use GPS
      */
     public void start() {
+        
+        /*
+         * Start GPS but dont start if already started
+         */
+        if(null != mLocationManager) {
+            return;
+        }
+                
         if(mPreferences.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
         }
@@ -193,34 +136,26 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             mGpsPeriod = GPS_PERIOD_LONG_MS;
         }
         
-        /*
-         * Start GPS
-         */
-        if(null == mLocationManager) {
-                
-            mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
 
-            if(isGpsAvailable(mContext)) {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        mGpsPeriod / 4, 0, this);
-                mLocationManager.addGpsStatusListener(this);
-            }
-            
-            /*
-             * Also obtain GSM based locations
-             */
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-                    0, 0, this);
-            
-            mGpsLastUpdate = SystemClock.uptimeMillis();
-            mTimer = new Timer();
-            TimerTask gpsTime = new UpdateGps();
-            /*
-             * Give some delay for check start
-             */
-            mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
-                    GPS_PERIOD_LONG_MS / 4);
-        }        
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                mGpsPeriod / 4, 0, this);
+        mLocationManager.addGpsStatusListener(this);
+        
+        /*
+         * Also obtain GSM based locations
+         */
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
+                0, 0, this);
+        
+        mGpsLastUpdate = SystemClock.elapsedRealtime();
+        mTimer = new Timer();
+        TimerTask gpsTime = new UpdateGps();
+        /*
+         * Give some delay for check start
+         */
+        mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
+                GPS_PERIOD_LONG_MS / 4);
     }
     
     /**
@@ -228,6 +163,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     public void stop() {
         
+        /*
+         * Stop but dont stop if already stopped
+         */
         if(null == mLocationManager) {
             return;
         }
@@ -277,7 +215,8 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null && (!mPreferences.isSimulationMode())) {
+        if ((location != null) && (!mPreferences.isSimulationMode())
+                && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 
 
             mGpsLastUpdate = SystemClock.uptimeMillis();
@@ -285,10 +224,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             /*
              * Called by GPS. Update everything driven by GPS.
              */
-            if(isBetterLocation(location, mLastLocation)) {
-                mLastLocation = location;
-                mGpsCallback.locationCallback(location);
-            }
+            mGpsCallback.locationCallback(location);
         }
     }
     
@@ -296,6 +232,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * @author zkhan
      *
      */
+    
     private class UpdateGps extends TimerTask {
         
         /* (non-Javadoc)
@@ -306,8 +243,8 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             /*
              * Check when last event was received
              */
-            if((SystemClock.uptimeMillis() - mGpsLastUpdate) > 
-                (GPS_PERIOD_LONG_MS * 2)) {
+            if((SystemClock.elapsedRealtime() - mGpsLastUpdate) > 
+                (GPS_PERIOD_LONG_MS * 4)) {
                 mGpsCallback.timeoutCallback(true);                
             }
             else {
@@ -322,7 +259,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             mGpsCallback.enabledCallback(false);
         }
     }
-
+    
     @Override
     public void onProviderEnabled(String provider) {
         if(provider.equals(LocationManager.GPS_PROVIDER)) {

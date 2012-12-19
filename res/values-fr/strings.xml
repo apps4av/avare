@@ -9,9 +9,9 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
     * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
-    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <resources>
     <string name="app_name">&quot;Avare&quot;</string>
@@ -23,13 +23,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Success">&quot;Réussi&quot;</string>
     <string name="DatabaseName">&quot;maps.db&quot;</string>
     <string name="WarningMsg">&quot;Avertissement&quot;</string>
-    <string name="AirportDia">&quot;Diagramme d'aéroport - Toucher pour ouvrir&quot;</string>
     <string name="DestinationPrompt">&quot;Entrez code de destination&quot;</string>
     <string name="DestinationNF">&quot;Destination non trouvée&quot;</string>
     <string name="AirDiaNF">&quot;Diagramme de l'aéroport non trouvé&quot;</string>
+    <string name="ADS">&quot;Diagrammes d'aéroports&quot;</string>
     <string name="InstallPDF">&quot;Pour visionner, installer un visionneur de PDF sur Google Play&quot;</string>
     <string name="Cancel">&quot;Annulé&quot;</string>
-    <string name="ADS">&quot;Diagrammes d'aéroports&quot;</string>
     <string name="To">&quot;Vers&quot;</string>
     <string name="Base">&quot;Base de départ&quot;</string>
     <string name="Maps">&quot;Cartes&quot;</string>
@@ -53,11 +52,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShowTrack">&quot;Afficher le tracé&quot;</string>
     <string name="ShowTrackLabel">&quot;Afficher le tracé vers la destination&quot;</string>
     <string name="ShowTrackSummary">&quot;Sélectionner pour afficher le tracé vers la destination&quot;</string>
-    <string name="BaseId">&quot;BOS&quot;</string>
+    <string name="BaseId">&quot;no Base de départ&quot;</string>
     <string name="Help">&quot;Aide&quot;</string>
+    <string name="desc">&quot;Image/Carte&quot;</string>	
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Préférences&quot;</string>
-    <string name="AFD">&quot;Diagramme aéroport&quot;</string>
     <string name="BasePrompt">&quot;Entrer le code de l'aéroport de départ&quot;</string>
     <string name="Downloading">&quot;En téléchargement&quot;</string>
     <string name="download">&quot;Télécharger&quot;</string>
@@ -85,4 +84,22 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="ScreenOn">&quot;Temps écoulé&quot;</string>
     <string name="ScreenOnLabel">&quot;Garder l'écran allumé&quot;</string>
     <string name="ScreenOnSummary">&quot;Selectioner pour garder l'écran allumé lorsque l'application roule&quot;</string>
+    <string name="update">&quot;Mise à jour&quot;</string>
+    <string name="gps">&quot;GPS&quot;</string>
+    <string name="longitude">&quot;'W&quot;</string>
+    <string name="latitude">&quot;'N&quot;</string>
+    <string name="accuracy">&quot;Précision ft.&quot;</string>
+    <string name="degree">&quot;\u00B0&quot;</string>
+    <string name="calibratethis">&quot;Marquer ce point&quot;</string>
+    <string name="Done">&quot;Terminé&quot;</string>
+    <string name="Calibrate">&quot;GeoTag&quot;</string>
+    <string name="PointsTooClose">&quot;Les positions sont trop rapprochés&quot;</string>
+    <string name="BadCoords">&quot;Longitude/Latitude invalide\nLongitude varie: 0 à 180 W\nLatitude varie 0 à 90 N&quot;</string>
+    <string name="GoodCoords">&quot;Données affichées et sauvegardées&quot;</string>
+    <string name="main">&quot;Cartes&quot;</string>
+    <string name="plates">&quot;Diagramme&quot;</string>
+    <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="Lon">&quot;Long&quot;</string>
+    <string name="Lat">&quot;Lat&quot;</string>
+    <string name="DestinationSet">&quot;Destination vers &quot;</string>
 </resources>

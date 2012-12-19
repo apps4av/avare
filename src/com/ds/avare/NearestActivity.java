@@ -54,17 +54,6 @@ public class NearestActivity extends Activity  implements Observer {
         @Override
         public void locationCallback(Location location) {
             if(location != null && mService != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-                GpsParams params = new GpsParams(location);
-                
-                
-                /*
-                 * Update distances/bearing to all airports in the area
-                 */
-                mService.getArea().updateLocation(params);
                 prepareAdapter();
             }
         }

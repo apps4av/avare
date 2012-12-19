@@ -94,16 +94,12 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Called by GPS. Update everything driven by GPS.
                  */
-                GpsParams params = new GpsParams(location); 
+                GpsParams params = new GpsParams(location);
                 
-                if(mDestination != null) {
-                    mDestination.updateTo(params);
-                }
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
                 mLocationView.updateParams(params); 
-                mService.setGpsParams(params);
             }
         }
 

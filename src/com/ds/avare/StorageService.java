@@ -177,6 +177,13 @@ public class StorageService extends Service {
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.locationCallback(location);
+                    if(null != location) {
+                        setGpsParams(new GpsParams(location));
+                        getArea().updateLocation(getGpsParams());
+                        if(mDestination != null) {
+                            mDestination.updateTo(getGpsParams());
+                        }
+                    }
                 }
             }
 
@@ -376,11 +383,9 @@ public class StorageService extends Service {
         /*
          * If first listener, start GPS
          */
-        if(mGpsCallbacks.isEmpty()) {
-            mGps.start();
-            synchronized(this) {
-                mIsGpsOn = true;
-            }
+        mGps.start();
+        synchronized(this) {
+            mIsGpsOn = true;
         }
         mGpsCallbacks.add(gps);
     }
