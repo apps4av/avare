@@ -407,7 +407,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawTiles(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
-    	
+  
         if(null != mTiles) {
             
             for(int tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
@@ -898,7 +898,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(tokens.length >= 2) {
                     mWeatherColor = WeatherHelper.metarColor(tokens[0]);
                     mTextPaint.setColor(Color.WHITE);
-                    mWeatherLayout = new StaticLayout(tokens[1], mTextPaint, getWidth() / 2,
+                    mWeatherLayout = new StaticLayout(tokens[1].trim(), mTextPaint, getWidth(),
                             Layout.Alignment.ALIGN_NORMAL, 1, 0, true);               
                 }
             }
