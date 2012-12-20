@@ -80,12 +80,23 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
         setListAdapter(mChartAdapter);
         
-        /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
+        /**
+         * Download database if it does not exists.
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-        mToast.setText(getString(R.string.DownloadInst));
-        mToast.show();
+        File dbase = new File(mPref.mapsFolder() + "/" + resFiles[0]);
+        if(!dbase.exists()) {
+            mChartAdapter.updateChecked(resFiles[0]);
+            mChartAdapter.notifyDataSetChanged();            
+            download();
+        }
+        else {
+            /*
+             * Create toast beforehand so multiple clicks dont throw up a new toast
+             */
+            mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+            mToast.setText(getString(R.string.DownloadInst));
+            mToast.show();
+        }
     }
     
 
@@ -143,28 +154,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
                 }
             }
         });
-        
-        /*
-         * This should consume all keys
-         */
-        mProgressDialog.setOnKeyListener(new OnKeyListener(){
-            @Override
-            public boolean onKey(DialogInterface dialog, 
-                                 int keyCode,
-                                 KeyEvent event) {
-                mDownload.cancel();
-                try {
-                    dialog.dismiss();
-                }
-                catch (Exception e) {
-                    
-                }
-                return true;
-            }
-        });
-
         mProgressDialog.show();
-
     }
     
     

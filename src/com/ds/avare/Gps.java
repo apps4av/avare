@@ -34,7 +34,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     /**
      * App preferences
      */
-    private Preferences mPreferences;
+    private Preferences mPref;
 
     private int mGpsPeriod;
     
@@ -61,11 +61,11 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      */
     public Gps(Context ctx, GpsInterface callback) {
-        mPreferences = new Preferences(ctx);
+        mPref = new Preferences(ctx);
         mContext = ctx;
         mLocationManager = null;
         mGpsCallback = callback;
-        if(mPreferences.isGpsUpdatePeriodShort()) {
+        if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
         }
         else {
@@ -129,7 +129,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             return;
         }
                 
-        if(mPreferences.isGpsUpdatePeriodShort()) {
+        if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
         }
         else {
@@ -202,9 +202,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             return;
         }
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
-        if(GpsStatus.GPS_EVENT_STOPPED == event) {
-        }
-        else {
+        if(!mPref.isSimulationMode()) {
             mGpsCallback.statusCallback(gpsStatus);           
         }
     }
@@ -214,7 +212,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onLocationChanged(Location location) {
-        if ((location != null) && (!mPreferences.isSimulationMode())
+        if ((location != null) && (!mPref.isSimulationMode())
                 && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 
 
@@ -241,6 +239,11 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
          */
         @Override
         public void run() {
+            
+            if(mPref.isSimulationMode()) {
+                return;
+            }
+            
             /*
              * Check when last event was received
              */
@@ -261,14 +264,14 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
 
     @Override
     public void onProviderDisabled(String provider) {
-        if(provider.equals(LocationManager.GPS_PROVIDER)) {
+        if(provider.equals(LocationManager.GPS_PROVIDER) && (!mPref.isSimulationMode())) {
             mGpsCallback.enabledCallback(false);
         }
     }
     
     @Override
     public void onProviderEnabled(String provider) {
-        if(provider.equals(LocationManager.GPS_PROVIDER)) {
+        if(provider.equals(LocationManager.GPS_PROVIDER) && (!mPref.isSimulationMode())) {
             mGpsCallback.enabledCallback(true);
         }
     }
@@ -276,7 +279,8 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     @Override
     public void onStatusChanged(String provider, int status, Bundle arg2) {
         if(provider.equals(LocationManager.GPS_PROVIDER) &&
-                (status == LocationProvider.OUT_OF_SERVICE)) {
+                (status == LocationProvider.OUT_OF_SERVICE)
+                && (!mPref.isSimulationMode())) {
             mGpsCallback.statusCallback(null);
         }
     }

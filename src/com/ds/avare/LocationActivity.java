@@ -117,7 +117,6 @@ public class LocationActivity extends Activity implements Observer {
             }
             else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
-                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
             }
             else if(mPreferences.isSimulationMode()) {
                 mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
