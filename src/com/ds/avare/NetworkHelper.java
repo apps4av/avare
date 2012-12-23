@@ -93,6 +93,14 @@ public class NetworkHelper {
      * 
      * @return
      */
+    public static String getDonationURL() {
+        return "http://apps4av.net/";
+    }
+
+    /**
+     * 
+     * @return
+     */
     public static String getHelpGeoTag() {
         return "http://youtu.be/mKOgguJ5bpo";
     }

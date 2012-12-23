@@ -26,25 +26,6 @@ import android.preference.PreferenceManager;
  */
 public class Preferences {
 
-    /**
-     * Default
-     */
-    public static final int XTILES_SMALL = 3;
-    
-    /**
-     * Default
-     */
-    public static final int YTILES_SMALL = 3;
-    
-    /**
-     * Default
-     */
-    public static final int XTILES_LARGE = 5;
-    
-    /**
-     * Default
-     */
-    public static final int YTILES_LARGE = 3;
 
     /*
      * BOS is default
@@ -156,13 +137,11 @@ public class Preferences {
      */
     public int[] getTilesNumber() {
         int[] ret = new int[2];
-        ret[0] = XTILES_SMALL;
-        ret[1] = YTILES_SMALL;
-        if(mPref.getBoolean(mContext.getString(R.string.MapSize), false)) {
-            ret[0] = XTILES_LARGE;
-            ret[1] = YTILES_LARGE;
-        }
-       return(ret);  
+        String size = mPref.getString(mContext.getString(R.string.MapSizeString), "3x3");
+        String tokens[] = size.split("x");
+        ret[0] = Integer.parseInt(tokens[0]);
+        ret[1] = Integer.parseInt(tokens[1]);
+        return(ret);  
     }
 
     /**

@@ -21,5 +21,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/gps"></item>
     <item android:id="@+id/help" android:icon="@drawable/help"
         android:title="@string/Help"></item>
-    
+    <item android:id="@+id/donate" android:icon="@drawable/donate"
+        android:title="@string/Donate"></item>
 </menu>

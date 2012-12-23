@@ -422,6 +422,12 @@ public class LocationActivity extends Activity implements Observer {
                 intent.putExtra("url", NetworkHelper.getHelpUrl());
                 startActivity(intent);
                 break;
+                
+            case R.id.donate:
+                Intent donint = new Intent(this, WebActivity.class);
+                donint.putExtra("url", NetworkHelper.getDonationURL());
+                startActivity(donint);
+                break;
 
             case R.id.download:
                 startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));

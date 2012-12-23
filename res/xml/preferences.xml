@@ -21,13 +21,27 @@ Redistribution and use in source and binary forms, with or without modification,
 		android:entries="@array/ChartType"
 		android:defaultValue="0"
 		android:entryValues="@array/ChartTypeValues"/>
-	<EditTextPreference xmlns:android="http://schemas.android.com/apk/res/android"
+    <ListPreference
+        android:key="@string/MapSizeString"
+        android:title="@string/MapSizeStringLabel"
+        android:summary="@string/MapSizeStringSummary"
+        android:entries="@array/MapSizeTiles"
+        android:defaultValue="3x3"
+        android:entryValues="@array/MapSizeTilesValues"/>
+	<EditTextPreference
 	    android:key="@string/Maps"
 	    android:title="@string/MapsLabel"
 	    android:summary="@string/MapsSummary"
 	    android:dialogTitle="@string/MapsLabel"
 	    android:dialogMessage="@string/MapsSummary"/>
-    <CheckBoxPreference
+    <EditTextPreference
+        android:key="@string/Base"
+        android:title="@string/Base"
+        android:summary="@string/BasePrompt"
+        android:dialogTitle="@string/Base"
+        android:dialogMessage="@string/BasePrompt"   
+        android:defaultValue="@string/BaseId"/>
+	<CheckBoxPreference
         android:key="@string/ScreenOn"
         android:title="@string/ScreenOnLabel"
         android:summary="@string/ScreenOnSummary"
@@ -37,11 +51,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/GpsTimeLabel"
         android:summary="@string/GpsTimeSummary"
         android:defaultValue="false"/>
-    	<CheckBoxPreference
-	    android:key="@string/MapSize"
-	    android:title="@string/MapSizeLabel"
-	    android:summary="@string/MapSizeSummary"
-	    android:defaultValue="false"/>
 	<CheckBoxPreference
 	    android:key="@string/GpsOffWarn"
 	    android:title="@string/GpsOffWarnLabel"
@@ -67,12 +76,4 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:title="@string/TFRAndMETARLabel"
 	    android:summary="@string/TFRAndMETARSummary"
 	    android:defaultValue="true"/>
-	<EditTextPreference xmlns:android="http://schemas.android.com/apk/res/android"
-        android:key="@string/Base"
-        android:title="@string/Base"
-        android:summary="@string/BasePrompt"
-        android:dialogTitle="@string/Base"
-        android:dialogMessage="@string/BasePrompt"   
-        android:defaultValue="@string/BaseId"/>
 </PreferenceScreen>
-    
