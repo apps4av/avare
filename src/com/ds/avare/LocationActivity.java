@@ -131,6 +131,9 @@ public class LocationActivity extends Activity implements Observer {
             else if(timeout) {
                 mLocationView.updateErrorStatus(getString(R.string.GPSLost));
             }
+            else if (Helper.isHeapFilled()) {
+                mLocationView.updateErrorStatus(getString(R.string.LowMemory));                
+            }
             else {
                 /*
                  *  GPS kicking.

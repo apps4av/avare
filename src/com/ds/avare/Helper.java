@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
@@ -23,6 +24,8 @@ import android.view.WindowManager;
  */
 public class Helper {
 
+    private static final float USE_HIGH_PERCENT = 90;
+    
     /**
      * Set common features of all activities in the framework
      * @param act
@@ -42,4 +45,16 @@ public class Helper {
         }
 
     } 
+    
+    /**
+     * 
+     * @return Free heap
+     */
+    public static boolean isHeapFilled() {
+        float use = (float)Runtime.getRuntime().totalMemory() / (float)Runtime.getRuntime().maxMemory();
+        if(use > (USE_HIGH_PERCENT / 100.f)) {
+            return true;
+        }
+        return false;
+    }
 }
