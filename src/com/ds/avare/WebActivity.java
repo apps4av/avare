@@ -14,6 +14,7 @@ package com.ds.avare;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Window;
 import android.webkit.WebView;
 
 /**
@@ -28,6 +29,8 @@ public class WebActivity extends Activity  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         WebView wv;
         wv = new WebView(this);

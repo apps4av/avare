@@ -19,6 +19,7 @@ import com.ds.avare.R;
 
 import android.location.GpsStatus;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.app.Activity;
@@ -424,9 +425,10 @@ public class LocationActivity extends Activity implements Observer {
                 break;
                 
             case R.id.donate:
-                Intent donint = new Intent(this, WebActivity.class);
-                donint.putExtra("url", NetworkHelper.getDonationURL());
-                startActivity(donint);
+                String url = NetworkHelper.getDonationURL();
+                Intent it = new Intent(Intent.ACTION_VIEW);
+                it.setData(Uri.parse(url));
+                startActivity(it);
                 break;
 
             case R.id.download:
