@@ -186,6 +186,16 @@ public class PlatesActivity extends Activity {
             }
             
             /*
+             * Not found
+             */
+            if((!mDestination.isFound()) || (mDestination.getDiagram() == null)) {
+                mToast.setText(getString(R.string.NoDia) + " - " + mDestination.getID());
+                mToast.show();
+                mName = null;
+                return;                
+            }
+            
+            /*
              * Find lon/lat of the center of airport
              */
             Location l = mDestination.getLocation();
