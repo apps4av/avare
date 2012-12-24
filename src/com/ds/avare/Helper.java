@@ -23,8 +23,6 @@ import android.view.WindowManager;
  *
  */
 public class Helper {
-
-    private static final float USE_HIGH_PERCENT = 90;
     
     /**
      * Set common features of all activities in the framework
@@ -44,17 +42,5 @@ public class Helper {
             act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-    } 
-    
-    /**
-     * 
-     * @return Free heap
-     */
-    public static boolean isHeapFilled() {
-        float use = (float)Runtime.getRuntime().totalMemory() / (float)Runtime.getRuntime().maxMemory();
-        if(use > (USE_HIGH_PERCENT / 100.f)) {
-            return true;
-        }
-        return false;
-    }
+    }    
 }
