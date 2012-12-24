@@ -100,6 +100,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
     <string name="DownloadInst">&quot;Touch to select an item, then press menu to download it&quot;</string>
     <string name="Donate">&quot;Donate&quot;</string>
-    <string name="LowMemory">&quot;Low On Memory&quot;</string>
     <string name="NoDia">&quot;Diagram Not Found&quot;</string>
 </resources>
