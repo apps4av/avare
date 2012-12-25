@@ -17,13 +17,19 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +53,8 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     private Preferences mPref;
     private ChartAdapter mChartAdapter;
     private Toast mToast;
+    
+    private StorageService mService;
 
 
     /**
@@ -97,6 +105,38 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         }
     }
     
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+            
+            /*
+             * Since we are downloading new charts, clear everything old on screen.
+             */
+            mService.getTiles().clear();
+        }
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
 
     /**
      * 
@@ -105,6 +145,9 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     public void onResume() {
         super.onResume();        
         Helper.setOrientationAndOn(this);
+        
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**
@@ -155,6 +198,18 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         mProgressDialog.show();
     }
     
+    /* (non-Javadoc)
+     * @see android.app.Activity#onPause()
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        
+        /*
+         * Clean up on pause that was started in on resume
+         */
+        getApplicationContext().unbindService(mConnection);
+    }
     
     /**
      * 

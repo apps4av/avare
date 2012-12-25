@@ -61,6 +61,11 @@ public class BitmapHolder {
      */
     public static final int HEIGHT = 512;
 
+    /*
+     * 
+     */
+    private static String NO_CHART = "no_chart";
+    
     /**
      * @param name
      * Get bitmap from renderer
@@ -85,6 +90,13 @@ public class BitmapHolder {
      * @param name is the name to store
      */
     public void drawInBitmap(BitmapHolder b, String name) {
+        /*
+         * This should mark bitmap dirty
+         */
+        mName = name;
+        if(null == name) {
+            return;
+        }
         if((null == b) || (null == mCanvas)) {
             return;
         }
@@ -93,7 +105,6 @@ public class BitmapHolder {
         }
         mTransform.setTranslate(0, 0);
         mCanvas.drawBitmap(b.getBitmap(), mTransform, null);
-        mName = name;
     }
 
     /**
@@ -138,7 +149,7 @@ public class BitmapHolder {
             if(null != mBitmap) {
                 mWidth = mBitmap.getWidth();
                 mHeight = mBitmap.getHeight();
-                mName = context.getString(R.drawable.nochart);
+                mName = NO_CHART;
             }
             else {
                 mWidth = 0;

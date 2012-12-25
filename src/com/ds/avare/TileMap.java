@@ -121,7 +121,26 @@ public class TileMap {
         
         return -1;
     }
-    
+
+    /**
+     * 
+     * Clear the cache.
+     * 
+     * @return
+     */
+    public void clear() {
+
+        /*
+         * For all tiles that will be re-used, find from cache.
+         */
+        for(int tilem = 0; tilem < numTiles2; tilem++) {
+            if(null == mBitmaps[tilem]) {
+                continue;
+            }
+            mBitmaps[tilem].drawInBitmap(null, null);
+        }
+    }
+
     /**
      * 
      * When a new string of names are available for a new region, reload
