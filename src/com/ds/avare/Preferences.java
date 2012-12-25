@@ -42,7 +42,24 @@ public class Preferences {
      */
     public static final long TFR_UPDATE_PERIOD_MS = 60 * 1000;
     public static final long TFR_GET_PERIOD_MIN = 60;
-            
+    
+    /*
+     * Max memory and max screen size it will support
+     */
+    public static final long MEM_128 = 128 * 1024 * 1024;
+    public static final long MEM_64 = 64 * 1024 * 1024;
+    public static final long MEM_32 = 32 * 1024 * 1024;
+    public static final long MEM_16 = 16 * 1024 * 1024;
+    
+    public static final int MEM_128_X = 9;
+    public static final int MEM_128_Y = 7;
+    public static final int MEM_64_X = 7;
+    public static final int MEM_64_Y = 5;
+    public static final int MEM_32_X = 5;
+    public static final int MEM_32_Y = 3;
+    public static final int MEM_16_X = 3;
+    public static final int MEM_16_Y = 3;
+    
     /**
      * Preferences
      */
@@ -137,11 +154,30 @@ public class Preferences {
      */
     public int[] getTilesNumber() {
         int[] ret = new int[2];
-        String size = mPref.getString(mContext.getString(R.string.MapSizeString), "3x3");
-        String tokens[] = size.split("x");
-        ret[0] = Integer.parseInt(tokens[0]);
-        ret[1] = Integer.parseInt(tokens[1]);
-        return(ret);  
+        
+        /*
+         * Find max tiles this system can support.
+         */
+        long mem = Runtime.getRuntime().maxMemory();
+
+        if(mem >= MEM_128) {
+            ret[0] = MEM_128_X;
+            ret[1] = MEM_128_Y;
+        }
+        else if(mem >= MEM_64) {
+            ret[0] = MEM_64_X;
+            ret[1] = MEM_64_Y;
+        }
+        else if(mem >= MEM_32) {
+            ret[0] = MEM_32_X;
+            ret[1] = MEM_32_Y;
+        }
+        else if(mem >= MEM_16) {
+            ret[0] = MEM_16_X;
+            ret[1] = MEM_16_Y;
+        }
+                
+        return ret;  
     }
 
     /**

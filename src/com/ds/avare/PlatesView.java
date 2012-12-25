@@ -153,6 +153,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
+        postInvalidate();
     }
 
     /* (non-Javadoc)

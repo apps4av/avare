@@ -213,22 +213,5 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>
-
-    <string-array name="MapSizeTiles">
-        <item>3x3 (Nexus-1) </item>
-        <item>5x3 (Nexus-7) </item>
-        <item>3x5           </item>
-        <item>7x5 (Nexus-10)</item>
-        <item>5x7           </item>
-    </string-array>
-
-    <string-array name="MapSizeTilesValues">
-        <item>3x3</item>
-        <item>5x3</item>
-        <item>3x5</item>
-        <item>7x5</item>
-        <item>5x7</item>
-    </string-array>
-    
+    </string-array>    
 </resources>

@@ -27,7 +27,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.Paint.FontMetrics;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.Layout;
@@ -54,11 +53,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Current GPS location
      */
     private GpsParams                  mGpsParams;
-
-    /**
-     * Where all tiles reside
-     */
-    private BitmapHolder               mTiles[];
 
     /**
      * The plane on screen
@@ -158,9 +152,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Max tiles in each dimension.
      */
-    private int                         mXtiles;
-    private int                         mYtiles;
+    private TileMap                      mTiles;
     private int                         mWeatherColor;
+    
+    /*
+     * Shadow length 
+     */
+    private static int SHADOW = 4;
     
     /**
      * @param context
@@ -189,16 +187,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
         
-        int[] tilesdim = mPref.getTilesNumber();
-        mXtiles = tilesdim[0];
-        mYtiles = tilesdim[1];
-        
-        mTiles = new BitmapHolder[mXtiles * mYtiles];
-
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
         mPaint.setTypeface(mFace);
-        FontMetrics fm = mPaint.getFontMetrics();
-        mFontHeight =  fm.bottom - fm.top;
+        mFontHeight = 8; // This is just double of all shadows
 
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
@@ -220,20 +211,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin.update(mGpsParams, mScale, mPan,
                 mMovement.getLongitudePerPixel(), mMovement.getLatitudePerPixel(),
                 getWidth(), getHeight()); 
-    }
-
-    /**
-     * Should'nt Android GC do this automatically? Not yet.
-     */
-    public void freeTiles() {
-        /*
-         * Free up tiles
-         */
-        for(int tile = 0; tile < mXtiles * mYtiles; tile++) {
-            if(null != mTiles[tile]) {
-                mTiles[tile].recycle();
-            }
-        }
     }
 
     /**
@@ -271,7 +248,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawMap(canvas);
     }
        
-    
     /* (non-Javadoc)
      * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
      */
@@ -402,7 +378,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * 
+     *
      * @param canvas
      */
     private void drawTiles(Canvas canvas) {
@@ -410,15 +386,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
   
         if(null != mTiles) {
             
-            for(int tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
+            for(int tilen = 0; tilen < mTiles.getTilesNum(); tilen++) {
+                
+                BitmapHolder tile = mTiles.getTile(tilen);
+                
                 /*
                  * Scale, then move under the plane which is at center
                  */
                 boolean nochart = false;
-                if(mTiles[tilen] == null) {
+                if(null == tile) {
                     nochart = true;
                 }
-                else if(mTiles[tilen].getBitmap() == null) {
+                else if(null == tile.getBitmap()) {
                     nochart = true;
                 }
                 if(nochart) {
@@ -428,11 +407,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Pretty straightforward. Pan and draw individual tiles.
                  */
-                mTiles[tilen].getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleCorrected());
-                mTiles[tilen].getTransform().postTranslate(
+                tile.getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleCorrected());
+                tile.getTransform().postTranslate(
                         getWidth()  / 2.f
                         - BitmapHolder.WIDTH  / 2.f * mScale.getScaleFactor() 
-                        + ((tilen % mXtiles) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mXtiles / 2)) * mScale.getScaleFactor()
+                        + ((tilen % mTiles.getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mTiles.getXTilesNum() / 2)) * mScale.getScaleFactor()
                         + mPan.getMoveX() * mScale.getScaleFactor()
                         + mPan.getTileMoveX() * BitmapHolder.WIDTH * mScale.getScaleFactor()
                         - (float)mMovement.getOffsetLongitude() * mScale.getScaleFactor(),
@@ -440,13 +419,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         getHeight() / 2.f 
                         - BitmapHolder.HEIGHT / 2.f * mScale.getScaleCorrected()  
                         + mPan.getMoveY() * mScale.getScaleCorrected()
-                        + ((tilen / mXtiles) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mYtiles / 2)) * mScale.getScaleCorrected() 
+                        + ((tilen / mTiles.getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mTiles.getYTilesNum() / 2)) * mScale.getScaleCorrected() 
                         + mPan.getTileMoveY() * BitmapHolder.HEIGHT * mScale.getScaleCorrected()
                         - (float)mMovement.getOffsetLatitude() * mScale.getScaleCorrected());
                 
-                Bitmap b = mTiles[tilen].getBitmap();
+                Bitmap b = tile.getBitmap();
                 if(null != b) {
-                    canvas.drawBitmap(b, mTiles[tilen].getTransform(), mPaint);
+                    canvas.drawBitmap(b, tile.getTransform(), mPaint);
                 }
             }
         }
@@ -498,7 +477,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Maps status, and point destination/destination bearing, altitude, ...
          * Add shadows for better viewing
          */
-        mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+        mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
         mPaint.setColor(Color.WHITE);
 
         mPaint.setTextAlign(Align.LEFT);
@@ -566,9 +545,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             if(null != mWeatherLayout) {
                 canvas.save();
-                canvas.translate(0, getHeight() / mTextDiv);
+                canvas.translate(0, getHeight() / mTextDiv + mFontHeight);
                 mPaint.setColor(mWeatherColor);
-                mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
                 canvas.drawRect(0, 0, mWeatherLayout.getWidth(), mWeatherLayout.getHeight(), mPaint);
                 mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
                 mWeatherLayout.draw(canvas);
@@ -713,18 +692,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         postInvalidate();
     }
 
-    private BitmapHolder findTile(String name) {
-        for(int tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
-            if(null == mTiles[tilen]) {
-                continue;
-            }
-            if(name.equals(mTiles[tilen].getName())) {
-                return(mTiles[tilen]);
+    /**
+     * Set tiles to use. Set to null at finish. 
+     * @param xtiles
+     * @param ytiles
+     */
+    public void setTiles(TileMap tiles) {
+        if(null == tiles) {
+            if(null != mTileDrawTask) {
+                if (!mTileDrawTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
+                    /*
+                     * Always honor the latest query
+                     */
+                    mTileDrawTask.cancel(true);
+                }
             }
         }
-        return(null);
+        mTiles = tiles;
     }
     
+
     /**
      * @author zkhan
      *
@@ -736,8 +723,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         double lat;
         int movex;
         int movey;
-        BitmapHolder mTilesTmp[] = new BitmapHolder[mXtiles * mYtiles];
-        String tileNames[] = new String[mXtiles * mYtiles];
+        String tileNames[] = new String[mTiles.getTilesNum()];
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -773,14 +759,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return false;
             }
             
+            if(null == mTiles) {
+                return false;
+            }
+            
             /*
              * Neighboring tiles with center and pan
              */
             int i = 0;
-            for(int tiley = -(int)(mYtiles / 2) ; 
-                    tiley <= (mYtiles / 2); tiley++) {
-                for(int tilex = -(int)(mXtiles / 2); 
-                        tilex <= (mXtiles / 2) ; tilex++) {
+            for(int tiley = -(int)(mTiles.getYTilesNum() / 2) ; 
+                    tiley <= (mTiles.getYTilesNum() / 2); tiley++) {
+                for(int tilex = -(int)(mTiles.getXTilesNum() / 2); 
+                        tilex <= (mTiles.getXTilesNum() / 2) ; tilex++) {
                     tileNames[i++] = mCenterTile.getNeighbor(tiley, tilex);
                 }
             }
@@ -788,22 +778,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Load tiles, draw in UI thread
              */
-            
-            for(int tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
-                if(null != tileNames[tilen]) {
-                    /*
-                     * reuse if found
-                     */
-                    mTilesTmp[tilen] = findTile(tileNames[tilen]);
-                    /*
-                     * load new if not found
-                     * mTilesTmp is in correct order.
-                     */
-                    if(mTilesTmp[tilen] == null) {
-                        mTilesTmp[tilen] = new BitmapHolder(mContext, mPref, tileNames[tilen]);
-                    }
-                }
-            }
+            mTiles.reload(tileNames);
             
             /*
              * Update TFR shapes if they exist in this area.
@@ -827,15 +802,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * This runs on UI
              */
-            int tilen;
             if(true == result) {
                 
-                for(tilen = 0; tilen < (mXtiles * mYtiles); tilen++) {
-                    if(null != mTilesTmp[tilen]) {
-                        mTiles[tilen] = mTilesTmp[tilen];
-                        continue;
-                    }
-                }
+                /*
+                 * Back buffer to front buffer
+                 */
+                mTiles.flip();
                 
                 /*
                  * And show message if we leave current area to double touch.
@@ -861,7 +833,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             invalidate();
         }
-        
     }    
     
     

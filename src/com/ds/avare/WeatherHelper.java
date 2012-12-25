@@ -11,10 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import android.graphics.Color;
-
 
 public class WeatherHelper {
+    
+    private static int BLUE = 0x7F0000BF;
+    private static int RED = 0x7FBF0000;
+    private static int GREEN = 0x7F00BF00;
+    private static int MAGENTA = 0x7FBF00BF;
+    private static int WHITE = 0x7FFFFFFF;
     
     /**
      * 
@@ -31,19 +35,19 @@ public class WeatherHelper {
         }
         int color = metarColor(token[0]);
         
-        if(color == Color.GREEN) {
+        if(color == GREEN) {
             return(R.drawable.greensq);
         }
-        else if(color == Color.RED) {
+        else if(color == RED) {
             return(R.drawable.redsq);            
         }
-        else if(color == Color.BLUE) {
+        else if(color == BLUE) {
             return(R.drawable.bluesq);            
         }
-        else if(color == Color.MAGENTA) {
+        else if(color == MAGENTA) {
             return(R.drawable.pinksq);            
         }
-        else if(color == Color.WHITE) {
+        else if(color == WHITE) {
             return R.drawable.whitesq;
         }
         return R.drawable.whitesq;
@@ -56,18 +60,18 @@ public class WeatherHelper {
      */
     public static int metarColor(String type) {
         if(type.equals("VFR")) {
-            return(Color.GREEN);
+            return(GREEN);
         }
         else if(type.equals("IFR")) {
-            return(Color.RED);                        
+            return(RED);                        
         }
         else if(type.equals("MVFR")) {
-            return(Color.BLUE);                        
+            return(BLUE);                        
         }
         else if(type.equals("LIFR")) {
-            return(Color.MAGENTA);                       
+            return(MAGENTA);                       
         }
-        return(Color.WHITE);
+        return(WHITE);
     }
     
 }

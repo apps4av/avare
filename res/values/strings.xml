@@ -30,9 +30,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Maps">&quot;Maps&quot;</string>
     <string name="MapsLabel">&quot;Charts storage folder&quot;</string>
     <string name="MapsSummary">&quot;Location where charts are stored&quot;</string>
-    <string name="MapSizeString">&quot;MapSizeString&quot;</string>
-    <string name="MapSizeStringLabel">&quot;Select Map Size&quot;</string>
-    <string name="MapSizeStringSummary">&quot;Choose map area size appropriate for your device (Larger area on older devices will make application unresponsive)&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="SimulationModeLabel">&quot;Enable Simulation Mode&quot;</string>
     <string name="SimulationModeSummary">&quot;Enable simulation mode for planning&quot;</string>

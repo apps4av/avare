@@ -21,13 +21,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		android:entries="@array/ChartType"
 		android:defaultValue="0"
 		android:entryValues="@array/ChartTypeValues"/>
-    <ListPreference
-        android:key="@string/MapSizeString"
-        android:title="@string/MapSizeStringLabel"
-        android:summary="@string/MapSizeStringSummary"
-        android:entries="@array/MapSizeTiles"
-        android:defaultValue="3x3"
-        android:entryValues="@array/MapSizeTilesValues"/>
 	<EditTextPreference
 	    android:key="@string/Maps"
 	    android:title="@string/MapsLabel"

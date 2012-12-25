@@ -97,6 +97,8 @@ public class StorageService extends Service {
     
     private int mCounter;
     
+    private TileMap mTiles;
+    
     /**
      * @author zkhan
      *
@@ -138,6 +140,11 @@ public class StorageService extends Service {
         
         mArea = new Area(getApplicationContext(), mImageDataSource);
         
+        /*
+         * All tiles
+         */
+        mTiles = new TileMap(getApplicationContext());
+                
         mTFRFetcher = new TFRFetcher(getApplicationContext());
         mTimer = new Timer();
         TimerTask tfrTime = new UpdateTask();
@@ -223,6 +230,15 @@ public class StorageService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        
+        /*
+         * If we ever exit
+         */
+        mTiles.recycleBitmaps();
+    }
+    
+    public TileMap getTiles() {
+        return mTiles;
     }
     
     /*

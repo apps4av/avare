@@ -15,6 +15,7 @@ package com.ds.avare;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 
 /**
@@ -27,6 +28,11 @@ public class BitmapHolder {
      * 
      */
     private Bitmap mBitmap = null;
+    
+    /**
+     * 
+     */
+    private Canvas mCanvas;
     
     /**
      * 
@@ -56,6 +62,41 @@ public class BitmapHolder {
     public static final int HEIGHT = 512;
 
     /**
+     * @param name
+     * Get bitmap from renderer
+     */
+    public BitmapHolder() {
+        Bitmap.Config conf = Bitmap.Config.RGB_565;
+        try {
+            mBitmap = Bitmap.createBitmap(WIDTH, HEIGHT, conf);
+            mBitmap.setDensity(Bitmap.DENSITY_NONE);
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mCanvas = new Canvas(mBitmap);
+            mName = null;
+        }
+        catch(OutOfMemoryError e){
+        }
+    }
+    
+    /**
+     * 
+     * @param b is bitmap to draw
+     * @param name is the name to store
+     */
+    public void drawInBitmap(BitmapHolder b, String name) {
+        if((null == b) || (null == mCanvas)) {
+            return;
+        }
+        if(null == b.getBitmap()) {
+            return;
+        }
+        mTransform.setTranslate(0, 0);
+        mCanvas.drawBitmap(b.getBitmap(), mTransform, null);
+        mName = name;
+    }
+
+    /**
      * 
      * @param pref
      * @param name
@@ -75,14 +116,13 @@ public class BitmapHolder {
     
     /**
      * @param name
-     * Get bitmap from a zip file
+     * Get bitmap from a file
      */
     public BitmapHolder(Context context, Preferences pref, String name) {
         try {
             mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name);
         }
-        catch(OutOfMemoryError e){
-            System.gc();
+        catch(OutOfMemoryError e) {
         }
         if(null != mBitmap) {
             mWidth = mBitmap.getWidth();
@@ -94,7 +134,6 @@ public class BitmapHolder {
                 mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.nochart);
             }
             catch(OutOfMemoryError e){
-                System.gc();
             }
             if(null != mBitmap) {
                 mWidth = mBitmap.getWidth();
@@ -111,14 +150,16 @@ public class BitmapHolder {
 
     /**
      * @param name
-     * Get bitmap from a zip file
+     * Get bitmap from a diagram / plate file
      */
     public BitmapHolder(String name) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        
         try {
-            mBitmap = BitmapFactory.decodeFile(name);
+            mBitmap = BitmapFactory.decodeFile(name, opt);
         }
         catch(OutOfMemoryError e){
-            System.gc();
         }
         if(null != mBitmap) {
             mWidth = mBitmap.getWidth();
@@ -142,7 +183,6 @@ public class BitmapHolder {
             mBitmap = BitmapFactory.decodeResource(context.getResources(), id);
         }
         catch(OutOfMemoryError e){
-            System.gc();
         }
         if(null != mBitmap) {
             mWidth = mBitmap.getWidth();
@@ -192,6 +232,10 @@ public class BitmapHolder {
         return mBitmap;
     }
         
+    /**
+     * 
+     * @return
+     */
     public Matrix getTransform() {
         return mTransform;
     }

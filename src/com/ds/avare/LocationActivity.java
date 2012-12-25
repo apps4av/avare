@@ -131,9 +131,6 @@ public class LocationActivity extends Activity implements Observer {
             else if(timeout) {
                 mLocationView.updateErrorStatus(getString(R.string.GPSLost));
             }
-            else if (Helper.isHeapFilled()) {
-                mLocationView.updateErrorStatus(getString(R.string.LowMemory));                
-            }
             else {
                 /*
                  *  GPS kicking.
@@ -231,6 +228,11 @@ public class LocationActivity extends Activity implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
+            /*
+             * Must do this here since bitmap needs to be reclaimed
+             */
+            mLocationView.setTiles(mService.getTiles());
+            
             if(mService.getDBResource().isOpen()) {
             	mService.getDBResource().close();
             }
@@ -318,7 +320,7 @@ public class LocationActivity extends Activity implements Observer {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);   
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
     
     /* (non-Javadoc)
@@ -360,9 +362,6 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
-
-        mLocationView.freeTiles();
-        
     }
     
     /* (non-Javadoc)
@@ -393,6 +392,11 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {   
             }
         }
+        
+        /*
+         * Clear tiles memory
+         */
+        mLocationView.setTiles(null);
 
         super.onDestroy();
     }

@@ -96,9 +96,6 @@ public class PlatesActivity extends Activity {
             else if(timeout) {
                 mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
             }
-            else if (Helper.isHeapFilled()) {
-                mPlatesView.updateErrorStatus(getString(R.string.LowMemory));                
-            }
             else {
                 /*
                  *  GPS kicking.
@@ -220,7 +217,9 @@ public class PlatesActivity extends Activity {
             ((EditText)mCalibrateView.findViewById(R.id.latitudems)).setText(mLatCMin);
             ((EditText)mCalibrateView.findViewById(R.id.longitudems)).setText(mLonCMin);
 
-            
+            /*
+             * Set diagram
+             */
             mName = mDestination.getDiagram();
             mBitmap = new BitmapHolder(mName);
             mPlatesView.setBitmap(mBitmap);
