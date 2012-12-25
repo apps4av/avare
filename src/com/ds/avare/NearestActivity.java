@@ -154,7 +154,7 @@ public class NearestActivity extends Activity  implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-            if(false == prepareAdapter()) {
+            if(mPref.isSimulationMode() || (!prepareAdapter())) {
                 mToast.setText(getString(R.string.AreaNF));
                 mToast.show();
                 return;

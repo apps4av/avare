@@ -74,7 +74,7 @@ public class LocationActivity extends Activity implements Observer {
     /**
      * App preferences
      */
-    private Preferences mPreferences;
+    private Preferences mPref;
     
     private AlertDialog mDestDialog;
     
@@ -116,13 +116,13 @@ public class LocationActivity extends Activity implements Observer {
             else if(!mService.getDBResource().isOpen()) {
                 mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
             }
-            else if(!(new File(mPreferences.mapsFolder() + "/tiles")).exists()) {
+            else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
             }
-            else if(mPreferences.isSimulationMode()) {
+            else if(mPref.isSimulationMode()) {
                 mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
             }
-            else if(Gps.isGpsDisabled(getApplicationContext(), mPreferences)) {
+            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
                 /*
                  * Prompt user to enable GPS.
                  */
@@ -161,7 +161,7 @@ public class LocationActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPreferences = new Preferences(this);
+        mPref = new Preferences(this);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -182,7 +182,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Throw this in case GPS is disabled.
          */
-        if(Gps.isGpsDisabled(getApplicationContext(), mPreferences)) {
+        if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
             mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setButton(getString(R.string.Yes),  new DialogInterface.OnClickListener() {
@@ -236,7 +236,7 @@ public class LocationActivity extends Activity implements Observer {
             if(mService.getDBResource().isOpen()) {
             	mService.getDBResource().close();
             }
-            mService.getDBResource().open(mPreferences.mapsFolder() + "/" + getString(R.string.DatabaseName));
+            mService.getDBResource().open(mPref.mapsFolder() + "/" + getString(R.string.DatabaseName));
             if(!mService.getDBResource().isOpen()) {
                 /*
                  * If could not open database then bring up download activity.
@@ -254,7 +254,7 @@ public class LocationActivity extends Activity implements Observer {
              * Now set location.
              */
             Location l = Gps.getLastLocation(getApplicationContext());
-            if(mPreferences.isSimulationMode() && (null != mDestination)) {
+            if(mPref.isSimulationMode() && (null != mDestination)) {
                 l = mDestination.getLocation();
             }
             if(null != l) {
@@ -468,14 +468,14 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 final EditText tv = (EditText)mDestView.findViewById(R.id.DestText);
                 tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                tv.setText(mPreferences.getBase());
+                tv.setText(mPref.getBase());
                 tv.selectAll();
 
                 /*
                  * Spinner calls repeatedly location 0 even when not selected.
                  * Make location 0 non valid.
                  */
-                String [] vals = mPreferences.getRecent();
+                String [] vals = mPref.getRecent();
                 String[] valsPos0 = new String[vals.length + 1];
                 valsPos0[0] = getString(R.string.Recent);
                 for(int i = 0; i < vals.length; i++) {
@@ -500,7 +500,7 @@ public class LocationActivity extends Activity implements Observer {
                             return;
                         }
                         String dst = adapter.getItem(position);
-                        mDestination = new Destination(dst, mPreferences, mService.getDBResource());
+                        mDestination = new Destination(dst, mPref, mService.getDBResource());
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         mDestDialog.dismiss();                        
@@ -528,7 +528,7 @@ public class LocationActivity extends Activity implements Observer {
                     @Override
                     public void onClick(View arg0) {
                         String dst = tv.getText().toString();
-                        mDestination = new Destination(dst, mPreferences, mService.getDBResource());
+                        mDestination = new Destination(dst, mPref, mService.getDBResource());
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         mDestDialog.dismiss();
@@ -573,7 +573,7 @@ public class LocationActivity extends Activity implements Observer {
                     mService.setDestination((Destination)arg0);
                 }
                 mLocationView.updateDestination(mDestination);
-                mPreferences.addToRecent(mDestination.getID());
+                mPref.addToRecent(mDestination.getID());
                 
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();

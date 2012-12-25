@@ -73,7 +73,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TFRReceived">&quot;TFR Received&quot;</string>
     <string name="databases">&quot;Databases (Required)&quot;</string>
     <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>
-    <string name="AreaNF">&quot;Nearest airports shown when GPS locked&quot;</string>
+    <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
     <string name="ScreenOn">&quot;Screen Timeout&quot;</string>
     <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
     <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>

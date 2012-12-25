@@ -240,10 +240,6 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         @Override
         public void run() {
             
-            if(mPref.isSimulationMode()) {
-                return;
-            }
-            
             /*
              * Check when last event was received
              */

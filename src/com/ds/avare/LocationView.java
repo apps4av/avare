@@ -708,6 +708,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }
         }
+        else {
+            tiles.setOrientation();
+        }
         mTiles = tiles;
     }
     
