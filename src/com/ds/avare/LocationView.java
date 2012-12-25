@@ -931,7 +931,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Hijack weather color
                          */
-                        mWeatherColor = Color.RED;
+                        mWeatherColor = WeatherHelper.getRed();
                         text = cshape.getTextIfTouched(x, y);
                         if(null != text) {
                             break;
@@ -958,10 +958,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * Take TFR text over weather text
                      */
                     mTextPaint.setColor(Color.WHITE);
-                    mWeatherLayout = new StaticLayout(text, mTextPaint, getWidth() / 2,
+                    mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
                             Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
                 }
             }           
-        }        
+        }
     }
 }

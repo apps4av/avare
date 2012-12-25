@@ -74,4 +74,12 @@ public class WeatherHelper {
         return(WHITE);
     }
     
+    /**
+     * 
+     * @return
+     */
+    static public int getRed() {
+        return RED;
+    }
+    
 }
