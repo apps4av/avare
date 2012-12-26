@@ -51,20 +51,24 @@ public class WeatherCache {
         /*
          * Remove all entries older than update time.
          */
-        Iterator<Entry<String, String>> it = mMap.entrySet().iterator();
-        long now = SystemClock.elapsedRealtime();
-        while (it.hasNext()) {
-            HashMap.Entry<String, String> pairs = (HashMap.Entry <String, String>)it.next();
-            String[] tokens = pairs.getValue().split("@");
-            long then = Long.parseLong(tokens[1]);
-            if(Math.abs(now - then) > UPDATE_TIME) {
-                it.remove();
+        String weather = null;
+        /*
+         * Save concurrent mod as many tasks update mMap.
+         */
+        synchronized(mMap) {
+            Iterator<Entry<String, String>> it = mMap.entrySet().iterator();
+            long now = SystemClock.elapsedRealtime();
+            while (it.hasNext()) {
+                HashMap.Entry<String, String> pairs = (HashMap.Entry <String, String>)it.next();
+                String[] tokens = pairs.getValue().split("@");
+                long then = Long.parseLong(tokens[1]);
+                if(Math.abs(now - then) > UPDATE_TIME) {
+                    it.remove();
+                }
             }
+            weather = mMap.get(id);
         }
         
-        String weather = null;
-        
-        weather = mMap.get(id);
         if(null == weather) {
             /*
              * Not found in cache
@@ -79,7 +83,9 @@ public class WeatherCache {
              * Put in hash
              * @ time it was obtained
              */
-            mMap.put(id, weather + "@" + SystemClock.elapsedRealtime());
+            synchronized(mMap) {
+                mMap.put(id, weather + "@" + SystemClock.elapsedRealtime());
+            }
         }
                 
         /*
