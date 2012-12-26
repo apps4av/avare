@@ -166,7 +166,8 @@ public class BitmapHolder {
     public BitmapHolder(String name) {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        
+        opt.inSampleSize = 2;
+
         try {
             mBitmap = BitmapFactory.decodeFile(name, opt);
         }

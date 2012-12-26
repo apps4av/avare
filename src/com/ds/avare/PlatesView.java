@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Paint.Align;
-import android.graphics.Paint.FontMetrics;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -59,6 +58,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private float                       mTextDiv;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
+    
+    private static final int CORRECTION = 2;
     
     /**
      * 
@@ -214,8 +215,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	
     	mOLon = params[0];
     	mOLat = params[1];
-    	mPx = params[2];
-    	mPy = params[3];
+    	mPx = params[2] * CORRECTION;
+    	mPy = params[3] * CORRECTION;
     	mRotated = params[4];
     	postInvalidate();
     }
@@ -259,17 +260,18 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	
         float min = Math.min(getWidth(), getHeight()) - 8;
         mPaint.setTextSize(min / 20);
-        FontMetrics fm = mPaint.getFontMetrics();
-        float fh =  fm.bottom - fm.top;
+        float fh =  8;
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
+        
+        float scale = mScale.getScaleFactor() * CORRECTION;
         
     	/*
     	 * Plate
     	 */
-    	mBitmap.getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleFactor());
+    	mBitmap.getTransform().setScale(scale, scale);
     	mBitmap.getTransform().postTranslate(
-    			mPan.getMoveX() * mScale.getScaleFactor() + getWidth() / 2 - mBitmap.getWidth() / 2 * mScale.getScaleFactor(),
-    			mPan.getMoveY() * mScale.getScaleFactor() + getHeight() / 2 - mBitmap.getHeight() / 2 * mScale.getScaleFactor());
+    			mPan.getMoveX() * scale + getWidth() / 2 - mBitmap.getWidth() / 2 * scale,
+    			mPan.getMoveY() * scale + getHeight() / 2 - mBitmap.getHeight() / 2 * scale);
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	mPaint.setStrokeWidth(4);
     	/*
@@ -288,8 +290,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         	canvas.drawLine(
         			getWidth() / 2,
         			getHeight() / 2,
-        			getWidth() / 2 + mPan.getMoveX() * mScale.getScaleFactor() - (float)mPixels.getX0() * mScale.getScaleFactor(),
-        			getHeight() / 2 + mPan.getMoveY() * mScale.getScaleFactor() - (float)mPixels.getY0() * mScale.getScaleCorrected(),
+        			getWidth() / 2 + mPan.getMoveX() * scale - (float)mPixels.getX0() * scale,
+        			getHeight() / 2 + mPan.getMoveY() * scale - (float)mPixels.getY0() * scale,
         			mPaint);    		
     	}
     	
@@ -373,13 +375,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             
             mAirplaneBitmap.getTransform().postTranslate(
                     getWidth() / 2.f
-                    - (float)x * mScale.getScaleFactor()
+                    - (float)x * scale
                     - mAirplaneBitmap.getWidth()  / 2.f
-                    + mPan.getMoveX() * mScale.getScaleFactor(),
+                    + mPan.getMoveX() * scale,
                     getHeight() / 2.f
-                    - (float)y * mScale.getScaleFactor()
+                    - (float)y * scale
                     - mAirplaneBitmap.getHeight()  / 2.f
-                    + mPan.getMoveY() * mScale.getScaleFactor());
+                    + mPan.getMoveY() * scale);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
         

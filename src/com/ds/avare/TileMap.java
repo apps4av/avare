@@ -214,10 +214,12 @@ public class TileMap {
                 }
                 mapB[tilen] = mBitmaps[tile];
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen]);
-                if(null != b && null != mapB[tilen]) {
-                    mapB[tilen].drawInBitmap(b, tileNames[tilen]);
+                if(null != b) {
+                    if(null != mapB[tilen]) {
+                        mapB[tilen].drawInBitmap(b, tileNames[tilen]);
+                    }
                     b.recycle();
-                }
+               }
             }
         }
         
