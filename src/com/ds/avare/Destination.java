@@ -194,6 +194,7 @@ public class Destination extends Observable {
 	                mService.loadDiagram(Destination.this.getDiagram());
 	            }
 	            else {
+                    mService.loadDiagram(null);
 	                mDiagramFound = null;
 	            }
 	        }

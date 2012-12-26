@@ -369,7 +369,10 @@ public class StorageService extends Service {
              */
             mDiagramBitmap.recycle();
         }
-        mDiagramBitmap = new BitmapHolder(name);
+        mDiagramBitmap = null;
+        if(null != name) {
+            mDiagramBitmap = new BitmapHolder(name);            
+        }
     }
     
     /**

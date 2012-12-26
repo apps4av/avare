@@ -38,7 +38,7 @@ public class PixelCoordinates {
     private boolean mLon1Set;
 
 
-    public static final int POINTS_MIN_PIXELS = 300;
+    public static final int POINTS_MIN_PIXELS = 150;
     
 
 	/**

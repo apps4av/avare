@@ -568,6 +568,11 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Temporarily move to destination by giving false GPS signal.
                  */
+                if(null == mLocationView || null == mDestination) {
+                    mToast.setText(getString(R.string.DestinationNF));
+                    mToast.show();
+                    return;
+                }
                 mLocationView.updateParams(new GpsParams(mDestination.getLocation()));
                 if(mService != null) {
                     mService.setDestination((Destination)arg0);

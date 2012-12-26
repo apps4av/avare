@@ -59,8 +59,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
     
-    private static final int CORRECTION = 2;
-    
     /**
      * 
      * @param context
@@ -215,8 +213,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	
     	mOLon = params[0];
     	mOLat = params[1];
-    	mPx = params[2] * CORRECTION;
-    	mPy = params[3] * CORRECTION;
+    	mPx = params[2];
+    	mPy = params[3];
     	mRotated = params[4];
     	postInvalidate();
     }
@@ -263,7 +261,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         float fh =  8;
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactor() * CORRECTION;
+        float scale = mScale.getScaleFactor();
         
     	/*
     	 * Plate
