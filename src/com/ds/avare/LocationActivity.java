@@ -500,7 +500,7 @@ public class LocationActivity extends Activity implements Observer {
                             return;
                         }
                         String dst = adapter.getItem(position);
-                        mDestination = new Destination(dst, mPref, mService.getDBResource());
+                        mDestination = new Destination(dst, mPref, mService);
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         mDestDialog.dismiss();                        
@@ -528,7 +528,7 @@ public class LocationActivity extends Activity implements Observer {
                     @Override
                     public void onClick(View arg0) {
                         String dst = tv.getText().toString();
-                        mDestination = new Destination(dst, mPref, mService.getDBResource());
+                        mDestination = new Destination(dst, mPref, mService);
                         mDestination.addObserver(LocationActivity.this);
                         mDestination.find();
                         mDestDialog.dismiss();

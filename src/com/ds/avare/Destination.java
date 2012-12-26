@@ -50,8 +50,7 @@ public class Destination extends Observable {
      * ETA to destination
      */
     private String mEta;
-    
-    
+        
     /*
      * Its lon/lat
      */
@@ -61,6 +60,8 @@ public class Destination extends Observable {
     private String mDiagramFound;
     
     private Preferences mPref;
+    
+    private StorageService mService;
     
     
     /**
@@ -73,10 +74,11 @@ public class Destination extends Observable {
 	 * @param name
 	 * @param DataSource
 	 */
-	public Destination(String name, Preferences pref, ImageDataSource DataSource) {
+	public Destination(String name, Preferences pref, StorageService service) {
 	    mName = name.toUpperCase();
 	    mFound = false;
-	    mDataSource = DataSource; 
+	    mService = service;
+	    mDataSource = mService.getDBResource(); 
 	    mPref = pref;
 	    mEta = new String("--:--");
     	mParams = new LinkedHashMap<String, String>();
@@ -189,6 +191,7 @@ public class Destination extends Observable {
 	            File f = new File(file);
 	            if(f.exists()) {
 	                mDiagramFound = file;
+	                mService.loadDiagram(Destination.this.getDiagram());
 	            }
 	            else {
 	                mDiagramFound = null;
@@ -250,6 +253,13 @@ public class Destination extends Observable {
     /**
      * @return
      */
+    public BitmapHolder getBitmap() {
+        return(mService.getDiagram());
+    }
+
+    /**
+     * @return
+     */
     public LinkedHashMap<String, String> getParams() {
     	return(mParams);
     }
@@ -277,5 +287,5 @@ public class Destination extends Observable {
         l.setLatitude(mLatd);
         l.setLongitude(mLond);
         return l;
-    }
+    }    
 }

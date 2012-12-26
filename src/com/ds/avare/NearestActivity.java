@@ -177,7 +177,7 @@ public class NearestActivity extends Activity  implements Observer {
                      * Set destination to this airport if clicked on it
                      */
                     mDestination = new Destination(mService.getArea().getAirport(position).getId(),
-                            mPref, mService.getDBResource());
+                            mPref, mService);
                     mDestination.addObserver(NearestActivity.this);
                     mDestination.find();
                 }

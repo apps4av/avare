@@ -41,7 +41,6 @@ public class PlatesActivity extends Activity {
     
     private Preferences mPref;
     private PlatesView mPlatesView;
-    private BitmapHolder mBitmap;
     private String mName;
     private StorageService mService;
     private Destination mDestination;
@@ -221,8 +220,7 @@ public class PlatesActivity extends Activity {
              * Set diagram
              */
             mName = mDestination.getDiagram();
-            mBitmap = new BitmapHolder(mName);
-            mPlatesView.setBitmap(mBitmap);
+            mPlatesView.setBitmap(mDestination.getBitmap());
 
             /*
              * This should be true. Get plate coords if stored
@@ -276,11 +274,6 @@ public class PlatesActivity extends Activity {
          */
         getApplicationContext().unbindService(mConnection);
         
-        if(null != mBitmap) {
-            mBitmap.recycle();
-            mBitmap = null;
-        }
-
         if(null != mCalibrateDialog) {
             try {
                 mCalibrateDialog.dismiss();

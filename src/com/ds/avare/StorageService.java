@@ -87,7 +87,12 @@ public class StorageService extends Service {
      * A list of GPS listeners
      */
     private LinkedList<GpsInterface> mGpsCallbacks;
-    
+
+    /*
+     * A diagram bitmap
+     */
+    private BitmapHolder mDiagramBitmap;
+
     /**
      * Local binding as this runs in same thread
      */
@@ -157,6 +162,7 @@ public class StorageService extends Service {
         TimerTask tfrTime = new UpdateTask();
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
+        mDiagramBitmap = null;
                 
         /*
          * Monitor TFR every hour.
@@ -239,9 +245,13 @@ public class StorageService extends Service {
         super.onDestroy();
         
         /*
-         * If we ever exit
+         * If we ever exit, reclaim memory
          */
         mTiles.recycleBitmaps();
+        
+        if(null != mDiagramBitmap) {
+            mDiagramBitmap.recycle();
+        }
     }
     
     public TileMap getTiles() {
@@ -348,6 +358,28 @@ public class StorageService extends Service {
         return mWeatherCache;
     }
 
+    /**
+     * 
+     * @param name
+     */
+    public void loadDiagram(String name) {
+        if(mDiagramBitmap != null) {
+            /*
+             * Clean old one first
+             */
+            mDiagramBitmap.recycle();
+        }
+        mDiagramBitmap = new BitmapHolder(name);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public BitmapHolder getDiagram() {
+       return mDiagramBitmap; 
+    }
+    
     /**
      * @author zkhan
      *
