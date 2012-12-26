@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.Context;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 
 /**
  * 
@@ -33,20 +33,24 @@ public class Area {
     private double mLat;
     private double mVariation;
     private boolean mFound;
-    private Context mContext;
+    private long mLastTime;
+    private WeatherCache mWeatherCache;
     
-    private static final int MAX_AIRPORTS = 50;
+    private static final int MAX_AIRPORTS = 20;
+    
+    private static final int UPDATE_TIME = 10000;
     
     /**
      * 
      * @param dataSource
      */
-    public Area(Context ctx, ImageDataSource dataSource) {
+    public Area(ImageDataSource dataSource, WeatherCache weather) {
         mDataSource = dataSource;
-        mContext = ctx;
         mLon = mLat = 0;
         mVariation = 0;
+        mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
+        mWeatherCache = weather;
     }
 
     /**
@@ -98,14 +102,16 @@ public class Area {
         double lat = params.getLatitude();
 
         if(mFound) {
-            Projection p = new Projection(mLon, mLat, lon, lat);
-            if(p.getDistance() < 1) {
+            long ctime = SystemClock.elapsedRealtime();
+            ctime -= mLastTime;
+            if(Math.abs(ctime) < UPDATE_TIME) {
                 /*
-                 * Do not change if movement is less than 1 mile.
+                 * Slow down on creating async tasks.
                  */
                 return;
             }
         }
+        mLastTime = SystemClock.elapsedRealtime();
         
         mLon = lon;
         mLat = lat;
@@ -115,7 +121,7 @@ public class Area {
              * Do not overwhelm
              */
             if(mDt.getStatus() != AsyncTask.Status.FINISHED) {
-                mDt.cancel(true);
+                return;
             }
         }
         mDt = new DataBaseAreaTask();
@@ -166,8 +172,7 @@ public class Area {
             for(int id = 0; id < getAirportsNumber(); id++) {
                 mVariation = mAirports[id].getVariation(); 
                 if(null != mAirports[id].getId()) {
-                    mAirports[id].setWeather(NetworkHelper.getMETAR(
-                            mContext, mAirports[id].getId()));
+                    mAirports[id].setWeather(mWeatherCache.get(mAirports[id].getId()));
                 }
             }
 

@@ -73,11 +73,16 @@ public class StorageService extends Service {
      */
     private TFRFetcher mTFRFetcher;
 
-    /*
+    /**
      * For performing periodic activities.
      */
     private Timer mTimer;
-
+    
+    /** 
+     * Keep temp weather here.
+     */
+    private WeatherCache mWeatherCache;
+    
     /*
      * A list of GPS listeners
      */
@@ -138,7 +143,9 @@ public class StorageService extends Service {
 
         mImageDataSource = new ImageDataSource(getApplicationContext());
         
-        mArea = new Area(getApplicationContext(), mImageDataSource);
+        mWeatherCache = new WeatherCache(getApplicationContext());
+
+        mArea = new Area(mImageDataSource, mWeatherCache);
         
         /*
          * All tiles
@@ -150,7 +157,7 @@ public class StorageService extends Service {
         TimerTask tfrTime = new UpdateTask();
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
-        
+                
         /*
          * Monitor TFR every hour.
          */
@@ -333,7 +340,14 @@ public class StorageService extends Service {
     public Area getArea() {
         return mArea;
     }
-   
+
+    /**
+     * @return
+     */
+    public WeatherCache getWeatherCache() {
+        return mWeatherCache;
+    }
+
     /**
      * @author zkhan
      *

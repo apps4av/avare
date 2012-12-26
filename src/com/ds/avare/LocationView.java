@@ -855,9 +855,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             double lon = (Double)vals[0];
             double lat = (Double)vals[1];
+            
+            if(null == mService) {
+                weather = null;
+                return false;
+            }
             String airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(null != airport) {
-                weather = NetworkHelper.getMETAR(mContext, airport);
+                weather = mService.getWeatherCache().get(airport);
             }
             return true;
         }
