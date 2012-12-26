@@ -176,6 +176,16 @@ public class NearestActivity extends Activity  implements Observer {
                     /*
                      * Set destination to this airport if clicked on it
                      */
+                    if(mDestination != null) {
+                        if(mDestination.isLooking()) {
+                            /*
+                             * Already looking for dest.
+                             */
+                            return;
+                        }
+                    }
+                    mToast.setText(getString(R.string.Searching) + " " + mService.getArea().getAirport(position).getId());
+                    mToast.show();
                     mDestination = new Destination(mService.getArea().getAirport(position).getId(),
                             mPref, mService);
                     mDestination.addObserver(NearestActivity.this);

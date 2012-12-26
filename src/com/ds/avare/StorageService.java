@@ -180,7 +180,8 @@ public class StorageService extends Service {
              */            
             @Override
             public void statusCallback(GpsStatus gpsStatus) {
-                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.statusCallback(gpsStatus);
@@ -193,7 +194,8 @@ public class StorageService extends Service {
              */
             @Override
             public void locationCallback(Location location) {
-                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.locationCallback(location);
@@ -213,7 +215,8 @@ public class StorageService extends Service {
              */
             @Override
             public void timeoutCallback(boolean timeout) {
-                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.timeoutCallback(timeout);
@@ -222,11 +225,12 @@ public class StorageService extends Service {
 
             @Override
             public void enabledCallback(boolean enabled) {
-                Iterator<GpsInterface> it = mGpsCallbacks.iterator();
+                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.enabledCallback(enabled);
-                }                
+                }
                 if(enabled) {
                     if(!mGpsCallbacks.isEmpty()) {
                         mGps.start();
@@ -452,7 +456,9 @@ public class StorageService extends Service {
         synchronized(this) {
             mIsGpsOn = true;
         }
-        mGpsCallbacks.add(gps);
+        synchronized(mGpsCallbacks) {
+            mGpsCallbacks.add(gps);
+        }
     }
 
     /**
@@ -460,11 +466,18 @@ public class StorageService extends Service {
      * @param gps
      */
     public void unregisterGpsListener(GpsInterface gps) {
-        mGpsCallbacks.remove(gps);
+        
+        boolean isempty = false;
+        
+        synchronized(mGpsCallbacks) {
+            mGpsCallbacks.remove(gps);
+            isempty = mGpsCallbacks.isEmpty();
+        }
+        
         /*
          * If no listener, relinquish GPS control
          */
-        if(mGpsCallbacks.isEmpty()) {
+        if(isempty) {
             synchronized(this) {
                 mCounter = 0;
                 mIsGpsOn = false;                

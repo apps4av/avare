@@ -502,6 +502,8 @@ public class LocationActivity extends Activity implements Observer {
                         String dst = adapter.getItem(position);
                         mDestination = new Destination(dst, mPref, mService);
                         mDestination.addObserver(LocationActivity.this);
+                        mToast.setText(getString(R.string.Searching) + " " + dst);
+                        mToast.show();
                         mDestination.find();
                         mDestDialog.dismiss();                        
                     }
@@ -530,6 +532,8 @@ public class LocationActivity extends Activity implements Observer {
                         String dst = tv.getText().toString();
                         mDestination = new Destination(dst, mPref, mService);
                         mDestination.addObserver(LocationActivity.this);
+                        mToast.setText(getString(R.string.Searching) + " " + dst);
+                        mToast.show();
                         mDestination.find();
                         mDestDialog.dismiss();
                         

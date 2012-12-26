@@ -63,6 +63,7 @@ public class Destination extends Observable {
     
     private StorageService mService;
     
+    private boolean mLooking;
     
     /**
      * Contains all info in a hash map for the destination
@@ -76,7 +77,7 @@ public class Destination extends Observable {
 	 */
 	public Destination(String name, Preferences pref, StorageService service) {
 	    mName = name.toUpperCase();
-	    mFound = false;
+	    mFound = mLooking = false;
 	    mService = service;
 	    mDataSource = mService.getDBResource(); 
 	    mPref = pref;
@@ -155,6 +156,7 @@ public class Destination extends Observable {
 	    /*
 	     * Do in background as database queries are disruptive
 	     */
+        mLooking = true;
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
         locmDataBaseTask.execute(mName);
 	}
@@ -219,7 +221,8 @@ public class Destination extends Observable {
 			 * Anyone watching if destination found?
 			 */
 			Destination.this.setChanged();
-            Destination.this.notifyObservers(Boolean.valueOf(mFound)); 
+            Destination.this.notifyObservers(Boolean.valueOf(mFound));
+            mLooking = false;
 	    }
     }
     
@@ -228,6 +231,13 @@ public class Destination extends Observable {
      */
     public boolean isFound() {
     	return(mFound);
+    }
+
+    /**
+     * @return
+     */
+    public boolean isLooking() {
+        return(mLooking);
     }
 
     /**
