@@ -82,6 +82,9 @@ public class WeatherCache {
             if(null == weather) {
                 return "";
             }
+            
+            weather += NetworkHelper.getTAF(mContext, id);
+            weather = WeatherHelper.formatWeather(weather);
 
             /*
              * Put in hash

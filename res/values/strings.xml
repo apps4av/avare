@@ -67,9 +67,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
 	<string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
     <string name="weather">&quot;Weather&quot;</string>
-    <string name="TFRAndMETAR">&quot;TFRs and METARs&quot;</string>
-    <string name="TFRAndMETARLabel">&quot;Enable TFRs and METARs&quot;</string>
-    <string name="TFRAndMETARSummary">&quot;Select to show TFR graphics and METAR text (require Internet connection)&quot;</string>
+    <string name="TFRAndMETAR">&quot;TFRs and METAR/TAF&quot;</string>
+    <string name="TFRAndMETARLabel">&quot;Enable TFRs and METAR/TAF&quot;</string>
+    <string name="TFRAndMETARSummary">&quot;Select to show TFR graphics and METAR/TAF text (require Internet connection)&quot;</string>
     <string name="TFRReceived">&quot;TFR Received&quot;</string>
     <string name="databases">&quot;Databases (Required)&quot;</string>
     <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>

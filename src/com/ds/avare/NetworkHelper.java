@@ -289,6 +289,51 @@ public class NetworkHelper {
         return null;
     }
 
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+    static String getTAF(Context ctx, String airport) {
+        
+        /*
+         * Do not download if not enabled
+         */
+        if(!(new Preferences(ctx)).shouldTFRAndMETARShow()) {
+            return "";
+        }
+
+        try {
+            /*
+             * Get weather if the point is on airport
+             */
+            String url = getTAFUrl(airport);
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet(url);
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+            if(null != entity) {
+                String ent = EntityUtils.toString(entity);
+                if(ent != null) {
+                    Spanned html = Html.fromHtml(ent);
+                    if(null != html) {
+                        String data = html.toString();
+                        if(null != data) {
+                            return(data);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+
+        }
+        
+        /*
+         * TAFS concatenate to METARS
+         */
+        return "";
+    }
 
     /**
      * 
@@ -297,6 +342,17 @@ public class NetworkHelper {
      */
     public static String getMETARUrl(String airport) {
         String query = "http://apps4av.net/cgi-bin/metar2.cgi?station=" + airport;
+
+        return query;
+    }
+
+    /**
+     * 
+     * @param airports
+     * @return
+     */
+    public static String getTAFUrl(String airport) {
+        String query = "http://apps4av.net/cgi-bin/taf.cgi?station=" + airport;
 
         return query;
     }

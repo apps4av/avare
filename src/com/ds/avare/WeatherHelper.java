@@ -74,4 +74,16 @@ public class WeatherHelper {
         return(WHITE);
     }
     
+    
+    /**
+     * 
+     * @param weather
+     * @return
+     */
+    public static String formatWeather(String weather) {
+        weather = weather.replace("\n\n", "\n");
+        weather = weather.replace(" FM", "\nFM");
+        weather = weather.replace("BECMG", "\nBECMG"); 
+        return weather;
+    }
 }

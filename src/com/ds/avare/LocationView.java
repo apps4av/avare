@@ -543,12 +543,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Write weather report
              * Use a static layout for showing as overlay and formatted to fit
              */
+            float top = getHeight() / mTextDiv * 2 + mFontHeight;
             if(null != mWeatherLayout) {
-                canvas.save();
-                canvas.translate(0, getHeight() / mTextDiv + mFontHeight);
                 mPaint.setColor(mWeatherColor);
                 mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                canvas.drawRect(0, 0, mWeatherLayout.getWidth(), mWeatherLayout.getHeight(), mPaint);
+                canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mWeatherLayout.getHeight() + top, mPaint);
+                canvas.save();
+                canvas.translate(SHADOW + 2, top);
                 mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
                 mWeatherLayout.draw(canvas);
                 canvas.restore();        
@@ -877,7 +878,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(tokens.length >= 2) {
                     mWeatherColor = WeatherHelper.metarColor(tokens[0]);
                     mTextPaint.setColor(Color.WHITE);
-                    mWeatherLayout = new StaticLayout(tokens[1].trim(), mTextPaint, getWidth(),
+                    mWeatherLayout = new StaticLayout(tokens[1].trim(), mTextPaint, getWidth() - SHADOW * 2,
                             Layout.Alignment.ALIGN_NORMAL, 1, 0, true);               
                 }
             }
