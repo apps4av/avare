@@ -273,9 +273,10 @@ public class NetworkHelper {
                     if(null != html) {
                         String data = html.toString();
                         if(null != data) {
-                            if(!data.contains("Not Found")) {
-                                return(data);
+                            if(data.contains("Not Found")) {
+                                return "";
                             }
+                            return(data);
                         }
                     }
                 }

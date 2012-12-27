@@ -939,7 +939,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Hijack weather color
                          */
-                        mWeatherColor = WeatherHelper.getRed();
+                        mWeatherColor = Color.RED;
                         text = cshape.getTextIfTouched(x, y);
                         if(null != text) {
                             break;

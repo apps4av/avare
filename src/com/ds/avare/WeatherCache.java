@@ -75,8 +75,12 @@ public class WeatherCache {
              */
 
             weather = NetworkHelper.getMETAR(mContext, id);
+            
+            /*
+             * This is some sort of network error, return.
+             */
             if(null == weather) {
-                weather = "";
+                return "";
             }
 
             /*
