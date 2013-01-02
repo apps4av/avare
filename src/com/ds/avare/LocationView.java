@@ -811,6 +811,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Back buffer to front buffer
                  */
+                if(null == mTiles) {
+                    return;
+                }
                 mTiles.flip();
                 
                 /*
