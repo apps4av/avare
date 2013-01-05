@@ -23,6 +23,7 @@ Redistribution and use in source and binary forms, with or without modification,
          android:layout_width="120dp"
          android:layout_height="30dp"
          android:layout_marginLeft="2dp"
+         android:clickable="true"
          android:textSize="25sp">
     </TextView>
     
@@ -33,6 +34,7 @@ Redistribution and use in source and binary forms, with or without modification,
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_marginLeft="20dp"
+         android:clickable="true"
          android:textSize="20sp"
          android:layout_toRightOf="@+id/distance">
     </TextView>
@@ -45,6 +47,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="2dp"
+         android:clickable="true"
         android:textSize="25sp"
         android:layout_below="@+id/distance">
     </TextView>
@@ -57,6 +60,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
+        android:clickable="true"
         android:textSize="20sp"
         android:layout_below="@+id/aidname"
         android:layout_toRightOf="@+id/bearing">
@@ -69,6 +73,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/distance"
+        android:clickable="true"
         android:layout_marginLeft="0dp"
         android:src="@drawable/whitesq"/>
     

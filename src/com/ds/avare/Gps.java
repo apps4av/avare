@@ -64,6 +64,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         mPref = new Preferences(ctx);
         mContext = ctx;
         mLocationManager = null;
+        mTimer = null;
         mGpsCallback = callback;
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
@@ -121,14 +122,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * Must be called to use GPS
      */
     public void start() {
-        
-        /*
-         * Start GPS but dont start if already started
-         */
-        if(null != mLocationManager) {
-            return;
-        }
-                
+
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
         }
@@ -136,26 +130,42 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             mGpsPeriod = GPS_PERIOD_LONG_MS;
         }
         
-        mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
+        /*
+         * Start GPS but dont start if already started
+         */
+        if(null == mLocationManager) {
+            mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
 
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                mGpsPeriod / 4, 0, this);
-        mLocationManager.addGpsStatusListener(this);
-        
+            try {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        mGpsPeriod / 4, 0, this);
+                mLocationManager.addGpsStatusListener(this);
+                
+                /*
+                 * Also obtain GSM based locations
+                 */
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
+                        0, 0, this);
+            }
+            catch (Exception e) {
+                mLocationManager = null;
+            }
+        }
+
+
         /*
-         * Also obtain GSM based locations
+         * Start timer
          */
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-                0, 0, this);
-        
-        mGpsLastUpdate = SystemClock.elapsedRealtime();
-        mTimer = new Timer();
-        TimerTask gpsTime = new UpdateGps();
-        /*
-         * Give some delay for check start
-         */
-        mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
-                GPS_PERIOD_LONG_MS / 4);
+        if(null == mTimer) {
+            mGpsLastUpdate = SystemClock.elapsedRealtime();
+            mTimer = new Timer();
+            TimerTask gpsTime = new UpdateGps();
+            /*
+             * Give some delay for check start
+             */
+            mTimer.scheduleAtFixedRate(gpsTime, (GPS_PERIOD_LONG_MS * 2),
+                    GPS_PERIOD_LONG_MS / 4);
+        }
     }
     
     /**
@@ -166,17 +176,17 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         /*
          * Stop but dont stop if already stopped
          */
-        if(null == mLocationManager) {
+        if(null != mLocationManager) {
+            mLocationManager.removeUpdates(this);
+            mLocationManager.removeGpsStatusListener(this);
+            mLocationManager = null;
             return;
         }
 
         if(null != mTimer) {
             mTimer.cancel();
+            mTimer = null;
         }
-
-        mLocationManager.removeUpdates(this);
-        mLocationManager.removeGpsStatusListener(this);
-        mLocationManager = null;
     }
 
     /**
