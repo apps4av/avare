@@ -34,9 +34,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Maps">&quot;Cartes&quot;</string>
     <string name="MapsLabel">&quot;Répertoire des cartes&quot;</string>
     <string name="MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
-    <string name="MapSize">&quot;Dimension&quot;</string>
-    <string name="MapSizeLabel">&quot;Cartes grand format&quot;</string>
-    <string name="MapSizeSummary">&quot;Sélectionner pour les cartes surdimensionnées mais celà réduira la performance (devez redémarrer l'application)&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="SimulationModeLabel">&quot;Activation du mode simulation&quot;</string>
     <string name="SimulationModeSummary">&quot;Activation du mode simulation pour la planification&quot;</string>
@@ -74,8 +71,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
     <string name="ChartTypeSummary">&quot;Sélectionner un type de carte pour la navigation&quot;</string>
     <string name="weather">&quot;Météo&quot;</string>
-	<string name="TFRAndMETAR">&quot;TFRs and METARs&quot;</string>
-    <string name="TFRAndMETARLabel">&quot;Activer TFRs and METARs&quot;</string>
+	<string name="TFRAndMETAR">&quot;TFRs et METARs&quot;</string>
+    <string name="TFRAndMETARLabel">&quot;Activer les TFRs et METARs&quot;</string>
     <string name="TFRAndMETARSummary">&quot;Sélectionner pour afficher les graphiques TFR et les textes METAR (connexion internet requise)&quot;</string>
 	<string name="TFRReceived">&quot;TFR reçus&quot;</string>
 	<string name="databases">&quot;Bases de données (requises)&quot;</string>
@@ -102,4 +99,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Lon">&quot;Long&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination vers &quot;</string>
+	<string name="DownloadInst">&quot;Sélectionner un item puis presser sur menu pour le télécharger&quot;</string>
+    <string name="Donate">&quot;Faire un don&quot;</string>
+    <string name="NoDia">&quot;Diagramme non trouvé&quot;</string>
+    <string name="Searching">&quot;Recherche&quot;</string>
 </resources>

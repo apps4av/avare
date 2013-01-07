@@ -99,4 +99,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Donate">&quot;Donate&quot;</string>
     <string name="NoDia">&quot;Diagram Not Found&quot;</string>
     <string name="Searching">&quot;Searching for&quot;</string>
+    <string name="Start">&quot;Start&quot;</string>
 </resources>
