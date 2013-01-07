@@ -388,7 +388,7 @@ public class NetworkHelper {
              * Location of file on internet
              * Download which is current folder?
              */
-            URL url = new URL("http://apps4av.net/update2.txt");
+            URL url = new URL("http://apps4av.net/update3.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()), blocksize);
 
             mVersion = in.readLine();

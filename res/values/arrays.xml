@@ -20,7 +20,26 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNames">
         <item>@string/databases</item>
         <item>@string/ADS</item>
-		<item>Albuquerque</item>
+        <item>CC-9</item>
+        <item>CD-11</item>
+        <item>CD-12</item>
+        <item>CE-13</item>
+        <item>CE-15</item>
+        <item>CF-16</item>
+        <item>CF-17</item>
+        <item>CF-18</item>
+        <item>CF-19</item>
+        <item>CG-18</item>
+        <item>CG-19</item>
+        <item>CG-20</item>
+        <item>CG-21</item>
+        <item>CH-22</item>
+        <item>CH-23</item>
+        <item>CH-24</item>
+        <item>CH-25</item>
+        <item>CJ-26</item>
+        <item>CJ-27</item>
+        <item>Albuquerque</item>
 		<item>Anchorage</item>
 		<item>Anchorage TAC</item>
 		<item>Atlanta</item>
@@ -115,7 +134,25 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFiles">
         <item>database</item>
         <item>AirportDiagramsj</item>
-		<item>Albuquerque</item>
+        <item>CC-9</item>
+        <item>CD-11</item>
+        <item>CD-12</item>
+        <item>CE-13</item>
+        <item>CE-15</item>
+        <item>CF-16</item>
+        <item>CF-17</item>
+        <item>CF-18</item>
+        <item>CF-19</item>
+        <item>CG-18</item>
+        <item>CG-19</item>
+        <item>CG-20</item>
+        <item>CG-21</item>
+        <item>CH-22</item>
+        <item>CH-23</item>
+        <item>CH-24</item>
+        <item>CH-25</item>
+        <item>CJ-26</item>
+        <item>CJ-27</item>
 		<item>Anchorage</item>
 		<item>AnchorageTAC</item>
 		<item>Atlanta</item>
@@ -206,7 +243,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
-        <item>IFR Low</item>
+        <item>WAC</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
