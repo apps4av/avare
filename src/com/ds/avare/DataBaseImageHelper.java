@@ -216,8 +216,8 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                         params.put("Facility Name", cursor.getString(4));
                         params.put("ARP Latitude", Double.toString(cursor.getDouble(1)));
                         params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
-                        params.put("Magnetic Variation", cursor.getString(8));
-                        params.put("Fuel Types", cursor.getString(9));
+                        params.put("Magnetic Variation", cursor.getString(10));
+                        params.put("Fuel Types", cursor.getString(12));
                         airports[id] = new Airport(params, lon, lat);
                         id++;
                     }
@@ -311,39 +311,64 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     if(cursorrun != null) {
                         while(cursorrun.moveToNext()) {
                             
-                            String Length = cursorrun.getString(2);
-                            String Width = cursorrun.getString(3);
-                            String Surface = cursorrun.getString(4);
+                            String Length = cursorrun.getString(1);
+                            String Width = cursorrun.getString(2);
+                            String Surface = cursorrun.getString(3);
+                            if(Surface.equals("")) {
+                                Surface = "Unknown";
+                            }
+                            String Lighted = cursorrun.getString(4);
+                            if(Lighted.equals("0") || Lighted.equals("")) {
+                                Lighted = "";
+                            }
+                            else {
+                                Lighted = ", " + Lighted;                            
+                            }
+                            String Closed = cursorrun.getString(5);
+                            if(Closed.equals("0") || Closed.equals("")) {
+                                Closed = ", Open";
+                            }
+                            else {
+                                Closed = ", Closed";                            
+                            }
                             
-                            params.put("Runway " + cursorrun.getString(1), 
+                            params.put("Runway " + cursorrun.getString(6) + "/" + cursorrun.getString(12), 
                                     "Length " + Length + 
                                     ", Width " + Width + 
-                                    ", Surface " + Surface);
-                                                        
-                            String th = cursorrun.getString(6);
-                            if(th.equals("")) {
-                                th = "Unknown";
-                            }
-                            String inst = cursorrun.getString(7);
-                            if(inst.equals("")) {
-                                inst = "None";
-                            }
-                            params.put("Runway " + cursorrun.getString(5),
-                                    "Instruments " + inst + 
-                                    ", True Heading " + th);
-    
-                            th = cursorrun.getString(9);
-                            if(th.equals("")) {
-                                th = "Unknown";
-                            }
-                            inst = cursorrun.getString(10);
-                            if(inst.equals("")) {
-                                inst = "None";
-                            }
-                            params.put("Runway " + cursorrun.getString(8),
-                                    "Instruments " + inst + 
-                                    ", True Heading " + th);
+                                    ", Surface " + Surface +
+                                    Lighted +
+                                    Closed);
                             
+                            String Elevation = cursorrun.getString(9);
+                            if(Elevation.equals("")) {
+                                Elevation = "0";
+                            }
+                            String Heading = cursorrun.getString(10);
+                            String DT = cursorrun.getString(11);
+                            if(DT.equals("")) {
+                                DT = "0";
+                            }
+                            
+                            params.put("Runway " + cursorrun.getString(6),
+                                    "Elevation " + Elevation + 
+                                    ", True Heading " + Heading + 
+                                    ", Displaced Threshold " + DT);
+    
+                            
+                            Elevation = cursorrun.getString(15);
+                            if(Elevation.equals("")) {
+                                Elevation = "0";
+                            }
+                            Heading = cursorrun.getString(16);
+                            DT = cursorrun.getString(17);
+                            if(DT.equals("")) {
+                                DT = "0";
+                            }
+                            
+                            params.put("Runway " + cursorrun.getString(12),
+                                    "Elevation " + Elevation + 
+                                    ", True Heading " + Heading + 
+                                    ", Displaced Threshold " + DT);
     
                         }
                         cursorrun.close();
@@ -356,10 +381,21 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
                     params.put("Type", cursor.getString(3).trim());
                     params.put("Use", cursor.getString(5).trim());
-                    params.put("Manager", cursor.getString(6).trim());
-                    params.put("Manager Phone", cursor.getString(7).trim());
-                    params.put("Magnetic Variation", cursor.getString(8).trim());
-                    params.put("Fuel Types", cursor.getString(9).trim());
+                    params.put("Owner Phone", cursor.getString(6).trim());
+                    params.put("Manager", cursor.getString(7).trim());
+                    params.put("Manager Phone", cursor.getString(8).trim());
+                    params.put("ARP Elevation", cursor.getString(9).trim());
+                    params.put("Magnetic Variation", cursor.getString(10).trim());
+                    params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
+                    params.put("Fuel Types", cursor.getString(12).trim());
+                    params.put("Airframe Repair", cursor.getString(13).trim());
+                    params.put("Power Plant Repair", cursor.getString(14).trim());
+                    params.put("Bottled Oxygen Type", cursor.getString(15).trim());
+                    params.put("Bulk Oxygen Type", cursor.getString(16).trim());
+                    params.put("ATCT", cursor.getString(17).trim());
+                    params.put("UNICOM Frequencies", cursor.getString(18).trim());
+                    params.put("CTAF Frequency", cursor.getString(19).trim());
+                    params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
                                     
                     cursor.close();
     
