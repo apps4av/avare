@@ -20,25 +20,25 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNames">
         <item>@string/databases</item>
         <item>@string/ADS</item>
-        <item>CC-9</item>
-        <item>CD-11</item>
-        <item>CD-12</item>
-        <item>CE-13</item>
-        <item>CE-15</item>
-        <item>CF-16</item>
-        <item>CF-17</item>
-        <item>CF-18</item>
-        <item>CF-19</item>
-        <item>CG-18</item>
-        <item>CG-19</item>
-        <item>CG-20</item>
-        <item>CG-21</item>
-        <item>CH-22</item>
-        <item>CH-23</item>
-        <item>CH-24</item>
-        <item>CH-25</item>
-        <item>CJ-26</item>
-        <item>CJ-27</item>
+        <item>CC-9 WAC</item>
+        <item>CD-11 WAC</item>
+        <item>CD-12 WAC</item>
+        <item>CE-13 WAC</item>
+        <item>CE-15 WAC</item>
+        <item>CF-16 WAC</item>
+        <item>CF-17 WAC</item>
+        <item>CF-18 WAC</item>
+        <item>CF-19 WAC</item>
+        <item>CG-18 WAC</item>
+        <item>CG-19 WAC</item>
+        <item>CG-20 WAC</item>
+        <item>CG-21 WAC</item>
+        <item>CH-22 WAC</item>
+        <item>CH-23 WAC</item>
+        <item>CH-24 WAC</item>
+        <item>CH-25 WAC</item>
+        <item>CJ-26 WAC</item>
+        <item>CJ-27 WAC</item>
         <item>Albuquerque</item>
 		<item>Anchorage</item>
 		<item>Anchorage TAC</item>

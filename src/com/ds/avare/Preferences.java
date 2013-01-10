@@ -206,6 +206,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean shouldShowAllFacilities() {
+        return(mPref.getBoolean(mContext.getString(R.string.AllFacilities), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean isTrackEnabled() {
         return(mPref.getBoolean(mContext.getString(R.string.ShowTrack), true));
     }

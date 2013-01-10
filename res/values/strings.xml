@@ -103,4 +103,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Units">&quot;Distance Unit&quot;</string>
     <string name="UnitsLabel">&quot;Distance Unit&quot;</string>
     <string name="UnitsSummary">&quot;Select distance unit&quot;</string>
+    <string name="AllFacilities">&quot;All Facilities&quot;</string>
+    <string name="AllFacilitiesLabel">&quot;Show Other Bases&quot;</string>
+    <string name="AllFacilitiesSummary">&quot;Select to show bases other than Airports (Heliports, Ultralights, Sea Planes)&quot;</string>
 </resources>

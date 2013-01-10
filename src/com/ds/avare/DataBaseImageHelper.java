@@ -219,12 +219,20 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         /*
          * Limit to airports taken by array airports
          */
-        try {
-            cursor = mDataBase.rawQuery(
-                    "select * from airports where Type==\"AIRPORT\" order by ((" + 
+        String qry;
+        if(mPref.shouldShowAllFacilities()) {
+            qry = "select * from airports order by ((" + 
                     lon + " - ARPLongitude) * (" + lon + "- ARPLongitude) + (" + 
-                    lat + " - ARPLatitude)  * (" + lat + "- ARPLatitude)) ASC limit " + airports.length + ";",
-                    null);
+                    lat + " - ARPLatitude)  * (" + lat + "- ARPLatitude)) ASC limit " + airports.length + ";";            
+        }
+        else {
+            qry = "select * from airports where Type==\"AIRPORT\" order by ((" + 
+                    lon + " - ARPLongitude) * (" + lon + "- ARPLongitude) + (" + 
+                    lat + " - ARPLatitude)  * (" + lat + "- ARPLatitude)) ASC limit " + airports.length + ";";            
+        }
+
+        try {
+            cursor = mDataBase.rawQuery(qry, null);
         }
         catch (Exception e) {
             closes();
@@ -489,11 +497,21 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         /*
          * Find with sqlite query
          */
-        String qry = 
-                "select LocationID from airports where Type==\"AIRPORT\" and (("
-                + "(ARPLongitude - " + lon + ") * (ARPLongitude - " + lon + ") + "
-                + "(ARPLatitude  - " + lat + ") * (ARPLatitude  - " + lat + ")"
-                + ") < 0.001) limit 1;";
+        String qry;
+        if(mPref.shouldShowAllFacilities()) {
+            qry = 
+                    "select LocationID from airports where (("
+                    + "(ARPLongitude - " + lon + ") * (ARPLongitude - " + lon + ") + "
+                    + "(ARPLatitude  - " + lat + ") * (ARPLatitude  - " + lat + ")"
+                    + ") < 0.001) limit 1;";            
+        }
+        else {
+            qry = 
+                    "select LocationID from airports where Type==\"AIRPORT\" and (("
+                    + "(ARPLongitude - " + lon + ") * (ARPLongitude - " + lon + ") + "
+                    + "(ARPLatitude  - " + lat + ") * (ARPLatitude  - " + lat + ")"
+                    + ") < 0.001) limit 1;";            
+        }
         
         try {
             cursor = mDataBase.rawQuery(qry,

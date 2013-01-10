@@ -301,9 +301,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
             if(mPan.setMove(newObjPosAndScale.getXOff(), newObjPosAndScale.getYOff())) {
                 /*
                  * Query when we have moved one tile. This will happen in background.
