@@ -100,4 +100,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NoDia">&quot;Diagram Not Found&quot;</string>
     <string name="Searching">&quot;Searching for&quot;</string>
     <string name="Start">&quot;Start&quot;</string>
+    <string name="Units">&quot;Distance Unit&quot;</string>
+    <string name="UnitsLabel">&quot;Distance Unit&quot;</string>
+    <string name="UnitsSummary">&quot;Select distance unit&quot;</string>
 </resources>

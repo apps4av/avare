@@ -153,7 +153,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>CH-25</item>
         <item>CJ-26</item>
         <item>CJ-27</item>
-		<item>Anchorage</item>
+        <item>Albuquerque</item>
+        <item>Anchorage</item>
 		<item>AnchorageTAC</item>
 		<item>Atlanta</item>
 		<item>AtlantaTAC</item>
@@ -251,4 +252,15 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>1</item>
         <item>2</item>
     </string-array>    
+
+    <string-array name="UnitsD">
+        <item>Nautical Miles</item>
+        <item>Statute Miles</item>
+    </string-array>
+
+    <string-array name="UnitsDValues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>    
+    
 </resources>

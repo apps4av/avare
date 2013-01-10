@@ -26,47 +26,22 @@ public class ImageDataSource {
      * 
      */
     private DataBaseImageHelper dbHelper;
-    /**
-     * 
-     */
-    private boolean mOpened;
 
     /**
      * @param context
      */
     public ImageDataSource(Context context) {
-        mOpened = false;
         dbHelper = new DataBaseImageHelper(context);
     }
 
     /**
+     * 
      * @return
      */
-    public boolean isOpen() {
-        return mOpened;
+    public boolean isPresent() {
+        return(dbHelper.isPresent());
     }
-      
-    /**
-     * @param name
-     */
-    public void open(String name) {
-        try {
-            dbHelper.openDataBase(name);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        mOpened = true;
-    }
-
-    /**
-     * 
-     */
-    public void close() {
-        dbHelper.close();
-        mOpened = false;
-    }
-      
+    
     /**
      * @param lon
      * @param lat

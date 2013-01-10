@@ -338,10 +338,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
         
-        if(!mImageDataSource.isOpen()) {
-            return;
-        }
-        
         if(null == mTiles) {
             return;                
         }
@@ -484,7 +480,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Speed
          */
-        canvas.drawText("" + Math.round(mGpsParams.getSpeed()) + "kt",
+        canvas.drawText("" + Math.round(mGpsParams.getSpeed()) + Preferences.speedConversionUnit,
                 0, getHeight() / mTextDiv, mPaint);
         /*
          * Altitude
@@ -955,7 +951,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Draw distance from point
              */
-            mPoint = "" + (int)p.getDistance() + "nm " + p.getGeneralDirectionFrom() + 
+            mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
                     "," + Math.round(brg) + '\u00B0' + mContext.getString(R.string.To);                
             
             if(mPref.shouldTFRAndMETARShow()) {

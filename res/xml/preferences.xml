@@ -34,7 +34,14 @@ Redistribution and use in source and binary forms, with or without modification,
         android:dialogTitle="@string/Base"
         android:dialogMessage="@string/BasePrompt"   
         android:defaultValue="@string/BaseId"/>
-	<CheckBoxPreference
+    <ListPreference
+        android:key="@string/Units"
+        android:title="@string/UnitsLabel"
+        android:summary="@string/UnitsSummary"
+        android:entries="@array/UnitsD"
+        android:defaultValue="0"
+        android:entryValues="@array/UnitsDValues"/>
+    <CheckBoxPreference
         android:key="@string/ScreenOn"
         android:title="@string/ScreenOnLabel"
         android:summary="@string/ScreenOnSummary"

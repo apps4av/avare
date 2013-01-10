@@ -13,11 +13,11 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -47,39 +47,38 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      */
     private Preferences mPref;
     
+    /*
+     * 
+     */
+    private String mPath;
+    
     /**
      * @param context
      */
     public DataBaseImageHelper(Context context) {
         super(context, context.getString(R.string.DatabaseName), null, DATABASE_VERSION);
-        mCenterTile = new Tile();
         mPref = new Preferences(context);
+        mPath = mPref.mapsFolder() + "/" + context.getString(R.string.DatabaseName);
+        mCenterTile = new Tile();
     }
 
-    /* (non-Javadoc)
-     * @see android.database.sqlite.SQLiteOpenHelper#close()
+    /**
+     * 
+     * @return
      */
-    @Override
-    public synchronized void close() {
-   
-        if(mDataBase != null) {
-        	try {
-        		mDataBase.close();
-                super.close();
-        	}
-        	catch (Exception e) {
-        		
-        	}
-        	mDataBase = null;
+    public synchronized boolean isPresent() {
+        if(null == mPath) {
+            return false;
         }
+        File f = new File(mPath);
+        return(f.exists());
     }
    
     /* (non-Javadoc)
      * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
      */
     @Override
-    public void onCreate(SQLiteDatabase database) {
-        
+    public void onCreate(SQLiteDatabase database) {        
     }
 
     /* (non-Javadoc)
@@ -88,14 +87,17 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
-  
-    /**
-     * @throws SQLException
-     */
-    public void openDataBase(String name) throws SQLException{
-        //Open the database        
-        String mPath = name;
 
+    /**
+     * Open database
+     */
+    private synchronized void opens() {
+        if(mPath == null) {
+            return;
+        }
+        if(mDataBase != null) {
+            return;
+        }
         try {
             
             mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READONLY | 
@@ -103,28 +105,44 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         }
         catch(RuntimeException e) {
             mDataBase = null;
-            throw e;
         }
+        
     }
 
+    /**
+     * Close database
+     */
+    private synchronized void closes() {
+        if(mDataBase != null) {
+            try {
+                mDataBase.close();
+                super.close();
+            }
+            catch (Exception e) {
+            }
+            mDataBase = null;
+        }
+    }
 
     /**
      * 
      * @param name
      * @return
      */
-    public Tile findTile(String name) {
+    public synchronized Tile findTile(String name) {
         Cursor cursor;
-        
+        opens();
         /*
          * In case we fail
          */
         
         if(mDataBase == null) {
+            closes();
             return null;
         }
         
         if(!mDataBase.isOpen()) {
+            closes();
             return null;
         }
         
@@ -165,17 +183,21 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     /*
                      * Position on tile
                      */
+                    closes();
                     return tile;                
                 }
                 else {
+                    closes();
                     return null;
                 }    
             }
             else {
+                closes();
                 return null;
             }
         }
         catch (Exception e) {
+            closes();
             return null;            
         }
     }
@@ -185,10 +207,12 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param name
      * @param params
      */
-    public void findClosestAirports(double lon, double lat, Airport[] airports) {
+    public synchronized void findClosestAirports(double lon, double lat, Airport[] airports) {
         Cursor cursor;
-        
+
+        opens();
         if(mDataBase == null) {
+            closes();
             return;
         }
         
@@ -203,6 +227,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     null);
         }
         catch (Exception e) {
+            closes();
             return;
         }
 
@@ -229,6 +254,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         catch (Exception e) {
             
         }
+        closes();
     }
 
     /**
@@ -237,13 +263,15 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public boolean findDestination(String name, LinkedHashMap<String, String> params) {
+    public synchronized boolean findDestination(String name, LinkedHashMap<String, String> params) {
         
         Cursor cursor;
         Cursor cursorfreq;
         Cursor cursorrun;
-        
+
+        opens();
         if(mDataBase == null) {
+            closes();
             return false;
         }
         
@@ -398,17 +426,18 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
                                     
                     cursor.close();
-    
-    
+                    
+                    closes();
                     return true;
                 }
             }
         }
         catch (Exception e) {
+            closes();
             return false;
         }
-
         
+        closes();
         return false;
     }
 
@@ -423,7 +452,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param p
      * @return
      */
-    public boolean isWithin(double lon, double lat, double offset[], double p[]) {
+    public synchronized boolean isWithin(double lon, double lat, double offset[], double p[]) {
         if(mCenterTile.within(lon, lat)) {
             offset[0] = mCenterTile.getOffsetX(lon);
             offset[1] = mCenterTile.getOffsetY(lat);
@@ -443,14 +472,17 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public String findClosestAirportID(double lon, double lat) {
+    public synchronized String findClosestAirportID(double lon, double lat) {
         Cursor cursor;
-        
+
+        opens();
         if(mDataBase == null) {
+            closes();
             return null;
         }
         
         if(!mDataBase.isOpen()) {
+            closes();
             return null;
         }
         
@@ -478,19 +510,23 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     String ret = new String(cursor.getString(0));
     
                     cursor.close();
+                    closes();
                     return(ret);
                 }
                 else {
+                    closes();
                     return null;
                 }    
             }
             else {
+                closes();
                 return null;
             }
         }
         catch (Exception e) {
             
         }
+        closes();
         return null;
     }
       
@@ -503,10 +539,11 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public Tile findClosest(double lon, double lat, double offset[], double p[]) {
+    public synchronized Tile findClosest(double lon, double lat, double offset[], double p[]) {
       
         Cursor cursor;
-        
+
+        opens();
         /*
          * In case we fail
          */
@@ -514,10 +551,12 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         offset[1] = 0;
         
         if(mDataBase == null) {
+            closes();
             return null;
         }
         
         if(!mDataBase.isOpen()) {
+            closes();
             return null;
         }
         
@@ -571,19 +610,23 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     p[0] = mCenterTile.getPx();
                     p[1] = mCenterTile.getPy();
     
+                    closes();
                     return mCenterTile;                
                 }
                 else {
+                    closes();
                     return null;
                 }    
             }
             else {
+                closes();
                 return null;
             }
         }
         catch (Exception e) {
         }
         
+        closes();
         return null;
     }
 }

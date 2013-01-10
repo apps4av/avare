@@ -28,11 +28,6 @@ public class Projection {
      */
     private double mDistance;
 
-    /**
-     * 
-     */
-    private static final double R = 3440.069; // Earth radius in nautical miles
-
     private static final boolean rhumb = true;
     
     /**
@@ -62,7 +57,7 @@ public class Projection {
                 dLon = dLon > 0 ? - (2 * Math.PI - dLon) : (2 * Math.PI + dLon);
             }
             
-            mDistance = Math.sqrt(dLat * dLat + q * q * dLon * dLon) * R;
+            mDistance = Math.sqrt(dLat * dLat + q * q * dLon * dLon) * Preferences.earthRadiusConversion;
     
             // bearing rhumb line
             dLon = lon2 - lon1;
@@ -80,9 +75,8 @@ public class Projection {
                     Math.cos(lat1) * Math.cos(lat2) * 
                     Math.sin(dLon / 2) * Math.sin(dLon / 2);
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            mDistance = R * c;
-            
-            
+            mDistance = Preferences.earthRadiusConversion * c;
+                       
             double y = Math.sin(dLon) * Math.cos(lat2);
             double x = Math.cos(lat1) * Math.sin(lat2) -
                     Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);

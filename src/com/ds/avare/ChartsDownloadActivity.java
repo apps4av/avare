@@ -56,13 +56,9 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
 
 
     /**
-     * 
+     * Select list based on state
      */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mPref = new Preferences(this);
+    private void selectList() {
         File file = new File(mPref.mapsFolder() + "/" + 
                 getResources().getStringArray(R.array.resFiles)[0]);
         if(file.exists()) {
@@ -82,7 +78,19 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
          * Show charts
          */
         mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
-        setListAdapter(mChartAdapter);
+        setListAdapter(mChartAdapter);        
+    }
+    
+    /**
+     * 
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mPref = new Preferences(this);
+
+        selectList();
         
         /**
          * Download database if it does not exists.
@@ -151,7 +159,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     /**
      * 
      */
-    private void download() {
+    private boolean download() {
         
         /*
          * Download first chart in list that is checked
@@ -164,7 +172,10 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
             }
         }
         if(i == resFiles.length) {
-            return;
+            /*
+             * Nothing to download
+             */
+            return false;
         }
 
         mDownload = new Download(getApplicationContext());
@@ -194,6 +205,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
             }
         });
         mProgressDialog.show();
+        return true;
     }
     
     /* (non-Javadoc)
@@ -305,7 +317,12 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
                 mChartAdapter.updateVersion(mName, mDownload.getVersion());
                 mChartAdapter.updateChecked(mName);
                 mChartAdapter.refresh();
-                download();
+                if(!download()) {
+                    /*
+                     * Done downloading all, now update the list
+                     */
+                    selectList();
+                }
             }
             else {
                 try {

@@ -113,9 +113,6 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
-            else if(!mService.getDBResource().isOpen()) {
-                mLocationView.updateErrorStatus(getString(R.string.LoadingMaps));
-            }
             else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
             }
@@ -233,11 +230,7 @@ public class LocationActivity extends Activity implements Observer {
              */
             mLocationView.setTiles(mService.getTiles());
             
-            if(mService.getDBResource().isOpen()) {
-            	mService.getDBResource().close();
-            }
-            mService.getDBResource().open(mPref.mapsFolder() + "/" + getString(R.string.DatabaseName));
-            if(!mService.getDBResource().isOpen()) {
+            if(!mService.getDBResource().isPresent()) {
                 /*
                  * If could not open database then bring up download activity.
                  */
@@ -451,9 +444,6 @@ public class LocationActivity extends Activity implements Observer {
                     return false;                    
                 }
                 if(null == mService.getDBResource()) {
-                    return false;
-                }
-                if(!mService.getDBResource().isOpen()) {
                     return false;
                 }
                 

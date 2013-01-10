@@ -144,10 +144,6 @@ public class Area {
                 return null;
             }
             
-            if(!mDataSource.isOpen()) {
-                return null;
-            }
-            
             mDataSource.findClosestAirports(mLon, mLat, mAirports);
             /*
              * Sort on distance because distance found from sqlite is less than perfect

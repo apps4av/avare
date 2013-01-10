@@ -26,6 +26,14 @@ import android.preference.PreferenceManager;
  */
 public class Preferences {
 
+    /*
+     * These are set when inited
+     */
+    public static double distanceConversion = 1.944;
+    public static double heightConversion = 3.28;
+    public static double earthRadiusConversion = 3440.069;
+    public static String distanceConversionUnit = "nm";
+    public static String speedConversionUnit = "kt";
 
     /*
      * BOS is default
@@ -84,6 +92,20 @@ public class Preferences {
          * 4. Internal Cache
          */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if(getDistanceUnit().equals("kt")) {
+            distanceConversion = 1.944; // m/s to kt/hr
+            heightConversion = 3.28;
+            earthRadiusConversion = 3440.069;
+            distanceConversionUnit = "nm";
+            speedConversionUnit = "kt";
+        }
+        else if(getDistanceUnit().equals("mi")) {
+            distanceConversion = 2.2396; // m/s to mi/hr
+            heightConversion = 3.28;
+            earthRadiusConversion = 3963.1676;            
+            distanceConversionUnit = "mi";
+            speedConversionUnit = "mph";
+        }
         String path = mPref.getString(mContext.getString(R.string.Maps), null);
         if(null == path) {
             File dir = mContext.getExternalFilesDir(null);
@@ -242,6 +264,20 @@ public class Preferences {
      */
     public String getChartType() {
         return(mPref.getString(mContext.getString(R.string.ChartType), "0"));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDistanceUnit() {
+        String val = mPref.getString(mContext.getString(R.string.Units), "0");
+        if(val.equals("0")) {
+            return ("kt");
+        }
+        else {
+            return ("mi");
+        }
     }
 
     /**

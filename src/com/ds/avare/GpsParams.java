@@ -44,10 +44,10 @@ public class GpsParams {
             mScale.setScaleAt(mLatitude);
             return;
         }
-        mSpeed = location.getSpeed() * 1.944; // ms / sec to knot / hr;
+        mSpeed = location.getSpeed() * Preferences.distanceConversion; // ms / sec to knot / hr;
         mLongitude = location.getLongitude();
         mLatitude = location.getLatitude();
-        mAltitude = location.getAltitude() * 3.28; // meters to feet;
+        mAltitude = location.getAltitude() * Preferences.heightConversion; // meters to feet;
         mBearing = (location.getBearing() + 360) % 360;
         mScale = new Scale();
         mScale.setScaleAt(mLatitude);

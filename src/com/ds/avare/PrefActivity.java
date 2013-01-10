@@ -38,4 +38,18 @@ public class PrefActivity extends PreferenceActivity {
         
         Helper.setOrientationAndOn(this);
     }
+
+
+    /**
+     * 
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        /*
+         * This should update preferences in static memory
+         */
+        new Preferences(this);
+    }
 }
