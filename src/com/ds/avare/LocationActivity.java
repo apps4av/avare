@@ -181,22 +181,22 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * To be notified of some action in the view
          */
-        mLocationView.setGestureCallback(new OnGesture() {
+        mLocationView.setGestureCallback(new GestureInterface() {
 
             /*
              * (non-Javadoc)
-             * @see com.ds.avare.OnGesture#gestureCallBack(int, java.lang.String)
+             * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
              */
             @Override
             public void gestureCallBack(int event, String airport) {
-                if(OnGesture.LONG_PRESS == event) {
+                if(GestureInterface.LONG_PRESS == event) {
                     /*
                      * Show the animation button for dest
                      */
                     animateDest(true);
                     mDestButton.setText(airport);
                 }
-                if(OnGesture.RELEASE == event) {
+                if(GestureInterface.RELEASE == event) {
                     animateDest(false);
                 }
             }

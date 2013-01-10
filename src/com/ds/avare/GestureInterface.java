@@ -17,7 +17,7 @@ package com.ds.avare;
  * @author zkhan
  * Just a simple way to notify activities of gestures in view.
  */
-public interface OnGesture {
+public interface GestureInterface {
 
     public static final int LONG_PRESS = 1;
     public static final int RELEASE = 2;

@@ -115,7 +115,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * To tell activity to do something on a gesture or touch
      */
-    private OnGesture                   mGestureCallBack; 
+    private GestureInterface                   mGestureCallBack; 
 
     /**
      * Our current location
@@ -263,7 +263,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not draw point. Only when long press and down.
              */
             if(null != mGestureCallBack) {
-                mGestureCallBack.gestureCallBack(OnGesture.RELEASE, null);
+                mGestureCallBack.gestureCallBack(GestureInterface.RELEASE, null);
             }
             mPoint = null;
             mWeatherLayout = null;
@@ -902,7 +902,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         protected void onPostExecute(Boolean result) {
             if(null != airport) {
                 if(null != mGestureCallBack) {
-                    mGestureCallBack.gestureCallBack(OnGesture.LONG_PRESS, airport);
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
                 }
             }
             if(null != weather) {
@@ -1014,9 +1014,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     /**
      * 
-     * @param onGesture
+     * @param gestureInterface
      */
-    public void setGestureCallback(OnGesture onGesture) {
-        mGestureCallBack = onGesture;
+    public void setGestureCallback(GestureInterface gestureInterface) {
+        mGestureCallBack = gestureInterface;
     }
 }
