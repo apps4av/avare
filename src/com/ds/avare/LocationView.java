@@ -113,6 +113,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private ImageDataSource             mImageDataSource;
     
     /**
+     * To tell activity to do something on a gesture or touch
+     */
+    private OnGesture                   mGestureCallBack; 
+
+    /**
      * Our current location
      */
     private Tile                        mGpsTile;
@@ -257,6 +262,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do not draw point. Only when long press and down.
              */
+            if(null != mGestureCallBack) {
+                mGestureCallBack.gestureCallBack(OnGesture.RELEASE, null);
+            }
             mPoint = null;
             mWeatherLayout = null;
         }
@@ -301,13 +309,35 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Query when we have moved one tile. This will happen in background.
                  */
                 dbquery(true);
-            }            
+            }
         }
         else {
             /*
+             * on double touch find distance and bearing between two points.
+             */
+            double x0 = mCurrTouchPoint.getXs()[0];
+            double y0 = mCurrTouchPoint.getYs()[0];
+            double x1 = mCurrTouchPoint.getXs()[1];
+            double y1 = mCurrTouchPoint.getYs()[1];
+
+            double lon0 = mOrigin.getLongitudeOf(x0);
+            double lat0 = mOrigin.getLatitudeOf(y0);
+            double lon1 = mOrigin.getLongitudeOf(x1);
+            double lat1 = mOrigin.getLatitudeOf(y1);
+            Projection p = new Projection(lon0, lat0, lon1, lat1);
+            
+            double brg = p.getBearing();
+                       
+            /*
+             * Draw distance from point
+             */
+            mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
+                    "," + Math.round(brg) + '\u00B0' + mContext.getString(R.string.To);                
+
+            /*
              * Clamp scaling.
              */
-            mPoint = null; /* this is to not support mPoint distance when zooming */
+            
             mScale.setScaleFactor(newObjPosAndScale.getScale());
 
         }
@@ -846,6 +876,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private class AirportTask extends AsyncTask<Object, Void, Boolean> {
 
         private String weather;
+        private String airport;
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -860,7 +891,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 weather = null;
                 return false;
             }
-            String airport = mService.getDBResource().findClosestAirportID(lon, lat);
+            airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(null != airport) {
                 weather = mService.getWeatherCache().get(airport);
             }
@@ -872,6 +903,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected void onPostExecute(Boolean result) {
+            if(null != airport) {
+                if(null != mGestureCallBack) {
+                    mGestureCallBack.gestureCallBack(OnGesture.LONG_PRESS, airport);
+                }
+            }
             if(null != weather) {
                 String tokens[] = weather.split(",");
                 if(tokens.length >= 2) {
@@ -885,6 +921,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
     
+
     /**
      * @author zkhan
      *
@@ -917,13 +954,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double x = mCurrTouchPoint.getX();
             double y = mCurrTouchPoint.getY();
 
+            /*
+             * Notify activity of gesture.
+             */
+            
             double lon2 = mOrigin.getLongitudeOf(x);
             double lat2 = mOrigin.getLatitudeOf(y);
             Projection p = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
             
             double brg = p.getBearing();
             String text = null;
-
+                       
             /*
              * Get TFR text if touched on its top
              */
@@ -971,5 +1012,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }           
         }
+    }
+
+
+    /**
+     * 
+     * @param onGesture
+     */
+    public void setGestureCallback(OnGesture onGesture) {
+        mGestureCallBack = onGesture;
     }
 }

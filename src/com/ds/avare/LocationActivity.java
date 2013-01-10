@@ -34,13 +34,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -81,6 +85,11 @@ public class LocationActivity extends Activity implements Observer {
     private View mDestView;
     
     private Toast mToast;
+    
+    private boolean mShowing;
+    
+    private Button mDestButton;
+
     
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -169,6 +178,56 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
+        
+        /*
+         * To be notified of some action in the view
+         */
+        mLocationView.setGestureCallback(new OnGesture() {
+
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.OnGesture#gestureCallBack(int, java.lang.String)
+             */
+            @Override
+            public void gestureCallBack(int event, String airport) {
+                if(OnGesture.LONG_PRESS == event) {
+                    /*
+                     * Show the animation button for dest
+                     */
+                    animateDest(true);
+                    mDestButton.setText(airport);
+                }
+                if(OnGesture.RELEASE == event) {
+                    animateDest(false);
+                }
+            }
+            
+        });
+        
+        /*
+         * Dest button
+         */
+        mDestButton = (Button)view.findViewById(R.id.buttonDest);
+        mShowing = false;
+        mDestButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                Button b = (Button)v;
+                mDestination = new Destination(b.getText().toString(), mPref, mService);
+                mDestination.addObserver(LocationActivity.this);
+                mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
+                mToast.show();
+                mDestination.find();
+                mDestDialog.dismiss();
+
+            }
+            
+        });
 
         mDestDialog = new AlertDialog.Builder(this).create();
         mDestDialog.setTitle(getString(R.string.DestinationPrompt));
@@ -204,8 +263,8 @@ public class LocationActivity extends Activity implements Observer {
         }
         
         mService = null;
-    }
-    
+    }    
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
@@ -582,5 +641,59 @@ public class LocationActivity extends Activity implements Observer {
                 mToast.show();
             }
         }
+    }
+
+    /**
+     * 
+     * @param
+     */
+    private void animateDest(final boolean visible) {
+        Animation a;
+        
+        /*
+         * Animates the dest button
+         */
+        if(visible) {
+            a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.xlater);
+            mShowing = true;
+        }
+        else {
+            if(!mShowing) {
+                return;
+            }
+            a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.xlatel);
+            mShowing = false;
+        }
+        a.reset();
+        a.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if(!visible) {
+                    /*
+                     * Set invisible when not animating
+                     */
+                    mDestButton.setVisibility(Button.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                if(visible) {
+                    /*
+                     * Set visible when animating
+                     */
+                    mDestButton.setVisibility(Button.VISIBLE);
+                }
+            }
+            
+        });            
+        mDestButton.clearAnimation();
+        mDestButton.startAnimation(a);
+
     }
 }

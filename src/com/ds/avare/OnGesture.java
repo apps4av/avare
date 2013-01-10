@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--  
+/*
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
 All rights reserved.
 
@@ -9,27 +8,19 @@ Redistribution and use in source and binary forms, with or without modification,
     *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FF000000"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-        <com.ds.avare.LocationView
-            android:background="#FF000000"
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+*/
 
-        <Button
-            android:id="@+id/buttonDest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:textSize="20sp"
-            android:layout_alignParentLeft="true"
-            android:drawableLeft="@drawable/direct"
-            android:visibility="invisible" />
- 
-</RelativeLayout>
+package com.ds.avare;
 
+/**
+ * 
+ * @author zkhan
+ * Just a simple way to notify activities of gestures in view.
+ */
+public interface OnGesture {
+
+    public static final int LONG_PRESS = 1;
+    public static final int RELEASE = 2;
+    
+    void gestureCallBack(int event, String airport);
+}
