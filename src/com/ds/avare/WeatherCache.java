@@ -61,9 +61,15 @@ public class WeatherCache {
             while (it.hasNext()) {
                 HashMap.Entry<String, String> pairs = (HashMap.Entry <String, String>)it.next();
                 String[] tokens = pairs.getValue().split("@");
-                long then = Long.parseLong(tokens[1]);
-                if(Math.abs(now - then) > UPDATE_TIME) {
-                    it.remove();
+                long then;
+                try {
+                    then = Long.parseLong(tokens[1]);
+                    if(Math.abs(now - then) > UPDATE_TIME) {
+                        it.remove();
+                    }
+                }
+                catch (Exception e) {
+                    it.remove();                    
                 }
             }
             weather = mMap.get(id);
