@@ -262,9 +262,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do not draw point. Only when long press and down.
              */
-            if(null != mGestureCallBack) {
-                mGestureCallBack.gestureCallBack(GestureInterface.RELEASE, null);
-            }
             mPoint = null;
             mWeatherLayout = null;
         }
@@ -312,24 +309,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            double x0 = mCurrTouchPoint.getXs()[0];
-            double y0 = mCurrTouchPoint.getYs()[0];
-            double x1 = mCurrTouchPoint.getXs()[1];
-            double y1 = mCurrTouchPoint.getYs()[1];
+            if(mPoint == null) {
+                double x0 = mCurrTouchPoint.getXs()[0];
+                double y0 = mCurrTouchPoint.getYs()[0];
+                double x1 = mCurrTouchPoint.getXs()[1];
+                double y1 = mCurrTouchPoint.getYs()[1];
 
-            double lon0 = mOrigin.getLongitudeOf(x0);
-            double lat0 = mOrigin.getLatitudeOf(y0);
-            double lon1 = mOrigin.getLongitudeOf(x1);
-            double lat1 = mOrigin.getLatitudeOf(y1);
-            Projection p = new Projection(lon0, lat0, lon1, lat1);
-            
-            double brg = p.getBearing();
-                       
-            /*
-             * Draw distance from point
-             */
-            mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                    "," + Math.round(brg) + '\u00B0' + mContext.getString(R.string.To);                
+                double lon0 = mOrigin.getLongitudeOf(x0);
+                double lat0 = mOrigin.getLatitudeOf(y0);
+                double lon1 = mOrigin.getLongitudeOf(x1);
+                double lat1 = mOrigin.getLatitudeOf(y1);
+                Projection p = new Projection(lon0, lat0, lon1, lat1);
+                
+                double brg = p.getBearing();
+                           
+                /*
+                 * Draw distance from point
+                 */
+                mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
+                        "," + Math.round(brg) + '\u00B0' + mContext.getString(R.string.To);
+            }
 
             /*
              * Clamp scaling.

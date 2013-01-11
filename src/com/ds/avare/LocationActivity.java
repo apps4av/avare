@@ -36,8 +36,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -85,11 +83,8 @@ public class LocationActivity extends Activity implements Observer {
     
     private Toast mToast;
     
-    private boolean mShowing;
-    
     private Button mDestButton;
 
-    
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -193,11 +188,9 @@ public class LocationActivity extends Activity implements Observer {
                     /*
                      * Show the animation button for dest
                      */
-                    animateDest(true);
                     mDestButton.setText(airport);
-                }
-                if(GestureInterface.RELEASE == event) {
-                    animateDest(false);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
+                    a.animate(true);
                 }
             }
             
@@ -207,7 +200,6 @@ public class LocationActivity extends Activity implements Observer {
          * Dest button
          */
         mDestButton = (Button)view.findViewById(R.id.buttonDest);
-        mShowing = false;
         mDestButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -222,7 +214,6 @@ public class LocationActivity extends Activity implements Observer {
                 mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
                 mToast.show();
                 mDestination.find();
-                mDestDialog.dismiss();
 
             }
             
@@ -640,59 +631,5 @@ public class LocationActivity extends Activity implements Observer {
                 mToast.show();
             }
         }
-    }
-
-    /**
-     * 
-     * @param
-     */
-    private void animateDest(final boolean visible) {
-        Animation a;
-        
-        /*
-         * Animates the dest button
-         */
-        if(visible) {
-            a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.xlater);
-            mShowing = true;
-        }
-        else {
-            if(!mShowing) {
-                return;
-            }
-            a = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.xlatel);
-            mShowing = false;
-        }
-        a.reset();
-        a.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                if(!visible) {
-                    /*
-                     * Set invisible when not animating
-                     */
-                    mDestButton.setVisibility(Button.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-                if(visible) {
-                    /*
-                     * Set visible when animating
-                     */
-                    mDestButton.setVisibility(Button.VISIBLE);
-                }
-            }
-            
-        });            
-        mDestButton.clearAnimation();
-        mDestButton.startAnimation(a);
-
     }
 }

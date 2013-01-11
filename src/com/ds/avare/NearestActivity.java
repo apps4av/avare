@@ -27,7 +27,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -45,6 +47,8 @@ public class NearestActivity extends Activity  implements Observer {
     private Preferences mPref;
     private Destination mDestination;
     
+    private Button mDestButton;
+
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -95,6 +99,29 @@ public class NearestActivity extends Activity  implements Observer {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.nearestact, null);
         setContentView(view);
+        
+        /*
+         * Dest button
+         */
+        mDestButton = (Button)view.findViewById(R.id.buttonDestNear);
+        mDestButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                Button b = (Button)v;
+                mDestination = new Destination(b.getText().toString(), mPref, mService);
+                mDestination.addObserver(NearestActivity.this);
+                mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
+                mToast.show();
+                mDestination.find();
+            }
+            
+        });
+
         mNearest = (ListView)view.findViewById(R.id.nearestlist);
 
         mPref = new Preferences(getApplicationContext());
@@ -183,13 +210,11 @@ public class NearestActivity extends Activity  implements Observer {
                              */
                             return;
                         }
-                    }
-                    mToast.setText(getString(R.string.Searching) + " " + mService.getArea().getAirport(position).getId());
-                    mToast.show();
-                    mDestination = new Destination(mService.getArea().getAirport(position).getId(),
-                            mPref, mService);
-                    mDestination.addObserver(NearestActivity.this);
-                    mDestination.find();
+                    }              
+                    
+                    mDestButton.setText(mService.getArea().getAirport(position).getId());
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
+                    a.animate(true);
                 }
             });
             

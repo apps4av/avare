@@ -20,7 +20,6 @@ package com.ds.avare;
 public interface GestureInterface {
 
     public static final int LONG_PRESS = 1;
-    public static final int RELEASE = 2;
     
     void gestureCallBack(int event, String airport);
 }
