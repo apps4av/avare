@@ -26,7 +26,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
     <string name="Cancel">&quot;Cancel&quot;</string>
     <string name="To">&quot;To&quot;</string>
-    <string name="Base">&quot;Base&quot;</string>
+    <string name="Base">&quot;Default Airport&quot;</string>
     <string name="Maps">&quot;Maps&quot;</string>
     <string name="MapsLabel">&quot;Charts storage folder&quot;</string>
     <string name="MapsSummary">&quot;Location where charts are stored&quot;</string>
@@ -50,7 +50,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="desc">&quot;Image/Chart&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Preferences&quot;</string>
-    <string name="BasePrompt">&quot;Enter base airport code&quot;</string>
+    <string name="BasePrompt">&quot;Enter default airport code&quot;</string>
     <string name="Downloading">&quot;Downloading&quot;</string>
     <string name="download">&quot;Download&quot;</string>
     <string name="Failed">&quot;Failed&quot;</string>
