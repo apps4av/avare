@@ -864,12 +864,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }    
     
-    
     /**
      * @author zkhan
      *
      */
-    private class AirportTask extends AsyncTask<Object, Void, Boolean> {
+    private class WeatherTask extends AsyncTask<Object, Void, Boolean> {
 
         private String weather;
         private String airport;
@@ -879,15 +878,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected Boolean doInBackground(Object... vals) {
-
-            double lon = (Double)vals[0];
-            double lat = (Double)vals[1];
             
+            airport = (String)vals[0];
             if(null == mService) {
                 weather = null;
                 return false;
             }
-            airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(null != airport) {
                 weather = mService.getWeatherCache().get(airport);
             }
@@ -899,11 +895,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected void onPostExecute(Boolean result) {
-            if(null != airport) {
-                if(null != mGestureCallBack) {
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
-                }
-            }
             if(null != weather) {
                 String tokens[] = weather.split(",");
                 if(tokens.length >= 2) {
@@ -916,8 +907,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             invalidate();
         }
     }
-    
 
+    
     /**
      * @author zkhan
      *
@@ -991,12 +982,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
                     "," + Math.round(brg) + '\u00B0' + mContext.getString(R.string.To);                
             
+            /*
+             * Get airport touched on, but it can block and not be in BG task because user
+             * is pressing on a point and it does not matter if zoom/pan hangs for a fraction sec.
+             */
+            String airport = null;
+            if(null != mService) {
+                airport = mService.getDBResource().findClosestAirportID(lon2, lat2);
+                if((null != airport) && (null != mGestureCallBack)) {
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
+                }
+            }
+        
             if(mPref.shouldTFRAndMETARShow()) {
                 /*
                  * If weather shows
                  */
                 if(text == null) {
-                    new AirportTask().execute(lon2, lat2);
+                    if(null != airport) {
+                        new WeatherTask().execute(airport);
+                    }
                 }
                 else {
                     /*
