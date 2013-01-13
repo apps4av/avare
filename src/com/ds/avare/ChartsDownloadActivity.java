@@ -54,33 +54,6 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     
     private StorageService mService;
 
-
-    /**
-     * Select list based on state
-     */
-    private void selectList() {
-        File file = new File(mPref.mapsFolder() + "/" + 
-                getResources().getStringArray(R.array.resFiles)[0]);
-        if(file.exists()) {
-            resNames = 
-                    getResources().getStringArray(R.array.resNames);
-            resFiles = 
-                    getResources().getStringArray(R.array.resFiles);            
-        }
-        else {
-            resNames = 
-                    getResources().getStringArray(R.array.resNamesNoDb);
-            resFiles = 
-                    getResources().getStringArray(R.array.resFilesNoDb);
-        }
-
-        /*
-         * Show charts
-         */
-        mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
-        setListAdapter(mChartAdapter);        
-    }
-    
     /**
      * 
      */
@@ -89,26 +62,17 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         super.onCreate(savedInstanceState);
 
         mPref = new Preferences(this);
+        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 
-        selectList();
-        
-        /**
-         * Download database if it does not exists.
+        resNames = 
+                getResources().getStringArray(R.array.resNames);
+        resFiles = 
+                getResources().getStringArray(R.array.resFiles);            
+        /*
+         * Show charts
          */
-        File dbase = new File(mPref.mapsFolder() + "/" + resFiles[0]);
-        if(!dbase.exists()) {
-            mChartAdapter.updateChecked(resFiles[0]);
-            mChartAdapter.notifyDataSetChanged();            
-            download();
-        }
-        else {
-            /*
-             * Create toast beforehand so multiple clicks dont throw up a new toast
-             */
-            mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-            mToast.setText(getString(R.string.DownloadInst));
-            mToast.show();
-        }
+        mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
+        setListAdapter(mChartAdapter);        
     }
     
     /** Defines callbacks for service binding, passed to bindService() */
@@ -133,6 +97,24 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
              * Since we are downloading new charts, clear everything old on screen.
              */
             mService.getTiles().clear();
+            
+            /**
+             * Download database if it does not exists.
+             */
+            File dbase = new File(mPref.mapsFolder() + "/" + resFiles[0]);
+            if(!dbase.exists()) {
+                mChartAdapter.updateChecked(resFiles[0]);
+                mChartAdapter.notifyDataSetChanged();            
+                download();
+            }
+            else {
+                /*
+                 * Create toast beforehand so multiple clicks dont throw up a new toast
+                 */
+                mToast.setText(getString(R.string.DownloadInst));
+                mToast.show();
+            }
+
         }
 
         /* (non-Javadoc)
@@ -317,12 +299,6 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
                 mChartAdapter.updateVersion(mName, mDownload.getVersion());
                 mChartAdapter.updateChecked(mName);
                 mChartAdapter.refresh();
-                if(!download()) {
-                    /*
-                     * Done downloading all, now update the list
-                     */
-                    selectList();
-                }
             }
             else {
                 try {

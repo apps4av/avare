@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.LinkedList;
 import org.apache.http.HttpEntity;
@@ -94,7 +93,7 @@ public class NetworkHelper {
      * @return
      */
     public static String getDonationURL() {
-        return "http://apps4av.net/";
+        return "http://apps4av.net/donate.html";
     }
 
     /**
@@ -399,30 +398,4 @@ public class NetworkHelper {
         return mVersion;
     }
     
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    public int getFileLength(String name) {
-        /*
-         * Path with file name on local storage
-         */
-        if(null == mVersion) {
-            getVersion();
-        }
-        try {
-            URL url = new URL("http://apps4av.net/" + mVersion + "/" + name);
-            URLConnection connection = url.openConnection();
-            connection.connect();
-            /* 
-             * this will be useful so that you can show a typical 0-100% progress bar
-             */
-            return(connection.getContentLength());
-        } 
-        catch (Exception e) {
-        }
-
-        return(0);
-    }
 }

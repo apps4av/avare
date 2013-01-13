@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Observable;
 import java.util.zip.ZipEntry;
@@ -84,6 +85,11 @@ public class Download extends Observable {
      * @param filename
      */
     public void start(String path, String filename) {
+        if(mDt != null) {
+            if(mDt.getStatus() != AsyncTask.Status.RUNNING) {
+                return;
+            }
+        }
         mDt = new DownloadTask();
         mDt.execute(path, filename);
     }
@@ -132,7 +138,7 @@ public class Download extends Observable {
             byte data[] = new byte[blocksize];
             NetworkHelper helper = new NetworkHelper();
             mVersion = helper.getVersion();
-            int fileLength = helper.getFileLength(mName + ".zip");
+            int fileLength;
                         
             try {
                 File file = new File(path + "/" + mName);
@@ -161,14 +167,16 @@ public class Download extends Observable {
                  * Path with file name on local storage
                  */
                 String zipfile = path + "/" + mName + ".zip";
-                String netfile = mName + ".zip";
+                String netfile = helper.getUrl(mName + ".zip");
 
                 /* 
                  * Download the file
                  */
-                input = new BufferedInputStream(
-                        (new URL(helper.getUrl(netfile))).openStream(),
-                        blocksize);
+                URL url = new URL(netfile);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                input = new BufferedInputStream(url.openStream());
+                fileLength = connection.getContentLength();
                 output = new FileOutputStream(zipfile);
     
                 long total = 0;
