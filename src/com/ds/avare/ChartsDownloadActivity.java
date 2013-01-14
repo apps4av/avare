@@ -299,6 +299,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
                 mChartAdapter.updateVersion(mName, mDownload.getVersion());
                 mChartAdapter.updateChecked(mName);
                 mChartAdapter.refresh();
+                download();
             }
             else {
                 try {
