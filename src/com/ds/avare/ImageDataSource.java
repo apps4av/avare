@@ -91,8 +91,23 @@ public class ImageDataSource {
         dbHelper.findClosestAirports(lon, lat, airports);        
     }
     
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @return
+     */
     public String findClosestAirportID(double lon, double lat) {
         return(dbHelper.findClosestAirportID(lon, lat));
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public float[] findDiagramMatrix(String name) {
+        return dbHelper.findDiagramMatrix(name);
     }
 
 }

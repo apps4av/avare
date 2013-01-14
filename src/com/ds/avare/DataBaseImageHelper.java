@@ -129,6 +129,66 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
+    public synchronized float[] findDiagramMatrix(String name) {
+        Cursor cursor;
+        float ret[] = new float[12];
+        int it;
+        
+        for(it = 0; it < 12; it++) {
+            ret[it] = 0;
+        }
+        
+        opens();
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBase == null) {
+            closes();
+            return null;
+        }
+        
+        if(!mDataBase.isOpen()) {
+            closes();
+            return null;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               cursor = mDataBase.rawQuery(
+                       "select * from airportdiags where LocationID==\"" + name +"\"", null);
+        }
+        catch (Exception e) {
+            cursor = null;
+        }
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+        
+                    /*
+                     * Database
+                     */
+                    for(it = 0; it < 12; it++) {
+                        ret[it] = cursor.getFloat(it + 1);
+                    }                    
+                }
+            }
+        }
+        catch (Exception e) {
+            
+        }
+        closes();
+        return ret;
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public synchronized Tile findTile(String name) {
         Cursor cursor;
         opens();

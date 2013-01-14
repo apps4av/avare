@@ -12,8 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import java.text.DecimalFormat;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,6 +19,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,19 +44,12 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private PointInfo                    mCurrTouchPoint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
-    private PixelCoordinates             mPixels;
-    private double                      mPx;
-    private double                      mPy;
-    private double                      mOLon;
-    private double                      mOLat;
-    private boolean                     mDrawLonLat;
-    private double                      mRotated;
-    private DecimalFormat 				  mFormat;
     private GpsParams                    mGpsParams;
     private String                       mErrorStatus;
     private float                       mTextDiv;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
+    private float[]                     mMatrix;
     
     /**
      * 
@@ -68,9 +60,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
         mPan = new Pan();
-        mPixels = new PixelCoordinates();
-        mDrawLonLat = false;
-        mRotated = 0;
         mGpsParams = new GpsParams(null);
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -80,7 +69,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mFormat = new DecimalFormat("00.00");
         mAirplaneBitmap = new BitmapHolder(context, R.drawable.planegreen);
     }
     
@@ -199,42 +187,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     }
 
     /**
-     * Get points on the chart
-     */
-    public PixelCoordinates getPoints() {
-    	return mPixels;
-    }
-
-    /**
      * Set params to show lon/lat 
      */
-    public void setParams(double[] params) {
-    	mDrawLonLat = true;
-    	
-    	mOLon = params[0];
-    	mOLat = params[1];
-    	mPx = params[2];
-    	mPy = params[3];
-    	mRotated = params[4];
+    public void setParams(float[] params) {
+    	mMatrix = params;
     	postInvalidate();
     }
     
-
-    /**
-     * 
-     * @return
-     */
-    public double getXn() {
-        return(mPan.getMoveX());
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public double getYn() {
-        return(mPan.getMoveY());
-    }
 
     /**
      * @param touchPoint
@@ -258,7 +217,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	
         float min = Math.min(getWidth(), getHeight()) - 8;
         mPaint.setTextSize(min / 20);
-        float fh =  8;
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
         float scale = mScale.getScaleFactor();
@@ -268,72 +226,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	 */
     	mBitmap.getTransform().setScale(scale, scale);
     	mBitmap.getTransform().postTranslate(
-    			mPan.getMoveX() * scale + getWidth() / 2 - mBitmap.getWidth() / 2 * scale,
-    			mPan.getMoveY() * scale + getHeight() / 2 - mBitmap.getHeight() / 2 * scale);
+    			mPan.getMoveX() * scale,
+    			mPan.getMoveY() * scale);
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	mPaint.setStrokeWidth(4);
-    	/*
-    	 * Drag line for points
-    	 */
-    	if(mPixels.firstPointAcquired()) {
-    	    if(
-    	            (Math.abs(mPixels.getX0() - mPan.getMoveX()) < PixelCoordinates.POINTS_MIN_PIXELS) ||
-    	            (Math.abs(mPixels.getY0() - mPan.getMoveY()) < PixelCoordinates.POINTS_MIN_PIXELS)
-    	            ) {
-    	        mPaint.setColor(Color.RED);    	        
-    	    }
-    	    else {
-                mPaint.setColor(Color.GREEN);    	        
-    	    }
-        	canvas.drawLine(
-        			getWidth() / 2,
-        			getHeight() / 2,
-        			getWidth() / 2 + mPan.getMoveX() * scale - (float)mPixels.getX0() * scale,
-        			getHeight() / 2 + mPan.getMoveY() * scale - (float)mPixels.getY0() * scale,
-        			mPaint);    		
-    	}
     	
-    	/*
-    	 * Cross hair
-    	 */
-        mPaint.setColor(Color.RED);
-    	canvas.drawLine(getWidth() / 2, getHeight() / 2 - 16, getWidth() / 2, getHeight() / 2 + 16, mPaint);
-    	canvas.drawLine(getWidth() / 2 - 16, getHeight() / 2, getWidth() / 2 + 16, getHeight() / 2, mPaint);
-    	
-    	/*
-    	 * This will show lon/lat under current cross hair
-    	 */
-    	if(mDrawLonLat) {
-    	    double lonms;
-    	    double latms;
-    	    if(mRotated == 0) {
-                lonms = mOLon - mPx * mPan.getMoveX();
-                latms = mOLat - mPy * mPan.getMoveY();              
-    	    }
-    	    else {
-    	        /*
-    	         * Rotated plate
-    	         */
-                lonms = mOLon - mPy * mPan.getMoveY();
-                latms = mOLat - mPx * mPan.getMoveX();
-    	    }
-    		int lon = (int)lonms;
-    		int lat = (int)latms;
-    		double lonl = Math.abs((lonms - (double)lon) * 60);
-    		if(lonl >= 60) {
-    		    lon--;
-    		    lonl -= 60;
-    		}
-    		double latl = Math.abs((latms - (double)lat) * 60);
-            if(latl >= 60) {
-                lat++;
-                latl -= 60;
-            }
-            
-            mPaint.setTextAlign(Align.LEFT);
-    		canvas.drawText("" + lon + '\u00B0' + mFormat.format(lonl) + "'" + ", "
-    		        + lat + '\u00B0' + mFormat.format(latl) + "'", 0, getHeight() - fh, mPaint);
-    	}
     	
         if(mErrorStatus != null) {
             mPaint.setTextAlign(Align.RIGHT);
@@ -344,46 +241,53 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         }
         else {
             
-            if(null == mGpsParams) {
+            if(null == mGpsParams || null == mMatrix) {
                 return;
             }
             
             /*
              * Calculate offsets of our location
              */
-            double x, y;
-            if(mRotated == 0) {
-                x = (mOLon - mGpsParams.getLongitude()) / mPx;
-                y = (mOLat - mGpsParams.getLatitude()) / mPy;              
-            }
-            else {
-                /*
-                 * Rotated plate
-                 */
-                y = (mOLon - mGpsParams.getLongitude()) / mPy;
-                x = (mOLat - mGpsParams.getLatitude()) / mPx;
-            }
-           
+            
+            float lon = (float)mGpsParams.getLongitude();
+            float lat = (float)mGpsParams.getLatitude();
+            float wftA = mMatrix[6];
+            float wftB = mMatrix[7];
+            float wftC = mMatrix[8];
+            float wftD = mMatrix[9];
+            float wftE = mMatrix[10];
+            float wftF = mMatrix[11];
+            
+            float pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
+            float pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
+            
+            /*
+             * Now find angle.
+             * Add 0.1 to lat that gives us north
+             * Y increase down so give -180
+             */
+            float pixxn = (wftA * lon + wftC * (lat + 0.1f) + wftE) / 2.f;
+            float pixyn = (wftB * lon + wftD * (lat + 0.1f) + wftF) / 2.f;
+            float diffx = pixxn - pixx;
+            float diffy = pixyn - pixy;
+            float angle = (float)Math.toDegrees(Math.atan2(diffx, -diffy));
+            
             /*
              * Draw airplane at that location
              */
-            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() - (float)mRotated,
+            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
                     mAirplaneBitmap.getWidth() / 2.f,
                     mAirplaneBitmap.getHeight() / 2.f);
             
             mAirplaneBitmap.getTransform().postTranslate(
-                    getWidth() / 2.f
-                    - (float)x * scale
+                    pixx * scale
                     - mAirplaneBitmap.getWidth()  / 2.f
                     + mPan.getMoveX() * scale,
-                    getHeight() / 2.f
-                    - (float)y * scale
+                    pixy * scale
                     - mAirplaneBitmap.getHeight()  / 2.f
                     + mPan.getMoveY() * scale);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
-        
-
     }
     
     /**

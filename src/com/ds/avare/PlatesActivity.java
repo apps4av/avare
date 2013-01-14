@@ -11,26 +11,18 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import java.text.DecimalFormat;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -44,13 +36,7 @@ public class PlatesActivity extends Activity {
     private String mName;
     private StorageService mService;
     private Destination mDestination;
-    private View mCalibrateView;
-    private AlertDialog mCalibrateDialog;
     private Toast mToast;
-    private String mLatC;
-    private String mLonC;
-    private String mLatCMin;
-    private String mLonCMin;
 
     /*
      * Start GPS
@@ -135,14 +121,6 @@ public class PlatesActivity extends Activity {
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
 
-        mCalibrateDialog = new AlertDialog.Builder(this).create();
-        mCalibrateDialog.setTitle(getString(R.string.calibratethis));
-        
-        mCalibrateView = layoutInflater.inflate(R.layout.lonlat, null);
-        mCalibrateDialog.setView(mCalibrateView);
-        mCalibrateDialog.setCancelable(false);
-
-
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
@@ -192,63 +170,19 @@ public class PlatesActivity extends Activity {
             }
             
             /*
-             * Find lon/lat of the center of airport
-             */
-            Location l = mDestination.getLocation();
-            double lonc = Math.abs(l.getLongitude());
-            double latc = Math.abs(l.getLatitude());
-            latc = ((int)latc);
-            lonc = ((int)lonc);
-            double latcm = Math.abs(l.getLatitude()) - latc;
-            double loncm = Math.abs(l.getLongitude()) - lonc;
-            latcm *= 60;
-            loncm *= 60;
-            DecimalFormat f = new DecimalFormat("00.0");
-            mLatCMin = f.format(latcm);
-            mLonCMin = f.format(loncm);
-            mLatC = String.valueOf((int)latc);
-            mLonC = String.valueOf((int)lonc);
-            /*
-             * Show the lon/lat of center of airport to begin with
-             */
-            ((EditText)mCalibrateView.findViewById(R.id.latitude)).setText(mLatC);
-            ((EditText)mCalibrateView.findViewById(R.id.longitude)).setText(mLonC);
-            ((EditText)mCalibrateView.findViewById(R.id.latitudems)).setText(mLatCMin);
-            ((EditText)mCalibrateView.findViewById(R.id.longitudems)).setText(mLonCMin);
-
-            /*
              * Set diagram
              */
-            mName = mDestination.getDiagram();
+            mName = mDestination.getID();
             mPlatesView.setBitmap(mDestination.getBitmap());
 
+
             /*
-             * This should be true. Get plate coords if stored
+             * Find lon/lat px from database
              */
-            if(null != mName) {
-                String value = mPref.loadString(mName);
-                if(null != value) {
-                    /*
-                     * mOLon, mOLat, mPx, mPy
-                     */
-                    String[] vals = value.split(",");
-                    double valsDouble[] = new double[5];
-                    try {
-                        if(5 == vals.length) {
-                            valsDouble[0] = Double.parseDouble(vals[0]);
-                            valsDouble[1] = Double.parseDouble(vals[1]);
-                            valsDouble[2] = Double.parseDouble(vals[2]);
-                            valsDouble[3] = Double.parseDouble(vals[3]);
-                            valsDouble[4] = Double.parseDouble(vals[4]);
-                            mPlatesView.setParams(valsDouble);
-                        }
-                    }
-                    catch (Exception e) {
-                        
-                    }
-                }
-            }            
-        }    
+            float vals[] = mService.getDBResource().findDiagramMatrix(mName);
+            mPlatesView.setParams(vals);
+            
+        }
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -274,14 +208,6 @@ public class PlatesActivity extends Activity {
          */
         getApplicationContext().unbindService(mConnection);
         
-        if(null != mCalibrateDialog) {
-            try {
-                mCalibrateDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
     }
 
     /**
@@ -308,174 +234,4 @@ public class PlatesActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
     }
-
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.plates, menu);
-        return true;
-    }
-
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        
-        /*
-         * We dont have a diagram?
-         */
-        
-        switch(item.getItemId()) {
-        
-            case R.id.help:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkHelper.getHelpGeoTag())));
-                break;
-
-            case R.id.mark:
-            	
-                if(null == mName) {
-                    return false;
-                }
-                
-                /*
-                 * Present a dialog to add a point and ask user for lon/lat
-                 */
-                mCalibrateDialog.show();
-                Button ok = (Button)mCalibrateView.findViewById(R.id.lonlatbuttonOK);
-                ok.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                    	/*
-                    	 * On OK click, save pixel points in the view's coordinate
-                    	 */
-                    	PixelCoordinates pc = mPlatesView.getPoints();
-                    	
-                    	/*
-                    	 * This will reset in case we are doing mark input again
-                    	 */
-                        if(pc.secondPointAcquired()) {
-                            pc.resetPoints();
-                        }
-
-                    	if(pc.noPointAcquired()) {
-                            /*
-                             * Acquire first point
-                             */
-                            if(!pc.setLatitude0(
-                                    ((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
-                                    ((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
-                                    )) {
-                                pc.unsetPoint0();
-                                mToast.setText(getString(R.string.BadCoords));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                            }
-                            if(!pc.setLongitude0(
-                                    ((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
-                                    ((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
-                                    )) {
-                                pc.unsetPoint0();
-                                mToast.setText(getString(R.string.BadCoords));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                            }
-                            pc.setX0(mPlatesView.getXn());
-                            pc.setY0(mPlatesView.getYn());
-                            mCalibrateDialog.dismiss();
-                            return;
-                    	}
-                    	
-                    	if(pc.firstPointAcquired()) {
-                            /*
-                             * Do the same for second point
-                             */
-                			if(!pc.setLatitude1(
-                					((EditText)mCalibrateView.findViewById(R.id.latitude)).getText().toString(),
-                					((EditText)mCalibrateView.findViewById(R.id.latitudems)).getText().toString()
-                					)) {
-                                pc.unsetPoint1();
-                                mToast.setText(getString(R.string.BadCoords));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                			}
-                			if(!pc.setLongitude1(
-                					((EditText)mCalibrateView.findViewById(R.id.longitude)).getText().toString(),
-                					((EditText)mCalibrateView.findViewById(R.id.longitudems)).getText().toString()
-                					)) {
-                                pc.unsetPoint1();
-                                mToast.setText(getString(R.string.BadCoords));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                			}
-                            if(!pc.setX1(mPlatesView.getXn())) {
-                                pc.unsetPoint1();
-                                mToast.setText(getString(R.string.PointsTooClose));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                            }
-                            if(!pc.setY1(mPlatesView.getYn())) {
-                                pc.unsetPoint1();
-                                mToast.setText(getString(R.string.PointsTooClose));
-                                mToast.show();
-                                mCalibrateDialog.dismiss();
-                                return;
-                            }
-                    	}
-                    	
-                    	if(pc.secondPointAcquired()) {
-                		    /*
-                		     * If everything is good, save the just received params
-                		     */
-                		    double[] params = pc.get();
-                		    if(null != params) {
-                		        mPlatesView.setParams(params);
-                		        String value = "" + params[0] + "," + params[1] + "," + params[2] + "," + params[3] + "," + params[4];
-                                mPref.saveString(mName, value);
-                                mToast.setText(getString(R.string.GoodCoords));
-                                mToast.show();
-                		    }
-                    	}
-                    	try {
-                    	    mCalibrateDialog.dismiss();
-                    	}
-                    	catch (Exception e) {                    	    
-                    	}
-                    }
-                });
-                
-                Button cancel = (Button)mCalibrateView.findViewById(R.id.lonlatbuttonCancel);
-                cancel.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        try {
-                            mCalibrateDialog.dismiss();
-                        }
-                        catch (Exception e) {                           
-                        }                    
-                    }
-                });
-
-                break;
-
-            case R.id.cancel:
-            	/*
-            	 * Start again
-            	 */
-                PixelCoordinates pc = mPlatesView.getPoints();
-                pc.resetPoints();
-                mPlatesView.postInvalidate();
-            	
-            	break;
-        }
-		return true;
-    }
-    
 }

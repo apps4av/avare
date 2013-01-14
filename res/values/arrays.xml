@@ -13,10 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 <resources> 
     
-    <string-array name="resNamesNoDb">
-        <item>@string/databases</item>
-    </string-array>
-          
     <string-array name="resNames">
         <item>@string/databases</item>
         <item>@string/ADS</item>
