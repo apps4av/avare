@@ -19,7 +19,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,6 +59,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
         mPan = new Pan();
+        mMatrix = null;
         mGpsParams = new GpsParams(null);
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -129,8 +129,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        if(e.getAction() == MotionEvent.ACTION_UP) {
-        }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
     }
