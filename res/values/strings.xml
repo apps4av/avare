@@ -61,7 +61,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GPSLost">&quot;No GPS Signal&quot;</string>
     <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
     <string name="Init">&quot;Initializing&quot;</string>
-    <string name="Warning">&quot;This is not a FAA certified GPS. \nUse at your own risk. \nThe author of this software is not liable for any injuries or damages caused by its use. \n&quot;</string>
+    <string name="Warning">&quot;This is not a FAA certified GPS.\nUse at your own risk.\nConsider this software to fail when property and life are at stake.\nThe author of this software is not liable for any injuries or damages caused by its use.\n&quot;</string>
     <string name="Recent">&quot;Recent&quot;</string>
    	<string name="ChartType">&quot;Chart Type&quot;</string>
 	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>

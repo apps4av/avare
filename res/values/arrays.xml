@@ -16,6 +16,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNames">
         <item>@string/databases</item>
         <item>@string/ADS</item>
+        <item>IFR Low Enroute NE</item>
+        <item>IFR Low Enroute NC</item>
+        <item>IFR Low Enroute NW</item>
+        <item>IFR Low Enroute SE</item>
+        <item>IFR Low Enroute SC</item>
+        <item>IFR Low Enroute SW</item>
         <item>CC-9 WAC</item>
         <item>CD-11 WAC</item>
         <item>CD-12 WAC</item>
@@ -128,8 +134,14 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFiles">
-        <item>database</item>
+        <item>databases</item>
         <item>AirportDiagramsj</item>
+        <item>ELUS_NE</item>
+        <item>ELUS_NC</item>
+        <item>ELUS_NW</item>
+        <item>ELUS_SE</item>
+        <item>ELUS_SC</item>
+        <item>ELUS_SW</item>
         <item>CC-9</item>
         <item>CD-11</item>
         <item>CD-12</item>
@@ -241,12 +253,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Sectional</item>
         <item>TAC</item>
         <item>WAC</item>
+        <item>IFR Low Enroute</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>    
 
     <string-array name="UnitsD">
