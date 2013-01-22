@@ -30,8 +30,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -84,6 +82,12 @@ public class LocationActivity extends Activity implements Observer {
     private Toast mToast;
     
     private Button mDestButton;
+    private Button mHelpButton;
+    private Button mDonateButton;
+    private Button mPrefButton;
+    private Button mGpsButton;
+    private Button mDownloadButton;
+    private Button mMenuButton;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -195,7 +199,88 @@ public class LocationActivity extends Activity implements Observer {
             }
             
         });
-        
+
+        mMenuButton = (Button)view.findViewById(R.id.buttonMenu);
+        mMenuButton.getBackground().setAlpha(127);
+        mMenuButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mDestButton.setText(getString(R.string.Destination));
+                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton);
+                AnimateButton c = new AnimateButton(getApplicationContext(), mDonateButton);
+                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton);
+                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton);
+                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton);
+                a.animate(true);
+                b.animate(true);
+                c.animate(true);
+                d.animate(true);
+                e.animate(true);
+                f.animate(true);
+            }
+            
+        });
+
+        mHelpButton = (Button)view.findViewById(R.id.buttonHelp);
+        mHelpButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LocationActivity.this, WebActivity.class);
+                intent.putExtra("url", NetworkHelper.getHelpUrl());
+                startActivity(intent);
+            }
+            
+        });
+
+        mGpsButton = (Button)view.findViewById(R.id.buttonGps);
+        mGpsButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LocationActivity.this, SatelliteActivity.class));
+            }
+            
+        });
+
+        mDownloadButton = (Button)view.findViewById(R.id.buttonDownload);
+        mDownloadButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {    
+                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+            }
+        });
+
+        mDonateButton = (Button)view.findViewById(R.id.buttonDonate);
+        mDonateButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String url = NetworkHelper.getDonationURL();
+                Intent it = new Intent(Intent.ACTION_VIEW);
+                it.setData(Uri.parse(url));
+                startActivity(it);
+            }
+        });
+
+        mPrefButton = (Button)view.findViewById(R.id.buttonPref);
+        mPrefButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                startActivity(new Intent(LocationActivity.this, PrefActivity.class));
+
+            }
+            
+        });
+
         /*
          * Dest button
          */
@@ -208,12 +293,124 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * On click, find destination that was pressed on in view
                  */
+
                 Button b = (Button)v;
-                mDestination = new Destination(b.getText().toString(), mPref, mService);
-                mDestination.addObserver(LocationActivity.this);
-                mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
-                mToast.show();
-                mDestination.find();
+                /*
+                 * If button pressed was a destination go there, otherwise ask for dest
+                 */
+                if(!b.getText().toString().equals(getString(R.string.Destination))) {
+                    mDestination = new Destination(b.getText().toString(), mPref, mService);
+                    mDestination.addObserver(LocationActivity.this);
+                    mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
+                    mToast.show();
+                    mDestination.find();
+                    return;
+                }
+
+                
+                /*
+                 * Ask for dest.
+                 */
+                if(null == mService) {
+                    return;                    
+                }
+                if(null == mService.getDBResource()) {
+                    return;
+                }
+                
+                /*
+                 * Query new destination
+                 * Present an alert dialog with a text field
+                 */
+
+
+                /*
+                 *  limit FAA/ICAO code length to 4
+                 */
+                final EditText tv = (EditText)mDestView.findViewById(R.id.DestText);
+                tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                tv.setText(mPref.getBase());
+                tv.selectAll();
+
+                /*
+                 * Spinner calls repeatedly location 0 even when not selected.
+                 * Make location 0 non valid.
+                 */
+                String [] vals = mPref.getRecent();
+                String[] valsPos0 = new String[vals.length + 1];
+                valsPos0[0] = getString(R.string.Recent);
+                for(int i = 0; i < vals.length; i++) {
+                    valsPos0[i + 1] = vals[i];
+                }
+                
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
+                        R.layout.input, valsPos0);
+
+                final Spinner lv = (Spinner)mDestView.findViewById(R.id.destList);
+               
+                lv.setAdapter(adapter);
+
+                /*
+                 * Listen to list selection, do it last spinner calls it immediately
+                 */
+                lv.setOnItemSelectedListener(new OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> arg0, View arg1,
+                            int position, long arg3) {
+                        if(0 == position) {
+                            return;
+                        }
+                        String dst = adapter.getItem(position);
+                        mDestination = new Destination(dst, mPref, mService);
+                        mDestination.addObserver(LocationActivity.this);
+                        mToast.setText(getString(R.string.Searching) + " " + dst);
+                        mToast.show();
+                        mDestination.find();
+                        mDestDialog.dismiss();                        
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> arg0) {
+                    }
+                });
+
+                tv.setOnTouchListener(new View.OnTouchListener(){
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        /*
+                         * Clear hint when user touches the edit box
+                         */
+                        tv.setText("");
+                        return false;
+                    }
+                });
+
+
+                Button ok = (Button)mDestView.findViewById(R.id.destbuttonOK);
+                ok.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        String dst = tv.getText().toString();
+                        mDestination = new Destination(dst, mPref, mService);
+                        mDestination.addObserver(LocationActivity.this);
+                        mToast.setText(getString(R.string.Searching) + " " + dst);
+                        mToast.show();
+                        mDestination.find();
+                        mDestDialog.dismiss();
+                        
+                    }
+                });
+
+                Button cancel = (Button)mDestView.findViewById(R.id.destbuttonCancel);
+                cancel.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        mDestDialog.dismiss();
+                    }
+                });
+
+                mDestDialog.show();
 
             }
             
@@ -443,159 +640,6 @@ public class LocationActivity extends Activity implements Observer {
         super.onDestroy();
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.location, menu);
-        return true;
-    }
-
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()) {
-        
-            case R.id.pref:
-                /*
-                 * Bring up preferences
-                 */
-                startActivity(new Intent(this, PrefActivity.class));
-                break;
-                
-            case R.id.help:
-                Intent intent = new Intent(this, WebActivity.class);
-                intent.putExtra("url", NetworkHelper.getHelpUrl());
-                startActivity(intent);
-                break;
-                
-            case R.id.donate:
-                String url = NetworkHelper.getDonationURL();
-                Intent it = new Intent(Intent.ACTION_VIEW);
-                it.setData(Uri.parse(url));
-                startActivity(it);
-                break;
-
-            case R.id.download:
-                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
-                break;
-
-            case R.id.gps:
-                startActivity(new Intent(LocationActivity.this, SatelliteActivity.class));
-                break;
-
-            case R.id.newdestination:
-                if(null == mService) {
-                    return false;                    
-                }
-                if(null == mService.getDBResource()) {
-                    return false;
-                }
-                
-                /*
-                 * Query new destination
-                 * Present an alert dialog with a text field
-                 */
-
-
-                /*
-                 *  limit FAA/ICAO code length to 4
-                 */
-                final EditText tv = (EditText)mDestView.findViewById(R.id.DestText);
-                tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                tv.setText(mPref.getBase());
-                tv.selectAll();
-
-                /*
-                 * Spinner calls repeatedly location 0 even when not selected.
-                 * Make location 0 non valid.
-                 */
-                String [] vals = mPref.getRecent();
-                String[] valsPos0 = new String[vals.length + 1];
-                valsPos0[0] = getString(R.string.Recent);
-                for(int i = 0; i < vals.length; i++) {
-                    valsPos0[i + 1] = vals[i];
-                }
-                
-                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
-                        R.layout.input, valsPos0);
-
-                final Spinner lv = (Spinner)mDestView.findViewById(R.id.destList);
-               
-                lv.setAdapter(adapter);
-
-                /*
-                 * Listen to list selection, do it last spinner calls it immediately
-                 */
-                lv.setOnItemSelectedListener(new OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> arg0, View arg1,
-                            int position, long arg3) {
-                        if(0 == position) {
-                            return;
-                        }
-                        String dst = adapter.getItem(position);
-                        mDestination = new Destination(dst, mPref, mService);
-                        mDestination.addObserver(LocationActivity.this);
-                        mToast.setText(getString(R.string.Searching) + " " + dst);
-                        mToast.show();
-                        mDestination.find();
-                        mDestDialog.dismiss();                        
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> arg0) {
-                    }
-                });
-
-                tv.setOnTouchListener(new View.OnTouchListener(){
-                    @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        /*
-                         * Clear hint when user touches the edit box
-                         */
-                        tv.setText("");
-                        return false;
-                    }
-                });
-
-
-                Button ok = (Button)mDestView.findViewById(R.id.destbuttonOK);
-                ok.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        String dst = tv.getText().toString();
-                        mDestination = new Destination(dst, mPref, mService);
-                        mDestination.addObserver(LocationActivity.this);
-                        mToast.setText(getString(R.string.Searching) + " " + dst);
-                        mToast.show();
-                        mDestination.find();
-                        mDestDialog.dismiss();
-                        
-                    }
-                });
-
-                Button cancel = (Button)mDestView.findViewById(R.id.destbuttonCancel);
-                cancel.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        mDestDialog.dismiss();
-                    }
-                });
-
-                mDestDialog.show();
-
-
-                break;
-        }
-        return true;
-    }    
-    
     /**
      * 
      */

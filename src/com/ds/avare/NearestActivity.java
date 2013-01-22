@@ -103,7 +103,7 @@ public class NearestActivity extends Activity  implements Observer {
         /*
          * Dest button
          */
-        mDestButton = (Button)view.findViewById(R.id.buttonDestNear);
+        mDestButton = (Button)view.findViewById(R.id.buttonNearDest);
         mDestButton.setOnClickListener(new OnClickListener() {
 
             @Override

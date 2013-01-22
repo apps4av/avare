@@ -20,16 +20,83 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
+        
         <Button
             android:id="@+id/buttonDest"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonPref"
+            android:gravity="left"
+            android:drawableLeft="@drawable/direct"
+            android:text="@string/Destination"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonPref"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonDownload"
+            android:text="@string/Settings"
+            android:drawableLeft="@drawable/settings"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/buttonDownload"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonGps"
+            android:gravity="left"
+            android:text="@string/download"
+            android:drawableLeft="@drawable/download"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+         <Button
+            android:id="@+id/buttonGps"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonHelp"
+            android:gravity="left"
+            android:text="@string/gps"
+            android:drawableLeft="@drawable/gps"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonHelp"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonDonate"
+            android:text="@string/Help"
+            android:drawableLeft="@drawable/help"
+            android:textSize="20sp"
+            android:gravity="left"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonDonate"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_alignParentBottom="true"
+            android:text="@string/Donate"
+            android:textSize="20sp"
+            android:layout_alignParentLeft="true"
+            android:drawableLeft="@drawable/donate"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/buttonMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:drawableLeft="@drawable/menu"
             android:textSize="20sp"
-            android:layout_alignParentLeft="true"
-            android:drawableLeft="@drawable/direct"
-            android:visibility="invisible" />
- 
+            android:visibility="visible" />
+        
 </RelativeLayout>
 

@@ -21,14 +21,57 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
         
-    <Button
-        android:id="@+id/buttonDestNear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:textSize="20sp"
-        android:layout_alignParentLeft="true"
-        android:drawableLeft="@drawable/direct"
-        android:visibility="invisible" />
+        <Button
+            android:id="@+id/buttonNearDest"
+            android:layout_width="180sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonNearest5"
+            android:gravity="left"
+            android:drawableLeft="@drawable/direct"
+            android:text="@string/Destination"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonNearest5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonNearest4"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/buttonNearest4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonNearest3"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonNearest3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonNearest2"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonNearest2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonNearest1"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/buttonNearest1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_alignParentBottom="true"
+            android:textSize="20sp"
+            android:layout_alignParentLeft="true"
+            android:visibility="invisible" />
     
 </RelativeLayout>

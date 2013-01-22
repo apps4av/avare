@@ -17,29 +17,31 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author zkhan
  *
  */
-public class ChartsDownloadActivity extends ListActivity implements Observer {
+public class ChartsDownloadActivity extends Activity implements Observer {
     
     private String mName;
     private ProgressDialog mProgressDialog;
@@ -53,6 +55,9 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
     private Toast mToast;
     
     private StorageService mService;
+    private Button mUDButton;
+    private Button mDLButton;
+    private Button mMenuButton;
 
     /**
      * 
@@ -71,9 +76,69 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         /*
          * Show charts
          */
+        
+        /*
+         * Get views from XML
+         */
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.chartact, null);
+        setContentView(view);
+
+        
         mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
-        setListAdapter(mChartAdapter);        
+        ListView list = (ListView)view.findViewById(R.id.chartlist);
+        list.setAdapter(mChartAdapter);
+        list.setOnItemClickListener(new OnItemClickListener() {
+
+            /* (non-Javadoc)
+             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+             */
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                    int position, long id) {
+                mChartAdapter.updateChecked(resFiles[position]);
+                mChartAdapter.notifyDataSetChanged();        
+            }
+        });
+
+        mDLButton = (Button)view.findViewById(R.id.buttonDL);
+        mDLButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                download();
+            }
+            
+        });
+
+        mUDButton = (Button)view.findViewById(R.id.buttonUD);
+        mUDButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mChartAdapter.checkOld();
+                mChartAdapter.notifyDataSetChanged();
+                download();
+            }
+            
+        });
+
+        mMenuButton = (Button)view.findViewById(R.id.buttonMenuDL);
+        mMenuButton.getBackground().setAlpha(127);
+        mMenuButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AnimateButton a = new AnimateButton(getApplicationContext(), mDLButton);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mUDButton);
+                a.animate(true);
+                b.animate(true);
+            }
+            
+        });
     }
+
     
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -203,53 +268,7 @@ public class ChartsDownloadActivity extends ListActivity implements Observer {
         getApplicationContext().unbindService(mConnection);
     }
     
-    /**
-     * 
-     */
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        mChartAdapter.updateChecked(resFiles[position]);
-        mChartAdapter.notifyDataSetChanged();        
-
-        return;
-    }
     
-    /* (non-Javadoc)
-     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.download, menu);
-        return true;
-    }
-
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()) {
-        
-            case R.id.help:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkHelper.getHelpDownload())));
-                break;
-
-            case R.id.downloadchart:
-                download();
-                break;
-                
-            case R.id.updatechart:
-                mChartAdapter.checkOld();
-                mChartAdapter.notifyDataSetChanged();
-                download();
-                break;
-        }
-        return false;
-    }
-
     /**
      * 
      */
