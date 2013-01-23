@@ -16,43 +16,21 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ListView
-        android:background="#FF000000"
+        android:background="#FFFFFFFF"
         android:id="@+id/chartlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
 
 	<Button
 	    android:id="@+id/buttonDL"
-	    android:layout_width="180sp"
+	    android:layout_width="170dp"
 	    android:layout_height="wrap_content"
-	    android:layout_above="@+id/buttonUD"
-	    android:text="@string/Start"
-	    android:drawableLeft="@drawable/downloadarrow"
-	    android:textSize="20sp"
-	    android:gravity="left"
-	    android:visibility="invisible" />
-	
-	<Button
-	    android:id="@+id/buttonUD"
-	    android:layout_width="180sp"
-	    android:layout_height="wrap_content"
-	    android:gravity="left"
-	    android:layout_alignParentBottom="true"
-	    android:text="@string/update"
-	    android:textSize="20sp"
-	    android:layout_alignParentLeft="true"
-	    android:drawableLeft="@drawable/updatearrow"
-	    android:visibility="invisible" />
-	
-	<Button
-	    android:id="@+id/buttonMenuDL"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
 	    android:layout_centerHorizontal="true"
-	    android:drawableLeft="@drawable/menu"
-	    android:textSize="20sp"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignParentBottom="true"
+	    android:drawableLeft="@drawable/downloadarrow"
+	    android:gravity="left|center"
+	    android:text="@string/Start"
 	    android:visibility="visible" />
-    
-    
+	    
 </RelativeLayout>

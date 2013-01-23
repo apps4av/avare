@@ -19,7 +19,6 @@ import com.ds.avare.R;
 
 import android.location.GpsStatus;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.app.Activity;
@@ -83,7 +82,6 @@ public class LocationActivity extends Activity implements Observer {
     
     private Button mDestButton;
     private Button mHelpButton;
-    private Button mDonateButton;
     private Button mPrefButton;
     private Button mGpsButton;
     private Button mDownloadButton;
@@ -209,13 +207,11 @@ public class LocationActivity extends Activity implements Observer {
                 mDestButton.setText(getString(R.string.Destination));
                 AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton);
-                AnimateButton c = new AnimateButton(getApplicationContext(), mDonateButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton);
                 AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton);
                 a.animate(true);
                 b.animate(true);
-                c.animate(true);
                 d.animate(true);
                 e.animate(true);
                 f.animate(true);
@@ -251,18 +247,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {    
                 startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
-            }
-        });
-
-        mDonateButton = (Button)view.findViewById(R.id.buttonDonate);
-        mDonateButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                String url = NetworkHelper.getDonationURL();
-                Intent it = new Intent(Intent.ACTION_VIEW);
-                it.setData(Uri.parse(url));
-                startActivity(it);
             }
         });
 

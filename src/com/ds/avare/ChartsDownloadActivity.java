@@ -55,9 +55,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private Toast mToast;
     
     private StorageService mService;
-    private Button mUDButton;
     private Button mDLButton;
-    private Button mMenuButton;
 
     /**
      * 
@@ -112,31 +110,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             
         });
 
-        mUDButton = (Button)view.findViewById(R.id.buttonUD);
-        mUDButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mChartAdapter.checkOld();
-                mChartAdapter.notifyDataSetChanged();
-                download();
-            }
-            
-        });
-
-        mMenuButton = (Button)view.findViewById(R.id.buttonMenuDL);
-        mMenuButton.getBackground().setAlpha(127);
-        mMenuButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                AnimateButton a = new AnimateButton(getApplicationContext(), mDLButton);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mUDButton);
-                a.animate(true);
-                b.animate(true);
-            }
-            
-        });
     }
 
     
