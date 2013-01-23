@@ -95,7 +95,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
-    <string name="DownloadInst">&quot;Touch to select an item, then press menu to download it&quot;</string>
+    <string name="DownloadInst">&quot;Touch to select an item, then press start to download it&quot;</string>
     <string name="NoDia">&quot;Diagram Not Found&quot;</string>
     <string name="Searching">&quot;Searching for&quot;</string>
     <string name="Start">&quot;Start&quot;</string>

@@ -29,7 +29,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:layout_alignParentRight="true"
 	    android:layout_alignParentBottom="true"
 	    android:drawableLeft="@drawable/downloadarrow"
-	    android:gravity="left|center"
+	    android:gravity="center"
 	    android:text="@string/Start"
 	    android:visibility="visible" />
 	    
