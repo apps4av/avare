@@ -102,6 +102,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UnitsSummary">&quot;Select distance unit&quot;</string>
     <string name="AllFacilities">&quot;All Facilities&quot;</string>
     <string name="AllFacilitiesLabel">&quot;Show All Bases&quot;</string>
-    <string name="AllFacilitiesSummary">&quot;Select to show heliport, ultralight, and sea plane bases in Nearest&quot;</string>
+    <string name="AllFacilitiesSummary">&quot;Select to show heliport, ultralight, and sea plane bases in Nearest and Search&quot;</string>
     <string name="Set">&quot;Set&quot;</string>
 </resources>

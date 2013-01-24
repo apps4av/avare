@@ -334,6 +334,20 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     public synchronized boolean search(String name, LinkedHashMap<String, String> params) {
         
         Cursor cursor;
+        
+        String query = "select * from airports where ";
+        if(!mPref.shouldShowAllFacilities()) {
+            query += "Type=='AIRPORT' and ";
+        }
+        
+        /*
+         * If longer than airport code, add a clause to find it in airport names
+         */
+        query += "(LocationID like '" + name + "%' ";
+        if(name.length() > 3) {
+            query += "or FacilityName like '" + name + "%' ";
+        }
+        query += ") order by LocationID asc";
 
         opens();
         if(mDataBase == null) {
@@ -342,9 +356,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         }
         
         try {
-            cursor = mDataBase.rawQuery(
-                    "select * from airports where (LocationID like '" + name +
-                    "%') order by LocationID asc", null);
+            cursor = mDataBase.rawQuery(query, null);
         }
         catch (Exception e) {
             cursor = null;
