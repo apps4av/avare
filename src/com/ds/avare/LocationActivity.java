@@ -29,17 +29,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -73,10 +66,6 @@ public class LocationActivity extends Activity implements Observer {
      * App preferences
      */
     private Preferences mPref;
-    
-    private AlertDialog mDestDialog;
-    
-    private View mDestView;
     
     private Toast mToast;
     
@@ -283,6 +272,7 @@ public class LocationActivity extends Activity implements Observer {
                  * If button pressed was a destination go there, otherwise ask for dest
                  */
                 if(!b.getText().toString().equals(getString(R.string.Destination))) {
+                    
                     mDestination = new Destination(b.getText().toString(), mPref, mService);
                     mDestination.addObserver(LocationActivity.this);
                     mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
@@ -291,120 +281,10 @@ public class LocationActivity extends Activity implements Observer {
                     return;
                 }
 
-                
-                /*
-                 * Ask for dest.
-                 */
-                if(null == mService) {
-                    return;                    
-                }
-                if(null == mService.getDBResource()) {
-                    return;
-                }
-                
-                /*
-                 * Query new destination
-                 * Present an alert dialog with a text field
-                 */
-
-
-                /*
-                 *  limit FAA/ICAO code length to 4
-                 */
-                final EditText tv = (EditText)mDestView.findViewById(R.id.DestText);
-                tv.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                tv.setText(mPref.getBase());
-                tv.selectAll();
-
-                /*
-                 * Spinner calls repeatedly location 0 even when not selected.
-                 * Make location 0 non valid.
-                 */
-                String [] vals = mPref.getRecent();
-                String[] valsPos0 = new String[vals.length + 1];
-                valsPos0[0] = getString(R.string.Recent);
-                for(int i = 0; i < vals.length; i++) {
-                    valsPos0[i + 1] = vals[i];
-                }
-                
-                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
-                        R.layout.input, valsPos0);
-
-                final Spinner lv = (Spinner)mDestView.findViewById(R.id.destList);
-               
-                lv.setAdapter(adapter);
-
-                /*
-                 * Listen to list selection, do it last spinner calls it immediately
-                 */
-                lv.setOnItemSelectedListener(new OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> arg0, View arg1,
-                            int position, long arg3) {
-                        if(0 == position) {
-                            return;
-                        }
-                        String dst = adapter.getItem(position);
-                        mDestination = new Destination(dst, mPref, mService);
-                        mDestination.addObserver(LocationActivity.this);
-                        mToast.setText(getString(R.string.Searching) + " " + dst);
-                        mToast.show();
-                        mDestination.find();
-                        mDestDialog.dismiss();                        
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> arg0) {
-                    }
-                });
-
-                tv.setOnTouchListener(new View.OnTouchListener(){
-                    @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        /*
-                         * Clear hint when user touches the edit box
-                         */
-                        tv.setText("");
-                        return false;
-                    }
-                });
-
-
-                Button ok = (Button)mDestView.findViewById(R.id.destbuttonOK);
-                ok.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        String dst = tv.getText().toString();
-                        mDestination = new Destination(dst, mPref, mService);
-                        mDestination.addObserver(LocationActivity.this);
-                        mToast.setText(getString(R.string.Searching) + " " + dst);
-                        mToast.show();
-                        mDestination.find();
-                        mDestDialog.dismiss();
-                        
-                    }
-                });
-
-                Button cancel = (Button)mDestView.findViewById(R.id.destbuttonCancel);
-                cancel.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        mDestDialog.dismiss();
-                    }
-                });
-
-                mDestDialog.show();
-
+                startActivity(new Intent(LocationActivity.this, PlanActivity.class));
             }
-            
         });
-
-        mDestDialog = new AlertDialog.Builder(this).create();
-        mDestDialog.setTitle(getString(R.string.DestinationPrompt));
         
-        mDestView = layoutInflater.inflate(R.layout.destination, null);
-        mDestDialog.setView(mDestView);
 
         /*
          * Throw this in case GPS is disabled.
@@ -573,14 +453,6 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mGpsWarnDialog) {
             try {
                 mGpsWarnDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mDestDialog) {
-            try {
-                mDestDialog.dismiss();
             }
             catch (Exception e) {
             }

@@ -110,4 +110,14 @@ public class ImageDataSource {
         return dbHelper.findDiagramMatrix(name);
     }
 
+    /**
+     * 
+     * @param name
+     * @param params
+     * @return
+     */
+    public boolean search(String name, LinkedHashMap<String, String> params) {
+        return dbHelper.search(name, params);    
+    }
+
 }

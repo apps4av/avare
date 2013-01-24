@@ -36,11 +36,6 @@ public class Preferences {
     public static String speedConversionUnit = "kt";
 
     /*
-     * BOS is default
-     */
-    public static final String BASE = "BOS"; 
-    
-    /*
      * MAX number of elements
      */
     public static final int MAX_RECENT = 15; 
@@ -130,8 +125,7 @@ public class Preferences {
      * @return
      */
     public String[] getRecent() {
-        String recent = mPref.getString(mContext.getString(R.string.Recent),
-                getBase() + ",");
+        String recent = mPref.getString(mContext.getString(R.string.Recent), "");
         String[] tokens = recent.split(",");
         return tokens;
     }
@@ -160,14 +154,6 @@ public class Preferences {
         SharedPreferences.Editor editor = mPref.edit();
         editor.putString(mContext.getString(R.string.Recent), recent);
         editor.commit();
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String getBase() {
-        return(mPref.getString(mContext.getString(R.string.Base), BASE));
     }
 
     /**

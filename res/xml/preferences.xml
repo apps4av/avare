@@ -27,13 +27,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:summary="@string/MapsSummary"
 	    android:dialogTitle="@string/MapsLabel"
 	    android:dialogMessage="@string/MapsSummary"/>
-    <EditTextPreference
-        android:key="@string/Base"
-        android:title="@string/Base"
-        android:summary="@string/BasePrompt"
-        android:dialogTitle="@string/Base"
-        android:dialogMessage="@string/BasePrompt"   
-        android:defaultValue="@string/BaseId"/>
     <ListPreference
         android:key="@string/Units"
         android:title="@string/UnitsLabel"

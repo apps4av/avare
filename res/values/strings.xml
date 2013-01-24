@@ -26,7 +26,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
     <string name="Cancel">&quot;Cancel&quot;</string>
     <string name="To">&quot;To&quot;</string>
-    <string name="Base">&quot;Base&quot;</string>
     <string name="Maps">&quot;Maps&quot;</string>
     <string name="MapsLabel">&quot;Charts storage folder&quot;</string>
     <string name="MapsSummary">&quot;Location where charts are stored&quot;</string>
@@ -45,12 +44,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShowTrack">&quot;ShowTrack&quot;</string>
     <string name="ShowTrackLabel">&quot;Destination Track Line&quot;</string>
     <string name="ShowTrackSummary">&quot;Select for showing track to destination&quot;</string>
-    <string name="BaseId">&quot;BOS&quot;</string>
     <string name="Help">&quot;Help&quot;</string>
     <string name="desc">&quot;Image/Chart&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Preferences&quot;</string>
-    <string name="BasePrompt">&quot;Enter default destination code&quot;</string>
     <string name="Downloading">&quot;Downloading&quot;</string>
     <string name="download">&quot;Download&quot;</string>
     <string name="Failed">&quot;Failed&quot;</string>
@@ -98,6 +95,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DownloadInst">&quot;Touch to select an item, then press start to download it&quot;</string>
     <string name="NoDia">&quot;Diagram Not Found&quot;</string>
     <string name="Searching">&quot;Searching for&quot;</string>
+    <string name="Search">&quot;Search&quot;</string>
     <string name="Start">&quot;Start&quot;</string>
     <string name="Units">&quot;Distance Unit&quot;</string>
     <string name="UnitsLabel">&quot;Distance Unit&quot;</string>
@@ -105,4 +103,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AllFacilities">&quot;All Facilities&quot;</string>
     <string name="AllFacilitiesLabel">&quot;Show All Bases&quot;</string>
     <string name="AllFacilitiesSummary">&quot;Select to show heliport, ultralight, and sea plane bases in Nearest&quot;</string>
+    <string name="Set">&quot;Set&quot;</string>
 </resources>

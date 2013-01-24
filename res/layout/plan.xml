@@ -11,40 +11,30 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FF000000"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <EditText
-        android:id="@+id/DestText"
-        android:inputType="textNoSuggestions|textCapCharacters"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:background="#FFFFFFFF"
-        android:textColor="#FF000000"
-        android:textSize="25sp" />
-
-    <Button
-        android:id="@+id/destbuttonOK"
-        android:layout_marginTop="30dp"
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="150dp"
-        android:layout_below="@+id/DestText"
-        android:text="@string/OK" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="@string/Search"
+        android:inputType="textMultiLine" >
 
-    <Button
-        android:id="@+id/destbuttonCancel"
+        <requestFocus />
+    </EditText>
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_width="150dp"
-        android:layout_below="@+id/DestText"
-        android:layout_toRightOf="@+id/destbuttonOK"
-        android:text="@string/Cancel" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editText1" >
 
-    <Spinner
-        android:id="@+id/destList"
-        android:layout_toRightOf="@+id/DestText"
-        android:layout_height="60dp"
-        android:layout_width="150dp"/>
-    
+    </ListView>
+
 </RelativeLayout>

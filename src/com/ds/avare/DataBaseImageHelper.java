@@ -326,6 +326,48 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Search something in database
+     * @param name
+     * @param params
+     * @return
+     */
+    public synchronized boolean search(String name, LinkedHashMap<String, String> params) {
+        
+        Cursor cursor;
+
+        opens();
+        if(mDataBase == null) {
+            closes();
+            return false;
+        }
+        
+        try {
+            cursor = mDataBase.rawQuery(
+                    "select * from airports where (LocationID like '" + name +
+                    "%') order by LocationID asc", null);
+        }
+        catch (Exception e) {
+            cursor = null;
+            return false;
+        }
+
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    params.put(cursor.getString(0), cursor.getString(4));
+                }
+                cursor.close();
+            }
+        }
+        catch (Exception e) {
+            cursor = null;
+            return false;
+        }
+        closes();
+        return true;
+    }
+
+    /**
      * Find all information about a facility / destination based on its name
      * @param name
      * @param params
