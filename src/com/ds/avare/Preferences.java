@@ -225,7 +225,7 @@ public class Preferences {
      * @return
      */
     public boolean isPortrait() {
-        return(mPref.getBoolean(mContext.getString(R.string.OrientationP), false));
+        return(mPref.getBoolean(mContext.getString(R.string.OrientationP), true));
     }
 
     /**

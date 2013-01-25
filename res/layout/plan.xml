@@ -22,8 +22,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentTop="true"
         android:ems="10"
         android:hint="@string/Search"
-        android:inputType="textMultiLine" >
-
+        android:inputType="textNoSuggestions" >
         <requestFocus />
     </EditText>
 

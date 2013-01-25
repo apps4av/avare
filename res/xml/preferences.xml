@@ -63,7 +63,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:key="@string/OrientationP"
 	    android:title="@string/OrientationPLabel"
 	    android:summary="@string/OrientationPSummary"
-	    android:defaultValue="false"/>
+	    android:defaultValue="true"/>
 	<CheckBoxPreference
 	    android:key="@string/TFRAndMETAR"
 	    android:title="@string/TFRAndMETARLabel"
