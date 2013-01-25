@@ -343,11 +343,14 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         /*
          * If longer than airport code, add a clause to find it in airport names
          */
-        query += "(LocationID like '" + name + "%' ";
-        if(name.length() > 3) {
-            query += "or FacilityName like '" + name + "%' ";
+        if(name.length() > 4) {
+            query += "(FacilityName like '%" + name + "%' ";
+            query += ") order by FacilityName asc";
         }
-        query += ") order by LocationID asc";
+        else {
+            query += "(LocationID like '" + name + "%' ";
+            query += ") order by LocationID asc";
+        }
 
         opens();
         if(mDataBase == null) {

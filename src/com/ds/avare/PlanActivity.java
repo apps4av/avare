@@ -95,6 +95,16 @@ public class PlanActivity extends Activity implements Observer {
         mDestination.find();
     }
     
+    /**
+     * 
+     */
+    private void initList() {
+        String [] vals = mPref.getRecent();
+        mAdapter = new ArrayAdapter<String>(PlanActivity.this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, vals);
+        mSearchListView.setAdapter(mAdapter);
+    }
+    
     @Override
     /**
      * 
@@ -125,11 +135,8 @@ public class PlanActivity extends Activity implements Observer {
         /*
          * Now initialize the list to recent in case someone needs to go there, and not search
          */
-        String [] vals = mPref.getRecent();
-        mAdapter = new ArrayAdapter<String>(PlanActivity.this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, vals);
-        mSearchListView.setAdapter(mAdapter);
-
+        initList();
+        
         /*
          * Set on click
          */
@@ -159,12 +166,6 @@ public class PlanActivity extends Activity implements Observer {
     
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int after) {
-                /*
-                 * If text char, then do not search
-                 */
-                if(s.length() == 0) {
-                    return;
-                }
                 
                 if(null != mSearchTask) {
                     if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
@@ -173,6 +174,14 @@ public class PlanActivity extends Activity implements Observer {
                          */
                         mSearchTask.cancel(true);
                     }
+                }
+                
+                /*
+                 * If text is 0 length, then do not search
+                 */
+                if(s.length() == 0) {
+                    initList();
+                    return;
                 }
                 
                 mSearchTask = new SearchTask();
@@ -357,6 +366,9 @@ public class PlanActivity extends Activity implements Observer {
             /*
              * Set new search adapter
              */
+            if(null == selection) {
+                return;
+            }
             mAdapter = new ArrayAdapter<String>(PlanActivity.this,
                     android.R.layout.simple_list_item_1, android.R.id.text1, selection);
             mSearchListView.setAdapter(mAdapter);
