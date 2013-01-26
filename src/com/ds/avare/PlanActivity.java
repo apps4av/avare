@@ -318,7 +318,9 @@ public class PlanActivity extends Activity implements Observer {
                 /*
                  * Switch back to main activity
                  */
-                startActivity(new Intent(PlanActivity.this, MainActivity.class));
+                Intent i = new Intent(PlanActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));
