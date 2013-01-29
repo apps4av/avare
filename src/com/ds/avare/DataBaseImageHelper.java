@@ -334,23 +334,15 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     public synchronized boolean search(String name, LinkedHashMap<String, String> params) {
         
         Cursor cursor;
-        
-        String query = "select * from airports where ";
-        if(!mPref.shouldShowAllFacilities()) {
-            query += "Type=='AIRPORT' and ";
-        }
+        String query;
         
         /*
-         * If longer than airport code, add a clause to find it in airport names
+         * All queries for airports, navaids, fixes
          */
-        if(name.length() > 4) {
-            query += "(FacilityName like '%" + name + "%' ";
-            query += ") order by FacilityName asc";
-        }
-        else {
-            query += "(LocationID like '" + name + "%' ";
-            query += ") order by LocationID asc";
-        }
+
+        query = "select LocationID,FacilityName,Type from nav where ";
+        query += "(LocationID like '" + name + "%' ";
+        query += ") order by LocationID asc";        
 
         opens();
         if(mDataBase == null) {
@@ -363,22 +355,85 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         }
         catch (Exception e) {
             cursor = null;
-            return false;
         }
 
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
-                    params.put(cursor.getString(0), cursor.getString(4));
+                    params.put("Navaid;" + cursor.getString(2) + ";" + cursor.getString(1), cursor.getString(0));
                 }
                 cursor.close();
             }
         }
         catch (Exception e) {
             cursor = null;
-            return false;
         }
         closes();
+
+        query = "select LocationID,FacilityName,Type from airports  where ";
+        if(!mPref.shouldShowAllFacilities()) {
+            query += "Type=='AIRPORT' and ";
+        }
+        query += "(LocationID like '" + name + "%' ";
+        query += ") order by LocationID asc";        
+
+        opens();
+        if(mDataBase == null) {
+            closes();
+            return false;
+        }
+        
+        try {
+            cursor = mDataBase.rawQuery(query, null);
+        }
+        catch (Exception e) {
+            cursor = null;
+        }
+
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    params.put("Base;" + cursor.getString(2) + ";" + cursor.getString(1), cursor.getString(0));
+                }
+                cursor.close();
+            }
+        }
+        catch (Exception e) {
+            cursor = null;
+        }
+        closes();
+
+
+        query = "select LocationID,FacilityName,Type from fix where ";
+        query += "(LocationID like '" + name + "%' ";
+        query += ") order by LocationID asc";        
+
+        opens();
+        if(mDataBase == null) {
+            closes();
+            return false;
+        }
+        
+        try {
+            cursor = mDataBase.rawQuery(query, null);
+        }
+        catch (Exception e) {
+            cursor = null;
+        }
+
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    params.put("Fix;" + cursor.getString(2) + ";" + cursor.getString(1), cursor.getString(0));
+                }
+                cursor.close();
+            }
+        }
+        catch (Exception e) {
+            cursor = null;
+        }
+        closes();
+        
         return true;
     }
 
@@ -388,11 +443,22 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public synchronized boolean findDestination(String name, LinkedHashMap<String, String> params) {
+    public synchronized boolean findDestination(String name, String type, LinkedHashMap<String, String> params) {
         
         Cursor cursor;
         Cursor cursorfreq;
         Cursor cursorrun;
+        
+        String types = "";
+        if(type.equals("Base")) {
+            types = "airports";
+        }
+        else if(type.equals("Navaid")) {
+            types = "nav";
+        }
+        else if(type.equals("Fix")) {
+            types = "fix";
+        }
 
         opens();
         if(mDataBase == null) {
@@ -402,7 +468,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         
         try {
             cursor = mDataBase.rawQuery(
-                    "select * from airports where LocationID==\"" + name + "\";", null);
+                    "select * from " + types + " where LocationID==\"" + name + "\";", null);
         }
         catch (Exception e) {
             cursor = null;
@@ -418,113 +484,115 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     params.put("Location ID", cursor.getString(0));
                     params.put("Facility Name", cursor.getString(4));
                     
-                    /*
-                     * Now find airport frequencies then put
-                     */
-                    try {
-                        cursorfreq = mDataBase.rawQuery(
-                            "select * from airportfreq where LocationID==\"" + name
-                            + "\" or LocationID==\"K" + name + "\";", null);
-                    }
-                    catch (Exception e) {
-                        cursorfreq = null;
-                    }
-    
-                    /*
-                     * Add all of them
-                     */
-                    if(cursorfreq != null) {
-                        while(cursorfreq.moveToNext()) {
-                            if(params.containsKey(cursorfreq.getString(1))) {
-                                params.put(cursorfreq.getString(1) + "#", cursorfreq.getString(2));                                
-                            }
-                            else {
-                                params.put(cursorfreq.getString(1), cursorfreq.getString(2));
-                            }
+                    if(type.equals("Base")) {
+                        /*
+                         * Now find airport frequencies then put
+                         */
+                        try {
+                            cursorfreq = mDataBase.rawQuery(
+                                "select * from airportfreq where LocationID==\"" + name
+                                + "\" or LocationID==\"K" + name + "\";", null);
                         }
-                        cursorfreq.close();
-                    }
-    
-    
-                    /*
-                     * Now find airport runways.
-                     */
-                    try {
-                        cursorrun = mDataBase.rawQuery(
-                            "select * from airportrunways where LocationID==\"" + name
-                            + "\" or LocationID==\"K" + name + "\";", null);
-                    }
-                    catch (Exception e) {
-                        cursorrun = null;
-                    }
-    
-                    /*
-                     * Add all of them
-                     */
-                    if(cursorrun != null) {
-                        while(cursorrun.moveToNext()) {
-                            
-                            String Length = cursorrun.getString(1);
-                            String Width = cursorrun.getString(2);
-                            String Surface = cursorrun.getString(3);
-                            if(Surface.equals("")) {
-                                Surface = "Unknown";
-                            }
-                            String Lighted = cursorrun.getString(4);
-                            if(Lighted.equals("0") || Lighted.equals("")) {
-                                Lighted = "";
-                            }
-                            else {
-                                Lighted = ", " + Lighted;                            
-                            }
-                            String Closed = cursorrun.getString(5);
-                            if(Closed.equals("0") || Closed.equals("")) {
-                                Closed = ", Open";
-                            }
-                            else {
-                                Closed = ", Closed";                            
-                            }
-                            
-                            params.put("Runway " + cursorrun.getString(6) + "/" + cursorrun.getString(12), 
-                                    "Length " + Length + 
-                                    ", Width " + Width + 
-                                    ", Surface " + Surface +
-                                    Lighted +
-                                    Closed);
-                            
-                            String Elevation = cursorrun.getString(9);
-                            if(Elevation.equals("")) {
-                                Elevation = "0";
-                            }
-                            String Heading = cursorrun.getString(10);
-                            String DT = cursorrun.getString(11);
-                            if(DT.equals("")) {
-                                DT = "0";
-                            }
-                            
-                            params.put("Runway " + cursorrun.getString(6),
-                                    "Elevation " + Elevation + 
-                                    ", True Heading " + Heading + 
-                                    ", Displaced Threshold " + DT);
-    
-                            
-                            Elevation = cursorrun.getString(15);
-                            if(Elevation.equals("")) {
-                                Elevation = "0";
-                            }
-                            Heading = cursorrun.getString(16);
-                            DT = cursorrun.getString(17);
-                            if(DT.equals("")) {
-                                DT = "0";
-                            }
-                            
-                            params.put("Runway " + cursorrun.getString(12),
-                                    "Elevation " + Elevation + 
-                                    ", True Heading " + Heading + 
-                                    ", Displaced Threshold " + DT);
-    
+                        catch (Exception e) {
+                            cursorfreq = null;
                         }
-                        cursorrun.close();
+        
+                        /*
+                         * Add all of them
+                         */
+                        if(cursorfreq != null) {
+                            while(cursorfreq.moveToNext()) {
+                                if(params.containsKey(cursorfreq.getString(1))) {
+                                    params.put(cursorfreq.getString(1) + "#", cursorfreq.getString(2));                                
+                                }
+                                else {
+                                    params.put(cursorfreq.getString(1), cursorfreq.getString(2));
+                                }
+                            }
+                            cursorfreq.close();
+                        }
+        
+        
+                        /*
+                         * Now find airport runways.
+                         */
+                        try {
+                            cursorrun = mDataBase.rawQuery(
+                                "select * from airportrunways where LocationID==\"" + name
+                                + "\" or LocationID==\"K" + name + "\";", null);
+                        }
+                        catch (Exception e) {
+                            cursorrun = null;
+                        }
+        
+                        /*
+                         * Add all of them
+                         */
+                        if(cursorrun != null) {
+                            while(cursorrun.moveToNext()) {
+                                
+                                String Length = cursorrun.getString(1);
+                                String Width = cursorrun.getString(2);
+                                String Surface = cursorrun.getString(3);
+                                if(Surface.equals("")) {
+                                    Surface = "Unknown";
+                                }
+                                String Lighted = cursorrun.getString(4);
+                                if(Lighted.equals("0") || Lighted.equals("")) {
+                                    Lighted = "";
+                                }
+                                else {
+                                    Lighted = ", " + Lighted;                            
+                                }
+                                String Closed = cursorrun.getString(5);
+                                if(Closed.equals("0") || Closed.equals("")) {
+                                    Closed = ", Open";
+                                }
+                                else {
+                                    Closed = ", Closed";                            
+                                }
+                                
+                                params.put("Runway " + cursorrun.getString(6) + "/" + cursorrun.getString(12), 
+                                        "Length " + Length + 
+                                        ", Width " + Width + 
+                                        ", Surface " + Surface +
+                                        Lighted +
+                                        Closed);
+                                
+                                String Elevation = cursorrun.getString(9);
+                                if(Elevation.equals("")) {
+                                    Elevation = "0";
+                                }
+                                String Heading = cursorrun.getString(10);
+                                String DT = cursorrun.getString(11);
+                                if(DT.equals("")) {
+                                    DT = "0";
+                                }
+                                
+                                params.put("Runway " + cursorrun.getString(6),
+                                        "Elevation " + Elevation + 
+                                        ", True Heading " + Heading + 
+                                        ", Displaced Threshold " + DT);
+        
+                                
+                                Elevation = cursorrun.getString(15);
+                                if(Elevation.equals("")) {
+                                    Elevation = "0";
+                                }
+                                Heading = cursorrun.getString(16);
+                                DT = cursorrun.getString(17);
+                                if(DT.equals("")) {
+                                    DT = "0";
+                                }
+                                
+                                params.put("Runway " + cursorrun.getString(12),
+                                        "Elevation " + Elevation + 
+                                        ", True Heading " + Heading + 
+                                        ", Displaced Threshold " + DT);
+        
+                            }
+                            cursorrun.close();
+                        }
                     }
     
                     /*
@@ -533,22 +601,24 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     params.put("ARP Latitude", Double.toString(cursor.getDouble(1)));
                     params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
                     params.put("Type", cursor.getString(3).trim());
-                    params.put("Use", cursor.getString(5).trim());
-                    params.put("Owner Phone", cursor.getString(6).trim());
-                    params.put("Manager", cursor.getString(7).trim());
-                    params.put("Manager Phone", cursor.getString(8).trim());
-                    params.put("ARP Elevation", cursor.getString(9).trim());
-                    params.put("Magnetic Variation", cursor.getString(10).trim());
-                    params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
-                    params.put("Fuel Types", cursor.getString(12).trim());
-                    params.put("Airframe Repair", cursor.getString(13).trim());
-                    params.put("Power Plant Repair", cursor.getString(14).trim());
-                    params.put("Bottled Oxygen Type", cursor.getString(15).trim());
-                    params.put("Bulk Oxygen Type", cursor.getString(16).trim());
-                    params.put("ATCT", cursor.getString(17).trim());
-                    params.put("UNICOM Frequencies", cursor.getString(18).trim());
-                    params.put("CTAF Frequency", cursor.getString(19).trim());
-                    params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
+                    if(type.equals("Base")) {
+                        params.put("Use", cursor.getString(5).trim());
+                        params.put("Owner Phone", cursor.getString(6).trim());
+                        params.put("Manager", cursor.getString(7).trim());
+                        params.put("Manager Phone", cursor.getString(8).trim());
+                        params.put("ARP Elevation", cursor.getString(9).trim());
+                        params.put("Magnetic Variation", cursor.getString(10).trim());
+                        params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
+                        params.put("Fuel Types", cursor.getString(12).trim());
+                        params.put("Airframe Repair", cursor.getString(13).trim());
+                        params.put("Power Plant Repair", cursor.getString(14).trim());
+                        params.put("Bottled Oxygen Type", cursor.getString(15).trim());
+                        params.put("Bulk Oxygen Type", cursor.getString(16).trim());
+                        params.put("ATCT", cursor.getString(17).trim());
+                        params.put("UNICOM Frequencies", cursor.getString(18).trim());
+                        params.put("CTAF Frequency", cursor.getString(19).trim());
+                        params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
+                    }
                                     
                     cursor.close();
                     

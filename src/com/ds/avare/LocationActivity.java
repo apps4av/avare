@@ -273,7 +273,7 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(!b.getText().toString().equals(getString(R.string.Destination))) {
                     
-                    mDestination = new Destination(b.getText().toString(), mPref, mService);
+                    mDestination = new Destination(b.getText().toString(), "Base", mPref, mService);
                     mDestination.addObserver(LocationActivity.this);
                     mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
                     mToast.show();
@@ -523,7 +523,7 @@ public class LocationActivity extends Activity implements Observer {
                     mService.setDestination((Destination)arg0);
                 }
                 mLocationView.updateDestination(mDestination);
-                mPref.addToRecent(mDestination.getID());
+                mPref.addToRecent(mDestination.getStorageName());
                 
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();

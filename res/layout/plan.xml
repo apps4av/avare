@@ -14,18 +14,6 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:ems="10"
-        android:hint="@string/Search"
-        android:inputType="textNoSuggestions" >
-        <requestFocus />
-    </EditText>
-
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
@@ -34,16 +22,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_below="@+id/editText1" >
 
     </ListView>
-
-    <Spinner
-        android:id="@+id/spinner1"
+    <EditText
+        android:id="@+id/editText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/editText1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:entries="@array/Type"
-        android:defaultValue="0"
-        android:entryValues="@array/TypeValues"
-        android:layout_toRightOf="@+id/editText1" />
+        android:ems="10"
+        android:hint="@string/Search"
+        android:inputType="textNoSuggestions" />
 
 </RelativeLayout>

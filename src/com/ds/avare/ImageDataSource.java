@@ -77,8 +77,8 @@ public class ImageDataSource {
      * @param params
      * @return
      */
-    public boolean findDestination(String name, LinkedHashMap<String, String> params) {
-        return(dbHelper.findDestination(name, params));
+    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params) {
+        return(dbHelper.findDestination(name, type, params));
     }
     
     /**

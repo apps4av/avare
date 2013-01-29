@@ -65,6 +65,9 @@ public class Destination extends Observable {
     
     private boolean mLooking;
     
+    private String mType;
+    private String mSubType;
+    
     /**
      * Contains all info in a hash map for the destination
      * Dozens of parameters in a linked map because simple map would rearrange the importance
@@ -75,8 +78,10 @@ public class Destination extends Observable {
 	 * @param name
 	 * @param DataSource
 	 */
-	public Destination(String name, Preferences pref, StorageService service) {
+	public Destination(String name, String type, Preferences pref, StorageService service) {
 	    mName = name.toUpperCase();
+	    mType = type;
+	    mSubType = "";
 	    mFound = mLooking = false;
 	    mService = service;
 	    mDataSource = mService.getDBResource(); 
@@ -86,7 +91,15 @@ public class Destination extends Observable {
     	mDiagramFound = null;
     	mLond = mLatd = 0;
 	}
-    	
+    
+	/**
+	 * 
+	 * @return
+	 */
+	public String getStorageName() {
+	    return getID() + "::" + mType + ";" + mSubType + ";" + getFacilityName();
+	}
+	
 	/**
      * Update the current speed, lat, lon, that will update
      * ETA, distance and bearing to the destination
@@ -158,7 +171,7 @@ public class Destination extends Observable {
 	     */
         mLooking = true;
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(mName);
+        locmDataBaseTask.execute(mName, mType);
 	}
 	
     /**
@@ -184,8 +197,8 @@ public class Destination extends Observable {
 	        	return false;
         	}
         	
-	        boolean ret = mDataSource.findDestination((String)vals[0], mParams);
-	        if(ret) {
+	        boolean ret = mDataSource.findDestination((String)vals[0], (String)vals[1], mParams);
+	        if(ret && mType.equals("Base")) {
 	            /*
 	             * Found destination extract its airport diagram
 	             */
@@ -199,6 +212,10 @@ public class Destination extends Observable {
                     mService.loadDiagram(null);
 	                mDiagramFound = null;
 	            }
+	        }
+	        else {
+                mService.loadDiagram(null);
+                mDiagramFound = null;
 	        }
 			return(ret);
         }
@@ -214,6 +231,7 @@ public class Destination extends Observable {
         	 */
 			mFound = result;
 			if(mFound) {
+                mSubType = mParams.get("Type");
     		    mLond = Double.parseDouble(mParams.get("ARP Longitude"));
     		    mLatd = Double.parseDouble(mParams.get("ARP Latitude"));
 			}

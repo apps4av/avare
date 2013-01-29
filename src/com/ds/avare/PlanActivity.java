@@ -87,8 +87,8 @@ public class PlanActivity extends Activity implements Observer {
      * 
      * @param dst
      */
-    private void goTo(String dst) {
-        mDestination = new Destination(dst, mPref, mService);
+    private void goTo(String dst, String type) {
+        mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(PlanActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -144,9 +144,16 @@ public class PlanActivity extends Activity implements Observer {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                     long arg3) {
-                String val[] = mAdapter.getItem(position).split("-");
+                String val[] = mAdapter.getItem(position).split("::");
+                if(val.length < 2) {
+                    return;
+                }
                 String dst = val[0];
-                goTo(dst);
+                String vals[] = val[1].split(";");
+                if(vals.length < 2) {
+                    return;
+                }
+                goTo(dst, vals[0]);
             }
         });
 
@@ -311,7 +318,7 @@ public class PlanActivity extends Activity implements Observer {
                 if(mService != null) {
                     mService.setDestination((Destination)arg0);
                 }
-                mPref.addToRecent(mDestination.getID());
+                mPref.addToRecent(mDestination.getStorageName());
                 
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();
@@ -353,7 +360,7 @@ public class PlanActivity extends Activity implements Observer {
                 selection = new String[params.size()];
                 int iterator = 0;
                 for(String key : params.keySet()){
-                    selection[iterator] = key + "-" + params.get(key);
+                    selection[iterator] = params.get(key) + "::" +  key;
                     iterator++;
                 }
             }
