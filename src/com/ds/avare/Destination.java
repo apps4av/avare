@@ -232,8 +232,8 @@ public class Destination extends Observable {
 			mFound = result;
 			if(mFound) {
                 mSubType = mParams.get("Type");
-    		    mLond = Double.parseDouble(mParams.get("ARP Longitude"));
-    		    mLatd = Double.parseDouble(mParams.get("ARP Latitude"));
+    		    mLond = Double.parseDouble(mParams.get("Longitude"));
+    		    mLatd = Double.parseDouble(mParams.get("Latitude"));
 			}
 			/*
 			 * Anyone watching if destination found?

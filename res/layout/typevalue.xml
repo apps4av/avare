@@ -36,7 +36,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:textSize="20sp"
-         android:layout_toRightOf="@+id/type">
+        android:layout_toRightOf="@+id/type">
     </TextView>
     
 

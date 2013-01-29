@@ -307,8 +307,8 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                         params.put("Location ID", cursor.getString(0));
                         params.put("Facility Name", cursor.getString(4));
-                        params.put("ARP Latitude", Double.toString(cursor.getDouble(1)));
-                        params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
+                        params.put("Latitude", Double.toString(cursor.getDouble(1)));
+                        params.put("Longitude", Double.toString(cursor.getDouble(2)));
                         params.put("Magnetic Variation", cursor.getString(10));
                         params.put("Fuel Types", cursor.getString(12));
                         airports[id] = new Airport(params, lon, lat);
@@ -598,15 +598,15 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                     /*
                      * Less important AFD in the end.
                      */
-                    params.put("ARP Latitude", Double.toString(cursor.getDouble(1)));
-                    params.put("ARP Longitude", Double.toString(cursor.getDouble(2)));
+                    params.put("Latitude", Double.toString(cursor.getDouble(1)));
+                    params.put("Longitude", Double.toString(cursor.getDouble(2)));
                     params.put("Type", cursor.getString(3).trim());
                     if(type.equals("Base")) {
                         params.put("Use", cursor.getString(5).trim());
                         params.put("Owner Phone", cursor.getString(6).trim());
                         params.put("Manager", cursor.getString(7).trim());
                         params.put("Manager Phone", cursor.getString(8).trim());
-                        params.put("ARP Elevation", cursor.getString(9).trim());
+                        params.put("Elevation", cursor.getString(9).trim());
                         params.put("Magnetic Variation", cursor.getString(10).trim());
                         params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
                         params.put("Fuel Types", cursor.getString(12).trim());
@@ -614,7 +614,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                         params.put("Power Plant Repair", cursor.getString(14).trim());
                         params.put("Bottled Oxygen Type", cursor.getString(15).trim());
                         params.put("Bulk Oxygen Type", cursor.getString(16).trim());
-                        params.put("ATCT", cursor.getString(17).trim());
+                        params.put("Control Tower", cursor.getString(17).trim());
                         params.put("UNICOM Frequencies", cursor.getString(18).trim());
                         params.put("CTAF Frequency", cursor.getString(19).trim());
                         params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
