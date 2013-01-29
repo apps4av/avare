@@ -393,6 +393,9 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
+                    /*
+                     * LocationID::Base;Type;FacilityName
+                     */
                     params.put("Base;" + cursor.getString(2) + ";" + cursor.getString(1), cursor.getString(0));
                 }
                 cursor.close();

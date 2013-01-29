@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -54,7 +53,7 @@ public class PlanActivity extends Activity implements Observer {
     private EditText mSearchText;
     private Preferences mPref;
     private Toast mToast;
-    private ArrayAdapter<String> mAdapter;
+    private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     
     /**
@@ -99,9 +98,8 @@ public class PlanActivity extends Activity implements Observer {
      * 
      */
     private void initList() {
-        String [] vals = mPref.getRecent();
-        mAdapter = new ArrayAdapter<String>(PlanActivity.this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, vals);
+        String [] vals = mPref.getRecent();        
+        mAdapter = new SearchAdapter(PlanActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
     }
     
@@ -342,7 +340,6 @@ public class PlanActivity extends Activity implements Observer {
      */
     private class SearchTask extends AsyncTask<Object, Void, Boolean> {
 
-        
         private String[] selection;
 
         /* (non-Javadoc)
@@ -378,8 +375,7 @@ public class PlanActivity extends Activity implements Observer {
             if(null == selection) {
                 return;
             }
-            mAdapter = new ArrayAdapter<String>(PlanActivity.this,
-                    android.R.layout.simple_list_item_1, android.R.id.text1, selection);
+            mAdapter = new SearchAdapter(PlanActivity.this, selection);
             mSearchListView.setAdapter(mAdapter);
         }
     }
