@@ -591,18 +591,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Rotate and move to a panned location
              */                
-            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing(),
-                    mAirplaneBitmap.getWidth() / 2.f,
-                    mAirplaneBitmap.getHeight() / 2.f);
+            mAirplaneBitmap.getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleFactor());
+            mAirplaneBitmap.getTransform().postRotate((float)mGpsParams.getBearing(),
+                    mAirplaneBitmap.getWidth() / 2.f * mScale.getScaleFactor(),
+                    mAirplaneBitmap.getHeight() / 2.f * mScale.getScaleFactor());
             
             mAirplaneBitmap.getTransform().postTranslate(
                     getWidth() / 2.f
-                    - mAirplaneBitmap.getWidth()  / 2.f
+                    - mAirplaneBitmap.getWidth() * mScale.getScaleFactor() / 2.f
                     + mPan.getMoveX() * mScale.getScaleFactor(),
                     getHeight() / 2.f
-                    - mAirplaneBitmap.getHeight()  / 2.f
+                    - mAirplaneBitmap.getHeight() * mScale.getScaleFactor() / 2.f
                     + mPan.getMoveY() * mScale.getScaleCorrected());
     
+            
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }	
     }
