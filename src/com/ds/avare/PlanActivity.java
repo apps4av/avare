@@ -38,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
  
 /**
@@ -55,6 +56,7 @@ public class PlanActivity extends Activity implements Observer {
     private Toast mToast;
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
+    private ProgressBar mProgressBar;
     
     /**
      * Current destination info
@@ -131,6 +133,11 @@ public class PlanActivity extends Activity implements Observer {
         mSearchListView = (ListView)view.findViewById(R.id.listView1);
         
         /*
+         * Progress bar
+         */
+        mProgressBar = (ProgressBar)(view.findViewById(R.id.progressBar1));
+        
+        /*
          * Now initialize the list to recent in case someone needs to go there, and not search
          */
         initList();
@@ -172,6 +179,7 @@ public class PlanActivity extends Activity implements Observer {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int after) {
                 
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if(null != mSearchTask) {
                     if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
                         /*
@@ -189,6 +197,8 @@ public class PlanActivity extends Activity implements Observer {
                     return;
                 }
                 
+                mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
                 mSearchTask = new SearchTask();
                 mSearchTask.execute(s.toString());
 
@@ -352,6 +362,7 @@ public class PlanActivity extends Activity implements Observer {
             if(null == mService) {
                 return false;
             }
+
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             if(mService.getDBResource().search(srch, params)) {
                 selection = new String[params.size()];
@@ -372,11 +383,13 @@ public class PlanActivity extends Activity implements Observer {
             /*
              * Set new search adapter
              */
+
             if(null == selection) {
                 return;
             }
             mAdapter = new SearchAdapter(PlanActivity.this, selection);
             mSearchListView.setAdapter(mAdapter);
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }
     }
 

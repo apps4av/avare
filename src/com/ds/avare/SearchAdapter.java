@@ -140,6 +140,7 @@ public class SearchAdapter extends ArrayAdapter<String> {
                         vals[1].equals("YNRS-WAYPOINT") ||
                         vals[1].equals("YVFR-WP") ||
                         vals[1].equals("YGPS-WP") ||
+                        vals[1].equals("YCNF") ||
                         vals[1].equals("YRADAR") ||
                         vals[1].equals("NDME-FIX") ||
                         vals[1].equals("NNOT-ASSIGNED") ||
