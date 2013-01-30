@@ -129,12 +129,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
 
-    <string-array name="resFilesNoDb">
-        <item>database</item>
-    </string-array>
-    
     <string-array name="resFiles">
-        <item>databases</item>
+        <item>databases_v1</item>
         <item>AirportDiagramsj</item>
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>

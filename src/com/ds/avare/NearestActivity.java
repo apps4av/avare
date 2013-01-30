@@ -284,6 +284,7 @@ public class NearestActivity extends Activity  implements Observer {
                 mPref.addToRecent(((Destination)arg0).getStorageName());
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();
+                ((MainActivity)this.getParent()).switchTab(0);
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));

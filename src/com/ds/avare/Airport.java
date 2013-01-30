@@ -40,8 +40,8 @@ public class Airport implements Comparable<Airport> {
      * @param cLat
      */
     public Airport(LinkedHashMap<String, String> params, double cLon, double cLat) {
-        mLon = Double.parseDouble(params.get("ARP Longitude"));
-        mLat = Double.parseDouble(params.get("ARP Latitude"));;
+        mLon = Double.parseDouble(params.get("Longitude"));
+        mLat = Double.parseDouble(params.get("Latitude"));;
         mId = params.get("Location ID");
         mName = params.get("Facility Name");
         mFuel = params.get("Fuel Types");
