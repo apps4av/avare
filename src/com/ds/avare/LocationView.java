@@ -982,7 +982,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Draw distance from point
              */
             mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                    "," + Math.round(brg) + '\u00B0' + "," + Math.round(180 - brg) + '\u00B0' + mContext.getString(R.string.From);                
+                    "," + Math.round(brg) + '\u00B0';           
             
             /*
              * Get airport touched on, but it can block and not be in BG task because user
