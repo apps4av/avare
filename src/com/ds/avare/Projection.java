@@ -28,8 +28,11 @@ public class Projection {
      */
     private double mDistance;
 
-    private static final boolean rhumb = true;
-    
+    private double mLon1;
+    private double mLon2;
+    private double mLat1;
+    private double mLat2;       
+
     /**
      * @param lon1 Longitude of point 1
      * @param lat1 Latitude of point 1
@@ -37,52 +40,29 @@ public class Projection {
      * @param lat2 Latitude of point 2
      */
     public Projection(double lon1, double lat1, double lon2, double lat2) {
+                
+        //http://williams.best.vwh.net/avform.htm#Intermediate
+        mLon1 = Math.toRadians(lon2);
+        mLon2 = Math.toRadians(lon1);
+        mLat1 = Math.toRadians(lat2);
+        mLat2 = Math.toRadians(lat1);       
         
+        double m = Math.sin((mLat1 - mLat2) / 2);
+        double n = Math.sin((mLon1 - mLon2) / 2);
         
-        //http://www.movable-type.co.uk/scripts/latlong.html
-        lon1 = Math.toRadians(lon1);
-        lon2 = Math.toRadians(lon2);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-        
-        if(rhumb) {
-            // distance rhumb line 
-            double dLat = lat2 - lat1;
-            double dLon = Math.abs(lon2 - lon1);
-            
-            double dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
-            double q = (dPhi != 0) ? dLat / dPhi : Math.cos(lat1);
-            
-            if (Math.abs(dLon) > Math.PI) {
-                dLon = dLon > 0 ? - (2 * Math.PI - dLon) : (2 * Math.PI + dLon);
-            }
-            
-            mDistance = Math.sqrt(dLat * dLat + q * q * dLon * dLon) * Preferences.earthRadiusConversion;
-    
-            // bearing rhumb line
-            dLon = lon2 - lon1;
-              
-            if (Math.abs(dLon) > Math.PI) dLon = dLon > 0 ? -(2 * Math.PI - dLon) : (2 * Math.PI + dLon);
-            mBearing = (Math.toDegrees(Math.atan2(dLon, dPhi)) + 360) % 360;
+        double d = 2 * Math.asin(Math.sqrt(m * m + 
+                Math.cos(mLat1) * Math.cos(mLat2) * n * n));
+
+        double c;
+        if (Math.sin(mLon2 - mLon1) < 0) {       
+            c = Math.acos((Math.sin(mLat2) - Math.sin(mLat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(mLat1)));
         }
         else {
-            
-            // Haversine
-            double dLat = lat2 - lat1;
-            double dLon = lon2 - lon1;
-            
-            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(lat1) * Math.cos(lat2) * 
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            mDistance = Preferences.earthRadiusConversion * c;
-                       
-            double y = Math.sin(dLon) * Math.cos(lat2);
-            double x = Math.cos(lat1) * Math.sin(lat2) -
-                    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-            
-            mBearing = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+            c = 2 * Math.PI - Math.acos((Math.sin(mLat2) - Math.sin(mLat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(mLat1)));
         }
+
+        mDistance = Preferences.earthRadiusConversion * d;
+        mBearing = (Math.toDegrees(c) + 360) % 360;
     }
 
     /**
@@ -136,5 +116,33 @@ public class Projection {
         }
 
         return(dir);
+    }
+    
+    /**
+     * Given distance and lon/lat pair, find points on grater circle.
+     * @return
+     */
+    public Coordinate[] findPoints(int num) {
+        
+        Coordinate mCoords[];
+        mCoords = new Coordinate[num];
+        double d = mDistance / Preferences.earthRadiusConversion;
+        double step = num / ((double)num - 1);
+
+        for(int i = 0; i < num; i++) {
+
+            double f = ((double)i) * step / ((double)(num));
+            double A = Math.sin((1 - f) * d) / Math.sin(d);
+            double B = Math.sin(f * d) / Math.sin(d);
+            double x = A * Math.cos(mLat1) * Math.cos(mLon1) + B * Math.cos(mLat2) * Math.cos(mLon2);
+            double y = A * Math.cos(mLat1) * Math.sin(mLon1) + B * Math.cos(mLat2) * Math.sin(mLon2);
+            double z = A * Math.sin(mLat1) + B * Math.sin(mLat2);
+            double ilat = Math.toDegrees(Math.atan2(z, Math.sqrt(x * x + y * y)));
+            double ilon = Math.toDegrees(Math.atan2(y , x));
+
+            mCoords[i] = new Coordinate(ilon, ilat);
+        }
+
+        return(mCoords);
     }
 }

@@ -21,8 +21,8 @@ public class TrackShape extends Shape {
     double mDestLon;
     double mDestLat;
     
-    private static final int SEGMENTS = 10;
-    
+    private static final int MILES_PER_SEGMENT = 50;
+        
     /**
      * Set the destination for this track 
      */
@@ -40,19 +40,23 @@ public class TrackShape extends Shape {
      * Update track as the aircraft moves 
      */
     public void updateShape(GpsParams loc) {
-        
+    
+        /*
+         * Where the aircraft is
+         */
         double lastLon = loc.getLongitude();
         double lastLat = loc.getLatitude();
         
-        double lonstep = (mDestLon - lastLon) / SEGMENTS; 
-        double latstep = (mDestLat - lastLat) / SEGMENTS;
-        
+        Projection p = new Projection(lastLon, lastLat, mDestLon, mDestLat);
+        int segments = (int)p.getDistance() / MILES_PER_SEGMENT + 3; // Min 3 points
+        Coordinate coord[] = p.findPoints(segments);
         super.mCoords.clear();
+        
         /*
          * Now make shape from coordinates with segments
          */
-        for(int i = 0; i <= SEGMENTS; i++) {
-            super.add(lastLon + i * lonstep, lastLat + i * latstep);
+        for(int i = 0; i < segments; i++) {
+            super.add(coord[i].getLongitude(), coord[i].getLatitude());
         }
     }
 }
