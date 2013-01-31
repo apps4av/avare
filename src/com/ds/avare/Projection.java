@@ -41,7 +41,8 @@ public class Projection {
      */
     public Projection(double lon1, double lat1, double lon2, double lat2) {
                 
-        //http://williams.best.vwh.net/avform.htm#Intermediate
+        //http://williams.best.vwh.net/avform.htm
+        // Great circle
         mLon1 = Math.toRadians(lon2);
         mLon2 = Math.toRadians(lon1);
         mLat1 = Math.toRadians(lat2);
@@ -53,16 +54,42 @@ public class Projection {
         double d = 2 * Math.asin(Math.sqrt(m * m + 
                 Math.cos(mLat1) * Math.cos(mLat2) * n * n));
 
-        double c;
-        if (Math.sin(mLon2 - mLon1) < 0) {       
-            c = Math.acos((Math.sin(mLat2) - Math.sin(mLat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(mLat1)));
-        }
-        else {
-            c = 2 * Math.PI - Math.acos((Math.sin(mLat2) - Math.sin(mLat1) * Math.cos(d)) / (Math.sin(d) * Math.cos(mLat1)));
-        }
+        
+        double y = Math.atan2(Math.sin(mLon1 - mLon2) * Math.cos(mLat2),
+                Math.cos(mLat1) * Math.sin(mLat2) - Math.sin(mLat1) * Math.cos(mLat2) * Math.cos(mLon1 - mLon2));
+        double x = 2 * Math.PI;
+        double c = y - x * Math.floor(y / x);
 
         mDistance = Preferences.earthRadiusConversion * d;
         mBearing = (Math.toDegrees(c) + 360) % 360;
+    }
+
+    /**
+     * Given distance and lon/lat pair, find points on great circle.
+     * @return
+     */
+    public Coordinate[] findPoints(int num) {
+        
+        Coordinate mCoords[];
+        mCoords = new Coordinate[num];
+        double d = mDistance / Preferences.earthRadiusConversion;
+        double step = num / ((double)num - 1);
+
+        for(int i = 0; i < num; i++) {
+
+            double f = ((double)i) * step / ((double)(num));
+            double A = Math.sin((1 - f) * d) / Math.sin(d);
+            double B = Math.sin(f * d) / Math.sin(d);
+            double x = A * Math.cos(mLat1) * Math.cos(mLon1) + B * Math.cos(mLat2) * Math.cos(mLon2);
+            double y = A * Math.cos(mLat1) * Math.sin(mLon1) + B * Math.cos(mLat2) * Math.sin(mLon2);
+            double z = A * Math.sin(mLat1) + B * Math.sin(mLat2);
+            double ilat = Math.toDegrees(Math.atan2(z, Math.sqrt(x * x + y * y)));
+            double ilon = Math.toDegrees(Math.atan2(y , x));
+
+            mCoords[i] = new Coordinate(ilon, ilat);
+        }
+
+        return(mCoords);
     }
 
     /**
@@ -116,33 +143,5 @@ public class Projection {
         }
 
         return(dir);
-    }
-    
-    /**
-     * Given distance and lon/lat pair, find points on grater circle.
-     * @return
-     */
-    public Coordinate[] findPoints(int num) {
-        
-        Coordinate mCoords[];
-        mCoords = new Coordinate[num];
-        double d = mDistance / Preferences.earthRadiusConversion;
-        double step = num / ((double)num - 1);
-
-        for(int i = 0; i < num; i++) {
-
-            double f = ((double)i) * step / ((double)(num));
-            double A = Math.sin((1 - f) * d) / Math.sin(d);
-            double B = Math.sin(f * d) / Math.sin(d);
-            double x = A * Math.cos(mLat1) * Math.cos(mLon1) + B * Math.cos(mLat2) * Math.cos(mLon2);
-            double y = A * Math.cos(mLat1) * Math.sin(mLon1) + B * Math.cos(mLat2) * Math.sin(mLon2);
-            double z = A * Math.sin(mLat1) + B * Math.sin(mLat2);
-            double ilat = Math.toDegrees(Math.atan2(z, Math.sqrt(x * x + y * y)));
-            double ilon = Math.toDegrees(Math.atan2(y , x));
-
-            mCoords[i] = new Coordinate(ilon, ilat);
-        }
-
-        return(mCoords);
-    }
+    }    
 }
