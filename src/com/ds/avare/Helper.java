@@ -26,6 +26,28 @@ public class Helper {
 
     /**
      * 
+     * @param heading
+     * @return
+     */
+    public static String correctConvertHeading(long heading) {
+        String ret = String.format("%03d", heading);
+        if(ret.equals("000")) {
+            ret = "360";
+        }
+        return ret;
+    }
+    
+    /**
+     * 
+     * @param val
+     * @return
+     */
+    public static String removeLeadingZeros(String val) {
+        return val.replaceFirst("^0+(?!$)", ""); 
+    }
+    
+    /**
+     * 
      * @param variation
      * @return
      */

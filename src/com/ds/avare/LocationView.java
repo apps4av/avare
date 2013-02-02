@@ -330,7 +330,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Draw distance from point
                  */
                 mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                        "," + Math.round(brg) + '\u00B0';
+                        "," + Helper.correctConvertHeading(Math.round(brg)) + '\u00B0';
             }
 
             /*
@@ -522,7 +522,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Heading
          */
-        canvas.drawText("" + Math.round(mGpsParams.getBearing()) + '\u00B0',
+        canvas.drawText(Helper.correctConvertHeading(Math.round(mGpsParams.getBearing())) + '\u00B0',
                 getWidth(), getHeight() - mFontHeight, mPaint);
 
         /*
@@ -729,7 +729,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Draw text with simple rotation math.
                      */
-                    canvas.drawText(r.getNumber(),
+                    canvas.drawText(num,
                             x + xfact * (float)Math.sin(Math.toRadians(heading - 180)),
                             y - yfact * (float)Math.cos(Math.toRadians(heading - 180)), mPaint);
                 }
@@ -1110,7 +1110,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Draw distance from point
              */
             mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                    "," + Math.round(brg) + '\u00B0';           
+                    "," + Helper.correctConvertHeading(Math.round(brg)) + '\u00B0';           
             
             /*
              * Get airport touched on, but it can block and not be in BG task because user

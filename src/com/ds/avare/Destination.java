@@ -162,7 +162,7 @@ public class Destination extends Observable {
 		else {
 			return(mParams.get("Location ID") + ":" + 
 			        Math.round(mDistance) + Preferences.distanceConversionUnit + " " +  mEta + " " + 
-			        Math.round(mBearing) + '\u00B0');
+			        Helper.correctConvertHeading(Math.round(mBearing)) + '\u00B0');
 		}
 	}
 	

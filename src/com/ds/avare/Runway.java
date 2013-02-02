@@ -81,7 +81,7 @@ public class Runway {
                 /*
                  * This is an approxmation.
                  */
-                ret = (float)Integer.parseInt(mNumber) * 10.f - (float)mVariation;
+                ret = (float)Integer.parseInt(mNumber.replace("L", "").replace("R", "").replace("C", "")) * 10.f - (float)mVariation;
             }
             catch (Exception e) {
                 
