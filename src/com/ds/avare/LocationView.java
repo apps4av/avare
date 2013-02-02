@@ -58,6 +58,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * The plane on screen
      */
     private BitmapHolder               mAirplaneBitmap;
+    private BitmapHolder               mRunwayBitmap;
+    
     /**
      * The magic of multi touch
      */
@@ -115,7 +117,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * To tell activity to do something on a gesture or touch
      */
-    private GestureInterface                   mGestureCallBack; 
+    private GestureInterface            mGestureCallBack; 
 
     /**
      * Our current location
@@ -203,6 +205,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
+        mRunwayBitmap = new BitmapHolder(context, R.drawable.runwayext);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         
@@ -492,7 +495,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
-    private void drawCornerTextsAndTrack(Canvas canvas) {
+    private void drawCornerTexts(Canvas canvas) {
 
         /*
          * Misc text in the information text location on the view like GPS status,
@@ -540,8 +543,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     getWidth(), getHeight() / mTextDiv, mPaint);            
         }
         else if(mDestination != null) {
+            /*
+             * Else dest
+             */
             canvas.drawText(mDestination.toString(),
                     getWidth(), getHeight() / mTextDiv, mPaint);
+        }
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawTrack(Canvas canvas) {
+        if(mDestination != null && null == mPoint) {
             if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
                 if(null != mTrackShape) {
                     mPaint.setColor(Color.MAGENTA);
@@ -549,9 +564,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }            
             }
-        }    	
+        }
     }
-    
+
     /**
      * 
      * @param canvas
@@ -586,7 +601,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawAircraft(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
-        if(null != mAirplaneBitmap) {
+
+        if(null != mAirplaneBitmap && null == mPoint) {
             
             /*
              * Rotate and move to a panned location
@@ -611,6 +627,95 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
 
     /**
+     * 
+     * @param canvas
+     */
+    private void drawRunways(Canvas canvas) {
+        
+        if(!mPref.shouldExtendRunways()) {
+            return;
+        }
+        if(null != mRunwayBitmap && null != mDestination && null == mPoint) {
+
+            LinkedList<Runway> runways = mDestination.getRunways();
+            if(runways != null) {
+                
+                for(Runway r : runways) {
+                    /*
+                     * Rotate and move to a panned location
+                     */
+                    float heading = r.getTrue();
+                    if(Runway.INVALID == heading) {
+                        continue;
+                    }
+                    
+                    float x = (float)mOrigin.getOffsetX(mDestination.getLocation().getLongitude());
+                    float y = (float)mOrigin.getOffsetY(mDestination.getLocation().getLatitude());
+                                        
+                    mRunwayBitmap.getTransform().setTranslate(
+                            x - mRunwayBitmap.getWidth() / 2,
+                            y - mRunwayBitmap.getHeight());
+                    
+                    mRunwayBitmap.getTransform().postRotate(heading,
+                            x,
+                            y);
+                    
+                    /*
+                     * Draw it.
+                     */
+                    canvas.drawBitmap(mRunwayBitmap.getBitmap(), mRunwayBitmap.getTransform(), mPaint);
+                }
+
+                /*
+                 * Loop again to over write text
+                 */
+                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+                mPaint.setColor(Color.WHITE);
+                mPaint.setTextAlign(Align.CENTER);
+
+                for(Runway r : runways) {
+                    /*
+                     * Rotate and move to a panned location
+                     */
+                    float heading = r.getTrue();
+                    if(Runway.INVALID == heading) {
+                        continue;
+                    }
+                    
+                    float x = (float)mOrigin.getOffsetX(mDestination.getLocation().getLongitude());
+                    float y = (float)mOrigin.getOffsetY(mDestination.getLocation().getLatitude());
+                                        
+                    /*
+                     * Draw it.
+                     */
+                    String num = r.getNumber();
+                    int xfact;
+                    int yfact;
+                    /*
+                     * If parallel runways, draw their text displaced so it does not overlap
+                     */
+                    if(num.contains("C")) {
+                        xfact = yfact = mRunwayBitmap.getHeight() * 3 / 4;
+                    }
+                    else if(num.contains("L")){
+                        xfact = yfact = mRunwayBitmap.getHeight() / 2;                        
+                    }
+                    else {
+                        xfact = yfact = mRunwayBitmap.getHeight();                                                
+                    }
+                    
+                    /*
+                     * Draw text with simple rotation math.
+                     */
+                    canvas.drawText(r.getNumber(),
+                            x + xfact * (float)Math.sin(Math.toRadians(heading - 180)),
+                            y - yfact * (float)Math.cos(Math.toRadians(heading - 180)), mPaint);
+                }
+            }
+        }   
+    }
+
+    /**
      * @param canvas
      * Does pretty much all drawing on screen
      */
@@ -621,10 +726,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	
     	drawTiles(canvas);
     	drawTFR(canvas);
-    	drawAircraft(canvas);
-
+        drawAircraft(canvas);
+        drawTrack(canvas);
+        drawRunways(canvas);
     	drawMETARText(canvas);
-    	drawCornerTextsAndTrack(canvas);
+    	drawCornerTexts(canvas);
     }    
     
     /**

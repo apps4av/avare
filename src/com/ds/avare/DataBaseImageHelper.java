@@ -15,6 +15,7 @@ package com.ds.avare;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -446,7 +447,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public synchronized boolean findDestination(String name, String type, LinkedHashMap<String, String> params) {
+    public synchronized boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
         
         Cursor cursor;
         Cursor cursorfreq;
@@ -576,7 +577,8 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                                         "Elevation " + Elevation + 
                                         ", True Heading " + Heading + 
                                         ", Displaced Threshold " + DT);
-        
+                                Runway l = new Runway(cursorrun.getString(6), cursor.getString(10).trim(), Heading, null);
+                                runways.add(l);        
                                 
                                 Elevation = cursorrun.getString(15);
                                 if(Elevation.equals("")) {
@@ -592,6 +594,8 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                                         "Elevation " + Elevation + 
                                         ", True Heading " + Heading + 
                                         ", Displaced Threshold " + DT);
+                                Runway h = new Runway(cursorrun.getString(12), cursor.getString(10).trim(), Heading, null);
+                                runways.add(h);        
         
                             }
                             cursorrun.close();

@@ -9,57 +9,82 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 package com.ds.avare;
-
-
-import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.view.WindowManager;
 
 /**
  * 
  * @author zkhan
  *
  */
-public class Helper {
+public class Runway {
 
+    private String mNumber;
+    private Coordinate mCoord;
+    private String mHeading;
+    private double mVariation;
+    
+    static final float INVALID = -1;
+   
     /**
      * 
-     * @param variation
-     * @return
      */
-    static double parseVariation(String variation) {
-        double var = 0;
-        if((null == variation) || (variation.length() < 3)) {
-            return 0;
-        }
-        else {
-            var = Double.parseDouble(variation.substring(0, 2));            
-            if(variation.contains("E")) {
-                var = -var;                 
-            }
-        }
-        return var;
+    public Runway(String number, String variation, String heading, Coordinate coord) {
+        mNumber = number;
+        mCoord = coord;
+        mHeading = heading;
+        mVariation = Helper.parseVariation(variation);
     }
 
     /**
-     * Set common features of all activities in the framework
-     * @param act
+     * 
+     * @return
      */
-    public static void setOrientationAndOn(Activity act) {
+    public String getNumber() {
+        return mNumber;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public float getTrue() {
+        float ret = INVALID;
+
+        /*
+         * Get true heading of runway if given
+         */
+        try {
+            ret = Integer.parseInt(mHeading);
+        }
+        catch (Exception e) {
+            
+        }
         
-        Preferences pref = new Preferences(act.getApplicationContext());
-        if(pref.shouldScreenStayOn()) {
-            act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
+        
+        /*
+         * Nothing found in True, now parse number of runway and add variation.
+         */
+        if(INVALID == ret) {
+            try {
+                /*
+                 * This is an approxmation.
+                 */
+                ret = (float)Integer.parseInt(mNumber) * 10.f - (float)mVariation;
+            }
+            catch (Exception e) {
+                
+            }
+    
         }
+        return ret;
+    }
 
-        if(pref.isPortrait()) {
-            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
-        }
-        else {
-            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+    /**
+     * 
+     * @return
+     */
+    public Coordinate getCoord() {
+        return mCoord;
+    }
 
-    }    
 }

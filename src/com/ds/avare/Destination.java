@@ -14,6 +14,7 @@ package com.ds.avare;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import java.util.Observable;
 import android.location.Location;
@@ -67,6 +68,7 @@ public class Destination extends Observable {
     
     private String mType;
     private String mSubType;
+    private LinkedList<Runway> mRunways;
     
     /**
      * Contains all info in a hash map for the destination
@@ -83,6 +85,7 @@ public class Destination extends Observable {
 	    mType = type;
 	    mSubType = "";
 	    mFound = mLooking = false;
+	    mRunways = new LinkedList<Runway>();
 	    mService = service;
 	    mDataSource = mService.getDBResource(); 
 	    mPref = pref;
@@ -90,6 +93,7 @@ public class Destination extends Observable {
     	mParams = new LinkedHashMap<String, String>();
     	mDiagramFound = null;
     	mLond = mLatd = 0;
+
 	}
     
 	/**
@@ -197,7 +201,9 @@ public class Destination extends Observable {
 	        	return false;
         	}
         	
-	        boolean ret = mDataSource.findDestination((String)vals[0], (String)vals[1], mParams);
+	        
+	        boolean ret = mDataSource.findDestination((String)vals[0], (String)vals[1], mParams, mRunways);
+
 	        if(ret && mType.equals("Base")) {
 	            /*
 	             * Found destination extract its airport diagram
@@ -277,6 +283,13 @@ public class Destination extends Observable {
      */
     public String getID() {
         return(mName);
+    }
+
+    /**
+     * @return
+     */
+    public LinkedList<Runway> getRunways() {
+        return(mRunways);
     }
 
     /**

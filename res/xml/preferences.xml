@@ -35,6 +35,11 @@ Redistribution and use in source and binary forms, with or without modification,
         android:defaultValue="0"
         android:entryValues="@array/UnitsDValues"/>
     <CheckBoxPreference
+        android:key="@string/Runways"
+        android:title="@string/RunwaysLabel"
+        android:summary="@string/RunwaysSummary"
+        android:defaultValue="true"/>
+    <CheckBoxPreference
         android:key="@string/ScreenOn"
         android:title="@string/ScreenOnLabel"
         android:summary="@string/ScreenOnSummary"

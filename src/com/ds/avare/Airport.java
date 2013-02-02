@@ -46,16 +46,7 @@ public class Airport implements Comparable<Airport> {
         mName = params.get("Facility Name");
         mFuel = params.get("Fuel Types");
         mWeather = null;
-        String variation = params.get("Magnetic Variation");
-        if((null == variation) || (variation.length() < 3)) {
-            mVariation = 0;
-        }
-        else {
-            mVariation = Double.parseDouble(variation.substring(0, 2));            
-            if(variation.contains("E")) {
-                mVariation = -mVariation;                 
-            }
-        }
+        mVariation = Helper.parseVariation(params.get("Magnetic Variation"));
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
     }

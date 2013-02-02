@@ -13,6 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
 import android.content.Context;
 
 /**
@@ -77,8 +79,8 @@ public class ImageDataSource {
      * @param params
      * @return
      */
-    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params) {
-        return(dbHelper.findDestination(name, type, params));
+    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
+        return(dbHelper.findDestination(name, type, params, runways));
     }
     
     /**

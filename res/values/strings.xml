@@ -104,4 +104,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AllFacilitiesLabel">&quot;Show All Bases&quot;</string>
     <string name="AllFacilitiesSummary">&quot;Select to show heliport, ultralight, and sea plane bases in Nearest and Search&quot;</string>
     <string name="Set">&quot;Set&quot;</string>
+    <string name="Runways">&quot;Runway Extensions&quot;</string>
+    <string name="RunwaysLabel">&quot;Runway Extensions&quot;</string>
+    <string name="RunwaysSummary">&quot;Select to show runway extensions&quot;</string>
 </resources>

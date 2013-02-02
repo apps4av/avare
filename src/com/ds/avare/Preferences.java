@@ -203,7 +203,15 @@ public class Preferences {
     public boolean isTrackEnabled() {
         return(mPref.getBoolean(mContext.getString(R.string.ShowTrack), true));
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldExtendRunways() {
+        return(mPref.getBoolean(mContext.getString(R.string.Runways), true));
+    }
+
     /**
      * 
      * @return
