@@ -649,8 +649,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         continue;
                     }
                     
-                    float x = (float)mOrigin.getOffsetX(mDestination.getLocation().getLongitude());
-                    float y = (float)mOrigin.getOffsetY(mDestination.getLocation().getLatitude());
+                    double lon = r.getLongitude();
+                    double lat = r.getLatitude();
+                    float x;
+                    float y;
+                    if(Runway.INVALID == lon || Runway.INVALID == lat) {
+                        /*
+                         * If we did not get any lon/lat of this runway, use airport lon/lat
+                         */
+                        lon = mDestination.getLocation().getLongitude();
+                        lat = mDestination.getLocation().getLatitude();
+                    }
+                    x = (float)mOrigin.getOffsetX(lon);
+                    y = (float)mOrigin.getOffsetY(lat);                        
                                         
                     mRunwayBitmap.getTransform().setTranslate(
                             x - mRunwayBitmap.getWidth() / 2,
@@ -682,8 +693,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         continue;
                     }
                     
-                    float x = (float)mOrigin.getOffsetX(mDestination.getLocation().getLongitude());
-                    float y = (float)mOrigin.getOffsetY(mDestination.getLocation().getLatitude());
+                    double lon = r.getLongitude();
+                    double lat = r.getLatitude();
+                    float x;
+                    float y;
+                    if(Runway.INVALID == lon || Runway.INVALID == lat) {
+                        /*
+                         * If we did not get any lon/lat of this runway, use airport lon/lat
+                         */
+                        lon = mDestination.getLocation().getLongitude();
+                        lat = mDestination.getLocation().getLatitude();
+                    }
+                    x = (float)mOrigin.getOffsetX(lon);
+                    y = (float)mOrigin.getOffsetY(lat);                        
                                         
                     /*
                      * Draw it.

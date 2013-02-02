@@ -577,7 +577,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                                         "Elevation " + Elevation + 
                                         ", True Heading " + Heading + 
                                         ", Displaced Threshold " + DT);
-                                Runway l = new Runway(cursorrun.getString(6), cursor.getString(10).trim(), Heading, null);
+                                Runway l = new Runway(cursorrun.getString(6), cursor.getString(10).trim(), Heading, cursorrun.getString(8), cursorrun.getString(7));
                                 runways.add(l);        
                                 
                                 Elevation = cursorrun.getString(15);
@@ -594,7 +594,8 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                                         "Elevation " + Elevation + 
                                         ", True Heading " + Heading + 
                                         ", Displaced Threshold " + DT);
-                                Runway h = new Runway(cursorrun.getString(12), cursor.getString(10).trim(), Heading, null);
+                                
+                                Runway h = new Runway(cursorrun.getString(12), cursor.getString(10).trim(), Heading,  cursorrun.getString(14), cursorrun.getString(13));
                                 runways.add(h);        
         
                             }

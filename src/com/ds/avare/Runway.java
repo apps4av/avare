@@ -19,18 +19,30 @@ package com.ds.avare;
 public class Runway {
 
     private String mNumber;
-    private Coordinate mCoord;
     private String mHeading;
     private double mVariation;
+    private double mLon;
+    private double mLat;
     
-    static final float INVALID = -1;
+    static final float INVALID = -1000;
    
     /**
      * 
      */
-    public Runway(String number, String variation, String heading, Coordinate coord) {
+    public Runway(String number, String variation, String heading, String lon, String lat) {
         mNumber = number;
-        mCoord = coord;
+        mLon = INVALID;
+        mLat = INVALID;
+        try {
+            mLon = Double.parseDouble(lon);
+        }
+        catch (Exception e) {
+        }
+        try {
+            mLat = Double.parseDouble(lat);
+        }
+        catch (Exception e) {
+        }
         mHeading = heading;
         mVariation = Helper.parseVariation(variation);
     }
@@ -83,8 +95,15 @@ public class Runway {
      * 
      * @return
      */
-    public Coordinate getCoord() {
-        return mCoord;
+    public double getLongitude() {
+        return mLon;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public double getLatitude() {
+        return mLat;
+    }
 }

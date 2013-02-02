@@ -130,7 +130,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFiles">
-        <item>databases_v1</item>
+        <item>databases_v2</item>
         <item>AirportDiagramsj</item>
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>
