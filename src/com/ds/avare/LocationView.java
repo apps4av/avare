@@ -85,10 +85,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private Movement                    mMovement;
     /**
-     * Current touch mPoint
-     */
-    private String                      mPoint;
-    /**
      * GPS status string if it fails, set by activity
      */
     private String                      mErrorStatus;
@@ -162,6 +158,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TileMap                      mTiles;
     private int                         mWeatherColor;
     
+    private Projection                  mPointProjection;
+    
     /*
      * Shadow length 
      */
@@ -184,12 +182,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mDestination = null;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
-        mPoint = null;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mShown = false;
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
+        mPointProjection = null;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -265,7 +263,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do not draw point. Only when long press and down.
              */
-            mPoint = null;
+            mPointProjection = null;
             mWeatherLayout = null;
         }
         mGestureDetector.onTouchEvent(e);
@@ -312,7 +310,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            if(mPoint == null) {
+            if(mPointProjection == null) {
                 double x0 = mCurrTouchPoint.getXs()[0];
                 double y0 = mCurrTouchPoint.getYs()[0];
                 double x1 = mCurrTouchPoint.getXs()[1];
@@ -322,15 +320,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 double lat0 = mOrigin.getLatitudeOf(y0);
                 double lon1 = mOrigin.getLongitudeOf(x1);
                 double lat1 = mOrigin.getLatitudeOf(y1);
-                Projection p = new Projection(lon0, lat0, lon1, lat1);
-                
-                double brg = p.getBearing();
-                           
-                /*
-                 * Draw distance from point
-                 */
-                mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                        "," + Helper.correctConvertHeading(Math.round(brg)) + '\u00B0';
+                mPointProjection = new Projection(lon0, lat0, lon1, lat1);
             }
 
             /*
@@ -503,51 +493,63 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Add shadows for better viewing
          */
         mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-        mPaint.setColor(Color.WHITE);
-
-        mPaint.setTextAlign(Align.LEFT);
-        /*
-         * Speed
-         */
-        canvas.drawText("" + Math.round(mGpsParams.getSpeed()) + Preferences.speedConversionUnit,
-                0, getHeight() / mTextDiv, mPaint);
-        /*
-         * Altitude
-         */
-        canvas.drawText("" + Math.round(mGpsParams.getAltitude()) + "ft",
-                0, getHeight() - mFontHeight, mPaint);
         
-        mPaint.setTextAlign(Align.RIGHT);
 
         /*
-         * Heading
-         */
-        canvas.drawText(Helper.correctConvertHeading(Math.round(mGpsParams.getBearing())) + '\u00B0',
-                getWidth(), getHeight() - mFontHeight, mPaint);
-
-        /*
-         * Status/destination top right
+         * Status
          */
         if(mErrorStatus != null) {
+            mPaint.setTextAlign(Align.RIGHT);
             mPaint.setColor(Color.RED);
             canvas.drawText(mErrorStatus,
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
         }
+        else {
+            mPaint.setColor(Color.WHITE);
+
+            mPaint.setTextAlign(Align.LEFT);
+            /*
+             * Altitude
+             */
+            canvas.drawText("" + Math.round(mGpsParams.getAltitude()) + "ft",
+                    0, getHeight() - mFontHeight, mPaint);
+
+            mPaint.setTextAlign(Align.RIGHT);
+            /*
+             * Heading, add variation if found
+             * Speed
+             */
+
+            canvas.drawText(
+                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "     ", mGpsParams.getBearing()),
+                    getWidth(), getHeight() / mTextDiv * 2, mPaint);
+        }
         
         /*
-         * Point above error status
+         * Point top right
          */
         mPaint.setColor(Color.WHITE);
-        if(mPoint != null) {
-            canvas.drawText(mPoint,
-                    getWidth(), getHeight() / mTextDiv, mPaint);            
+        if(mPointProjection != null) {
+            mPaint.setTextAlign(Align.RIGHT);
+            /*
+             * Draw distance from point
+             */
+            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing()),
+                    getWidth(), getHeight() / mTextDiv, mPaint);
+            mPaint.setTextAlign(Align.LEFT);
+            canvas.drawText(mPointProjection.getGeneralDirectionFrom(),
+                    0, getHeight() / mTextDiv, mPaint);
         }
         else if(mDestination != null) {
+            mPaint.setTextAlign(Align.RIGHT);
             /*
              * Else dest
              */
             canvas.drawText(mDestination.toString(),
                     getWidth(), getHeight() / mTextDiv, mPaint);
+            mPaint.setTextAlign(Align.LEFT);
+            canvas.drawText(mDestination.getID(),
+                    0, getHeight() / mTextDiv, mPaint);
         }
     }
 
@@ -556,7 +558,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawTrack(Canvas canvas) {
-        if(mDestination != null && null == mPoint) {
+        if(mDestination != null && null == mPointProjection) {
             if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
                 if(null != mTrackShape) {
                     mPaint.setColor(Color.MAGENTA);
@@ -602,7 +604,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
 
-        if(null != mAirplaneBitmap && null == mPoint) {
+        if(null != mAirplaneBitmap && null == mPointProjection) {
             
             /*
              * Rotate and move to a panned location
@@ -635,7 +637,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(!mPref.shouldExtendRunways()) {
             return;
         }
-        if(null != mRunwayBitmap && null != mDestination && null == mPoint) {
+        if(null != mRunwayBitmap && null != mDestination && null == mPointProjection) {
 
             LinkedList<Runway> runways = mDestination.getRunways();
             if(runways != null) {
@@ -1077,9 +1079,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
             double lon2 = mOrigin.getLongitudeOf(x);
             double lat2 = mOrigin.getLatitudeOf(y);
-            Projection p = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
+            mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
             
-            double brg = p.getBearing();
             String text = null;
                        
             /*
@@ -1106,12 +1107,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }
 
-            /*
-             * Draw distance from point
-             */
-            mPoint = "" + (int)p.getDistance() + Preferences.distanceConversionUnit + " " + p.getGeneralDirectionFrom() + 
-                    "," + Helper.correctConvertHeading(Math.round(brg)) + '\u00B0';           
-            
             /*
              * Get airport touched on, but it can block and not be in BG task because user
              * is pressing on a point and it does not matter if zoom/pan hangs for a fraction sec.

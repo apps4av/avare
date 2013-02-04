@@ -99,7 +99,7 @@ public class Preferences {
             heightConversion = 3.28;
             earthRadiusConversion = 3963.1676;            
             distanceConversionUnit = "mi";
-            speedConversionUnit = "mph";
+            speedConversionUnit = "mh";
         }
         String path = mPref.getString(mContext.getString(R.string.Maps), null);
         if(null == path) {

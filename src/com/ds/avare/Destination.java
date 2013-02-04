@@ -136,9 +136,14 @@ public class Destination extends Observable {
     	if(speed != 0) {
 	    	int etahr = (int)(mDistance / speed);
 	    	int etamin =  (int)Math.round((mDistance / speed - (double)etahr) * 60);
-	    	String hr = String.format("%02d", etahr);
-	    	String min = String.format("%02d", etamin);
-        	mEta = new String(hr + ":" + min);        	
+	    	if(etahr > 99) {
+	    	    mEta = "XX:XX";
+	    	}
+	    	else {
+    	    	String hr = String.format("%02d", etahr);
+    	    	String min = String.format("%02d", etamin);
+            	mEta = new String(hr + ":" + min);
+	    	}
     	}
     	else {
     	    /*
@@ -160,9 +165,7 @@ public class Destination extends Observable {
 			return(mName + "? ");
 		}
 		else {
-			return(mParams.get("Location ID") + ":" + 
-			        Math.round(mDistance) + Preferences.distanceConversionUnit + " " +  mEta + " " + 
-			        Helper.correctConvertHeading(Math.round(mBearing)) + '\u00B0');
+			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing); 
 		}
 	}
 	

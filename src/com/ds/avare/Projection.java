@@ -127,28 +127,28 @@ public class Projection {
          * These are important to show for traffic controller communications.
          */
         if(mBearing > (DIR_DEGREES) && mBearing <= (90 - DIR_DEGREES)) {
-            dir = "SW";
+            dir = "SW of";
         }
         else if(mBearing > (90 - DIR_DEGREES) && mBearing <= (90 + DIR_DEGREES)) {
-            dir = "W";
+            dir = "W  of";
         }
         else if(mBearing > (90 + DIR_DEGREES) && mBearing <= (180 - DIR_DEGREES)) {
-            dir = "NW";
+            dir = "NW of";
         }
         else if(mBearing > (180 - DIR_DEGREES) && mBearing <= (180 + DIR_DEGREES)) {
-            dir = "N";
+            dir = "N  of";
         }
         else if(mBearing > (180 + DIR_DEGREES) && mBearing <= (270 - DIR_DEGREES)) {
-            dir = "NE";
+            dir = "NE of";
         }
         else if(mBearing > (270 - DIR_DEGREES) && mBearing <= (270 + DIR_DEGREES)) {
-            dir = "E";
+            dir = "E  of";
         }
         else if(mBearing > (270 + DIR_DEGREES) && mBearing <= (360 - DIR_DEGREES)) {
-            dir = "SE";
+            dir = "SE of";
         }
         else {
-            dir = "S";
+            dir = "S  of";
         }
 
         return(dir);

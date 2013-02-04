@@ -26,6 +26,20 @@ public class Helper {
 
     /**
      * 
+     * @param distance
+     * @param eta
+     * @param heading
+     * @return
+     */
+    public static String makeLine(double value, String unit, String eta, double heading) {
+        String valTrunc = String.format("%4d", (Math.round(value)));
+        return 
+                valTrunc + unit + " " +  eta + " " + 
+                Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
+    }
+    
+    /**
+     * 
      * @param heading
      * @return
      */
