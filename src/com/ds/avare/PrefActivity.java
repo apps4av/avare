@@ -11,6 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 

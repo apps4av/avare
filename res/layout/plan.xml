@@ -15,7 +15,7 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_height="match_parent" >
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/plan_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -26,16 +26,16 @@ Redistribution and use in source and binary forms, with or without modification,
         android:inputType="textNoSuggestions" />
     
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/plan_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/editText1" >
+        android:layout_below="@+id/plan_edit_text" >
 
     </ListView>
 
     <ProgressBar
-        android:id="@+id/progressBar1"
+        android:id="@+id/plan_progress_bar"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

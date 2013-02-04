@@ -73,17 +73,17 @@ public class NearestAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(R.layout.nearest, parent, false);
+            rowView = inflater.inflate(R.layout.nearest_list, parent, false);
         }
-        TextView textView = (TextView)rowView.findViewById(R.id.distance);
+        TextView textView = (TextView)rowView.findViewById(R.id.nearest_list_distance);
         textView.setText(mDistance[position]);
-        textView = (TextView)rowView.findViewById(R.id.bearing);
+        textView = (TextView)rowView.findViewById(R.id.nearest_list_bearing);
         textView.setText(mBearing[position]);
-        textView = (TextView)rowView.findViewById(R.id.aidname);
+        textView = (TextView)rowView.findViewById(R.id.nearest_list_aid_name);
         textView.setText(mName[position]);
-        textView = (TextView)rowView.findViewById(R.id.fuel);
+        textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
         textView.setText(mFuel[position]);
-        ImageView imageView = (ImageView)rowView.findViewById(R.id.imageWeather);
+        ImageView imageView = (ImageView)rowView.findViewById(R.id.nearest_list_image_weather);
         imageView.setImageResource(mColor[position]);
         
         return rowView;

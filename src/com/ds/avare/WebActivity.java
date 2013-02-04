@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.utils.Helper;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;

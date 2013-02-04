@@ -19,7 +19,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <TextView
         android:background="#FFFFFFFF"
         android:textColor="#FF000000"
-        android:id="@+id/type"
+        android:id="@+id/typevalue_type"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="2dp"
@@ -31,12 +31,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <TextView
         android:background="#FFFFFFFF"
         android:textColor="#FF000000"
-        android:id="@+id/value"
+        android:id="@+id/typevalue_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:textSize="20sp"
-        android:layout_toRightOf="@+id/type">
+        android:layout_toRightOf="@+id/typevalue_type">
     </TextView>
     
 

@@ -13,6 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import com.ds.avare.R;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -84,7 +86,7 @@ public class SatelliteActivity extends Activity  {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.satellite, null);
         setContentView(view);
-        mSatelliteView = (SatelliteView)view.findViewById(R.id.satellites);
+        mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
 
         mService = null;        
     }

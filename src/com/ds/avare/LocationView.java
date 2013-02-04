@@ -15,11 +15,29 @@ package com.ds.avare;
 
 import java.util.LinkedList;
 
-import com.ds.avare.MultiTouchController.MultiTouchObjectCanvas;
-import com.ds.avare.MultiTouchController.PointInfo;
-import com.ds.avare.MultiTouchController.PositionAndScale;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Runway;
+import com.ds.avare.position.Movement;
+import com.ds.avare.position.Origin;
+import com.ds.avare.position.Pan;
+import com.ds.avare.position.Projection;
+import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.shapes.Tile;
+import com.ds.avare.shapes.TileMap;
+import com.ds.avare.shapes.TrackShape;
+import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.GestureInterface;
+import com.ds.avare.touch.MultiTouchController;
+import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
+import com.ds.avare.touch.MultiTouchController.PointInfo;
+import com.ds.avare.touch.MultiTouchController.PositionAndScale;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.R;
-import com.ds.avare.BitmapHolder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -203,7 +221,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
-        mRunwayBitmap = new BitmapHolder(context, R.drawable.runwayext);
+        mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         

@@ -13,6 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import com.ds.avare.utils.Helper;
+
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -110,8 +112,8 @@ public class MainActivity extends TabActivity {
      * @return
      */
     private View createTabView(Context context, String text) {
-        View view = LayoutInflater.from(context).inflate(R.layout.tabsbg, null);
-        TextView tv = (TextView) view.findViewById(R.id.tabsText);
+        View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
+        TextView tv = (TextView) view.findViewById(R.id.tabs_text);
         tv.setText(text);
         tv.setTextSize(mTabHeight);
         return view;

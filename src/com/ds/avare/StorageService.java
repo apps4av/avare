@@ -15,6 +15,22 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.ds.avare.gps.Gps;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.network.TFRFetcher;
+import com.ds.avare.place.Area;
+import com.ds.avare.place.Destination;
+import com.ds.avare.position.Movement;
+import com.ds.avare.position.Pan;
+import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.shapes.TileMap;
+import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.weather.WeatherCache;
+
 import android.app.Service;
 import android.content.Intent;
 import android.location.GpsStatus;
@@ -117,7 +133,7 @@ public class StorageService extends Service {
         /**
          * @return
          */
-        StorageService getService() {
+        public StorageService getService() {
             return StorageService.this;
         }
     }

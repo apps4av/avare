@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.utils.BitmapHolder;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +47,7 @@ public class SearchAdapter extends ArrayAdapter<String> {
      * @param vals
      */
     public SearchAdapter(Context context, String[] vals) {
-        super(context, R.layout.searchlist, vals);
+        super(context, R.layout.search_list, vals);
         mContext = context;
         mVals = vals;
         /*
@@ -71,11 +73,11 @@ public class SearchAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(R.layout.searchlist, parent, false);
+            rowView = inflater.inflate(R.layout.search_list, parent, false);
         }
-        ImageView imgView = (ImageView)rowView.findViewById(R.id.imageSearch);
-        TextView textView = (TextView)rowView.findViewById(R.id.idSearch);
-        TextView textView2 = (TextView)rowView.findViewById(R.id.nameSearch);
+        ImageView imgView = (ImageView)rowView.findViewById(R.id.search_list_image);
+        TextView textView = (TextView)rowView.findViewById(R.id.search_list_text);
+        TextView textView2 = (TextView)rowView.findViewById(R.id.search_list_name);
         
         /*
          * This string is formatted as

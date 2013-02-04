@@ -17,6 +17,11 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.R;
+import com.ds.avare.network.Download;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -79,12 +84,12 @@ public class ChartsDownloadActivity extends Activity implements Observer {
          * Get views from XML
          */
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.chartact, null);
+        View view = layoutInflater.inflate(R.layout.chart_download, null);
         setContentView(view);
 
         
         mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
-        ListView list = (ListView)view.findViewById(R.id.chartlist);
+        ListView list = (ListView)view.findViewById(R.id.chart_download_list);
         list.setAdapter(mChartAdapter);
         list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -100,7 +105,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             }
         });
 
-        mDLButton = (Button)view.findViewById(R.id.buttonDL);
+        mDLButton = (Button)view.findViewById(R.id.chart_download_button_dl);
         mDLButton.setOnClickListener(new OnClickListener() {
 
             @Override

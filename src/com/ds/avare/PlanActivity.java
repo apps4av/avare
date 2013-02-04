@@ -18,6 +18,11 @@ import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -130,12 +135,12 @@ public class PlanActivity extends Activity implements Observer {
         /*
          * For a search query
          */
-        mSearchListView = (ListView)view.findViewById(R.id.listView1);
+        mSearchListView = (ListView)view.findViewById(R.id.plan_list_view);
         
         /*
          * Progress bar
          */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.progressBar1));
+        mProgressBar = (ProgressBar)(view.findViewById(R.id.plan_progress_bar));
         
         /*
          * Now initialize the list to recent in case someone needs to go there, and not search
@@ -166,7 +171,7 @@ public class PlanActivity extends Activity implements Observer {
         /*
          * For searching, start search on every new key press
          */
-        mSearchText = (EditText)view.findViewById(R.id.editText1);
+        mSearchText = (EditText)view.findViewById(R.id.plan_edit_text);
         mSearchText.addTextChangedListener(new TextWatcher() { 
             @Override
             public void afterTextChanged(Editable arg0) {

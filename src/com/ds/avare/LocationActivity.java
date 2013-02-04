@@ -16,6 +16,15 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
+import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gps.Gps;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.GestureInterface;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.NetworkHelper;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -187,7 +196,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mMenuButton = (Button)view.findViewById(R.id.buttonMenu);
+        mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
         mMenuButton.getBackground().setAlpha(127);
         mMenuButton.setOnClickListener(new OnClickListener() {
 
@@ -208,7 +217,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mHelpButton = (Button)view.findViewById(R.id.buttonHelp);
+        mHelpButton = (Button)view.findViewById(R.id.location_button_help);
         mHelpButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -220,7 +229,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mGpsButton = (Button)view.findViewById(R.id.buttonGps);
+        mGpsButton = (Button)view.findViewById(R.id.location_button_gps);
         mGpsButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -230,7 +239,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mDownloadButton = (Button)view.findViewById(R.id.buttonDownload);
+        mDownloadButton = (Button)view.findViewById(R.id.location_button_dl);
         mDownloadButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -239,7 +248,7 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-        mPrefButton = (Button)view.findViewById(R.id.buttonPref);
+        mPrefButton = (Button)view.findViewById(R.id.location_button_pref);
         mPrefButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -257,7 +266,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Dest button
          */
-        mDestButton = (Button)view.findViewById(R.id.buttonDest);
+        mDestButton = (Button)view.findViewById(R.id.location_button_dest);
         mDestButton.setOnClickListener(new OnClickListener() {
 
             @Override

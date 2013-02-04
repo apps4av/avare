@@ -12,6 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.gps.Gps;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

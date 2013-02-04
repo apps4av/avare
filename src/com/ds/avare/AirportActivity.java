@@ -14,6 +14,9 @@ package com.ds.avare;
 
 import java.util.LinkedHashMap;
 
+import com.ds.avare.place.Destination;
+import com.ds.avare.utils.Helper;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -66,7 +69,7 @@ public class AirportActivity extends Activity {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.airport, null);
         setContentView(view);
-        mAirport = (ListView)view.findViewById(R.id.airportlist);
+        mAirport = (ListView)view.findViewById(R.id.airport_list);
 
         mService = null;
     }

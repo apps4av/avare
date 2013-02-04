@@ -15,6 +15,13 @@ package com.ds.avare;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.WeatherHelper;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -97,13 +104,13 @@ public class NearestActivity extends Activity  implements Observer {
          * Get views from XML
          */
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.nearestact, null);
+        View view = layoutInflater.inflate(R.layout.nearest, null);
         setContentView(view);
         
         /*
          * Dest button
          */
-        mDestButton = (Button)view.findViewById(R.id.buttonNearDest);
+        mDestButton = (Button)view.findViewById(R.id.nearest_button_dest);
         mDestButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -122,7 +129,7 @@ public class NearestActivity extends Activity  implements Observer {
             
         });
 
-        mNearest = (ListView)view.findViewById(R.id.nearestlist);
+        mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
         mService = null;

@@ -16,6 +16,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.NetworkHelper;
+
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -50,7 +55,7 @@ public class ChartAdapter extends ArrayAdapter<String> {
      * @param textViewResourceId
      */
     public ChartAdapter(Context context, String[] values, String ids[]) {
-        super(context, R.layout.chartlist, values);
+        super(context, R.layout.chart_download, values);
         mContext = context;
         mValues = values;
         mIds = ids;
@@ -59,9 +64,9 @@ public class ChartAdapter extends ArrayAdapter<String> {
         mChecked = new boolean[ids.length];
         new ViewTask().execute();
         mOkBitmapHolder = new BitmapHolder(mContext, R.drawable.check);
-        mUpdateBitmapHolder = new BitmapHolder(mContext, R.drawable.checkred);
+        mUpdateBitmapHolder = new BitmapHolder(mContext, R.drawable.check_red);
         mAddBitmapHolder = new BitmapHolder(mContext, R.drawable.add);
-        mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.whitesq);
+        mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.white_square);
     }
 
     @Override
@@ -71,16 +76,16 @@ public class ChartAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(R.layout.chartlist, parent, false);
+            rowView = inflater.inflate(R.layout.chart_download_list, parent, false);
         }
-        ImageView imgView = (ImageView)rowView.findViewById(R.id.image);
-        TextView textView = (TextView)rowView.findViewById(R.id.item);
+        ImageView imgView = (ImageView)rowView.findViewById(R.id.chart_download_list_image);
+        TextView textView = (TextView)rowView.findViewById(R.id.chart_download_list_item);
         textView.setText(mValues[position]);
         
         /*
          * Get status of chart item from preferences.
          */
-        TextView textView2 = (TextView)rowView.findViewById(R.id.state);
+        TextView textView2 = (TextView)rowView.findViewById(R.id.chart_download_list_state);
         if(mVers[position] != null) {
             textView2.setText(mVers[position]);
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());            

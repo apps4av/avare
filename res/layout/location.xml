@@ -22,47 +22,47 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"/>
 
         <Button
-            android:id="@+id/buttonDest"
+            android:id="@+id/location_button_dest"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonPref"
+            android:layout_above="@+id/location_button_pref"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/buttonPref"
+            android:id="@+id/location_button_pref"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonDownload"
+            android:layout_above="@+id/location_button_dl"
             android:text="@string/Settings"
             android:drawableLeft="@drawable/settings"
             android:gravity="left|center"
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/buttonDownload"
+            android:id="@+id/location_button_dl"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonGps"
+            android:layout_above="@+id/location_button_gps"
             android:gravity="left|center"
             android:text="@string/download"
             android:drawableLeft="@drawable/download"
             android:visibility="invisible" />
         
          <Button
-            android:id="@+id/buttonGps"
+            android:id="@+id/location_button_gps"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonHelp"
+            android:layout_above="@+id/location_button_help"
             android:gravity="left|center"
             android:text="@string/gps"
             android:drawableLeft="@drawable/gps"
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/buttonHelp"
+            android:id="@+id/location_button_help"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -73,7 +73,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/buttonMenu"
+            android:id="@+id/location_button_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

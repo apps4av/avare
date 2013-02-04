@@ -24,9 +24,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.ds.avare.MultiTouchController.MultiTouchObjectCanvas;
-import com.ds.avare.MultiTouchController.PointInfo;
-import com.ds.avare.MultiTouchController.PositionAndScale;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Pan;
+import com.ds.avare.position.Scale;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.MultiTouchController;
+import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
+import com.ds.avare.touch.MultiTouchController.PointInfo;
+import com.ds.avare.touch.MultiTouchController.PositionAndScale;
+import com.ds.avare.utils.BitmapHolder;
 
 /**
  * 
@@ -69,7 +75,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mAirplaneBitmap = new BitmapHolder(context, R.drawable.planegreen);
+        mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane_green);
     }
     
     /**

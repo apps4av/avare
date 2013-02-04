@@ -10,71 +10,62 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFFFF"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FF000000"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
-         android:id="@+id/distance"
-         android:layout_width="120dp"
-         android:layout_height="30dp"
-         android:layout_marginLeft="2dp"
-         android:clickable="true"
-         android:textSize="25sp">
-    </TextView>
-    
-    <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
-         android:id="@+id/aidname"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="20dp"
-         android:clickable="true"
-         android:textSize="20sp"
-         android:layout_toRightOf="@+id/distance">
-    </TextView>
-    
-    <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
-        android:id="@+id/bearing"
-        android:layout_width="120dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="2dp"
-         android:clickable="true"
-        android:textSize="25sp"
-        android:layout_below="@+id/distance">
-    </TextView>
-
-    <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
-        android:id="@+id/fuel"
+    android:layout_height="match_parent">
+    <ListView
+        android:background="#FF000000"
+        android:id="@+id/nearest_list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:clickable="true"
-        android:textSize="20sp"
-        android:layout_below="@+id/aidname"
-        android:layout_toRightOf="@+id/bearing">
-    </TextView>
+        android:layout_height="wrap_content"/> 
+        
+        <Button
+            android:id="@+id/nearest_button_dest"
+            android:layout_width="170sp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_5"
+            android:gravity="left"
+            android:drawableLeft="@drawable/direct"
+            android:text="@string/Destination"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_4"
+            android:visibility="invisible" />
 
-    <ImageView
-        android:background="#FFFFFFFF"
-        android:contentDescription="@string/desc"
-        android:id="@+id/imageWeather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/distance"
-        android:clickable="true"
-        android:layout_marginLeft="0dp"
-        android:src="@drawable/whitesq"/>
+        <Button
+            android:id="@+id/nearest_button_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_3"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_2"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_1"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:visibility="invisible" />
     
 </RelativeLayout>

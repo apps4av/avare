@@ -50,9 +50,9 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
         if(null == rowView) {
             rowView = inflater.inflate(R.layout.typevalue, parent, false);
         }
-        TextView textView = (TextView)rowView.findViewById(R.id.type);
+        TextView textView = (TextView)rowView.findViewById(R.id.typevalue_type);
         textView.setText(mType[position]);
-        textView = (TextView)rowView.findViewById(R.id.value);
+        textView = (TextView)rowView.findViewById(R.id.typevalue_value);
         textView.setText(mValue[position]);
         
         return rowView;
