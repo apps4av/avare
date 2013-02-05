@@ -13,6 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
+import java.util.Locale;
+
 import com.ds.avare.storage.Preferences;
 
 import android.app.Activity;
@@ -45,7 +47,7 @@ public class Helper {
      * @return
      */
     public static String makeLine(double value, String unit, String eta, double heading) {
-        String valTrunc = String.format("%4d", (Math.round(value)));
+        String valTrunc = String.format(Locale.getDefault(), "%4d", (Math.round(value)));
         return 
                 valTrunc + unit + " " +  eta + " " + 
                 Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
@@ -57,7 +59,7 @@ public class Helper {
      * @return
      */
     public static String correctConvertHeading(long heading) {
-        String ret = String.format("%03d", heading);
+        String ret = String.format(Locale.getDefault(), "%03d", heading);
         if(ret.equals("000")) {
             ret = "360";
         }

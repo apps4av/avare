@@ -44,12 +44,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Intent from google maps to share location for destination -->
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"></action>
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         </application>
 </manifest>

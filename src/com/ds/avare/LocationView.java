@@ -1144,9 +1144,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 if((null == airport) && (null != mGestureCallBack)) {
                     /*
-                     * Not found; send lon/lat
+                     * Not found; send lat/lon
                      */
-                    airport = "" + Helper.truncGeo(lon2) + "&" + Helper.truncGeo(lat2);
+                    airport = "" + Helper.truncGeo(lat2) + "&" + Helper.truncGeo(lon2);
                     mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
                 }
             }

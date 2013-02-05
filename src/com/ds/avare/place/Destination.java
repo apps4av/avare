@@ -15,6 +15,7 @@ package com.ds.avare.place;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import java.util.Observable;
 
@@ -113,8 +114,8 @@ public class Destination extends Observable {
 	        String tokens[] = name.split("&");
 	        
 	        try {
-    	        mLond = Double.parseDouble(tokens[0]);
-    	        mLatd = Double.parseDouble(tokens[1]);
+    	        mLond = Double.parseDouble(tokens[1]);
+    	        mLatd = Double.parseDouble(tokens[0]);
 	        }
 	        catch (Exception e) {
 	            /*
@@ -124,11 +125,19 @@ public class Destination extends Observable {
 	            mType = "";
 	            return;
 	        }
+	        if((mLond > 0) || (mLond < -179.99) || (mLatd < 0) || (mLatd > 89.99)) {
+	            /*
+	             * Sane input
+	             */
+                mName = "";
+                mType = "";
+                return;	            
+	        }
 	        mName = name;
 	        mType = GPS;
 	        return;
 	    }
-	    mName = name.toUpperCase();
+	    mName = name.toUpperCase(Locale.getDefault());
 	    mType = type;
     	mLond = mLatd = 0;
 	}
@@ -177,8 +186,8 @@ public class Destination extends Observable {
 	    	    mEta = "XX:XX";
 	    	}
 	    	else {
-    	    	String hr = String.format("%02d", etahr);
-    	    	String min = String.format("%02d", etamin);
+    	    	String hr = String.format(Locale.getDefault(), "%02d", etahr);
+    	    	String min = String.format(Locale.getDefault(), "%02d", etamin);
             	mEta = new String(hr + ":" + min);
 	    	}
     	}

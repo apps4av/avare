@@ -190,13 +190,21 @@ public class StorageService extends Service {
          */
         GpsInterface intf = new GpsInterface() {
 
+            /**
+             * 
+             * @return
+             */
+            private LinkedList<GpsInterface> extracted() {
+                return (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+            }
+
             /*
              * (non-Javadoc)
              * @see com.ds.avare.GpsInterface#statusCallback(android.location.GpsStatus)
              */            
             @Override
             public void statusCallback(GpsStatus gpsStatus) {
-                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
@@ -210,7 +218,7 @@ public class StorageService extends Service {
              */
             @Override
             public void locationCallback(Location location) {
-                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
@@ -231,7 +239,7 @@ public class StorageService extends Service {
              */
             @Override
             public void timeoutCallback(boolean timeout) {
-                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
@@ -241,7 +249,7 @@ public class StorageService extends Service {
 
             @Override
             public void enabledCallback(boolean enabled) {
-                LinkedList<GpsInterface> list = (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
