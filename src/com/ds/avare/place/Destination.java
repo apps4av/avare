@@ -79,6 +79,13 @@ public class Destination extends Observable {
     private String mSubType;
     private LinkedList<Runway> mRunways;
     
+    public static final String GPS = "GPS Coordinate";
+    
+    /*
+     * -128.0000&90.0000 = 17
+     */
+    public static final int MAX_NAME_LEN = 17;
+    
     /**
      * Contains all info in a hash map for the destination
      * Dozens of parameters in a linked map because simple map would rearrange the importance
@@ -90,21 +97,42 @@ public class Destination extends Observable {
 	 * @param DataSource
 	 */
 	public Destination(String name, String type, Preferences pref, StorageService service) {
+        mSubType = "";
+        mFound = mLooking = false;
+        mRunways = new LinkedList<Runway>();
+        mService = service;
+        mDataSource = mService.getDBResource(); 
+        mPref = pref;
+        mEta = new String("--:--");
+        mParams = new LinkedHashMap<String, String>();
+        mDiagramFound = null;
+	    if(name.contains("&")) {
+	        /*
+	         * This is lon/lat destination
+	         */
+	        String tokens[] = name.split("&");
+	        
+	        try {
+    	        mLond = Double.parseDouble(tokens[0]);
+    	        mLatd = Double.parseDouble(tokens[1]);
+	        }
+	        catch (Exception e) {
+	            /*
+	             * Bad input from user on GPS
+	             */
+	            mName = "";
+	            mType = "";
+	            return;
+	        }
+	        mName = name;
+	        mType = GPS;
+	        return;
+	    }
 	    mName = name.toUpperCase();
 	    mType = type;
-	    mSubType = "";
-	    mFound = mLooking = false;
-	    mRunways = new LinkedList<Runway>();
-	    mService = service;
-	    mDataSource = mService.getDBResource(); 
-	    mPref = pref;
-	    mEta = new String("--:--");
-    	mParams = new LinkedHashMap<String, String>();
-    	mDiagramFound = null;
     	mLond = mLatd = 0;
-
 	}
-    
+
 	/**
 	 * 
 	 * @return
@@ -185,6 +213,19 @@ public class Destination extends Observable {
 	    /*
 	     * Do in background as database queries are disruptive
 	     */
+	    if(mType.equals(GPS)) {
+            mParams = new LinkedHashMap<String, String>();
+            mParams.put("Longitude", "" + mLond);
+            mParams.put("Latitude", "" + mLatd);
+            mParams.put("Facility Name", GPS);
+            mDiagramFound = null;
+            mFound = true;
+            mLooking = false;
+            mSubType = GPS;
+            setChanged();
+            notifyObservers(true);
+            return;
+	    }
         mLooking = true;
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
         locmDataBaseTask.execute(mName, mType);

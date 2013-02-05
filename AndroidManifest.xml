@@ -11,8 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="64"
-    android:versionName="3.4.4" >
+    android:versionCode="65"
+    android:versionName="3.4.5" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="8" />
@@ -39,9 +39,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
+            <!-- Intent for mock gps built into app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Intent from google maps to share location for destination -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"></action>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         </application>

@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BitmapHolder;
 
 import android.content.Context;
@@ -41,6 +42,7 @@ public class SearchAdapter extends ArrayAdapter<String> {
     private BitmapHolder mAirportBitmapHolder;
     private BitmapHolder mFixBitmapHolder;
     private BitmapHolder mNoBitmapHolder;
+    private BitmapHolder mGeoBitmapHolder;
     
     /**
      * @param context
@@ -64,6 +66,7 @@ public class SearchAdapter extends ArrayAdapter<String> {
         mAirportBitmapHolder = new BitmapHolder(mContext, R.drawable.airport);
         mNoBitmapHolder = new BitmapHolder(mContext, R.drawable.no);
         mFixBitmapHolder = new BitmapHolder(mContext, R.drawable.fix);
+        mGeoBitmapHolder = new BitmapHolder(mContext, R.drawable.geo);
     }
 
     @Override
@@ -150,6 +153,9 @@ public class SearchAdapter extends ArrayAdapter<String> {
                         vals[1].equals("NSTAR-TRANS-XIN") ||
                         vals[1].equals("NBRG-INTXN")) {
                     imgView.setImageBitmap(mFixBitmapHolder.getBitmap());
+                }
+                else if(vals[1].equals(Destination.GPS)) {
+                    imgView.setImageBitmap(mGeoBitmapHolder.getBitmap());
                 }
                 else {
                     /*

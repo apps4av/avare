@@ -197,11 +197,21 @@ public class PlanActivity extends Activity implements Observer {
                 /*
                  * If text is 0 length, then do not search
                  */
-                if(s.length() == 0) {
+                if((0 == s.length()) || (s.length() > Destination.MAX_NAME_LEN)) {
                     initList();
                     return;
                 }
                 
+                /*
+                 * This is a geo coordinate
+                 */
+                if(s.toString().contains("&")) {
+                    String [] vals = new String[1];
+                    vals[0] = s.toString() + "::" + ";" + Destination.GPS;
+                    mAdapter = new SearchAdapter(PlanActivity.this, vals);
+                    mSearchListView.setAdapter(mAdapter);
+                    return;
+                }
                 mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
                 mSearchTask = new SearchTask();

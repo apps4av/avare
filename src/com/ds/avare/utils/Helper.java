@@ -28,6 +28,17 @@ public class Helper {
 
     /**
      * 
+     * @param lonlat
+     */
+    public static double truncGeo(double lonlat) {
+        lonlat *= 10000;
+        lonlat = Math.round(lonlat);
+        lonlat /= 10000;
+        return lonlat;
+    }
+    
+    /**
+     * 
      * @param distance
      * @param eta
      * @param heading

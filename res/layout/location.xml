@@ -23,12 +23,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <Button
             android:id="@+id/location_button_dest"
-            android:layout_width="170dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_pref"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
+            android:minWidth="170dp"
             android:visibility="invisible" />
         
         <Button

@@ -527,17 +527,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             mPaint.setTextAlign(Align.LEFT);
             /*
-             * Altitude
+             * Altitude 2nd row
              */
             canvas.drawText("" + Math.round(mGpsParams.getAltitude()) + "ft",
-                    0, getHeight() - mFontHeight, mPaint);
+                    0, getHeight() / mTextDiv * 2, mPaint);
 
             mPaint.setTextAlign(Align.RIGHT);
             /*
              * Heading, add variation if found
              * Speed
              */
-
             canvas.drawText(
                     Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "     ", mGpsParams.getBearing()),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
@@ -566,8 +565,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(mDestination.toString(),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
+            String name = mDestination.getID();
+            if(name.length() > 6) {
+                /*
+                 * If this string is too long, for Lon/Lat display, make text small.
+                 */
+                mPaint.setTextSize(getHeight() / mTextDiv / 2);
+            }
             canvas.drawText(mDestination.getID(),
                     0, getHeight() / mTextDiv, mPaint);
+            mPaint.setTextSize(getHeight() / mTextDiv);
         }
     }
 
@@ -768,9 +775,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	
     	drawTiles(canvas);
     	drawTFR(canvas);
-        drawAircraft(canvas);
         drawTrack(canvas);
         drawRunways(canvas);
+        drawAircraft(canvas);
     	drawMETARText(canvas);
     	drawCornerTexts(canvas);
     }    
@@ -1133,6 +1140,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null != mService) {
                 airport = mService.getDBResource().findClosestAirportID(lon2, lat2);
                 if((null != airport) && (null != mGestureCallBack)) {
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
+                }
+                if((null == airport) && (null != mGestureCallBack)) {
+                    /*
+                     * Not found; send lon/lat
+                     */
+                    airport = "" + Helper.truncGeo(lon2) + "&" + Helper.truncGeo(lat2);
                     mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
                 }
             }
