@@ -181,7 +181,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Shadow length 
      */
-    private static int SHADOW = 4;
+    private static final int SHADOW = 4;
+    
+    /*
+     * Text on screen color
+     */
+    private static final int TEXT_COLOR = 0xffadff2f; 
     
     /**
      * @param context
@@ -523,7 +528,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
         }
         else {
-            mPaint.setColor(Color.WHITE);
+            mPaint.setColor(TEXT_COLOR);
 
             mPaint.setTextAlign(Align.LEFT);
             /*
@@ -545,7 +550,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Point top right
          */
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(TEXT_COLOR);
         if(mPointProjection != null) {
             mPaint.setTextAlign(Align.RIGHT);
             /*
@@ -566,7 +571,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
             String name = mDestination.getID();
-            if(name.length() > 6) {
+            if(name.contains("&")) {
                 /*
                  * If this string is too long, for Lon/Lat display, make text small.
                  */
@@ -708,7 +713,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Loop again to over write text
                  */
                 mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                mPaint.setColor(Color.WHITE);
+                mPaint.setColor(TEXT_COLOR);
                 mPaint.setTextAlign(Align.CENTER);
 
                 for(Runway r : runways) {
