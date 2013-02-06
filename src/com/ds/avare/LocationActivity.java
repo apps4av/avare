@@ -22,6 +22,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
@@ -84,6 +85,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mGpsButton;
     private Button mDownloadButton;
     private Button mMenuButton;
+    private Bundle mExtras;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -282,7 +284,11 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(!b.getText().toString().equals(getString(R.string.Destination))) {
                     
-                    mDestination = new Destination(b.getText().toString(), "Base", mPref, mService);
+                    String type = Destination.BASE;
+                    if(b.getText().toString().contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    mDestination = new Destination(b.getText().toString(), type, mPref, mService);
                     mDestination.addObserver(LocationActivity.this);
                     mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
                     mToast.show();
@@ -324,6 +330,11 @@ public class LocationActivity extends Activity implements Observer {
             mGpsWarnDialog.show();
         }
         
+        /*
+         * Check if this was sent from Google Maps
+         */
+        mExtras = getIntent().getExtras();
+ 
         mService = null;
     }    
 
@@ -402,7 +413,29 @@ public class LocationActivity extends Activity implements Observer {
                 });
     
                 mAlertDialogWarn.show();
-            }            
+            }    
+            
+            /*
+             * See if we got an intent to search for address as dest
+             */
+            if(null != mExtras) {
+                String addr = mExtras.getString(Intent.EXTRA_TEXT);
+                if(addr != null) {
+                    
+                    /*
+                     * , cannot be saved in prefs
+                     */
+                    addr = StringPreference.formatAddressName(addr);
+                    
+                    mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
+                    mDestination.addObserver(LocationActivity.this);
+                    mToast.setText(getString(R.string.Searching) + " " + addr);
+                    mToast.show();
+                    mDestination.find();
+                }
+                mExtras = null;
+            }
+
         }
 
         /* (non-Javadoc)

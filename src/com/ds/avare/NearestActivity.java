@@ -120,7 +120,7 @@ public class NearestActivity extends Activity  implements Observer {
                  * On click, find destination that was pressed on in view
                  */
                 Button b = (Button)v;
-                mDestination = new Destination(b.getText().toString(), "Base", mPref, mService);
+                mDestination = new Destination(b.getText().toString(), Destination.BASE, mPref, mService);
                 mDestination.addObserver(NearestActivity.this);
                 mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
                 mToast.show();

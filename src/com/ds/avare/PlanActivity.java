@@ -21,6 +21,7 @@ import java.util.Observer;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 
@@ -154,16 +155,12 @@ public class PlanActivity extends Activity implements Observer {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                     long arg3) {
-                String val[] = mAdapter.getItem(position).split("::");
-                if(val.length < 2) {
+                String id = StringPreference.parseHashedNameId(mAdapter.getItem(position)); 
+                String destType = StringPreference.parseHashedNameDestType(mAdapter.getItem(position)); 
+                if(id == null || destType == null) {
                     return;
                 }
-                String dst = val[0];
-                String vals[] = val[1].split(";");
-                if(vals.length < 2) {
-                    return;
-                }
-                goTo(dst, vals[0]);
+                goTo(id, destType);
             }
         });
 
@@ -195,7 +192,7 @@ public class PlanActivity extends Activity implements Observer {
                 }
                 
                 /*
-                 * If text is 0 length, then do not search
+                 * If text is 0 length or too long, then do not search, show last list
                  */
                 if((0 == s.length()) || (s.length() > Destination.MAX_NAME_LEN)) {
                     initList();
@@ -203,11 +200,12 @@ public class PlanActivity extends Activity implements Observer {
                 }
                 
                 /*
-                 * This is a geo coordinate
+                 * This is a geo coordinate?
                  */
                 if(s.toString().contains("&")) {
                     String [] vals = new String[1];
-                    vals[0] = s.toString() + "::" + ";" + Destination.GPS;
+                    StringPreference sp = new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, s.toString());
+                    vals[0] = sp.getHashedName();
                     mAdapter = new SearchAdapter(PlanActivity.this, vals);
                     mSearchListView.setAdapter(mAdapter);
                     return;
@@ -383,7 +381,7 @@ public class PlanActivity extends Activity implements Observer {
                 selection = new String[params.size()];
                 int iterator = 0;
                 for(String key : params.keySet()){
-                    selection[iterator] = params.get(key) + "::" +  key;
+                    selection[iterator] = StringPreference.getHashedName(params.get(key), key);
                     iterator++;
                 }
             }

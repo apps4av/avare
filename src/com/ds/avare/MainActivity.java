@@ -87,14 +87,14 @@ public class MainActivity extends TabActivity {
         /*
          * Add tabs
          */
-        setupTab(new TextView(this), getString(R.string.main), new Intent(this, LocationActivity.class));
-        setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class));
-        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class));
-        setupTab(new TextView(this), getString(R.string.Nearest), new Intent(this, NearestActivity.class));
+        setupTab(new TextView(this), getString(R.string.main), new Intent(this, LocationActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Nearest), new Intent(this, NearestActivity.class), getIntent());
         
         //Mock mMockGps;
         //mMockGps = new Mock();
-        //mMockGps.execute(mGps); // execute the listener where GPS location is
+        //mMockGps.execute(mGps); // execute the listener where GPS location is        
     }
     
     /**
@@ -103,7 +103,13 @@ public class MainActivity extends TabActivity {
      * @param tag
      * @param i
      */
-    private void setupTab(View view, String tag, Intent i) {
+    private void setupTab(View view, String tag, Intent i, Intent original) {
+        /*
+         * Pass on all original.
+         */
+        if(original.getExtras() != null) {
+            i.putExtras(original);
+        }
         View tabview = createTabView(mTabHost.getContext(), tag);
         TabSpec setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(i);
         mTabHost.addTab(setContent);

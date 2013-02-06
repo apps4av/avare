@@ -575,11 +575,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * If this string is too long, for Lon/Lat display, make text small.
                  */
-                mPaint.setTextSize(getHeight() / mTextDiv / 2);
+                name = Destination.GPS;
             }
-            canvas.drawText(mDestination.getID(),
+            else if (name.length() > 8) {
+                name = name.substring(0, 7);
+            }
+            canvas.drawText(name,
                     0, getHeight() / mTextDiv, mPaint);
-            mPaint.setTextSize(getHeight() / mTextDiv);
         }
     }
 

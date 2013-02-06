@@ -15,18 +15,22 @@ package com.ds.avare.place;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import java.util.Observable;
-
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
+import com.ds.avare.storage.DataBaseImageHelper;
 import com.ds.avare.storage.ImageDataSource;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 
@@ -76,11 +80,15 @@ public class Destination extends Observable {
     
     private boolean mLooking;
     
-    private String mType;
-    private String mSubType;
+    private String mDestType;
+    private String mDbType;
     private LinkedList<Runway> mRunways;
     
-    public static final String GPS = "GPS Coordinate";
+    public static final String GPS = "GPS";
+    public static final String MAPS = "Maps";
+    public static final String BASE = "Base";
+    public static final String FIX = "Fix";
+    public static final String NAVAID = "Navaid";
     
     /*
      * -128.0000&90.0000 = 17
@@ -98,7 +106,7 @@ public class Destination extends Observable {
 	 * @param DataSource
 	 */
 	public Destination(String name, String type, Preferences pref, StorageService service) {
-        mSubType = "";
+        mDbType = "";
         mFound = mLooking = false;
         mRunways = new LinkedList<Runway>();
         mService = service;
@@ -107,11 +115,24 @@ public class Destination extends Observable {
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
         mDiagramFound = null;
+        /*
+         * GPS
+         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
+         * get the x&y part, then parse them to lon=y lat=x
+         */
 	    if(name.contains("&")) {
+	        String token[] = new String[2];
+	        token[1] = token[0] = name;
+	        if(name.contains("@")) {
+	            /*
+	             * This could be the geo point from maps
+	             */
+	            token = name.split("@");
+	        }
 	        /*
 	         * This is lon/lat destination
 	         */
-	        String tokens[] = name.split("&");
+	        String tokens[] = token[1].split("&");
 	        
 	        try {
     	        mLond = Double.parseDouble(tokens[1]);
@@ -122,7 +143,7 @@ public class Destination extends Observable {
 	             * Bad input from user on GPS
 	             */
 	            mName = "";
-	            mType = "";
+	            mDestType = "";
 	            return;
 	        }
 	        if((mLond > 0) || (mLond < -179.99) || (mLatd < 0) || (mLatd > 89.99)) {
@@ -130,15 +151,15 @@ public class Destination extends Observable {
 	             * Sane input
 	             */
                 mName = "";
-                mType = "";
+                mDestType = "";
                 return;	            
 	        }
-	        mName = name;
-	        mType = GPS;
+	        mName = token[0];
+	        mDestType = type;
 	        return;
 	    }
 	    mName = name.toUpperCase(Locale.getDefault());
-	    mType = type;
+	    mDestType = type;
     	mLond = mLatd = 0;
 	}
 
@@ -147,7 +168,8 @@ public class Destination extends Observable {
 	 * @return
 	 */
 	public String getStorageName() {
-	    return getID() + "::" + mType + ";" + mSubType + ";" + getFacilityName();
+	    StringPreference s = new StringPreference(mDestType, mDbType, getFacilityName(), getID());
+	    return s.getHashedName();
 	}
 	
 	/**
@@ -222,22 +244,27 @@ public class Destination extends Observable {
 	    /*
 	     * Do in background as database queries are disruptive
 	     */
-	    if(mType.equals(GPS)) {
+	    if(mDestType.equals(GPS)) {
+	        /*
+	         * For GPS coordinates, simply put parsed lon/lat in params
+	         * No need to query database
+	         */
             mParams = new LinkedHashMap<String, String>();
-            mParams.put("Longitude", "" + mLond);
-            mParams.put("Latitude", "" + mLatd);
-            mParams.put("Facility Name", GPS);
+            mParams.put(DataBaseImageHelper.LONGITUDE, "" + mLond);
+            mParams.put(DataBaseImageHelper.LATITUDE, "" + mLatd);
+            mParams.put(DataBaseImageHelper.FACILITY_NAME, GPS);
             mDiagramFound = null;
             mFound = true;
             mLooking = false;
-            mSubType = GPS;
+            mDbType = GPS;
             setChanged();
             notifyObservers(true);
-            return;
 	    }
-        mLooking = true;
-        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(mName, mType);
+	    else { 
+            mLooking = true;
+            DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
+            locmDataBaseTask.execute();
+	    }
 	}
 	
     /**
@@ -263,10 +290,64 @@ public class Destination extends Observable {
 	        	return false;
         	}
         	
-	        
-	        boolean ret = mDataSource.findDestination((String)vals[0], (String)vals[1], mParams, mRunways);
+	        /*
+	         * For Google maps address, if we have already geo decoded it using internet,
+	         * then no need to do again because internet may not be available on flight.
+	         * It could be coming from storage and not google maps.
+	         */
+	        if(mDestType.equals(MAPS)) {
 
-	        if(ret && mType.equals("Base")) {
+	            if(mLond == 0 && mLatd == 0) {
+	                /*
+	                 * We have already decomposed it?
+	                 * No.
+	                 */
+	                String strAddress = mName;
+	                
+	                Geocoder coder = new Geocoder(mService);
+	                Address location = null;
+
+	                /*
+	                 * Decompose
+	                 */
+	                try {
+	                    List<Address> address = coder.getFromLocationName(strAddress, 1);
+	                    if (address != null) {
+	                        location = address.get(0);
+	                    }
+	                }
+	                catch (Exception e) {
+	                    return false;
+	                }
+	                
+	                if(null == location) {
+	                    return false;
+	                }
+	                                        
+	                /*
+	                 * Decomposed it
+	                 * 
+	                 */
+	                mLond = Helper.truncGeo(location.getLongitude());
+	                mLatd = Helper.truncGeo(location.getLatitude());
+	            }
+                /*
+                 * Common stuff
+                 */
+                mParams = new LinkedHashMap<String, String>();
+                mDiagramFound = null;
+                mDbType = mDestType;
+                mParams.put(DataBaseImageHelper.TYPE, mDestType);
+                mParams.put(DataBaseImageHelper.FACILITY_NAME, mName);
+                mParams.put(DataBaseImageHelper.LONGITUDE, "" + mLond);
+                mParams.put(DataBaseImageHelper.LATITUDE, "" + mLatd);
+                mName += "@" + mLatd + "&" + mLond;
+                return true;                    
+	        }
+	        
+	        boolean ret = mDataSource.findDestination(mName, mDestType, mParams, mRunways);
+
+	        if(ret && mDestType.equals(BASE)) {
 	            /*
 	             * Found destination extract its airport diagram
 	             */
@@ -299,9 +380,9 @@ public class Destination extends Observable {
         	 */
 			mFound = result;
 			if(mFound) {
-                mSubType = mParams.get("Type");
-    		    mLond = Double.parseDouble(mParams.get("Longitude"));
-    		    mLatd = Double.parseDouble(mParams.get("Latitude"));
+                mDbType = mParams.get(DataBaseImageHelper.TYPE);
+    		    mLond = Double.parseDouble(mParams.get(DataBaseImageHelper.LONGITUDE));
+    		    mLatd = Double.parseDouble(mParams.get(DataBaseImageHelper.LATITUDE));
 			}
 			/*
 			 * Anyone watching if destination found?
@@ -337,7 +418,7 @@ public class Destination extends Observable {
      * @return
      */
     public String getFacilityName() {
-    	return(mParams.get("Facility Name"));
+    	return(mParams.get(DataBaseImageHelper.FACILITY_NAME));
     }
 
     /**
