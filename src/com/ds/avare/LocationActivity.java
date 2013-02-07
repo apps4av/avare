@@ -553,11 +553,6 @@ public class LocationActivity extends Activity implements Observer {
             }
         }
         
-        /*
-         * Clear tiles memory
-         */
-        mLocationView.setTiles(null);
-
         super.onDestroy();
     }
 

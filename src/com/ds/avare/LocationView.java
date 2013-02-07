@@ -134,12 +134,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private GestureInterface            mGestureCallBack; 
 
     /**
-     * Our current location
-     */
-    private Tile                        mGpsTile;
-    private Tile                        mCenterTile;
-    
-    /**
      * Scale factor based on pinch zoom
      */
     private Scale                       mScale;
@@ -903,9 +897,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         double p[] = new double[2];
         double lon;
         double lat;
-        int movex;
-        int movey;
-        String tileNames[] = new String[mTiles.getTilesNum()];
+        int     movex;
+        int     movey;
+        String        tileNames[];
+        private Tile centerTile;
+        private Tile gpsTile;
+        
+
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -913,6 +911,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         @Override
         protected Boolean doInBackground(Object... vals) {
             
+
             /*
              * Load tiles from image files in background, then send them to handler.
              */
@@ -922,20 +921,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Now draw in background
              */
-            mGpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
+            gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
             
             
-            if(mGpsTile == null) {
+            if(gpsTile == null) {
                 return false;
             }
             
             movex = mPan.getTileMoveXWithoutTear();
             movey = mPan.getTileMoveYWithoutTear();
             
-            String newt = mGpsTile.getNeighbor(movey, movex);
-            mCenterTile = mImageDataSource.findTile(newt);
-            if(null != mCenterTile) {
-                mScale.setScaleAt(mCenterTile.getLatitude());
+            String newt = gpsTile.getNeighbor(movey, movex);
+            centerTile = mImageDataSource.findTile(newt);
+            if(null != centerTile) {
+                mScale.setScaleAt(centerTile.getLatitude());
             }
             else {
                 return false;
@@ -949,11 +948,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Neighboring tiles with center and pan
              */
             int i = 0;
+            tileNames = new String[mTiles.getTilesNum()];
             for(int tiley = -(int)(mTiles.getYTilesNum() / 2) ; 
                     tiley <= (mTiles.getYTilesNum() / 2); tiley++) {
                 for(int tilex = -(int)(mTiles.getXTilesNum() / 2); 
                         tilex <= (mTiles.getXTilesNum() / 2) ; tilex++) {
-                    tileNames[i++] = mCenterTile.getNeighbor(tiley, tilex);
+                    tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
                 }
             }
             
@@ -968,8 +968,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             LinkedList<TFRShape> shapes = mService.getTFRShapes();
             if(null != shapes) {
                 for(int shape = 0; shape < shapes.size(); shape++) {
-                    shapes.get(shape).prepareIfVisible(mCenterTile.getLongitude(),
-                            mCenterTile.getLatitude());
+                    shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
+                            centerTile.getLatitude());
                 }
             }
                         
