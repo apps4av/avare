@@ -107,4 +107,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Runways">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysLabel">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysSummary">&quot;Select to show runway extensions&quot;</string>
+    <string name="Altitude">&quot;Altitude ft.&quot;</string>
+    <string name="Exit">&quot;Exit&quot;</string>
+    <string name="ExitLabel">&quot;Exit Behavior&quot;</string>
+    <string name="ExitSummary">&quot;Select to completely exit Avare on back key&quot;</string>
 </resources>

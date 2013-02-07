@@ -18,8 +18,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.ds.avare.R;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
 
 /**
@@ -249,6 +252,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean shouldExitCompletely() {
+        return(mPref.getBoolean(mContext.getString(R.string.Exit), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldScreenStayOn() {
         return(mPref.getBoolean(mContext.getString(R.string.ScreenOn), true));
     }
@@ -261,6 +272,43 @@ public class Preferences {
         return(mPref.getBoolean(mContext.getString(R.string.GpsTime), false));
     }
 
+    /**
+     * 
+     * @param activity
+     * @return
+     */
+    public boolean isNewerVersion(Activity activity) {
+        PackageInfo packageInfo = null;
+        
+        /*
+         * Get current version code.
+         */
+        try {
+            packageInfo = activity.getPackageManager()
+                    .getPackageInfo("com.ds.avare", 0);
+        } catch (Exception e) {
+            packageInfo = null;
+        }
+        
+        /*
+         * Found.
+         */
+        if(null != packageInfo) {
+            int newCode = packageInfo.versionCode;
+            int oldCode = mPref.getInt(mContext.getString(R.string.app_name), 0);
+            if(oldCode != newCode) {
+                /*
+                 * Updated or new
+                 */
+                SharedPreferences.Editor editor = mPref.edit();
+                editor.putInt(mContext.getString(R.string.app_name), newCode);
+                editor.commit();
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * 
      * @return

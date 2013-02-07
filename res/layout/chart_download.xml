@@ -23,7 +23,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 	<Button
 	    android:id="@+id/chart_download_button_dl"
-	    android:layout_width="170dp"
+	    android:layout_width="100dp"
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true"
 	    android:layout_alignParentRight="true"
@@ -31,6 +31,17 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:drawableLeft="@drawable/download_arrow"
 	    android:gravity="center"
 	    android:text="@string/Start"
+	    android:visibility="visible" />
+
+	<Button
+	    android:id="@+id/chart_download_button_back"
+	    android:layout_width="100dp"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentBottom="true"
+	    android:drawableLeft="@drawable/back"
+	    android:gravity="center"
+	    android:text="@string/main"
 	    android:visibility="visible" />
 	    
 </RelativeLayout>

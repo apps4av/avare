@@ -25,19 +25,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/nearest_button_dest"
             android:layout_width="170sp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_5"
+            android:layout_above="@+id/nearest_button_4"
             android:gravity="left"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
             android:visibility="invisible" />
         
-        <Button
-            android:id="@+id/nearest_button_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_4"
-            android:visibility="invisible" />
-
         <Button
             android:id="@+id/nearest_button_4"
             android:layout_width="wrap_content"

@@ -530,17 +530,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         else {
             mPaint.setColor(TEXT_COLOR);
 
-            mPaint.setTextAlign(Align.LEFT);
-            /*
-             * Altitude 2nd row
-             */
-            canvas.drawText("" + Math.round(mGpsParams.getAltitude()) + "ft",
-                    0, getHeight() / mTextDiv * 2, mPaint);
-
             mPaint.setTextAlign(Align.RIGHT);
             /*
-             * Heading, add variation if found
-             * Speed
+             * Heading, Speed
              */
             canvas.drawText(
                     Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "     ", mGpsParams.getBearing()),

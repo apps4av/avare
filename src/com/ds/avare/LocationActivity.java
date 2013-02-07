@@ -152,7 +152,34 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        
+        /*
+         * Throw a confirm dialog
+         */
+        new AlertDialog.Builder(this)
+        .setIcon(android.R.drawable.ic_dialog_alert)
+        .setTitle(R.string.Exit)
+        .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if(mPref.shouldExitCompletely()) {
+                    /*
+                     * Completely exit
+                     */
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+                else { 
+                    /*
+                     * Go to background
+                     */
+                    LocationActivity.super.onBackPressed();
+                }
+            }
+        })
+        .setNegativeButton(R.string.No, null)
+        .show();
     }
 
     /* (non-Javadoc)
@@ -362,7 +389,10 @@ public class LocationActivity extends Activity implements Observer {
              */
             mLocationView.setTiles(mService.getTiles());
             
-            if(!mService.getDBResource().isPresent()) {
+            /*
+             * Check if database is not present or needs upgrade
+             */
+            if((!mService.getDBResource().isPresent()) || mPref.isNewerVersion(LocationActivity.this)) {
                 /*
                  * If could not open database then bring up download activity.
                  */

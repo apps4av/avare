@@ -61,6 +61,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     
     private StorageService mService;
     private Button mDLButton;
+    private Button mBackButton;
 
     /**
      * 
@@ -114,6 +115,29 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             }
             
         });
+        
+        mDLButton = (Button)view.findViewById(R.id.chart_download_button_dl);
+        mDLButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                download();
+            }
+        });
+        mBackButton = (Button)view.findViewById(R.id.chart_download_button_back);
+        mBackButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                /*
+                 * Switch back to main activity
+                 */
+                Intent i = new Intent(ChartsDownloadActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
+            }
+        });
+
 
     }
 
