@@ -141,10 +141,11 @@ public class Destination extends Observable {
 	            mDestType = "";
 	            return;
 	        }
-	        if((mLond > 0) || (mLond < -179.99) || (mLatd < 0) || (mLatd > 89.99)) {
-	            /*
-	             * Sane input
-	             */
+	        
+	        /*
+	         * Sane input
+	         */
+            if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
                 mName = "";
                 mDestType = "";
                 return;	            
@@ -325,6 +326,10 @@ public class Destination extends Observable {
 	                 */
 	                mLond = Helper.truncGeo(location.getLongitude());
 	                mLatd = Helper.truncGeo(location.getLatitude());
+	                if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
+	                    return false;  
+	                }
+
 	            }
                 /*
                  * Common stuff

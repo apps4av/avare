@@ -106,7 +106,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * 
      * @return
      */
-    public synchronized boolean isPresent() {
+    public boolean isPresent() {
         if(null == mPath) {
             return false;
         }
@@ -169,7 +169,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public synchronized float[] findDiagramMatrix(String name) {
+    public float[] findDiagramMatrix(String name) {
         Cursor cursor;
         float ret[] = new float[12];
         int it;
@@ -230,7 +230,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public synchronized Tile findTile(String name) {
+    public Tile findTile(String name) {
         Cursor cursor;
         opens();
         /*
@@ -309,7 +309,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @param params
      */
-    public synchronized void findClosestAirports(double lon, double lat, Airport[] airports) {
+    public void findClosestAirports(double lon, double lat, Airport[] airports) {
         Cursor cursor;
 
         opens();
@@ -369,7 +369,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public synchronized boolean search(String name, LinkedHashMap<String, String> params) {
+    public boolean search(String name, LinkedHashMap<String, String> params) {
         
         Cursor cursor;
         String query;
@@ -481,7 +481,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public synchronized boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
+    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
         
         Cursor cursor;
         Cursor cursorfreq;
@@ -695,7 +695,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param p
      * @return
      */
-    public synchronized boolean isWithin(double lon, double lat, double offset[], double p[]) {
+    public boolean isWithin(double lon, double lat, double offset[], double p[]) {
         if(mCenterTile.within(lon, lat)) {
             offset[0] = mCenterTile.getOffsetX(lon);
             offset[1] = mCenterTile.getOffsetY(lat);
@@ -715,7 +715,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public synchronized String findClosestAirportID(double lon, double lat) {
+    public String findClosestAirportID(double lon, double lat) {
         Cursor cursor;
 
         opens();
@@ -788,7 +788,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public synchronized Tile findClosest(double lon, double lat, double offset[], double p[]) {
+    public Tile findClosest(double lon, double lat, double offset[], double p[]) {
       
         Cursor cursor;
 
@@ -808,8 +808,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             closes();
             return null;
         }
-        
-        
         
         /*
          * Find with sqlite query

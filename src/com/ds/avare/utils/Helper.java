@@ -39,6 +39,26 @@ public class Helper {
         return lonlat;
     }
     
+    
+    /**
+     * 
+     * @param lon
+     * @return
+     */
+    public static boolean isLongitudeSane(double lon) {
+        return (lon < 0) && (lon > -180); 
+    }
+    
+    /**
+     * 
+     * @param lat
+     * @return
+     */
+    public static boolean isLatitudeSane(double lat) {
+        return (lat >= 0) && (lat < 90); 
+    }
+    
+    
     /**
      * 
      * @param distance
