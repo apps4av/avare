@@ -79,9 +79,4 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/AllFacilitiesLabel"
         android:summary="@string/AllFacilitiesSummary"
         android:defaultValue="false"/>
-    <CheckBoxPreference
-        android:key="@string/Exit"
-        android:title="@string/ExitLabel"
-        android:summary="@string/ExitSummary"
-        android:defaultValue="false"/>
 </PreferenceScreen>

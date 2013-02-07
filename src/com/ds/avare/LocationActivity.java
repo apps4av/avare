@@ -163,19 +163,10 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                if(mPref.shouldExitCompletely()) {
-                    /*
-                     * Completely exit
-                     */
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-                else { 
-                    /*
-                     * Go to background
-                     */
-                    LocationActivity.super.onBackPressed();
-                }
+                /*
+                 * Go to background
+                 */
+                LocationActivity.super.onBackPressed();
             }
         })
         .setNegativeButton(R.string.No, null)

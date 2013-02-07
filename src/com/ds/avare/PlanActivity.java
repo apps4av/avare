@@ -359,6 +359,7 @@ public class PlanActivity extends Activity implements Observer {
                 startActivity(i);
             }
             else {
+                mService.setDestination((Destination)null);
                 mToast.setText(getString(R.string.DestinationNF));
                 mToast.show();
             }

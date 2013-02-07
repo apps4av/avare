@@ -252,14 +252,6 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean shouldExitCompletely() {
-        return(mPref.getBoolean(mContext.getString(R.string.Exit), false));
-    }
-
-    /**
-     * 
-     * @return
-     */
     public boolean shouldScreenStayOn() {
         return(mPref.getBoolean(mContext.getString(R.string.ScreenOn), true));
     }
