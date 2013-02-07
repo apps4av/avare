@@ -26,7 +26,7 @@ import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
-import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.weather.WeatherCache;
@@ -55,7 +55,7 @@ public class StorageService extends Service {
     /**
      * The Sqlite database
      */
-    private ImageDataSource mImageDataSource;
+    private DataSource mImageDataSource;
     /**
      * Store this
      */
@@ -162,7 +162,7 @@ public class StorageService extends Service {
           
         super.onCreate();
 
-        mImageDataSource = new ImageDataSource(getApplicationContext());
+        mImageDataSource = new DataSource(getApplicationContext());
         
         mWeatherCache = new WeatherCache(getApplicationContext());
 
@@ -311,7 +311,7 @@ public class StorageService extends Service {
     /**
      * @return
      */
-    public ImageDataSource getDBResource() {
+    public DataSource getDBResource() {
         return mImageDataSource;
     }
     

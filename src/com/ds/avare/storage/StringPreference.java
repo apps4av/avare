@@ -78,7 +78,7 @@ public class StringPreference {
      * @return
      */
     static public String formatAddressName(String name) {
-        return name.replaceAll("http:.*", "").replaceAll(",", "-").replaceAll("\n", "");
+        return name.replaceAll("http:.*", "").replaceAll(",", " ").replaceAll("\n", "");
     }
 
     /**

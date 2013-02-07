@@ -33,7 +33,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @author zkhan
  * The class that does the grunt wortk of dealing with the databse
  */
-public class DataBaseImageHelper extends SQLiteOpenHelper {
+public class DataBaseHelper extends SQLiteOpenHelper {
 
     /**
      * 
@@ -95,7 +95,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
     /**
      * @param context
      */
-    public DataBaseImageHelper(Context context) {
+    public DataBaseHelper(Context context) {
         super(context, context.getString(R.string.DatabaseName), null, DATABASE_VERSION);
         mPref = new Preferences(context);
         mPath = mPref.mapsFolder() + "/" + context.getString(R.string.DatabaseName);
@@ -528,7 +528,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                          */
                         try {
                             cursorfreq = mDataBase.rawQuery(
-                                "select * from " + TABLE_AIRPORT_FREQ + "where " + LOCATION_ID_DB + "==\"" + name                            
+                                "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "==\"" + name                            
                                 + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";", null);
                         }
                         catch (Exception e) {
@@ -559,7 +559,7 @@ public class DataBaseImageHelper extends SQLiteOpenHelper {
                          */
                         try {
                             cursorrun = mDataBase.rawQuery(
-                                "select * from " + TABLE_AIRPORT_RUNWAYS + "where " + LOCATION_ID_DB + "==\"" + name
+                                "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "==\"" + name
                                 + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";", null);
                         }
                         catch (Exception e) {

@@ -194,13 +194,21 @@ public class PlanActivity extends Activity implements Observer {
                 /*
                  * If text is 0 length or too long, then do not search, show last list
                  */
-                if((0 == s.length()) || (s.length() > Destination.MAX_NAME_LEN)) {
+                if(0 == s.length()) {
                     initList();
                     return;
                 }
                 
+                if(s.toString().contains(" ")) {
+                    String [] vals = new String[1];
+                    StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, s.toString());
+                    vals[0] = sp.getHashedName();
+                    mAdapter = new SearchAdapter(PlanActivity.this, vals);
+                    mSearchListView.setAdapter(mAdapter);
+                    return;
+                }
                 /*
-                 * This is a geo coordinate?
+                 * This is a geo coordinate with &?
                  */
                 if(s.toString().contains("&")) {
                     String [] vals = new String[1];

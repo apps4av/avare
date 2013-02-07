@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.DataSource;
 import com.ds.avare.weather.WeatherCache;
 
 import android.os.AsyncTask;
@@ -30,7 +30,7 @@ import android.os.SystemClock;
  */
 public class Area {
 
-    private ImageDataSource mDataSource;
+    private DataSource mDataSource;
     private Airport[] mAirports = new Airport[MAX_AIRPORTS];
     private DataBaseAreaTask mDt;
     private double mLon;
@@ -48,7 +48,7 @@ public class Area {
      * 
      * @param dataSource
      */
-    public Area(ImageDataSource dataSource, WeatherCache weather) {
+    public Area(DataSource dataSource, WeatherCache weather) {
         mDataSource = dataSource;
         mLon = mLat = 0;
         mVariation = 0;

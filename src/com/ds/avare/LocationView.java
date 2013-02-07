@@ -27,7 +27,7 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.shapes.TrackShape;
-import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.MultiTouchController;
@@ -126,7 +126,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private Pan                         mPan;
     
-    private ImageDataSource             mImageDataSource;
+    private DataSource             mImageDataSource;
     
     /**
      * To tell activity to do something on a gesture or touch

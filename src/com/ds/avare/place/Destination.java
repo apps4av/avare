@@ -22,8 +22,8 @@ import java.util.Observable;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.DataBaseImageHelper;
-import com.ds.avare.storage.ImageDataSource;
+import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.BitmapHolder;
@@ -48,7 +48,7 @@ public class Destination extends Observable {
     /**
      * Cache it for database query from async task
      */
-    private ImageDataSource mDataSource;
+    private DataSource mDataSource;
     /**
      * 
      */
@@ -89,11 +89,6 @@ public class Destination extends Observable {
     public static final String BASE = "Base";
     public static final String FIX = "Fix";
     public static final String NAVAID = "Navaid";
-    
-    /*
-     * -128.0000&90.0000 = 17
-     */
-    public static final int MAX_NAME_LEN = 17;
     
     /**
      * Contains all info in a hash map for the destination
@@ -250,9 +245,9 @@ public class Destination extends Observable {
 	         * No need to query database
 	         */
             mParams = new LinkedHashMap<String, String>();
-            mParams.put(DataBaseImageHelper.LONGITUDE, "" + mLond);
-            mParams.put(DataBaseImageHelper.LATITUDE, "" + mLatd);
-            mParams.put(DataBaseImageHelper.FACILITY_NAME, GPS);
+            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
+            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
+            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
             mDiagramFound = null;
             mFound = true;
             mLooking = false;
@@ -337,10 +332,10 @@ public class Destination extends Observable {
                 mParams = new LinkedHashMap<String, String>();
                 mDiagramFound = null;
                 mDbType = mDestType;
-                mParams.put(DataBaseImageHelper.TYPE, mDestType);
-                mParams.put(DataBaseImageHelper.FACILITY_NAME, mName);
-                mParams.put(DataBaseImageHelper.LONGITUDE, "" + mLond);
-                mParams.put(DataBaseImageHelper.LATITUDE, "" + mLatd);
+                mParams.put(DataBaseHelper.TYPE, mDestType);
+                mParams.put(DataBaseHelper.FACILITY_NAME, mName);
+                mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
+                mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
                 mName += "@" + mLatd + "&" + mLond;
                 return true;                    
 	        }
@@ -380,9 +375,9 @@ public class Destination extends Observable {
         	 */
 			mFound = result;
 			if(mFound) {
-                mDbType = mParams.get(DataBaseImageHelper.TYPE);
-    		    mLond = Double.parseDouble(mParams.get(DataBaseImageHelper.LONGITUDE));
-    		    mLatd = Double.parseDouble(mParams.get(DataBaseImageHelper.LATITUDE));
+                mDbType = mParams.get(DataBaseHelper.TYPE);
+    		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
+    		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
 			}
 			/*
 			 * Anyone watching if destination found?
@@ -418,7 +413,7 @@ public class Destination extends Observable {
      * @return
      */
     public String getFacilityName() {
-    	return(mParams.get(DataBaseImageHelper.FACILITY_NAME));
+    	return(mParams.get(DataBaseHelper.FACILITY_NAME));
     }
 
     /**

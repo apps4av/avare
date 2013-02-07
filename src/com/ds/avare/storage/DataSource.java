@@ -24,20 +24,20 @@ import android.content.Context;
 /**
  * @author zkhan
  * Gets entries from database
- * The class that actually does something is DataBaseImageHelper
+ * The class that actually does something is DataBaseHelper
  */
-public class ImageDataSource {
+public class DataSource {
 
     /**
      * 
      */
-    private DataBaseImageHelper dbHelper;
+    private DataBaseHelper dbHelper;
 
     /**
      * @param context
      */
-    public ImageDataSource(Context context) {
-        dbHelper = new DataBaseImageHelper(context);
+    public DataSource(Context context) {
+        dbHelper = new DataBaseHelper(context);
     }
 
     /**

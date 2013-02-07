@@ -15,7 +15,7 @@ package com.ds.avare.place;
 import java.util.LinkedHashMap;
 
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.DataBaseImageHelper;
+import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.utils.Helper;
 
 
@@ -44,13 +44,13 @@ public class Airport implements Comparable<Airport> {
      * @param cLat
      */
     public Airport(LinkedHashMap<String, String> params, double cLon, double cLat) {
-        mLon = Double.parseDouble(params.get(DataBaseImageHelper.LONGITUDE));
-        mLat = Double.parseDouble(params.get(DataBaseImageHelper.LATITUDE));;
-        mId = params.get(DataBaseImageHelper.LOCATION_ID);
-        mName = params.get(DataBaseImageHelper.FACILITY_NAME);
-        mFuel = params.get(DataBaseImageHelper.FUEL_TYPES);
+        mLon = Double.parseDouble(params.get(DataBaseHelper.LONGITUDE));
+        mLat = Double.parseDouble(params.get(DataBaseHelper.LATITUDE));;
+        mId = params.get(DataBaseHelper.LOCATION_ID);
+        mName = params.get(DataBaseHelper.FACILITY_NAME);
+        mFuel = params.get(DataBaseHelper.FUEL_TYPES);
         mWeather = null;
-        mVariation = Helper.parseVariation(params.get(DataBaseImageHelper.MAGNETIC_VARIATION));
+        mVariation = Helper.parseVariation(params.get(DataBaseHelper.MAGNETIC_VARIATION));
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
     }
