@@ -40,13 +40,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <TextView
          android:background="#FFFFFFFF"
          android:textColor="#FF000000"
-        android:id="@+id/chart_download_list_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="22dp"
-        android:textSize="15sp"
-        android:layout_below="@+id/chart_download_list_item">
+         android:id="@+id/chart_download_list_state"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp"
+         android:layout_marginLeft="22dp"
+         android:textSize="15sp"
+         android:layout_below="@+id/chart_download_list_item">
     </TextView>
     
 </RelativeLayout>

@@ -22,11 +22,12 @@ import com.ds.avare.utils.NetworkHelper;
 
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,140 +35,101 @@ import android.widget.TextView;
  * @author zkhan
  *
  */
-public class ChartAdapter extends ArrayAdapter<String> {
+public class ChartAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    private String[] mValues;
-    private String[] mIds;
-    private boolean[] mChecked;
     private Preferences mPref;
-    private String[] mVers;
     private BitmapHolder mOkBitmapHolder;
     private BitmapHolder mAddBitmapHolder;
     private BitmapHolder mUpdateBitmapHolder;
     private BitmapHolder mNoneBitmapHolder;
     private String mVersion;
+    private String[] mGroups;
+    private String[][] mChildrenFiles;
+    private String[][] mChildren;
+    private boolean[][] mChecked;
+    private String[][] mVers;
     
     static final int blocksize = 128;
+    
+    private static final int GROUP_DATABASE = 0;
+    private static final int GROUP_PLATE = 1;
+    private static final int GROUP_SECTIONAL = 2;
+    private static final int GROUP_TAC = 3;
+    private static final int GROUP_WAC = 4;
+    private static final int GROUP_IFRLE = 5;
+    private static final int GROUP_NUM = 6;
     
     /**
      * @param context
      * @param textViewResourceId
      */
-    public ChartAdapter(Context context, String[] values, String ids[]) {
-        super(context, R.layout.chart_download, values);
-        mContext = context;
-        mValues = values;
-        mIds = ids;
-        mVers = new String[ids.length];
+    public ChartAdapter(Context context) {
         mPref = new Preferences(context);
-        mChecked = new boolean[ids.length];
-        new ViewTask().execute();
+        mContext = context;
+        
+        /*
+         * Get all groups
+         */
+        mGroups = context.getResources().getStringArray(R.array.resGroups);
+        /*
+         * Assign children
+         */
+        mChildren = new String[GROUP_NUM][];
+        mChildren[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resNameDatabase);
+        mChildren[GROUP_PLATE] = context.getResources().getStringArray(R.array.resNamePlate);
+        mChildren[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resNameSectional);
+        mChildren[GROUP_TAC] = context.getResources().getStringArray(R.array.resNameTAC);
+        mChildren[GROUP_WAC] = context.getResources().getStringArray(R.array.resNameWAC);
+        mChildren[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resNameIFRLE);
+        /*
+         * Assign children file names
+         */
+        mChildrenFiles = new String[GROUP_NUM][];
+        mChildrenFiles[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
+        mChildrenFiles[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
+        mChildrenFiles[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
+        mChildrenFiles[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
+        mChildrenFiles[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
+        mChildrenFiles[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
+        
+        /*
+         * Allocate space for versions
+         * This will be filled later. For now, init them with any value.
+         */
+        mVers = new String[GROUP_NUM][];
+        mVers[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
+        mVers[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
+        mVers[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
+        mVers[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
+        mVers[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
+        mVers[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
+        
+        /*
+         * Allocate space for checked charts
+         */
+        mChecked = new boolean[GROUP_NUM][];
+        mChecked[GROUP_DATABASE] = new boolean[mVers[GROUP_DATABASE].length];
+        mChecked[GROUP_PLATE] = new boolean[mVers[GROUP_PLATE].length];
+        mChecked[GROUP_SECTIONAL] = new boolean[mVers[GROUP_SECTIONAL].length];
+        mChecked[GROUP_TAC] = new boolean[mVers[GROUP_TAC].length];
+        mChecked[GROUP_WAC] = new boolean[mVers[GROUP_WAC].length];
+        mChecked[GROUP_IFRLE] = new boolean[mVers[GROUP_IFRLE].length];
+        
+        /*
+         * Get various bitmaps
+         */
         mOkBitmapHolder = new BitmapHolder(mContext, R.drawable.check);
         mUpdateBitmapHolder = new BitmapHolder(mContext, R.drawable.check_red);
         mAddBitmapHolder = new BitmapHolder(mContext, R.drawable.add);
         mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.white_square);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View rowView = convertView;
-
-        if(null == rowView) {
-            rowView = inflater.inflate(R.layout.chart_download_list, parent, false);
-        }
-        ImageView imgView = (ImageView)rowView.findViewById(R.id.chart_download_list_image);
-        TextView textView = (TextView)rowView.findViewById(R.id.chart_download_list_item);
-        textView.setText(mValues[position]);
         
         /*
-         * Get status of chart item from preferences.
+         * Update versions
          */
-        TextView textView2 = (TextView)rowView.findViewById(R.id.chart_download_list_state);
-        if(mVers[position] != null) {
-            textView2.setText(mVers[position]);
-            imgView.setImageBitmap(mOkBitmapHolder.getBitmap());            
-            if(mVersion != null) {
-                if(!mVersion.equals(mVers[position])) {
-                    imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());
-                }
-            }
-        }
-        else {
-            imgView.setImageBitmap(mNoneBitmapHolder.getBitmap());                
-            textView2.setText("");
-        }
-
-        if(mChecked[position]) {
-            imgView.setImageBitmap(mAddBitmapHolder.getBitmap());
-        }
-
-        return rowView;
-    }
-
-    /**
-     * 
-     */
-    public void refresh() {
         new ViewTask().execute();
     }
 
-    /**
-     * 
-     */
-    public void checkOld() {
-        for(int id = 0; id < mVers.length; id++) {
-            if(mVers[id] != null) {
-                if(mVersion != null) {
-                    if(!mVersion.equals(mVers[id])) {
-                        mChecked[id] = true;
-                        continue;
-                    }
-                }
-            }
-            mChecked[id] = false;
-        }
-    }
-    
-    /**
-     * 
-     * @param name
-     * @param version
-     */
-    public void updateVersion(String name, String version) {
-        for(int id = 0; id < mVers.length; id++) {
-            if(mIds[id].equals(name)) {
-                mVers[id] = version;
-                break;
-            }
-        }
-    }
-
-    /**
-     * 
-     * @param name
-     * @param version
-     */
-    public void updateChecked(String name) {
-        for(int id = 0; id < mChecked.length; id++) {
-            if(mIds[id].equals(name)) {
-                mChecked[id] = !mChecked[id];
-                break;
-            }
-        }
-    }
-
-    /**
-     * 
-     * @param position
-     * @return
-     */
-    public boolean getChecked(int position) {
-        return mChecked[position];
-    }
-    
     /**
      * 
      * @author zkhan
@@ -189,22 +151,24 @@ public class ChartAdapter extends ArrayAdapter<String> {
             /*
              * Load versions
              */
-            for(int id = 0; id < mIds.length; id++) {
-                /*
-                 * Read version from file and if it exists.
-                 */
-                File file = new File(mPref.mapsFolder() + "/" + mIds[id]);
-                mVers[id] = null;
-                if(file.exists()) {
-                    try {
-                        BufferedReader br = new BufferedReader(new FileReader(file), blocksize);
-                        /*
-                         * Preferably do assignment on UI thread in postExecute()
-                         */
-                        mVers[id] = br.readLine();
-                        br.close();
-                    }
-                    catch (IOException e) {
+            for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+                for(int child = 0; child < mVers[group].length; child++) {
+                    /*
+                     * Read version from file and if it exists.
+                     */
+                    File file = new File(mPref.mapsFolder() + "/" + mChildrenFiles[group][child]);
+                    mVers[group][child] = null;
+                    if(file.exists()) {
+                        try {
+                            BufferedReader br = new BufferedReader(new FileReader(file), blocksize);
+                            /*
+                             * Preferably do assignment on UI thread in postExecute()
+                             */
+                            mVers[group][child] = br.readLine();
+                            br.close();
+                        }
+                        catch (IOException e) {
+                        }
                     }
                 }
             }
@@ -215,5 +179,238 @@ public class ChartAdapter extends ArrayAdapter<String> {
         protected void onPostExecute(Boolean result) {
             notifyDataSetChanged();            
         }
+    }
+
+    /**
+     * Just update the version numbers.
+     */
+    public void refresh() {
+        new ViewTask().execute();
+    }
+
+    /**
+     * Check if any of the charts are old
+     */
+    public void checkOld() {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mVers[group][child] != null) {
+                    if(mVersion != null) {
+                        if(!mVersion.equals(mVers[group][child])) {
+                            mChecked[group][child] = true;
+                            continue;
+                        }
+                    }
+                }
+                mChecked[group][child] = false;
+            }
+        }
+    }
+
+    /**
+     * Update the version of a chart after it has been downloaded. 
+     * @param name
+     * @param version
+     */
+    public void updateVersion(String name, String version) {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChildrenFiles[group][child].equals(name)) {
+                    mVers[group][child] = version;
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Toggle the checked state of a chart
+     * @param group
+     * @param child
+     */
+    public String getDatabaseName() {
+        return mChildrenFiles[GROUP_DATABASE][0];
+    }
+    
+    /**
+     * Toggle the checked state of a chart
+     * @param name
+     */
+    public void toggleChecked(String name) {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChildrenFiles[group][child].equals(name)) {
+                    mChecked[group][child] = !mChecked[group][child];
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Toggle the checked state of a chart
+     * @param name
+     */
+    public void toggleChecked(int group, int child) {
+        mChecked[group][child] = !mChecked[group][child];
+    }
+
+    /**
+     * Get the next checked chart
+     * @return
+     */
+    public String getChecked() {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChecked[group][child]) {
+                    return mChildrenFiles[group][child];
+                }
+            }
+        }
+        /*
+         * Nothing checked
+         */
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    @Override
+    public View getGroupView(int group, boolean isExpanded, View convertView, ViewGroup parent) {
+
+        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        
+        View rowView = convertView;
+
+        /*
+         * Do not inflate if not needed. Speeds up things quite a bit
+         */
+        if(null == rowView) {
+            rowView = inflater.inflate(R.layout.textview, parent, false);
+        }
+        
+        TextView tv = (TextView)rowView.findViewById(R.id.textview_textview);
+        
+        int total = mChildren[group].length;
+        
+        tv.setText(mGroups[group] + "(" + total + ")");
+        if(isExpanded) {
+            tv.setTypeface(null, Typeface.BOLD_ITALIC);
+        }
+        else {
+            tv.setTypeface(null, Typeface.BOLD);
+        }
+        return rowView;
+    }
+    @Override
+    
+    public View getChildView(int groupPosition, int childPosition,
+            boolean isLastChild, View convertView, ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View rowView = convertView;
+
+        if(null == rowView) {
+            rowView = inflater.inflate(R.layout.chart_download_list, parent, false);
+        }
+        ImageView imgView = (ImageView)rowView.findViewById(R.id.chart_download_list_image);
+        TextView textView = (TextView)rowView.findViewById(R.id.chart_download_list_item);
+        textView.setText(mChildren[groupPosition][childPosition]);
+        
+        /*
+         * Get status of chart item from preferences.
+         */
+        TextView textView2 = (TextView)rowView.findViewById(R.id.chart_download_list_state);
+        if(mVers[groupPosition][childPosition] != null) {
+            textView2.setText(mVers[groupPosition][childPosition]);
+            imgView.setImageBitmap(mOkBitmapHolder.getBitmap());            
+            if(mVersion != null) {
+                if(!mVersion.equals(mVers[groupPosition][childPosition])) {
+                    imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());
+                }
+            }
+        }
+        else {
+            imgView.setImageBitmap(mNoneBitmapHolder.getBitmap());                
+            textView2.setText("");
+        }
+
+        if(mChecked[groupPosition][childPosition]) {
+            imgView.setImageBitmap(mAddBitmapHolder.getBitmap());
+        }
+
+        return rowView;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public Object getChild(int arg0, int arg1) {
+        return mChildren[arg0][arg1];
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public long getChildId(int arg0, int arg1) {
+        return arg1;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public int getChildrenCount(int arg0) {
+        int count = 0;
+        try {
+            count = mChildren[arg0].length;
+        } 
+        catch (Exception e) {
+        }
+
+        return count;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public Object getGroup(int arg0) {
+        return mGroups[arg0];
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public int getGroupCount() {
+        return mGroups.length;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public long getGroupId(int arg0) {
+        return arg0;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public boolean isChildSelectable(int arg0, int arg1) {
+        return true;
     }
 }

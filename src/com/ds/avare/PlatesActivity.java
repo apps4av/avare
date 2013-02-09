@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -30,6 +33,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -44,6 +51,9 @@ public class PlatesActivity extends Activity {
     private StorageService mService;
     private Destination mDestination;
     private Toast mToast;
+    private Spinner mSpinner;
+    private List<String> mList;
+
 
     /*
      * Start GPS
@@ -127,7 +137,22 @@ public class PlatesActivity extends Activity {
         View view = layoutInflater.inflate(R.layout.plates, null);
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
+        
+        /*
+         * Spinner to select a plate
+         */
+        mSpinner = (Spinner)view.findViewById(R.id.plates_spinner);
+        mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+            
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
@@ -167,15 +192,35 @@ public class PlatesActivity extends Activity {
             }
             
             /*
+             * Start adding plates
+             */
+            /*
              * Not found
              */
             if((!mDestination.isFound()) || (mDestination.getDiagram() == null)) {
-                mToast.setText(getString(R.string.NoDia) + " - " + mDestination.getID());
+                mToast.setText(getString(R.string.PlatesNF));
                 mToast.show();
+                mSpinner.setVisibility(View.INVISIBLE);
+                mPlatesView.setBitmap(null);
                 mName = null;
                 return;                
             }
             
+            /*
+             * Airport diagram found
+             */
+            /*
+             * A list of plates available for this airport
+             */
+            mList = new ArrayList<String>();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlatesActivity.this,
+                    android.R.layout.simple_spinner_item, mList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            mList.add(getString(R.string.AirDia));
+            mSpinner.setAdapter(adapter);            
+            mSpinner.setVisibility(View.VISIBLE);
+
             /*
              * Set diagram
              */

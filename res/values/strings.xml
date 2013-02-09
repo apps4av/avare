@@ -21,7 +21,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WarningMsg">&quot;Warning&quot;</string>
     <string name="DestinationPrompt">&quot;Enter Destination Code&quot;</string>
     <string name="DestinationNF">&quot;Destination Not Found&quot;</string>
-    <string name="AirDiaNF">&quot;Airport diagram not found&quot;</string>
+    <string name="AirDia">&quot;Airport Diagram&quot;</string>
     <string name="ADS">&quot;Airport Diagrams&quot;</string>
     <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
     <string name="Cancel">&quot;Cancel&quot;</string>
@@ -87,16 +87,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N&quot;</string>
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
     <string name="main">&quot;Map&quot;</string>
-    <string name="plates">&quot;Diagram&quot;</string>
+    <string name="plates">&quot;Plates&quot;</string>
     <string name="AFD">&quot;A/FD&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
     <string name="DownloadInst">&quot;Touch to select an item, then press start to download it&quot;</string>
-    <string name="NoDia">&quot;Diagram Not Found&quot;</string>
     <string name="Searching">&quot;Searching for&quot;</string>
     <string name="Search">&quot;Search&quot;</string>
-    <string name="Start">&quot;Start&quot;</string>
+    <string name="Get">&quot;Get&quot;</string>
     <string name="Units">&quot;Distance Unit&quot;</string>
     <string name="UnitsLabel">&quot;Distance Unit&quot;</string>
     <string name="UnitsSummary">&quot;Select distance unit&quot;</string>
@@ -109,4 +108,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="RunwaysSummary">&quot;Select to show runway extensions&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">&quot;Exit&quot;</string>
+    <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
 </resources>

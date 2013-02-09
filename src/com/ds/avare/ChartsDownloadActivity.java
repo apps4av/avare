@@ -36,11 +36,9 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author zkhan
@@ -52,9 +50,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private ProgressDialog mProgressDialog;
     private Download mDownload;
     
-    private String[] resNames; 
-
-    private String[] resFiles;
     private Preferences mPref;
     private ChartAdapter mChartAdapter;
     private Toast mToast;
@@ -73,10 +68,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         mPref = new Preferences(this);
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 
-        resNames = 
-                getResources().getStringArray(R.array.resNames);
-        resFiles = 
-                getResources().getStringArray(R.array.resFiles);            
         /*
          * Show charts
          */
@@ -89,20 +80,17 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         setContentView(view);
 
         
-        mChartAdapter = new ChartAdapter(this, resNames, resFiles); 
-        ListView list = (ListView)view.findViewById(R.id.chart_download_list);
+        mChartAdapter = new ChartAdapter(this); 
+        ExpandableListView list = (ExpandableListView)view.findViewById(R.id.chart_download_list);
         list.setAdapter(mChartAdapter);
-        list.setOnItemClickListener(new OnItemClickListener() {
-
-            /* (non-Javadoc)
-             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-             */
-
+        list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1,
-                    int position, long id) {
-                mChartAdapter.updateChecked(resFiles[position]);
+            public boolean onChildClick(ExpandableListView parent,
+                    View v, int groupPosition, int childPosition,
+                    long id) {
+                mChartAdapter.toggleChecked(groupPosition, childPosition);
                 mChartAdapter.notifyDataSetChanged();        
+                return false;
             }
         });
 
@@ -168,9 +156,9 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             /**
              * Download database if it does not exists.
              */
-            File dbase = new File(mPref.mapsFolder() + "/" + resFiles[0]);
+            File dbase = new File(mPref.mapsFolder() + "/" + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
-                mChartAdapter.updateChecked(resFiles[0]);
+                mChartAdapter.toggleChecked(mChartAdapter.getDatabaseName());
                 mChartAdapter.notifyDataSetChanged();            
                 download();
             }
@@ -213,14 +201,8 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         /*
          * Download first chart in list that is checked
          */
-        int i;
-        for(i = 0; i < resFiles.length; i++) {
-            if(mChartAdapter.getChecked(i)) {
-                mName = resFiles[i];
-                break;
-            }
-        }
-        if(i == resFiles.length) {
+        mName = mChartAdapter.getChecked();
+        if(null == mName) {
             /*
              * Nothing to download
              */
@@ -318,7 +300,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                         + getString(R.string.Success), Toast.LENGTH_SHORT).show();
 
                 mChartAdapter.updateVersion(mName, mDownload.getVersion());
-                mChartAdapter.updateChecked(mName);
+                mChartAdapter.toggleChecked(mName);
                 mChartAdapter.refresh();
                 download();
             }
