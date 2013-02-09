@@ -131,10 +131,10 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             public void onClick(View v) {
                 /*
                  * Switch back to main activity
+                 * Since we can only come here from main activity, fake a 
+                 * back press. 
                  */
-                Intent i = new Intent(ChartsDownloadActivity.this, MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(i);
+                ChartsDownloadActivity.super.onBackPressed();
             }
         });
 
