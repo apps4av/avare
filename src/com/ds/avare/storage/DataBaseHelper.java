@@ -491,10 +491,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(type.equals(Destination.BASE)) {
             types = TABLE_AIRPORTS;
         }
-        else if(type.equals("Destination.NAVAID")) {
+        else if(type.equals(Destination.NAVAID)) {
             types = TABLE_NAV;
         }
-        else if(type.equals("Destination.FIX")) {
+        else if(type.equals(Destination.FIX)) {
             types = TABLE_FIX;
         }
 

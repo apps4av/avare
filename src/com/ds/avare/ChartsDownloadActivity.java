@@ -104,14 +104,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             
         });
         
-        mDLButton = (Button)view.findViewById(R.id.chart_download_button_dl);
-        mDLButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                download();
-            }
-        });
         mBackButton = (Button)view.findViewById(R.id.chart_download_button_back);
         mBackButton.setOnClickListener(new OnClickListener() {
 
@@ -125,8 +117,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 ChartsDownloadActivity.super.onBackPressed();
             }
         });
-
-
     }
 
     
