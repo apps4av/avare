@@ -263,6 +263,10 @@ public class StorageService extends Service {
             }
         };
         mGps = new Gps(this, intf);
+        //Mock mMockGps;
+        //mMockGps = new Mock();
+        //mMockGps.execute(mGps); // execute the listener where GPS location is. Disable GPS        
+
     }
         
     /* (non-Javadoc)

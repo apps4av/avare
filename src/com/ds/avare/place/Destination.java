@@ -79,6 +79,13 @@ public class Destination extends Observable {
     private StorageService mService;
     
     private boolean mLooking;
+    private boolean mInited;
+    
+    /*
+     * This is where destination was set.
+     */
+    private double mLonInit;
+    private double mLatInit;
     
     private String mDestType;
     private String mDbType;
@@ -101,6 +108,13 @@ public class Destination extends Observable {
 	 * @param DataSource
 	 */
 	public Destination(String name, String type, Preferences pref, StorageService service) {
+	    GpsParams params = service.getGpsParams();
+	    mInited = false;
+	    if(null != params) {
+    	    mLonInit = params.getLongitude();
+            mLatInit = params.getLatitude();
+            mInited = true;
+	    }
         mDbType = "";
         mFound = mLooking = false;
         mRunways = new LinkedList<Runway>();
@@ -185,6 +199,12 @@ public class Destination extends Observable {
 			return;
 		}		
 
+        if(!mInited) {
+            mLonInit = mLon;
+            mLatInit = mLat;
+            mInited = true;
+        }
+        
 		/*
 		 * Project and find distance
 		 */
@@ -473,4 +493,16 @@ public class Destination extends Observable {
         l.setLongitude(mLond);
         return l;
     }    
+
+    /**
+     * 
+     * @return
+     */
+    public Location getLocationInit() {
+        Location l = new Location("");
+        l.setLatitude(mLatInit);
+        l.setLongitude(mLonInit);
+        return l;
+    }    
+
 }

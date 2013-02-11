@@ -118,7 +118,20 @@ public abstract class Shape {
         if(this instanceof TFRShape) {
             c.drawLine((float)mXtop, (float)mYtop, (float)mXtop, (float)mYtop - WIDTHTOP / 4, paint);
         }
-        
+        /*
+         * Draw pivots at end of track
+         */
+        else if (this instanceof TrackShape) {
+            if(getNumCoords() < 2) {
+                return;
+            }
+            float x1 = (float)origin.getOffsetX(mCoords.get(0).getLongitude());
+            float y1 = (float)origin.getOffsetY(mCoords.get(0).getLatitude());
+            c.drawCircle(x1, y1, 8, paint);
+            float x2 = (float)origin.getOffsetX(mCoords.get(getNumCoords() - 1).getLongitude());
+            float y2 = (float)origin.getOffsetY(mCoords.get(getNumCoords() - 1).getLatitude());
+            c.drawCircle(x2, y2, 8, paint);
+        }
     }
     
     /**

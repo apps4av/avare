@@ -77,6 +77,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private BitmapHolder               mAirplaneBitmap;
     private BitmapHolder               mRunwayBitmap;
+    private BitmapHolder               mLineBitmap;
     
     /**
      * The magic of multi touch
@@ -170,6 +171,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TileMap                      mTiles;
     private int                         mWeatherColor;
     
+    /*
+     * Projection of a touch point
+     */
     private Projection                  mPointProjection;
     
     /*
@@ -220,6 +224,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
+        mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
@@ -410,6 +415,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
+     * This function will rotate and move a bitmap to a given lon/lat on screen
+     * @param b
+     * @param angle
+     * @param lon
+     * @param lat
+     * @param div Shift the image half way up so it could be centered on y axis
+     */
+    private void rotateBitmapIntoPlace(BitmapHolder b, float angle, double lon, double lat, boolean div) {
+        float x = (float)mOrigin.getOffsetX(lon);
+        float y = (float)mOrigin.getOffsetY(lat);                        
+                            
+        b.getTransform().setTranslate(
+                x - b.getWidth() / 2,
+                y - (div ? b.getHeight() / 2 : b.getHeight()));
+        
+        b.getTransform().postRotate(angle, x, y);   
+    }
+    
+
+    /**
      *
      * @param canvas
      */
@@ -559,7 +584,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             String name = mDestination.getID();
             if(name.contains("&")) {
                 /*
-                 * If this string is too long, for Lon/Lat display, make text small.
+                 * If this string is too long, cut it.
                  */
                 name = Destination.GPS;
             }
@@ -582,7 +607,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mPaint.setColor(Color.MAGENTA);
                     mPaint.setStrokeWidth(4);
                     mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
-                }            
+                }
+            }
+            /*
+             * Draw actual track
+             */
+            if(null != mLineBitmap && mGpsParams != null) {
+                rotateBitmapIntoPlace(mLineBitmap, (float)mDestination.getBearing(),
+                        mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
+                canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
             }
         }
     }
@@ -627,22 +660,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Rotate and move to a panned location
              */                
-            mAirplaneBitmap.getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleFactor());
-            mAirplaneBitmap.getTransform().postRotate((float)mGpsParams.getBearing(),
-                    mAirplaneBitmap.getWidth() / 2.f * mScale.getScaleFactor(),
-                    mAirplaneBitmap.getHeight() / 2.f * mScale.getScaleFactor());
-            
-            mAirplaneBitmap.getTransform().postTranslate(
-                    getWidth() / 2.f
-                    - mAirplaneBitmap.getWidth() * mScale.getScaleFactor() / 2.f
-                    + mPan.getMoveX() * mScale.getScaleFactor(),
-                    getHeight() / 2.f
-                    - mAirplaneBitmap.getHeight() * mScale.getScaleFactor() / 2.f
-                    + mPan.getMoveY() * mScale.getScaleCorrected());
-    
-            
+            rotateBitmapIntoPlace(mAirplaneBitmap, (float)mGpsParams.getBearing(),
+                    mGpsParams.getLongitude(), mGpsParams.getLatitude(), true);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
-        }	
+        }        
     }
 
 
@@ -671,8 +692,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     double lon = r.getLongitude();
                     double lat = r.getLatitude();
-                    float x;
-                    float y;
                     if(Runway.INVALID == lon || Runway.INVALID == lat) {
                         /*
                          * If we did not get any lon/lat of this runway, use airport lon/lat
@@ -680,17 +699,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         lon = mDestination.getLocation().getLongitude();
                         lat = mDestination.getLocation().getLatitude();
                     }
-                    x = (float)mOrigin.getOffsetX(lon);
-                    y = (float)mOrigin.getOffsetY(lat);                        
-                                        
-                    mRunwayBitmap.getTransform().setTranslate(
-                            x - mRunwayBitmap.getWidth() / 2,
-                            y - mRunwayBitmap.getHeight());
                     
-                    mRunwayBitmap.getTransform().postRotate(heading,
-                            x,
-                            y);
-                    
+                    rotateBitmapIntoPlace(mRunwayBitmap, heading, lon, lat, false);
+                    canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
+
                     /*
                      * Draw it.
                      */
@@ -791,7 +803,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 mPan = new Pan();
                 tfrReset();
-                mTrackShape = new TrackShape(mDestination);
+                
+                /*
+                 * Reset track.
+                 */
+                mTrackShape = null;
             }
         }
     }
@@ -811,8 +827,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Comes from location manager
          */
         mGpsParams = params;
-        if(mTrackShape != null) {
-            mTrackShape.updateShape(params);
+        if(mDestination != null) {
+            if(mDestination.isFound()) {
+                /*
+                 * Set track to current destination from init point.
+                 * This should not be moved here because this is the only place we know we have
+                 * correct initial GPS lon/lat.
+                 */
+                if(mTrackShape == null) {
+                    mTrackShape = new TrackShape(mDestination);
+                    mTrackShape.updateShape(new GpsParams(mDestination.getLocationInit()));
+                }
+            }
         }
         tfrReset();
         /*
