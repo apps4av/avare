@@ -28,7 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:layout_width="100dp"
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true"
-	    android:layout_alignParentRight="true"
+	    android:layout_centerInParent="true"
 	    android:layout_alignParentTop="true"
 	    android:drawableLeft="@drawable/download_arrow"
 	    android:gravity="center"

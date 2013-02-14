@@ -386,12 +386,17 @@ public class PlanActivity extends Activity implements Observer {
             }
 
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            if(mService.getDBResource().search(srch, params)) {
-                selection = new String[params.size()];
-                int iterator = 0;
-                for(String key : params.keySet()){
-                    selection[iterator] = StringPreference.getHashedName(params.get(key), key);
-                    iterator++;
+            synchronized (PlanActivity.class) {
+                /*
+                 * This is not to be done repeatedly with new text input so sync.
+                 */
+                if(mService.getDBResource().search(srch, params)) {
+                    selection = new String[params.size()];
+                    int iterator = 0;
+                    for(String key : params.keySet()){
+                        selection[iterator] = StringPreference.getHashedName(params.get(key), key);
+                        iterator++;
+                    }
                 }
             }
             return true;

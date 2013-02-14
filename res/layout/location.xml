@@ -23,6 +23,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <Button
             android:id="@+id/location_button_dest"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_pref"
@@ -34,6 +35,7 @@ Redistribution and use in source and binary forms, with or without modification,
         
         <Button
             android:id="@+id/location_button_pref"
+            android:textStyle="bold"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_dl"
@@ -44,6 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <Button
             android:id="@+id/location_button_dl"
+            android:textStyle="bold"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_gps"
@@ -54,6 +57,7 @@ Redistribution and use in source and binary forms, with or without modification,
         
          <Button
             android:id="@+id/location_button_gps"
+            android:textStyle="bold"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_help"
@@ -64,6 +68,7 @@ Redistribution and use in source and binary forms, with or without modification,
         
         <Button
             android:id="@+id/location_button_help"
+            android:textStyle="bold"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -72,13 +77,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/help"
             android:gravity="left|center"
             android:visibility="invisible" />
-        
+
         <Button
             android:id="@+id/location_button_menu"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
+            android:layout_alignBottom="@+id/location_button_help"
             android:drawableLeft="@drawable/menu"
             android:visibility="visible" />
         

@@ -209,7 +209,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null);
                     a.animate(true);
                 }
             }
@@ -217,17 +217,17 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
-        mMenuButton.getBackground().setAlpha(127);
+        mMenuButton.getBackground().setAlpha(200);
         mMenuButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 mDestButton.setText(getString(R.string.Destination));
-                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton);
+                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton);
+                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, null);
+                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, null);
+                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, null);
                 a.animate(true);
                 b.animate(true);
                 d.animate(true);

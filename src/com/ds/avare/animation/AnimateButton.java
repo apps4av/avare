@@ -14,6 +14,7 @@ package com.ds.avare.animation;
 import com.ds.avare.R;
 
 import android.content.Context;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -27,14 +28,27 @@ public class AnimateButton {
     private boolean mShowing;
     private Context mContext;
     private Button mButton;
+    private View mReplaces;
     
     /**
      * 
      */
-    public AnimateButton(Context ctx, Button b) {
+    public AnimateButton(Context ctx, Button b, View replaces) {
         mContext = ctx;
         mShowing = false;
         mButton = b;
+        if(null == replaces) {
+            /*
+             * Dummy
+             */
+            mReplaces = new View(ctx);
+        }
+        else {
+            /*
+             * The view this animate hides
+             */
+            mReplaces = replaces;
+        }
     }
     
     /**
@@ -77,6 +91,7 @@ public class AnimateButton {
                      * Set invisible when not animating
                      */
                     mButton.setVisibility(Button.INVISIBLE);
+                    mReplaces.setVisibility(Button.VISIBLE);
                 }
                 else {
                     /*
@@ -96,6 +111,7 @@ public class AnimateButton {
                     /*
                      * Set visible when animating
                      */
+                    mReplaces.setVisibility(Button.INVISIBLE);
                     mButton.setVisibility(Button.VISIBLE);
                 }
             }
