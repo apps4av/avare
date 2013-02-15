@@ -77,7 +77,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/help"
             android:gravity="left|center"
             android:visibility="invisible" />
-
+        
         <Button
             android:id="@+id/location_button_menu"
             android:textStyle="bold"

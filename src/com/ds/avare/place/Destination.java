@@ -344,8 +344,13 @@ public class Destination extends Observable {
 	                 * Decomposed it
 	                 * 
 	                 */
-	                mLond = Helper.truncGeo(location.getLongitude());
-	                mLatd = Helper.truncGeo(location.getLatitude());
+	                try {
+    	                mLond = Helper.truncGeo(location.getLongitude());
+    	                mLatd = Helper.truncGeo(location.getLatitude());
+	                }
+	                catch (Exception e) {
+	                    
+	                }
 	                if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
 	                    return false;  
 	                }
@@ -365,9 +370,9 @@ public class Destination extends Observable {
                 return true;                    
 	        }
 	        
-	        boolean ret = mDataSource.findDestination(mName, mDestType, mParams, mRunways);
+	        mDataSource.findDestination(mName, mDestType, mParams, mRunways);
 
-	        if(ret && mDestType.equals(BASE)) {
+	        if(mDestType.equals(BASE)) {
 	            /*
 	             * Found destination extract its airport diagram
 	             */
@@ -386,7 +391,7 @@ public class Destination extends Observable {
                 mService.loadDiagram(null);
                 mDiagramFound = null;
 	        }
-			return(ret);
+			return(!mParams.isEmpty());
         }
         
 

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
@@ -60,6 +61,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     private String mPath;
     
+    /*
+     * How many users at this point. Used for closing the database
+     * Will serve as a non blocking sem with synchronized statement
+     */
+    private int mUsers;
+    
     public  static final String  FACILITY_NAME = "Facility Name";
     private static final String  FACILITY_NAME_DB = "FacilityName";
     private static final int    FACILITY_NAME_COL = 4;
@@ -89,9 +96,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
+    private static final String TABLE_OBSTACLES = "obstacles";
 
     private static final String TILE_NAME = "name";
-    
+       
     /**
      * @param context
      */
@@ -99,7 +107,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         super(context, context.getString(R.string.DatabaseName), null, DATABASE_VERSION);
         mPref = new Preferences(context);
         mPath = mPref.mapsFolder() + "/" + context.getString(R.string.DatabaseName);
-        mCenterTile = new Tile();
+        mCenterTile = null;
     }
 
     /**
@@ -129,48 +137,91 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Open database
+     * Close database
      */
-    private synchronized void opens() {
-        if(mPath == null) {
-            return;
+    private void closes(Cursor c) {
+        if(null != c) {
+            c.close();
         }
-        if(mDataBase != null) {
-            return;
+
+        synchronized (this) {
+            mUsers--;
+            if((mDataBase != null) && (mUsers <= 0)) {
+                try {
+                    mDataBase.close();
+                    super.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBase = null;
+                mUsers = 0;
+            }
         }
-        try {
-            
-            mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READONLY | 
-                    SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-        }
-        catch(RuntimeException e) {
-            mDataBase = null;
-        }
-        
     }
 
     /**
-     * Close database
+     * 
+     * @param statement
+     * @return
      */
-    private synchronized void closes() {
-        if(mDataBase != null) {
-            try {
-                mDataBase.close();
-                super.close();
+    private Cursor doQuery(String statement) {
+        Cursor c = null;
+        
+        /*
+         * 
+         */
+        synchronized (this) {
+            if(mPath == null) {
+                return c;
             }
-            catch (Exception e) {
+            if(mDataBase == null) {
+                mUsers = 0;
+                try {
+                    
+                    mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBase = null;
+                }
             }
-            mDataBase = null;
+            if(mDataBase == null) {
+                return c;
+            }
+            mUsers++;
         }
-    }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBase == null) {
+            return c;
+        }
+        
+        if(!mDataBase.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBase.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
 
+        return c;
+    }
+    
     /**
      * 
      * @param name
      * @return
      */
     public float[] findDiagramMatrix(String name) {
-        Cursor cursor;
         float ret[] = new float[12];
         int it;
         
@@ -178,32 +229,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             ret[it] = 0;
         }
         
-        opens();
-        /*
-         * In case we fail
-         */
-        
-        if(mDataBase == null) {
-            closes();
-            return null;
-        }
-        
-        if(!mDataBase.isOpen()) {
-            closes();
-            return null;
-        }
-        
-        /*
-         * Find with sqlite query
-         */
-        try {
-               cursor = mDataBase.rawQuery(
-                       "select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "==\"" + name +"\"", null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
-
+        Cursor cursor = doQuery("select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "==\"" + name +"\"");
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
@@ -215,13 +241,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         ret[it] = cursor.getFloat(it + 1);
                     }                    
                 }
-                cursor.close();
             }
         }
         catch (Exception e) {
             
         }
-        closes();
+        closes(cursor);
         return ret;
     }
 
@@ -231,32 +256,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public Tile findTile(String name) {
-        Cursor cursor;
-        opens();
-        /*
-         * In case we fail
-         */
-        
-        if(mDataBase == null) {
-            closes();
-            return null;
-        }
-        
-        if(!mDataBase.isOpen()) {
-            closes();
-            return null;
-        }
-        
-        /*
-         * Find with sqlite query
-         */
-        try {
-               cursor = mDataBase.rawQuery(
-                       "select * from " + TABLE_FILES + " where " + TILE_NAME + "==\"" + name +"\"", null);           
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
+        Cursor cursor = doQuery("select * from " + TABLE_FILES + " where " + TILE_NAME + "==\"" + name +"\"");
+        Tile tile = null;
 
         try {
             if(cursor != null) {
@@ -265,7 +266,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     /*
                      * Database
                      */
-                    Tile tile = new Tile(
+                    tile = new Tile(
                             mPref,
                             cursor.getString(0),
                             cursor.getDouble(1),
@@ -278,30 +279,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(8),
                             cursor.getDouble(9),
                             cursor.getDouble(10));
-                  
-                    cursor.close();
-                    
                     /*
                      * Position on tile
                      */
-                    closes();
-                    return tile;                
                 }
-                else {
-                    cursor.close();
-                    closes();
-                    return null;
-                }    
-            }
-            else {
-                closes();
-                return null;
             }
         }
         catch (Exception e) {
-            closes();
-            return null;            
         }
+        
+        closes(cursor);
+        return tile;            
+
     }
 
     /**
@@ -310,14 +299,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      */
     public void findClosestAirports(double lon, double lat, Airport[] airports) {
-        Cursor cursor;
 
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return;
-        }
-        
         /*
          * Limit to airports taken by array airports
          */
@@ -329,13 +311,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
                 lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + airports.length + ";";            
 
-        try {
-            cursor = mDataBase.rawQuery(qry, null);
-        }
-        catch (Exception e) {
-            closes();
-            return;
-        }
+        Cursor cursor = doQuery(qry);
 
         try {
             int id = 0;
@@ -354,25 +330,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     }
                     while(cursor.moveToNext());
                 }
-                cursor.close();
             }  
         }
         catch (Exception e) {
-            
         }
-        closes();
+        closes(cursor);
     }
 
     /**
      * Search something in database
      * @param name
      * @param params
-     * @return
      */
-    public boolean search(String name, LinkedHashMap<String, String> params) {
+    public void search(String name, LinkedHashMap<String, String> params) {
         
-        Cursor cursor;
-        String query;
+        String qry;
         String qbasic = "select " + LOCATION_ID_DB + "," + FACILITY_NAME_DB + "," + TYPE_DB + " from ";
         String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
         
@@ -380,20 +352,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          * All queries for airports, navaids, fixes
          */
 
-        query = qbasic + TABLE_NAV + " where " + qend;
-
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return false;
-        }
-        
-        try {
-            cursor = mDataBase.rawQuery(query, null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
+        qry = qbasic + TABLE_NAV + " where " + qend;
+        Cursor cursor = doQuery(qry);
 
         try {
             if(cursor != null) {
@@ -401,78 +361,45 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     StringPreference s = new StringPreference(Destination.NAVAID, cursor.getString(2), cursor.getString(1), cursor.getString(0));
                     s.putInHash(params);
                 }
-                cursor.close();
             }
         }
         catch (Exception e) {
-            cursor = null;
         }
-        closes();
+        closes(cursor);
 
-        query = qbasic + TABLE_AIRPORTS + " where ";
+        qry = qbasic + TABLE_AIRPORTS + " where ";
         if(!mPref.shouldShowAllFacilities()) {
-            query += TYPE_DB + "=='AIRPORT' and ";
+            qry += TYPE_DB + "=='AIRPORT' and ";
         }
-        query += qend;
+        qry += qend;
 
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return false;
-        }
-        
-        try {
-            cursor = mDataBase.rawQuery(query, null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
-
+        cursor = doQuery(qry);
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
                     StringPreference s = new StringPreference(Destination.BASE, cursor.getString(2), cursor.getString(1), cursor.getString(0));
                     s.putInHash(params);
                 }
-                cursor.close();
             }
         }
         catch (Exception e) {
-            cursor = null;
         }
-        closes();
+        closes(cursor);
 
 
-        query = qbasic + TABLE_FIX + " where " + qend;
-
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return false;
-        }
-        
-        try {
-            cursor = mDataBase.rawQuery(query, null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
-
+        qry = qbasic + TABLE_FIX + " where " + qend;
+        cursor = doQuery(qry);
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
                     StringPreference s = new StringPreference(Destination.FIX, cursor.getString(2), cursor.getString(1), cursor.getString(0));
                     s.putInHash(params);
                 }
-                cursor.close();
             }
         }
         catch (Exception e) {
-            cursor = null;
         }
-        closes();
-        
-        return true;
+        closes(cursor);
     }
 
     /**
@@ -481,11 +408,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
         
         Cursor cursor;
-        Cursor cursorfreq;
-        Cursor cursorrun;
         
         String types = "";
         if(type.equals(Destination.BASE)) {
@@ -498,19 +423,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             types = TABLE_FIX;
         }
 
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return false;
-        }
-        
-        try {
-            cursor = mDataBase.rawQuery(
-                    "select * from " + types + " where " + LOCATION_ID_DB + "==\"" + name + "\";", null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
+        cursor = doQuery("select * from " + types + " where " + LOCATION_ID_DB + "==\"" + name + "\";");
 
         try {
             if(cursor != null) {
@@ -521,131 +434,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                      */
                     params.put(LOCATION_ID, cursor.getString(LOCATION_ID_COL));
                     params.put(FACILITY_NAME, cursor.getString(FACILITY_NAME_COL));
-                    
-                    if(type.equals(Destination.BASE)) {
-                        /*
-                         * Now find airport frequencies then put
-                         */
-                        try {
-                            cursorfreq = mDataBase.rawQuery(
-                                "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "==\"" + name                            
-                                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";", null);
-                        }
-                        catch (Exception e) {
-                            cursorfreq = null;
-                        }
-        
-                        /*
-                         * Add all of them
-                         */
-                        if(cursorfreq != null) {
-                            while(cursorfreq.moveToNext()) {
-                                if(params.containsKey(cursorfreq.getString(1))) {
-                                    /*
-                                     * Add a hash if duplicate value
-                                     */
-                                    params.put(cursorfreq.getString(1) + "#", cursorfreq.getString(2));                                
-                                }
-                                else {
-                                    params.put(cursorfreq.getString(1), cursorfreq.getString(2));
-                                }
-                            }
-                            cursorfreq.close();
-                        }
-        
-        
-                        /*
-                         * Now find airport runways.
-                         */
-                        try {
-                            cursorrun = mDataBase.rawQuery(
-                                "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "==\"" + name
-                                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";", null);
-                        }
-                        catch (Exception e) {
-                            cursorrun = null;
-                        }
-        
-                        /*
-                         * Add all of them
-                         */
-                        if(cursorrun != null) {
-                            while(cursorrun.moveToNext()) {
-                                
-                                String Length = cursorrun.getString(1);
-                                String Width = cursorrun.getString(2);
-                                String Surface = cursorrun.getString(3);
-                                if(Surface.equals("")) {
-                                    Surface = "Unknown";
-                                }
-                                String Lighted = cursorrun.getString(4);
-                                if(Lighted.equals("0") || Lighted.equals("")) {
-                                    Lighted = "";
-                                }
-                                else {
-                                    Lighted = ", " + Lighted;                            
-                                }
-                                String Closed = cursorrun.getString(5);
-                                if(Closed.equals("0") || Closed.equals("")) {
-                                    Closed = ", Open";
-                                }
-                                else {
-                                    Closed = ", Closed";                            
-                                }
-                                
-                                String runl = Helper.removeLeadingZeros(cursorrun.getString(6));
-                                String runh = Helper.removeLeadingZeros(cursorrun.getString(12));
-                                
-                                params.put("Runway " + runl + "/" + runh, 
-                                        "Length " + Length + 
-                                        ", Width " + Width + 
-                                        ", Surface " + Surface +
-                                        Lighted +
-                                        Closed);
-                                
-                                String Elevation = cursorrun.getString(9);
-                                if(Elevation.equals("")) {
-                                    Elevation = "0";
-                                }
-                                String Heading = cursorrun.getString(10);
-                                String DT = cursorrun.getString(11);
-                                if(DT.equals("")) {
-                                    DT = "0";
-                                }
-                                
-                                params.put("Runway " + runl,
-                                        "Elevation " + Elevation + 
-                                        ", True Heading " + Heading + 
-                                        ", Displaced Threshold " + DT);
-                                Runway l = new Runway(runl, cursor.getString(10).trim(), Heading, cursorrun.getString(8), cursorrun.getString(7));
-                                runways.add(l);        
-                                
-                                Elevation = cursorrun.getString(15);
-                                if(Elevation.equals("")) {
-                                    Elevation = "0";
-                                }
-                                Heading = cursorrun.getString(16);
-                                DT = cursorrun.getString(17);
-                                if(DT.equals("")) {
-                                    DT = "0";
-                                }
-                                
-                                params.put("Runway " + runh,
-                                        "Elevation " + Elevation + 
-                                        ", True Heading " + Heading + 
-                                        ", Displaced Threshold " + DT);
-                                
-                                Runway h = new Runway(runh, cursor.getString(10).trim(), Heading,  cursorrun.getString(14), cursorrun.getString(13));
-                                runways.add(h);        
-        
-                            }
-                            cursorrun.close();
-                        }
-                    }
-    
-                    /*
-                     * Less important AFD in the end.
-                     */
                     params.put(LATITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LATITUDE_COL))));
                     params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                     params.put(TYPE, cursor.getString(TYPE_COL).trim());
@@ -667,21 +455,127 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("CTAF Frequency", cursor.getString(19).trim());
                         params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
                     }
-                                    
-                    cursor.close();
-                    
-                    closes();
-                    return true;
                 }
             }
         }
         catch (Exception e) {
-            closes();
-            return false;
         }
         
-        closes();
-        return false;
+        closes(cursor);
+
+        if(!type.equals(Destination.BASE)) {
+            return;
+        }
+            
+        cursor = doQuery("select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "==\"" + name                            
+                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";");
+
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    if(params.containsKey(cursor.getString(1))) {
+                        /*
+                         * Add a hash if duplicate value
+                         */
+                        params.put(cursor.getString(1) + "#", cursor.getString(2));                                
+                    }
+                    else {
+                        params.put(cursor.getString(1), cursor.getString(2));
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        cursor.close();
+
+
+        cursor = doQuery("select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "==\"" + name
+                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";");
+        
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    
+                    String Length = cursor.getString(1);
+                    String Width = cursor.getString(2);
+                    String Surface = cursor.getString(3);
+                    if(Surface.equals("")) {
+                        Surface = "Unknown";
+                    }
+                    String Lighted = cursor.getString(4);
+                    if(Lighted.equals("0") || Lighted.equals("")) {
+                        Lighted = "";
+                    }
+                    else {
+                        Lighted = ", " + Lighted;                            
+                    }
+                    String Closed = cursor.getString(5);
+                    if(Closed.equals("0") || Closed.equals("")) {
+                        Closed = ", Open";
+                    }
+                    else {
+                        Closed = ", Closed";                            
+                    }
+                    
+                    String runl = Helper.removeLeadingZeros(cursor.getString(6));
+                    String runh = Helper.removeLeadingZeros(cursor.getString(12));
+                    
+                    params.put("Runway " + runl + "/" + runh, 
+                            "Length " + Length + 
+                            ", Width " + Width + 
+                            ", Surface " + Surface +
+                            Lighted +
+                            Closed);
+                    
+                    String Elevation = cursor.getString(9);
+                    if(Elevation.equals("")) {
+                        Elevation = "0";
+                    }
+                    String Heading = cursor.getString(10);
+                    String DT = cursor.getString(11);
+                    if(DT.equals("")) {
+                        DT = "0";
+                    }
+                    
+                    params.put("Runway " + runl,
+                            "Elevation " + Elevation + 
+                            ", True Heading " + Heading + 
+                            ", Displaced Threshold " + DT);
+                    Runway l = new Runway(runl, cursor.getString(10).trim(), Heading, cursor.getString(8), cursor.getString(7));
+                    runways.add(l);        
+                    
+                    Elevation = cursor.getString(15);
+                    if(Elevation.equals("")) {
+                        Elevation = "0";
+                    }
+                    Heading = cursor.getString(16);
+                    DT = cursor.getString(17);
+                    if(DT.equals("")) {
+                        DT = "0";
+                    }
+                    
+                    params.put("Runway " + runh,
+                            "Elevation " + Elevation + 
+                            ", True Heading " + Heading + 
+                            ", Displaced Threshold " + DT);
+                    
+                    Runway h = new Runway(runh, cursor.getString(10).trim(), Heading,  cursor.getString(14), cursor.getString(13));
+                    runways.add(h);        
+    
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);        
     }
 
     
@@ -696,6 +590,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public boolean isWithin(double lon, double lat, double offset[], double p[]) {
+        if(null == mCenterTile) {
+            return false;
+        }
         if(mCenterTile.within(lon, lat)) {
             offset[0] = mCenterTile.getOffsetX(lon);
             offset[1] = mCenterTile.getOffsetY(lat);
@@ -716,19 +613,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public String findClosestAirportID(double lon, double lat) {
-        Cursor cursor;
 
-        opens();
-        if(mDataBase == null) {
-            closes();
-            return null;
-        }
-        
-        if(!mDataBase.isOpen()) {
-            closes();
-            return null;
-        }
-        
         /*
          * Find with sqlite query
          */
@@ -744,39 +629,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "(" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
                 + ") < 0.001) limit 1;";
         
-        try {
-            cursor = mDataBase.rawQuery(qry, null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
+        Cursor cursor = doQuery(qry);
+        String ret = null;
 
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
                     
-                    String ret = new String(cursor.getString(0));
-    
-                    cursor.close();
-                    closes();
-                    return(ret);
+                    ret = new String(cursor.getString(0));
                 }
-                else {
-                    cursor.close();
-                    closes();
-                    return null;
-                }    
-            }
-            else {
-                closes();
-                return null;
             }
         }
         catch (Exception e) {
-            
         }
-        closes();
-        return null;
+        closes(cursor);
+        return ret;
     }
       
     /**
@@ -790,42 +657,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     public Tile findClosest(double lon, double lat, double offset[], double p[]) {
       
-        Cursor cursor;
-
-        opens();
         /*
          * In case we fail
          */
         offset[0] = 0;
         offset[1] = 0;
         
-        if(mDataBase == null) {
-            closes();
-            return null;
-        }
-        
-        if(!mDataBase.isOpen()) {
-            closes();
-            return null;
-        }
-        
-        /*
-         * Find with sqlite query
-         */
-        try {
-            String type = mPref.getChartType();
-            cursor = mDataBase.rawQuery(
-                "select * from " + TABLE_FILES + " where " + TILE_NAME + " like \"%tiles/" + type + "/%\" and " + 
+        Cursor cursor = doQuery(
+                "select * from " + TABLE_FILES + " where " + TILE_NAME + " like \"%tiles/" + mPref.getChartType() + "/%\" and " + 
                 "((latul - " + lat + ") > 0) and " +
                 "((latll - " + lat + ") < 0) and " + 
                 "((lonul - " + lon + ") < 0) and " + 
-                "((lonur - " + lon + ") > 0);" ,
-                null);
-        }
-        catch (Exception e) {
-            cursor = null;
-        }
-
+                "((lonur - " + lon + ") > 0);");
+        
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
@@ -847,7 +691,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(9),
                             cursor.getDouble(10));
                   
-                    
                     /*
                      * Position on tile
                      */
@@ -855,26 +698,45 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     offset[1] = mCenterTile.getOffsetY(lat);
                     p[0] = mCenterTile.getPx();
                     p[1] = mCenterTile.getPy();
-    
-                    cursor.close();
-                    closes();
-                    return mCenterTile;                
                 }
-                else {
-                    cursor.close();
-                    closes();
-                    return null;
-                }    
-            }
-            else {
-                closes();
-                return null;
             }
         }
         catch (Exception e) {
         }
         
-        closes();
-        return null;
+        closes(cursor);
+        return mCenterTile;        
+    }
+    
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @param height
+     * @return
+     */
+    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
+        
+        LinkedList<Obstacle> list = new LinkedList<Obstacle>();
+        
+        /*
+         * Find obstacles 200 feet below or higher in lon/lat radius
+         */
+        Cursor cursor = doQuery("select * from " + TABLE_OBSTACLES + " where (height > " + height + ") and " +
+                "(lat > " + (lat - Obstacle.RADIUS) + ") and (lat < "  + (lat + Obstacle.RADIUS) + ") and " +
+                "(lon > " + (lon - Obstacle.RADIUS) + ") and (lon < "  + (lon + Obstacle.RADIUS) + ");");
+        
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    list.add(new Obstacle(cursor.getFloat(0), cursor.getFloat(1), cursor.getInt(2)));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closes(cursor);
+        return list;
     }
 }

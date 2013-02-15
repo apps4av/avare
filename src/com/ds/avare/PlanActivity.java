@@ -390,7 +390,8 @@ public class PlanActivity extends Activity implements Observer {
                 /*
                  * This is not to be done repeatedly with new text input so sync.
                  */
-                if(mService.getDBResource().search(srch, params)) {
+                mService.getDBResource().search(srch, params);
+                if(params.size() > 0) {
                     selection = new String[params.size()];
                     int iterator = 0;
                     for(String key : params.keySet()){

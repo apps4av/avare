@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import com.ds.avare.place.Airport;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.shapes.Tile;
 
@@ -81,10 +82,9 @@ public class DataSource {
     /**
      * @param name
      * @param params
-     * @return
      */
-    public boolean findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
-        return(dbHelper.findDestination(name, type, params, runways));
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
+        dbHelper.findDestination(name, type, params, runways);
     }
     
     /**
@@ -122,8 +122,18 @@ public class DataSource {
      * @param params
      * @return
      */
-    public boolean search(String name, LinkedHashMap<String, String> params) {
-        return dbHelper.search(name, params);    
+    public void search(String name, LinkedHashMap<String, String> params) {
+        dbHelper.search(name, params);    
     }
 
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @param height
+     * @return
+     */
+    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
+        return dbHelper.findObstacles(lon, lat, height);
+    }
 }

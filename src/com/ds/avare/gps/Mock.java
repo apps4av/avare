@@ -58,7 +58,7 @@ public class Mock extends AsyncTask<Gps, Integer, Void> {
       protected void onProgressUpdate(Integer... progress) {     
           mLatitude -= 0.001;
           mLongitude -= 0.01;
-          mAltitude += 1;
+          //mAltitude += 1;
           mBearing++;
           mSpeed++;
           Location location = new Location(LocationManager.GPS_PROVIDER);

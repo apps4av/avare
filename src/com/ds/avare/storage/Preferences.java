@@ -196,8 +196,24 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean shouldShowBackground() {
+        return(mPref.getBoolean(mContext.getString(R.string.Background), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldShowAllFacilities() {
         return(mPref.getBoolean(mContext.getString(R.string.AllFacilities), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldShowObstacles() {
+        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), true));
     }
 
     /**

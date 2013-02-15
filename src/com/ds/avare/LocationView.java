@@ -17,6 +17,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
@@ -78,6 +79,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private BitmapHolder               mAirplaneBitmap;
     private BitmapHolder               mRunwayBitmap;
     private BitmapHolder               mLineBitmap;
+    private BitmapHolder               mObstacleBitmap;
+    private BitmapHolder               mLineHeadingBitmap;
     
     /**
      * The magic of multi touch
@@ -127,7 +130,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private Pan                         mPan;
     
-    private DataSource             mImageDataSource;
+    private DataSource                  mImageDataSource;
     
     /**
      * To tell activity to do something on a gesture or touch
@@ -177,6 +180,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Projection                  mPointProjection;
     
     /*
+     * When the last time around obstacles were calculated
+     */
+    private Long                        mObstaclesLastTime;
+    
+    /*
+     * Obstacles
+     */
+    private LinkedList<Obstacle>        mObstacles;
+    
+    /*
+     * Obstacles task
+     */
+    private ObstaclesTask              mObstaclesTask;
+    
+    /*
      * Shadow length 
      */
     private static final int SHADOW = 4;
@@ -185,6 +203,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Text on screen color
      */
     private static final int TEXT_COLOR = 0xffadff2f; 
+    private static final int TEXT_COLOR_OPPOSITE = 0xff5200d0; 
+    
+    /*
+     * Periodic async task
+     */
+    private static final long PERIODIC_QUERY_TIME = 10 * 1000; 
     
     /**
      * @param context
@@ -209,6 +233,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
+        mObstaclesLastTime = System.currentTimeMillis();
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -225,7 +250,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
+        mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
+        mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         
@@ -547,6 +574,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
         }
         else {
+            if(mPref.shouldShowBackground()) {
+                mPaint.setShadowLayer(0, 0, 0, 0);
+                mPaint.setColor(TEXT_COLOR_OPPOSITE);
+                mPaint.setAlpha(0x7f);
+                canvas.drawRect(0, 0, getWidth(), getHeight() / mTextDiv * 2 + SHADOW, mPaint);            
+                mPaint.setAlpha(0xff);
+                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+            }
+            
             mPaint.setColor(TEXT_COLOR);
 
             mPaint.setTextAlign(Align.RIGHT);
@@ -617,6 +653,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
                 canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
             }
+            /*
+             * Draw actual heading
+             */
+            if(null != mLineHeadingBitmap && mGpsParams != null) {
+                rotateBitmapIntoPlace(mLineHeadingBitmap, (float)mGpsParams.getBearing(),
+                        mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
+                canvas.drawBitmap(mLineHeadingBitmap.getBitmap(), mLineHeadingBitmap.getTransform(), mPaint);
+            }
         }
     }
 
@@ -651,6 +695,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
+    private void drawObstacles(Canvas canvas) {
+        if(mPref.shouldShowObstacles()) {
+            if((mObstacles != null) && (null == mPointProjection)) {
+                mPaint.setShadowLayer(0, 0, 0, 0);
+                for (Obstacle o : mObstacles) {
+                    rotateBitmapIntoPlace(mObstacleBitmap, 0, o.getLongitude(), o.getLatitude(), false);
+                    canvas.drawBitmap(mObstacleBitmap.getBitmap(), mObstacleBitmap.getTransform(), mPaint);
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
     private void drawAircraft(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
@@ -664,6 +724,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mGpsParams.getLongitude(), mGpsParams.getLatitude(), true);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }        
+
     }
 
 
@@ -782,6 +843,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	drawTFR(canvas);
         drawTrack(canvas);
         drawRunways(canvas);
+        drawObstacles(canvas);
         drawAircraft(canvas);
     	drawMETARText(canvas);
     	drawCornerTexts(canvas);
@@ -845,6 +907,29 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Database query for new location / pan location.
          */
         dbquery(false);
+        
+        
+        /*
+         * Query obstacles every periodic time
+         */
+        if(Math.abs(System.currentTimeMillis() - mObstaclesLastTime) > PERIODIC_QUERY_TIME) {
+            mObstaclesLastTime = System.currentTimeMillis();
+            if(mPref.shouldShowObstacles()) {
+                if(null != mObstaclesTask) {
+                    if (!mObstaclesTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
+                        /*
+                         * Always honor the latest query
+                         */
+                        mObstaclesTask.cancel(true);
+                    }
+                }
+                mObstaclesTask = new ObstaclesTask();
+                mObstaclesTask.execute(params.getLongitude(), params.getLatitude(), (int)params.getAltitude());
+            }
+            else {
+                mObstacles = null;
+            }
+        }
     }
 
     
@@ -1045,6 +1130,44 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             invalidate();
         }
     }    
+    
+    
+    /**
+     * @author zkhan
+     *
+     */
+    private class ObstaclesTask extends AsyncTask<Object, Void, Boolean> {
+
+        LinkedList<Obstacle> obs;
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Boolean doInBackground(Object... vals) {
+            
+            if(null == mService || null == mGpsParams) {
+                return false;
+            }
+            obs = mService.getDBResource().findObstacles(
+                    (Double)vals[0],
+                    (Double)vals[1],
+                    (Integer)vals[2]);
+            return true;
+        }
+        
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if(true == result) {
+                mObstacles = obs;
+            }
+            invalidate();
+        }
+    }
+
     
     /**
      * @author zkhan

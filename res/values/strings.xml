@@ -109,4 +109,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">&quot;Exit&quot;</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
+    <string name="Obstacles">&quot;Obstacles&quot;</string>
+    <string name="ObstaclesLabel">&quot;Show Obstacles&quot;</string>
+    <string name="ObstaclesSummary">&quot;Show obstacles near the aircraft&quot;</string>
+    <string name="Background">&quot;Background&quot;</string>
+    <string name="BackgroundLabel">&quot;Show Background&quot;</string>
+    <string name="BackgroundSummary">&quot;Show a color background to improve readability on smaller screens&quot;</string>
 </resources>

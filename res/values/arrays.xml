@@ -149,7 +149,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesDatabase">
-        <item>databases_v2</item>
+        <item>databases_v3</item>
     </string-array>    
     <string-array name="resFilesPlate">
         <item>AirportDiagramsj</item>
