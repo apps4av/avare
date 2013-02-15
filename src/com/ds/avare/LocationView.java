@@ -561,6 +561,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Maps status, and point destination/destination bearing, altitude, ...
          * Add shadows for better viewing
          */
+        if(mPref.shouldShowBackground()) {
+            mPaint.setShadowLayer(0, 0, 0, 0);
+            mPaint.setColor(TEXT_COLOR_OPPOSITE);
+            mPaint.setAlpha(0x7f);
+            canvas.drawRect(0, 0, getWidth(), getHeight() / mTextDiv * 2 + SHADOW, mPaint);            
+            mPaint.setAlpha(0xff);
+        }
         mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
         
 
@@ -574,14 +581,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
         }
         else {
-            if(mPref.shouldShowBackground()) {
-                mPaint.setShadowLayer(0, 0, 0, 0);
-                mPaint.setColor(TEXT_COLOR_OPPOSITE);
-                mPaint.setAlpha(0x7f);
-                canvas.drawRect(0, 0, getWidth(), getHeight() / mTextDiv * 2 + SHADOW, mPaint);            
-                mPaint.setAlpha(0xff);
-                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-            }
             
             mPaint.setColor(TEXT_COLOR);
 
