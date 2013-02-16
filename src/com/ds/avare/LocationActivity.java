@@ -217,7 +217,7 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
-        mMenuButton.getBackground().setAlpha(200);
+        mMenuButton.getBackground().setAlpha(0);
         mMenuButton.setOnClickListener(new OnClickListener() {
 
             @Override

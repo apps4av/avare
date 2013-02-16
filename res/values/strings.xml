@@ -42,8 +42,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GpsOffWarnLabel">&quot;Warn GPS Disabled&quot;</string>
     <string name="GpsOffWarnSummary">&quot;Select to warn frequently when GPS is disabled&quot;</string>
     <string name="ShowTrack">&quot;ShowTrack&quot;</string>
-    <string name="ShowTrackLabel">&quot;Destination Track Line&quot;</string>
-    <string name="ShowTrackSummary">&quot;Select for showing track to destination&quot;</string>
+    <string name="ShowTrackLabel">&quot;Destination Course Line&quot;</string>
+    <string name="ShowTrackSummary">&quot;Select to show course to destination&quot;</string>
     <string name="Help">&quot;Help&quot;</string>
     <string name="desc">&quot;Image/Chart&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>

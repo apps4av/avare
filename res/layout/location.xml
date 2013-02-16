@@ -81,7 +81,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <Button
             android:id="@+id/location_button_menu"
             android:textStyle="bold"
-            android:background="#00FF00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/location_button_help"

@@ -839,9 +839,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
     	
     	drawTiles(canvas);
+        drawRunways(canvas);
     	drawTFR(canvas);
         drawTrack(canvas);
-        drawRunways(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
     	drawMETARText(canvas);

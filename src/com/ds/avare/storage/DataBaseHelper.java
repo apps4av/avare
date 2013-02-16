@@ -490,7 +490,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         catch (Exception e) {
         }
-        cursor.close();
+        closes(cursor);
 
 
         cursor = doQuery("select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "==\"" + name
