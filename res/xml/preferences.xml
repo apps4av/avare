@@ -80,11 +80,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:summary="@string/AllFacilitiesSummary"
         android:defaultValue="false"/>
     <CheckBoxPreference
-        android:key="@string/Obstacles"
-        android:title="@string/ObstaclesLabel"
-        android:summary="@string/ObstaclesSummary"
-        android:defaultValue="true"/>
-    <CheckBoxPreference
         android:key="@string/Background"
         android:title="@string/BackgroundLabel"
         android:summary="@string/BackgroundSummary"

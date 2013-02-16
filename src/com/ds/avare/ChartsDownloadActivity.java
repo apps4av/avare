@@ -182,7 +182,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             /*
              * Nothing to download
              */
-            ChartsDownloadActivity.super.onBackPressed();
             return false;
         }
 
