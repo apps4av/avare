@@ -85,6 +85,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mGpsButton;
     private Button mDownloadButton;
     private Button mMenuButton;
+    private Button mTrackButton;
     private Bundle mExtras;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
@@ -320,6 +321,24 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
         
+        mTrackButton = (Button)view.findViewById(R.id.location_button_track);
+        mTrackButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                if(mTrackButton.getText().equals(getString(R.string.TrackUp))) {
+                    mLocationView.setTrackUp(true);
+                }
+                else {
+                    mLocationView.setTrackUp(false);                    
+                }
+            }
+            
+        });
 
         /*
          * Throw this in case GPS is disabled.

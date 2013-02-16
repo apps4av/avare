@@ -43,7 +43,7 @@ public class Mock extends AsyncTask<Gps, Integer, Void> {
                     
               // sleep for a while before providing next location
               try {
-                  Thread.sleep(5000);
+                  Thread.sleep(1000);
               } catch (Exception e) {
                   break;
               }
@@ -58,8 +58,8 @@ public class Mock extends AsyncTask<Gps, Integer, Void> {
       protected void onProgressUpdate(Integer... progress) {     
           mLatitude -= 0.001;
           mLongitude -= 0.01;
-          //mAltitude += 1;
-          mBearing++;
+          mAltitude += 10;
+          mBearing += 10;
           mSpeed++;
           Location location = new Location(LocationManager.GPS_PROVIDER);
           location.setLatitude(mLatitude);

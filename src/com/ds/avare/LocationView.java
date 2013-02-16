@@ -195,6 +195,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private ObstaclesTask              mObstaclesTask;
     
     /*
+     * If showing track up
+     */
+    private boolean                   mTrackUp;
+    
+    /*
      * Shadow length 
      */
     private static final int SHADOW = 4;
@@ -234,6 +239,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
         mObstaclesLastTime = System.currentTimeMillis();
+        mTrackUp = false;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -718,7 +724,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
             /*
              * Rotate and move to a panned location
-             */                
+             */
             rotateBitmapIntoPlace(mAirplaneBitmap, (float)mGpsParams.getBearing(),
                     mGpsParams.getLongitude(), mGpsParams.getLatitude(), true);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
@@ -838,12 +844,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	mPaint.setTextSize(getHeight() / mTextDiv);
         mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
     	
+        if(mTrackUp && (mGpsParams != null)) {
+            canvas.save();
+            canvas.rotate(-(int)mGpsParams.getBearing(), getWidth() / 2, getHeight() / 2);
+        }
     	drawTiles(canvas);
         drawRunways(canvas);
     	drawTFR(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
+        if(mTrackUp) {
+            canvas.restore();
+        }
     	drawMETARText(canvas);
     	drawCornerTexts(canvas);
     }    
@@ -1239,6 +1252,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         public void onLongPress(MotionEvent e) {
+            
+            /*
+             * XXX:
+             * For track up, currently there is no math to find anything with long press.
+             */
+            if(mTrackUp) {
+                return;
+            }
+            
             /*
              * on long press, find a point where long press was done
              */
@@ -1326,5 +1348,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void setGestureCallback(GestureInterface gestureInterface) {
         mGestureCallBack = gestureInterface;
+    }
+
+    /**
+     * 
+     * @param b
+     */
+    public void setTrackUp(boolean b) {
+        mTrackUp = b;
+        postInvalidate();
     }
 }
