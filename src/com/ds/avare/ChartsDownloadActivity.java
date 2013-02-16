@@ -56,7 +56,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     
     private StorageService mService;
     private Button mDLButton;
-    private Button mBackButton;
 
     /**
      * 
@@ -102,22 +101,9 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 download();
             }
             
-        });
-        
-        mBackButton = (Button)view.findViewById(R.id.chart_download_button_back);
-        mBackButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Switch back to main activity
-                 * Since we can only come here from main activity, fake a 
-                 * back press. 
-                 */
-                ChartsDownloadActivity.super.onBackPressed();
-            }
-        });
+        });        
     }
+    
 
     
     /** Defines callbacks for service binding, passed to bindService() */
@@ -196,6 +182,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             /*
              * Nothing to download
              */
+            ChartsDownloadActivity.super.onBackPressed();
             return false;
         }
 
