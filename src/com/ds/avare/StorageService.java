@@ -16,9 +16,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.ds.avare.gps.Gps;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.gps.GpsParams;
+import com.ds.avare.gps.*;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;

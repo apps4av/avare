@@ -91,12 +91,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textOn="@string/TrackUp"
-            android:textStyle="bold"
-            android:textSize="20sp"
+            android:layout_alignBottom="@+id/location_button_dest"
+            android:layout_alignParentLeft="true"
             android:textOff="@string/NorthUp"
-            android:layout_alignParentRight="true"/>
+            android:textOn="@string/TrackUp"
+            android:textSize="20sp"
+            android:textStyle="bold" />
         
 </RelativeLayout>
 

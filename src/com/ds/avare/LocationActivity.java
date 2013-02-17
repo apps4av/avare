@@ -210,7 +210,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton);
                     a.animate(true);
                 }
             }
@@ -218,13 +218,13 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
-        mMenuButton.getBackground().setAlpha(0);
+        mMenuButton.getBackground().setAlpha(255);
         mMenuButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 mDestButton.setText(getString(R.string.Destination));
-                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null);
+                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton);
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, null);
                 AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, null);

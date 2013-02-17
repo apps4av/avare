@@ -115,6 +115,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
     <string name="BackgroundSummary">&quot;Show a color background to improve readability on smaller screens&quot;</string>
-    <string name="NorthUp">&quot;N&quot;</string>
-    <string name="TrackUp">&quot;Tr&quot;</string>
+    <string name="NorthUp">&quot;MV&quot;</string>
+    <string name="TrackUp">&quot;FZ&quot;</string>
 </resources>

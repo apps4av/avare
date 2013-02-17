@@ -207,8 +207,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Text on screen color
      */
-    private static final int TEXT_COLOR = 0xffadff2f; 
-    private static final int TEXT_COLOR_OPPOSITE = 0xff5200d0; 
+    private static final int TEXT_COLOR = Color.WHITE; 
+    private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     
     /*
      * Periodic async task
@@ -354,7 +354,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
-            if(mPan.setMove(newObjPosAndScale.getXOff(), newObjPosAndScale.getYOff())) {
+            /*
+             * XXX: Till track up pan in problematic, freeze it to current location.
+             * 
+             */
+            if(mPan.setMove(
+                    mTrackUp ? 
+                            mPan.getMoveX() : 
+                            newObjPosAndScale.getXOff(),
+                    mTrackUp ? 
+                            mPan.getMoveY() : 
+                            newObjPosAndScale.getYOff())) {
                 /*
                  * Query when we have moved one tile. This will happen in background.
                  */
@@ -365,17 +375,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            if(mPointProjection == null) {
-                double x0 = mCurrTouchPoint.getXs()[0];
-                double y0 = mCurrTouchPoint.getYs()[0];
-                double x1 = mCurrTouchPoint.getXs()[1];
-                double y1 = mCurrTouchPoint.getYs()[1];
-
-                double lon0 = mOrigin.getLongitudeOf(x0);
-                double lat0 = mOrigin.getLatitudeOf(y0);
-                double lon1 = mOrigin.getLongitudeOf(x1);
-                double lat1 = mOrigin.getLatitudeOf(y1);
-                mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+            if(!mTrackUp) {
+                if(mPointProjection == null) {
+                    double x0 = mCurrTouchPoint.getXs()[0];
+                    double y0 = mCurrTouchPoint.getYs()[0];
+                    double x1 = mCurrTouchPoint.getXs()[1];
+                    double y1 = mCurrTouchPoint.getYs()[1];
+    
+                    double lon0 = mOrigin.getLongitudeOf(x0);
+                    double lat0 = mOrigin.getLatitudeOf(y0);
+                    double lon1 = mOrigin.getLongitudeOf(x1);
+                    double lat1 = mOrigin.getLatitudeOf(y1);
+                    mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+                }
             }
 
             /*
@@ -846,7 +858,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	
         if(mTrackUp && (mGpsParams != null)) {
             canvas.save();
-            canvas.rotate(-(int)mGpsParams.getBearing(), getWidth() / 2, getHeight() / 2);
+            /*
+             * Rotate around current position
+             */
+            float x = (float)mOrigin.getOffsetX(mGpsParams.getLongitude());
+            float y = (float)mOrigin.getOffsetY(mGpsParams.getLatitude());
+            canvas.rotate(-(int)mGpsParams.getBearing(), x, y);
         }
     	drawTiles(canvas);
         drawRunways(canvas);
