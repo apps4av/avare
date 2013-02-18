@@ -3,14 +3,15 @@
 <h3 style="text-align: center;">Avare Donate</h3>
 <a href="http://apps4av.net/donate.html">Click here to help improve the project</a>.<br>
 Thank you!<br>
-<h3 style="text-align: center;">Avare Releases</h3>
-<span style="font-style: italic;">3.4.8</span> Added Freeze Mode
+<h3 style="text-align: center;">Avare Releases</h3><span style="font-weight: bold;">3.5</span> Added terminal procedures this includes ALL approach and departure procedures publisehd by the FAA (all 50 states)<br>
+
+<span style="font-style: italic; font-weight: bold;">3.4.8</span> Added Freeze Mode
 ("FZ"). In this mode, a user can align the nose of the miniature
 aircraft shown in the Map screen to the current GPS track heading,
 while freezing the map view to whats shown (Experimental). Fixed a few
 minor bugs.<br>
 
-<span style="font-style: italic;">3.4.7</span> Fixed some bugs,
+<span style="font-style: italic; font-weight: bold;">3.4.7</span> Fixed some bugs,
 re-arranged the layout for better navigation, and added a permanent
 route line to be used for planning in later releases.<br>
 <br>
@@ -27,8 +28,10 @@ device be Online).
 <p>&#8226;<a title="Offline Quick Start" href="#Quick">Quick Start</a> - Offline Intro.</p>
 
 <p>&#8226;<a title="Offline Help" href="#Help">Help</a> - Offline Extra Info.</p>
+<p>&#8226;<a title="Airport Diagrams" href="avare-offlinehelp.html#Diags">Airport Diagrams</a> - Intro.</p>
 
-<p>&#8226;<a title="Airport Diagrams" href="#Diags">Airport Diagrams</a> - Intro.</p>
+
+<p>&#8226;<a title="Airport Diagrams" href="#Terminal">Terminal Procedures</a> - Intro.</p>
 <p>&#8226;<a title="Airport Diagrams" href="avare-offlinehelp.html#Landmarks">Fly To Landmarks/Addresses</a> - Intro.</p>
 
 
@@ -44,7 +47,7 @@ device be Online).
 <p>&#8226;When you first launch Avare, after reading the disclaimer just
 click OK. Before using other features in Avare, you'll want to use it
 via an internet connection on your device (WiFi or Data) to Download
-the free Database, Airport Diagrams, charts and other files you'll
+the free Database, airport diagrams, terminal procedures, charts and other files you'll
 want. Press the Options key (button on the lower left side of the
 screen), select one or more download items from the list, then the
 Start button to begin downloading. When you're done Downloading, just
@@ -133,15 +136,13 @@ line aligns with the red line.
 Beginning in Avare version 3.2 you can view these other screens in
 addition to the Map screen, using Tabs along the bottom of the display.</p>
 <p>&#8226;The "<strong>Plates</strong>" Tab at the bottom of the screen
-displays the FAA Airport Diagram for the currently selected Destination
-airport, with future plan of adding approach plates.&nbsp; The FAA does
-not publish airport diagrams for all the airports, hence the screen
-appeas blank for the unpublished airports.<br>
+displays the FAA airport diagrams, and terminal procedures for the currently selected Destination
+airport.<br>
 </p>
-<p style="padding-left: 30px;"><strong>To view an Airport Diagram</strong>
+<p style="padding-left: 30px;"><strong>To view an airport diagram</strong>
 first input a Destination airport code in Map view as described above,
-then tap the "Diagram" Tab and Avare will display it, if you have used
-Download to install the Airport Diagrams file and a diagram is
+then tap the "Plates" Tab then select "AIRPORT-DIAGRAM" from the drop down list, and Avare will display it, if you have used
+Download to install the Plates file for your location, and a diagram is
 available for your current Destination airport. Note that "<b>GPS Taxi</b>" was added in Avare version 3.2, to show your current location on an
 airport (see the link for details at the top of this page, or scroll
 down to that section below).
@@ -212,7 +213,26 @@ screen. When internet access is available Avare automatically searches
 for all TFRs hourly, but will try every minute if unable to find them
 due to lack of internet access or for any other reason.</p>
 <p>&#8226;<strong>Runway Extensions</strong> show 6 degree approach to all runways at a given airport set as Destination.<br>
+
+
 </p>
+<hr size="1">
+<h3 style="text-align: center;"><a name="Terminal">Terminal Procedures</a></h3>
+
+
+<p>&#8226;<strong>Plates</strong><br></p>
+<p>The Plates screen shows the terminal procedure plates when
+downloaded by the user.&nbsp; To see terminal procedures for an
+airport, simply enter it as destination, then press the Plates screen
+tab at the bottom of the screen. Select the appropriate procedure from
+the drop down list for that airport. <br>
+</p>
+Plates are distributed in several files, one for each state.&nbsp;
+There are tens of thousands of proceudres, making plate files large.
+For example, the Texas plates download size is about 300 MB.
+<p>
+</p>
+
 <hr size="1">
 <h3 style="text-align: center;"><a name="Diags">Airport Diagrams</a> - Intro</h3>
 
@@ -220,18 +240,20 @@ due to lack of internet access or for any other reason.</p>
 GPS taxi position was added to Avare in version 3.2, displaying an airplane
 icon at your current GPS location on the FAA Airport Diagram for your
 currently selected Destination airport.</p>
-<p style="padding-left: 30px;"><strong></strong>GPS Taxi on Diagrams is <b>not "moving map"</b>
+<p style="padding-left: 30px;"><strong></strong>GPS Taxi on airport diagrams is <b>not "moving map"</b>
 so your location will not be automatically tracked at the center of the
 screen, but instead you must scroll the Diagram to find the airplane
-icon that indicates your position. </p>
-
-<p>You will be able to scroll
-the Diagram screen while on the airport with GPS On to find the
+icon that indicates your position. </p>You will be able to scroll
+the Plates screen while on the airport with GPS On to find the
 airplane icon at your current location and use the "GPS Taxi" feature
 on that airport.<br>
+<p>GPS Taxi is active when "AIRPORT-DIAGRAM" is selected in the Plates screen.<br>
+</p>
+<p><br>
 
 
 </p>
+
 <hr size="1">
 <h3 style="text-align: center;"><a name="Landmarks">Fly To Landmarks</a>/Addresses - Intro</h3>
 
@@ -345,10 +367,20 @@ Frequently Asked Questions</h3>
 (Situational) Awareness. So you can use Avare to more conveniently be
 Aware of FAA information in flight and for planning purposes.</p>
 
-<p><a name="faaReq"></a><em><strong>* Does Avare meet FAA chart requirements?</strong></em><br>
+<p><a name="faaReq"></a><em><strong>* Does Avare meet FAA chart requirements?</strong></em><br></p>
+<p>Note: With addition of the terminal procedure, Avare will start
+delivering all data every 28 days. There may be a lag in uploading the
+latest charts due to limited resources on the Avare project. <br>
+</p>
+<p>IT IS THE RESPONSIBILITY OF THE PILOT IN COMMAND TO VERIFY THAT ALL TERMINAL PROCEDURES ARE UP TO DATE BEFORE USING THEM.<br>
+</p>
+<p>THE FAA DOES NOT APPROVE USE OF HANDHELD GPS DEVICES FOR IFR FLIGHTS.<br>
+</p>
+<p>
 Note that Avare is <strong><span style="text-decoration: underline;">not</span></strong>
 an FAA certified app, and is not intended for primary navigation or
 information. But J. Mac McClellan, former editor-in-chief of "<em>FLYING</em>" magazine and popular columnist for EAA's "<em>Sport Aviation</em>" magazine wrote on 9/26/2012:</p>
+
 <blockquote><p>"&#8230;the FARs are totally silent on any requirement for
 charts of any kind if you fly for personal reasons in an airplane that
 is not a turbojet, or not certified for takeoff above 12,500 pounds."</p></blockquote>
@@ -357,12 +389,9 @@ required for flying in some Class B special VFR corridors, and TAC
 charts were added to Avare with version 2.7 as more free chart Download
 options.</p>
 <p>IFR charts must be current at all times.</p>
-<p>Avare updates all charts and databases every 56 days, coinciding
-with the FAA IFR charts release cycle.&nbsp; Users are posponsible for
-updating the charts when indicated in the download menu.&nbsp; When a
-new chart is available for an installed chart, the green check mark on
-its left will turn red.<br>
+<p><br>
 </p>
+
 <p><a name="accuracy"></a><em><strong>* How accurate is Avare's indicated GPS position?</strong></em><br>Users
 have reported Avare to be accurate to less than one hundred feet
 with their device's internal GPS, and some have found it much more
@@ -410,18 +439,20 @@ your future use of Avare. To view only charts other than Sectionals
 
 <p><a name="airpDiag"></a> <em><strong>* How do I display an Airport Diagram?</strong></em><br>To
 view Airport Diagrams just input a Destination and then press the
-Diagram tab. Note that before you can view any Airport Diagram you must
-Download the entire set via the Download button.</p>
+Plates tab, then select "AIRPORT-DIAGRAM" from the drop down list. Note
+that before you can view any airport diagram you must
+Download the plates for that airport's state/territory via the Download
+button.</p>
 
 
 <p><a name="memSize"></a> <em><strong>* How much memory does Avare use?</strong></em><br>The
 total installed size of Avare with the Database and A/FD is about 16MB.
-The average chart is about 10 MB, and the total size of all Sectional
-&amp; TAC charts is about 500 MB. The file containing all available
-Airport Diagrams is about 100MB. For the typical pilot, Avare uses 1/10
-the memory of comparable aviation chart apps. Note that Preferences
+The average chart is about 10 MB, and the total size of all sectionals,
+WAC, TAC, and IFR charts is about 500 MB. Terminal procedures are about
+3 GB. Note that Preferences
 includes an option for moving Avare files to different storage
-locations. Avare uses all run time memory that Androig gives it, and is typically 32 MB.<br>
+locations. Avare uses all run time memory that Androig gives it, and is
+typically 32 MB.<br>
 </p>
 
 
