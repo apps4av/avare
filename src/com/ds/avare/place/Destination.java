@@ -97,6 +97,7 @@ public class Destination extends Observable {
     public static final String BASE = "Base";
     public static final String FIX = "Fix";
     public static final String NAVAID = "Navaid";
+    public static final String AD = "AIRPORT-DIAGRAM";
     
     /**
      * Contains all info in a hash map for the destination
@@ -383,17 +384,26 @@ public class Destination extends Observable {
 	                }
 	            };
 	            mPlateFound = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
-	            
 	            if(null != mPlateFound) {
+	                /*
+	                 * Add first empty row
+	                 */
+	                String tmp[] = new String[mPlateFound.length + 1];
+	                tmp[0] = "";
+	                /*
+	                 * Sort first
+	                 */
+	                java.util.Arrays.sort(mPlateFound);
     	            for(int plate = 0; plate < mPlateFound.length; plate++) {
     	                /*
     	                 * Make sure it conforms to XXXXXX.jpg
+    	                 * Keep one empty space in front for list header
     	                 */
-    	                
     	                String tokens[] = mPlateFound[plate].split(".jpg");
-                        mPlateFound[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
+                        tmp[plate + 1] = mPref.mapsFolder() + "/plates/" + mName + "/" +
                                 tokens[0];
     	            }
+    	            mPlateFound = tmp;
 	            }
 	        }
 	        else {

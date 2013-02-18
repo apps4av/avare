@@ -47,13 +47,14 @@ public class PlatesActivity extends Activity {
     
     private Preferences mPref;
     private PlatesView mPlatesView;
-    private String mName;
     private StorageService mService;
     private Destination mDestination;
     private Toast mToast;
     private Spinner mSpinner;
     private List<String> mList;
     private float[] mMatrix;
+    private int mLastPlate;
+    private String mShowing;
 
     /*
      * Start GPS
@@ -137,6 +138,8 @@ public class PlatesActivity extends Activity {
         View view = layoutInflater.inflate(R.layout.plates, null);
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
+        mLastPlate = 0;
+        mShowing = "";
         
         /*
          * Spinner to select a plate
@@ -147,19 +150,36 @@ public class PlatesActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
                 if(mDestination != null && mService != null && mList != null) {
+                    /*
+                     * If moving to invalid position (this happens with spinner automatically,
+                     * then if last plate was not 0, then use it.
+                     * Persistance of plates.
+                     */
+                    if((0 == pos) && (0 != mLastPlate)) {
+                        pos = mLastPlate;
+                    }
                     String[] plates = mDestination.getPlates();
                     if(plates != null) {
-                        if(plates.length >= pos) {
-                            mService.loadDiagram(plates[pos] + ".jpg");
-                            mPlatesView.setBitmap(mService.getDiagram());
-                            String name = mList.get(pos);
-                            if(name.equals("AIRPORT-DIAGRAM")) {
-                                mPlatesView.setParams(mMatrix);
-                            }
-                            else {
-                                mPlatesView.setParams(null);
-                            }
+                        if(pos >= plates.length) {
+                            pos = 0;
                         }
+                        mSpinner.setSelection(pos);
+                        if(!mShowing.equals(plates[pos])) {
+                            /*
+                             * Do not load diagram again and again
+                             */
+                            mShowing = plates[pos];
+                            mService.loadDiagram(plates[pos] + ".jpg");
+                        }
+                        mPlatesView.setBitmap(mService.getDiagram());
+                        String name = mList.get(pos);
+                        if(name.equals(Destination.AD)) {
+                            mPlatesView.setParams(mMatrix);
+                        }
+                        else {
+                            mPlatesView.setParams(null);
+                        }
+                        mLastPlate = pos;
                     }
                 }
             }
@@ -195,16 +215,15 @@ public class PlatesActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mPlatesView.setBitmap(null);
 
             /*
              * Now get all stored data
              */
             mDestination = mService.getDestination();
             if(null == mDestination) {
+                mPlatesView.setBitmap(null);
                 mToast.setText(getString(R.string.ValidDest));
                 mToast.show();
-                mName = null;
                 return;
             }
             
@@ -215,10 +234,10 @@ public class PlatesActivity extends Activity {
              * Not found
              */
             if((!mDestination.isFound()) || (mDestination.getPlates() == null)) {
+                mPlatesView.setBitmap(null);
                 mToast.setText(getString(R.string.PlatesNF));
                 mToast.show();
                 mSpinner.setVisibility(View.INVISIBLE);
-                mName = null;
                 return;                
             }
             
@@ -239,22 +258,18 @@ public class PlatesActivity extends Activity {
             String[] plates = mDestination.getPlates();            
             for(int plate = 0; plate < plates.length; plate++) {
                 String tokens[] = plates[plate].split("/");
+                if(tokens[tokens.length - 1].equals("")) {
+                    tokens[tokens.length - 1] = getApplicationContext().getString(R.string.SelectPlate);
+                }
                 mList.add(tokens[tokens.length - 1]);
             }
             mSpinner.setAdapter(adapter);            
             mSpinner.setVisibility(View.VISIBLE);
 
             /*
-             * Set diagram
-             */
-            mName = mDestination.getID();
-            mPlatesView.setBitmap(mDestination.getBitmap());
-
-
-            /*
              * Find lon/lat px from database
              */
-            mMatrix = mService.getDBResource().findDiagramMatrix(mName);
+            mMatrix = mService.getDBResource().findDiagramMatrix(mDestination.getID());
             
         }
 

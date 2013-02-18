@@ -117,4 +117,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="BackgroundSummary">&quot;Show a color background to improve readability on smaller screens&quot;</string>
     <string name="NorthUp">&quot;MV&quot;</string>
     <string name="TrackUp">&quot;FZ&quot;</string>
+    <string name="SelectPlate">&quot;Select A Plate&quot;</string>
 </resources>
