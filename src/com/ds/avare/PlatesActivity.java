@@ -53,7 +53,7 @@ public class PlatesActivity extends Activity {
     private Toast mToast;
     private Spinner mSpinner;
     private List<String> mList;
-
+    private float[] mMatrix;
 
     /*
      * Start GPS
@@ -108,7 +108,7 @@ public class PlatesActivity extends Activity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }          
+        }
     };
 
     /*
@@ -146,6 +146,22 @@ public class PlatesActivity extends Activity {
         
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+                if(mDestination != null && mService != null && mList != null) {
+                    String[] plates = mDestination.getPlates();
+                    if(plates != null) {
+                        if(plates.length >= pos) {
+                            mService.loadDiagram(plates[pos] + ".jpg");
+                            mPlatesView.setBitmap(mService.getDiagram());
+                            String name = mList.get(pos);
+                            if(name.equals("AIRPORT-DIAGRAM")) {
+                                mPlatesView.setParams(mMatrix);
+                            }
+                            else {
+                                mPlatesView.setParams(null);
+                            }
+                        }
+                    }
+                }
             }
 
             @Override
@@ -179,6 +195,7 @@ public class PlatesActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mPlatesView.setBitmap(null);
 
             /*
              * Now get all stored data
@@ -197,11 +214,10 @@ public class PlatesActivity extends Activity {
             /*
              * Not found
              */
-            if((!mDestination.isFound()) || (mDestination.getDiagram() == null)) {
+            if((!mDestination.isFound()) || (mDestination.getPlates() == null)) {
                 mToast.setText(getString(R.string.PlatesNF));
                 mToast.show();
                 mSpinner.setVisibility(View.INVISIBLE);
-                mPlatesView.setBitmap(null);
                 mName = null;
                 return;                
             }
@@ -217,7 +233,14 @@ public class PlatesActivity extends Activity {
                     android.R.layout.simple_spinner_item, mList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-            mList.add(getString(R.string.AirDia));
+            /*
+             * Now add all plates to the list
+             */
+            String[] plates = mDestination.getPlates();            
+            for(int plate = 0; plate < plates.length; plate++) {
+                String tokens[] = plates[plate].split("/");
+                mList.add(tokens[tokens.length - 1]);
+            }
             mSpinner.setAdapter(adapter);            
             mSpinner.setVisibility(View.VISIBLE);
 
@@ -231,8 +254,7 @@ public class PlatesActivity extends Activity {
             /*
              * Find lon/lat px from database
              */
-            float vals[] = mService.getDBResource().findDiagramMatrix(mName);
-            mPlatesView.setParams(vals);
+            mMatrix = mService.getDBResource().findDiagramMatrix(mName);
             
         }
 

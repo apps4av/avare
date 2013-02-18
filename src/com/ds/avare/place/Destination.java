@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.place;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class Destination extends Observable {
     private double mLond;
     private double mLatd;
 
-    private String mDiagramFound;
+    private String mPlateFound[];
     
     private Preferences mPref;
     
@@ -123,7 +124,7 @@ public class Destination extends Observable {
         mPref = pref;
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
-        mDiagramFound = null;
+        mPlateFound = null;
         /*
          * GPS
          * GPS coordinates are either x&y (user), or addr@x&y (google maps)
@@ -269,7 +270,7 @@ public class Destination extends Observable {
             mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
             mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
             mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
-            mDiagramFound = null;
+            mPlateFound = null;
             mFound = true;
             mLooking = false;
             mDbType = GPS;
@@ -360,7 +361,7 @@ public class Destination extends Observable {
                  * Common stuff
                  */
                 mParams = new LinkedHashMap<String, String>();
-                mDiagramFound = null;
+                mPlateFound = null;
                 mDbType = mDestType;
                 mParams.put(DataBaseHelper.TYPE, mDestType);
                 mParams.put(DataBaseHelper.FACILITY_NAME, mName);
@@ -374,22 +375,29 @@ public class Destination extends Observable {
 
 	        if(mDestType.equals(BASE)) {
 	            /*
-	             * Found destination extract its airport diagram
+	             * Found destination extract its airport plates
 	             */
-	            String file = mPref.mapsFolder() + "/plates/" + mName + ".jpg";
-	            File f = new File(file);
-	            if(f.exists()) {
-	                mDiagramFound = file;
-	                mService.loadDiagram(Destination.this.getDiagram());
-	            }
-	            else {
-                    mService.loadDiagram(null);
-	                mDiagramFound = null;
+	            FilenameFilter filter = new FilenameFilter() {
+	                public boolean accept(File directory, String fileName) {
+	                    return fileName.endsWith(".jpg");
+	                }
+	            };
+	            mPlateFound = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
+	            
+	            if(null != mPlateFound) {
+    	            for(int plate = 0; plate < mPlateFound.length; plate++) {
+    	                /*
+    	                 * Make sure it conforms to XXXXXX.jpg
+    	                 */
+    	                
+    	                String tokens[] = mPlateFound[plate].split(".jpg");
+                        mPlateFound[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
+                                tokens[0];
+    	            }
 	            }
 	        }
 	        else {
-                mService.loadDiagram(null);
-                mDiagramFound = null;
+                mPlateFound = null;
 	        }
 			return(!mParams.isEmpty());
         }
@@ -435,8 +443,8 @@ public class Destination extends Observable {
     /**
      * @return
      */
-    public String getDiagram() {
-        return(mDiagramFound);
+    public String[] getPlates() {
+        return(mPlateFound);
     }
 
     /**
