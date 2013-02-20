@@ -145,6 +145,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
+        <item>Airport Diagrams Only</item>
 		<item>Alabama</item>
 		<item>Alaska</item>
 		<item>Arizona</item>
@@ -320,6 +321,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
+        <item>AirportDiagrams</item>
 		<item>AL</item>
 		<item>AK</item>
 		<item>AZ</item>
