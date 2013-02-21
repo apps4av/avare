@@ -118,4 +118,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NorthUp">&quot;NU&quot;</string>
     <string name="TrackUp">&quot;TU&quot;</string>
     <string name="SelectPlate">&quot;Select A Plate&quot;</string>
+    <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
 </resources>

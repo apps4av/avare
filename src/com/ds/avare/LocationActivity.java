@@ -400,13 +400,15 @@ public class LocationActivity extends Activity implements Observer {
             mLocationView.setTiles(mService.getTiles());
             
             /*
-             * Check if database is not present or needs upgrade
+             * Check if database needs upgrade
              */
-            if((!mService.getDBResource().isPresent()) || mPref.isNewerVersion(LocationActivity.this)) {
-                /*
-                 * If could not open database then bring up download activity.
-                 */
+            if(mPref.isNewerVersion(LocationActivity.this)) {
                 startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+                return;
+            }
+            if(!mService.getDBResource().isPresent()) {
+                mToast.setText(R.string.DownloadDB);
+                mToast.show();
                 return;
             }
 

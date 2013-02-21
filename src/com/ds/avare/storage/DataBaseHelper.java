@@ -59,13 +59,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     /*
      * 
      */
-    private String mPath;
+    private Context mContext;
     
     /*
      * How many users at this point. Used for closing the database
      * Will serve as a non blocking sem with synchronized statement
      */
     private int mUsers;
+    
     
     public  static final String  FACILITY_NAME = "Facility Name";
     private static final String  FACILITY_NAME_DB = "FacilityName";
@@ -106,8 +107,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataBaseHelper(Context context) {
         super(context, context.getString(R.string.DatabaseName), null, DATABASE_VERSION);
         mPref = new Preferences(context);
-        mPath = mPref.mapsFolder() + "/" + context.getString(R.string.DatabaseName);
         mCenterTile = null;
+        mContext = context;
     }
 
     /**
@@ -115,10 +116,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public boolean isPresent() {
-        if(null == mPath) {
-            return false;
-        }
-        File f = new File(mPath);
+        String path = mPref.mapsFolder() + "/" + mContext.getString(R.string.DatabaseName);
+        File f = new File(path);
         return(f.exists());
     }
    
@@ -167,18 +166,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private Cursor doQuery(String statement) {
         Cursor c = null;
         
+        String path = mPref.mapsFolder() + "/" + mContext.getString(R.string.DatabaseName);
+
         /*
          * 
          */
         synchronized (this) {
-            if(mPath == null) {
-                return c;
-            }
             if(mDataBase == null) {
                 mUsers = 0;
                 try {
                     
-                    mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.OPEN_READONLY | 
+                    mDataBase = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
                             SQLiteDatabase.NO_LOCALIZED_COLLATORS);
                 }
                 catch(RuntimeException e) {
