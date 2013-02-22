@@ -122,4 +122,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NorthUp">&quot;NU&quot;</string>
     <string name="TrackUp">&quot;TU&quot;</string>
     <string name="SelectPlate">&quot;Sélectionner un diagramme&quot;</string>
+    <string name="DownloadDB">&quot;Le ficher requis est manquant et doit être téléchargé.&quot;</string>
 </resources>
