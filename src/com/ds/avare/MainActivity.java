@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.TabActivity;
@@ -133,7 +134,20 @@ public class MainActivity extends TabActivity {
         super.onResume();
         Helper.setOrientationAndOn(this);
     }
- 
+
+    @Override 
+    public void onDestroy() {
+        /*
+         * Start service now, bind later. This will be no-op if service is already running
+         */
+        Preferences mPref = new Preferences(this);
+        if(!mPref.shouldLeaveRunning()) {
+            Intent intent = new Intent(this, StorageService.class);
+            stopService(intent);
+        }
+        super.onDestroy();
+    }
+    
     /**
      * For switching tab from any tab activity
      */

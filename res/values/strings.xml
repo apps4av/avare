@@ -119,4 +119,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrackUp">&quot;TU&quot;</string>
     <string name="SelectPlate">&quot;Select A Plate&quot;</string>
     <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
+    <string name="Agree">&quot;I Agree&quot;</string>
+    <string name="LeaveRunning">&quot;Leave Running&quot;</string>
+    <string name="LeaveRunningLabel">&quot;Leave Running&quot;</string>
+    <string name="LeaveRunningSummary">&quot;Select to pause the application on Exit (instead of a complete exit)&quot;</string>
 </resources>

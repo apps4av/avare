@@ -282,6 +282,13 @@ public class StorageService extends Service {
         if(null != mDiagramBitmap) {
             mDiagramBitmap.recycle();
         }
+        
+        if(mTimer != null) {
+            mTimer.cancel();
+        }
+        if(mGps != null) {
+            mGps.stop();
+        }
     }
     
     public TileMap getTiles() {

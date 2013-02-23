@@ -3,7 +3,18 @@
 <h3 style="text-align: center;">Avare Donate</h3>
 <a href="http://apps4av.net/donate.html">Click here to help improve the project</a>.<br>
 Thank you!<br>
-<h3 style="text-align: center;">Avare Releases</h3><span style="font-weight: bold;">3.5.1</span> Update to French translations, and changed some text<br>
+<h3 style="text-align: center;">Warning!<br>
+</h3>
+<br>
+<span style="font-weight: bold;">Hand help GPS applications on smart devices are not
+approved by the FAA for IFR flights. Operating systems on smart
+devices are not tested according to the strict FAA standards, and
+hence any software running on them is unfit for use as a primary
+flight navigation tool. It is unwise to completely rely on a smart device GPS
+application during the critical phases of a flight.</span><br>
+<h3 style="text-align: center;">Avare Releases</h3><span style="font-weight: bold;">3.5.3</span> The app can now exit completely based on Preferences option "Leave Running". Read the following help for more details.<br>
+<span style="font-weight: bold;">3.5.2</span> Bug fix release. An incorrect maps folder setting could put the app in a loop and required reinstall. Fixed.<br>
+<span style="font-weight: bold;">3.5.1</span> Update to French translations, and changed some text<br>
 <span style="font-weight: bold;">3.5</span> Added terminal procedures. This includes ALL the approach and departure procedures publisehd by the FAA (all 50 states)<br>
 
 <span style="font-weight: bold;">3.4.8</span> Added Freeze Mode
@@ -44,8 +55,9 @@ device be Online).
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;*<em>Requires internet</em></p>
 <hr size="1">
 
-<h3 style="text-align: center;"><a name="Quick">Quick Start</a> - Offline Intro</h3>
-<p>&#8226;When you first launch Avare, after reading the disclaimer just
+<h3 style="text-align: center;"><a name="Quick">Quick Start</a> - Offline Intro<span style="font-weight: bold;">&nbsp;</span><br style="font-weight: bold;">
+
+</h3><p>&#8226;When you first launch Avare, after reading the disclaimer just
 click OK. Before using other features in Avare, you'll want to use it
 via an internet connection on your device (WiFi or Data) to Download
 the free Database, airport diagrams, terminal procedures, charts and other files you'll
@@ -358,6 +370,8 @@ Frequently Asked Questions</h3>
 
 <p><em>* <a href="#dBase">What's in the Database file Avare uses?</a></em><br>
 <em>* <a href="#browse">How do I browse charts and then get back to current location?</a></em></p>
+<p><a href="#browse"><em>* </em></a><em><a href="avare-offlinehelp.html#completeshutdown">What is a complete shutdown?</a></em></p>
+
 
 
 <hr> <a name="qaList"></a>
@@ -641,6 +655,23 @@ turn off that mode to instantly return to your current location. In Map
 view press Option key, the Preferences button, then
 check-mark the Enter Simulation Mode line. To view or use your current
 location again, just un-check the Enter Simulation Mode checkbox.</p>
+<p>
+
+</p>
+<p><a name="completeshutdown"></a> <em><strong>* What is a complete shutdown?</strong></em><br>By
+default, Avare will keep a background process running. This process
+will store important data like the current destination, the
+location,&nbsp; the map view, the weather, the TFRs, and the airport
+information.&nbsp; This process will wake up periodically for a few
+simple tasks (fetch TFRs, weather etc.). It will also keep the GPS on
+for up to 2 minutes after the user exits Avare.</p>
+<p>The background process allows the user to temporarily switch to
+other applications without losing the flight data, and the GPS lock.<br>
+</p>
+<p>The user can completely exit Avare, and stop the background process
+by unselecting option "Leave Running" in the preferences menu item.<br>
+</p>
+
 
 
 <hr size="1">

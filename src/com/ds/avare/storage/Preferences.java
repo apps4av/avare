@@ -196,6 +196,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean shouldLeaveRunning() {
+        return(mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldShowBackground() {
         return(mPref.getBoolean(mContext.getString(R.string.Background), false));
     }

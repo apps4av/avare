@@ -23,6 +23,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -255,8 +256,15 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 catch (Exception e) {
                     
                 }
-                Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " " 
-                        + getString(R.string.Failed), Toast.LENGTH_SHORT).show();
+                
+                /*
+                 * Throw a confirm dialog
+                 */
+                new AlertDialog.Builder(ChartsDownloadActivity.this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle(getString(R.string.download) + " " + getString(R.string.Failed))
+                .setPositiveButton(R.string.OK, null)
+                .show();
             }
             if(Download.NONEED == result) {
                 try {

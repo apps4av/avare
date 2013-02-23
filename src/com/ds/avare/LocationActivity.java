@@ -56,14 +56,6 @@ public class LocationActivity extends Activity implements Observer {
      */
     private LocationView mLocationView;
     /**
-     * Shows warning message about Avare
-     */
-    private AlertDialog mAlertDialogWarn;
-    /**
-     * Shows warning about GPS
-     */
-    private AlertDialog mGpsWarnDialog;
-    /**
      * Current destination info
      */
     private Destination mDestination;
@@ -344,27 +336,19 @@ public class LocationActivity extends Activity implements Observer {
          * Throw this in case GPS is disabled.
          */
         if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-            mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
-            mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
-            mGpsWarnDialog.setButton(getString(R.string.Yes),  new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
+            new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle(R.string.GPSEnable)
+            .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
+
+                @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
                     Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(i);
                 }
-            });
-            mGpsWarnDialog.setButton2(getString(R.string.No),  new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            mGpsWarnDialog.show();
+            })
+            .setNegativeButton(R.string.No, null)
+            .show();
         }
         
         /*
@@ -440,21 +424,12 @@ public class LocationActivity extends Activity implements Observer {
              */
             if(mService.shouldWarn()) {
              
-                mAlertDialogWarn = new AlertDialog.Builder(LocationActivity.this).create();
-                mAlertDialogWarn.setTitle(getString(R.string.WarningMsg));
-                mAlertDialogWarn.setMessage(getString(R.string.Warning));
-                mAlertDialogWarn.setCanceledOnTouchOutside(true);
-                mAlertDialogWarn.setCancelable(true);
-                mAlertDialogWarn.setButton(getString(R.string.OK),  new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-    
-                mAlertDialogWarn.show();
+                new AlertDialog.Builder(LocationActivity.this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle(R.string.WarningMsg)
+                .setMessage(R.string.Warning)
+                .setPositiveButton(R.string.Agree, null)
+                .show();
             }    
             
             /*
@@ -527,22 +502,6 @@ public class LocationActivity extends Activity implements Observer {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
-
-        if(null != mAlertDialogWarn) {
-            try {
-                mAlertDialogWarn.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mGpsWarnDialog) {
-            try {
-                mGpsWarnDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
     }
     
     /* (non-Javadoc)
@@ -566,14 +525,6 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onDestroy() {
-        if(null != mGpsWarnDialog) {
-            try {
-                mGpsWarnDialog.dismiss();
-            }                
-            catch (Exception e) {   
-            }
-        }
-        
         super.onDestroy();
     }
 

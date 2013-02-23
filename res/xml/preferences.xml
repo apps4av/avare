@@ -45,6 +45,11 @@ Redistribution and use in source and binary forms, with or without modification,
         android:summary="@string/ScreenOnSummary"
         android:defaultValue="true"/>
     <CheckBoxPreference
+        android:key="@string/LeaveRunning"
+        android:title="@string/LeaveRunningLabel"
+        android:summary="@string/LeaveRunningSummary"
+        android:defaultValue="true"/>
+    <CheckBoxPreference
         android:key="@string/GpsTime"
         android:title="@string/GpsTimeLabel"
         android:summary="@string/GpsTimeSummary"
