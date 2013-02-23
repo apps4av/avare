@@ -428,6 +428,7 @@ public class LocationActivity extends Activity implements Observer {
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle(R.string.WarningMsg)
                 .setMessage(R.string.Warning)
+                .setCancelable(false)
                 .setPositiveButton(R.string.Agree, null)
                 .show();
             }    
