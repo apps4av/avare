@@ -46,6 +46,8 @@ public class NetworkHelper {
     
     private String mVersion = null;
     
+    private static final String root = "http://www.mamba.dreamhosters.com/";
+    
     private static final int blocksize = 8192;
 
     /**
@@ -97,7 +99,7 @@ public class NetworkHelper {
      * @return
      */
     public static String getDonationURL() {
-        return "http://apps4av.net/donate.html";
+        return root + "donate.html";
     }
 
     /**
@@ -149,7 +151,7 @@ public class NetworkHelper {
             /*
              * Get weather if the point is on airport
              */
-            String url = "http://apps4av.net/cgi-bin/tfr2.cgi";
+            String url = root + "cgi-bin/tfr2.cgi";
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(url);
             HttpResponse response = client.execute(request);
@@ -328,7 +330,7 @@ public class NetworkHelper {
      * @return
      */
     public static String getMETARUrl(String airport) {
-        String query = "http://apps4av.net/cgi-bin/metar2.cgi?station=" + airport;
+        String query = root + "cgi-bin/metar2.cgi?station=" + airport;
 
         return query;
     }
@@ -339,7 +341,7 @@ public class NetworkHelper {
      * @return
      */
     public static String getTAFUrl(String airport) {
-        String query = "http://apps4av.net/cgi-bin/taf.cgi?station=" + airport;
+        String query = root + "cgi-bin/taf2.cgi?station=" + airport;
 
         return query;
     }
@@ -358,7 +360,7 @@ public class NetworkHelper {
      * @return
      */
     public String getUrl(String file) {
-        return("http://apps4av.net/" + mVersion + "/" + file);
+        return(root + mVersion + "/" + file);
     }
     
     /**
@@ -375,7 +377,7 @@ public class NetworkHelper {
              * Location of file on internet
              * Download which is current folder?
              */
-            URL url = new URL("http://apps4av.net/update3.txt");
+            URL url = new URL(root + "update.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()), blocksize);
 
             mVersion = in.readLine();
