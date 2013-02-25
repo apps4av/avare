@@ -18,15 +18,26 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.Date;
 import java.util.LinkedList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import com.ds.avare.R;
 import com.ds.avare.shapes.TFRShape;
@@ -56,6 +67,29 @@ public class NetworkHelper {
     public NetworkHelper() {
     }
 
+    /**
+     * 
+     * @param url
+     * @return
+     */
+    private static String getXmlFromUrl(String url) {
+        String xml = null;
+ 
+        try {
+            // defaultHttpClient
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url);
+ 
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            xml = EntityUtils.toString(httpEntity);
+ 
+        } 
+        catch (Exception e) {
+        }
+        return xml;
+    }
+    
     /*
      * Delete a folder
      */
@@ -245,39 +279,59 @@ public class NetworkHelper {
         if(!(new Preferences(ctx)).shouldTFRAndMETARShow()) {
             return null;
         }
-
-        try {
-            /*
-             * Get weather if the point is on airport
-             */
-            String url = getMETARUrl(airport);
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(url);
-            HttpResponse response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-            if(null != entity) {
-                String ent = EntityUtils.toString(entity);
-                if(ent != null) {
-                    Spanned html = Html.fromHtml(ent);
-                    if(null != html) {
-                        String data = html.toString();
-                        if(null != data) {
-                            if(data.contains("Not Found")) {
-                                return "";
+        
+        /*
+         * Get TAF
+         */
+        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" + 
+                airport + "&hoursBeforeNow=2");
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                
+                NodeList nl = doc.getElementsByTagName("METAR");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        /*
+                         * Return most recent
+                         */
+                        String txt = "";
+                        String cat = "";
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    txt = n.item(0).getTextContent();
+                                }
                             }
-                            return(data);
                         }
+                        n = eElement.getElementsByTagName("flight_category");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    cat = n.item(0).getTextContent();
+                                }
+                            }
+                        }
+                        if(cat.equals("") || txt.equals("")) {
+                            return "";
+                        }
+                        return(cat + "," + txt);
                     }
                 }
             }
         }
-        catch (Exception e) {
-
-        }
         
         return null;
     }
-
+        
     /**
      * 
      * @param airport
@@ -292,58 +346,45 @@ public class NetworkHelper {
             return "";
         }
 
-        try {
-            /*
-             * Get weather if the point is on airport
-             */
-            String url = getTAFUrl(airport);
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(url);
-            HttpResponse response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-            if(null != entity) {
-                String ent = EntityUtils.toString(entity);
-                if(ent != null) {
-                    Spanned html = Html.fromHtml(ent);
-                    if(null != html) {
-                        String data = html.toString();
-                        if(null != data) {
-                            return(data);
+        /*
+         * Get TAF
+         */
+        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
+                 + airport + "&hoursBeforeNow=2");
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                
+                NodeList nl = doc.getElementsByTagName("TAF");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        /*
+                         * Return most recent
+                         */
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    return(n.item(0).getTextContent());
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-        catch (Exception e) {
-
         }
         
         /*
          * TAFS concatenate to METARS
          */
         return "";
-    }
-
-    /**
-     * 
-     * @param airports
-     * @return
-     */
-    public static String getMETARUrl(String airport) {
-        String query = root + "cgi-bin/metar2.cgi?station=" + airport;
-
-        return query;
-    }
-
-    /**
-     * 
-     * @param airports
-     * @return
-     */
-    public static String getTAFUrl(String airport) {
-        String query = root + "cgi-bin/taf2.cgi?station=" + airport;
-
-        return query;
     }
 
     /**
@@ -388,4 +429,29 @@ public class NetworkHelper {
         return mVersion;
     }
     
+    /**
+     * 
+     * @param xml
+     * @return
+     */
+    private static Document getDomElement(String xml){
+        
+        /*
+         * XML parser
+         */
+        Document doc = null;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+ 
+            DocumentBuilder db = dbf.newDocumentBuilder();
+ 
+            InputSource is = new InputSource();
+                is.setCharacterStream(new StringReader(xml));
+                doc = db.parse(is); 
+        }
+        catch (Exception e) {
+        }
+        return doc;
+    }
+
 }
