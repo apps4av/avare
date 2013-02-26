@@ -123,4 +123,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="LeaveRunning">&quot;Leave Running&quot;</string>
     <string name="LeaveRunningLabel">&quot;Leave Running&quot;</string>
     <string name="LeaveRunningSummary">&quot;Select to pause the application on Exit (instead of a complete exit)&quot;</string>
+    <string name="TFRs">&quot;TFRs&quot;</string>
 </resources>

@@ -19,6 +19,7 @@ import java.util.Observer;
 
 import com.ds.avare.R;
 import com.ds.avare.network.Download;
+import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
@@ -57,7 +58,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     
     private StorageService mService;
     private Button mDLButton;
-
+    
     /**
      * 
      */
@@ -102,11 +103,9 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 download();
             }
             
-        });        
+        });
     }
-    
-
-    
+            
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
@@ -175,6 +174,9 @@ public class ChartsDownloadActivity extends Activity implements Observer {
      */
     private boolean download() {
         
+        if(mService == null) {
+            return false;
+        }
         /*
          * Download first chart in list that is checked
          */
@@ -185,7 +187,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
              */
             return false;
         }
-
+        
         mDownload = new Download(getApplicationContext());
         mDownload.addObserver(ChartsDownloadActivity.this);
         mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
@@ -228,8 +230,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
          */
         getApplicationContext().unbindService(mConnection);
     }
-    
-    
+     
     /**
      * 
      */
@@ -282,6 +283,13 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 }
                 Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " " 
                         + getString(R.string.Success), Toast.LENGTH_SHORT).show();
+
+                /*
+                 * If TFR fetched, parse it. 
+                 */
+                if(mName.equals(getString(R.string.TFRs))) {
+                    mService.getTFRFetcher().parse();
+                }
 
                 mChartAdapter.updateVersion(mName, mDownload.getVersion());
                 mChartAdapter.toggleChecked(mName);

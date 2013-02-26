@@ -32,7 +32,6 @@ public class TFRFetcher {
     private TFRTask mTask;
     private LinkedList<TFRShape> mShapes;
     private Context mContext;
-    private boolean fromFile;
     
     /**
      * 
@@ -40,19 +39,18 @@ public class TFRFetcher {
     public TFRFetcher(Context ctx) {
         mShapes = null;
         mContext = ctx;
-        fromFile = true;
     }
 
     /**
-     * Get TFRs. A very long operation.
+     * Parse TFRs
      */
-    public void fetch() {
+    public void parse() {
         /*
          * TFR is an expensive operation. Do not do if previous is running
          */
         if(mTask != null) {
             if(mTask.getStatus() == AsyncTask.Status.RUNNING) {
-                return;
+                mTask.cancel(true);
             }
         }
         
@@ -60,7 +58,7 @@ public class TFRFetcher {
          * Start the task
          */
         mTask = new TFRTask();
-        mTask.execute(null, null);
+        mTask.execute();
     }
     
     /**
@@ -71,10 +69,6 @@ public class TFRFetcher {
         return mShapes;
     }
 
-    public boolean isFromFile() {
-        return fromFile;
-    }
-    
     /**
      * @author zkhan
      *
@@ -87,14 +81,8 @@ public class TFRFetcher {
          */
         @Override
         protected Boolean doInBackground(Object... vals) {
-
-            /*
-             * Get TFR shapes
-             */
-            boolean metrics[] = new boolean[1];
-            mShapes = NetworkHelper.getTFRShapes(mContext, metrics);
-            fromFile = metrics[0];
+            mShapes = NetworkHelper.getShapesInTFR(mContext);
             return true;
-        }  
+        }
     } 
 }

@@ -22,6 +22,7 @@ import com.ds.avare.utils.NetworkHelper;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -293,7 +294,26 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         TextView tv = (TextView)rowView.findViewById(R.id.textview_textview);
         
         int total = mChildren[group].length;
+        boolean expired = false;
         
+        /*
+         * Inform with red color if any child is expired
+         */
+        for(int child = 0; child < total; child++) {
+            if(mVers[group][child] != null) {
+                if(mVersion != null) {
+                    if(!mVers[group][child].equals(mVersion)) {
+                        expired = true;
+                    }
+                }
+            }
+        }
+        if(expired) {
+            tv.setTextColor(Color.RED);
+        }
+        else {
+            tv.setTextColor(Color.BLACK);
+        }
         tv.setText(mGroups[group] + "(" + total + ")");
         if(isExpanded) {
             tv.setTypeface(null, Typeface.BOLD_ITALIC);
@@ -303,8 +323,11 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         }
         return rowView;
     }
-    @Override
     
+    /**
+     * 
+     */
+    @Override
     public View getChildView(int groupPosition, int childPosition,
             boolean isLastChild, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -324,7 +347,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         TextView textView2 = (TextView)rowView.findViewById(R.id.chart_download_list_state);
         if(mVers[groupPosition][childPosition] != null) {
             textView2.setText(mVers[groupPosition][childPosition]);
-            imgView.setImageBitmap(mOkBitmapHolder.getBitmap());            
+            imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             if(mVersion != null) {
                 if(!mVersion.equals(mVers[groupPosition][childPosition])) {
                     imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());

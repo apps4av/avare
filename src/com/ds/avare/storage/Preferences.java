@@ -44,11 +44,6 @@ public class Preferences {
      */
     public static final int MAX_RECENT = 15; 
     
-    /*
-     * TFR update period for slow and fast updates
-     */
-    public static final long TFR_UPDATE_PERIOD_MS = 60 * 1000;
-    public static final long TFR_GET_PERIOD_MIN = 60;
     
     /*
      * Max memory and max screen size it will support

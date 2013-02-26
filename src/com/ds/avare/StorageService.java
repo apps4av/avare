@@ -25,7 +25,6 @@ import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.weather.WeatherCache;
 
@@ -34,9 +33,7 @@ import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 
 /**
  * @author zkhan
@@ -172,8 +169,9 @@ public class StorageService extends Service {
         mTiles = new TileMap(getApplicationContext());
                 
         mTFRFetcher = new TFRFetcher(getApplicationContext());
+        mTFRFetcher.parse();
         mTimer = new Timer();
-        TimerTask tfrTime = new UpdateTask();
+        TimerTask gpsTime = new UpdateTask();
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
@@ -181,7 +179,7 @@ public class StorageService extends Service {
         /*
          * Monitor TFR every hour.
          */
-        mTimer.scheduleAtFixedRate(tfrTime, 0, Preferences.TFR_UPDATE_PERIOD_MS);
+        mTimer.scheduleAtFixedRate(gpsTime, 0, 60 * 1000);
         
         /*
          * Start GPS, and call all activities registered to listen to GPS
@@ -311,6 +309,14 @@ public class StorageService extends Service {
     }
 
     /**
+     * 
+     * @return
+     */
+    public TFRFetcher getTFRFetcher() {
+        return mTFRFetcher;
+    }
+    
+    /**
      * @return
      */
     public LinkedList<TFRShape> getTFRShapes() {
@@ -426,8 +432,6 @@ public class StorageService extends Service {
      */
     private class UpdateTask extends TimerTask {
         
-        private int counter = -1;
-        
         /* (non-Javadoc)
          * @see java.util.TimerTask#run()
          */
@@ -444,39 +448,9 @@ public class StorageService extends Service {
                 }
             }
 
-            /*
-             * Comes here every TFR_UPDATE_PERIOD_MS (1 minute)
-             * Try to fetch more quickly when we dont have TFRs
-             * When we have TFRs, then fetch slowly for update only.
-             */
-            counter++;
-            Message msg = mHandler.obtainMessage();
-            msg.what = (Integer)0;
-            if(mTFRFetcher.isFromFile() || (mTFRFetcher.getShapes() == null)) {
-                mHandler.sendMessage(msg);
-                return;
-            }
-            else if (mTFRFetcher.getShapes().isEmpty()) {
-                mHandler.sendMessage(msg);
-                return;
-            }
-            else if(((counter % Preferences.TFR_GET_PERIOD_MIN) == 0)) {
-                mHandler.sendMessage(msg);
-                return;
-            }
         }
     }
     
-    /**
-     * This leak warning is not an issue if we do not post delayed messages, which is true here.
-     */
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            mTFRFetcher.fetch();            
-        }
-    };
-
     /**
      * 
      * @param gps

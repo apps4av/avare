@@ -14,10 +14,8 @@ package com.ds.avare.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Date;
@@ -28,8 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -44,8 +40,6 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
-import android.text.Html;
-import android.text.Spanned;
 
 
 /**
@@ -76,7 +70,7 @@ public class NetworkHelper {
         String xml = null;
  
         try {
-            // defaultHttpClient
+            
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost = new HttpPost(url);
  
@@ -111,25 +105,6 @@ public class NetworkHelper {
 
     /**
      * 
-     * @param data
-     */
-    private static void writeToFile(String filename, String data) {
-        File file = new File(filename);
-        try {
-            file.createNewFile();
-            if(file.exists()) {
-                 OutputStream fo = new FileOutputStream(file);              
-                 fo.write(data.getBytes());
-                 fo.close();
-            }
-        }
-        catch (Exception e) {
-            
-        }
-    }
-
-    /**
-     * 
      * @return
      */
     public static String getDonationURL() {
@@ -160,61 +135,20 @@ public class NetworkHelper {
         }
         return null;
     }
-
+    
     /**
      * 
      * @param airport
      * @return
      */
-    public static LinkedList<TFRShape> getTFRShapes(Context ctx, boolean[] metrics) {
+    public static LinkedList<TFRShape> getShapesInTFR(Context ctx) {
         
         /*
          * Create a shapes list
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
-        metrics[0] = true;
-        
-        /*
-         * Do not download if not enabled
-         */
-        if(!(new Preferences(ctx)).shouldTFRAndMETARShow()) {
-            return shapeList;
-        }
-        
-        try {
-            /*
-             * Get weather if the point is on airport
-             */
-            String url = root + "cgi-bin/tfr2.cgi";
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(url);
-            HttpResponse response = client.execute(request);
-            HttpEntity entity = response.getEntity();
-            
-            if(null != entity) {
-                String ent = EntityUtils.toString(entity);
-                if(ent != null) {
-                    Spanned html = Html.fromHtml(ent);
-                    if(null != html) {
-                        String data = html.toString();
-                        if(null != data) {
-                            /*
-                             * Store for offline usage
-                             */
-                            String filename = new Preferences(ctx).mapsFolder() + "/tfr2.txt";
-                            writeToFile(filename, data);
-                            metrics[0] = false;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
 
-        }
-
-
-        String filename = new Preferences(ctx).mapsFolder() + "/tfr2.txt";
+        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
         String data = readFromFile(filename);
         if(null != data) {
             /*
@@ -260,11 +194,9 @@ public class NetworkHelper {
                 shapeList.add(shape);
             }
         }
-
         
         return shapeList;
-    }
-    
+    }  
  
     /**
      * 
