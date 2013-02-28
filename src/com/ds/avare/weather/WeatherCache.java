@@ -30,7 +30,6 @@ import android.os.SystemClock;
 public class WeatherCache {
 
     private HashMap<String, String> mMap;
-    private Context mContext;
     
     /*
      * Drop METAR after 30 minutes.
@@ -42,7 +41,6 @@ public class WeatherCache {
      */
     public WeatherCache(Context context) {
         mMap = new HashMap<String, String>();
-        mContext = context;
     }
 
     /**
@@ -84,7 +82,7 @@ public class WeatherCache {
              * Not found in cache
              */
 
-            weather = NetworkHelper.getMETAR(mContext, id);
+            weather = NetworkHelper.getMETAR(id);
             
             /*
              * This is some sort of network error, return.
@@ -93,7 +91,7 @@ public class WeatherCache {
                 return "";
             }
             
-            weather += NetworkHelper.getTAF(mContext, id);
+            weather += NetworkHelper.getTAF(id);
             weather = WeatherHelper.formatWeather(weather);
 
             /*

@@ -19,7 +19,13 @@ Please
 do not download any charts/plates that you do not need for navigation.
 Downloading only the needed files will help us keep server hosting
 costs down, allowing for the application to be free to all. Thank you.<br>
-<h3 style="text-align: center;">Avare Releases</h3><span style="font-weight: bold;">3.5.5</span> Now METAR/TAF are parsed inside the phone rather than on the server. This reduces load on the server.<br>
+<h3 style="text-align: center;">Avare Releases</h3><span style="font-weight: bold;">3.5.6</span>
+TFRs are in the download list now, allowing manual update of TFRs. TFRs
+will not be updated automatically anymore, as this causes excessive
+load on the server, and may cause excessive data usage on the user
+side. Some references to the apps4av website may not work as we are
+moving the website content to a new hosting location.<br>
+<span style="font-weight: bold;">3.5.5</span> Now METAR/TAF are parsed inside the phone rather than on the server. This reduces load on the server.<br>
 <span style="font-weight: bold;">3.5.4</span>
 Changed the hosting site / acquired a new data hosting server due to hosting issues at the previous server at ipage.com.<br>
 <span style="font-weight: bold;">3.5.3</span> The app can now exit completely based on Preferences option "Leave Running". Read the following help for more details.<br>
@@ -108,11 +114,9 @@ airport, enter part of its facility name to search for it.<br>
 <p style="padding-left: 30px;">Note that a selection list of any similar previously input Destination codes is displayed before you begin to input a new one.</p>
 <p style="padding-left: 30px;"><strong>METAR/TAF conditions</strong>
 may be indicated for each airport in the list. To use this feature,
-ensure that your device has active internet access (WiFi or Data), and
-that in Preferences you have a green checkmark on "Enable TFRs and
-METARS" (Note that if GPS is off, Nearest will assume your most recent
-location). Cloud/visibility conditions for each airport is indicated by dots using
-the FAA standard: White = VFR; Blue = Minimum VFR; Red = IFR; Magenta =
+ensure that your device has active internet access (WiFi or Data). Note that if GPS is off, Nearest will assume your most recent
+location. Cloud/visibility conditions for each airport is indicated by dots using
+the FAA standard: Green = VFR; Blue = Minimum VFR; Red = IFR; Magenta =
 Minimum IFR.</p>
 <p>&#8226;The "<strong>Download</strong>" button in the Menu displays a list
 of charts currently available online for your version of Avare. Just
@@ -219,9 +223,8 @@ location.</p>
 from the FAA are automatically displayed as red graphics on charts by
 default. If you long-press the red indicator at the top-center of a TFR
 shape, text for that TFR will be displayed at the upper-left of the
-screen. When internet access is available Avare automatically searches
-for all TFRs hourly, but will try every minute if unable to find them
-due to lack of internet access or for any other reason.</p>
+screen. It is user's responsibility to update the latest TFRs from the download list under the Databases group.<br>
+</p>
 <p>&#8226;<strong>Runway Extensions</strong> show 6 degree approach to all runways at a given airport set as Destination.<br>
 
 
@@ -433,12 +436,12 @@ storage location Preference.</p>
 Yes, Avare has been successfully installed and used on every Android
 device we have tested. Due to limitations imposed by the Google Play
 store, if you can't install there you may want to try the Avare Alternate
-Installation instructions on our <a href="http://www.mamba.dreamhosters.com/">website</a>.</p>
+Installation instructions on our <a href="http://apps4av.com/">website</a>.</p>
 
 <p><a name="noGplay"></a> <em><strong>* Where can I get Avare other than the Google Play store?</strong></em><br>
 Avare is available on CNet, and a growing number of other sources.
 Please use caution, because some non-Google sources may not be safe or
-secure. You can install Avare directly from us using the Avare Alternate Installation instructions on our&nbsp;<a href="http://www.mamba.dreamhosters.com/">website</a>.</p>
+secure. You can install Avare directly from us using the Avare Alternate Installation instructions on our&nbsp;<a href="http://apps4av.com/">website</a>.</p>
 
 <p><a name="blackScr"></a> <em><strong>* Why do I only see a black screen and no chart?</strong></em><br>
 When you first install Avare, no charts are included, and Sectionals is
@@ -562,16 +565,12 @@ to. Note that the internal GPS in some devices may lose GPS lock if
 Avare is not the active app for more than a few minutes, so you'll want
 to test your device for this in advance of flight.</p>
 
-<p><a name="Tfr"></a><em><strong>* How do I get Avare to display FAA TFRs?</strong></em><br>
-Avare automatically fetches all FAA TFRs hourly when there is internet
-access available (see your Preferences for other available options). If
-internet access is not available or there is some other problem such as
-an outage on the FAA server, Avare will try every minute and then
-revert to hourly again. TFRs are automatically displayed on the chart
-in red by default (see your Preferences for other available options).
+<p><a name="Tfr"></a><em><strong>* How do I get Avare to display FAA TFRs?</strong></em><br>The user can download the latest TFRs from the Download list under Databses. TFRs are automatically displayed on the chart
+in red by default.
 If you long-press the indicator at the top-center of a TFR shape, text
 information (including date/time) for that TFR will be displayed at the
-upper-left of the screen.</p>
+upper-left of the screen. Apps4av servers update TFRs every top of the hour.<br>
+</p>
 
 <p><a name="trackLine"></a><em><strong>* How do I use the Course line?</strong></em><br>
 It is provided primarily for route planning, such as to avoid obstacles

@@ -202,14 +202,7 @@ public class NetworkHelper {
      * @param airport
      * @return
      */
-    public static String getMETAR(Context ctx, String airport) {
-        
-        /*
-         * Do not download if not enabled
-         */
-        if(!(new Preferences(ctx)).shouldTFRAndMETARShow()) {
-            return null;
-        }
+    public static String getMETAR(String airport) {
         
         /*
          * Get TAF
@@ -268,15 +261,8 @@ public class NetworkHelper {
      * @param airport
      * @return
      */
-    public static String getTAF(Context ctx, String airport) {
+    public static String getTAF(String airport) {
         
-        /*
-         * Do not download if not enabled
-         */
-        if(!(new Preferences(ctx)).shouldTFRAndMETARShow()) {
-            return "";
-        }
-
         /*
          * Get TAF
          */

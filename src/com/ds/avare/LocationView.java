@@ -543,25 +543,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         /*
          * Draw TFRs, weather
-         */
-        if(mPref.shouldTFRAndMETARShow()) {
-            
-            LinkedList<TFRShape> shapes = null;
-            if(null != mService) {
-                shapes = mService.getTFRShapes();
-            }
-            if(null != shapes) {
-                mPaint.setColor(Color.RED);
-                mPaint.setStrokeWidth(8);
-                mPaint.setShadowLayer(0, 0, 0, 0);
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    TFRShape cshape = shapes.get(shape);
-                    if(cshape.isVisible()) {
-                        /*
-                         * Find offsets of TFR then draw it
-                         */
-                        cshape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
-                    }
+         */            
+        LinkedList<TFRShape> shapes = null;
+        if(null != mService) {
+            shapes = mService.getTFRShapes();
+        }
+        if(null != shapes) {
+            mPaint.setColor(Color.RED);
+            mPaint.setStrokeWidth(8);
+            mPaint.setShadowLayer(0, 0, 0, 0);
+            for(int shape = 0; shape < shapes.size(); shape++) {
+                TFRShape cshape = shapes.get(shape);
+                if(cshape.isVisible()) {
+                    /*
+                     * Find offsets of TFR then draw it
+                     */
+                    cshape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }
             }
         }
@@ -689,22 +686,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Draw TFRs, weather
          */
-        if(mPref.shouldTFRAndMETARShow()) {
-            /*
-             * Write weather report
-             * Use a static layout for showing as overlay and formatted to fit
-             */
-            float top = getHeight() / mTextDiv * 2 + mFontHeight;
-            if(null != mWeatherLayout) {
-                mPaint.setColor(mWeatherColor);
-                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mWeatherLayout.getHeight() + top, mPaint);
-                canvas.save();
-                canvas.translate(SHADOW + 2, top);
-                mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-                mWeatherLayout.draw(canvas);
-                canvas.restore();        
-            }
+        /*
+         * Write weather report
+         * Use a static layout for showing as overlay and formatted to fit
+         */
+        float top = getHeight() / mTextDiv * 2 + mFontHeight;
+        if(null != mWeatherLayout) {
+            mPaint.setColor(mWeatherColor);
+            mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+            canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mWeatherLayout.getHeight() + top, mPaint);
+            canvas.save();
+            canvas.translate(SHADOW + 2, top);
+            mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
+            mWeatherLayout.draw(canvas);
+            canvas.restore();        
         }
     }
 
@@ -1337,25 +1332,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }
         
-            if(mPref.shouldTFRAndMETARShow()) {
+            /*
+             * If weather shows
+             */
+            if(text == null) {
+                if(null != airport) {
+                    new WeatherTask().execute(airport);
+                }
+            }
+            else {
                 /*
-                 * If weather shows
+                 * Take TFR text over weather text
                  */
-                if(text == null) {
-                    if(null != airport) {
-                        new WeatherTask().execute(airport);
-                    }
-                }
-                else {
-                    /*
-                     * Take TFR text over weather text
-                     */
-                    mTextPaint.setColor(Color.WHITE);
-                    mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
-                            Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
-                }
-            }           
-        }
+                mTextPaint.setColor(Color.WHITE);
+                mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
+                        Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
+            }
+        }           
     }
 
 

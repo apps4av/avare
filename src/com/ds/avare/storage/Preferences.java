@@ -263,14 +263,6 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean shouldTFRAndMETARShow() {
-        return(mPref.getBoolean(mContext.getString(R.string.TFRAndMETAR), false));
-    }
-
-    /**
-     * 
-     * @return
-     */
     public boolean shouldScreenStayOn() {
         return(mPref.getBoolean(mContext.getString(R.string.ScreenOn), true));
     }

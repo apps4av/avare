@@ -68,9 +68,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
     <string name="ChartTypeSummary">&quot;Sélectionner un type de carte pour la navigation&quot;</string>
     <string name="weather">&quot;Météo&quot;</string>
-	<string name="TFRAndMETAR">&quot;TFRs et METARs&quot;</string>
-    <string name="TFRAndMETARLabel">&quot;Activer les TFRs et METARs&quot;</string>
-    <string name="TFRAndMETARSummary">&quot;Sélectionner pour afficher les graphiques TFR et les textes METAR (connexion internet requise)&quot;</string>
 	<string name="TFRReceived">&quot;TFR reçus&quot;</string>
 	<string name="databases">&quot;Bases de données (requises)&quot;</string>
     <string name="ValidDest">&quot;Entrer une destination valide&quot;</string>
