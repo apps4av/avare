@@ -139,8 +139,7 @@ public class Download extends Observable {
             String path = sUrl[0];
             mName = sUrl[1];
             byte data[] = new byte[blocksize];
-            NetworkHelper helper = new NetworkHelper();
-            mVersion = helper.getVersion();
+            mVersion = NetworkHelper.getVersion(mName);
             int fileLength;
                         
             try {
@@ -170,7 +169,7 @@ public class Download extends Observable {
                  * Path with file name on local storage
                  */
                 String zipfile = path + "/" + mName + ".zip";
-                String netfile = helper.getUrl(mName + ".zip");
+                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion);
 
                 /* 
                  * Download the file

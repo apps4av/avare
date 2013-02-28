@@ -45,6 +45,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private BitmapHolder mUpdateBitmapHolder;
     private BitmapHolder mNoneBitmapHolder;
     private String mVersion;
+    private String mVersionTFR;
     private String[] mGroups;
     private String[][] mChildrenFiles;
     private String[][] mChildren;
@@ -141,8 +142,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            NetworkHelper helper = new NetworkHelper();
-            mVersion = helper.getVersion();
+            mVersion = NetworkHelper.getVersion("");
+            mVersionTFR = NetworkHelper.getVersion(mContext.getString(R.string.TFRs));
                        
             /*
              * Always get version in BG because its a network operation
@@ -187,25 +188,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      */
     public void refresh() {
         new ViewTask().execute();
-    }
-
-    /**
-     * Check if any of the charts are old
-     */
-    public void checkOld() {
-        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
-            for(int child = 0; child < mVers[group].length; child++) {
-                if(mVers[group][child] != null) {
-                    if(mVersion != null) {
-                        if(!mVersion.equals(mVers[group][child])) {
-                            mChecked[group][child] = true;
-                            continue;
-                        }
-                    }
-                }
-                mChecked[group][child] = false;
-            }
-        }
     }
 
     /**
@@ -301,8 +283,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                if(mVersion != null) {
-                    if(!mVers[group][child].equals(mVersion)) {
+                String vers = mChildrenFiles[group][child].equals(mContext.getString(R.string.TFRs)) ? mVersionTFR : mVersion;
+                if(vers != null) {
+                    if(!mVers[group][child].equals(vers)) {
                         expired = true;
                     }
                 }
@@ -348,8 +331,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         if(mVers[groupPosition][childPosition] != null) {
             textView2.setText(mVers[groupPosition][childPosition]);
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
-            if(mVersion != null) {
-                if(!mVersion.equals(mVers[groupPosition][childPosition])) {
+            String vers = mChildrenFiles[groupPosition][childPosition].equals(mContext.getString(R.string.TFRs)) ? mVersionTFR : mVersion;
+            if(vers != null) {
+                if(!vers.equals(mVers[groupPosition][childPosition])) {
                     imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());
                 }
             }

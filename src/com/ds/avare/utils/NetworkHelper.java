@@ -49,7 +49,6 @@ import android.content.Context;
  */
 public class NetworkHelper {
     
-    private String mVersion = null;
     
     private static final String root = "http://www.mamba.dreamhosters.com/";
     
@@ -332,15 +331,21 @@ public class NetworkHelper {
      * @param file
      * @return
      */
-    public String getUrl(String file) {
-        return(root + mVersion + "/" + file);
+    public static String getUrl(String file, String vers) {
+        if(file.equals("TFRs.zip")) {
+            return(root + "/" + file);
+        }
+        return(root + vers + "/" + file);
     }
     
     /**
      * 
      * @return
      */
-    public String getVersion() {
+    public static String getVersion(String name) {
+        
+        String vers = null;
+        
         /*
          * Do this on background task if possible
          */
@@ -350,15 +355,21 @@ public class NetworkHelper {
              * Location of file on internet
              * Download which is current folder?
              */
-            URL url = new URL(root + "update.txt");
+            URL url;
+            if(name.equals("TFRs")) {
+                url = new URL(root + "TFRs_update.txt");
+            }
+            else {
+                url = new URL(root + "update.txt");                
+            }
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()), blocksize);
 
-            mVersion = in.readLine();
+            vers = in.readLine();
             in.close();
         }
         catch (Exception e) {
         }
-        return mVersion;
+        return vers;
     }
     
     /**

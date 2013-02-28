@@ -19,7 +19,6 @@ import java.util.Observer;
 
 import com.ds.avare.R;
 import com.ds.avare.network.Download;
-import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
