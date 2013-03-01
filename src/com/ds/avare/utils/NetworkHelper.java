@@ -83,25 +83,6 @@ public class NetworkHelper {
         return xml;
     }
     
-    /*
-     * Delete a folder
-     */
-    static void deleteRecursive(File fileOrDirectory, Context ctx) {
-        if (fileOrDirectory.isDirectory()) {
-            for (File child : fileOrDirectory.listFiles()) {
-                deleteRecursive(child, ctx);
-            }
-        }
-        /*
-         * Do not delete database
-         */
-        if(fileOrDirectory.getName().equals("database") || 
-                fileOrDirectory.getName().equals(ctx.getString(R.string.DatabaseName))) {
-            return;
-        }
-        fileOrDirectory.delete();
-    }
-
     /**
      * 
      * @return

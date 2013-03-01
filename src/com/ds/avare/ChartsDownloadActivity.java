@@ -261,7 +261,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                  * Throw a confirm dialog
                  */
                 new AlertDialog.Builder(ChartsDownloadActivity.this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.important_red)
                 .setTitle(getString(R.string.download) + " " + getString(R.string.Failed))
                 .setPositiveButton(R.string.OK, null)
                 .show();

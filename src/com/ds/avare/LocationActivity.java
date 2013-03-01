@@ -150,7 +150,7 @@ public class LocationActivity extends Activity implements Observer {
          * Throw a confirm dialog
          */
         new AlertDialog.Builder(this)
-        .setIcon(android.R.drawable.ic_dialog_alert)
+        .setIcon(R.drawable.important_red)
         .setTitle(R.string.Exit)
         .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
 
@@ -337,7 +337,7 @@ public class LocationActivity extends Activity implements Observer {
          */
         if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
             new AlertDialog.Builder(this)
-            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setIcon(R.drawable.important_red)
             .setTitle(R.string.GPSEnable)
             .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
 
@@ -425,7 +425,7 @@ public class LocationActivity extends Activity implements Observer {
             if(mService.shouldWarn()) {
              
                 new AlertDialog.Builder(LocationActivity.this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.important_red)
                 .setTitle(R.string.WarningMsg)
                 .setMessage(R.string.Warning)
                 .setCancelable(false)

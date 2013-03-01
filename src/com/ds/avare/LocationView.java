@@ -119,7 +119,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Task that would draw tiles on bitmap.
      */
     private TileDrawTask                mTileDrawTask; 
-    
+
+    /**
+     * Task that finds closets airport.
+     */
+    private ClosestAirportTask          mClosestTask; 
+
     /**
      * Storage service that contains all the state
      */
@@ -1192,39 +1197,68 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
-    
+
     /**
      * @author zkhan
      *
      */
-    private class WeatherTask extends AsyncTask<Object, Void, Boolean> {
-
-        private String weather;
-        private String airport;
-
+    private class ClosestAirportTask extends AsyncTask<Object, String, String> {
+        private Double lon;
+        private Double lat;
+        private String text;
+        
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected Boolean doInBackground(Object... vals) {
-            
-            airport = (String)vals[0];
-            if(null == mService) {
-                weather = null;
-                return false;
+        protected String doInBackground(Object... vals) {
+            String airport = null;
+            String weather = null;
+            lon = (Double)vals[0];
+            lat = (Double)vals[1];
+            text = (String)vals[2];
+            boolean found = false;
+            if(null != mService) {
+                airport = mService.getDBResource().findClosestAirportID(lon, lat);
             }
-            if(null != airport) {
+            if(null == airport) {
+                airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
+            }
+            else {
+                found = true;
+            }
+            publishProgress(airport);            
+            
+            /*
+             * Dont wait to weather to arrive from Internet to notify user of airport
+             */
+ 
+            if((null == mService) || (!found)) {
+                weather = null;
+            }
+            else {
+                /*
+                 * Do weather now.
+                 */
                 weather = mService.getWeatherCache().get(airport);
             }
-            return true;
+            return weather;
         }
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
-        protected void onPostExecute(Boolean result) {
-            if(null != weather) {
+        protected void onPostExecute(String weather) {
+            if(text != null) {
+                /*
+                 * Take TFR text over weather text
+                 */
+                mTextPaint.setColor(Color.WHITE);
+                mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
+                        Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
+            }
+            else if(null != weather) {
                 String tokens[] = weather.split(",");
                 if(tokens.length >= 2) {
                     mWeatherColor = WeatherHelper.metarColor(tokens[0]);
@@ -1235,9 +1269,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             invalidate();
         }
+        
+        /**
+         * 
+         */
+        @Override
+        protected void onProgressUpdate(String... result) {
+            if(null != mGestureCallBack) {
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, result[0]);
+            }
+        }
     }
 
-    
+            
     /**
      * @author zkhan
      *
@@ -1314,41 +1358,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
 
             /*
-             * Get airport touched on, but it can block and not be in BG task because user
-             * is pressing on a point and it does not matter if zoom/pan hangs for a fraction sec.
+             * Get airport touched on
              */
-            String airport = null;
-            if(null != mService) {
-                airport = mService.getDBResource().findClosestAirportID(lon2, lat2);
-                if((null != airport) && (null != mGestureCallBack)) {
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
-                }
-                if((null == airport) && (null != mGestureCallBack)) {
-                    /*
-                     * Not found; send lat/lon
-                     */
-                    airport = "" + Helper.truncGeo(lat2) + "&" + Helper.truncGeo(lon2);
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
-                }
+            if(null != mClosestTask) {
+                mClosestTask.cancel(true);
             }
-        
-            /*
-             * If weather shows
-             */
-            if(text == null) {
-                if(null != airport) {
-                    new WeatherTask().execute(airport);
-                }
-            }
-            else {
-                /*
-                 * Take TFR text over weather text
-                 */
-                mTextPaint.setColor(Color.WHITE);
-                mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
-                        Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
-            }
-        }           
+            mClosestTask = new ClosestAirportTask();
+            mClosestTask.execute(lon2, lat2, text);
+        }
     }
 
 
