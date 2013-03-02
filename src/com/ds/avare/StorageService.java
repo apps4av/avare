@@ -270,8 +270,6 @@ public class StorageService extends Service {
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        
         /*
          * If we ever exit, reclaim memory
          */
@@ -279,6 +277,7 @@ public class StorageService extends Service {
         
         if(null != mDiagramBitmap) {
             mDiagramBitmap.recycle();
+            mDiagramBitmap = null;
         }
         
         if(mTimer != null) {
@@ -287,6 +286,7 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
+        super.onDestroy();
     }
     
     public TileMap getTiles() {

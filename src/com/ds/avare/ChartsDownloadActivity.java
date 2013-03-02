@@ -59,6 +59,11 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private Button mDLButton;
     
     /**
+     * Shows warning message about Avare
+     */
+    private AlertDialog mAlertDialog;
+
+    /**
      * 
      */
     @Override
@@ -228,6 +233,14 @@ public class ChartsDownloadActivity extends Activity implements Observer {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
+        
+        if(mAlertDialog != null) {
+            try {
+                mAlertDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
     }
      
     /**
@@ -260,11 +273,21 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 /*
                  * Throw a confirm dialog
                  */
-                new AlertDialog.Builder(ChartsDownloadActivity.this)
-                .setIcon(R.drawable.important_red)
-                .setTitle(getString(R.string.download) + " " + getString(R.string.Failed))
-                .setPositiveButton(R.string.OK, null)
-                .show();
+                
+                mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed));
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+    
+                mAlertDialog.show();
             }
             if(Download.NONEED == result) {
                 try {
