@@ -120,4 +120,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrackUp">&quot;TU&quot;</string>
     <string name="SelectPlate">&quot;Sélectionner un diagramme&quot;</string>
     <string name="DownloadDB">&quot;Le ficher requis est manquant et doit être téléchargé.&quot;</string>
+    <string name="Agree">&quot;J'accepte&quot;</string>
+    <string name="LeaveRunning">&quot;Laisser ouvert&quot;</string>
+    <string name="LeaveRunningLabel">&quot;Laisser ouvert&quot;</string>
+    <string name="LeaveRunningSummary">&quot;Selectionner pour laisser en veille lorsque l'on quitte l'application (au lieu de terminer l'application)&quot;</string>
+    <string name="TFRs">&quot;TFRs&quot;</string>
 </resources>
