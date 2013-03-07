@@ -262,6 +262,20 @@ public class ChartsDownloadActivity extends Activity implements Observer {
 		@Override
         public void handleMessage(Message msg) {
             int result = msg.what;
+            
+            /*
+             * XXX: Do not know why it happens. Maybe the activity gets restarted, and then
+             * download sends a message as it was a BG task.  
+             */
+            if(null == mName) {
+                try {
+                    mProgressDialog.dismiss();
+                }
+                catch (Exception e) {
+                }                
+                return;
+            }
+            
             if(Download.FAILED == result) {
                 try {
                     mProgressDialog.dismiss();
@@ -324,8 +338,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 }
                 catch (Exception e) {                    
                 }
-            }
-            
+            }           
         }
     };
 }

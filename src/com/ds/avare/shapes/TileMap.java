@@ -244,7 +244,10 @@ public class TileMap {
     public void recycleBitmaps() {
         for(int tile = 0; tile < numTiles2; tile++) {
             mBitmaps[tile].recycle();
+            mBitmaps[tile] = null;        
         }
+        mBitmaps = null;
+        mapA = mapB = null;
     }
     
     /**

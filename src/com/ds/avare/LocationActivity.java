@@ -415,10 +415,7 @@ public class LocationActivity extends Activity implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-            /*
-             * Must do this here since bitmap needs to be reclaimed
-             */
-            mLocationView.setTiles(mService.getTiles());
+            mService.getTiles().setOrientation();
             
             /*
              * Check if database needs upgrade

@@ -26,7 +26,6 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
-import com.ds.avare.shapes.TileMap;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -174,9 +173,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TrackShape                  mTrackShape;
     
     /*
-     * Max tiles in each dimension.
+     * Weather.
      */
-    private TileMap                      mTiles;
     private int                         mWeatherColor;
     
     /*
@@ -185,19 +183,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Projection                  mPointProjection;
     
     /*
-     * When the last time around obstacles were calculated
-     */
-    private Long                        mObstaclesLastTime;
-    
-    /*
      * Obstacles
      */
     private LinkedList<Obstacle>        mObstacles;
-    
-    /*
-     * Obstacles task
-     */
-    private ObstaclesTask              mObstaclesTask;
     
     /*
      * If showing track up
@@ -214,11 +202,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
-    
-    /*
-     * Periodic async task
-     */
-    private static final long PERIODIC_QUERY_TIME = 10 * 1000; 
     
     /**
      * @param context
@@ -243,7 +226,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
-        mObstaclesLastTime = System.currentTimeMillis();
         mTrackUp = false;
         
         mPref = new Preferences(context);
@@ -335,7 +317,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
      */
     public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return mTiles;
+        return this;
     }
 
     /* (non-Javadoc)
@@ -429,7 +411,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
         
-        if(null == mTiles) {
+        if(null == mService) {
             return;                
         }
 
@@ -456,7 +438,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Always honor the latest query
                  */
-                mTileDrawTask.cancel(true);
+                return;
             }
         }
 
@@ -491,11 +473,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawTiles(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
   
-        if(null != mTiles) {
+        if(null != mService) {
             
-            for(int tilen = 0; tilen < mTiles.getTilesNum(); tilen++) {
+            for(int tilen = 0; tilen < mService.getTiles().getTilesNum(); tilen++) {
                 
-                BitmapHolder tile = mTiles.getTile(tilen);
+                BitmapHolder tile = mService.getTiles().getTile(tilen);
                 
                 /*
                  * Scale, then move under the plane which is at center
@@ -518,7 +500,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 tile.getTransform().postTranslate(
                         getWidth()  / 2.f
                         - BitmapHolder.WIDTH  / 2.f * mScale.getScaleFactor() 
-                        + ((tilen % mTiles.getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mTiles.getXTilesNum() / 2)) * mScale.getScaleFactor()
+                        + ((tilen % mService.getTiles().getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mService.getTiles().getXTilesNum() / 2)) * mScale.getScaleFactor()
                         + mPan.getMoveX() * mScale.getScaleFactor()
                         + mPan.getTileMoveX() * BitmapHolder.WIDTH * mScale.getScaleFactor()
                         - (float)mMovement.getOffsetLongitude() * mScale.getScaleFactor(),
@@ -526,7 +508,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         getHeight() / 2.f 
                         - BitmapHolder.HEIGHT / 2.f * mScale.getScaleCorrected()  
                         + mPan.getMoveY() * mScale.getScaleCorrected()
-                        + ((tilen / mTiles.getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mTiles.getYTilesNum() / 2)) * mScale.getScaleCorrected() 
+                        + ((tilen / mService.getTiles().getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mService.getTiles().getYTilesNum() / 2)) * mScale.getScaleCorrected() 
                         + mPan.getTileMoveY() * BitmapHolder.HEIGHT * mScale.getScaleCorrected()
                         - (float)mMovement.getOffsetLatitude() * mScale.getScaleCorrected());
                 
@@ -938,27 +920,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         dbquery(false);
         
         
-        /*
-         * Query obstacles every periodic time
-         */
-        if(Math.abs(System.currentTimeMillis() - mObstaclesLastTime) > PERIODIC_QUERY_TIME) {
-            mObstaclesLastTime = System.currentTimeMillis();
-            if(mPref.shouldShowObstacles()) {
-                if(null != mObstaclesTask) {
-                    if (!mObstaclesTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
-                        /*
-                         * Always honor the latest query
-                         */
-                        mObstaclesTask.cancel(true);
-                    }
-                }
-                mObstaclesTask = new ObstaclesTask();
-                mObstaclesTask.execute(params.getLongitude(), params.getLatitude(), (int)params.getAltitude());
-            }
-            else {
-                mObstacles = null;
-            }
-        }
     }
 
     
@@ -1004,28 +965,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = status;
         postInvalidate();
     }
-
-    /**
-     * Set tiles to use. Set to null at finish. 
-     * @param xtiles
-     * @param ytiles
-     */
-    public void setTiles(TileMap tiles) {
-        if(null == tiles) {
-            if(null != mTileDrawTask) {
-                if (!mTileDrawTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
-                    /*
-                     * Always honor the latest query
-                     */
-                    mTileDrawTask.cancel(true);
-                }
-            }
-        }
-        else {
-            tiles.setOrientation();
-        }
-        mTiles = tiles;
-    }
+    
     
 
     /**
@@ -1080,7 +1020,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return false;
             }
             
-            if(null == mTiles) {
+            if(null == mService) {
                 return false;
             }
             
@@ -1088,11 +1028,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Neighboring tiles with center and pan
              */
             int i = 0;
-            tileNames = new String[mTiles.getTilesNum()];
-            for(int tiley = -(int)(mTiles.getYTilesNum() / 2) ; 
-                    tiley <= (mTiles.getYTilesNum() / 2); tiley++) {
-                for(int tilex = -(int)(mTiles.getXTilesNum() / 2); 
-                        tilex <= (mTiles.getXTilesNum() / 2) ; tilex++) {
+            tileNames = new String[mService.getTiles().getTilesNum()];
+            for(int tiley = -(int)(mService.getTiles().getYTilesNum() / 2) ; 
+                    tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
+                for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
+                        tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
                     tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
                 }
             }
@@ -1100,7 +1040,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Load tiles, draw in UI thread
              */
-            mTiles.reload(tileNames);
+            mService.getTiles().reload(tileNames);
             
             /*
              * Update TFR shapes if they exist in this area.
@@ -1129,10 +1069,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Back buffer to front buffer
                  */
-                if(null == mTiles) {
+                if(null == mService) {
                     return;
                 }
-                mTiles.flip();
+                mService.getTiles().flip();
                 
                 /*
                  * And show message if we leave current area to double touch.
@@ -1161,42 +1101,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }    
     
     
-    /**
-     * @author zkhan
-     *
-     */
-    private class ObstaclesTask extends AsyncTask<Object, Void, Boolean> {
-
-        LinkedList<Obstacle> obs;
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Object... vals) {
-            
-            if(null == mService || null == mGpsParams) {
-                return false;
-            }
-            obs = mService.getDBResource().findObstacles(
-                    (Double)vals[0],
-                    (Double)vals[1],
-                    (Integer)vals[2]);
-            return true;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if(true == result) {
-                mObstacles = obs;
-            }
-            invalidate();
-        }
-    }
-
 
     /**
      * @author zkhan

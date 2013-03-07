@@ -279,6 +279,7 @@ public class StorageService extends Service {
             mDiagramBitmap.recycle();
             mDiagramBitmap = null;
         }
+        mTiles = null;
         
         if(mTimer != null) {
             mTimer.cancel();
@@ -287,6 +288,9 @@ public class StorageService extends Service {
             mGps.stop();
         }
         super.onDestroy();
+        
+        System.runFinalizersOnExit(true);
+        System.exit(0);
     }
     
     public TileMap getTiles() {

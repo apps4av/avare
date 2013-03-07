@@ -185,8 +185,9 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Ohio</item>
 		<item>Oklahoma</item>
 		<item>Oregon</item>
-		<item>Pennsylvania</item>
-		<item>Rhode Island</item>
+        <item>Pennsylvania</item>
+        <item>Puerto Rico</item>
+        <item>Rhode Island</item>
 		<item>South Carolina</item>
 		<item>South Dakota</item>
 		<item>Tennessee</item>
@@ -363,6 +364,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>OK</item>
 		<item>OR</item>
 		<item>PA</item>
+		<item>PR</item>
 		<item>RI</item>
 		<item>SC</item>
 		<item>SD</item>

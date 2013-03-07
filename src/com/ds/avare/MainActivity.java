@@ -142,8 +142,13 @@ public class MainActivity extends TabActivity {
          */
         Preferences mPref = new Preferences(this);
         if(!mPref.shouldLeaveRunning()) {
-            Intent intent = new Intent(this, StorageService.class);
-            stopService(intent);
+            if (isFinishing()) {
+                /*
+                 * Do not kill on orientation change
+                 */
+                Intent intent = new Intent(this, StorageService.class);
+                stopService(intent);
+            }
         }
         super.onDestroy();
     }
