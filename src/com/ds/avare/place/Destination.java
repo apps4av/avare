@@ -375,6 +375,7 @@ public class Destination extends Observable {
 	        mDataSource.findDestination(mName, mDestType, mParams, mRunways);
 
 	        if(mDestType.equals(BASE)) {
+	            
 	            /*
 	             * Found destination extract its airport plates
 	             */
@@ -384,11 +385,31 @@ public class Destination extends Observable {
 	                }
 	            };
 	            mPlateFound = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
+	            
+                /*
+                 * Find A/FD
+                 */
+                final String afd = mDataSource.findAFD(mName);
+                filter = new FilenameFilter() {
+                    public boolean accept(File directory, String fileName) {
+                        return fileName.matches(afd + ".*");
+                    }
+                };
+                String afdPages[] = null;
+                int afdLen = 0;
+                if(null != afd) {
+                    afdPages = new File(mPref.mapsFolder() + "/afd/").list(filter);
+                    if(null != afdPages) {
+                        afdLen = afdPages.length;
+                        java.util.Arrays.sort(afdPages);
+                    }
+                }
+                
 	            if(null != mPlateFound) {
 	                /*
 	                 * Add first empty row
 	                 */
-	                String tmp[] = new String[mPlateFound.length + 1];
+	                String tmp[] = new String[mPlateFound.length + 1 + afdLen];
 	                tmp[0] = "";
 	                /*
 	                 * Sort first
@@ -403,6 +424,15 @@ public class Destination extends Observable {
                         tmp[plate + 1] = mPref.mapsFolder() + "/plates/" + mName + "/" +
                                 tokens[0];
     	            }
+                    for(int plate = 0; plate < afdLen; plate++) {
+                        /*
+                         * Make sure it conforms to XXXXXX.jpg
+                         * Keep one empty space in front for list header
+                         */
+                        String tokens[] = afdPages[plate].split(".jpg");
+                        tmp[plate + 1 + mPlateFound.length] = mPref.mapsFolder() + "/afd/" +
+                                tokens[0];              
+                    }
     	            mPlateFound = tmp;
 	            }
 	        }

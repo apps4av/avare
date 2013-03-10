@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
@@ -97,7 +96,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
-    private static final String TABLE_OBSTACLES = "obstacles";
+    private static final String TABLE_AFD = "afd";
 
     private static final String TILE_NAME = "name";
        
@@ -706,35 +705,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return mCenterTile;        
     }
     
+    
     /**
-     * 
-     * @param lon
-     * @param lat
-     * @param height
-     * @return
+     * Search A/FD name for this airport
+     * @param airportId
+     * @return A/FD
      */
-    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
+    public String findAFD(String airportId) {
         
-        LinkedList<Obstacle> list = new LinkedList<Obstacle>();
+        String ret = null;
+        String qry = "select File from " + TABLE_AFD + " where " + LOCATION_ID_DB + "==" + "\"" + airportId + "\"";
         
-        /*
-         * Find obstacles 200 feet below or higher in lon/lat radius
-         */
-        Cursor cursor = doQuery("select * from " + TABLE_OBSTACLES + " where (height > " + height + ") and " +
-                "(lat > " + (lat - Obstacle.RADIUS) + ") and (lat < "  + (lat + Obstacle.RADIUS) + ") and " +
-                "(lon > " + (lon - Obstacle.RADIUS) + ") and (lon < "  + (lon + Obstacle.RADIUS) + ");");
-        
+        Cursor cursor = doQuery(qry);
+
         try {
             if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    list.add(new Obstacle(cursor.getFloat(0), cursor.getFloat(1), cursor.getInt(2)));
+                if(cursor.moveToNext()) {
+                    ret = cursor.getString(0);
                 }
             }
         }
         catch (Exception e) {
         }
-        
         closes(cursor);
-        return list;
+        
+        return ret;
     }
+
 }

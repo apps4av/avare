@@ -20,13 +20,26 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>TAC Charts</item>
         <item>WAC Charts</item>
         <item>IFR Low Enroute Charts</item>
+        <item>A/FD</item>
     </string-array>
     
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>@string/TFRs</item>
     </string-array>
-    
+
+    <string-array name="resNameAFD">
+        <item>A/FD NE</item>
+        <item>A/FD NC</item>
+        <item>A/FD NW</item>
+        <item>A/FD SE</item>
+        <item>A/FD SC</item>
+        <item>A/FD SW</item>
+        <item>A/FD EC</item>
+        <item>A/FD AK</item>
+        <item>A/FD Pacific</item>
+    </string-array>
+        
     <string-array name="resNameIFRLE">
         <item>IFR Low Enroute NE</item>
         <item>IFR Low Enroute NC</item>
@@ -201,7 +214,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 	</string-array>
     <string-array name="resFilesDatabase">
-        <item>databases_v2</item>
+        <item>databases</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -212,6 +225,19 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ELUS_SC</item>
         <item>ELUS_SW</item>
     </string-array>
+    
+    <string-array name="resFilesAFD">
+        <item>AFD_NE</item>
+        <item>AFD_NC</item>
+        <item>AFD_NW</item>
+        <item>AFD_SE</item>
+        <item>AFD_SC</item>
+        <item>AFD_SW</item>
+        <item>AFD_EC</item>
+        <item>AFD_AK</item>
+        <item>AFD_PAC</item>
+    </string-array>
+    
     <string-array name="resFilesWAC">
         <item>CC-9</item>
         <item>CD-11</item>

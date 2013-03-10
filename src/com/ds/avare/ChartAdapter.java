@@ -60,7 +60,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_TAC = 3;
     private static final int GROUP_WAC = 4;
     private static final int GROUP_IFRLE = 5;
-    private static final int GROUP_NUM = 6;
+    private static final int GROUP_AFD = 6;
+    private static final int GROUP_NUM = 7;
     
     /**
      * @param context
@@ -84,6 +85,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TAC] = context.getResources().getStringArray(R.array.resNameTAC);
         mChildren[GROUP_WAC] = context.getResources().getStringArray(R.array.resNameWAC);
         mChildren[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resNameIFRLE);
+        mChildren[GROUP_AFD] = context.getResources().getStringArray(R.array.resNameAFD);
         /*
          * Assign children file names
          */
@@ -94,6 +96,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
         mChildrenFiles[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mChildrenFiles[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
+        mChildrenFiles[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
         
         /*
          * Allocate space for versions
@@ -106,6 +109,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
         mVers[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mVers[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
+        mVers[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
         
         /*
          * Allocate space for checked charts
@@ -117,6 +121,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_TAC] = new boolean[mVers[GROUP_TAC].length];
         mChecked[GROUP_WAC] = new boolean[mVers[GROUP_WAC].length];
         mChecked[GROUP_IFRLE] = new boolean[mVers[GROUP_IFRLE].length];
+        mChecked[GROUP_AFD] = new boolean[mVers[GROUP_AFD].length];
         
         /*
          * Get various bitmaps
