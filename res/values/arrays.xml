@@ -214,7 +214,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 	</string-array>
     <string-array name="resFilesDatabase">
-        <item>databases</item>
+        <item>databases_v1</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
