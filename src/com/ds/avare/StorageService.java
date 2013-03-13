@@ -73,6 +73,16 @@ public class StorageService extends Service {
      * Store this
      */
     private Pan mPan;
+    
+    /*
+     * Plate showing
+     */
+    private int mPlateIndex;
+    
+    /*
+     * A/FD showing
+     */
+    private int mAfdIndex;
 
     /**
      * Area around us
@@ -175,6 +185,8 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
+        mPlateIndex = 0;
+        mAfdIndex = 0;
                 
         /*
          * Monitor TFR every hour.
@@ -346,6 +358,40 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
+        mPlateIndex = 0;
+        mAfdIndex = 0;
+    }
+
+    /**
+     * 
+     * @param index
+     */
+    public void setPlateIndex(int index) {
+        mPlateIndex = index;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getPlateIndex() {
+        return mPlateIndex;
+    }
+
+    /**
+     * 
+     * @param index
+     */
+    public void setAfdIndex(int index) {
+        mAfdIndex = index;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getAfdIndex() {
+        return mAfdIndex;
     }
 
     /**

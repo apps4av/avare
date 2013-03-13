@@ -229,7 +229,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton, AnimateButton.DIRECTION_R_L);
                     a.animate(true);
                 }
             }
@@ -242,13 +242,10 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                mDestButton.setText(getString(R.string.Destination));
-                AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, null);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, null);
-                a.animate(true);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton, AnimateButton.DIRECTION_L_R);
+                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, null, AnimateButton.DIRECTION_L_R);
+                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, null, AnimateButton.DIRECTION_L_R);
+                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, null, AnimateButton.DIRECTION_L_R);
                 b.animate(true);
                 d.animate(true);
                 e.animate(true);

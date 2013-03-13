@@ -42,7 +42,7 @@ public class Preferences {
     /*
      * MAX number of elements
      */
-    public static final int MAX_RECENT = 15; 
+    public static final int MAX_RECENT = 30; 
     
     
     /*

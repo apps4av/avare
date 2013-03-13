@@ -29,14 +29,19 @@ public class AnimateButton {
     private Context mContext;
     private Button mButton;
     private View mReplaces;
+    private int mDir;
+    
+    public static final int DIRECTION_L_R = 1;
+    public static final int DIRECTION_R_L = 2;
     
     /**
      * 
      */
-    public AnimateButton(Context ctx, Button b, View replaces) {
+    public AnimateButton(Context ctx, Button b, View replaces, int direction) {
         mContext = ctx;
         mShowing = false;
         mButton = b;
+        mDir = direction;
         if(null == replaces) {
             /*
              * Dummy
@@ -65,7 +70,8 @@ public class AnimateButton {
             /*
              * Bring the button out
              */
-            a = AnimationUtils.loadAnimation(mContext, R.anim.xlate_right);
+            a = AnimationUtils.loadAnimation(mContext,
+                    mDir == DIRECTION_L_R ? R.anim.xlate_right : R.anim.xlate_left_end);
             mShowing = true;
         }
         else {
@@ -78,7 +84,8 @@ public class AnimateButton {
             /*
              * Take the button in
              */
-            a = AnimationUtils.loadAnimation(mContext, R.anim.xlate_left);
+            a = AnimationUtils.loadAnimation(mContext,
+                    mDir == DIRECTION_L_R ? R.anim.xlate_left : R.anim.xlate_right_end);
             mShowing = false;
         }
         a.reset();

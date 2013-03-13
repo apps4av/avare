@@ -89,6 +89,16 @@ public class PlanActivity extends Activity implements Observer {
         }          
     };
 
+    /*
+     * For being on tab this activity discards back to main activity
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        ((MainActivity)this.getParent()).switchTab(0);
+    }
+
     
     /**
      * 
@@ -292,6 +302,10 @@ public class PlanActivity extends Activity implements Observer {
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
+        
+        if(null != mSearchText) {
+            mSearchText.setText("");
+        }
 
         /*
          * Clean up on pause that was started in on resume
@@ -351,12 +365,7 @@ public class PlanActivity extends Activity implements Observer {
                 
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();
-                /*
-                 * Switch back to main activity
-                 */
-                Intent i = new Intent(PlanActivity.this, MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(i);
+                ((MainActivity)this.getParent()).switchTab(0);
             }
             else {
                 mService.setDestination((Destination)null);

@@ -74,6 +74,7 @@ public class Destination extends Observable {
     private double mLatd;
 
     private String mPlateFound[];
+    private String mAfdFound[];
     
     private Preferences mPref;
     
@@ -81,6 +82,8 @@ public class Destination extends Observable {
     
     private boolean mLooking;
     private boolean mInited;
+    
+    private String mAfdName;
     
     /*
      * This is where destination was set.
@@ -126,6 +129,8 @@ public class Destination extends Observable {
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
         mPlateFound = null;
+        mAfdFound = null;
+        
         /*
          * GPS
          * GPS coordinates are either x&y (user), or addr@x&y (google maps)
@@ -272,6 +277,7 @@ public class Destination extends Observable {
             mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
             mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
             mPlateFound = null;
+            mAfdFound = null;
             mFound = true;
             mLooking = false;
             mDbType = GPS;
@@ -363,6 +369,7 @@ public class Destination extends Observable {
                  */
                 mParams = new LinkedHashMap<String, String>();
                 mPlateFound = null;
+                mAfdFound = null;
                 mDbType = mDestType;
                 mParams.put(DataBaseHelper.TYPE, mDestType);
                 mParams.put(DataBaseHelper.FACILITY_NAME, mName);
@@ -376,70 +383,70 @@ public class Destination extends Observable {
 
 	        if(mDestType.equals(BASE)) {
 	            
+                mPlateFound = null;
+                mAfdFound = null;
+                
+                mAfdName = mDataSource.findAFD(mName);
+	            
 	            /*
 	             * Found destination extract its airport plates
 	             */
-	            FilenameFilter filter = new FilenameFilter() {
-	                public boolean accept(File directory, String fileName) {
-	                    return fileName.endsWith(".jpg");
-	                }
-	            };
-	            mPlateFound = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
+	            if(null != mName) {
+    	            FilenameFilter filter = new FilenameFilter() {
+    	                public boolean accept(File directory, String fileName) {
+    	                    return fileName.endsWith(".jpg");
+    	                }
+    	            };
+                    String plates[] = null;
+    	            plates = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
+                    if(null != plates) {
+                        java.util.Arrays.sort(plates);
+                        int len = plates.length;
+                        String tmp[] = new String[len];
+                        for(int plate = 0; plate < len; plate++) {
+                            /*
+                             * Add plates/AD
+                             */
+                            String tokens[] = plates[plate].split(".jpg");
+                            tmp[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
+                                    tokens[0];
+                        }
+                        if(len > 0) {
+                            mPlateFound = tmp;
+                        }
+                    }
+	            }
 	            
                 /*
                  * Find A/FD
                  */
-                final String afd = mDataSource.findAFD(mName);
-                filter = new FilenameFilter() {
-                    public boolean accept(File directory, String fileName) {
-                        return fileName.matches(afd + ".*");
-                    }
-                };
-                String afdPages[] = null;
-                int afdLen = 0;
-                if(null != afd) {
-                    afdPages = new File(mPref.mapsFolder() + "/afd/").list(filter);
-                    if(null != afdPages) {
-                        afdLen = afdPages.length;
-                        java.util.Arrays.sort(afdPages);
+                if(null != mAfdName) {
+                    FilenameFilter filter = new FilenameFilter() {
+                        public boolean accept(File directory, String fileName) {
+                            return fileName.matches(mAfdName + ".*");
+                        }
+                    };
+                    String afd[] = null;
+                    afd = new File(mPref.mapsFolder() + "/afd/").list(filter);
+                    if(null != afd) {
+                        java.util.Arrays.sort(afd);
+                        int len = afd.length;
+                        String tmp[] = new String[len];
+                        for(int plate = 0; plate < len; plate++) {
+                            /*
+                             * Add A/FD
+                             */
+                            String tokens[] = afd[plate].split(".jpg");
+                            tmp[plate] = mPref.mapsFolder() + "/afd/" +
+                                    tokens[0];             
+                        }
+                        if(len > 0) {
+                            mAfdFound = tmp;
+                        }
                     }
                 }
-                
-	            if(null != mPlateFound) {
-	                /*
-	                 * Add first empty row
-	                 */
-	                String tmp[] = new String[mPlateFound.length + 1 + afdLen];
-	                tmp[0] = "";
-	                /*
-	                 * Sort first
-	                 */
-	                java.util.Arrays.sort(mPlateFound);
-    	            for(int plate = 0; plate < mPlateFound.length; plate++) {
-    	                /*
-    	                 * Make sure it conforms to XXXXXX.jpg
-    	                 * Keep one empty space in front for list header
-    	                 */
-    	                String tokens[] = mPlateFound[plate].split(".jpg");
-                        tmp[plate + 1] = mPref.mapsFolder() + "/plates/" + mName + "/" +
-                                tokens[0];
-    	            }
-                    for(int plate = 0; plate < afdLen; plate++) {
-                        /*
-                         * Make sure it conforms to XXXXXX.jpg
-                         * Keep one empty space in front for list header
-                         */
-                        String tokens[] = afdPages[plate].split(".jpg");
-                        tmp[plate + 1 + mPlateFound.length] = mPref.mapsFolder() + "/afd/" +
-                                tokens[0];              
-                    }
-    	            mPlateFound = tmp;
-	            }
 	        }
-	        else {
-                mPlateFound = null;
-	        }
-			return(!mParams.isEmpty());
+            return(!mParams.isEmpty());
         }
         
 
@@ -485,6 +492,13 @@ public class Destination extends Observable {
      */
     public String[] getPlates() {
         return(mPlateFound);
+    }
+
+    /**
+     * @return
+     */
+    public String[] getAfd() {
+        return(mAfdFound);
     }
 
     /**

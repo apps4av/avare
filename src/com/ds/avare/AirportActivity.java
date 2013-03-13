@@ -12,7 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.utils.Helper;
@@ -27,8 +29,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
  * @author zkhan
@@ -40,6 +46,10 @@ public class AirportActivity extends Activity {
     private Destination mDestination;
     private ListView mAirport;
     private Toast mToast;
+    private AfdView mAfdView;
+    private Spinner mSpinner;
+    private List<String> mList;
+    private boolean mIgnoreFocus;
 
     /*
      * For being on tab this activity discards back to main activity
@@ -70,9 +80,54 @@ public class AirportActivity extends Activity {
         View view = layoutInflater.inflate(R.layout.airport, null);
         setContentView(view);
         mAirport = (ListView)view.findViewById(R.id.airport_list);
+        mAfdView = (AfdView)view.findViewById(R.id.airport_afd);
+        mSpinner = (Spinner)view.findViewById(R.id.airport_spinner);
+        mIgnoreFocus = true;
+
+        mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+                if(mDestination != null && mService != null && mList != null) {
+                    /*
+                     * mIgnoreFocus will get rid of spinner position 0 call on onResume()
+                     */
+                    if(mIgnoreFocus) {
+                        pos = mService.getAfdIndex();
+                        mIgnoreFocus = false;
+                    }
+                    String[] afd = mDestination.getAfd();
+                    if(afd != null) {
+                        if(pos > afd.length) {
+                            pos = 0;
+                        }
+                        mSpinner.setSelection(pos);
+                        if(pos > 0) {
+                            mService.loadDiagram(afd[pos - 1] + ".jpg");
+                            mAfdView.setBitmap(mService.getDiagram());
+                            /*
+                             * Show graphics
+                             */
+                            mAirport.setVisibility(View.INVISIBLE);
+                        }
+                        else {
+                            mAirport.setVisibility(View.VISIBLE);                            
+                            mService.loadDiagram(null);
+                            mAfdView.setBitmap(null);
+                        }
+                        mService.setAfdIndex(pos);
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
 
         mService = null;
     }
+    
     
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -92,16 +147,28 @@ public class AirportActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
 
+            mList = new ArrayList<String>();
+            mList.add(getApplicationContext().getString(R.string.AFD));
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(AirportActivity.this,
+                    android.R.layout.simple_spinner_item, mList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mSpinner.setAdapter(adapter);
+
             /*
              * Now get all stored data
              */
             mDestination = mService.getDestination();
             if(null == mDestination) {
-                mToast.setText(getString(R.string.ValidDest)); 
+                mAfdView.setBitmap(null);
+                mToast.setText(getString(R.string.ValidDest));
+                mAirport.setVisibility(View.VISIBLE);
                 mToast.show();
                 return;
             }
 
+            /*
+             * Get Text A/FD
+             */
             LinkedHashMap <String, String>map = mDestination.getParams();
             String[] views = new String[map.size()];
             String[] values = new String[map.size()];
@@ -117,6 +184,35 @@ public class AirportActivity extends Activity {
             mAirport.setBackgroundColor(Color.WHITE);
             mAirport.setAdapter(new TypeValueAdapter(AirportActivity.this, views, values));
 
+            /*
+             * Start adding graphical A/FD
+             */
+            
+            /*
+             * Not found
+             */
+            if((!mDestination.isFound()) || (mDestination.getAfd() == null)) {
+                mAfdView.setBitmap(null);
+                mAirport.setVisibility(View.VISIBLE);
+                return;                
+            }
+            
+            /*
+             * Now add all A/FD pages to the list
+             */
+            String[] afd = mDestination.getAfd();            
+            for(int plate = 0; plate < afd.length; plate++) {
+                String tokens[] = afd[plate].split("/");
+                mList.add(tokens[tokens.length - 1]);
+            }
+            
+            /*
+             * A list of A/FD available for this airport
+             */
+            adapter = new ArrayAdapter<String>(AirportActivity.this,
+                    android.R.layout.simple_spinner_item, mList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mSpinner.setAdapter(adapter);            
         }    
 
         /* (non-Javadoc)
@@ -151,6 +247,7 @@ public class AirportActivity extends Activity {
          * Registering our receiver
          * Bind now.
          */
+        mIgnoreFocus = true;
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
