@@ -26,12 +26,41 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/nearest_button_4"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
             android:minWidth="140dp"
             android:visibility="invisible" />
-            
+        
+        <Button
+            android:id="@+id/nearest_button_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_3"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_2"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/nearest_button_1"
+            android:visibility="invisible" />
+        
+        <Button
+            android:id="@+id/nearest_button_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:visibility="invisible" />
+    
 </RelativeLayout>

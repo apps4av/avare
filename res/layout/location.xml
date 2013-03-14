@@ -26,18 +26,17 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/location_button_pref"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
-            android:minWidth="170dp"
+            android:minWidth="140dp"
             android:visibility="invisible" />
         
         <Button
             android:id="@+id/location_button_pref"
             android:textStyle="bold"
-            android:layout_width="170dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_dl"
             android:text="@string/Settings"
@@ -48,7 +47,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <Button
             android:id="@+id/location_button_dl"
             android:textStyle="bold"
-            android:layout_width="170dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_gps"
             android:gravity="left|center"
@@ -59,7 +58,7 @@ Redistribution and use in source and binary forms, with or without modification,
          <Button
             android:id="@+id/location_button_gps"
             android:textStyle="bold"
-            android:layout_width="170dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_help"
             android:gravity="left|center"
@@ -70,7 +69,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <Button
             android:id="@+id/location_button_help"
             android:textStyle="bold"
-            android:layout_width="170dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"

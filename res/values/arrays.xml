@@ -20,7 +20,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>TAC Charts</item>
         <item>WAC Charts</item>
         <item>IFR Low Enroute Charts</item>
-        <item>A/FD</item>
+        <item>A/FD Images</item>
     </string-array>
     
     <string-array name="resNameDatabase">

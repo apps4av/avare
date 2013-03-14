@@ -144,11 +144,16 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      */
     private class ViewTask extends AsyncTask<Void, Void, Boolean> {
 
+        String[][] vers;
+        String mvers;
+        String mtfrvers;
+
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            mVersion = NetworkHelper.getVersion("");
-            mVersionTFR = NetworkHelper.getVersion(mContext.getString(R.string.TFRs));
+            vers = mVers.clone();
+            mvers = NetworkHelper.getVersion("");
+            mtfrvers = NetworkHelper.getVersion(mContext.getString(R.string.TFRs));
                        
             /*
              * Always get version in BG because its a network operation
@@ -159,19 +164,19 @@ public class ChartAdapter extends BaseExpandableListAdapter {
              * Load versions
              */
             for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
-                for(int child = 0; child < mVers[group].length; child++) {
+                for(int child = 0; child < vers[group].length; child++) {
                     /*
                      * Read version from file and if it exists.
                      */
                     File file = new File(mPref.mapsFolder() + "/" + mChildrenFiles[group][child]);
-                    mVers[group][child] = null;
+                    vers[group][child] = null;
                     if(file.exists()) {
                         try {
                             BufferedReader br = new BufferedReader(new FileReader(file), blocksize);
                             /*
                              * Preferably do assignment on UI thread in postExecute()
                              */
-                            mVers[group][child] = br.readLine();
+                            vers[group][child] = br.readLine();
                             br.close();
                         }
                         catch (IOException e) {
@@ -184,6 +189,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
         @Override
         protected void onPostExecute(Boolean result) {
+            mVersion = mvers;
+            mVersionTFR = mtfrvers;
+            mVers = vers;
             notifyDataSetChanged();            
         }
     }

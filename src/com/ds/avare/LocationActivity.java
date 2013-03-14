@@ -229,7 +229,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, mTrackButton, AnimateButton.DIRECTION_R_L);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null, AnimateButton.DIRECTION_L_R);
                     a.animate(true);
                 }
             }
