@@ -277,6 +277,14 @@ public class Preferences {
 
     /**
      * 
+     * @return
+     */
+    public boolean isNightMode() {
+        return(mPref.getBoolean(mContext.getString(R.string.NightMode), false));
+    }
+
+    /**
+     * 
      * @param activity
      * @return
      */

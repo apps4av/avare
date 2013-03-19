@@ -493,6 +493,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     continue;
                 }
 
+                if(mPref.isNightMode() && mPref.getChartType().equals("3")) {
+                    /*
+                     * IFR charts invert color at night
+                     */
+                    Helper.invertCanvasColors(mPaint);
+                }
+                
                 /*
                  * Pretty straightforward. Pan and draw individual tiles.
                  */
@@ -516,6 +523,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null != b) {
                     canvas.drawBitmap(b, tile.getTransform(), mPaint);
                 }
+                
+                Helper.restoreCanvasColors(mPaint);
             }
         }
     }

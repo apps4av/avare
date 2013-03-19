@@ -19,6 +19,9 @@ import com.ds.avare.storage.Preferences;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.view.WindowManager;
 
 /**
@@ -39,6 +42,28 @@ public class Helper {
         return lonlat;
     }
     
+    /**
+     * 
+     * @param paint
+     */
+    public static void invertCanvasColors(Paint paint) {
+       float mx [] = {
+                -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+                0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
+                0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
+                1.0f,  1.0f,  1.0f,  1.0f,  0.0f 
+       };
+       ColorMatrix cm = new ColorMatrix(mx);
+       paint.setColorFilter(new ColorMatrixColorFilter(cm));
+    }
+    
+    /**
+     * 
+     * @param paint
+     */
+    public static void restoreCanvasColors(Paint paint) {
+       paint.setColorFilter(null);
+    }
     
     /**
      * 

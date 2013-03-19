@@ -33,6 +33,7 @@ import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -232,7 +233,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	mBitmap.getTransform().postTranslate(
     			mPan.getMoveX() * scale,
     			mPan.getMoveY() * scale);
+        
+    	if(mPref.isNightMode()) {
+            Helper.invertCanvasColors(mPaint);
+        }
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
+        Helper.restoreCanvasColors(mPaint);
+        
     	mPaint.setStrokeWidth(4);
     	
     	
