@@ -423,7 +423,8 @@ public class Destination extends Observable {
                 if(null != mAfdName) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
-                            return fileName.matches(mAfdName + ".*");
+                            return (fileName.matches(mAfdName + ".jpg") || 
+                                    fileName.matches(mAfdName + "-[0-9]+.jpg"));
                         }
                     };
                     String afd[] = null;
