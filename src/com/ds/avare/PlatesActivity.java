@@ -33,9 +33,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -49,6 +51,7 @@ public class PlatesActivity extends Activity {
     private PlatesView mPlatesView;
     private StorageService mService;
     private Destination mDestination;
+    private Button mCenterButton;
     private Toast mToast;
     private Spinner mSpinner;
     private List<String> mList;
@@ -139,6 +142,17 @@ public class PlatesActivity extends Activity {
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
         mIgnoreFocus = true;
         
+        mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
+        mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mPlatesView.center();
+            }
+            
+        });
+
         /*
          * Spinner to select a plate
          */

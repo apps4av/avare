@@ -22,6 +22,14 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <Button
+		android:id="@+id/plates_button_center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:drawableLeft="@drawable/center"
+		android:layout_centerInParent="true"
+		android:layout_alignParentBottom="true"/>
+    
     <Spinner
         android:id="@+id/plates_spinner"
         android:layout_width="fill_parent"

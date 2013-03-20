@@ -87,6 +87,7 @@ public class LocationActivity extends Activity implements Observer {
     private AlertDialog mGpsWarnDialog;
     
     private Button mDestButton;
+    private Button mCenterButton;
     private Button mHelpButton;
     private Button mPrefButton;
     private Button mGpsButton;
@@ -236,6 +237,17 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
+        mCenterButton = (Button)view.findViewById(R.id.location_button_center);
+        mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mLocationView.center();
+            }
+            
+        });
+
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
         mMenuButton.getBackground().setAlpha(255);
         mMenuButton.setOnClickListener(new OnClickListener() {
@@ -243,7 +255,7 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton, AnimateButton.DIRECTION_L_R);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, null, AnimateButton.DIRECTION_L_R);
+                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, mCenterButton, AnimateButton.DIRECTION_L_R);
                 AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, null, AnimateButton.DIRECTION_L_R);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, null, AnimateButton.DIRECTION_L_R);
                 b.animate(true);
@@ -253,6 +265,7 @@ public class LocationActivity extends Activity implements Observer {
             }
             
         });
+
 
         mHelpButton = (Button)view.findViewById(R.id.location_button_help);
         mHelpButton.setOnClickListener(new OnClickListener() {
@@ -280,8 +293,10 @@ public class LocationActivity extends Activity implements Observer {
         mDownloadButton.setOnClickListener(new OnClickListener() {
 
             @Override
-            public void onClick(View v) {    
-                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+            public void onClick(View v) {
+                Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
             }
         });
 
@@ -295,7 +310,6 @@ public class LocationActivity extends Activity implements Observer {
                  * Bring up preferences
                  */
                 startActivity(new Intent(LocationActivity.this, PrefActivity.class));
-
             }
             
         });
@@ -418,7 +432,9 @@ public class LocationActivity extends Activity implements Observer {
              * Check if database needs upgrade
              */
             if(mPref.isNewerVersion(LocationActivity.this)) {
-                startActivity(new Intent(LocationActivity.this, ChartsDownloadActivity.class));
+                Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
                 return;
             }
             if(!mService.getDBResource().isPresent()) {

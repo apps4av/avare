@@ -133,8 +133,8 @@ public class Download extends Observable {
         @Override
         protected Boolean doInBackground(String... sUrl) {
 
-            InputStream input;
-            OutputStream output;
+            BufferedInputStream input;
+            BufferedOutputStream output;
             int count;
             String path = sUrl[0];
             mName = sUrl[1];
@@ -177,17 +177,23 @@ public class Download extends Observable {
                 URL url = new URL(netfile);
                 URLConnection connection = url.openConnection();
                 connection.connect();
-                input = new BufferedInputStream(url.openStream());
+                input = new BufferedInputStream(url.openStream(), blocksize);
                 fileLength = connection.getContentLength();
-                output = new FileOutputStream(zipfile);
+                output = new BufferedOutputStream(new FileOutputStream(zipfile), blocksize);
     
                 long total = 0;
                 int lastp = FAILED;
                 int newp;
-                while ((count = input.read(data)) != -1) {
+                while(true) {
+                    count = input.read(data, 0, blocksize);
+                    if(count <= 0) {
+                        break;
+                    }
                     total += count;
                     newp = (int) (total * 50 / fileLength);
-                    // publishing the progress....
+                    /* 
+                     * publishing the progress....
+                     */
                     if(lastp != newp) {
                         lastp = newp;
                         publishProgress(newp);

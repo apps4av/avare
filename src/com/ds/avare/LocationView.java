@@ -178,6 +178,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private int                         mWeatherColor;
     
     /*
+     * Draw tiles?
+     */
+    private boolean                    mDrawTiles;
+    
+    /*
      * Projection of a touch point
      */
     private Projection                  mPointProjection;
@@ -223,6 +228,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mShown = false;
+        mDrawTiles = true;
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
@@ -489,7 +495,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 else if(null == tile.getBitmap()) {
                     nochart = true;
                 }
-                if(nochart) {
+                if(nochart || (!mDrawTiles)) {
                     continue;
                 }
 
@@ -1049,6 +1055,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Load tiles, draw in UI thread
              */
+            mDrawTiles = false;
             mService.getTiles().reload(tileNames);
             
             /*
@@ -1081,8 +1088,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null == mService) {
                     return;
                 }
-                mService.getTiles().flip();
                 
+                mService.getTiles().flip();
+                mDrawTiles = true;
+
                 /*
                  * And show message if we leave current area to double touch.
                  */
@@ -1194,27 +1203,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
+    /**
+     * Center to the location
+     */
+    public void center() {
+        /*
+         * On double tap, move to center
+         */
+        mPan = new Pan();
+        dbquery(true);
+        mShown = false;
+        tfrReset();
+        postInvalidate();
+    }
             
     /**
      * @author zkhan
      *
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onDoubleTap(android.view.MotionEvent)
-         */
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            /*
-             * On double tap, move to center
-             */
-            mPan = new Pan();
-            dbquery(true);
-            mShown = false;
-            tfrReset();
-            return true;
-        }
 
         /* (non-Javadoc)
          * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
