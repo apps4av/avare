@@ -150,8 +150,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * A hashmap to load only required tiles.
      */
     
-    private boolean                    mShown;
-    
     private Preferences                 mPref;
     
     private float                      mTextDiv;
@@ -227,7 +225,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mShown = false;
         mDrawTiles = true;
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
@@ -1093,19 +1090,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mDrawTiles = true;
 
                 /*
-                 * And show message if we leave current area to double touch.
-                 */
-                if(
-                        ((movex != 0 && mPan.getTileMoveX() == 0) ||
-                        (movey != 0 && mPan.getTileMoveY() == 0)) && 
-                        (mShown == false)
-                        ) {
-                    mShown = true;
-                    Toast.makeText(mContext, mContext.getString(R.string.ReturnOriginal),
-                            Toast.LENGTH_SHORT).show();
-                }
-                                
-                /*
                  * And pan
                  */
                 mPan.setTileMove(movex, movey);
@@ -1212,7 +1196,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mPan = new Pan();
         dbquery(true);
-        mShown = false;
         tfrReset();
         postInvalidate();
     }

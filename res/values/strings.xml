@@ -54,7 +54,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Extracting">&quot;Extracting&quot;</string>
     <string name="Yes">&quot;Yes&quot;</string>
     <string name="No">&quot;No&quot;</string>
-    <string name="ReturnOriginal">&quot;Double tap to return to current location&quot;</string>
     <string name="GPSLost">&quot;No GPS Signal&quot;</string>
     <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
     <string name="Init">&quot;Initializing&quot;</string>
