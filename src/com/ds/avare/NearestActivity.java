@@ -27,7 +27,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -93,6 +92,8 @@ public class NearestActivity extends Activity  implements Observer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         /*
@@ -197,7 +198,6 @@ public class NearestActivity extends Activity  implements Observer {
             
             mNearest.setClickable(true);
             mNearest.setDividerHeight(10);
-            mNearest.setBackgroundColor(Color.WHITE);
             mNearest.setOnItemClickListener(new OnItemClickListener() {
 
                 /* (non-Javadoc)

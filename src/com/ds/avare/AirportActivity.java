@@ -24,7 +24,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -66,6 +65,8 @@ public class AirportActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         /*
@@ -179,9 +180,7 @@ public class AirportActivity extends Activity {
                 iterator++;
             }
             mAirport.setClickable(false);
-            mAirport.setCacheColorHint(Color.WHITE);
             mAirport.setDividerHeight(10);
-            mAirport.setBackgroundColor(Color.WHITE);
             mAirport.setAdapter(new TypeValueAdapter(AirportActivity.this, views, values));
 
             /*

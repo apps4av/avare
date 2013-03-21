@@ -18,6 +18,7 @@ import java.util.Locale;
 import com.ds.avare.storage.Preferences;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -139,6 +140,20 @@ public class Helper {
         return var;
     }
 
+    /**
+     * Set theme
+     * @param act
+     */
+    public static void setTheme(Activity act) {
+        Preferences p = new Preferences(act.getApplicationContext()); 
+        if(p.isNightMode()) {
+            act.setTheme(android.R.style.Theme_Black);
+        }
+        else {
+            act.setTheme(android.R.style.Theme_Light);            
+        }
+    }
+    
     /**
      * Set common features of all activities in the framework
      * @param act

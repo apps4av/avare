@@ -68,6 +68,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         mPref = new Preferences(this);
@@ -312,7 +313,11 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                     }
                 });
     
-                mAlertDialog.show();
+                try {
+                    mAlertDialog.show();
+                }
+                catch (Exception e) {
+                }
             }
             if(Download.NONEED == result) {
                 try {

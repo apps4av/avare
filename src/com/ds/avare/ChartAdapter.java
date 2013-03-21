@@ -308,7 +308,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             tv.setTextColor(Color.RED);
         }
         else {
-            tv.setTextColor(Color.BLACK);
+            tv.setTextColor(Color.GREEN);
         }
         tv.setText(mGroups[group] + "(" + total + ")");
         if(isExpanded) {

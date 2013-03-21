@@ -129,6 +129,7 @@ public class PlatesActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         mPref = new Preferences(getApplicationContext());

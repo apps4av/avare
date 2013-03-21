@@ -12,12 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <ImageView
-         android:background="#FFFFFFFF"
          android:id="@+id/chart_download_list_image"
          android:layout_marginTop="2dp"
          android:layout_marginLeft="2dp"
@@ -27,8 +25,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </ImageView>
     
      <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
          android:id="@+id/chart_download_list_item"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -38,8 +34,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
          android:id="@+id/chart_download_list_state"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"

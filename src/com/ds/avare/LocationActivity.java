@@ -199,6 +199,8 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -12,13 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
          android:id="@+id/nearest_list_distance"
          android:layout_width="120dp"
          android:layout_height="30dp"
@@ -28,8 +25,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
          android:id="@+id/nearest_list_aid_name"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -40,21 +35,17 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
         android:id="@+id/nearest_list_bearing"
         android:layout_width="120dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="2dp"
-         android:clickable="true"
+        android:clickable="true"
         android:textSize="25sp"
         android:layout_below="@+id/nearest_list_distance">
     </TextView>
 
     <TextView
-         android:background="#FFFFFFFF"
-         android:textColor="#FF000000"
         android:id="@+id/nearest_list_fuel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,7 +58,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
 
     <ImageView
-        android:background="#FFFFFFFF"
         android:contentDescription="@string/desc"
         android:id="@+id/nearest_list_image_weather"
         android:layout_width="wrap_content"

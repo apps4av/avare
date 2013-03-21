@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FF000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
@@ -21,7 +20,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content" >
 
         <com.ds.avare.AfdView
-            android:background="#FF000000"
             android:layout_marginTop="50dp"
             android:id="@+id/airport_afd"
             android:layout_width="wrap_content"
@@ -39,8 +37,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:background="#FF000000" >
+            android:layout_alignParentTop="true">
         </ListView>
 
     </RelativeLayout>

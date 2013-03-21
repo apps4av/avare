@@ -12,13 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFFFF"
     android:layout_width="fill_parent"
     android:layout_height="50dp" >
 
     <TextView
-        android:background="#FFFFFFFF"
-        android:textColor="#FF000000"
         android:id="@+id/textview_textview"
         android:layout_width="fill_parent"
         android:layout_height="30dp"

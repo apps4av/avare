@@ -26,6 +26,7 @@ public class PrefActivity extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Helper.setTheme(this);
         super.onCreate(savedInstanceState); 
 
         addPreferencesFromResource(R.xml.preferences);
