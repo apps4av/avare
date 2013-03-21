@@ -55,7 +55,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Toast;
 
 /**
  * @author zkhan
@@ -176,11 +175,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private int                         mWeatherColor;
     
     /*
-     * Draw tiles?
-     */
-    private boolean                    mDrawTiles;
-    
-    /*
      * Projection of a touch point
      */
     private Projection                  mPointProjection;
@@ -225,7 +219,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mDrawTiles = true;
         mTrackShape = null;
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
@@ -492,7 +485,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 else if(null == tile.getBitmap()) {
                     nochart = true;
                 }
-                if(nochart || (!mDrawTiles)) {
+                if(nochart) {
                     continue;
                 }
 
@@ -1052,7 +1045,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Load tiles, draw in UI thread
              */
-            mDrawTiles = false;
             mService.getTiles().reload(tileNames);
             
             /*
@@ -1087,7 +1079,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 
                 mService.getTiles().flip();
-                mDrawTiles = true;
 
                 /*
                  * And pan

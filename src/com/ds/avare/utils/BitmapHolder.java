@@ -127,7 +127,18 @@ public class BitmapHolder {
         opts[0] = options.outWidth;
         opts[1] = options.outHeight;
     }
-    
+
+    /**
+     * @param name
+     * Get bitmap from a bitmap
+     */
+    public BitmapHolder(Bitmap b, String name) {
+            mBitmap = b;
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mName = name;
+    }
+
     /**
      * @param name
      * Get bitmap from a file

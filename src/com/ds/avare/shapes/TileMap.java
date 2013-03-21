@@ -12,14 +12,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.shapes;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 
 /**
  * 
@@ -28,7 +26,8 @@ import android.content.Context;
  */
 public class TileMap {
 
-    private HashMap<String, BitmapHolder> mBitmaps;
+    private LruCache<String, Bitmap> mBitmapCache;
+    
     
     private BitmapHolder[] mapA;
     private BitmapHolder[] mapB;
@@ -55,14 +54,22 @@ public class TileMap {
          */
         mContext = context;
         mPref = new Preferences(context);
-        mBitmaps = new HashMap<String, BitmapHolder>(); 
+
         int[] tilesdim = mPref.getTilesNumber();
         mXtiles = tilesdim[0];
         mYtiles = tilesdim[1];
         numTiles = mXtiles * mYtiles;
-        numTilesMax = mXtiles * mYtiles + mXtiles + mYtiles;
+        numTilesMax = mXtiles * mYtiles;
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
+        mBitmapCache = new LruCache<String, Bitmap>(numTilesMax * BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2) {
+            /**
+             * 
+             */
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2;
+            }
+        };
     }
 
     /**
@@ -72,118 +79,8 @@ public class TileMap {
      * @return
      */
     public void clear() {
-
-        Iterator<Entry<String, BitmapHolder>> it = mBitmaps.entrySet().iterator();
-        
-        /*
-         * For all tiles that will be re-used, find from cache.
-         */
-        while(it.hasNext()) {
-            HashMap.Entry<String, BitmapHolder> pairs = (HashMap.Entry<String, BitmapHolder>)it.next();
-            if(null == pairs.getValue()) {
-                continue;
-            }
-            pairs.getValue().drawInBitmap(null, null);
-        }
     }
 
-    /*
-     * Delete some tiles based on LRU
-     */
-    private void makeSpace(String tileNames[]) {
-        
-        /*
-         * Now delete a tile
-         */
-        
-        Iterator<Entry<String, BitmapHolder>> it = mBitmaps.entrySet().iterator();
-        
-        boolean deleted = false;
-        
-        /*
-         * For all tiles that will be re-used, find from cache.
-         */
-        while(it.hasNext()) {
-            HashMap.Entry<String, BitmapHolder> pairs = (HashMap.Entry<String, BitmapHolder>)it.next();
-            BitmapHolder b = pairs.getValue();
-            String name = pairs.getKey();
-            if(null == name || null == b) {
-                it.remove();
-                continue;
-            }
-            boolean found = false;
-            
-            /*
-             * See if this tile is in new to be loaded tiles. 
-             * If yes, then this cannot be deleted.
-             */
-            for(int tilen = 0; tilen < numTiles; tilen++) {
-                if(tileNames[tilen] != null) {
-                    if(name.equals(tileNames[tilen])) {
-                        found = true;
-                    }
-                }
-                if(mapA[tilen] != null) {
-                    if(mapA[tilen].getName() != null) {
-                        if(name.equals(mapA[tilen].getName())) {
-                            found = true;
-                        }
-                    }
-                }
-            }
-
-            if(!found) {
-                /*
-                 * Delete this tile
-                 */
-                deleted = true;
-                b.recycle();
-                it.remove();
-            }
-        }
-        
-        /*
-         * Nothing deleted so now delete even mapA
-         */
-        if(!deleted) {
-            /*
-             * 
-             */
-            while(it.hasNext()) {
-                HashMap.Entry<String, BitmapHolder> pairs = (HashMap.Entry<String, BitmapHolder>)it.next();
-                BitmapHolder b = pairs.getValue();
-                String name = pairs.getKey();
-                if(null == name || null == b) {
-                    it.remove();
-                    continue;
-                }
-                boolean found = false;
-                
-                /*
-                 * See if this tile is in new to be loaded tiles. 
-                 * If yes, then this cannot be deleted.
-                 */
-                for(int tilen = 0; tilen < numTiles; tilen++) {
-                    if(tileNames[tilen] != null) {
-                        if(name.equals(tileNames[tilen])) {
-                            found = true;
-                        }
-                    }
-                }
-                
-                if(!found) {
-                    /*
-                     * Delete this tile
-                     */
-                    deleted = true;
-                    b.recycle();
-                    it.remove();
-                }
-            }
-        }
-        
-        System.gc();
-    }
     
     /**
      * 
@@ -209,28 +106,20 @@ public class TileMap {
                 continue;
             }
 
-            BitmapHolder h = mBitmaps.get(tileNames[tilen]);
-            if(null != h) {
-                mapB[tilen] = h;
-            }
-            else {
-                
-                /*
-                 * If cache limit reached, delete some tiles
-                 */
-                if(mBitmaps.size() >= numTilesMax) {
-                    makeSpace(tileNames);
-                }
-                
-                /*
-                 * No tile re-used for this. Load new.
-                 */
+            /*
+             * Put in cache
+             */
+            Bitmap m = mBitmapCache.get(tileNames[tilen]);
+            if (m == null) {
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen]);
-                if(null != b) {
-                    mapB[tilen] = b;
-                    mBitmaps.put(tileNames[tilen], b);
-                }
-            }
+                m = b.getBitmap();
+                mBitmapCache.put(tileNames[tilen], m);
+            } 
+
+            /*
+             * Tack a BitmapHolder header on top.
+             */
+            mapB[tilen] = new BitmapHolder(m, tileNames[tilen]);
         }        
     }
 
@@ -245,21 +134,7 @@ public class TileMap {
      * 
      */
     public void recycleBitmaps() {
-        Iterator<Entry<String, BitmapHolder>> it = mBitmaps.entrySet().iterator();
-        
-        /*
-         * For all tiles that will be re-used, find from cache.
-         */
-        while(it.hasNext()) {
-            HashMap.Entry<String, BitmapHolder> pairs = (HashMap.Entry<String, BitmapHolder>)it.next();
-            if(null == pairs.getValue()) {
-                continue;
-            }
-            pairs.getValue().recycle();
-            it.remove();
-        }
-        
-        System.gc();
+        mBitmapCache.evictAll();
     }
     
     /**
