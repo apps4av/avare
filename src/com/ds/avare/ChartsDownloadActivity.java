@@ -232,11 +232,22 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         /*
          * Clean up on pause that was started in on resume
          */
+        if(mDownload != null) {
+            mDownload.cancel();
+        }
         getApplicationContext().unbindService(mConnection);
         
         if(mAlertDialog != null) {
             try {
                 mAlertDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+                
+        if(mProgressDialog != null) {
+            try {
+                mProgressDialog.dismiss();
             }
             catch (Exception e) {
             }
