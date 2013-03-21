@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import com.ds.avare.place.Airport;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.shapes.Tile;
 
@@ -133,4 +134,16 @@ public class DataSource {
     public String findAFD(String airportId) {
         return dbHelper.findAFD(airportId);
     }
+    
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @param height
+     * @return Obstacles list that are dangerous
+     */
+    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
+        return dbHelper.findObstacles(lon, lat, height);
+    }
+
 }

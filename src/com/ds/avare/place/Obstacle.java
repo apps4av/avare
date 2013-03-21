@@ -26,6 +26,7 @@ public class Obstacle {
      * Lon/lat degrees radius
      */
     public static final float RADIUS = 0.1f;
+    public static final float HEIGHT_BELOW = 200;
 
     /**
      * 

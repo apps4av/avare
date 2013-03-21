@@ -216,7 +216,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldShowObstacles() {
-        return(false);
+        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
     }
 
     /**

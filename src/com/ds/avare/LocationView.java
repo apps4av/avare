@@ -119,6 +119,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TileDrawTask                mTileDrawTask; 
 
     /**
+     * Task that would draw obstacles
+     */
+    private ObstacleTask                mObstacleTask; 
+
+    /**
      * Task that finds closets airport.
      */
     private ClosestAirportTask          mClosestTask; 
@@ -925,6 +930,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         dbquery(false);
         
         
+        /*
+         * Do not overwhelm, obstacles
+         */
+        if(null != mObstacleTask) {
+            if (!mObstacleTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
+                /*
+                 * Always honor the latest query
+                 */
+                return;
+            }
+        }
+        
+        mObstacleTask = new ObstacleTask();
+        mObstacleTask.execute(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
     }
 
     
@@ -1175,6 +1194,44 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null != mGestureCallBack) {
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, result[0]);
             }
+        }
+    }
+
+    
+    /**
+     * @author zkhan
+     * Find obstacles
+     */
+    private class ObstacleTask extends AsyncTask<Double, Void, Boolean> {
+        private LinkedList<Obstacle> obs;
+        
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Boolean doInBackground(Double... vals) {
+            Double lon;
+            Double lat;
+            Double alt;
+            lon = (Double)vals[0];
+            lat = (Double)vals[1];
+            alt = (Double)vals[2];
+            if(null != mService) {
+                /*
+                 * Find obstacles in background as well
+                 */
+                obs = mImageDataSource.findObstacles(lon, lat, alt.intValue());
+                return true;
+            }
+            return false;
+        }
+        
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            mObstacles = obs;
         }
     }
 

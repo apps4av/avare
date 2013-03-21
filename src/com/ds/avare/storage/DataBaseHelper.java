@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
@@ -97,6 +98,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
     private static final String TABLE_AFD = "afd";
+    private static final String TABLE_OBSTACLES = "obs";
+
 
     private static final String TILE_NAME = "name";
        
@@ -732,4 +735,36 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return ret;
     }
 
+    /**
+     *
+     * @param lon
+     * @param lat
+     * @param height
+     * @return
+     */
+    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
+        
+        LinkedList<Obstacle> list = new LinkedList<Obstacle>();
+        
+        /*
+         * Find obstacles at below or higher in lon/lat radius
+         * We ignore all obstacles 500 AGL below in our script
+         */
+        Cursor cursor = doQuery("select * from " + TABLE_OBSTACLES + " where (Height > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
+                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
+                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");");
+        
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    list.add(new Obstacle(cursor.getFloat(1), cursor.getFloat(0), (int)cursor.getFloat(2)));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closes(cursor);
+        return list;
+    }
 }
