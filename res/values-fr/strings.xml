@@ -125,4 +125,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="LeaveRunningLabel">&quot;Laisser ouvert&quot;</string>
     <string name="LeaveRunningSummary">&quot;Selectionner pour laisser en veille lorsque l'on quitte l'application (au lieu de terminer l'application)&quot;</string>
     <string name="TFRs">&quot;TFRs&quot;</string>
+    <string name="NightMode">&quot;Mode de nuit&quot;</string>
+    <string name="NightModeLabel">&quot;Mode de nuit&quot;</string>
+    <string name="NightModeSummary">&quot;Selectioner pour réduire l'intensité lumineuse durant les vols de nuit (redémarrage requis)&quot;</string>
 </resources>
