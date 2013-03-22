@@ -58,7 +58,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Extracting">&quot;Extraction&quot;</string>
     <string name="Yes">&quot;Oui&quot;</string>
     <string name="No">&quot;Non&quot;</string>
-    <string name="ReturnOriginal">&quot;Tapper 2 fois l'écran pour retourner à votre position actuelle&quot;</string>
     <string name="GPSLost">&quot;Aucun signal GPS&quot;</string>
     <string name="GPSEnable">&quot;Activer le GPS&quot;</string>
     <string name="Init">&quot;Initialisation&quot;</string>
@@ -68,11 +67,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
     <string name="ChartTypeSummary">&quot;Sélectionner un type de carte pour la navigation&quot;</string>
     <string name="weather">&quot;Météo&quot;</string>
-	<string name="TFRReceived">&quot;TFR reçus&quot;</string>
-	<string name="databases">&quot;Bases de données (requises)&quot;</string>
+    <string name="TFRReceived">&quot;TFR reçus&quot;</string>
+    <string name="databases">&quot;Bases de données (requises)&quot;</string>
     <string name="ValidDest">&quot;Entrer une destination valide&quot;</string>
     <string name="AreaNF">&quot;Les Aéroports proches sont affichés quand le GPS a une position&quot;</string>
-	<string name="ScreenOn">&quot;Temps écoulé&quot;</string>
+    <string name="ScreenOn">&quot;Temps écoulé&quot;</string>
     <string name="ScreenOnLabel">&quot;Garder l'écran allumé&quot;</string>
     <string name="ScreenOnSummary">&quot;Selectioner pour garder l'écran allumé lorsque l'application roule&quot;</string>
     <string name="update">&quot;Mise à jour&quot;</string>
@@ -93,9 +92,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Lon">&quot;Long&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination vers &quot;</string>
-	<string name="DownloadInst">&quot;Sélectionner un item puis presser sur menu pour le télécharger&quot;</string>
+    <string name="DownloadInst">&quot;Sélectionner un item puis presser sur menu pour le télécharger&quot;</string>
     <string name="Searching">&quot;Recherche&quot;</string>
-	<string name="Search">&quot;Cherche&quot;</string>
+    <string name="Search">&quot;Cherche&quot;</string>
     <string name="Get">&quot;Recherche&quot;</string>
     <string name="Units">&quot;Unité de distance&quot;</string>
     <string name="UnitsLabel">&quot;Unité de distance&quot;</string>
