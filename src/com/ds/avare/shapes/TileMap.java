@@ -42,6 +42,8 @@ public class TileMap {
     private int numTiles;
     private int numTilesMax;
     
+    private int mNumRem;
+    
     /**
      * 
      * @param x
@@ -62,12 +64,28 @@ public class TileMap {
         numTilesMax = mXtiles * mYtiles;
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
+        mNumRem = 0;
         mBitmapCache = new LruCache<String, Bitmap>(numTilesMax * BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2) {
             /**
              * 
              */
+            @Override
             protected int sizeOf(String key, Bitmap bitmap) {
                 return BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2;
+            }
+            
+            @Override
+            protected void entryRemoved(boolean evicted, String key, Bitmap oldBitmap, Bitmap newBitmap) {
+                oldBitmap.recycle();
+                oldBitmap = null;
+                mNumRem++;
+                if(mNumRem >= numTilesMax) {
+                    /*
+                     * GC is required for some older phones
+                     */
+                    System.gc();
+                    mNumRem = 0;
+                }
             }
         };
     }
@@ -113,7 +131,9 @@ public class TileMap {
             if (m == null) {
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen]);
                 m = b.getBitmap();
-                mBitmapCache.put(tileNames[tilen], m);
+                if(m != null) {
+                    mBitmapCache.put(tileNames[tilen], m);
+                }
             } 
 
             /*
