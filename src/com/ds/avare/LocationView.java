@@ -1047,7 +1047,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null == mService) {
                 return false;
             }
-            
+
+            /*
+             * Update TFR shapes if they exist in this area.
+             */
+            LinkedList<TFRShape> shapes = mService.getTFRShapes();
+            if(null != shapes) {
+                for(int shape = 0; shape < shapes.size(); shape++) {
+                    shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
+                            centerTile.getLatitude());
+                }
+            }
+                        
             /*
              * Neighboring tiles with center and pan
              */
@@ -1066,17 +1077,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             mService.getTiles().reload(tileNames);
             
-            /*
-             * Update TFR shapes if they exist in this area.
-             */
-            LinkedList<TFRShape> shapes = mService.getTFRShapes();
-            if(null != shapes) {
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
-                            centerTile.getLatitude());
-                }
-            }
-                        
             return true;
         }
         

@@ -110,6 +110,8 @@ public class TileMap {
      */
     public void reload(String[] tileNames) {
 
+        mapB = new BitmapHolder[numTiles];
+        
         /*
          * For all tiles that will be re-used, find from cache.
          */
