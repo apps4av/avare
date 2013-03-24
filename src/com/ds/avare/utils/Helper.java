@@ -18,7 +18,6 @@ import java.util.Locale;
 import com.ds.avare.storage.Preferences;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;

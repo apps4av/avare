@@ -61,7 +61,7 @@ public class TileMap {
         mXtiles = tilesdim[0];
         mYtiles = tilesdim[1];
         numTiles = mXtiles * mYtiles;
-        numTilesMax = mXtiles * mYtiles;
+        numTilesMax = mXtiles * mYtiles + mXtiles + mYtiles; /* Only one row and one col can go out dated at once */
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
         mNumRem = 0;
