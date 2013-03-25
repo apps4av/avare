@@ -65,13 +65,13 @@ public class TileMap {
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
         mNumRem = 0;
-        mBitmapCache = new LruCache<String, Bitmap>(numTilesMax * BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2) {
+        mBitmapCache = new LruCache<String, Bitmap>(numTilesMax * BitmapHolder.WIDTH * BitmapHolder.HEIGHT * 2) {
             /**
              * 
              */
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
-                return BitmapHolder.HEIGHT * BitmapHolder.HEIGHT * 2;
+                return BitmapHolder.WIDTH * BitmapHolder.HEIGHT * 2;
             }
             
             @Override
@@ -141,7 +141,9 @@ public class TileMap {
             /*
              * Tack a BitmapHolder header on top.
              */
-            mapB[tilen] = new BitmapHolder(m, tileNames[tilen]);
+            if(null != m) {
+                mapB[tilen] = new BitmapHolder(m, tileNames[tilen]);
+            }
         }        
     }
 

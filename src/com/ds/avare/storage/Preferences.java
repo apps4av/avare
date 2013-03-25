@@ -179,7 +179,7 @@ public class Preferences {
             ret[0] = MEM_32_X;
             ret[1] = MEM_32_Y;
         }
-        else if(mem >= MEM_16) {
+        else {
             ret[0] = MEM_16_X;
             ret[1] = MEM_16_Y;
         }
