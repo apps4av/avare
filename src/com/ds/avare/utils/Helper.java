@@ -140,6 +140,23 @@ public class Helper {
     }
 
     /**
+     * 
+     * @param variation
+     * @return
+     */
+    public static String makeVariation(double variation) {
+        int var = (int)Math.round(variation);
+        String ret = String.format(Locale.getDefault(), "%02d", var);
+        if(var < 0) {
+            ret = var + "\u00B0E";
+        }
+        else {
+            ret = var + "\u00B0W";
+        }
+        return ret;
+    }
+
+    /**
      * Set theme
      * @param act
      */

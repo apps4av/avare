@@ -606,6 +606,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         
         /*
+         * Variation
+         */
+        if(mService != null) {
+            if(mService.getArea().getAirportsNumber() > 0) {
+                mPaint.setColor(TEXT_COLOR);
+
+                mPaint.setTextAlign(Align.LEFT);
+                
+                /*
+                 * Variation
+                 */
+                canvas.drawText(Helper.makeVariation(mService.getArea().getVariation()),
+                        0, getHeight() / mTextDiv * 2, mPaint);
+            }
+        }
+        
+        /*
          * Point top right
          */
         mPaint.setColor(TEXT_COLOR);

@@ -201,18 +201,6 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onDoubleTap(android.view.MotionEvent)
-         */
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            /*
-             * On double tap, move to center
-             */
-            mPan = new Pan();
-            return true;
-        }
-
-        /* (non-Javadoc)
          * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
          */
         @Override

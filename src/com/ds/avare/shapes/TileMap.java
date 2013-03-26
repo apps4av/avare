@@ -16,8 +16,6 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.v4.util.LruCache;
 
 /**
  * 
@@ -26,9 +24,6 @@ import android.support.v4.util.LruCache;
  */
 public class TileMap {
 
-    private LruCache<String, Bitmap> mBitmapCache;
-    
-    
     private BitmapHolder[] mapA;
     private BitmapHolder[] mapB;
     
@@ -41,8 +36,8 @@ public class TileMap {
     
     private int numTiles;
     private int numTilesMax;
-    
-    private int mNumRem;
+        
+    private BitmapHolder[] mBitmapCache;
     
     /**
      * 
@@ -61,33 +56,13 @@ public class TileMap {
         mXtiles = tilesdim[0];
         mYtiles = tilesdim[1];
         numTiles = mXtiles * mYtiles;
-        numTilesMax = mXtiles * mYtiles + mXtiles + mYtiles; /* Only one row and one col can go out dated at once */
+        numTilesMax = mXtiles * mYtiles;
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
-        mNumRem = 0;
-        mBitmapCache = new LruCache<String, Bitmap>(numTilesMax * BitmapHolder.WIDTH * BitmapHolder.HEIGHT * 2) {
-            /**
-             * 
-             */
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                return BitmapHolder.WIDTH * BitmapHolder.HEIGHT * 2;
-            }
-            
-            @Override
-            protected void entryRemoved(boolean evicted, String key, Bitmap oldBitmap, Bitmap newBitmap) {
-                oldBitmap.recycle();
-                oldBitmap = null;
-                mNumRem++;
-                if(mNumRem >= numTilesMax) {
-                    /*
-                     * GC is required for some older phones
-                     */
-                    System.gc();
-                    mNumRem = 0;
-                }
-            }
-        };
+        mBitmapCache = new BitmapHolder[numTilesMax];
+        for(int tile = 0; tile < numTilesMax; tile++) {
+            mBitmapCache[tile] = new BitmapHolder();
+        }
     }
 
     /**
@@ -99,7 +74,60 @@ public class TileMap {
     public void clear() {
     }
 
-    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    private BitmapHolder findTile(String name) {
+        if(null == name) {
+            return null;
+        }
+        for(int tile = 0; tile < numTilesMax; tile++) {
+            if(mBitmapCache[tile] != null) {
+                if(mBitmapCache[tile].getName() != null) {
+                    if(mBitmapCache[tile].getName().equals(name)) {
+                        return(mBitmapCache[tile]);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    private BitmapHolder findTileNotInMapB() {
+        boolean found;
+        for(int tile = 0; tile < numTilesMax; tile++) {
+            if(mBitmapCache[tile] == null) {
+                continue;
+            }
+            found = false;
+            for(int tileb = 0; tileb < numTiles; tileb++) {
+                if(mapB[tileb] == null) {
+                    continue;
+                }
+                if(mapB[tileb].getName() == null) {
+                    continue;
+                }
+                if(mBitmapCache[tile].getName() == null) {
+                    return(mBitmapCache[tile]);
+                }
+                if(mBitmapCache[tile].getName().equals(mapB[tileb].getName())) {
+                    found = true;
+                }
+            }
+            if(!found) {
+                return(mBitmapCache[tile]);
+            }
+        }
+        return null;
+    }
+
     /**
      * 
      * When a new string of names are available for a new region, reload
@@ -116,35 +144,37 @@ public class TileMap {
          * For all tiles that will be re-used, find from cache.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
-                        
-            mapB[tilen] = null;
+            mapB[tilen] = findTile(tileNames[tilen]);
+        }
+
+        /*
+         * For all tiles that will be loaded.
+         */
+        for(int tilen = 0; tilen < numTiles; tilen++) {
             
-            /*
-             * Only happens when out of chart?
-             */
             if(null == tileNames[tilen]) {
+                /*
+                 * Map out?
+                 */
                 continue;
             }
-
-            /*
-             * Put in cache
-             */
-            Bitmap m = mBitmapCache.get(tileNames[tilen]);
-            if (m == null) {
-                BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen]);
-                m = b.getBitmap();
-                if(m != null) {
-                    mBitmapCache.put(tileNames[tilen], m);
-                }
-            } 
-
-            /*
-             * Tack a BitmapHolder header on top.
-             */
-            if(null != m) {
-                mapB[tilen] = new BitmapHolder(m, tileNames[tilen]);
+            
+            if(null != mapB[tilen]) {
+                /*
+                 * This is reused
+                 */
+                continue;
             }
-        }        
+            
+            BitmapHolder h = findTileNotInMapB();
+            if(h != null) {
+                BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen]);
+                h.drawInBitmap(b, tileNames[tilen]); 
+                mapB[tilen] = h;
+                b.recycle();
+                b = null;
+            }
+        }
     }
 
     /**
@@ -158,7 +188,10 @@ public class TileMap {
      * 
      */
     public void recycleBitmaps() {
-        mBitmapCache.evictAll();
+        for(int tile = 0; tile < numTilesMax; tile++) {
+            mBitmapCache[tile].recycle();
+            mBitmapCache[tile] = null;
+        }
     }
     
     /**

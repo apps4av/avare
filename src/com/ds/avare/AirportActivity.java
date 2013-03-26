@@ -110,9 +110,11 @@ public class AirportActivity extends Activity {
                              * Show graphics
                              */
                             mAirport.setVisibility(View.INVISIBLE);
+                            mAfdView.setVisibility(View.VISIBLE);
                         }
                         else {
                             mAirport.setVisibility(View.VISIBLE);                            
+                            mAfdView.setVisibility(View.INVISIBLE);
                             mService.loadDiagram(null);
                             mAfdView.setBitmap(null);
                         }
@@ -163,6 +165,7 @@ public class AirportActivity extends Activity {
                 mAfdView.setBitmap(null);
                 mToast.setText(getString(R.string.ValidDest));
                 mAirport.setVisibility(View.VISIBLE);
+                mAfdView.setVisibility(View.INVISIBLE);
                 mToast.show();
                 return;
             }
@@ -193,6 +196,7 @@ public class AirportActivity extends Activity {
             if((!mDestination.isFound()) || (mDestination.getAfd() == null)) {
                 mAfdView.setBitmap(null);
                 mAirport.setVisibility(View.VISIBLE);
+                mAfdView.setVisibility(View.INVISIBLE);
                 return;                
             }
             

@@ -293,6 +293,8 @@ public class StorageService extends Service {
         }
         mTiles = null;
         
+        System.gc();
+        
         if(mTimer != null) {
             mTimer.cancel();
         }
@@ -461,8 +463,9 @@ public class StorageService extends Service {
              * Clean old one first
              */
             mDiagramBitmap.recycle();
+            mDiagramBitmap = null;
+            System.gc();
         }
-        mDiagramBitmap = null;
         if(null != name) {
             mDiagramBitmap = new BitmapHolder(name);            
         }
