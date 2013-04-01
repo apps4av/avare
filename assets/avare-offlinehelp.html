@@ -35,9 +35,9 @@ costs down, allowing for the application to be free to all. Thank you.<br>
 <h3 style="text-align: center;">Avare Releases</h3>
 
 <span style="font-weight: bold; outline-color: navy ! important;"></span><span style="font-weight: bold; outline-color: navy ! important;">3.6.9</span><span style="font-weight: bold; outline-color: navy ! important;">&nbsp;</span>
-Added terrain maps. In later versions, these maps will be used to add
-terrain proximity alerts. Right now these are just for viewing in gray
-scale.<br>
+Added terrain maps, and terrain proximity charts. Read the help below
+for how to use this feature. Comments and suggestions for improvments
+requested.<br>
 <span style="font-weight: bold; outline-color: navy ! important;">3.6.8</span><span style="font-weight: bold; outline-color: navy ! important;">&nbsp;</span> Bug fix release. Fix for crash in drawing. Added variation to text display in top left.<br>
 <span style="font-weight: bold; outline-color: navy ! important;">3.6.7</span><span style="font-weight: bold; outline-color: navy ! important;">&nbsp;</span> Bug fix release. Tearing while drawing has been fixed.<br>
 <span style="font-weight: bold; outline-color: navy ! important;">3.6.6</span><span style="font-weight: bold; outline-color: navy ! important;">&nbsp;</span> Bug fix release. Fixed a crash bug when memory ran out on some devices.<br>
@@ -62,6 +62,8 @@ Offline Intro.</p>
 
 <p>&#8226;<a title="Airport Diagrams" href="avare-offlinehelp.html#Diags">Airport
 Diagrams</a> - Intro.</p>
+<p>&#8226;<a title="Airport Diagrams" href="avare-offlinehelp.html#Terrain">Terrain Maps/Proximity Processing</a> - Intro.</p>
+
 
 <p>&#8226;<a title="Airport Diagrams" href="#Terminal">Terminal Procedures,
 Graphical A/FD Pages</a> - Intro.</p>
@@ -352,7 +354,40 @@ downloaded. A/FD pages appear in the end of the drop down list, and are
 named according to the page number of an A/FD directory for that
 particular region. Note that textual A/FD does not require downloading
 the graphical A/FD.<br>
+<br>
 
+
+<p>
+</p>
+
+
+<hr size="1">
+<h3 style="text-align: center;"><a name="Terrain">Terrain Maps / Proximity Processing</a> -
+Intro</h3>
+
+
+<p>&#8226;<strong>Terrain Maps</strong><br>Avare provides USGS 1 arc second
+terrain maps.&nbsp; These maps can be downloaded from the download menu
+under "Terrain".&nbsp; Maps are divided on longitude. Each map covers
+10 degrees longitude over the continental US.<br>
+</p>
+
+
+<p style="padding-left: 30px;">Terrain maps show elevation around your current position.&nbsp; Visible areas are at or above your GPS calculated altitude.&nbsp;
+Black areas are below your current GPS altitude. Note that GPS altitude
+is not accurate. Give good margin of error to the calculations.<br>
+</p>
+&#8226;<strong>Proximity Processing<br>
+</strong>Two slide bars are provided on the "Map" view when Terrain charts are selected from the Preferences. <br>
+<br>
+The left bar is used to increase the brightness/contrast of the maps.<br>
+<br>
+The right bar is slaved to the GPS altitude, and moves as the GPS
+altitude changes in relationship with your true altitude.&nbsp;
+However, you can move this bar temporarily, to simulate climbing or
+decending. As you move this bar, ground proximity is redrawn to show
+the relationship of ground elevataion around your current position to
+the bar indicated altitude.<br>
 <p>
 </p>
 
