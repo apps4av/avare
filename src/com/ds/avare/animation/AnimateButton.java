@@ -28,7 +28,7 @@ public class AnimateButton {
     private boolean mShowing;
     private Context mContext;
     private Button mButton;
-    private View mReplaces;
+    private View mReplaces[];
     private int mDir;
     
     public static final int DIRECTION_L_R = 1;
@@ -37,22 +37,22 @@ public class AnimateButton {
     /**
      * 
      */
-    public AnimateButton(Context ctx, Button b, View replaces, int direction) {
+    public AnimateButton(Context ctx, Button b, int direction, View... replaces) {
         mContext = ctx;
         mShowing = false;
         mButton = b;
         mDir = direction;
+        /*
+         * The view this animate hides
+         */
+        mReplaces = replaces;
+        
         if(null == replaces) {
             /*
              * Dummy
              */
-            mReplaces = new View(ctx);
-        }
-        else {
-            /*
-             * The view this animate hides
-             */
-            mReplaces = replaces;
+            mReplaces = new View[1];
+            mReplaces[0] = new View(ctx);
         }
     }
     
@@ -98,7 +98,9 @@ public class AnimateButton {
                      * Set invisible when not animating
                      */
                     mButton.setVisibility(Button.INVISIBLE);
-                    mReplaces.setVisibility(Button.VISIBLE);
+                    for(int v = 0; v < mReplaces.length; v++) {
+                        mReplaces[v].setVisibility(Button.VISIBLE);
+                    }
                 }
                 else {
                     /*
@@ -118,7 +120,9 @@ public class AnimateButton {
                     /*
                      * Set visible when animating
                      */
-                    mReplaces.setVisibility(Button.INVISIBLE);
+                    for(int v = 0; v < mReplaces.length; v++) {
+                        mReplaces[v].setVisibility(Button.INVISIBLE);
+                    }
                     mButton.setVisibility(Button.VISIBLE);
                 }
             }

@@ -20,6 +20,29 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <TextView
+            android:id="@+id/location_text_altitude"
+            android:textColor="#FF00FF00"          
+            android:layout_width="80dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/location_seekbar_threshold">
+        </TextView>
+        
+        <SeekBar
+            android:id="@+id/location_seekbar_factor"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/location_button_menu"
+            android:layout_alignParentLeft="true"/>
+
+        <SeekBar
+            android:id="@+id/location_seekbar_threshold"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/location_button_menu"
+            android:layout_alignParentRight="true"/>
+        
         <Button
             android:id="@+id/location_button_dest"
             android:textStyle="bold"
@@ -93,7 +116,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/center"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"/>
-        
+
         <ToggleButton
             android:id="@+id/location_button_track"
             android:layout_width="wrap_content"
@@ -102,8 +125,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:textOff="@string/NorthUp"
             android:textOn="@string/TrackUp"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
+
+        
         
 </RelativeLayout>
 

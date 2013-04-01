@@ -56,7 +56,61 @@ public class Helper {
        ColorMatrix cm = new ColorMatrix(mx);
        paint.setColorFilter(new ColorMatrixColorFilter(cm));
     }
-    
+
+    /**
+     * See the explanation in the function setThreshold. 
+     * @param altitude
+     * @return
+     */
+    public static String calculateAltitudeFromThreshold(int threshold) {
+        double altitude = (threshold - 5) * Preferences.heightConversion * 50.0;
+        return(String.format(Locale.getDefault(), "%05dft", (int)altitude));
+    }
+
+    /**
+     * See the explanation in the function setThreshold. 
+     * @param altitude
+     * @return
+     */
+    public static int calculateThreshold(double altitude) {
+        double threshold = altitude / Preferences.heightConversion / 50.0; 
+        return((int)Math.round(threshold) + 5);
+    }
+
+    /**
+     * 
+     * @param paint
+     */
+    public static void setThreshold(Paint paint, float threshold, float factor) {
+        /*
+         * Elevation matrix. This will threshold the elevation with GPS altitude.
+         * The factor is used to increase the brightness for a given elevation map.
+         * Elevation map is prepared so that altitudes from 0-5000 meter are encoded with 0-200 pixel values.
+         * Each pixel level is 25 meter. 
+         * 
+         * Negative sign for black threshold instead of white.
+         * Threshold of to 0 to 100 translated to 0 - 200 for all pixels thresholded at 5000 meters.
+         * 
+         * Calibrated (visually) at 
+         * KRNO - 1346 meters, threshold - 5 = 28
+         * KLXV - 3027 meters, threshold - 5 = 61
+         * L70  - 811  meters, threshold - 5 = 16
+         * KHIE - 326  meters, threshold - 5 = 7
+         *--------------------------------------------
+         *       5510                        = 112  ~ 50
+         * Formula to calculate threshold is:
+         * threshold = altitude / 3 (meters per foot) / 50 + 5 
+         */
+        float mx [] = {
+                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
+                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
+                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
+                0     , 0,  0,   1,  0,
+       };
+       ColorMatrix cm = new ColorMatrix(mx);
+       paint.setColorFilter(new ColorMatrixColorFilter(cm));
+    }
+
     /**
      * 
      * @param paint

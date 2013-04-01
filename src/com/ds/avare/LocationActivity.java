@@ -43,6 +43,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -95,6 +98,9 @@ public class LocationActivity extends Activity implements Observer {
     private Button mMenuButton;
     private Button mTrackButton;
     private Bundle mExtras;
+    private SeekBar mBar;
+    private SeekBar mBar2;
+    private TextView mAltitudeText;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -114,7 +120,15 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
-                mLocationView.updateParams(params); 
+                mLocationView.updateParams(params);
+                
+                /*
+                 * For terrain update threshold.
+                 */
+                int threshold = Helper.calculateThreshold(params.getAltitude());
+                mBar2.setProgress(threshold);
+                mAltitudeText.setText(Helper.calculateAltitudeFromThreshold(threshold));
+                mLocationView.updateThreshold(threshold);
             }
         }
 
@@ -232,11 +246,51 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null, AnimateButton.DIRECTION_L_R);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     a.animate(true);
                 }
             }
             
+        });
+
+        mAltitudeText = (TextView)view.findViewById(R.id.location_text_altitude);
+
+        mBar = (SeekBar)view.findViewById(R.id.location_seekbar_factor);
+        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
+
+            @Override       
+            public void onStopTrackingTouch(SeekBar seekBar) {      
+            }       
+
+            @Override       
+            public void onStartTrackingTouch(SeekBar seekBar) {     
+            }       
+
+            @Override       
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                /*
+                 * This should give a brightness enhancement of 10
+                 */
+                mLocationView.updateFactor((progress + 10) / 10);
+            }       
+        });
+
+        mBar2 = (SeekBar)view.findViewById(R.id.location_seekbar_threshold);
+        mBar2.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
+
+            @Override       
+            public void onStopTrackingTouch(SeekBar seekBar) {      
+            }       
+
+            @Override       
+            public void onStartTrackingTouch(SeekBar seekBar) {     
+            }       
+
+            @Override       
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mLocationView.updateThreshold(progress);
+                mAltitudeText.setText(Helper.calculateAltitudeFromThreshold(progress));
+            }       
         });
 
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
@@ -256,10 +310,10 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, mMenuButton, AnimateButton.DIRECTION_L_R);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, mCenterButton, AnimateButton.DIRECTION_L_R);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, mTrackButton, AnimateButton.DIRECTION_L_R);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, null, AnimateButton.DIRECTION_L_R);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton);
+                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 b.animate(true);
                 d.animate(true);
                 e.animate(true);
@@ -371,6 +425,7 @@ public class LocationActivity extends Activity implements Observer {
             }
             
         });
+
 
         /*
          * Throw this in case GPS is disabled.
@@ -510,7 +565,6 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mExtras = null;
             }
-
         }
 
         /* (non-Javadoc)
@@ -543,6 +597,20 @@ public class LocationActivity extends Activity implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        /*
+         * Contrast bars only in terrain view
+         */
+        if(mPref.getChartType().equals("5")) {
+            mBar.setVisibility(View.VISIBLE);
+            mBar2.setVisibility(View.VISIBLE);
+            mAltitudeText.setVisibility(View.VISIBLE);
+        }
+        else {
+            mBar.setVisibility(View.INVISIBLE);
+            mBar2.setVisibility(View.INVISIBLE);
+            mAltitudeText.setVisibility(View.INVISIBLE);
+        }
     }
     
     /* (non-Javadoc)

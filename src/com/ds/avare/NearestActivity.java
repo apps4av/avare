@@ -220,7 +220,7 @@ public class NearestActivity extends Activity  implements Observer {
                     }              
                     
                     mDestButton.setText(mService.getArea().getAirport(position).getId());
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, null, AnimateButton.DIRECTION_L_R);
+                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     a.animate(true);
                 }
             });
