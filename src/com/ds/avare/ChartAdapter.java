@@ -61,7 +61,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_WAC = 4;
     private static final int GROUP_IFRLE = 5;
     private static final int GROUP_AFD = 6;
-    private static final int GROUP_NUM = 7;
+    private static final int GROUP_TERRAIN = 7;
+    private static final int GROUP_NUM = 8;
     
     /**
      * @param context
@@ -86,6 +87,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_WAC] = context.getResources().getStringArray(R.array.resNameWAC);
         mChildren[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resNameIFRLE);
         mChildren[GROUP_AFD] = context.getResources().getStringArray(R.array.resNameAFD);
+        mChildren[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resNameTerrain);
         /*
          * Assign children file names
          */
@@ -97,6 +99,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mChildrenFiles[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
         mChildrenFiles[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
+        mChildrenFiles[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
         
         /*
          * Allocate space for versions
@@ -110,6 +113,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mVers[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
         mVers[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
+        mVers[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
         
         /*
          * Allocate space for checked charts
@@ -122,6 +126,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_WAC] = new boolean[mVers[GROUP_WAC].length];
         mChecked[GROUP_IFRLE] = new boolean[mVers[GROUP_IFRLE].length];
         mChecked[GROUP_AFD] = new boolean[mVers[GROUP_AFD].length];
+        mChecked[GROUP_TERRAIN] = new boolean[mVers[GROUP_TERRAIN].length];
         
         /*
          * Get various bitmaps
