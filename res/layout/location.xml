@@ -14,33 +14,27 @@ Redistribution and use in source and binary forms, with or without modification,
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
         <com.ds.avare.LocationView
             android:background="#FF000000"
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/location_text_altitude"
-            android:textColor="#FF00FF00"          
-            android:layout_width="80dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_above="@+id/location_seekbar_threshold">
-        </TextView>
         
-        <SeekBar
+        <com.ds.avare.VerticalSeekBar
             android:id="@+id/location_seekbar_factor"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:progressDrawable="@android:color/transparent"
+            android:layout_above="@+id/location_button_gps"
             android:layout_alignParentLeft="true"/>
 
-        <SeekBar
+        <com.ds.avare.VerticalSeekBar
             android:id="@+id/location_seekbar_threshold"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:progressDrawable="@android:color/transparent"
+            android:layout_above="@+id/location_button_gps"
             android:layout_alignParentRight="true"/>
         
         <Button

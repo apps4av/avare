@@ -45,7 +45,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -98,9 +97,8 @@ public class LocationActivity extends Activity implements Observer {
     private Button mMenuButton;
     private Button mTrackButton;
     private Bundle mExtras;
-    private SeekBar mBar;
-    private SeekBar mBar2;
-    private TextView mAltitudeText;
+    private VerticalSeekBar mBar;
+    private VerticalSeekBar mBar2;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -127,7 +125,6 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 int threshold = Helper.calculateThreshold(params.getAltitude());
                 mBar2.setProgress(threshold);
-                mAltitudeText.setText(Helper.calculateAltitudeFromThreshold(threshold));
                 mLocationView.updateThreshold(threshold);
             }
         }
@@ -253,9 +250,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mAltitudeText = (TextView)view.findViewById(R.id.location_text_altitude);
-
-        mBar = (SeekBar)view.findViewById(R.id.location_seekbar_factor);
+        mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_factor);
         mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
 
             @Override       
@@ -275,7 +270,7 @@ public class LocationActivity extends Activity implements Observer {
             }       
         });
 
-        mBar2 = (SeekBar)view.findViewById(R.id.location_seekbar_threshold);
+        mBar2 = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
         mBar2.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
 
             @Override       
@@ -289,7 +284,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override       
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mLocationView.updateThreshold(progress);
-                mAltitudeText.setText(Helper.calculateAltitudeFromThreshold(progress));
             }       
         });
 
@@ -604,12 +598,10 @@ public class LocationActivity extends Activity implements Observer {
         if(mPref.getChartType().equals("5")) {
             mBar.setVisibility(View.VISIBLE);
             mBar2.setVisibility(View.VISIBLE);
-            mAltitudeText.setVisibility(View.VISIBLE);
         }
         else {
             mBar.setVisibility(View.INVISIBLE);
             mBar2.setVisibility(View.INVISIBLE);
-            mAltitudeText.setVisibility(View.INVISIBLE);
         }
     }
     

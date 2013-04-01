@@ -59,12 +59,12 @@ public class Helper {
 
     /**
      * See the explanation in the function setThreshold. 
-     * @param altitude
+     * @param altitude in FL for printing
      * @return
      */
     public static String calculateAltitudeFromThreshold(int threshold) {
-        double altitude = (threshold - 5) * Preferences.heightConversion * 50.0;
-        return(String.format(Locale.getDefault(), "%05dft", (int)altitude));
+        double altitude = (threshold - 0) * Preferences.heightConversion * 50.0 / 100.0;
+        return(String.format(Locale.getDefault(), "FL%03d", (int)altitude));
     }
 
     /**
@@ -74,7 +74,7 @@ public class Helper {
      */
     public static int calculateThreshold(double altitude) {
         double threshold = altitude / Preferences.heightConversion / 50.0; 
-        return((int)Math.round(threshold) + 5);
+        return((int)Math.round(threshold) + 0);
     }
 
     /**
@@ -202,10 +202,10 @@ public class Helper {
         int var = (int)Math.round(variation);
         String ret = String.format(Locale.getDefault(), "%02d", var);
         if(var < 0) {
-            ret = var + "\u00B0E";
+            ret = "E" + var + "\u00B0";
         }
         else {
-            ret = var + "\u00B0W";
+            ret = "W" + var + "\u00B0";
         }
         return ret;
     }

@@ -512,7 +512,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      */
                     Helper.invertCanvasColors(mPaint);
                 }
-                if(mPref.getChartType().equals("5")) {
+                else if(mPref.getChartType().equals("5")) {
                     /*
                      * Terrain
                      */
@@ -621,23 +621,29 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(
                     Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "     ", mGpsParams.getBearing()),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
+            
         }
-        
+
         /*
          * Variation
          */
+        /*
+         * Altitude
+         */
+        mPaint.setColor(TEXT_COLOR);
+        mPaint.setTextAlign(Align.LEFT);
+        canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, getHeight() / mTextDiv * 2, mPaint);
+
         if(mService != null) {
             if(mService.getArea().getAirportsNumber() > 0) {
                 mPaint.setColor(TEXT_COLOR);
-
-                mPaint.setTextAlign(Align.LEFT);
-                
+                mPaint.setTextAlign(Align.RIGHT);
                 /*
                  * Variation
                  */
                 canvas.drawText(Helper.makeVariation(mService.getArea().getVariation()),
-                        0, getHeight() / mTextDiv * 2, mPaint);
-            }
+                        getWidth(), getHeight() / mTextDiv * 3, mPaint);
+            }            
         }
         
         /*
