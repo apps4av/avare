@@ -14,13 +14,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<ListPreference
-	    android:key="@string/ChartType"
-	    android:title="@string/ChartTypeLabel"
-		android:summary="@string/ChartTypeSummary"
-		android:entries="@array/ChartType"
-		android:defaultValue="0"
-		android:entryValues="@array/ChartTypeValues"/>
 	<EditTextPreference
 	    android:key="@string/Maps"
 	    android:title="@string/MapsLabel"

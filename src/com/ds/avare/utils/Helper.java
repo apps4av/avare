@@ -63,7 +63,7 @@ public class Helper {
      * @return
      */
     public static String calculateAltitudeFromThreshold(int threshold) {
-        double altitude = (threshold - 0) * Preferences.heightConversion * 50.0 / 100.0;
+        double altitude = (threshold) * Preferences.heightConversion * 50.0 / 100.0;
         return(String.format(Locale.getDefault(), "FL%03d", (int)altitude));
     }
 
@@ -74,14 +74,14 @@ public class Helper {
      */
     public static int calculateThreshold(double altitude) {
         double threshold = altitude / Preferences.heightConversion / 50.0; 
-        return((int)Math.round(threshold) + 0);
+        return((int)Math.round(threshold));
     }
 
     /**
      * 
      * @param paint
      */
-    public static void setThreshold(Paint paint, float threshold, float factor) {
+    public static void setThreshold(Paint paint, float threshold) {
         /*
          * Elevation matrix. This will threshold the elevation with GPS altitude.
          * The factor is used to increase the brightness for a given elevation map.
@@ -92,20 +92,22 @@ public class Helper {
          * Threshold of to 0 to 100 translated to 0 - 200 for all pixels thresholded at 5000 meters.
          * 
          * Calibrated (visually) at 
-         * KRNO - 1346 meters, threshold - 5 = 28
-         * KLXV - 3027 meters, threshold - 5 = 61
-         * L70  - 811  meters, threshold - 5 = 16
-         * KHIE - 326  meters, threshold - 5 = 7
+         * KRNO - 1346 meters, threshold = 28
+         * KLXV - 3027 meters, threshold = 61
+         * L70  - 811  meters, threshold = 16
+         * KHIE - 326  meters, threshold = 7
          *--------------------------------------------
-         *       5510                        = 112  ~ 50
+         *       5510                    = 112  ~ 50 meters per px
          * Formula to calculate threshold is:
-         * threshold = altitude / 3 (meters per foot) / 50 + 5 
+         * threshold = altitude / 3 (meters per foot) / 50
+         * Give 2 levels margin of safety
          */
+        float factor = 10.f;
         float mx [] = {
-                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
-                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
-                factor, 0,  0,   0,  -(factor) * threshold * 2.0f,
-                0     , 0,  0,   1,  0,
+                factor, 0,             0,             0,  -(factor) * (threshold - 2) * 2.0f,
+                0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 2) * 2.0f,
+                0,      0,             factor / 2.0f, 0,  -(factor) * (threshold - 2) * 2.0f,
+                0     , 0,             0,             1,  0
        };
        ColorMatrix cm = new ColorMatrix(mx);
        paint.setColorFilter(new ColorMatrixColorFilter(cm));

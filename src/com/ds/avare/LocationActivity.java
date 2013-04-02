@@ -42,9 +42,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -96,9 +99,9 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDownloadButton;
     private Button mMenuButton;
     private Button mTrackButton;
+    private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
-    private VerticalSeekBar mBar2;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -124,7 +127,7 @@ public class LocationActivity extends Activity implements Observer {
                  * For terrain update threshold.
                  */
                 int threshold = Helper.calculateThreshold(params.getAltitude());
-                mBar2.setProgress(threshold);
+                mBar.setProgress(threshold);
                 mLocationView.updateThreshold(threshold);
             }
         }
@@ -250,28 +253,30 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_factor);
-        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
-
-            @Override       
-            public void onStopTrackingTouch(SeekBar seekBar) {      
-            }       
-
-            @Override       
-            public void onStartTrackingTouch(SeekBar seekBar) {     
-            }       
-
-            @Override       
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        mChartSpinner = (Spinner)view.findViewById(R.id.location_spinner_chart);
+        mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            
+            public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+                mPref.setChartType("" + id);
                 /*
-                 * This should give a brightness enhancement of 10
+                 * Contrast bars only in terrain view
                  */
-                mLocationView.updateFactor((progress + 10) / 10);
-            }       
+                if(mPref.getChartType().equals("5")) {
+                    mBar.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mBar.setVisibility(View.INVISIBLE);
+                }
+                mLocationView.forceReload();                
+            }
+           
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
         });
-
-        mBar2 = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
-        mBar2.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
+        
+        mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
+        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
 
             @Override       
             public void onStopTrackingTouch(SeekBar seekBar) {      
@@ -590,19 +595,7 @@ public class LocationActivity extends Activity implements Observer {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        
-        /*
-         * Contrast bars only in terrain view
-         */
-        if(mPref.getChartType().equals("5")) {
-            mBar.setVisibility(View.VISIBLE);
-            mBar2.setVisibility(View.VISIBLE);
-        }
-        else {
-            mBar.setVisibility(View.INVISIBLE);
-            mBar2.setVisibility(View.INVISIBLE);
-        }
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);        
     }
     
     /* (non-Javadoc)

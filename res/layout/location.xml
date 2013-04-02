@@ -22,20 +22,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"/>
         
         <com.ds.avare.VerticalSeekBar
-            android:id="@+id/location_seekbar_factor"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:progressDrawable="@android:color/transparent"
-            android:layout_above="@+id/location_button_gps"
-            android:layout_alignParentLeft="true"/>
-
-        <com.ds.avare.VerticalSeekBar
             android:id="@+id/location_seekbar_threshold"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:progressDrawable="@android:color/transparent"
             android:layout_above="@+id/location_button_gps"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentLeft="true"/>
         
         <Button
             android:id="@+id/location_button_dest"
@@ -99,30 +91,39 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location_button_help"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
             android:drawableLeft="@drawable/menu"
             android:visibility="visible" />
-
-        <Button
-            android:id="@+id/location_button_center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/center"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"/>
 
         <ToggleButton
             android:id="@+id/location_button_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@+id/location_button_center"
             android:textOff="@string/NorthUp"
             android:textOn="@string/TrackUp"
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        
-        
+        <Spinner
+            android:id="@+id/location_spinner_chart"
+            android:layout_width="wrap_content"
+            android:entries="@array/ChartType"
+            android:entryValues="@array/ChartTypeValues"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/location_button_center"
+            android:layout_alignParentBottom="true"/>
+
+        <Button
+            android:id="@+id/location_button_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:drawableLeft="@drawable/center" />
+
 </RelativeLayout>
 

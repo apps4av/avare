@@ -195,11 +195,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private boolean                   mTrackUp;
     
     /*
-     * Factor for brightness/contrast in terrain map
-     */
-    private int                        mFactor;
-
-    /*
      * Threshold for terrain
      */
     private int                        mThreshold;
@@ -239,7 +234,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
         mTrackUp = false;
-        mFactor = 1;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -516,7 +510,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Terrain
                      */
-                    Helper.setThreshold(mPaint, mThreshold, mFactor);
+                    Helper.setThreshold(mPaint, mThreshold);
                 }
                 
                 /*
@@ -911,15 +905,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	drawMETARText(canvas);
     	drawCornerTexts(canvas);
     }    
-
-    /**
-     * 
-     * @param factor
-     */
-    public void updateFactor(int factor) {
-        mFactor = factor;
-        invalidate();
-    }
 
     /**
      * 
