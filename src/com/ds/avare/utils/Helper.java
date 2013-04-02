@@ -102,11 +102,11 @@ public class Helper {
          * threshold = altitude / 3 (meters per foot) / 50
          * Give 2 levels margin of safety
          */
-        float factor = 10.f;
+        float factor = 8.f;
         float mx [] = {
-                factor, 0,             0,             0,  -(factor) * (threshold - 2) * 2.0f,
-                0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 2) * 2.0f,
-                0,      0,             factor / 2.0f, 0,  -(factor) * (threshold - 2) * 2.0f,
+                factor, 0,             0,             0,  -(factor) * (threshold - 5) * 2.0f,
+                0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 5) * 2.0f,
+                0,      0,             factor / 2.0f, 0,  -(factor) * (threshold - 5) * 2.0f,
                 0     , 0,             0,             1,  0
        };
        ColorMatrix cm = new ColorMatrix(mx);

@@ -429,8 +429,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Sectional</item>
         <item>TAC</item>
         <item>WAC</item>
-        <item>IFR Low Enroute</item>
-        <item>IFR High Enroute</item>
+        <item>IFR Low</item>
+        <item>IFR High</item>
     	<item>Terrain</item>
     </string-array>
 

@@ -102,6 +102,7 @@ public class LocationActivity extends Activity implements Observer {
     private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
+    private boolean mSpinner;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -219,6 +220,7 @@ public class LocationActivity extends Activity implements Observer {
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
+        mSpinner = false;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -257,6 +259,14 @@ public class LocationActivity extends Activity implements Observer {
         mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             
             public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+                if(mSpinner == false) {
+                    /*
+                     * Shitty spinner calls this when inflated. Send it back on inflation.
+                     */
+                    mSpinner = true;
+                    mChartSpinner.setSelection(Integer.parseInt(mPref.getChartType()));
+                    return;
+                }
                 mPref.setChartType("" + id);
                 /*
                  * Contrast bars only in terrain view
@@ -309,7 +319,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton, mChartSpinner);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
@@ -564,6 +574,11 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mExtras = null;
             }
+
+            /*
+             * Force reload
+             */
+            mLocationView.forceReload();
         }
 
         /* (non-Javadoc)
