@@ -197,7 +197,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Threshold for terrain
      */
-    private int                        mThreshold;
+    private float                      mThreshold;
 
     /*
      * Shadow length 
@@ -612,8 +612,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Heading, Speed
              */
+            String var = "     ";
+            if(mService != null) {
+                if(mService.getArea().getAirportsNumber() > 0) {
+                    var = Helper.makeVariation(mService.getArea().getVariation());
+                }            
+            }            
+
             canvas.drawText(
-                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "     ", mGpsParams.getBearing()),
+                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "", mGpsParams.getBearing(), var),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
             
         }
@@ -628,18 +635,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setTextAlign(Align.LEFT);
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, getHeight() / mTextDiv * 2, mPaint);
 
-        if(mService != null) {
-            if(mService.getArea().getAirportsNumber() > 0) {
-                mPaint.setColor(TEXT_COLOR);
-                mPaint.setTextAlign(Align.RIGHT);
-                /*
-                 * Variation
-                 */
-                canvas.drawText(Helper.makeVariation(mService.getArea().getVariation()),
-                        getWidth(), getHeight() / mTextDiv * 3, mPaint);
-            }            
-        }
-        
         /*
          * Point top right
          */
@@ -649,7 +644,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Draw distance from point
              */
-            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing()),
+            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing(), ""),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
             canvas.drawText(mPointProjection.getGeneralDirectionFrom(),
@@ -910,7 +905,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param factor
      */
-    public void updateThreshold(int threshold) {
+    public void updateThreshold(float threshold) {
         mThreshold = threshold;
         invalidate();
     }

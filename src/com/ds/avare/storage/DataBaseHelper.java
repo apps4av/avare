@@ -229,7 +229,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             ret[it] = 0;
         }
         
-        Cursor cursor = doQuery("select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "==\"" + name +"\"");
+        Cursor cursor = doQuery("select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "=='" + name +"'");
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
@@ -256,7 +256,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public Tile findTile(String name) {
-        Cursor cursor = doQuery("select * from " + TABLE_FILES + " where " + TILE_NAME + "==\"" + name +"\"");
+        Cursor cursor = doQuery("select * from " + TABLE_FILES + " where " + TILE_NAME + "=='" + name +"'");
         Tile tile = null;
 
         try {
@@ -305,7 +305,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          */
         String qry = "select * from " + TABLE_AIRPORTS;
         if(!mPref.shouldShowAllFacilities()) {
-            qry += " where " + TYPE_DB + "==\"AIRPORT\" ";
+            qry += " where " + TYPE_DB + "=='AIRPORT' ";
         }
         qry += " order by ((" + 
                 lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
@@ -423,7 +423,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             types = TABLE_FIX;
         }
 
-        cursor = doQuery("select * from " + types + " where " + LOCATION_ID_DB + "==\"" + name + "\";");
+        cursor = doQuery("select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';");
 
         try {
             if(cursor != null) {
@@ -467,8 +467,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             return;
         }
             
-        cursor = doQuery("select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "==\"" + name                            
-                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";");
+        cursor = doQuery("select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';");
 
         try {
             /*
@@ -493,8 +493,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);
 
 
-        cursor = doQuery("select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "==\"" + name
-                + "\" or " + LOCATION_ID_DB + "==\"K" + name + "\";");
+        cursor = doQuery("select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';");
         
         try {
             /*
@@ -619,7 +619,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          */
         String qry = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS;
         if(!mPref.shouldShowAllFacilities()) {
-            qry +=  " where " + TYPE_DB + "==\"AIRPORT\" and ((";
+            qry +=  " where " + TYPE_DB + "=='AIRPORT' and ((";
         }
         else {
             qry += " where ((";
@@ -664,7 +664,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         offset[1] = 0;
         
         Cursor cursor = doQuery(
-                "select * from " + TABLE_FILES + " where " + TILE_NAME + " like \"%tiles/" + mPref.getChartType() + "/%\" and " + 
+                "select * from " + TABLE_FILES + " where " + TILE_NAME + " like '%tiles/" + mPref.getChartType() + "/%' and " + 
                 "((latul - " + lat + ") > 0) and " +
                 "((latll - " + lat + ") < 0) and " + 
                 "((lonul - " + lon + ") < 0) and " + 
@@ -717,7 +717,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public String findAFD(String airportId) {
         
         String ret = null;
-        String qry = "select File from " + TABLE_AFD + " where " + LOCATION_ID_DB + "==" + "\"" + airportId + "\"";
+        String qry = "select File from " + TABLE_AFD + " where " + LOCATION_ID_DB + "==" + "'" + airportId + "'";
         
         Cursor cursor = doQuery(qry);
 

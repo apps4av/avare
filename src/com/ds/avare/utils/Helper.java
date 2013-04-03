@@ -62,9 +62,9 @@ public class Helper {
      * @param altitude in FL for printing
      * @return
      */
-    public static String calculateAltitudeFromThreshold(int threshold) {
-        double altitude = (threshold) * Preferences.heightConversion * 50.0 / 100.0;
-        return(String.format(Locale.getDefault(), "FL%03d", (int)altitude));
+    public static String calculateAltitudeFromThreshold(float threshold) {
+        double altitude = (threshold) * Preferences.heightConversion * 50.0;
+        return(String.format(Locale.getDefault(), "%04dft", (int)altitude));
     }
 
     /**
@@ -72,9 +72,9 @@ public class Helper {
      * @param altitude
      * @return
      */
-    public static int calculateThreshold(double altitude) {
-        double threshold = altitude / Preferences.heightConversion / 50.0; 
-        return((int)Math.round(threshold));
+    public static float calculateThreshold(double altitude) {
+        float threshold = (float)(altitude / Preferences.heightConversion / 50.0); 
+        return(threshold);
     }
 
     /**
@@ -147,10 +147,10 @@ public class Helper {
      * @param heading
      * @return
      */
-    public static String makeLine(double value, String unit, String eta, double heading) {
+    public static String makeLine(double value, String unit, String eta, double heading, String variation) {
         String valTrunc = String.format(Locale.getDefault(), "%4d", (Math.round(value)));
         return 
-                valTrunc + unit + " " +  eta + " " + 
+                valTrunc + unit + " " +  eta + " " + variation +
                 Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
     }
     
@@ -204,10 +204,10 @@ public class Helper {
         int var = (int)Math.round(variation);
         String ret = String.format(Locale.getDefault(), "%02d", var);
         if(var < 0) {
-            ret = "E" + var + "\u00B0";
+            ret = "E" + var + "\u00B0 ";
         }
         else {
-            ret = "W" + var + "\u00B0";
+            ret = "W" + var + "\u00B0 ";
         }
         return ret;
     }

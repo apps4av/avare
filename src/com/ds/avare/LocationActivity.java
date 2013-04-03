@@ -127,8 +127,8 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * For terrain update threshold.
                  */
-                int threshold = Helper.calculateThreshold(params.getAltitude());
-                mBar.setProgress(threshold);
+                float threshold = Helper.calculateThreshold(params.getAltitude());
+                mBar.setProgress(Math.round(threshold));
                 mLocationView.updateThreshold(threshold);
             }
         }

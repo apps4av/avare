@@ -25,7 +25,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resNameDatabase">
-        <item>@string/databases</item>
+        <item>@string/databases_v4</item>
         <item>@string/TFRs</item>
     </string-array>
 

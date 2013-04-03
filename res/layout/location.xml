@@ -101,7 +101,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/location_button_center"
+            android:layout_alignParentRight="true"
             android:textOff="@string/NorthUp"
             android:textOn="@string/TrackUp"
             android:textSize="15sp"
@@ -113,7 +113,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:entries="@array/ChartType"
             android:entryValues="@array/ChartTypeValues"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/location_button_center"
+            android:layout_toRightOf="@+id/location_button_menu"
             android:layout_alignParentBottom="true"/>
 
         <Button

@@ -256,7 +256,7 @@ public class Destination extends Observable {
 			return(mName + "? ");
 		}
 		else {
-			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing); 
+			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, ""); 
 		}
 	}
 	
