@@ -462,8 +462,17 @@ public class Destination extends Observable {
 			mFound = result;
 			if(mFound) {
                 mDbType = mParams.get(DataBaseHelper.TYPE);
-    		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
-    		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                try {
+                    /*
+                     * XXX:
+                     * Wacky KUSE airport sqlite issue
+                     */
+        		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
+        		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                }
+                catch(Exception e) {
+                    mFound = false;
+                }
 			}
 			/*
 			 * Anyone watching if destination found?

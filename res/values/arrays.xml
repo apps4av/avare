@@ -169,6 +169,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>California</item>
 		<item>Colorado</item>
 		<item>Connecticut</item>
+        <item>D.C.</item>
 		<item>Delaware</item>
 		<item>Florida</item>
 		<item>Georgia</item>
@@ -225,7 +226,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v4</item>
+        <item>databases</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -370,6 +371,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>CA</item>
 		<item>CO</item>
 		<item>CT</item>
+        <item>DC</item>
 		<item>DE</item>
 		<item>FL</item>
 		<item>GA</item>
