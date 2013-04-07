@@ -22,6 +22,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Low Enroute Charts</item>
         <item>A/FD Images</item>
         <item>Terrain</item>
+        <item>IFR High Enroute Charts</item>
     </string-array>
     
     <string-array name="resNameDatabase">
@@ -40,7 +41,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>A/FD AK</item>
         <item>A/FD Pacific</item>
     </string-array>
-        
+
+    <string-array name="resNameIFRHE">
+        <item>IFR High Enroute NE</item>
+        <item>IFR High Enroute NC</item>
+        <item>IFR High Enroute NW</item>
+        <item>IFR High Enroute SE</item>
+        <item>IFR High Enroute SC</item>
+        <item>IFR High Enroute SW</item>
+    </string-array>
+    
     <string-array name="resNameIFRLE">
         <item>IFR Low Enroute NE</item>
         <item>IFR Low Enroute NC</item>
@@ -226,7 +236,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v4</item>
+        <item>databases_v5</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -236,6 +246,15 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ELUS_SE</item>
         <item>ELUS_SC</item>
         <item>ELUS_SW</item>
+    </string-array>
+
+    <string-array name="resFilesIFRHE">
+        <item>EHUS_NE</item>
+        <item>EHUS_NC</item>
+        <item>EHUS_NW</item>
+        <item>EHUS_SE</item>
+        <item>EHUS_SC</item>
+        <item>EHUS_SW</item>
     </string-array>
     
     <string-array name="resFilesAFD">

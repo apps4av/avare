@@ -500,7 +500,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     continue;
                 }
 
-                if(mPref.isNightMode() && mPref.getChartType().equals("3")) {
+                if(mPref.isNightMode() && (mPref.getChartType().equals("3") || mPref.getChartType().equals("4"))) {
                     /*
                      * IFR charts invert color at night
                      */
