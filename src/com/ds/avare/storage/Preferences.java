@@ -133,6 +133,28 @@ public class Preferences {
      * 
      * @return
      */
+    public void deleteARecent(String name) {
+        String[] tokens = getRecent();
+        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
+        for(int id = 0; id < l.size(); id++) {
+            if(l.get(id).equals(name)) { 
+                l.remove(id);
+            }
+        }
+        
+        String recent = "";
+        for(int id = 0; id < l.size(); id++) {
+            recent = recent + l.get(id) + ",";
+        }
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.Recent), recent);
+        editor.commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
     public void addToRecent(String name) {
         String[] tokens = getRecent();
         List<String> l = new LinkedList<String>(Arrays.asList(tokens));

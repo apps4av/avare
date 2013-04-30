@@ -26,8 +26,10 @@ import com.ds.avare.utils.Helper;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -63,6 +65,8 @@ public class PlanActivity extends Activity implements Observer {
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     private ProgressBar mProgressBar;
+    private String mDelete;
+    private AlertDialog mDeleteDialog;
     
     /**
      * Current destination info
@@ -143,6 +147,11 @@ public class PlanActivity extends Activity implements Observer {
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        
+        /*
+         * Lose info
+         */
+        mDelete = null;
 
         /*
          * For a search query
@@ -174,6 +183,48 @@ public class PlanActivity extends Activity implements Observer {
                 goTo(id, destType);
             }
         });
+        
+        mSearchListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                    int index, long arg3) {
+                mDelete = mAdapter.getItem(index); 
+                if(mDelete == null) {
+                    return false;
+                }
+                                
+                mDeleteDialog = new AlertDialog.Builder(PlanActivity.this).create();
+                mDeleteDialog.setTitle(getString(R.string.Delete));
+                mDeleteDialog.setCancelable(false);
+                mDeleteDialog.setCanceledOnTouchOutside(false);
+                mDeleteDialog.setButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if(null != mDelete) {
+                            mPref.deleteARecent(mDelete);
+                            initList();
+                        }
+                        mDelete = null;
+                    }
+                });
+                mDeleteDialog.setButton2(getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        mDelete = null;
+                    }
+                });
+                mDeleteDialog.show();        
+
+                return true;
+            }
+        }); 
 
 
         /*
@@ -306,6 +357,14 @@ public class PlanActivity extends Activity implements Observer {
         
         if(null != mSearchText) {
             mSearchText.setText("");
+        }
+
+        if(null != mDeleteDialog) {
+            try {
+                mDeleteDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
         }
 
         /*
