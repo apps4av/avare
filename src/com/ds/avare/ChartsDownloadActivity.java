@@ -193,7 +193,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             return false;
         }
         
-        mDownload = new Download(getApplicationContext());
+        mDownload = new Download(mPref.getRoot());
         mDownload.addObserver(ChartsDownloadActivity.this);
         mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
         

@@ -21,6 +21,12 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:dialogTitle="@string/MapsLabel"
 	    android:dialogMessage="@string/MapsSummary"/>
     <ListPreference
+        android:key="@string/Root"
+        android:title="@string/RootLabel"
+        android:summary="@string/RootSummary"
+        android:entries="@array/Server"
+        android:entryValues="@array/ServerValues"/>
+	<ListPreference
         android:key="@string/Units"
         android:title="@string/UnitsLabel"
         android:summary="@string/UnitsSummary"

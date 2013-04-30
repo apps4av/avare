@@ -123,6 +123,15 @@ public class Preferences {
      * 
      * @return
      */
+    public String getRoot() {
+        String[] sarray = mContext.getResources().getStringArray(R.array.ServerValues); 
+        return(mPref.getString(mContext.getString(R.string.Root), sarray[0]));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public String[] getRecent() {
         String recent = mPref.getString(mContext.getString(R.string.Recent), "");
         String[] tokens = recent.split(",");

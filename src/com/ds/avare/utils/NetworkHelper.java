@@ -48,10 +48,7 @@ import android.content.Context;
  *
  */
 public class NetworkHelper {
-    
-    
-    private static final String root = "http://www.mamba.dreamhosters.com/";
-    
+        
     private static final int blocksize = 8192;
 
     /**
@@ -87,7 +84,7 @@ public class NetworkHelper {
      * 
      * @return
      */
-    public static String getDonationURL() {
+    public static String getDonationURL(String root) {
         return root + "donate.html";
     }
 
@@ -298,7 +295,7 @@ public class NetworkHelper {
      * @param file
      * @return
      */
-    public static String getUrl(String file, String vers) {
+    public static String getUrl(String file, String vers, String root) {
         if(file.equals("TFRs.zip")) {
             return(root + "/" + file);
         }
@@ -309,7 +306,7 @@ public class NetworkHelper {
      * 
      * @return
      */
-    public static String getVersion(String name) {
+    public static String getVersion(String name, String root) {
         
         String vers = null;
         

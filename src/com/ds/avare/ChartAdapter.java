@@ -162,8 +162,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         protected Boolean doInBackground(Void... params) {
 
             vers = mVers.clone();
-            mvers = NetworkHelper.getVersion("");
-            mtfrvers = NetworkHelper.getVersion(mContext.getString(R.string.TFRs));
+            mvers = NetworkHelper.getVersion("", mPref.getRoot());
+            mtfrvers = NetworkHelper.getVersion(mContext.getString(R.string.TFRs), mPref.getRoot());
                        
             /*
              * Always get version in BG because its a network operation

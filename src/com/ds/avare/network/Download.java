@@ -31,7 +31,6 @@ import java.util.zip.ZipFile;
 import com.ds.avare.utils.NetworkHelper;
 
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 /**
@@ -45,6 +44,7 @@ public class Download extends Observable {
     private boolean mStop;
     private String mVersion;
     private String mName;
+    private String mRoot;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -56,11 +56,12 @@ public class Download extends Observable {
      * 
      * @param act
      */
-    public Download(Context ctx) {
+    public Download(String root) {
         mStop = false;
         mDt = null;
         mVersion = null;
         mName = null;
+        mRoot = root;
     }
     
     /**
@@ -139,7 +140,7 @@ public class Download extends Observable {
             String path = sUrl[0];
             mName = sUrl[1];
             byte data[] = new byte[blocksize];
-            mVersion = NetworkHelper.getVersion(mName);
+            mVersion = NetworkHelper.getVersion(mName, mRoot);
             int fileLength;
                         
             try {
@@ -169,7 +170,7 @@ public class Download extends Observable {
                  * Path with file name on local storage
                  */
                 String zipfile = path + "/" + mName + ".zip";
-                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion);
+                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot);
 
                 /* 
                  * Download the file
