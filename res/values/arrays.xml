@@ -469,19 +469,17 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Statute Miles</item>
     </string-array>
 
-    <string-array name="Server">
-        <item>Apps4av.com</item>
-        <item>Kitepilot.org</item>
-    </string-array>
-
-    <string-array name="ServerValues">
-        <item>http://www.mamba.dreamhosters.com/</item>
-        <item>http://avare.kitepilot.org/</item>
-    </string-array>
-    
     <string-array name="UnitsDValues">
         <item>0</item>
         <item>1</item>
     </string-array>       
+    
+    <string-array name="Server">
+        <item>Apps4av.com</item>
+    </string-array>
+
+    <string-array name="ServerValues">
+        <item>0</item>
+    </string-array>
     
 </resources>

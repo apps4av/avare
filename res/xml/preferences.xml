@@ -24,6 +24,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:key="@string/Root"
         android:title="@string/RootLabel"
         android:summary="@string/RootSummary"
+        android:defaultValue="0"
         android:entries="@array/Server"
         android:entryValues="@array/ServerValues"/>
 	<ListPreference

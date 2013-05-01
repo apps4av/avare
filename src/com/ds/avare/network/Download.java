@@ -152,11 +152,11 @@ public class Download extends Observable {
                  */
                 File f = new File(path);
                 if(!f.exists()) {
-                    if(!f.mkdir()) {
+                    if(!f.mkdirs()) {
                         return false;
                     }
                 }
-                
+
                 /*
                  * Make sure someone does not index avare's images.
                  */

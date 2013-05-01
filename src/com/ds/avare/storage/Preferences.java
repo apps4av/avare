@@ -124,8 +124,18 @@ public class Preferences {
      * @return
      */
     public String getRoot() {
-        String[] sarray = mContext.getResources().getStringArray(R.array.ServerValues); 
-        return(mPref.getString(mContext.getString(R.string.Root), sarray[0]));
+        
+        String val = mPref.getString(mContext.getString(R.string.Root), "0");
+        if(val.equals("0")) {
+            /*
+             * I hope Android comes up with a better resource solution some time soon.
+             */
+            return "http://www.mamba.dreamhosters.com/";
+        }
+        else if (val.equals("1")) {
+            return "http://avare.kitepilot.org/";
+        }
+        return("");
     }
 
     /**
