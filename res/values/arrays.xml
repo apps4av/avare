@@ -236,7 +236,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases</item>
+        <item>databases_v5</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -476,10 +476,12 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="Server">
         <item>Apps4av.com</item>
+        <item>Kitepilot.org</item>
     </string-array>
 
     <string-array name="ServerValues">
         <item>0</item>
+        <item>1</item>
     </string-array>
     
 </resources>
