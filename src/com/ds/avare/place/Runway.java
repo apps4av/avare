@@ -25,28 +25,82 @@ public class Runway {
     private double mVariation;
     private double mLon;
     private double mLat;
+    private String mSurface;
+    private String mElevation;
+    private String mLights;
+    private String mThreshold;
+    private String mWidth;
+    private String mLength;
+    private String mPattern;
+    private String mILS;
+    private String mVGSI;
     
     public static final float INVALID = -1000;
    
     /**
      * 
      */
-    public Runway(String number, String variation, String heading, String lon, String lat) {
+    public Runway(String number) {
         mNumber = number;
         mLon = INVALID;
         mLat = INVALID;
-        try {
-            mLon = Double.parseDouble(lon);
-        }
-        catch (Exception e) {
-        }
-        try {
-            mLat = Double.parseDouble(lat);
-        }
-        catch (Exception e) {
-        }
-        mHeading = heading;
-        mVariation = Helper.parseVariation(variation);
+
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getSurface() {
+        return mSurface;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getThreshold() {
+        return mThreshold;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getWidth() {
+        return mWidth;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getLength() {
+        return mLength;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getPattern() {
+        return mPattern;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getLights() {
+        return mLights;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getElevation() {
+        return mElevation;
     }
 
     /**
@@ -100,7 +154,7 @@ public class Runway {
     public double getLongitude() {
         return mLon;
     }
-
+    
     /**
      * 
      * @return
@@ -108,4 +162,133 @@ public class Runway {
     public double getLatitude() {
         return mLat;
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getILS() {
+        return mILS;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getVGSI() {
+        return mVGSI;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setSurface(String surface) {
+        mSurface = surface;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setThreshold(String threshold) {
+        mThreshold = threshold;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setWidth(String width) {
+        mWidth = width;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLength(String length) {
+        mLength = length;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setPattern(String pattern) {
+        mPattern = pattern;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLights(String lights) {
+        mLights = lights;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setElevation(String elevation) {
+        mElevation = elevation;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHeading(String heading) {
+        mHeading = heading;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLongitude(String lon) {
+        try {
+            mLon = Double.parseDouble(lon);
+        }
+        catch (Exception e) {
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLatitude(String lat) {
+        try {
+            mLat = Double.parseDouble(lat);
+        }
+        catch (Exception e) {
+        }
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public void setVariation(String variation) {
+        mVariation = Helper.parseVariation(variation);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public void setILS(String ils) {
+        mILS = ils;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setVGSI(String vgsi) {
+        mVGSI = vgsi;
+    }
+
 }

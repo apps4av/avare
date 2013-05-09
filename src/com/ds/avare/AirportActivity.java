@@ -14,9 +14,12 @@ package com.ds.avare;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Runway;
+import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -24,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -32,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -49,6 +54,7 @@ public class AirportActivity extends Activity {
     private Spinner mSpinner;
     private List<String> mList;
     private boolean mIgnoreFocus;
+
 
     /*
      * For being on tab this activity discards back to main activity
@@ -174,17 +180,59 @@ public class AirportActivity extends Activity {
              * Get Text A/FD
              */
             LinkedHashMap <String, String>map = mDestination.getParams();
-            String[] views = new String[map.size()];
-            String[] values = new String[map.size()];
+            LinkedHashMap <String, String>freq = mDestination.getFrequencies();
+            LinkedList<Runway> runways = mDestination.getRunways();
+            String[] views = new String[map.size() + freq.size() + runways.size()];
+            String[] values = new String[map.size() + freq.size() + runways.size()];
             int iterator = 0;
             for(String key : map.keySet()){
                 views[iterator] = key;
                 values[iterator] = map.get(key);
                 iterator++;
             }
+            for(String key : freq.keySet()){
+                views[iterator] = key;
+                values[iterator] = freq.get(key);
+                iterator++;
+            }
+            for(Runway run : runways){
+                views[iterator] = "Runway-" + run.getNumber() + " (" + run.getLength() + "X" + run.getWidth() + ")";
+                values[iterator] = 
+                        "Threshold " + run.getThreshold() +
+                        ", Elevation " + run.getElevation() +
+                        ", Surface " + run.getSurface() +
+                        ", Pattern " + run.getPattern() +
+                        ", App. Lights " + run.getLights() +
+                        ", Inst. " + run.getILS() +
+                        ", VGS " + run.getVGSI()
+                        ;
+                iterator++;
+            }
             mAirport.setClickable(false);
             mAirport.setDividerHeight(10);
-            mAirport.setAdapter(new TypeValueAdapter(AirportActivity.this, views, values));
+            TypeValueAdapter mAdapter = new TypeValueAdapter(AirportActivity.this, views, values);
+            mAirport.setAdapter(mAdapter);
+
+            mAirport.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                        int index, long arg3) {
+                    TextView tt = (TextView)v.findViewById(R.id.typevalue_type);
+                    TextView tv = (TextView)v.findViewById(R.id.typevalue_value);
+                    if(tt.getText().equals(DataBaseHelper.FSSPHONE)) {
+                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:1-800-992-7433"));
+                        startActivity(intent);
+                    }
+                    else if(tt.getText().equals(DataBaseHelper.MANAGER_PHONE)) {
+                       String uri = tv.getText().toString();
+                       if(uri.length() == 12) {
+                           Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + uri));
+                           startActivity(intent);
+                       }
+                    }
+                    return true;
+                }
+            });
 
             /*
              * Start adding graphical A/FD

@@ -331,7 +331,6 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-
         mHelpButton = (Button)view.findViewById(R.id.location_button_help);
         mHelpButton.setOnClickListener(new OnClickListener() {
 
@@ -610,7 +609,17 @@ public class LocationActivity extends Activity implements Observer {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);        
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        /*
+         * Contrast bars only in terrain view
+         */
+        if(mPref.getChartType().equals("5")) {
+            mBar.setVisibility(View.VISIBLE);
+        }
+        else {
+            mBar.setVisibility(View.INVISIBLE);
+        }
+
     }
     
     /* (non-Javadoc)

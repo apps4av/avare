@@ -89,7 +89,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public  static final String  FUEL_TYPES = "Fuel Types";
     //private static final String  FUEL_TYPES_DB = "FuelTypes";
     private static final int    FUEL_TYPES_COL = 12;
-    
+    private static final int    CUSTOMS_COL = 13;
+    private static final String  CUSTOMS = "Customs Office";
+    private static final int    BEACON_COL = 14;
+    private static final String  BEACON = "Beacon";
+    private static final int    FSSPHONE_COL = 6;
+    public static final String FSSPHONE = "FSS Phone";
+    private static final int    SEGCIRCLE_COL = 16;
+    private static final String SEGCIRCLE = "Segmented Circle";
+    public static final String MANAGER_PHONE = "Manager Phone";
+
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
@@ -321,10 +330,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                         params.put(LOCATION_ID, cursor.getString(LOCATION_ID_COL));
                         params.put(FACILITY_NAME, cursor.getString(FACILITY_NAME_COL));
+                        params.put(FUEL_TYPES, cursor.getString(FUEL_TYPES_COL));
                         params.put(LATITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LATITUDE_COL))));
                         params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
-                        params.put(MAGNETIC_VARIATION, cursor.getString(MAGNETIC_VARIATION_COL));
-                        params.put(FUEL_TYPES, cursor.getString(FUEL_TYPES_COL));
+                        params.put(MAGNETIC_VARIATION, cursor.getString(MAGNETIC_VARIATION_COL).trim());
                         airports[id] = new Airport(params, lon, lat);
                         id++;
                     }
@@ -408,7 +417,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
         
         Cursor cursor;
         
@@ -438,22 +447,77 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                     params.put(TYPE, cursor.getString(TYPE_COL).trim());
                     if(type.equals(Destination.BASE)) {
-                        params.put("Use", cursor.getString(5).trim());
-                        params.put("Owner Phone", cursor.getString(6).trim());
+                        String use = cursor.getString(5).trim();
+                        if(use.equals("PU")) {
+                            use = "PUBLIC";
+                        }
+                        else if(use.equals("PR")) {
+                            use = "PRIVATE";                            
+                        }
+                        else  {
+                            use = "MILITARY";                            
+                        }
+                        params.put("Use", use);
                         params.put("Manager", cursor.getString(7).trim());
-                        params.put("Manager Phone", cursor.getString(8).trim());
+                        params.put(MANAGER_PHONE, cursor.getString(8).trim());
                         params.put("Elevation", cursor.getString(9).trim());
-                        params.put(MAGNETIC_VARIATION, cursor.getString(MAGNETIC_VARIATION_COL).trim());
-                        params.put("Traffic Pattern Altitude", cursor.getString(11).trim());
-                        params.put(FUEL_TYPES, cursor.getString(FUEL_TYPES_COL).trim());
-                        params.put("Airframe Repair", cursor.getString(13).trim());
-                        params.put("Power Plant Repair", cursor.getString(14).trim());
-                        params.put("Bottled Oxygen Type", cursor.getString(15).trim());
-                        params.put("Bulk Oxygen Type", cursor.getString(16).trim());
-                        params.put("Control Tower", cursor.getString(17).trim());
-                        params.put("UNICOM Frequencies", cursor.getString(18).trim());
-                        params.put("CTAF Frequency", cursor.getString(19).trim());
-                        params.put("Non Commercial Landing Fee", cursor.getString(20).trim());
+                        String customs = cursor.getString(CUSTOMS_COL);
+                        if(customs.equals("") || customs.equals("NN")) {
+                            params.put(CUSTOMS, "NONE");
+                        }
+                        else {
+                            params.put(CUSTOMS, "YES");
+                        }
+                        params.put(BEACON, cursor.getString(BEACON_COL));
+                        String sc = cursor.getString(SEGCIRCLE_COL);
+                        if(sc.equals("Y")) {
+                            params.put(SEGCIRCLE, "YES");
+                        }
+                        else {
+                            params.put(SEGCIRCLE, "NO");                            
+                        }
+                        params.put(FSSPHONE, cursor.getString(FSSPHONE_COL));
+                        String pa = cursor.getString(11).trim();
+                        if(pa.equals("")) {
+                            try {
+                                pa = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
+                            }
+                            catch (Exception e) {
+                                
+                            }
+                        }
+                        params.put("Pattern Altitude", pa);
+                        String fuel = cursor.getString(FUEL_TYPES_COL).trim();
+                        if(fuel.equals("")) {
+                            fuel = "None";
+                        }
+                        params.put(FUEL_TYPES, fuel);
+                        String ct = cursor.getString(17).trim();
+                        if(ct.equals("Y")) {
+                            ct = "YES";
+                        }
+                        else {
+                            ct = "NO";
+                        }
+                        params.put("Control Tower", ct);
+                        
+                        String unicom = cursor.getString(18).trim();
+                        if(!unicom.equals("")) {
+                            freq.put("UNICOM", unicom);
+                        }
+                        String ctaf = cursor.getString(19).trim();
+                        if(!ctaf.equals("")) {
+                            freq.put("CTAF", ctaf);
+                        }
+                        
+                        String fee = cursor.getString(20).trim();
+                        if(fee.equals("Y")) {
+                            fee = "YES";
+                        }
+                        else {
+                            fee = "NO";
+                        }
+                        params.put("Landing Fee", fee);
                     }
                 }
             }
@@ -476,14 +540,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
              */
             if(cursor != null) {
                 while(cursor.moveToNext()) {
-                    if(params.containsKey(cursor.getString(1))) {
+                    if(freq.containsKey(cursor.getString(1))) {
                         /*
                          * Add a hash if duplicate value
                          */
-                        params.put(cursor.getString(1) + "#", cursor.getString(2));                                
+                        freq.put(cursor.getString(1) + "#", cursor.getString(2));                                
                     }
                     else {
-                        params.put(cursor.getString(1), cursor.getString(2));
+                        freq.put(cursor.getString(1), cursor.getString(2));
                     }
                 }
             }
@@ -506,68 +570,104 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     String Length = cursor.getString(1);
                     String Width = cursor.getString(2);
                     String Surface = cursor.getString(3);
+                    String Variation = params.get(MAGNETIC_VARIATION);
+                    String Pattern = cursor.getString(4);
+                    if(Pattern.equals("") || Pattern.equals("N")) {
+                        Pattern = "Left";
+                    }
+                    else {
+                        Pattern = "Right";
+                    }
                     if(Surface.equals("")) {
                         Surface = "Unknown";
                     }
-                    String Lighted = cursor.getString(4);
+                    
+                    String run = Helper.removeLeadingZeros(cursor.getString(5));
+                    String lat = Helper.removeLeadingZeros(cursor.getString(7));
+                    String lon = Helper.removeLeadingZeros(cursor.getString(9));
+                    
+                    String Elevation = cursor.getString(11);
+                    if(Elevation.equals("")) {
+                        Elevation = params.get("Elevation");
+                    }
+                    String Heading = cursor.getString(13);
+                    String DT = cursor.getString(15);
+                    if(DT.equals("")) {
+                        DT = "0";
+                    }
+                    String Lighted = cursor.getString(17);
                     if(Lighted.equals("0") || Lighted.equals("")) {
-                        Lighted = "";
+                        Lighted = "None";
                     }
-                    else {
-                        Lighted = ", " + Lighted;                            
+                    String ILS = cursor.getString(19);
+                    if(ILS.equals("")) {
+                        ILS = "None";
                     }
-                    String Closed = cursor.getString(5);
-                    if(Closed.equals("0") || Closed.equals("")) {
-                        Closed = ", Open";
-                    }
-                    else {
-                        Closed = ", Closed";                            
+                    String VGSI = cursor.getString(21);
+                    if(VGSI.equals("")) {
+                        VGSI = "None";
                     }
                     
-                    String runl = Helper.removeLeadingZeros(cursor.getString(6));
-                    String runh = Helper.removeLeadingZeros(cursor.getString(12));
+                    Runway r = new Runway(run);
+                    r.setElevation(Elevation);
+                    r.setHeading(Heading);
+                    r.setSurface(Surface);
+                    r.setLength(Length);
+                    r.setWidth(Width);
+                    r.setThreshold(DT);
+                    r.setLights(Lighted);
+                    r.setPattern(Pattern);
+                    r.setLongitude(lon);
+                    r.setLatitude(lat);
+                    r.setVariation(Variation);
+                    r.setILS(ILS);
+                    r.setVGSI(VGSI);
                     
-                    params.put("Runway " + runl + "/" + runh, 
-                            "Length " + Length + 
-                            ", Width " + Width + 
-                            ", Surface " + Surface +
-                            Lighted +
-                            Closed);
+                    runways.add(r);
                     
-                    String Elevation = cursor.getString(9);
+                    run = Helper.removeLeadingZeros(cursor.getString(6));
+                    lat = Helper.removeLeadingZeros(cursor.getString(8));
+                    lon = Helper.removeLeadingZeros(cursor.getString(10));
+                    
+                    Elevation = cursor.getString(12);
                     if(Elevation.equals("")) {
-                        Elevation = "0";
+                        Elevation = params.get("Elevation");
                     }
-                    String Heading = cursor.getString(10);
-                    String DT = cursor.getString(11);
+                    Heading = cursor.getString(14);
+                    DT = cursor.getString(16);
                     if(DT.equals("")) {
                         DT = "0";
                     }
-                    
-                    params.put("Runway " + runl,
-                            "Elevation " + Elevation + 
-                            ", True Heading " + Heading + 
-                            ", Displaced Threshold " + DT);
-                    Runway l = new Runway(runl, cursor.getString(10).trim(), Heading, cursor.getString(8), cursor.getString(7));
-                    runways.add(l);        
-                    
-                    Elevation = cursor.getString(15);
-                    if(Elevation.equals("")) {
-                        Elevation = "0";
+                    Lighted = cursor.getString(18);
+                    if(Lighted.equals("0") || Lighted.equals("")) {
+                        Lighted = "None";
                     }
-                    Heading = cursor.getString(16);
-                    DT = cursor.getString(17);
-                    if(DT.equals("")) {
-                        DT = "0";
+                    ILS = cursor.getString(20);
+                    if(ILS.equals("")) {
+                        ILS = "None";
+                    }
+                    VGSI = cursor.getString(22);
+                    if(VGSI.equals("")) {
+                        VGSI = "None";
                     }
                     
-                    params.put("Runway " + runh,
-                            "Elevation " + Elevation + 
-                            ", True Heading " + Heading + 
-                            ", Displaced Threshold " + DT);
+                    r = new Runway(run);
+                    r.setElevation(Elevation);
+                    r.setHeading(Heading);
+                    r.setSurface(Surface);
+                    r.setLength(Length);
+                    r.setWidth(Width);
+                    r.setThreshold(DT);
+                    r.setLights(Lighted);
+                    r.setPattern(Pattern);
+                    r.setLongitude(lon);
+                    r.setLatitude(lat);
+                    r.setVariation(Variation);
+                    r.setILS(ILS);
+                    r.setVGSI(VGSI);
                     
-                    Runway h = new Runway(runh, cursor.getString(10).trim(), Heading,  cursor.getString(14), cursor.getString(13));
-                    runways.add(h);        
+                    runways.add(r);
+                    
     
                 }
             }

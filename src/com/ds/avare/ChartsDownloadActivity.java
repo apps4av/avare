@@ -57,6 +57,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     
     private StorageService mService;
     private Button mDLButton;
+    private Button mUpdateButton;
     
     /**
      * Shows warning message about Avare
@@ -108,6 +109,16 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 download();
             }
             
+        });
+        
+        mUpdateButton = (Button)view.findViewById(R.id.chart_download_button_update);
+        mUpdateButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mChartAdapter.checkDownloaded();
+                download();
+            }
         });
     }
             

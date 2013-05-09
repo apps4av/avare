@@ -83,8 +83,8 @@ public class DataSource {
      * @param name
      * @param params
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways) {
-        dbHelper.findDestination(name, type, params, runways);
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
+        dbHelper.findDestination(name, type, params, runways, freq);
     }
     
     /**

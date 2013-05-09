@@ -278,7 +278,21 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         return null;
     }
-    
+
+    /**
+     * Check the downloaded.
+     * @return
+     */
+    public void checkDownloaded() {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(null != mVers[group][child]) {
+                    mChecked[group][child] = true;
+                }
+            }
+        }
+    }
+
     /**
      * 
      */

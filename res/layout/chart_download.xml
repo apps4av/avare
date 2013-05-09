@@ -17,7 +17,7 @@ Redistribution and use in source and binary forms, with or without modification,
         
     <ExpandableListView
         android:id="@+id/chart_download_list"
-        android:layout_below="@+id/chart_download_button_dl"
+        android:layout_below="@+id/chart_download_button_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
 
@@ -32,5 +32,17 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:gravity="center"
 	    android:text="@string/Get"
 	    android:visibility="visible" />
-	    
+
+    <Button
+        android:id="@+id/chart_download_button_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/chart_download_button_dl"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="@string/update"
+        android:visibility="visible" />
+		    
 </RelativeLayout>

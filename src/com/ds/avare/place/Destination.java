@@ -94,6 +94,7 @@ public class Destination extends Observable {
     private String mDestType;
     private String mDbType;
     private LinkedList<Runway> mRunways;
+    private LinkedHashMap <String, String>mFreq;
     
     public static final String GPS = "GPS";
     public static final String MAPS = "Maps";
@@ -128,6 +129,7 @@ public class Destination extends Observable {
         mPref = pref;
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
+        mFreq = new LinkedHashMap<String, String>();
         mPlateFound = null;
         mAfdFound = null;
         
@@ -273,6 +275,7 @@ public class Destination extends Observable {
 	         * No need to query database
 	         */
             mParams = new LinkedHashMap<String, String>();
+            mFreq = new LinkedHashMap<String, String>();
             mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
             mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
             mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
@@ -368,6 +371,7 @@ public class Destination extends Observable {
                  * Common stuff
                  */
                 mParams = new LinkedHashMap<String, String>();
+                mFreq = new LinkedHashMap<String, String>();
                 mPlateFound = null;
                 mAfdFound = null;
                 mDbType = mDestType;
@@ -379,7 +383,7 @@ public class Destination extends Observable {
                 return true;                    
 	        }
 	        
-	        mDataSource.findDestination(mName, mDestType, mParams, mRunways);
+	        mDataSource.findDestination(mName, mDestType, mParams, mRunways, mFreq);
 
 	        if(mDestType.equals(BASE)) {
 	            
@@ -545,7 +549,14 @@ public class Destination extends Observable {
     public LinkedHashMap<String, String> getParams() {
     	return(mParams);
     }
-    
+
+    /**
+     * @return
+     */
+    public LinkedHashMap<String, String> getFrequencies() {
+        return(mFreq);
+    }
+
     /**
      * @return
      */
