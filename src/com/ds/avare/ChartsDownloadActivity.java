@@ -201,6 +201,8 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             /*
              * Nothing to download
              */
+            mToast.setText(getString(R.string.Done));
+            mToast.show();
             return false;
         }
         

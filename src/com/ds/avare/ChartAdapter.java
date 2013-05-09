@@ -286,7 +286,10 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     public void checkDownloaded() {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
-                if(null != mVers[group][child]) {
+                if(mVers[group][child] == null) {
+                    continue;
+                }
+                if(!mVersion.equals(mVers[group][child])) {
                     mChecked[group][child] = true;
                 }
             }
