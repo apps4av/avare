@@ -74,7 +74,7 @@ public class TwilightCalculator {
     public String getSunrise() {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-        return(df.format(new Date(mSunrise + TimeZone.getDefault().getDSTSavings())) + " GMT+0");
+        return(df.format(new Date(mSunrise)) + " Z");
     }
 
     /**
@@ -84,7 +84,7 @@ public class TwilightCalculator {
     public String getSunset() {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-        return(df.format(new Date(mSunset + TimeZone.getDefault().getDSTSavings())) + " GMT+0");
+        return(df.format(new Date(mSunset)) + " Z");
     }
 
     

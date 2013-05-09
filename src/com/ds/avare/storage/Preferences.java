@@ -154,7 +154,7 @@ public class Preferences {
      */
     public void modifyARecent(String name, String description) {
         String[] tokens = getRecent();
-        description = description.replaceAll(",", " ");
+        description = description.replaceAll("[^A-Za-z0-9 ]", "");
         description = description.replaceAll(";", " ");
         List<String> l = new LinkedList<String>(Arrays.asList(tokens));
         for(int id = 0; id < l.size(); id++) {
