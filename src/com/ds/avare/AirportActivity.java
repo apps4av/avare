@@ -198,13 +198,13 @@ public class AirportActivity extends Activity {
             for(Runway run : runways){
                 views[iterator] = "Runway-" + run.getNumber() + " (" + run.getLength() + "X" + run.getWidth() + ")";
                 values[iterator] = 
-                        "Threshold " + run.getThreshold() +
-                        ", Elevation " + run.getElevation() +
-                        ", Surface " + run.getSurface() +
-                        ", Pattern " + run.getPattern() +
-                        ", App. Lights " + run.getLights() +
-                        ", Inst. " + run.getILS() +
-                        ", VGS " + run.getVGSI()
+                        "DT: " + run.getThreshold() + ",\n" +
+                        "Elev: " + run.getElevation() + ",\n" +
+                        "Surf: " + run.getSurface() + ",\n" +
+                        "Ptrn: " + run.getPattern() + ",\n" +
+                        "ALS: " + run.getLights() + ",\n" +
+                        "ILS: " + run.getILS() + ",\n" +
+                        "VGSI: " + run.getVGSI()
                         ;
                 iterator++;
             }

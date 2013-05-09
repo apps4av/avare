@@ -94,10 +94,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final int    BEACON_COL = 14;
     private static final String  BEACON = "Beacon";
     private static final int    FSSPHONE_COL = 6;
-    public static final String FSSPHONE = "FSS Phone";
+    public static final String FSSPHONE = "FSS (Select to Dial)";
     private static final int    SEGCIRCLE_COL = 16;
     private static final String SEGCIRCLE = "Segmented Circle";
-    public static final String MANAGER_PHONE = "Manager Phone";
+    public static final String MANAGER_PHONE = "Manager Phone (Select to Dial)";
 
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
@@ -463,20 +463,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("Elevation", cursor.getString(9).trim());
                         String customs = cursor.getString(CUSTOMS_COL);
                         if(customs.equals("") || customs.equals("NN")) {
-                            params.put(CUSTOMS, "NONE");
+                            params.put(CUSTOMS, mContext.getString(R.string.No));
                         }
                         else {
-                            params.put(CUSTOMS, "YES");
+                            params.put(CUSTOMS, mContext.getString(R.string.No));
                         }
-                        params.put(BEACON, cursor.getString(BEACON_COL));
+                        String bcn = cursor.getString(BEACON_COL);
+                        if(bcn.equals("")) {
+                            bcn = mContext.getString(R.string.No);
+                        }
+                        params.put(BEACON, bcn);
                         String sc = cursor.getString(SEGCIRCLE_COL);
                         if(sc.equals("Y")) {
-                            params.put(SEGCIRCLE, "YES");
+                            params.put(SEGCIRCLE, mContext.getString(R.string.Yes));
                         }
                         else {
-                            params.put(SEGCIRCLE, "NO");                            
+                            params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
-                        params.put(FSSPHONE, cursor.getString(FSSPHONE_COL));
                         String pa = cursor.getString(11).trim();
                         if(pa.equals("")) {
                             try {
@@ -489,15 +492,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("Pattern Altitude", pa);
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
-                            fuel = "None";
+                            fuel = mContext.getString(R.string.No);
                         }
                         params.put(FUEL_TYPES, fuel);
                         String ct = cursor.getString(17).trim();
                         if(ct.equals("Y")) {
-                            ct = "YES";
+                            ct = mContext.getString(R.string.Yes);
                         }
                         else {
-                            ct = "NO";
+                            ct = mContext.getString(R.string.No);
                         }
                         params.put("Control Tower", ct);
                         
@@ -512,12 +515,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         
                         String fee = cursor.getString(20).trim();
                         if(fee.equals("Y")) {
-                            fee = "YES";
+                            fee = mContext.getString(R.string.Yes);
                         }
                         else {
-                            fee = "NO";
+                            fee = mContext.getString(R.string.No);
                         }
                         params.put("Landing Fee", fee);
+                        
+                        params.put(FSSPHONE, cursor.getString(FSSPHONE_COL));
+
                     }
                 }
             }
@@ -540,14 +546,34 @@ public class DataBaseHelper extends SQLiteOpenHelper {
              */
             if(cursor != null) {
                 while(cursor.moveToNext()) {
-                    if(freq.containsKey(cursor.getString(1))) {
+                    String typeof = cursor.getString(1);
+                    typeof = typeof.replace("LCL", "TWR");
+                    /*
+                     * Filter out silly frequencies
+                     */
+                    if(typeof.equals("EMERG") || typeof.contains("GATE") || typeof.equals("EMERGENCY")) {
+                        continue;
+                    }
+                    /*
+                     * Filter out UHF
+                     */
+                    try {
+                        double frequency = Double.parseDouble(cursor.getString(2));
+                        if(frequency > 136) {
+                            continue;
+                        }
+                    }
+                    catch (Exception e) {
+                    }
+                    
+                    if(freq.containsKey(typeof)) {
                         /*
                          * Add a hash if duplicate value
                          */
-                        freq.put(cursor.getString(1) + "#", cursor.getString(2));                                
+                        freq.put(typeof + "#", cursor.getString(2));                                
                     }
                     else {
-                        freq.put(cursor.getString(1), cursor.getString(2));
+                        freq.put(typeof, cursor.getString(2));
                     }
                 }
             }
@@ -597,15 +623,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     }
                     String Lighted = cursor.getString(17);
                     if(Lighted.equals("0") || Lighted.equals("")) {
-                        Lighted = "None";
+                        Lighted = mContext.getString(R.string.No);
                     }
                     String ILS = cursor.getString(19);
                     if(ILS.equals("")) {
-                        ILS = "None";
+                        ILS = mContext.getString(R.string.No);
                     }
                     String VGSI = cursor.getString(21);
                     if(VGSI.equals("")) {
-                        VGSI = "None";
+                        VGSI = mContext.getString(R.string.No);
                     }
                     
                     Runway r = new Runway(run);
@@ -640,15 +666,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     }
                     Lighted = cursor.getString(18);
                     if(Lighted.equals("0") || Lighted.equals("")) {
-                        Lighted = "None";
+                        Lighted = mContext.getString(R.string.No);
                     }
                     ILS = cursor.getString(20);
                     if(ILS.equals("")) {
-                        ILS = "None";
+                        ILS = mContext.getString(R.string.No);
                     }
                     VGSI = cursor.getString(22);
                     if(VGSI.equals("")) {
-                        VGSI = "None";
+                        VGSI = mContext.getString(R.string.No);
                     }
                     
                     r = new Runway(run);
