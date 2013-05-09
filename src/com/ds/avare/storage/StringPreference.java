@@ -99,12 +99,54 @@ public class StringPreference {
      * @param hashedName
      * @return
      */
+    static public String parseHashedNameIdBefore(String hashedName) {
+        String tokens[] = hashedName.split("@");
+        if(tokens.length > 1) {
+            return (tokens[0]);
+        }
+        return "";
+    }
+
+    /**
+     * 
+     * @param hashedName
+     * @return
+     */
+    static public String parseHashedNameIdAfter(String hashedName) {
+        String tokens[] = hashedName.split("@");
+        if(tokens.length > 1) {
+            return (tokens[1]);
+        }
+        return hashedName;
+    }
+
+    /**
+     * 
+     * @param hashedName
+     * @return
+     */
     static public String parseHashedNameDestType(String hashedName) {
         String tokens[] = hashedName.split("::");
         if(tokens.length > 1) {
             String token[] = tokens[1].split(";");
             if(token.length > 0) {
                 return (token[0]);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param hashedDesc
+     * @return
+     */
+    static public String parseHashedNameDesc(String hashedName) {
+        String tokens[] = hashedName.split("::");
+        if(tokens.length > 1) {
+            String token[] = tokens[1].split(";");
+            if(token.length > 0) {
+                return (token[tokens.length - 1]);
             }
         }
         return null;

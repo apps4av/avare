@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
@@ -42,8 +43,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -65,8 +68,14 @@ public class PlanActivity extends Activity implements Observer {
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     private ProgressBar mProgressBar;
-    private String mDelete;
-    private AlertDialog mDeleteDialog;
+    private String mSelected;
+    private Button mSelectedButton;
+    private Button mEditButton;
+    /**
+     * Shows edit dialog
+     */
+    private AlertDialog mAlertDialogEdit;
+
     
     /**
      * Current destination info
@@ -151,7 +160,7 @@ public class PlanActivity extends Activity implements Observer {
         /*
          * Lose info
          */
-        mDelete = null;
+        mSelected = null;
 
         /*
          * For a search query
@@ -168,6 +177,69 @@ public class PlanActivity extends Activity implements Observer {
          */
         initList();
         
+        mSelectedButton = (Button)view.findViewById(R.id.plan_button_delete);
+        mSelectedButton.getBackground().setAlpha(255);
+        mSelectedButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    mPref.deleteARecent(mSelected);
+                    initList();
+                }
+                mSelected = null;
+            }
+            
+        });
+
+        mEditButton = (Button)view.findViewById(R.id.plan_button_note);
+        mEditButton.getBackground().setAlpha(255);
+        mEditButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    final EditText edit = new EditText(PlanActivity.this);
+                    if(!StringPreference.parseHashedNameDbType(mSelected).equals(Destination.GPS)) {
+                        mToast.setText(R.string.GpsOnly);
+                        mToast.show();
+                        return;
+                    }
+                    
+                    edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
+
+                    mAlertDialogEdit = new AlertDialog.Builder(PlanActivity.this).create();
+                    mAlertDialogEdit.setTitle(getString(R.string.Label));
+                    mAlertDialogEdit.setCanceledOnTouchOutside(true);
+                    mAlertDialogEdit.setCancelable(true);
+                    mAlertDialogEdit.setView(edit);
+                    mAlertDialogEdit.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            /*
+                             * Edit and save description field
+                             */
+                            
+                            mPref.modifyARecent(mSelected, edit.getText().toString());
+                            initList();
+                            mSelected = null;
+                            dialog.dismiss();
+
+                        }
+                    });
+                    mAlertDialogEdit.setButton2(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSelected = null;
+                            dialog.dismiss();
+                        }            
+                    });
+
+                    mAlertDialogEdit.show();
+                }
+            }
+            
+        });
+
+
         /*
          * Set on click
          */
@@ -189,38 +261,15 @@ public class PlanActivity extends Activity implements Observer {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View v,
                     int index, long arg3) {
-                mDelete = mAdapter.getItem(index); 
-                if(mDelete == null) {
+                mSelected = mAdapter.getItem(index); 
+                if(mSelected == null) {
                     return false;
                 }
                                 
-                mDeleteDialog = new AlertDialog.Builder(PlanActivity.this).create();
-                mDeleteDialog.setTitle(getString(R.string.Delete));
-                mDeleteDialog.setCancelable(false);
-                mDeleteDialog.setCanceledOnTouchOutside(false);
-                mDeleteDialog.setButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        if(null != mDelete) {
-                            mPref.deleteARecent(mDelete);
-                            initList();
-                        }
-                        mDelete = null;
-                    }
-                });
-                mDeleteDialog.setButton2(getString(R.string.No), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        mDelete = null;
-                    }
-                });
-                mDeleteDialog.show();        
+                AnimateButton e = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                AnimateButton f = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                e.animate(true);
+                f.animate(true);
 
                 return true;
             }
@@ -359,9 +408,9 @@ public class PlanActivity extends Activity implements Observer {
             mSearchText.setText("");
         }
 
-        if(null != mDeleteDialog) {
+        if(null != mAlertDialogEdit) {
             try {
-                mDeleteDialog.dismiss();
+                mAlertDialogEdit.dismiss();
             }
             catch (Exception e) {
             }

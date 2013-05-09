@@ -152,6 +152,40 @@ public class Preferences {
      * 
      * @return
      */
+    public void modifyARecent(String name, String description) {
+        String[] tokens = getRecent();
+        description = description.replaceAll(",", " ");
+        description = description.replaceAll(";", " ");
+        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
+        for(int id = 0; id < l.size(); id++) {
+            if(l.get(id).equals(name)) {
+                String oldName = name;
+                String newName = null;
+                int desc = oldName.lastIndexOf("@");
+                if(desc < 0) {
+                    newName = description + "@" +  oldName;
+                }
+                else {
+                    newName = description + oldName.substring(desc, oldName.length());
+                }
+                l.set(id, newName);
+                break;
+            }
+        }
+        
+        String recent = "";
+        for(int id = 0; id < l.size(); id++) {
+            recent = recent + l.get(id) + ",";
+        }
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.Recent), recent);
+        editor.commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
     public void deleteARecent(String name) {
         String[] tokens = getRecent();
         List<String> l = new LinkedList<String>(Arrays.asList(tokens));

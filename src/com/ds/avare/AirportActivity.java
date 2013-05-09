@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
-import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -27,7 +26,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -36,7 +34,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -217,19 +214,6 @@ public class AirportActivity extends Activity {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
-                    TextView tt = (TextView)v.findViewById(R.id.typevalue_type);
-                    TextView tv = (TextView)v.findViewById(R.id.typevalue_value);
-                    if(tt.getText().equals(DataBaseHelper.FSSPHONE)) {
-                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:1-800-992-7433"));
-                        startActivity(intent);
-                    }
-                    else if(tt.getText().equals(DataBaseHelper.MANAGER_PHONE)) {
-                       String uri = tv.getText().toString();
-                       if(uri.length() == 12) {
-                           Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + uri));
-                           startActivity(intent);
-                       }
-                    }
                     return true;
                 }
             });

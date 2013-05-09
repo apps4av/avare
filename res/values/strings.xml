@@ -123,7 +123,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightMode">&quot;Night Mode&quot;</string>
     <string name="NightModeLabel">&quot;Night Mode&quot;</string>
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
-    <string name="Delete">&quot;Delete?&quot;</string>
+    <string name="Delete">&quot;Delete&quot;</string>
+    <string name="Label">&quot;Label&quot;</string>
+    <string name="GpsOnly">&quot;Only GPS destinations can be edited&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
     <string name="RootLabel">&quot;Charts Download Server&quot;</string>
     <string name="RootSummary">&quot;Select a server from which to download charts/data&quot;</string>

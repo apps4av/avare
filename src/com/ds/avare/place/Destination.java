@@ -29,6 +29,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.TwilightCalculator;
 
 import android.location.Address;
 import android.location.Geocoder;
@@ -245,6 +246,16 @@ public class Destination extends Observable {
     		mEta = new String("--:--");
     	}
 	}
+
+	/**
+	 * 
+	 */
+	private void addTime() {
+        TwilightCalculator calc = new TwilightCalculator();
+        calc.calculateTwilight(mLatd, mLond);
+        mParams.put("Twilight Begin", calc.getSunrise());
+        mParams.put("Twilight End", calc.getSunset());
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -279,11 +290,18 @@ public class Destination extends Observable {
             mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
             mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
             mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
+            addTime();
             mPlateFound = null;
             mAfdFound = null;
             mFound = true;
             mLooking = false;
             mDbType = GPS;
+            if(!mName.contains("&")) {
+                /*
+                 * This comes from MAPS to GPS for user edited
+                 */
+                mName += "@" + mLatd + "&" + mLond;
+            }
             setChanged();
             notifyObservers(true);
 	    }
@@ -379,6 +397,7 @@ public class Destination extends Observable {
                 mParams.put(DataBaseHelper.FACILITY_NAME, mName);
                 mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
                 mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
+                addTime();
                 mName += "@" + mLatd + "&" + mLond;
                 return true;                    
 	        }
@@ -467,10 +486,6 @@ public class Destination extends Observable {
 			if(mFound) {
                 mDbType = mParams.get(DataBaseHelper.TYPE);
                 try {
-                    /*
-                     * XXX:
-                     * Wacky KUSE airport sqlite issue
-                     */
         		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
         		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
                 }
@@ -478,6 +493,11 @@ public class Destination extends Observable {
                     mFound = false;
                 }
 			}
+            /**
+             * 
+             */
+            addTime();
+
 			/*
 			 * Anyone watching if destination found?
 			 */

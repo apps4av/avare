@@ -94,10 +94,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final int    BEACON_COL = 14;
     private static final String  BEACON = "Beacon";
     private static final int    FSSPHONE_COL = 6;
-    public static final String FSSPHONE = "FSS (Select to Dial)";
+    public static final String FSSPHONE = "FSS Phone";
     private static final int    SEGCIRCLE_COL = 16;
     private static final String SEGCIRCLE = "Segmented Circle";
-    public static final String MANAGER_PHONE = "Manager Phone (Select to Dial)";
+    public static final String MANAGER_PHONE = "Manager Phone";
 
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";

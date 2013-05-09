@@ -34,6 +34,29 @@ Redistribution and use in source and binary forms, with or without modification,
 
     </ListView>
 
+    <Button
+        android:id="@+id/plan_button_delete"
+        android:textStyle="bold"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/plan_button_note"
+        android:gravity="left|center"
+        android:text="@string/Delete"
+        android:drawableLeft="@drawable/remove"
+        android:visibility="invisible" />
+    
+    <Button
+	    android:id="@+id/plan_button_note"
+	    android:textStyle="bold"
+	    android:layout_width="140dp"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentLeft="true"
+	    android:text="@string/Label"
+	    android:drawableLeft="@drawable/edit"
+	    android:gravity="left|center"
+	    android:visibility="invisible" />
+        
     <ProgressBar
         android:id="@+id/plan_progress_bar"
         style="?android:attr/progressBarStyleSmall"
