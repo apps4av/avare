@@ -284,6 +284,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     public void checkDownloaded() {
+        if(mVersion == null) {
+            return;
+        }
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mVers[group][child] == null) {
