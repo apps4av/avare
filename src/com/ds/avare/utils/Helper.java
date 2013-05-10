@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
+import java.io.File;
 import java.util.Locale;
 
 import com.ds.avare.storage.Preferences;
@@ -245,4 +246,22 @@ public class Helper {
         }
 
     }    
+    
+    /**
+     * 
+     * @param f
+     */
+    public static void deleteDir(File f) {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                deleteDir(c);
+            }
+        }
+        try {
+            f.delete();
+        }
+        catch (Exception e) {
+            
+        }
+     }
 }

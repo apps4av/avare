@@ -28,6 +28,7 @@ import java.util.Observable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 
 
@@ -222,9 +223,11 @@ public class Download extends Observable {
 
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
+                    String lastName = "";
                     while(entries.hasMoreElements()) {
                         if(mStop) {
                             zipFile.close();
+                            new File(zipfile).delete();
                             return false;
                         }
 
@@ -233,8 +236,41 @@ public class Download extends Observable {
                         /*
                          * Keep un-zipping and creating folders
                          */
-                        String fn = path + "/" + entry.getName();
+                        String entryName = entry.getName();
+                        String fn = path + "/" + entryName;
+                        String tokens[] = entryName.split("/");
+                        String folder = tokens[0];
+                        
+                        /*
+                         * This is a new folder, do something with it.
+                         * Mostly needed for delete
+                         */
                         File dir = new File(fn.substring(0, fn.lastIndexOf("/")));
+                        if(!folder.equals(lastName)) {
+                            
+                            if(dir.exists()) {
+                                /*
+                                 * Delete older plates
+                                 */
+                                if(folder.equals("plates")) {
+                                    Helper.deleteDir(dir);
+                                }
+                                
+                                /*
+                                 * Delete older A/FD
+                                 */
+                                else if(folder.equals("afd")) {
+                                    String newRegion = (tokens[1].split("_"))[0];
+                                    String[] info = dir.list();
+                                    for(int i = 0; i < info.length; i++) {
+                                        if(info[i].startsWith(newRegion)) {
+                                            (new File(path + "/afd/" + info[i])).delete();
+                                        }
+                                    }
+                                }
+                            }
+                            lastName = folder;
+                        }
                         dir.mkdirs();
                         
                         File outf = new File(path + "/" + entry.getName());

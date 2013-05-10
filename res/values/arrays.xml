@@ -171,7 +171,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
-        <item>Airport Diagrams Only</item>
+        <item>Airport Diagrams (VFR Only)</item>
 		<item>Alabama</item>
 		<item>Alaska</item>
 		<item>Arizona</item>
