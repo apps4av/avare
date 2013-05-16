@@ -16,8 +16,8 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_height="match_parent" >
 
     <TextView
-         android:id="@+id/nearest_list_distance"
-         android:layout_width="120dp"
+         android:id="@+id/plan_list_aid_name"
+         android:layout_width="match_parent"
          android:layout_height="30dp"
          android:layout_marginLeft="2dp"
          android:clickable="false"
@@ -25,46 +25,14 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
     
     <TextView
-         android:id="@+id/nearest_list_aid_name"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="20dp"
-         android:clickable="false"
-         android:textSize="20sp"
-         android:layout_toRightOf="@+id/nearest_list_distance">
-    </TextView>
-    
-    <TextView
-        android:id="@+id/nearest_list_bearing"
-        android:layout_width="120dp"
+        android:id="@+id/plan_list_info"
+        android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="10dp"
         android:clickable="false"
         android:textSize="25sp"
-        android:layout_below="@+id/nearest_list_distance">
+        android:layout_below="@+id/plan_list_aid_name">
     </TextView>
 
-    <TextView
-        android:id="@+id/nearest_list_fuel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:clickable="false"
-        android:textSize="20sp"
-        android:layout_below="@+id/nearest_list_aid_name"
-        android:layout_toRightOf="@+id/nearest_list_bearing">
-    </TextView>
-
-    <ImageView
-        android:contentDescription="@string/desc"
-        android:id="@+id/nearest_list_image_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/nearest_list_distance"
-        android:clickable="false"
-        android:layout_marginLeft="0dp"
-        android:src="@drawable/white_square"/>
-    
 </RelativeLayout>

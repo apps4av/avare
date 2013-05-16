@@ -84,7 +84,8 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Nearest), new Intent(this, NearestActivity.class), getIntent());        
-        setupTab(new TextView(this), getString(R.string.Search), new Intent(this, PlanActivity.class), getIntent());        
+        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());        
+        setupTab(new TextView(this), getString(R.string.Search), new Intent(this, SearchActivity.class), getIntent());        
     }
     
     /**

@@ -9,80 +9,45 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
-
 package com.ds.avare;
 
 
-import java.util.LinkedHashMap;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.place.Destination;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
- 
+
 /**
- * 
  * @author zkhan
- *
+ * An activity that deals with plates
  */
-public class PlanActivity extends Activity implements Observer {
-
+public class PlanActivity extends Activity  {
+    
     private StorageService mService;
-    
-    private ListView mSearchListView;
-    private EditText mSearchText;
-    private Preferences mPref;
+    private ListView mPlan;
+    private PlanAdapter mPlanAdapter;
     private Toast mToast;
-    private SearchAdapter mAdapter;
-    private SearchTask mSearchTask;
-    private ProgressBar mProgressBar;
-    private String mSelected;
-    private Button mSelectedButton;
-    private Button mEditButton;
-    /**
-     * Shows edit dialog
-     */
-    private AlertDialog mAlertDialogEdit;
+    private Button mDeleteButton;
+    private int mIndex;
 
-    
-    /**
-     * Current destination info
-     */
-    private Destination mDestination;
 
-    
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -91,6 +56,9 @@ public class PlanActivity extends Activity implements Observer {
 
         @Override
         public void locationCallback(Location location) {
+            if(location != null && mService != null) {
+                prepareAdapter();
+            }
         }
 
         @Override
@@ -112,233 +80,77 @@ public class PlanActivity extends Activity implements Observer {
         ((MainActivity)this.getParent()).switchTab(0);
     }
 
-    
-    /**
-     * 
-     * @param dst
-     */
-    private void goTo(String dst, String type) {
-        mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(PlanActivity.this);
-        mToast.setText(getString(R.string.Searching) + " " + dst);
-        mToast.show();
-        mDestination.find();
-    }
-    
     /**
      * 
      */
-    private void initList() {
-        String [] vals = mPref.getRecent();        
-        mAdapter = new SearchAdapter(PlanActivity.this, vals);
-        mSearchListView.setAdapter(mAdapter);
-    }
-    
     @Override
-    /**
-     * 
-     */
     public void onCreate(Bundle savedInstanceState) {
+        
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
- 
-                
-        mService = null;
-        mPref = new Preferences(getApplicationContext());
-        
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.plan, null);        
-        setContentView(view);
-        
+
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
         /*
-         * Lose info
+         * Get views from XML
          */
-        mSelected = null;
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.plan, null);
+        setContentView(view);
+        
 
-        /*
-         * For a search query
-         */
-        mSearchListView = (ListView)view.findViewById(R.id.plan_list_view);
+        mPlan = (ListView)view.findViewById(R.id.plan_list);
+
+        mService = null;
+        mIndex = -1;
         
-        /*
-         * Progress bar
-         */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.plan_progress_bar));
-        
-        /*
-         * Now initialize the list to recent in case someone needs to go there, and not search
-         */
-        initList();
-        
-        mSelectedButton = (Button)view.findViewById(R.id.plan_button_delete);
-        mSelectedButton.getBackground().setAlpha(255);
-        mSelectedButton.setOnClickListener(new OnClickListener() {
+        mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
+        mDeleteButton.getBackground().setAlpha(255);
+        mDeleteButton.setOnClickListener(new OnClickListener() {
 
             @Override
+            /*
+             * (non-Javadoc)
+             * Delete the plan destination
+             * @see android.view.View.OnClickListener#onClick(android.view.View)
+             */
             public void onClick(View v) {
-                if(null != mSelected) {
-                    mPref.deleteARecent(mSelected);
-                    initList();
-                }
-                mSelected = null;
-            }
-            
-        });
-
-        mEditButton = (Button)view.findViewById(R.id.plan_button_note);
-        mEditButton.getBackground().setAlpha(255);
-        mEditButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(null != mSelected) {
-                    final EditText edit = new EditText(PlanActivity.this);
-                    if(!StringPreference.parseHashedNameDbType(mSelected).equals(Destination.GPS)) {
-                        mToast.setText(R.string.GpsOnly);
-                        mToast.show();
-                        return;
-                    }
-                    
-                    edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
-
-                    mAlertDialogEdit = new AlertDialog.Builder(PlanActivity.this).create();
-                    mAlertDialogEdit.setTitle(getString(R.string.Label));
-                    mAlertDialogEdit.setCanceledOnTouchOutside(true);
-                    mAlertDialogEdit.setCancelable(true);
-                    mAlertDialogEdit.setView(edit);
-                    mAlertDialogEdit.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            /*
-                             * Edit and save description field
-                             */
-                            
-                            mPref.modifyARecent(mSelected, edit.getText().toString());
-                            initList();
-                            mSelected = null;
-                            dialog.dismiss();
-
-                        }
-                    });
-                    mAlertDialogEdit.setButton2(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            mSelected = null;
-                            dialog.dismiss();
-                        }            
-                    });
-
-                    mAlertDialogEdit.show();
+                if(mIndex >= 0) {
+                    mService.getPlan().remove(mIndex);
+                    prepareAdapter();
+                    mPlan.setAdapter(mPlanAdapter);
+                    mPlanAdapter.notifyDataSetChanged();
+                    mIndex = -1;
                 }
             }
             
         });
 
-
-        /*
-         * Set on click
-         */
-        mSearchListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                    long arg3) {
-                String id = StringPreference.parseHashedNameId(mAdapter.getItem(position)); 
-                String destType = StringPreference.parseHashedNameDestType(mAdapter.getItem(position)); 
-                if(id == null || destType == null) {
-                    return;
-                }
-                goTo(id, destType);
-            }
-        });
-        
-        mSearchListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                    int index, long arg3) {
-                mSelected = mAdapter.getItem(index); 
-                if(mSelected == null) {
-                    return false;
-                }
-                                
-                AnimateButton e = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                e.animate(true);
-                f.animate(true);
-
-                return true;
-            }
-        }); 
-
-
-        /*
-         * For searching, start search on every new key press
-         */
-        mSearchText = (EditText)view.findViewById(R.id.plan_edit_text);
-        mSearchText.addTextChangedListener(new TextWatcher() { 
-            @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-    
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-    
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int after) {
-                
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                if(null != mSearchTask) {
-                    if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
-                        /*
-                         * Cancel the last query
-                         */
-                        mSearchTask.cancel(true);
-                    }
-                }
-                
-                /*
-                 * If text is 0 length or too long, then do not search, show last list
-                 */
-                if(0 == s.length()) {
-                    initList();
-                    return;
-                }
-                
-                if(s.toString().contains(" ")) {
-                    String [] vals = new String[1];
-                    StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, s.toString());
-                    vals[0] = sp.getHashedName();
-                    mAdapter = new SearchAdapter(PlanActivity.this, vals);
-                    mSearchListView.setAdapter(mAdapter);
-                    return;
-                }
-                /*
-                 * This is a geo coordinate with &?
-                 */
-                if(s.toString().contains("&")) {
-                    String [] vals = new String[1];
-                    StringPreference sp = new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, s.toString());
-                    vals[0] = sp.getHashedName();
-                    mAdapter = new SearchAdapter(PlanActivity.this, vals);
-                    mSearchListView.setAdapter(mAdapter);
-                    return;
-                }
-                mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-                mSearchTask = new SearchTask();
-                mSearchTask.execute(s.toString());
-
-            }
-        });
     }
+
+    /**
+     * 
+     */
+    private boolean prepareAdapter() {
+        int destnum = mService.getPlan().getDestinationNumber();
+        if(0 == destnum) {
+            mToast.setText(getString(R.string.PlanNF));
+            mToast.show();
+        }
         
-        
+        final String [] name = new String[destnum];
+        final String [] info = new String[destnum];
+
+        for(int id = 0; id < destnum; id++) {
+            name[id] = mService.getPlan().getDestination(id).getID();
+            info[id] = mService.getPlan().getDestination(id).toString();
+        }
+        mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info);
+        return true;
+    }
     
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -359,7 +171,26 @@ public class PlanActivity extends Activity implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-        }
+            prepareAdapter();
+            mPlan.setAdapter(mPlanAdapter);
+            
+            mPlan.setClickable(true);
+            mPlan.setDividerHeight(10);
+            mPlan.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                        int index, long arg3) {
+                    mIndex = index;
+                                    
+                    AnimateButton f = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                    f.animate(true);
+
+                    return true;
+                }
+            }); 
+            
+        }    
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -370,30 +201,6 @@ public class PlanActivity extends Activity implements Observer {
     };
 
     /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Helper.setOrientationAndOn(this);
-
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-    
-    /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
     @Override
@@ -403,140 +210,36 @@ public class PlanActivity extends Activity implements Observer {
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
-        
-        if(null != mSearchText) {
-            mSearchText.setText("");
-        }
-
-        if(null != mAlertDialogEdit) {
-            try {
-                mAlertDialogEdit.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
 
         /*
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
-
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
- 
     /**
      * 
      */
     @Override
-    public void update(Observable arg0, Object arg1) {
+    public void onResume() {
+        super.onResume();
+        Helper.setOrientationAndOn(this);
+        
         /*
-         * Destination found?
+         * Registering our receiver
+         * Bind now.
          */
-        if(arg0 instanceof Destination) {
-            Boolean result = (Boolean)arg1;
-            if(result) {
-            
-                /*
-                 * Temporarily move to destination by giving false GPS signal.
-                 */
-                if(null == mDestination) {
-                    mToast.setText(getString(R.string.DestinationNF));
-                    mToast.show();
-                    return;
-                }
-                if(mService != null) {
-                    mService.setDestination((Destination)arg0);
-                }
-                mPref.addToRecent(mDestination.getStorageName());
-                
-                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
-                mToast.show();
-                ((MainActivity)this.getParent()).switchTab(0);
-            }
-            else {
-                mService.setDestination((Destination)null);
-                mToast.setText(getString(R.string.DestinationNF));
-                mToast.show();
-            }
-        }
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**
-     * @author zkhan
-     *
+     * 
      */
-    private class SearchTask extends AsyncTask<Object, Void, Boolean> {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-        private String[] selection;
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Object... vals) {
-            
-            String srch = (String)vals[0];
-            if(null == mService) {
-                return false;
-            }
-
-            LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            synchronized (PlanActivity.class) {
-                /*
-                 * This is not to be done repeatedly with new text input so sync.
-                 */
-                mService.getDBResource().search(srch, params);
-                if(params.size() > 0) {
-                    selection = new String[params.size()];
-                    int iterator = 0;
-                    for(String key : params.keySet()){
-                        selection[iterator] = StringPreference.getHashedName(params.get(key), key);
-                        iterator++;
-                    }
-                }
-            }
-            return true;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            /*
-             * Set new search adapter
-             */
-
-            if(null == selection) {
-                return;
-            }
-            mAdapter = new SearchAdapter(PlanActivity.this, selection);
-            mSearchListView.setAdapter(mAdapter);
-            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-        }
     }
 
 }

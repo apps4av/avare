@@ -20,6 +20,7 @@ import com.ds.avare.gps.*;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.TFRShape;
@@ -88,7 +89,12 @@ public class StorageService extends Service {
      * Area around us
      */
     private Area mArea;
-    
+
+    /**
+     * Flight plan
+     */
+    private Plan mPlan;
+
     /**
      * TFR list
      */
@@ -172,6 +178,7 @@ public class StorageService extends Service {
         mWeatherCache = new WeatherCache(getApplicationContext());
 
         mArea = new Area(mImageDataSource, mWeatherCache);
+        mPlan = new Plan();
         
         /*
          * All tiles
@@ -234,6 +241,7 @@ public class StorageService extends Service {
                     if(null != location) {
                         setGpsParams(new GpsParams(location));
                         getArea().updateLocation(getGpsParams());
+                        getPlan().updateLocation(getGpsParams());
                         if(mDestination != null) {
                             mDestination.updateTo(getGpsParams());
                         }
@@ -444,6 +452,13 @@ public class StorageService extends Service {
      */
     public Area getArea() {
         return mArea;
+    }
+
+    /**
+     * @return
+     */
+    public Plan getPlan() {
+        return mPlan;
     }
 
     /**

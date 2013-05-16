@@ -28,7 +28,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <service android:name=".StorageService">
         </service>
         <activity android:name=".PrefActivity" />
-        <activity android:name=".PlanActivity" />
+        <activity android:name="SearchActivity" />
+        <activity android:name="PlanActivity" />
         <activity android:name=".AirportActivity" />
         <activity android:name=".SatelliteActivity" />
         <activity android:name=".WebActivity" />

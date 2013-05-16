@@ -409,7 +409,7 @@ public class LocationActivity extends Activity implements Observer {
                     return;
                 }
 
-                Intent i = new Intent(LocationActivity.this, PlanActivity.class);
+                Intent i = new Intent(LocationActivity.this, SearchActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
             }

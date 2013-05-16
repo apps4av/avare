@@ -125,6 +125,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
+    <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlanSet">&quot; added to the plan&quot;</string>
+    <string name="PlanNoset">&quot; not added to the plan&quot;</string>
+    <string name="PlanNF">&quot;Plan shown when at least one way point is active&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
     <string name="RootLabel">&quot;Charts Download Server&quot;</string>
