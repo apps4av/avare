@@ -370,6 +370,17 @@ public class StorageService extends Service {
         mDestination = destination;
         mPlateIndex = 0;
         mAfdIndex = 0;
+        getPlan().makeInactive();
+    }
+
+    /**
+     * @param destination from plan
+     */
+    public void setDestinationPlan(Destination destination) {
+        mDestination = destination;
+        mPlateIndex = 0;
+        mAfdIndex = 0;
+        getPlan().makeActive();
     }
 
     /**

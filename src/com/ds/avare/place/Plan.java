@@ -15,6 +15,9 @@ package com.ds.avare.place;
 
 
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.Projection;
+import com.ds.avare.shapes.TrackShape;
 
 /**
  * 
@@ -24,15 +27,23 @@ import com.ds.avare.gps.GpsParams;
 public class Plan {
 
     private Destination[] mDestination = new Destination[MAX_DESTINATIONS];
+    private Boolean[] mPassed = new Boolean[MAX_DESTINATIONS];
     
     private static final int MAX_DESTINATIONS = 10;
     
+    private static final int MILES_PER_SEGMENT = 50;
+    
+    private boolean mActive;
+
+    private TrackShape mTrackShape;
     
     /**
      * 
      * @param dataSource
      */
     public Plan() {
+        mActive = false;
+        mTrackShape = new TrackShape();
     }
 
     /**
@@ -46,6 +57,19 @@ public class Plan {
             return null;
         }
         return(mDestination[index]);
+    }
+    
+    /**
+     * 
+     */
+    public Boolean isPassed(int index) {
+        /*
+         * Check for null.
+         */
+        if(index >= MAX_DESTINATIONS) {
+            return true;
+        }
+        return(mPassed[index]);
     }
 
     /**
@@ -76,10 +100,20 @@ public class Plan {
             return;
         }
         mDestination[rmId] = null;
+        mPassed[rmId] = null;
         for(int id = rmId; id < num; id++) {
             mDestination[id] = mDestination[id + 1];
             mDestination[id + 1] = null;
-        }        
+            mPassed[id] = mPassed[id + 1];
+            mPassed[id + 1] = null;
+        }
+        if(getDestinationNumber() > 0) {
+            mTrackShape.updateShapeFromPlan(getCoordinates(
+                    mDestination[0].getLocationInit().getLongitude(), mDestination[0].getLocationInit().getLatitude()));
+        }
+        else {
+            mTrackShape = new TrackShape();
+        }
     }
 
     /**
@@ -102,10 +136,25 @@ public class Plan {
             }
         }
         mDestination[n] = dest;
-        
+        mPassed[n] = false;
+        mTrackShape.updateShapeFromPlan(getCoordinates(
+                mDestination[0].getLocationInit().getLongitude(), mDestination[0].getLocationInit().getLatitude()));
+
         return(true);
     }
 
+    /*
+     * Find the next not passed destination
+     */
+    public int findNextNotPassed() {
+        for(int id = 0; id < getDestinationNumber(); id++) {
+            if(!mPassed[id]) {
+                return id;
+            }
+        }
+        return 0;
+    }
+    
     /**
      * 
      * @param lon
@@ -117,4 +166,77 @@ public class Plan {
             mDestination[id].updateTo(params);
         }
     }
+    
+    /**
+     * Activate flight plan
+     */
+    public void makeActive() {
+        mActive = true;
+    }
+    
+    /**
+     * Inativate flight plan
+     */
+    public void makeInactive() {
+        mActive = false;
+    }
+    
+    /**
+     * flight plan
+     */
+    public boolean isActive() {
+        return mActive;
+    }
+    
+    
+    /*
+     * Used to concat coordinates.
+     */
+    private Coordinate[] concat(Coordinate[] A, Coordinate[] B) {
+        int aLen = A.length;
+        int bLen = B.length;
+        Coordinate[] C = new Coordinate[aLen + bLen];
+        System.arraycopy(A, 0, C, 0, aLen);
+        System.arraycopy(B, 0, C, aLen, bLen);
+        return C;
+    }
+    
+    /*
+     * Get a list of coordinates forming this route on great circle
+     */
+    public Coordinate[] getCoordinates(double initLon, double initLat) {
+        int num = getDestinationNumber();
+        
+        double lon0 = initLon;
+        double lat0 = initLat;
+        Coordinate[] c = null;
+
+        /*
+         * Form a general path on the great circle of this plan
+         */
+        for(int id = 0; id < num; id++) {
+            Projection p = new Projection(
+                    getDestination(id).getLocation().getLongitude(), 
+                    getDestination(id).getLocation().getLatitude(),
+                    lon0, lat0);
+            int segments = (int)p.getDistance() / MILES_PER_SEGMENT + 3; // Min 3 points
+            Coordinate coord[] = p.findPoints(segments);
+
+            if(null == c) {
+                c = coord;
+            }
+            else {
+                c = concat(c, coord);
+            }
+            lon0 = getDestination(id).getLocation().getLongitude();
+            lat0 = getDestination(id).getLocation().getLatitude();            
+        }
+        return c;
+    }
+
+    public TrackShape getTrackShape() {
+        return mTrackShape;
+    }
 }
+
+

@@ -18,18 +18,20 @@ Redistribution and use in source and binary forms, with or without modification,
     <TextView
          android:id="@+id/plan_list_aid_name"
          android:layout_width="match_parent"
-         android:layout_height="30dp"
+         android:layout_height="wrap_content"
          android:layout_marginLeft="2dp"
          android:clickable="false"
-         android:textSize="25sp">
+        android:textStyle="bold"
+         android:textSize="35sp">
     </TextView>
     
     <TextView
         android:id="@+id/plan_list_info"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
+        android:typeface="monospace"
         android:clickable="false"
         android:textSize="25sp"
         android:layout_below="@+id/plan_list_aid_name">

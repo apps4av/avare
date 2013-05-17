@@ -128,9 +128,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
-    <string name="PlanNF">&quot;Plan shown when at least one way point is active&quot;</string>
+    <string name="PlanNF">&quot;Plan shown when at least one way point is added from the Search&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
     <string name="RootLabel">&quot;Charts Download Server&quot;</string>
     <string name="RootSummary">&quot;Select a server from which to download charts/data&quot;</string>
+    <string name="Inactive">&quot;Inactive&quot;</string>
+    <string name="Active">&quot;Active&quot;</string>
 </resources>

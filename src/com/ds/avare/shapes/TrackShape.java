@@ -23,36 +23,39 @@ import com.ds.avare.position.Projection;
  */
 public class TrackShape extends Shape {
 
-    double mDestLon;
-    double mDestLat;
-    
     private static final int MILES_PER_SEGMENT = 50;
-        
+
     /**
      * Set the destination for this track 
      */
-    public TrackShape(Destination destination) {
+    public TrackShape() {
         
         /*
          * No label for track line
          */
         super("");
-        mDestLon = destination.getLocation().getLongitude();
-        mDestLat = destination.getLocation().getLatitude();
     }
 
     /**
      * Update track as the aircraft moves 
      */
-    public void updateShape(GpsParams loc) {
+    public void updateShape(GpsParams loc, Destination destination) {
     
         /*
          * Where the aircraft is
          */
         double lastLon = loc.getLongitude();
         double lastLat = loc.getLatitude();
+        double destLon = 0;
+        double destLat = 0;
         
-        Projection p = new Projection(lastLon, lastLat, mDestLon, mDestLat);
+
+        if(null != destination) {
+            destLon = destination.getLocation().getLongitude();
+            destLat = destination.getLocation().getLatitude();
+        }
+
+        Projection p = new Projection(lastLon, lastLat, destLon, destLat);
         int segments = (int)p.getDistance() / MILES_PER_SEGMENT + 3; // Min 3 points
         Coordinate coord[] = p.findPoints(segments);
         super.mCoords.clear();
@@ -64,4 +67,23 @@ public class TrackShape extends Shape {
             super.add(coord[i].getLongitude(), coord[i].getLatitude());
         }
     }
+    
+    /**
+     * Update track as the aircraft moves 
+     */
+    public void updateShapeFromPlan(Coordinate[] c) {
+    
+        super.mCoords.clear();
+        
+        if(null == c) {
+            return;
+        }
+        /*
+         * Now make shape from coordinates with segments
+         */
+        for(int i = 0; i < c.length; i++) {
+            super.add(c[i].getLongitude(), c[i].getLatitude());
+        }
+    }
+    
 }

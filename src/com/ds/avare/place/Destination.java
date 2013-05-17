@@ -23,6 +23,7 @@ import java.util.Observable;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
+import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -67,6 +68,11 @@ public class Destination extends Observable {
      * ETA to destination
      */
     private String mEta;
+    
+    /*
+     * Track to dest.
+     */
+    TrackShape mTrackShape;
         
     /*
      * Its lon/lat
@@ -127,6 +133,7 @@ public class Destination extends Observable {
         mRunways = new LinkedList<Runway>();
         mService = service;
         mDataSource = mService.getDBResource(); 
+        mTrackShape = new TrackShape();
         mPref = pref;
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
@@ -296,6 +303,7 @@ public class Destination extends Observable {
             mFound = true;
             mLooking = false;
             mDbType = GPS;
+            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
             if(!mName.contains("&")) {
                 /*
                  * This comes from MAPS to GPS for user edited
@@ -501,6 +509,7 @@ public class Destination extends Observable {
 			/*
 			 * Anyone watching if destination found?
 			 */
+            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
 			Destination.this.setChanged();
             Destination.this.notifyObservers(Boolean.valueOf(mFound));
             mLooking = false;
@@ -613,4 +622,12 @@ public class Destination extends Observable {
         return l;
     }    
 
+    /**
+     * 
+     * @return
+     */
+    public TrackShape getTrackShape() {
+        return mTrackShape;
+    }
+    
 }

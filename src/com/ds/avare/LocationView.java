@@ -26,7 +26,6 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
-import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
@@ -170,11 +169,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Origin                      mOrigin;
     
     /*
-     * Track to destination
-     */
-    private TrackShape                  mTrackShape;
-    
-    /*
      * Weather.
      */
     private int                         mWeatherColor;
@@ -230,7 +224,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mTrackShape = null;
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
         mTrackUp = false;
@@ -679,11 +672,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawTrack(Canvas canvas) {
         if(mDestination != null && null == mPointProjection) {
-            if(mDestination.isFound() && mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
-                if(null != mTrackShape) {
-                    mPaint.setColor(Color.MAGENTA);
-                    mPaint.setStrokeWidth(4);
-                    mTrackShape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+            if(mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
+                mPaint.setColor(Color.MAGENTA);
+                mPaint.setStrokeWidth(4);
+                if(mDestination.isFound() && !mService.getPlan().isActive()) {
+                    mDestination.getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                }
+                else if (mService.getPlan().isActive()) {
+                    mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);                    
                 }
             }
             /*
@@ -925,12 +921,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * and we want to show it without pan.
                  */
                 mPan = new Pan();
-                tfrReset();
-                
-                /*
-                 * Reset track.
-                 */
-                mTrackShape = null;
+                tfrReset();                
             }
         }
     }
@@ -941,7 +932,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void forceReload() {
         dbquery(true);        
     }
-    
+        
     /**
      * @param params
      */
@@ -950,19 +941,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Comes from location manager
          */
         mGpsParams = params;
-        if(mDestination != null) {
-            if(mDestination.isFound()) {
-                /*
-                 * Set track to current destination from init point.
-                 * This should not be moved here because this is the only place we know we have
-                 * correct initial GPS lon/lat.
-                 */
-                if(mTrackShape == null) {
-                    mTrackShape = new TrackShape(mDestination);
-                    mTrackShape.updateShape(new GpsParams(mDestination.getLocationInit()));
-                }
-            }
-        }
+
         tfrReset();
         /*
          * Database query for new location / pan location.

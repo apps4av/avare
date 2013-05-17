@@ -33,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 /**
  * @author zkhan
@@ -46,6 +47,7 @@ public class PlanActivity extends Activity  {
     private Toast mToast;
     private Button mDeleteButton;
     private int mIndex;
+    private ToggleButton mActivateButton;
 
 
     private GpsInterface mGpsInfc = new GpsInterface() {
@@ -57,7 +59,7 @@ public class PlanActivity extends Activity  {
         @Override
         public void locationCallback(Location location) {
             if(location != null && mService != null) {
-                prepareAdapter();
+                updateAdapter();
             }
         }
 
@@ -123,12 +125,61 @@ public class PlanActivity extends Activity  {
                     prepareAdapter();
                     mPlan.setAdapter(mPlanAdapter);
                     mPlanAdapter.notifyDataSetChanged();
+                    mService.setDestinationPlan(mService.getPlan().getDestination(0));
                     mIndex = -1;
                 }
             }
             
         });
 
+        mActivateButton = (ToggleButton)view.findViewById(R.id.plan_button_activate);
+        mActivateButton.getBackground().setAlpha(255);
+        mActivateButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            /*
+             * (non-Javadoc)
+             * Delete the plan destination
+             * @see android.view.View.OnClickListener#onClick(android.view.View)
+             */
+            public void onClick(View v) {
+                /*
+                 * Make plan active/inactive in which case, track will be drawn to dest/plan
+                 */
+                if(null != mService) {
+                    if(mActivateButton.getText().equals(getString(R.string.Inactive))) {
+                        mService.getPlan().makeInactive();
+                    }
+                    else {
+                        if(mService.getPlan().getDestination(0) != null) {
+                            mService.setDestinationPlan(mService.getPlan().getDestination(0));
+                        }
+                    }
+                }
+            }
+            
+        });
+        
+    }
+
+    /**
+     * 
+     */
+    private boolean updateAdapter() {
+        if(null == mPlanAdapter) {
+            return false;
+        }
+        int destnum = mService.getPlan().getDestinationNumber();
+        
+        final String [] name = new String[destnum];
+        final String [] info = new String[destnum];
+
+        for(int id = 0; id < destnum; id++) {
+            name[id] = mService.getPlan().getDestination(id).getID();
+            info[id] = mService.getPlan().getDestination(id).toString();
+        }
+        mPlanAdapter.updateList(name, info);
+        return true;
     }
 
     /**
@@ -189,7 +240,17 @@ public class PlanActivity extends Activity  {
                     return true;
                 }
             }); 
-            
+
+            /*
+             * Set proper state of the active button.
+             * Plan only active when more than one dest.
+             */
+            if((!mService.getPlan().isActive()) || (mService.getPlan().getDestinationNumber() <= 0)) {
+                mActivateButton.setChecked(false);                
+            }
+            else {
+                mActivateButton.setChecked(true);
+            }
         }    
 
         /* (non-Javadoc)
