@@ -26,9 +26,19 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textOn="@string/Active"
         android:visibility="visible" />
     
+    <TextView 
+        android:id="@+id/plan_total_text"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/plan_button_activate"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="30sp"
+        />
+    
     <ListView
         android:id="@+id/plan_list"
-        android:layout_below="@+id/plan_button_activate"
+        android:layout_below="@+id/plan_total_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
             

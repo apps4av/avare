@@ -18,6 +18,8 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -37,6 +39,12 @@ public class Plan {
 
     private TrackShape mTrackShape;
     
+    private String mEta;
+    private double mDistance;
+    private double mBearing;
+    private GpsParams mLastLocation;
+    
+    
     /**
      * 
      * @param dataSource
@@ -44,6 +52,10 @@ public class Plan {
     public Plan() {
         mActive = false;
         mTrackShape = new TrackShape();
+        mDistance = 0;
+        mLastLocation = null;
+        mBearing = 0;
+        mEta = "--:--";
     }
 
     /**
@@ -109,7 +121,7 @@ public class Plan {
         }
         if(getDestinationNumber() > 0) {
             mTrackShape.updateShapeFromPlan(getCoordinates(
-                    mDestination[0].getLocationInit().getLongitude(), mDestination[0].getLocationInit().getLatitude()));
+                    mLastLocation.getLongitude(), mLastLocation.getLatitude()));
         }
         else {
             mTrackShape = new TrackShape();
@@ -137,8 +149,11 @@ public class Plan {
         }
         mDestination[n] = dest;
         mPassed[n] = false;
+        if(null == mLastLocation) {
+            mLastLocation = new GpsParams(mDestination[n].getLocationInit());
+        }
         mTrackShape.updateShapeFromPlan(getCoordinates(
-                mDestination[0].getLocationInit().getLongitude(), mDestination[0].getLocationInit().getLatitude()));
+                mLastLocation.getLongitude(), mLastLocation.getLatitude()));
 
         return(true);
     }
@@ -161,12 +176,31 @@ public class Plan {
      * @param lat
      */
     public void updateLocation(GpsParams params) {
-        
-        for(int id = 0; id < getDestinationNumber(); id++) {
+        mDistance = 0;
+        int num = getDestinationNumber();
+        for(int id = 0; id < num; id++) {
             mDestination[id].updateTo(params);
+            mDistance += mDestination[id].getDistance();
         }
+        mBearing = 0;
+        if(num > 0) {
+            mBearing = mDestination[0].getBearing();
+        }
+        mEta = Helper.calculateEta(mDistance, params.getSpeed());
+        mLastLocation = params;
     }
-    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        /*
+         * For display purpose
+         */
+        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, ""); 
+    }
+
     /**
      * Activate flight plan
      */
@@ -234,6 +268,10 @@ public class Plan {
         return c;
     }
 
+    /**
+     * 
+     * @return
+     */
     public TrackShape getTrackShape() {
         return mTrackShape;
     }

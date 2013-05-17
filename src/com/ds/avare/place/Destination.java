@@ -234,24 +234,7 @@ public class Destination extends Observable {
     	/*
     	 * ETA when speed != 0
     	 */
-    	if(speed != 0) {
-	    	int etahr = (int)(mDistance / speed);
-	    	int etamin =  (int)Math.round((mDistance / speed - (double)etahr) * 60);
-	    	if(etahr > 99) {
-	    	    mEta = "XX:XX";
-	    	}
-	    	else {
-    	    	String hr = String.format(Locale.getDefault(), "%02d", etahr);
-    	    	String min = String.format(Locale.getDefault(), "%02d", etamin);
-            	mEta = new String(hr + ":" + min);
-	    	}
-    	}
-    	else {
-    	    /*
-    	     * NaN avoid
-    	     */
-    		mEta = new String("--:--");
-    	}
+    	mEta = Helper.calculateEta(mDistance, speed);
 	}
 
 	/**
@@ -611,6 +594,14 @@ public class Destination extends Observable {
         return l;
     }    
 
+    /**
+     * 
+     * @return
+     */
+    public String getType() {
+        return mDestType;
+    }
+    
     /**
      * 
      * @return

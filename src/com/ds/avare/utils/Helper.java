@@ -32,6 +32,24 @@ import android.view.WindowManager;
  */
 public class Helper {
 
+    public static String calculateEta(double distance, double speed) {
+        String eta = "--:--"; 
+        if(0 == speed) {
+            return eta;
+        }
+        int etahr = (int)(distance / speed);
+        int etamin =  (int)Math.round((distance / speed - (double)etahr) * 60);
+        if(etahr > 99) {
+            return "XX:XX";
+        }
+        else {
+            String hr = String.format(Locale.getDefault(), "%02d", etahr);
+            String min = String.format(Locale.getDefault(), "%02d", etamin);
+            eta = new String(hr + ":" + min);
+        }
+        return eta;
+    }
+    
     /**
      * 
      * @param lonlat

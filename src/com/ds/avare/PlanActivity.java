@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -48,6 +49,8 @@ public class PlanActivity extends Activity  {
     private Button mDeleteButton;
     private int mIndex;
     private ToggleButton mActivateButton;
+    private TextView mTotalText;
+    
 
 
     private GpsInterface mGpsInfc = new GpsInterface() {
@@ -106,8 +109,12 @@ public class PlanActivity extends Activity  {
 
         mPlan = (ListView)view.findViewById(R.id.plan_list);
 
+        
+        
+
         mService = null;
         mIndex = -1;
+        mTotalText = (TextView)view.findViewById(R.id.plan_total_text);
         
         mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
         mDeleteButton.getBackground().setAlpha(255);
@@ -149,6 +156,7 @@ public class PlanActivity extends Activity  {
                 if(null != mService) {
                     if(mActivateButton.getText().equals(getString(R.string.Inactive))) {
                         mService.getPlan().makeInactive();
+                        mService.getGpsParams();
                     }
                     else {
                         if(mService.getPlan().getDestination(0) != null) {
@@ -175,10 +183,11 @@ public class PlanActivity extends Activity  {
         final String [] info = new String[destnum];
 
         for(int id = 0; id < destnum; id++) {
-            name[id] = mService.getPlan().getDestination(id).getID();
+            name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
             info[id] = mService.getPlan().getDestination(id).toString();
         }
         mPlanAdapter.updateList(name, info);
+        mTotalText.setText(mService.getPlan().toString());
         return true;
     }
 
@@ -196,7 +205,7 @@ public class PlanActivity extends Activity  {
         final String [] info = new String[destnum];
 
         for(int id = 0; id < destnum; id++) {
-            name[id] = mService.getPlan().getDestination(id).getID();
+            name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
             info[id] = mService.getPlan().getDestination(id).toString();
         }
         mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info);
