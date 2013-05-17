@@ -503,6 +503,12 @@ public class SearchActivity extends Activity implements Observer {
                     mToast.show();
                     return;
                 }
+                if((Destination)arg0 != mDestination) {
+                    /*
+                     * If user presses a selection repeatedly, reject previous
+                     */
+                    return;                    
+                }
                 mPref.addToRecent(mDestination.getStorageName());
                 
                 if(!mIsWaypoint) {
