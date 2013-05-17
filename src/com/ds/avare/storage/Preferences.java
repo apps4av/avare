@@ -125,7 +125,12 @@ public class Preferences {
      */
     public String getRoot() {
         
-        String val = mPref.getString(mContext.getString(R.string.Root), "0");
+        String val = mPref.getString(mContext.getString(R.string.Root), null);
+        if(null == val) {
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putString(mContext.getString(R.string.Root), "0");
+            editor.commit();
+        }
         if(val.equals("0")) {
             /*
              * I hope Android comes up with a better resource solution some time soon.

@@ -235,8 +235,10 @@ public class Plan {
      */
     public void makeActive(GpsParams params) {
         mLastLocation = params;
-        mTrackShape.updateShapeFromPlan(getCoordinates(
-                mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+        if(null != params) {
+            mTrackShape.updateShapeFromPlan(getCoordinates(
+                    mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+        }
         mActive = true;
     }
     
