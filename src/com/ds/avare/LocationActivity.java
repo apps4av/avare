@@ -529,7 +529,7 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateParams(mService.getGpsParams());
             }
 
-            mLocationView.updateDestination(mDestination);
+            mLocationView.updateDestination();
 
             /*
              * Show avare warning when service says so 
@@ -714,7 +714,7 @@ public class LocationActivity extends Activity implements Observer {
                 if(mService != null) {
                     mService.setDestination((Destination)arg0);
                 }
-                mLocationView.updateDestination(mDestination);
+                mLocationView.updateDestination();
                 mPref.addToRecent(mDestination.getStorageName());
                 
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());

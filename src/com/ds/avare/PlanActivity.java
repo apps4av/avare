@@ -132,7 +132,9 @@ public class PlanActivity extends Activity  {
                     prepareAdapter();
                     mPlan.setAdapter(mPlanAdapter);
                     mPlanAdapter.notifyDataSetChanged();
-                    mService.setDestinationPlan(mService.getPlan().getDestination(0));
+                    if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
+                        mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
+                    }
                     mIndex = -1;
                 }
             }
@@ -159,8 +161,8 @@ public class PlanActivity extends Activity  {
                         mService.getGpsParams();
                     }
                     else {
-                        if(mService.getPlan().getDestination(0) != null) {
-                            mService.setDestinationPlan(mService.getPlan().getDestination(0));
+                        if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
+                            mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
                         }
                     }
                 }
@@ -181,12 +183,14 @@ public class PlanActivity extends Activity  {
         
         final String [] name = new String[destnum];
         final String [] info = new String[destnum];
+        final boolean [] passed = new boolean[destnum];
 
         for(int id = 0; id < destnum; id++) {
             name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
             info[id] = mService.getPlan().getDestination(id).toString();
+            passed[id] = mService.getPlan().isPassed(id);
         }
-        mPlanAdapter.updateList(name, info);
+        mPlanAdapter.updateList(name, info, passed);
         mTotalText.setText(mService.getPlan().toString());
         return true;
     }
@@ -203,12 +207,14 @@ public class PlanActivity extends Activity  {
         
         final String [] name = new String[destnum];
         final String [] info = new String[destnum];
+        final boolean [] passed = new boolean[destnum];
 
         for(int id = 0; id < destnum; id++) {
             name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
             info[id] = mService.getPlan().getDestination(id).toString();
+            passed[id] = mService.getPlan().isPassed(id);
         }
-        mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info);
+        mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info, passed);
         return true;
     }
     

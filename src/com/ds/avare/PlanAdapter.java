@@ -13,6 +13,7 @@ package com.ds.avare;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,16 +29,19 @@ public class PlanAdapter extends ArrayAdapter<String> {
     private Context  mContext;
     private String[] mName;
     private String[] mInfo;
+    private boolean[] mPassed;
+    private int mNext;
         
     /**
      * @param context
      * @param textViewResourceId
      */
-    public PlanAdapter(Context context, String name[], String info[]) {
+    public PlanAdapter(Context context, String name[], String info[], boolean[] passed) {
         super(context, R.layout.plan, name);
         mContext = context;
         mName = name;
         mInfo = info;
+        mPassed = passed;
     }
 
     /**
@@ -47,9 +51,10 @@ public class PlanAdapter extends ArrayAdapter<String> {
      * @param bearing
      * @param eta
      */
-    public void updateList(String name[], String info[]) {
+    public void updateList(String name[], String info[], boolean passed[]) {
         mName = name;
         mInfo = info;
+        mPassed = passed;
         notifyDataSetChanged();
     }
     
@@ -58,12 +63,35 @@ public class PlanAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = convertView;
+        
+        /*
+         * Find the next not passed.
+         */
+        for(int id = 0; id < mPassed.length; id++) {
+            if(!mPassed[id]) {
+                mNext = id;
+                break;
+            }
+        }
 
         if(null == rowView) {
             rowView = inflater.inflate(R.layout.plan_list, parent, false);
         }
         TextView textView = (TextView)rowView.findViewById(R.id.plan_list_aid_name);
-        textView.setText(mName[position]);
+        textView.setText(mName[position]);            
+        if(mNext == position) {
+            /*
+             * Add an arrow to indicate next way point in the plan
+             */
+            textView.setText("> " + mName[position]);
+            textView.setBackgroundColor(Color.MAGENTA);
+        }
+        else if (position < mNext) {
+            textView.setBackgroundColor(Color.RED);
+        }
+        else {
+            textView.setBackgroundColor(Color.BLUE);            
+        }
         textView = (TextView)rowView.findViewById(R.id.plan_list_info);
         textView.setText(mInfo[position]);
         

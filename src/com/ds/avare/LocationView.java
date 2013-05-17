@@ -88,10 +88,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private PointInfo                   mCurrTouchPoint;
     /**
-     * Current destination
-     */
-    private Destination                 mDestination;
-    /**
      * Gesture like long press, double touch outside of multi-touch
      */
     private GestureDetector             mGestureDetector;
@@ -218,7 +214,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mDestination = null;
         mThreshold = 0;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
@@ -643,15 +638,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(mPointProjection.getGeneralDirectionFrom(),
                     0, getHeight() / mTextDiv, mPaint);
         }
-        else if(mDestination != null) {
+        else if(mService != null && mService.getDestination() != null) {
             mPaint.setTextAlign(Align.RIGHT);
             /*
              * Else dest
              */
-            canvas.drawText(mDestination.toString(),
+            canvas.drawText(mService.getDestination().toString(),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
-            String name = mDestination.getID();
+            String name = mService.getDestination().getID();
             if(name.contains("&")) {
                 /*
                  * If this string is too long, cut it.
@@ -671,12 +666,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawTrack(Canvas canvas) {
-        if(mDestination != null && null == mPointProjection) {
+        if(null == mService) {
+            return;
+        }
+
+        if(mService.getDestination() != null && null == mPointProjection) {
             if(mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
                 mPaint.setColor(Color.MAGENTA);
                 mPaint.setStrokeWidth(4);
-                if(mDestination.isFound() && !mService.getPlan().isActive()) {
-                    mDestination.getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                if(mService.getDestination().isFound() && !mService.getPlan().isActive()) {
+                    mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }
                 else if (mService.getPlan().isActive()) {
                     mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);                    
@@ -686,7 +685,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Draw actual track
              */
             if(null != mLineBitmap && mGpsParams != null) {
-                rotateBitmapIntoPlace(mLineBitmap, (float)mDestination.getBearing(),
+                rotateBitmapIntoPlace(mLineBitmap, (float)mService.getDestination().getBearing(),
                         mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
                 canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
             }
@@ -772,9 +771,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(!mPref.shouldExtendRunways()) {
             return;
         }
-        if(null != mRunwayBitmap && null != mDestination && null == mPointProjection) {
+        if(null == mService) {
+            return;
+        }
 
-            LinkedList<Runway> runways = mDestination.getRunways();
+        if(null != mRunwayBitmap && null != mService.getDestination() && null == mPointProjection) {
+
+            LinkedList<Runway> runways = mService.getDestination().getRunways();
             if(runways != null) {
                 
                 for(Runway r : runways) {
@@ -792,8 +795,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * If we did not get any lon/lat of this runway, use airport lon/lat
                          */
-                        lon = mDestination.getLocation().getLongitude();
-                        lat = mDestination.getLocation().getLatitude();
+                        lon = mService.getDestination().getLocation().getLongitude();
+                        lat = mService.getDestination().getLocation().getLatitude();
                     }
                     
                     rotateBitmapIntoPlace(mRunwayBitmap, heading, lon, lat, false);
@@ -829,8 +832,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * If we did not get any lon/lat of this runway, use airport lon/lat
                          */
-                        lon = mDestination.getLocation().getLongitude();
-                        lat = mDestination.getLocation().getLatitude();
+                        lon = mService.getDestination().getLocation().getLongitude();
+                        lat = mService.getDestination().getLocation().getLatitude();
                     }
                     x = (float)mOrigin.getOffsetX(lon);
                     y = (float)mOrigin.getOffsetY(lat);                        
@@ -909,13 +912,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * @param destination
      */
-    public void updateDestination(Destination destination) {
+    public void updateDestination() {
         /*
          * Comes from database
          */
-        mDestination = destination;
-        if(null != destination) {
-            if(destination.isFound()) {
+        if(null == mService) {
+            return;
+        }
+        if(null != mService.getDestination()) {
+            if(mService.getDestination().isFound()) {
                 /*
                  * Set pan to zero since we entered new destination
                  * and we want to show it without pan.
@@ -987,8 +992,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != params) {
             mGpsParams = params;
         }
-        else if (null != mDestination) {
-            mGpsParams = new GpsParams(mDestination.getLocation());
+        else if (null != mService.getDestination()) {
+            mGpsParams = new GpsParams(mService.getDestination().getLocation());
         }
         else {
             mGpsParams = new GpsParams(null);

@@ -43,6 +43,8 @@ public class Plan {
     private double mDistance;
     private double mBearing;
     private GpsParams mLastLocation;
+    private Passage mPassage;
+    private boolean mDestChanged;
     
     
     /**
@@ -55,7 +57,9 @@ public class Plan {
         mDistance = 0;
         mLastLocation = null;
         mBearing = 0;
+        mDestChanged = false;
         mEta = "--:--";
+        mPassage = new Passage();
     }
 
     /**
@@ -71,19 +75,6 @@ public class Plan {
         return(mDestination[index]);
     }
     
-    /**
-     * 
-     */
-    public Boolean isPassed(int index) {
-        /*
-         * Check for null.
-         */
-        if(index >= MAX_DESTINATIONS) {
-            return true;
-        }
-        return(mPassed[index]);
-    }
-
     /**
      * 
      * @return
@@ -125,9 +116,22 @@ public class Plan {
         }
         else {
             mTrackShape = new TrackShape();
-        }
+        }        
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean hasDestinationChanged() {
+        /*
+         * Auto change to next dest.
+         */
+        boolean ret = mDestChanged;
+        mDestChanged = false;
+        return ret;
+    }
+    
     /**
      * 
      * @return
@@ -162,6 +166,9 @@ public class Plan {
      * Find the next not passed destination
      */
     public int findNextNotPassed() {
+        /*
+         * 
+         */
         for(int id = 0; id < getDestinationNumber(); id++) {
             if(!mPassed[id]) {
                 return id;
@@ -169,7 +176,14 @@ public class Plan {
         }
         return 0;
     }
-    
+
+    /*
+     * If passed
+     */
+    public boolean isPassed(int id) {
+        return mPassed[id];
+    }
+
     /**
      * 
      * @param lon
@@ -180,11 +194,26 @@ public class Plan {
         int num = getDestinationNumber();
         for(int id = 0; id < num; id++) {
             mDestination[id].updateTo(params);
-            mDistance += mDestination[id].getDistance();
+            if(id >= findNextNotPassed()) {
+                mDistance += mDestination[id].getDistance();
+            }
         }
         mBearing = 0;
         if(num > 0) {
-            mBearing = mDestination[0].getBearing();
+            mBearing = mDestination[findNextNotPassed()].getBearing();
+            if(mPassage.updateLocation(params, mDestination[findNextNotPassed()])) {
+                /*
+                 * Passed. Go to next.
+                 */
+                mPassed[findNextNotPassed()] = true;
+                mDestChanged = true;
+            }   
+        }
+        else {
+            /*
+             * Reset flight plan
+             */
+            mPassage = new Passage();
         }
         mEta = Helper.calculateEta(mDistance, params.getSpeed());
         mLastLocation = params;
@@ -204,7 +233,10 @@ public class Plan {
     /**
      * Activate flight plan
      */
-    public void makeActive() {
+    public void makeActive(GpsParams params) {
+        mLastLocation = params;
+        mTrackShape.updateShapeFromPlan(getCoordinates(
+                mLastLocation.getLongitude(), mLastLocation.getLatitude()));
         mActive = true;
     }
     
@@ -275,6 +307,76 @@ public class Plan {
     public TrackShape getTrackShape() {
         return mTrackShape;
     }
+    
+    /**
+     * A class that finds a station passage
+     * @author zkhan
+     *
+     */
+    private class Passage {
+
+        double mLastDistance;
+        double mLastBearing;
+        double mCurrentDistance;
+        double mCurrentBearing;
+        
+        private static final double PASSAGE_DISTANCE_MIN = 10;
+
+        public Passage() {
+            mLastDistance = -1;
+            mLastBearing = -1;
+        }
+
+        /*
+         * Algorithm to calculate passage.
+         */
+        private boolean hasPassed() {
+            
+            /*
+             * Distance increases
+             */
+            if(mCurrentDistance > mLastDistance) {
+                
+                /*
+                 * We are in passage zone
+                 */
+                if(mCurrentDistance < PASSAGE_DISTANCE_MIN) {
+                    return true;
+                }
+                
+            }
+            
+            return false;
+        }
+        
+        /**
+         * 
+         * @param params
+         */
+        public boolean updateLocation(GpsParams params, Destination nextDest) {
+            Projection p = new Projection(params.getLongitude(), params.getLatitude(),
+                    nextDest.getLocation().getLongitude(), nextDest.getLocation().getLatitude());
+            if(mLastBearing < 0) {
+                /*
+                 * Init on first input on location
+                 */
+                mLastDistance = p.getDistance();
+                mLastBearing = p.getBearing();
+                return false;
+            }
+          
+            mCurrentDistance = p.getDistance();
+            mCurrentBearing = p.getBearing();
+            
+            boolean ret = hasPassed();
+            
+            mLastDistance = mCurrentDistance;
+            mLastBearing = mCurrentBearing;
+            return ret;
+        }
+        
+    }
+    
 }
 
 

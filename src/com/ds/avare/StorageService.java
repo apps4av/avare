@@ -242,6 +242,13 @@ public class StorageService extends Service {
                         setGpsParams(new GpsParams(location));
                         getArea().updateLocation(getGpsParams());
                         getPlan().updateLocation(getGpsParams());
+                        if(getPlan().hasDestinationChanged()) {
+                            /*
+                             * If plan active then set destination to next not passed way point
+                             */
+                            setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
+                        }
+
                         if(mDestination != null) {
                             mDestination.updateTo(getGpsParams());
                         }
@@ -376,11 +383,20 @@ public class StorageService extends Service {
     /**
      * @param destination from plan
      */
+    public void setDestinationPlanNoChange(Destination destination) {
+        mDestination = destination;
+        mPlateIndex = 0;
+        mAfdIndex = 0;
+    }
+
+    /**
+     * @param destination from plan
+     */
     public void setDestinationPlan(Destination destination) {
         mDestination = destination;
         mPlateIndex = 0;
         mAfdIndex = 0;
-        getPlan().makeActive();
+        getPlan().makeActive(mGpsParams);
     }
 
     /**
