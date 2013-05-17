@@ -90,7 +90,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //private static final String  FUEL_TYPES_DB = "FuelTypes";
     private static final int    FUEL_TYPES_COL = 12;
     private static final int    CUSTOMS_COL = 13;
-    private static final String  CUSTOMS = "Customs Office";
+    private static final String  CUSTOMS = "Customs";
     private static final int    BEACON_COL = 14;
     private static final String  BEACON = "Beacon";
     private static final int    FSSPHONE_COL = 6;
@@ -462,11 +462,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put(MANAGER_PHONE, cursor.getString(8).trim());
                         params.put("Elevation", cursor.getString(9).trim());
                         String customs = cursor.getString(CUSTOMS_COL);
-                        if(customs.equals("") || customs.equals("NN")) {
-                            params.put(CUSTOMS, mContext.getString(R.string.No));
+                        if(customs.equals("YN")) {
+                            params.put(CUSTOMS, "Intl. Entry");
+                        }
+                        else if(customs.equals("NY")) {
+                            params.put(CUSTOMS, "Lndg. Rights");
+                        }
+                        else if(customs.equals("YY")) {
+                            params.put(CUSTOMS, "Lndg. Rights, Intl. Entry");
                         }
                         else {
-                            params.put(CUSTOMS, mContext.getString(R.string.No));
+                            params.put(CUSTOMS, mContext.getString(R.string.No));                            
                         }
                         String bcn = cursor.getString(BEACON_COL);
                         if(bcn.equals("")) {
