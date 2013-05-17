@@ -111,8 +111,10 @@ public class Plan {
             mPassed[id + 1] = null;
         }
         if(getDestinationNumber() > 0) {
-            mTrackShape.updateShapeFromPlan(getCoordinates(
-                    mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+            if(mLastLocation != null) {
+                mTrackShape.updateShapeFromPlan(getCoordinates(
+                        mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+            }
         }
         else {
             mTrackShape = new TrackShape();
