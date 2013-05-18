@@ -193,29 +193,40 @@ public class Plan {
      */
     public void updateLocation(GpsParams params) {
         mDistance = 0;
-        int num = getDestinationNumber();
-        for(int id = 0; id < num; id++) {
-            mDestination[id].updateTo(params);
-            if(id >= findNextNotPassed()) {
-                mDistance += mDestination[id].getDistance();
-            }
-        }
         mBearing = 0;
+        int num = getDestinationNumber();
+        int np = findNextNotPassed();
+        if(0 == num) {
+            mPassage = new Passage();
+            return;
+        }
+        
+        /*
+         * For all passed way points set distance to current
+         */
+        for(int id = 0; id <= np; id++) {
+            mDestination[id].updateTo(params);
+        }
+        mDistance = mDestination[np].getDistance();
+        
+        /*
+         * For all upcoming, add distance. Distance is from way point to way point
+         */
+        for(int id = np; id < (num - 1); id++) {
+            mDestination[id + 1].updateTo(new GpsParams(mDestination[id].getLocation()));
+            mDistance += mDestination[id + 1].getDistance();
+        }
         if(num > 0) {
             mBearing = mDestination[findNextNotPassed()].getBearing();
             if(mPassage.updateLocation(params, mDestination[findNextNotPassed()])) {
                 /*
-                 * Passed. Go to next.
+                 * Passed. Go to next. Only when active
                  */
-                mPassed[findNextNotPassed()] = true;
-                mDestChanged = true;
+                if(mActive) {
+                    mPassed[findNextNotPassed()] = true;
+                    mDestChanged = true;
+                }
             }   
-        }
-        else {
-            /*
-             * Reset flight plan
-             */
-            mPassage = new Passage();
         }
         mEta = Helper.calculateEta(mDistance, params.getSpeed());
         mLastLocation = params;
@@ -324,7 +335,7 @@ public class Plan {
         double mCurrentDistance;
         double mCurrentBearing;
         
-        private static final double PASSAGE_DISTANCE_MIN = 10;
+        private static final double PASSAGE_DISTANCE_MIN = 2;
 
         public Passage() {
             mLastDistance = -1;

@@ -87,10 +87,10 @@ public class PlanAdapter extends ArrayAdapter<String> {
             textView.setBackgroundColor(Color.MAGENTA);
         }
         else if (position < mNext) {
-            textView.setBackgroundColor(Color.RED);
+            textView.setBackgroundColor(Color.rgb(0x00, 0x7F, 0x00));
         }
         else {
-            textView.setBackgroundColor(Color.BLUE);            
+            textView.setBackgroundColor(Color.rgb(0x7F, 0x00, 0x00));            
         }
         textView = (TextView)rowView.findViewById(R.id.plan_list_info);
         textView.setText(mInfo[position]);
