@@ -130,6 +130,7 @@ public class Preferences {
             SharedPreferences.Editor editor = mPref.edit();
             editor.putString(mContext.getString(R.string.Root), "0");
             editor.commit();
+            val = "0";
         }
         if(val.equals("0")) {
             /*
