@@ -128,6 +128,19 @@ public class TileMap {
         return null;
     }
 
+    /*
+     * Force a reload.
+     */
+    public void forceReload() {
+        for(int tile = 0; tile < numTilesMax; tile++) {
+            if(mBitmapCache[tile] != null) {
+                if(mBitmapCache[tile].getName() != null) {
+                    mBitmapCache[tile].drawInBitmap(null, null);
+                }
+            }
+        }        
+    }
+
     /**
      * 
      * When a new string of names are available for a new region, reload

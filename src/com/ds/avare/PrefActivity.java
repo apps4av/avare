@@ -11,10 +11,18 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
+import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceActivity;
 
 /**
@@ -23,6 +31,29 @@ import android.preference.PreferenceActivity;
  *
  */
 public class PrefActivity extends PreferenceActivity {
+    private StorageService mService;
+
+    /*
+     * Start GPS
+     */
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
+        }          
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,8 +62,37 @@ public class PrefActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
+        mService = null;        
     }
-    
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+            mService.registerGpsListener(mGpsInfc);
+        }    
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
     /**
      * 
      */
@@ -41,6 +101,12 @@ public class PrefActivity extends PreferenceActivity {
         super.onResume();
         
         Helper.setOrientationAndOn(this);
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
 
@@ -55,5 +121,16 @@ public class PrefActivity extends PreferenceActivity {
          * This should update preferences in static memory
          */
         new Preferences(this);
+
+        getApplicationContext().unbindService(mConnection);
+        
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+            
+            /*
+             * This will will sure we update tiles when someone changes storage folder
+             */
+            mService.getTiles().forceReload();
+        }
     }
 }

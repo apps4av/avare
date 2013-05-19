@@ -266,6 +266,13 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
+        
+        /*
+         * Download does update tiles
+         */
+        if(mService != null){
+            mService.getTiles().forceReload();
+        }
     }
      
     /**
