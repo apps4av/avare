@@ -135,4 +135,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="RootSummary">&quot;Select a server from which to download charts/data&quot;</string>
     <string name="Inactive">&quot;Inactive&quot;</string>
     <string name="Active">&quot;Active&quot;</string>
+    <string name="Total">&quot;Total&quot;</string>
 </resources>

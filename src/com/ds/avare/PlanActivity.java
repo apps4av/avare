@@ -191,7 +191,7 @@ public class PlanActivity extends Activity  {
             passed[id] = mService.getPlan().isPassed(id);
         }
         mPlanAdapter.updateList(name, info, passed);
-        mTotalText.setText(mService.getPlan().toString());
+        mTotalText.setText(getString(R.string.Total) + " " + mService.getPlan().toString());
         return true;
     }
 

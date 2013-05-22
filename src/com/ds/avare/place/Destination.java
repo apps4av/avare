@@ -243,8 +243,8 @@ public class Destination extends Observable {
 	private void addTime() {
         TwilightCalculator calc = new TwilightCalculator();
         calc.calculateTwilight(mLatd, mLond);
-        mParams.put("Twilight Begin", calc.getSunrise());
-        mParams.put("Twilight End", calc.getSunset());
+        mParams.put("Morning Twilight Start", calc.getSunrise());
+        mParams.put("Evening Twilight End", calc.getSunset());
 	}
 	
 	/* (non-Javadoc)
