@@ -121,7 +121,7 @@ public class Helper {
          * threshold = altitude / 3 (meters per foot) / 50
          * Give 2 levels margin of safety
          */
-        float factor = 8.f;
+        float factor = 4.f;
         float mx [] = {
                 factor, 0,             0,             0,  -(factor) * (threshold - 5) * 2.0f,
                 0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 5) * 2.0f,

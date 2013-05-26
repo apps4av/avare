@@ -225,17 +225,18 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 	</string-array>
     <string-array name="resNameTerrain">
-        <item>60\u00B0W_70\u00B0W</item>
-        <item>70\u00B0W_80\u00B0W</item>
-        <item>80\u00B0W_90\u00B0W</item>
-        <item>90\u00B0W_100\u00B0W</item>
-        <item>100\u00B0W_110\u00B0W</item>
-        <item>110\u00B0W_120\u00B0W</item>
-        <item>120\u00B0W_130\u00B0W</item>
+        <item>US 48 States</item>
+        <item>Alaska</item>
+        <item>Hawaii</item>
+        <item>Puerto Rico</item>
+        <item>US 48 States Shaded Relief</item>
+        <item>Alaska Shaded Relief</item>
+        <item>Hawaii Shaded Relief</item>
+        <item>Puerto Rico Shaded Relief</item>
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v6</item>
+        <item>databases_v7</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -435,15 +436,16 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>WY</item>  
     </string-array>
     <string-array name="resFilesTerrain">
-        <item>60_70</item>
-        <item>70_80</item>
-        <item>80_90</item>
-        <item>90_100</item>
-        <item>100_110</item>
-        <item>110_120</item>
-        <item>120_130</item>
+        <item>elev48</item>
+        <item>elevak</item>
+        <item>elevhi</item>
+        <item>elevpr</item>
+        <item>rel48</item>
+        <item>relak</item>
+        <item>relhi</item>
+        <item>relpr</item>
     </string-array>
-    
+        
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -451,6 +453,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Low</item>
         <item>IFR High</item>
     	<item>Terrain</item>
+        <item>Shaded Relief</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
@@ -460,6 +463,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>3</item>
         <item>4</item>
         <item>5</item>
+        <item>6</item>
     </string-array>    
 
     <string-array name="UnitsD">
