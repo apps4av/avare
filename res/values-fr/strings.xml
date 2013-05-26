@@ -127,4 +127,17 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightMode">&quot;Mode de nuit&quot;</string>
     <string name="NightModeLabel">&quot;Mode de nuit&quot;</string>
     <string name="NightModeSummary">&quot;Selectioner pour réduire l'intensité lumineuse durant les vols de nuit (redémarrage requis)&quot;</string>
+    <string name="Delete">&quot;Effacer&quot;</string>
+    <string name="Label">&quot;Étiquette&quot;</string>
+    <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlanSet">&quot; ajouté au plan&quot;</string>
+    <string name="PlanNoset">&quot; pas ajouté au plan&quot;</string>
+    <string name="PlanNF">&quot;Le plan est affiché lorsqu'au moins un point de repère est entré dans la recherche&quot;</string>
+    <string name="GpsOnly">&quot;Seulement les destinations GPS peuvent être étiquettées&quot;</string>
+    <string name="Root">&quot;Racine&quot;</string>
+    <string name="RootLabel">&quot;Serveur pour le téléchargement des cartes&quot;</string>
+    <string name="RootSummary">&quot;Selectioner un serveur pour les téléchargements des cartes et données&quot;</string>
+    <string name="Inactive">&quot;Inactif&quot;</string>
+    <string name="Active">&quot;Actif&quot;</string>
+    <string name="Total">&quot;Total&quot;</string>
 </resources>
