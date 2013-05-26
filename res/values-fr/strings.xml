@@ -130,8 +130,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Delete">&quot;Effacer&quot;</string>
     <string name="Label">&quot;Étiquette&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
-    <string name="PlanSet">&quot;Ajouter au plan&quot;</string>
-    <string name="PlanNoset">&quot; not added to the plan&quot;</string>
+    <string name="PlanSet">&quot; ajouté au plan&quot;</string>
+    <string name="PlanNoset">&quot; pas ajouté au plan&quot;</string>
     <string name="PlanNF">&quot;Le plan est affiché lorsqu'au moins un point de repère est entré dans la recherche&quot;</string>
     <string name="GpsOnly">&quot;Seulement les destinations GPS peuvent être étiquettées&quot;</string>
     <string name="Root">&quot;Racine&quot;</string>
