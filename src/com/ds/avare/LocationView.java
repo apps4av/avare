@@ -681,21 +681,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);                    
                 }
             }
-            /*
-             * Draw actual track
-             */
-            if(null != mLineBitmap && mGpsParams != null) {
-                rotateBitmapIntoPlace(mLineBitmap, (float)mService.getDestination().getBearing(),
-                        mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
-                canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
-            }
-            /*
-             * Draw actual heading
-             */
-            if(null != mLineHeadingBitmap && mGpsParams != null) {
-                rotateBitmapIntoPlace(mLineHeadingBitmap, (float)mGpsParams.getBearing(),
-                        mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
-                canvas.drawBitmap(mLineHeadingBitmap.getBitmap(), mLineHeadingBitmap.getTransform(), mPaint);
+            if(!mPref.isSimulationMode()) {
+                /*
+                 * Draw actual track
+                 */
+                if(null != mLineBitmap && mGpsParams != null) {
+                    rotateBitmapIntoPlace(mLineBitmap, (float)mService.getDestination().getBearing(),
+                            mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
+                    canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
+                }
+                /*
+                 * Draw actual heading
+                 */
+                if(null != mLineHeadingBitmap && mGpsParams != null) {
+                    rotateBitmapIntoPlace(mLineHeadingBitmap, (float)mGpsParams.getBearing(),
+                            mGpsParams.getLongitude(), mGpsParams.getLatitude(), false);
+                    canvas.drawBitmap(mLineHeadingBitmap.getBitmap(), mLineHeadingBitmap.getTransform(), mPaint);
+                }
             }
         }
     }
@@ -800,7 +802,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     }
                     
                     rotateBitmapIntoPlace(mRunwayBitmap, heading, lon, lat, false);
-                    canvas.drawBitmap(mLineBitmap.getBitmap(), mLineBitmap.getTransform(), mPaint);
 
                     /*
                      * Draw it.
