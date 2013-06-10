@@ -264,12 +264,12 @@ public class PlatesActivity extends Activity {
             /*
              * Now add all plates to the list
              */
-            String[] plates = mDestination.getPlates();            
+            String[] plates = mDestination.getPlates();
             for(int plate = 0; plate < plates.length; plate++) {
                 String tokens[] = plates[plate].split("/");
                 mList.add(tokens[tokens.length - 1]);
             }
-            
+
             /*
              * A list of plates available for this airport
              */
@@ -281,8 +281,7 @@ public class PlatesActivity extends Activity {
             /*
              * Find lon/lat px from database
              */
-            mMatrix = mService.getDBResource().findDiagramMatrix(mDestination.getID());
-            
+            mMatrix = mDestination.getMatrix();
         }
 
         /* (non-Javadoc)

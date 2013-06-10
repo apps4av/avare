@@ -136,4 +136,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Inactive">&quot;Inactive&quot;</string>
     <string name="Active">&quot;Active&quot;</string>
     <string name="Total">&quot;Total&quot;</string>
+    <string name="Near">&quot;Near&quot;</string>
+    <string name="Find">&quot;Find&quot;</string>
 </resources>

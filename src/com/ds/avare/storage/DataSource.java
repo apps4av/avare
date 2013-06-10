@@ -129,12 +129,21 @@ public class DataSource {
     /**
      * 
      * @param airportId
+     * @return Name of Minimums file
+     */
+    public String[] findMinimums(String airportId) {
+        return dbHelper.findMinimums(airportId);
+    }
+
+    /**
+     * 
+     * @param airportId
      * @return Name of AFD file
      */
     public String findAFD(String airportId) {
         return dbHelper.findAFD(airportId);
     }
-    
+
     /**
      * 
      * @param lon

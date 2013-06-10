@@ -73,6 +73,11 @@ public class Destination extends Observable {
      * Track to dest.
      */
     TrackShape mTrackShape;
+
+    /*
+     * For GPS taxi
+     */
+    private float[] mMatrix;
         
     /*
      * Its lon/lat
@@ -91,7 +96,7 @@ public class Destination extends Observable {
     private boolean mInited;
     
     private String mAfdName;
-    
+
     /*
      * This is where destination was set.
      */
@@ -400,11 +405,11 @@ public class Destination extends Observable {
                 mPlateFound = null;
                 mAfdFound = null;
                 
-                mAfdName = mDataSource.findAFD(mName);
-	            
 	            /*
 	             * Found destination extract its airport plates
 	             */
+                String tmp0[] = null;
+                int len0 = 0;
 	            if(null != mName) {
     	            FilenameFilter filter = new FilenameFilter() {
     	                public boolean accept(File directory, String fileName) {
@@ -415,22 +420,49 @@ public class Destination extends Observable {
     	            plates = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
                     if(null != plates) {
                         java.util.Arrays.sort(plates);
-                        int len = plates.length;
-                        String tmp[] = new String[len];
-                        for(int plate = 0; plate < len; plate++) {
+                        len0 = plates.length;
+                        tmp0 = new String[len0];
+                        for(int plate = 0; plate < len0; plate++) {
                             /*
                              * Add plates/AD
                              */
                             String tokens[] = plates[plate].split(".jpg");
-                            tmp[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
+                            tmp0[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
                                     tokens[0];
-                        }
-                        if(len > 0) {
-                            mPlateFound = tmp;
                         }
                     }
 	            }
 	            
+                /*
+                 * Take off and alternate minimums
+                 */
+                String tmp2[] = mDataSource.findMinimums(mName);
+                int len2 = 0;
+                if(null != tmp2) {
+                    len2 = tmp2.length;
+                    for(int min = 0; min < len2; min++) {
+                        /*
+                         * Add minimums with path
+                         */
+                        tmp2[min] = mPref.mapsFolder() + "/minimums/" + tmp2[min];
+                    }
+                }
+                
+                /*
+                 * Now combine to/alt with plates
+                 */
+                if(0 == len0 && 0 != len2) {
+                    mPlateFound = tmp2;
+                }
+                else if(0 != len0 && 0 == len2) {
+                    mPlateFound = tmp0;
+                }
+                else if(0 != len0 && 0 != len2) {
+                    mPlateFound = new String[len0 + len2];
+                    System.arraycopy(tmp0, 0, mPlateFound, 0, len0);
+                    System.arraycopy(tmp2, 0, mPlateFound, len0, len2);
+                }
+                
                 /*
                  * Find A/FD
                  */
@@ -445,22 +477,28 @@ public class Destination extends Observable {
                     afd = new File(mPref.mapsFolder() + "/afd/").list(filter);
                     if(null != afd) {
                         java.util.Arrays.sort(afd);
-                        int len = afd.length;
-                        String tmp[] = new String[len];
-                        for(int plate = 0; plate < len; plate++) {
+                        int len1 = afd.length;
+                        String tmp1[] = new String[len1];
+                        for(int plate = 0; plate < len1; plate++) {
                             /*
                              * Add A/FD
                              */
                             String tokens[] = afd[plate].split(".jpg");
-                            tmp[plate] = mPref.mapsFolder() + "/afd/" +
+                            tmp1[plate] = mPref.mapsFolder() + "/afd/" +
                                     tokens[0];             
                         }
-                        if(len > 0) {
-                            mAfdFound = tmp;
+                        if(len1 > 0) {
+                            mAfdFound = tmp1;
                         }
                     }
                 }
 	        }
+
+            /*
+             * GPS taxi for this airport?
+             */
+            mMatrix = mDataSource.findDiagramMatrix(mName);
+
             return(!mParams.isEmpty());
         }
         
@@ -539,6 +577,13 @@ public class Destination extends Observable {
      */
     public String getID() {
         return(mName);
+    }
+
+    /**
+     * @return
+     */
+    public float[] getMatrix() {
+        return(mMatrix);
     }
 
     /**

@@ -171,7 +171,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
-		<item>Alabama</item>
+        <item>Minimums T/A</item>
+        <item>Alabama</item>
 		<item>Alaska</item>
 		<item>Arizona</item>
 		<item>Arkansas</item>
@@ -236,7 +237,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v7</item>
+        <item>databases_v8</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -382,7 +383,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
-		<item>AL</item>
+        <item>minimums</item>
+        <item>AL</item>
 		<item>AK</item>
 		<item>AZ</item>
 		<item>AR</item>

@@ -106,6 +106,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
+    private static final String TABLE_TO = "takeoff";
+    private static final String TABLE_ALT = "alternate";
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_OBSTACLES = "obs";
 
@@ -839,7 +841,69 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);
         return mCenterTile;        
     }
-    
+
+    /**
+     * Search Minimums plates for this airport
+     * @param airportId
+     * @return Minimums
+     */
+    public String[] findMinimums(String airportId) {
+        
+        String ret2[] = new String[2];
+        String ret[] = new String[1];
+        
+        /*
+         * Silly that FAA gives K and P for some airports as ICAO
+         */
+        String qry = "select File from " + TABLE_ALT + " where " + LOCATION_ID_DB + "==" + "'" + airportId + "'" +
+                " or " + LOCATION_ID_DB + "==" + "'K" + airportId + "'" +
+                " or " + LOCATION_ID_DB + "==" + "'P" + airportId + "'";
+        
+        Cursor cursor = doQuery(qry);
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToNext()) {
+                    ret2[0] = cursor.getString(0);
+                    ret[0] = ret2[0];
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+
+        qry = "select File from " + TABLE_TO + " where " + LOCATION_ID_DB + "==" + "'" + airportId + "'" +
+                " or " + LOCATION_ID_DB + "==" + "'K" + airportId + "'" +
+                " or " + LOCATION_ID_DB + "==" + "'P" + airportId + "'";
+        
+        cursor = doQuery(qry);
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToNext()) {
+                    ret2[1] = cursor.getString(0);
+                    ret[0] = ret2[1];
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+
+        /*
+         * Only return approp sized array
+         */
+        if(ret[0] == null) {
+            return null;
+        }
+        else if(ret2[0] == null || ret2[1] == null) {
+            return ret;
+        }
+        
+        return ret2;
+    }
+
     
     /**
      * Search A/FD name for this airport

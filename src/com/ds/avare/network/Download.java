@@ -255,7 +255,14 @@ public class Download extends Observable {
                                 if(folder.equals("plates")) {
                                     Helper.deleteDir(dir);
                                 }
-                                
+
+                                /*
+                                 * Delete older plates
+                                 */
+                                if(folder.equals("minimums")) {
+                                    Helper.deleteDir(dir);
+                                }
+
                                 /*
                                  * Delete older A/FD
                                  */
