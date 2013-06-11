@@ -404,6 +404,7 @@ public class Destination extends Observable {
 	            
                 mPlateFound = null;
                 mAfdFound = null;
+                mAfdName = mDataSource.findAFD(mName);
                 
 	            /*
 	             * Found destination extract its airport plates
