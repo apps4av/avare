@@ -383,7 +383,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
-        <item>minimums</item>
+        <item>alternates</item>
         <item>AL</item>
 		<item>AK</item>
 		<item>AZ</item>

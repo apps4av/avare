@@ -444,7 +444,8 @@ public class Destination extends Observable {
                         /*
                          * Add minimums with path
                          */
-                        tmp2[min] = mPref.mapsFolder() + "/minimums/" + tmp2[min];
+                        String folder = tmp2[min].substring(0, 1) + "/";
+                        tmp2[min] = mPref.mapsFolder() + "/minimums/" + folder + tmp2[min];
                     }
                 }
                 
