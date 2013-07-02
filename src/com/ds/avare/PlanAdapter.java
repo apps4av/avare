@@ -13,7 +13,6 @@ package com.ds.avare;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,13 +83,14 @@ public class PlanAdapter extends ArrayAdapter<String> {
              * Add an arrow to indicate next way point in the plan
              */
             textView.setText("> " + mName[position]);
-            textView.setBackgroundColor(Color.MAGENTA);
         }
         else if (position < mNext) {
-            textView.setBackgroundColor(Color.rgb(0x00, 0x7F, 0x00));
+            /*
+             * Show passed points smaller
+             */
+            textView.setTextSize(textView.getTextSize() * 0.8f);
         }
         else {
-            textView.setBackgroundColor(Color.rgb(0x7F, 0x00, 0x00));            
         }
         textView = (TextView)rowView.findViewById(R.id.plan_list_info);
         textView.setText(mInfo[position]);

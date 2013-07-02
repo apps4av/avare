@@ -236,7 +236,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaint.setTypeface(mFace);
 
         setOnTouchListener(this);
-        mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
+        mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);

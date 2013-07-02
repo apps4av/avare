@@ -94,4 +94,9 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/BackgroundLabel"
         android:summary="@string/BackgroundSummary"
         android:defaultValue="false"/>
+    <CheckBoxPreference
+        android:key="@string/IconHelicopter"
+        android:title="@string/IconHelicopterLabel"
+        android:summary="@string/IconHelicopterSummary"
+        android:defaultValue="false"/>
 </PreferenceScreen>

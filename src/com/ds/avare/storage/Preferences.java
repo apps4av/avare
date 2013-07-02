@@ -328,6 +328,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean isHelicopter() {
+        return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldGpsWarn() {
         return(mPref.getBoolean(mContext.getString(R.string.GpsOffWarn), true));
     }

@@ -605,41 +605,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     String Width = cursor.getString(2);
                     String Surface = cursor.getString(3);
                     String Variation = params.get(MAGNETIC_VARIATION);
-                    String Pattern = cursor.getString(4);
-                    if(Pattern.equals("") || Pattern.equals("N")) {
-                        Pattern = "Left";
-                    }
-                    else {
-                        Pattern = "Right";
-                    }
-                    if(Surface.equals("")) {
-                        Surface = "Unknown";
-                    }
                     
-                    String run = Helper.removeLeadingZeros(cursor.getString(5));
-                    String lat = Helper.removeLeadingZeros(cursor.getString(7));
-                    String lon = Helper.removeLeadingZeros(cursor.getString(9));
+                    String run = Helper.removeLeadingZeros(cursor.getString(4));
+                    String lat = Helper.removeLeadingZeros(cursor.getString(6));
+                    String lon = Helper.removeLeadingZeros(cursor.getString(8));
                     
-                    String Elevation = cursor.getString(11);
+                    String Elevation = cursor.getString(10);
                     if(Elevation.equals("")) {
                         Elevation = params.get("Elevation");
                     }
-                    String Heading = cursor.getString(13);
-                    String DT = cursor.getString(15);
+                    String Heading = cursor.getString(12);
+                    String DT = cursor.getString(14);
                     if(DT.equals("")) {
                         DT = "0";
                     }
-                    String Lighted = cursor.getString(17);
+                    String Lighted = cursor.getString(16);
                     if(Lighted.equals("0") || Lighted.equals("")) {
                         Lighted = mContext.getString(R.string.No);
                     }
-                    String ILS = cursor.getString(19);
+                    String ILS = cursor.getString(18);
                     if(ILS.equals("")) {
                         ILS = mContext.getString(R.string.No);
                     }
-                    String VGSI = cursor.getString(21);
+                    String VGSI = cursor.getString(20);
                     if(VGSI.equals("")) {
                         VGSI = mContext.getString(R.string.No);
+                    }
+                    String Pattern = cursor.getString(22);
+                    if(Pattern.equals("Y")) {
+                        Pattern = "Right";
+                    }
+                    else {
+                        Pattern = "Left";                        
                     }
                     
                     Runway r = new Runway(run);
@@ -659,30 +656,37 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     
                     runways.add(r);
                     
-                    run = Helper.removeLeadingZeros(cursor.getString(6));
-                    lat = Helper.removeLeadingZeros(cursor.getString(8));
-                    lon = Helper.removeLeadingZeros(cursor.getString(10));
+                    run = Helper.removeLeadingZeros(cursor.getString(5));
+                    lat = Helper.removeLeadingZeros(cursor.getString(7));
+                    lon = Helper.removeLeadingZeros(cursor.getString(9));
                     
-                    Elevation = cursor.getString(12);
+                    Elevation = cursor.getString(11);
                     if(Elevation.equals("")) {
                         Elevation = params.get("Elevation");
                     }
-                    Heading = cursor.getString(14);
-                    DT = cursor.getString(16);
+                    Heading = cursor.getString(13);
+                    DT = cursor.getString(15);
                     if(DT.equals("")) {
                         DT = "0";
                     }
-                    Lighted = cursor.getString(18);
+                    Lighted = cursor.getString(17);
                     if(Lighted.equals("0") || Lighted.equals("")) {
                         Lighted = mContext.getString(R.string.No);
                     }
-                    ILS = cursor.getString(20);
+                    ILS = cursor.getString(19);
                     if(ILS.equals("")) {
                         ILS = mContext.getString(R.string.No);
                     }
-                    VGSI = cursor.getString(22);
+                    VGSI = cursor.getString(21);
                     if(VGSI.equals("")) {
                         VGSI = mContext.getString(R.string.No);
+                    }
+                    Pattern = cursor.getString(23);
+                    if(Pattern.equals("Y")) {
+                        Pattern = "Right";
+                    }
+                    else {
+                        Pattern = "Left";                        
                     }
                     
                     r = new Runway(run);

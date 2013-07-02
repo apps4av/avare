@@ -76,7 +76,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
+        mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
     }
     
     /**
