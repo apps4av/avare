@@ -39,7 +39,7 @@ public class TwilightCalculator {
     private static final double J0 = 0.0009f;
 
     // correction for civil twilight
-    private static final double ALTIDUTE_CORRECTION_CIVIL_TWILIGHT = -0.104719755f;
+    private static final double ALTIDUTE_CORRECTION_CIVIL_TWILIGHT = 0; //ZK for sunset/sunrise remove 6 degree horizon correction -0.104719755f;
 
     // coefficients for calculating Equation of Center.
     private static final double C1 = 0.0334196f;

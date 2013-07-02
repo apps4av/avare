@@ -138,7 +138,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Total">&quot;Total&quot;</string>
     <string name="Near">&quot;Near&quot;</string>
     <string name="Find">&quot;Find&quot;</string>
-    <string name="IconHelicopter">&quot;Icon Helicopter&quot;</string>
-    <string name="IconHelicopterLabel">&quot;Icon Helicopter&quot;</string>
+    <string name="IconHelicopter">&quot;Helicopter Icon&quot;</string>
+    <string name="IconHelicopterLabel">&quot;Helicopter Icon&quot;</string>
     <string name="IconHelicopterSummary">&quot;Select to make the location icon a helicopter (requires restart)&quot;</string>
 </resources>
