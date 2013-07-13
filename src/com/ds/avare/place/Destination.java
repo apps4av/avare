@@ -14,6 +14,7 @@ package com.ds.avare.place;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -420,7 +421,7 @@ public class Destination extends Observable {
                     String plates[] = null;
     	            plates = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
                     if(null != plates) {
-                        java.util.Arrays.sort(plates);
+                        java.util.Arrays.sort(plates, new PlatesComparable());
                         len0 = plates.length;
                         tmp0 = new String[len0];
                         for(int plate = 0; plate < len0; plate++) {
@@ -668,4 +669,37 @@ public class Destination extends Observable {
         return mTrackShape;
     }
     
+    /**
+     * 
+     * @author zkhan
+     *
+     */
+    private class PlatesComparable implements Comparator<String>{
+        
+        @Override
+        public int compare(String o1, String o2) {
+            /*
+             * Airport diagram must be  first
+             */
+            if(o1.startsWith("AIRPORT-DIAGRAM")) {
+                return -1;
+            }
+            if(o2.startsWith("AIRPORT-DIAGRAM")) {
+                return 1;
+            }
+            
+            /*
+             * Continued must follow main
+             */
+            if(o1.contains(",-CONT.") && o1.startsWith(o2.replace(".jpg", ""))) {
+                return 1;
+            }
+            if(o2.contains(",-CONT.") && o2.startsWith(o1.replace(".jpg", ""))) {
+                return -1;
+            }
+            
+            return o1.compareTo(o2);
+        }
+    } 
+
 }
