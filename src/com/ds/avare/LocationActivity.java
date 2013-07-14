@@ -99,6 +99,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDownloadButton;
     private Button mMenuButton;
     private Button mTrackButton;
+    private Button mDrawButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
@@ -319,7 +320,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton, mChartSpinner);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton, mChartSpinner, mDrawButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
@@ -434,6 +435,27 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
+        /*
+         * Draw
+         */
+        mDrawButton = (Button)view.findViewById(R.id.location_button_draw);
+        mDrawButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                    mLocationView.setDraw(true);
+                }
+                else {
+                    mLocationView.setDraw(false);                    
+                }
+            }
+            
+        });
 
         /*
          * Throw this in case GPS is disabled.

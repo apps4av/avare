@@ -19,6 +19,7 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
@@ -183,11 +184,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * If showing track up
      */
     private boolean                   mTrackUp;
-    
+
+    /*
+     * Is it drawing?
+     */
+    private boolean                   mDraw;
+
     /*
      * Threshold for terrain
      */
     private float                      mThreshold;
+    
+    private float                      mLastXDraw;
+    private float                      mLastYDraw;
 
     /*
      * Shadow length 
@@ -200,6 +209,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     
+    private static final int MAX_DRAW_POINTS = 1024;
+    private static final int DRAW_POINT_THRESHOLD = 10;
+    private static final int DRAW_POINT_SKIP_FACTOR = 5;
+    
+
     /**
      * @param context
      */
@@ -222,6 +236,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
         mTrackUp = false;
+        mDraw = false;
+        mLastXDraw = 0;
+        mLastYDraw = 0;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 12.f;
@@ -337,6 +354,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
             /*
+             * Do nnot
+             */
+            if(mDraw) {
+                float x = mCurrTouchPoint.getX();
+                float y = mCurrTouchPoint.getY();
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
+                if((Math.abs(mLastXDraw - x) < DRAW_POINT_THRESHOLD)
+                        && (Math.abs(mLastYDraw - y) < DRAW_POINT_THRESHOLD)) {
+                    return true;
+                }
+                mLastXDraw = x;
+                mLastYDraw = y;
+                if(mService != null) {
+                    /*
+                     * Start deleting oldest points if too many points.
+                     */
+                    if(mService.getDraw().size() >= MAX_DRAW_POINTS) {
+                        mService.getDraw().remove(0);
+                    }
+                    mService.addDrawPoint(mOrigin.getLongitudeOf(mLastXDraw), mOrigin.getLatitudeOf(mLastYDraw));
+                }
+                return true;
+            }
+
+            /*
              * XXX: Till track up pan in problematic, freeze it to current location.
              * 
              */
@@ -354,6 +398,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
         else {
+            if(mDraw) {
+                /*
+                 * Clear draw on multi touch
+                 */
+                if(mService != null) {
+                    mService.clearDraw();
+                }
+                return true;
+            }
             /*
              * on double touch find distance and bearing between two points.
              */
@@ -706,6 +759,48 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
+    private void drawDrawing(Canvas canvas) {
+        if(null == mService) {
+            return;
+        }
+
+        /*
+         * Get draw points.
+         */
+        mPaint.setColor(Color.BLUE);
+        LinkedList<Coordinate> coordinates = mService.getDraw();
+        Coordinate c0 = null;
+        Coordinate c1 = null;
+        float facx = DRAW_POINT_THRESHOLD * DRAW_POINT_SKIP_FACTOR * mScale.getScaleFactor();
+        float facy = DRAW_POINT_THRESHOLD * DRAW_POINT_SKIP_FACTOR * mScale.getScaleCorrected();
+        for (Coordinate c : coordinates) {
+            if(c0 == null) {
+                c0 = c;
+                continue;
+            }
+            c1 = c0;
+            c0 = c;
+            
+            /*
+             * This logic will draw a continuous line between points. However, a discontinuity is required.
+             */
+            float x0 = (float) (mOrigin.getOffsetX(c0.getLongitude()));
+            float y0 = (float) (mOrigin.getOffsetY(c0.getLatitude()));
+            float x1 = (float) (mOrigin.getOffsetX(c1.getLongitude()));
+            float y1 = (float) (mOrigin.getOffsetY(c1.getLatitude()));
+            if((Math.abs(x0 - x1) > facx) || (Math.abs(y0 - y1) > facy)) {
+                canvas.drawCircle(x0, y0, 4, mPaint);
+            }
+            else {
+                canvas.drawLine(x0, y0, x1, y1, mPaint); 
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
     private void drawMETARText(Canvas canvas) {
         /*
          * Draw TFRs, weather
@@ -889,6 +984,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.rotate(-(int)mGpsParams.getBearing(), x, y);
         }
     	drawTiles(canvas);
+        drawDrawing(canvas);
         drawRunways(canvas);
     	drawTFR(canvas);
         drawTrack(canvas);
@@ -1351,6 +1447,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void setGestureCallback(GestureInterface gestureInterface) {
         mGestureCallBack = gestureInterface;
+    }
+
+    /**
+     * 
+     * @param b
+     */
+    public void setDraw(boolean b) {
+        mDraw = b;
     }
 
     /**

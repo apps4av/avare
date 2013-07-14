@@ -141,4 +141,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="IconHelicopter">&quot;Helicopter Icon&quot;</string>
     <string name="IconHelicopterLabel">&quot;Helicopter Icon&quot;</string>
     <string name="IconHelicopterSummary">&quot;Select to make the location icon a helicopter (requires restart)&quot;</string>
+    <string name="Draw">&quot;Draw&quot;</string>
+    <string name="Pan">&quot;Pan&quot;</string>
 </resources>

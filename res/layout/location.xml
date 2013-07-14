@@ -105,8 +105,19 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOff="@string/NorthUp"
             android:textOn="@string/TrackUp"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
+        <ToggleButton
+            android:id="@+id/location_button_draw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/location_button_center"
+            android:textOff="@string/Pan"
+            android:textOn="@string/Draw"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        
         <Spinner
             android:id="@+id/location_spinner_chart"
             android:layout_width="wrap_content"
@@ -126,5 +137,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_centerHorizontal="true"
             android:drawableLeft="@drawable/center" />
 
+        
 </RelativeLayout>
 
