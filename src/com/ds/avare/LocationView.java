@@ -356,7 +356,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do nnot
              */
-            if(mDraw) {
+            if(mDraw && !mTrackUp) {
                 float x = mCurrTouchPoint.getX();
                 float y = mCurrTouchPoint.getY();
                 /*
@@ -398,19 +398,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
         else {
-            if(mDraw) {
-                /*
-                 * Clear draw on multi touch
-                 */
-                if(mService != null) {
-                    mService.clearDraw();
-                }
-                return true;
-            }
             /*
              * on double touch find distance and bearing between two points.
              */
             if(!mTrackUp) {
+                if(mDraw) {
+                    /*
+                     * Clear draw on multi touch
+                     */
+                    if(mService != null) {
+                        mService.clearDraw();
+                    }
+                    return true;
+                }
+                
                 if(mPointProjection == null) {
                     double x0 = mCurrTouchPoint.getXs()[0];
                     double y0 = mCurrTouchPoint.getYs()[0];
@@ -768,6 +769,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Get draw points.
          */
         mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(8);
         LinkedList<Coordinate> coordinates = mService.getDraw();
         Coordinate c0 = null;
         Coordinate c1 = null;
