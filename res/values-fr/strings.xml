@@ -140,4 +140,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Inactive">&quot;Inactif&quot;</string>
     <string name="Active">&quot;Actif&quot;</string>
     <string name="Total">&quot;Total&quot;</string>
+    <string name="Near">&quot;près de&quot;</string>
+    <string name="Find">&quot;trouvé&quot;</string>
+    <string name="IconHelicopter">&quot;Icône d'hélicoptère&quot;</string>
+    <string name="IconHelicopterLabel">&quot;icône d'hélicoptère&quot;</string>
+    <string name="IconHelicopterSummary">&quot;Selectionner pour changer l'icône de position à un hélicoptère (redémarrage requis)&quot;</string>
+    <string name="Draw">&quot;Dessiner&quot;</string>
+    <string name="Pan">&quot;Dérouler&quot;</string>
 </resources>
