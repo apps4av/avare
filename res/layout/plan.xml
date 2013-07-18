@@ -47,11 +47,26 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/plan_button_2"
         android:gravity="left|center"
         android:text="@string/Delete"
         android:drawableLeft="@drawable/remove"
         android:visibility="invisible" />
+    
+	<Button
+	    android:id="@+id/plan_button_2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/plan_button_1"
+	    android:visibility="invisible" />
+	
+	<Button
+	    android:id="@+id/plan_button_1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:gravity="left"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentLeft="true"
+	    android:visibility="invisible" />
     
 </RelativeLayout>
