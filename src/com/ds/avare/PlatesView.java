@@ -308,6 +308,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         /*
          * On double tap, move to center
          */
+        mScale = new Scale();
         mPan = new Pan();
         postInvalidate();
     }

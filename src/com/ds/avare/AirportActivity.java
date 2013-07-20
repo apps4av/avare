@@ -30,8 +30,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class AirportActivity extends Activity {
     private Spinner mSpinner;
     private List<String> mList;
     private boolean mIgnoreFocus;
+    private Button mCenterButton;
 
 
     /*
@@ -86,6 +89,18 @@ public class AirportActivity extends Activity {
         mAirport = (ListView)view.findViewById(R.id.airport_list);
         mAfdView = (AfdView)view.findViewById(R.id.airport_afd);
         mSpinner = (Spinner)view.findViewById(R.id.airport_spinner);
+
+        mCenterButton = (Button)view.findViewById(R.id.airport_button_center);
+        mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mAfdView.center();
+            }
+            
+        });
+
         mIgnoreFocus = true;
 
         mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -114,10 +129,12 @@ public class AirportActivity extends Activity {
                              */
                             mAirport.setVisibility(View.INVISIBLE);
                             mAfdView.setVisibility(View.VISIBLE);
+                            mCenterButton.setVisibility(View.VISIBLE);
                         }
                         else {
                             mAirport.setVisibility(View.VISIBLE);                            
                             mAfdView.setVisibility(View.INVISIBLE);
+                            mCenterButton.setVisibility(View.INVISIBLE);
                             mService.loadDiagram(null);
                             mAfdView.setBitmap(null);
                         }
@@ -169,6 +186,7 @@ public class AirportActivity extends Activity {
                 mToast.setText(getString(R.string.ValidDest));
                 mAirport.setVisibility(View.VISIBLE);
                 mAfdView.setVisibility(View.INVISIBLE);
+                mCenterButton.setVisibility(View.INVISIBLE);
                 mToast.show();
                 return;
             }
@@ -229,6 +247,7 @@ public class AirportActivity extends Activity {
                 mAfdView.setBitmap(null);
                 mAirport.setVisibility(View.VISIBLE);
                 mAfdView.setVisibility(View.INVISIBLE);
+                mCenterButton.setVisibility(View.INVISIBLE);
                 return;                
             }
             

@@ -1366,6 +1366,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * On double tap, move to center
          */
         mPan = new Pan();
+        mScale = new Scale();
         dbquery(true);
         tfrReset();
         postInvalidate();

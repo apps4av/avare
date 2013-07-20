@@ -160,6 +160,18 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         mCurrTouchPoint.set(touchPoint);
         invalidate();
     }
+    
+    /**
+     * Center to the location
+     */
+    public void center() {
+        /*
+         * On double tap, move to center
+         */
+        mScale = new Scale();
+        mPan = new Pan();
+        postInvalidate();
+    }
 
     /* (non-Javadoc)
      * @see android.view.View#onDraw(android.graphics.Canvas)
