@@ -11,8 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="108"
-    android:versionName="4.1.8" >
+    android:versionCode="109"
+    android:versionName="4.1.9" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />

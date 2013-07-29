@@ -146,7 +146,7 @@ public class Helper {
      * @return
      */
     public static boolean isLongitudeSane(double lon) {
-        return (lon < 0) && (lon > -180); 
+        return (lon < 180) && (lon > -180);
     }
     
     /**
@@ -155,7 +155,7 @@ public class Helper {
      * @return
      */
     public static boolean isLatitudeSane(double lat) {
-        return (lat >= 0) && (lat < 90); 
+        return (lat > -90) && (lat < 90); 
     }
     
     
