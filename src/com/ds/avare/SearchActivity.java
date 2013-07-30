@@ -217,10 +217,16 @@ public class SearchActivity extends Activity implements Observer {
             public void onClick(View v) {
                 if(null != mSelected) {
                     final EditText edit = new EditText(SearchActivity.this);
-                    if(!StringPreference.parseHashedNameDbType(mSelected).equals(Destination.GPS)) {
+                    String type = StringPreference.parseHashedNameDbType(mSelected);
+                    if(type == null) {
                         mToast.setText(R.string.GpsOnly);
                         mToast.show();
-                        return;
+                        return;                        
+                    }
+                    if(!type.equals(Destination.GPS)) {
+                        mToast.setText(R.string.GpsOnly);
+                        mToast.show();
+                        return;                        
                     }
                     
                     edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
