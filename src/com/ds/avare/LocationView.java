@@ -1385,6 +1385,28 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         public void onLongPress(MotionEvent e) {
             
             /*
+             * on long press, find a point where long press was done
+             */
+            double x = mCurrTouchPoint.getX();
+            double y = mCurrTouchPoint.getY();
+
+            /*
+             * Clear the destination
+             */
+            if(y < ((2 * getHeight()) / mTextDiv)) {
+                /*
+                 * If pressed on top of screen
+                 */
+                if(null != mGestureCallBack) {
+                    /*
+                     * Pop out a clear destination flag
+                     */
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mContext.getString(R.string.Delete));
+                    return;
+                }            
+            }
+            
+            /*
              * XXX:
              * For track up, currently there is no math to find anything with long press.
              */
@@ -1392,12 +1414,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return;
             }
             
-            /*
-             * on long press, find a point where long press was done
-             */
-            double x = mCurrTouchPoint.getX();
-            double y = mCurrTouchPoint.getY();
-
             /*
              * Notify activity of gesture.
              */

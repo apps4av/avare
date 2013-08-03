@@ -396,7 +396,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * If button pressed was a destination go there, otherwise ask for dest
                  */
-                if(!b.getText().toString().equals(getString(R.string.Destination))) {
+                if(!b.getText().toString().equals(getString(R.string.Delete))) {
                     
                     String type = Destination.BASE;
                     if(b.getText().toString().contains("&")) {
@@ -407,12 +407,13 @@ public class LocationActivity extends Activity implements Observer {
                     mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
                     mToast.show();
                     mDestination.find();
-                    return;
                 }
-
-                Intent i = new Intent(LocationActivity.this, SearchActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
+                else if(mService != null) {
+                    /*
+                     * Clear destination
+                     */
+                    mService.setDestination(null);
+                }
             }
         });
         

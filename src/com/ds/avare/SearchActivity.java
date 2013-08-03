@@ -538,7 +538,6 @@ public class SearchActivity extends Activity implements Observer {
                 }
             }
             else {
-                mService.setDestination((Destination)null);
                 mToast.setText(getString(R.string.DestinationNF));
                 mToast.show();
             }
