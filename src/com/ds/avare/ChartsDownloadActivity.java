@@ -162,6 +162,18 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 mToast.show();
             }
 
+            /*
+             * See if we need to download a chart.
+             * This will be done if charts do not exist.
+             * LocationActivity sends this intent to download chart at GPS location for the new
+             * user.
+             */
+            String chart = ChartsDownloadActivity.this.getIntent().getStringExtra(getString(R.string.download));
+            if(null != chart) {
+                mChartAdapter.toggleChecked(chart);
+                mChartAdapter.notifyDataSetChanged();            
+                download();                
+            }
         }
 
         /* (non-Javadoc)

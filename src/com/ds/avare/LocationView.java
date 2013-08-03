@@ -160,6 +160,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     
     private Typeface                    mFace;
     
+    private String                      mOnChart;
+    
     /**
      * These are longitude and latitude at top left (0,0)
      */
@@ -229,6 +231,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mMovement = new Movement();
         mErrorStatus = null;
         mThreshold = 0;
+        mOnChart = null;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -713,6 +716,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(name,
                     0, getHeight() / mTextDiv, mPaint);
         }
+        /*
+         * Chart
+         */
+        else if((null != mService) && (null != mOnChart) && (null == mService.getDestination())) {
+            canvas.drawText(mOnChart, 0, getHeight() / mTextDiv, mPaint);
+        }
+
     }
 
     /**
@@ -1150,7 +1160,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
             
-            
             if(gpsTile == null) {
                 return false;
             }
@@ -1162,6 +1171,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             centerTile = mImageDataSource.findTile(newt);
             if(null != centerTile) {
                 mScale.setScaleAt(centerTile.getLatitude());
+                mOnChart = centerTile.getChart();
             }
             else {
                 return false;
@@ -1483,5 +1493,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void setTrackUp(boolean b) {
         mTrackUp = b;
         postInvalidate();
+    }
+    
+    /*
+     * Gets chart on which this view is.
+     */
+    public String getChart() {
+        return mOnChart;
     }
 }

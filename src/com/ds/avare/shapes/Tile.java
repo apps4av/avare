@@ -39,6 +39,7 @@ public class Tile {
     private double mLatC;
     private double mWidth;
     private double mHeight;
+    private String mChart;
 
     /**
      * 
@@ -64,7 +65,8 @@ public class Tile {
                String name, 
                double lonul, double latul, double lonll, double latll,
                double lonur, double latur, double lonlr, double latlr,
-               double lonc, double latc) {
+               double lonc, double latc,
+               String chart) {
         mName = name;
         mLonUL = lonul;
         mLonLL = lonll;
@@ -76,6 +78,7 @@ public class Tile {
         mLatLR = latlr;
         mLonC = lonc;
         mLatC = latc;
+        mChart = chart;
         int opts[] = new int[2];
         BitmapHolder.getBitmapOptions(pref, name, opts);
         mWidth = opts[0];
@@ -100,6 +103,14 @@ public class Tile {
      */
     public double getPx() {
         return(-((mLonUL - mLonUR)  + (mLonLL - mLonLR)) / (mWidth * 2));
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getChart() {
+        return mChart;
     }
     
     /**

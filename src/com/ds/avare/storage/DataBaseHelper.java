@@ -289,7 +289,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(7),
                             cursor.getDouble(8),
                             cursor.getDouble(9),
-                            cursor.getDouble(10));
+                            cursor.getDouble(10),
+                            cursor.getString(11));
                     /*
                      * Position on tile
                      */
@@ -827,7 +828,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(7),
                             cursor.getDouble(8),
                             cursor.getDouble(9),
-                            cursor.getDouble(10));
+                            cursor.getDouble(10),
+                            cursor.getString(11));
                   
                     /*
                      * Position on tile
