@@ -226,14 +226,24 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 	</string-array>
     <string-array name="resNameTerrain">
-        <item>US 48 States</item>
-        <item>Alaska</item>
-        <item>Hawaii</item>
-        <item>Puerto Rico</item>
-        <item>US 48 States Shaded Relief</item>
-        <item>Alaska Shaded Relief</item>
-        <item>Hawaii Shaded Relief</item>
-        <item>Puerto Rico Shaded Relief</item>
+        <item>Elevation NE</item>
+        <item>Elevation NC</item>
+        <item>Elevation NW</item>
+        <item>Elevation SE</item>
+        <item>Elevation SC</item>
+        <item>Elevation SW</item>
+        <item>Elevation AK</item>
+        <item>Elevation HI</item>
+        <item>Elevation PR</item>
+        <item>Shaded Relief NE</item>
+        <item>Shaded Relief NC</item>
+        <item>Shaded Relief NW</item>
+        <item>Shaded Relief SE</item>
+        <item>Shaded Relief SC</item>
+        <item>Shaded Relief SW</item>
+        <item>Shaded Relief AK</item>
+        <item>Shaded Relief HI</item>
+        <item>Shaded Relief PR</item>
     </string-array>
     
     <string-array name="resFilesDatabase">
@@ -438,14 +448,24 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>WY</item>  
     </string-array>
     <string-array name="resFilesTerrain">
-        <item>elev48</item>
-        <item>elevak</item>
-        <item>elevhi</item>
-        <item>elevpr</item>
-        <item>rel48</item>
-        <item>relak</item>
-        <item>relhi</item>
-        <item>relpr</item>
+        <item>ELEV_NE</item>
+        <item>ELEV_NC</item>
+        <item>ELEV_NW</item>
+        <item>ELEV_SE</item>
+        <item>ELEV_SC</item>
+        <item>ELEV_SW</item>
+        <item>ELEV_AK</item>
+        <item>ELEV_HI</item>
+        <item>ELEV_PR</item>
+        <item>REL_NE</item>
+        <item>REL_NC</item>
+        <item>REL_NW</item>
+        <item>REL_SE</item>
+        <item>REL_SC</item>
+        <item>REL_SW</item>
+        <item>REL_AK</item>
+        <item>REL_HI</item>
+        <item>REL_PR</item>
     </string-array>
         
     <string-array name="ChartType">
