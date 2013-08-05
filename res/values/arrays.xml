@@ -245,9 +245,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief HI</item>
         <item>Shaded Relief PR</item>
     </string-array>
+    <string-array name="resNameTopo">
+        <item>Canada (40N to 50N)</item>
+        <item>Canada (50N to 60N)</item>
+        <item>Canada (60N to 70N)</item>
+        <item>Canada (70N to 80N)</item>
+        <item>Canada (80N to 90N)</item>
+    </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v9</item>
+        <item>databases</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -467,7 +474,13 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>REL_HI</item>
         <item>REL_PR</item>
     </string-array>
-        
+    <string-array name="resFilesTopo">
+        <item>CANM_40N_50N</item>
+        <item>CANM_50N_60N</item>
+        <item>CANM_60N_70N</item>
+        <item>CANM_70N_80N</item>
+        <item>CANM_80N_90N</item>
+    </string-array>
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -476,6 +489,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High</item>
     	<item>Terrain</item>
         <item>Shaded Relief</item>
+        <item>Topographic</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
@@ -486,6 +500,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <item>7</item>
     </string-array>    
 
     <string-array name="UnitsD">

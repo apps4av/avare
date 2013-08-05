@@ -324,7 +324,7 @@ public class NetworkHelper {
                 url = new URL(root + "TFRs_update.txt");
             }
             else {
-                url = new URL(root + "update.txt");                
+                url = new URL(root + "update_a.txt");                
             }
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()), blocksize);
 

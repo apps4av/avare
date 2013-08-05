@@ -144,14 +144,20 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
                 
-                /*
-                 * Also obtain GSM based locations
-                 */
+            }
+            catch (Exception e) {
+                mLocationManager = null;
+                return;
+            }
+            /*
+             * Also obtain GSM based locations
+             */
+            try {
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
                         0, 0, this);
             }
             catch (Exception e) {
-                mLocationManager = null;
+                
             }
         }
 
@@ -215,9 +221,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             return;
         }
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
-        if(!mPref.isSimulationMode()) {
-            mGpsCallback.statusCallback(gpsStatus);           
-        }
+        mGpsCallback.statusCallback(gpsStatus);           
     }
 
     /**

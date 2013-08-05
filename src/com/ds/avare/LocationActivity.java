@@ -402,7 +402,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * If button pressed was a destination go there, otherwise ask for dest
                  */
-                if(!b.getText().toString().equals(getString(R.string.Delete))) {
+                if(!b.getText().toString().equals(getString(R.string.Clear))) {
                     
                     String type = Destination.BASE;
                     if(b.getText().toString().contains("&")) {

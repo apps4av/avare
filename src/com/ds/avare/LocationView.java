@@ -719,7 +719,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Chart
          */
-        else if((null != mService) && (null != mOnChart) && (null == mService.getDestination())) {
+        else if(null != mOnChart) {
             canvas.drawText(mOnChart, 0, getHeight() / mTextDiv, mPaint);
         }
 
@@ -1403,15 +1403,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Clear the destination
              */
-            if(y < ((2 * getHeight()) / mTextDiv)) {
+            if((y < ((2 * getHeight()) / mTextDiv)) && null != mService) {
                 /*
                  * If pressed on top of screen
                  */
-                if(null != mGestureCallBack) {
+                if(null != mGestureCallBack && null != mService.getDestination()) {
                     /*
                      * Pop out a clear destination flag
                      */
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mContext.getString(R.string.Delete));
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mContext.getString(R.string.Clear));
                     return;
                 }            
             }
