@@ -147,4 +147,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="IconHelicopterSummary">&quot;Selectionner pour changer l'icône de position à un hélicoptère (redémarrage requis)&quot;</string>
     <string name="Draw">&quot;Dessiner&quot;</string>
     <string name="Pan">&quot;Dérouler&quot;</string>
+    <string name="Clear">&quot;Effacer&quot;</string>
 </resources>
