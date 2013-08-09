@@ -23,6 +23,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>A/FD Images</item>
         <item>Terrain</item>
         <item>IFR High Enroute Charts</item>
+        <item>Topographic Maps</item>
     </string-array>
     
     <string-array name="resNameDatabase">
@@ -246,15 +247,52 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief PR</item>
     </string-array>
     <string-array name="resNameTopo">
-        <item>Canada (40N to 50N)</item>
-        <item>Canada (50N to 60N)</item>
-        <item>Canada (60N to 70N)</item>
-        <item>Canada (70N to 80N)</item>
-        <item>Canada (80N to 90N)</item>
+		<item>Canada Grid 001</item>
+		<item>Canada Grid 002</item>
+		<item>Canada Grid 003</item>
+		<item>Canada Grid 010</item>
+		<item>Canada Grid 011</item>
+		<item>Canada Grid 012</item>
+		<item>Canada Grid 013</item>
+		<item>Canada Grid 014</item>
+		<item>Canada Grid 020</item>
+		<item>Canada Grid 021</item>
+		<item>Canada Grid 022</item>
+		<item>Canada Grid 023</item>
+		<item>Canada Grid 024</item>
+		<item>Canada Grid 030</item>
+		<item>Canada Grid 031</item>
+		<item>Canada Grid 032</item>
+		<item>Canada Grid 033</item>
+		<item>Canada Grid 034</item>
+		<item>Canada Grid 040</item>
+		<item>Canada Grid 041</item>
+		<item>Canada Grid 042</item>
+		<item>Canada Grid 043</item>
+		<item>Canada Grid 044</item>
+		<item>Canada Grid 052</item>
+		<item>Canada Grid 053</item>
+		<item>Canada Grid 054</item>
+		<item>Canada Grid 062</item>
+		<item>Canada Grid 063</item>
+		<item>Canada Grid 064</item>
+		<item>Canada Grid 072</item>
+		<item>Canada Grid 073</item>
+		<item>Canada Grid 074</item>
+		<item>Canada Grid 082</item>
+		<item>Canada Grid 083</item>
+		<item>Canada Grid 084</item>
+		<item>Canada Grid 092</item>
+		<item>Canada Grid 093</item>
+		<item>Canada Grid 094</item>
+		<item>Canada Grid 102</item>
+		<item>Canada Grid 103</item>
+		<item>Canada Grid 104</item>
+		<item>Canada Grid 114</item>
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases</item>
+        <item>databases_v2</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -475,11 +513,48 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>REL_PR</item>
     </string-array>
     <string-array name="resFilesTopo">
-        <item>CANM_40N_50N</item>
-        <item>CANM_50N_60N</item>
-        <item>CANM_60N_70N</item>
-        <item>CANM_70N_80N</item>
-        <item>CANM_80N_90N</item>
+		<item>CAN_001</item>
+		<item>CAN_002</item>
+		<item>CAN_003</item>
+		<item>CAN_010</item>
+		<item>CAN_011</item>
+		<item>CAN_012</item>
+		<item>CAN_013</item>
+		<item>CAN_014</item>
+		<item>CAN_020</item>
+		<item>CAN_021</item>
+		<item>CAN_022</item>
+		<item>CAN_023</item>
+		<item>CAN_024</item>
+		<item>CAN_030</item>
+		<item>CAN_031</item>
+		<item>CAN_032</item>
+		<item>CAN_033</item>
+		<item>CAN_034</item>
+		<item>CAN_040</item>
+		<item>CAN_041</item>
+		<item>CAN_042</item>
+		<item>CAN_043</item>
+		<item>CAN_044</item>
+		<item>CAN_052</item>
+		<item>CAN_053</item>
+		<item>CAN_054</item>
+		<item>CAN_062</item>
+		<item>CAN_063</item>
+		<item>CAN_064</item>
+		<item>CAN_072</item>
+		<item>CAN_073</item>
+		<item>CAN_074</item>
+		<item>CAN_082</item>
+		<item>CAN_083</item>
+		<item>CAN_084</item>
+		<item>CAN_092</item>
+		<item>CAN_093</item>
+		<item>CAN_094</item>
+		<item>CAN_102</item>
+		<item>CAN_103</item>
+		<item>CAN_104</item>
+		<item>CAN_114</item>
     </string-array>
     <string-array name="ChartType">
         <item>Sectional</item>

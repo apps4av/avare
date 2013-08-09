@@ -73,6 +73,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final int    FACILITY_NAME_COL = 4;
     public  static final String  LOCATION_ID = "Location ID";
     private static final String  LOCATION_ID_DB = "LocationID";
+    private static final String  INFO_DB = "info";
     private static final int    LOCATION_ID_COL = 0;
     public  static final String  MAGNETIC_VARIATION = "Magnetic Variation";
     //private static final String  MAGNETIC_VARIATION_DB = "MagneticVariation";
@@ -259,6 +260,50 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         closes(cursor);
         return ret;
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Tile findFiles(String name) {
+        Cursor cursor = doQuery("select files from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'");
+        Tile tile = null;
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+        
+                    /*
+                     * Database
+                     */
+                    tile = new Tile(
+                            mPref,
+                            cursor.getString(0),
+                            cursor.getDouble(1),
+                            cursor.getDouble(2),
+                            cursor.getDouble(3),
+                            cursor.getDouble(4),
+                            cursor.getDouble(5),
+                            cursor.getDouble(6),
+                            cursor.getDouble(7),
+                            cursor.getDouble(8),
+                            cursor.getDouble(9),
+                            cursor.getDouble(10),
+                            cursor.getString(11));
+                    /*
+                     * Position on tile
+                     */
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closes(cursor);
+        return tile;            
+
     }
 
     /**
