@@ -31,6 +31,7 @@ public class Plan {
     private Destination[] mDestination = new Destination[MAX_DESTINATIONS];
     private Boolean[] mPassed = new Boolean[MAX_DESTINATIONS];
     
+    
     private static final int MAX_DESTINATIONS = 10;
     
     private static final int MILES_PER_SEGMENT = 50;
@@ -45,7 +46,7 @@ public class Plan {
     private GpsParams mLastLocation;
     private Passage mPassage;
     private boolean mDestChanged;
-    
+    private double mDeclination;
     
     /**
      * 
@@ -57,6 +58,7 @@ public class Plan {
         mDistance = 0;
         mLastLocation = null;
         mBearing = 0;
+        mDeclination = 0;
         mDestChanged = false;
         mEta = "--:--";
         mPassage = new Passage();
@@ -194,6 +196,7 @@ public class Plan {
     public void updateLocation(GpsParams params) {
         mDistance = 0;
         mBearing = 0;
+        mDeclination = params.getDeclinition();
         int num = getDestinationNumber();
         int np = findNextNotPassed();
         if(0 == num) {
@@ -240,7 +243,7 @@ public class Plan {
         /*
          * For display purpose
          */
-        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, ""); 
+        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, -mDeclination); 
     }
 
     /**

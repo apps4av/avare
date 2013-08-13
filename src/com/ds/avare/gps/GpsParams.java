@@ -16,6 +16,7 @@ package com.ds.avare.gps;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 
+import android.hardware.GeomagneticField;
 import android.location.Location;
 
 /**
@@ -30,6 +31,7 @@ public class GpsParams {
     private double mAltitude;
     private double mBearing;
     private Scale  mScale;
+    private float mDeclination;
     
     
     /**
@@ -45,16 +47,26 @@ public class GpsParams {
             mBearing = 0;
             mScale = new Scale();
             mScale.setScaleAt(mLatitude);
+            mDeclination = 0;
             return;
         }
+        
         mSpeed = location.getSpeed() * Preferences.distanceConversion; // ms / sec to knot / hr;
         mLongitude = location.getLongitude();
         mLatitude = location.getLatitude();
         mAltitude = location.getAltitude() * Preferences.heightConversion; // meters to feet;
+        
+        /*
+         * Find declination
+         */
+        GeomagneticField gmf = new GeomagneticField((float)location.getLatitude(), 
+                (float)location.getLongitude(), 0, System.currentTimeMillis());
+        mDeclination = gmf.getDeclination();
+        gmf = null;
+        
         mBearing = (location.getBearing() + 360) % 360;
         mScale = new Scale();
         mScale.setScaleAt(mLatitude);
-
     }
     
     /**
@@ -81,6 +93,7 @@ public class GpsParams {
     public double getAltitude() {
         return mAltitude;
     }
+    
     /**
      * @return
      */
@@ -88,8 +101,18 @@ public class GpsParams {
         return mBearing;
     }
 
+    /**
+     * @return
+     */
     public Scale getScale() {
         return mScale;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public double getDeclinition() {
+        return mDeclination;
+    }
 }

@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.position;
 
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
 
 /**
  * @author zkhan
@@ -120,33 +121,34 @@ public class Projection {
     /**
      * @return
      */
-    public String getGeneralDirectionFrom() {
+    public String getGeneralDirectionFrom(double declination) {
         
         String dir;
         final double DIR_DEGREES = 15;
+        double bearing = Helper.getMagneticHeading(mBearing, declination);
         
         /*
          * These are important to show for traffic controller communications.
          */
-        if(mBearing > (DIR_DEGREES) && mBearing <= (90 - DIR_DEGREES)) {
+        if(bearing > (DIR_DEGREES) && bearing <= (90 - DIR_DEGREES)) {
             dir = "SW of";
         }
-        else if(mBearing > (90 - DIR_DEGREES) && mBearing <= (90 + DIR_DEGREES)) {
+        else if(bearing > (90 - DIR_DEGREES) && bearing <= (90 + DIR_DEGREES)) {
             dir = "W  of";
         }
-        else if(mBearing > (90 + DIR_DEGREES) && mBearing <= (180 - DIR_DEGREES)) {
+        else if(bearing > (90 + DIR_DEGREES) && bearing <= (180 - DIR_DEGREES)) {
             dir = "NW of";
         }
-        else if(mBearing > (180 - DIR_DEGREES) && mBearing <= (180 + DIR_DEGREES)) {
+        else if(bearing > (180 - DIR_DEGREES) && bearing <= (180 + DIR_DEGREES)) {
             dir = "N  of";
         }
-        else if(mBearing > (180 + DIR_DEGREES) && mBearing <= (270 - DIR_DEGREES)) {
+        else if(bearing > (180 + DIR_DEGREES) && bearing <= (270 - DIR_DEGREES)) {
             dir = "NE of";
         }
-        else if(mBearing > (270 - DIR_DEGREES) && mBearing <= (270 + DIR_DEGREES)) {
+        else if(bearing > (270 - DIR_DEGREES) && bearing <= (270 + DIR_DEGREES)) {
             dir = "E  of";
         }
-        else if(mBearing > (270 + DIR_DEGREES) && mBearing <= (360 - DIR_DEGREES)) {
+        else if(bearing > (270 + DIR_DEGREES) && bearing <= (360 - DIR_DEGREES)) {
             dir = "SE of";
         }
         else {

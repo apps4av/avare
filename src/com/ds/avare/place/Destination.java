@@ -97,6 +97,8 @@ public class Destination extends Observable {
     private boolean mInited;
     
     private String mAfdName;
+    
+    private double mDeclination;
 
     /*
      * This is where destination was set.
@@ -217,10 +219,11 @@ public class Destination extends Observable {
         double mLon = params.getLongitude();
         double mLat = params.getLatitude();
         double speed = params.getSpeed();
+        mDeclination = params.getDeclinition();
 
 		if(!mFound) {
 			return;
-		}		
+		}
 
         if(!mInited) {
             mLonInit = mLon;
@@ -265,7 +268,7 @@ public class Destination extends Observable {
 			return(mName + "? ");
 		}
 		else {
-			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, ""); 
+			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, -mDeclination); 
 		}
 	}
 	

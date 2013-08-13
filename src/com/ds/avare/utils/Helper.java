@@ -166,11 +166,11 @@ public class Helper {
      * @param heading
      * @return
      */
-    public static String makeLine(double value, String unit, String eta, double heading, String variation) {
+    public static String makeLine(double value, String unit, String eta, double heading, double variation) {
         String valTrunc = String.format(Locale.getDefault(), "%4d", (Math.round(value)));
         return 
-                valTrunc + unit + " " +  eta + " " + variation +
-                Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
+                valTrunc + unit + " " +  eta + " " +
+                Helper.correctConvertHeading(Math.round(getMagneticHeading(heading, variation))) + '\u00B0';
     }
     
     /**
@@ -281,5 +281,15 @@ public class Helper {
         catch (Exception e) {
             
         }
-     }
+    }
+    
+    /**
+     * 
+     * @param heading
+     * @param variation
+     * @return
+     */
+    public static double getMagneticHeading(double heading, double variation) {
+        return (heading + variation + 360) % 360;
+    }
 }

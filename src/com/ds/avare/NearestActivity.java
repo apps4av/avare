@@ -17,6 +17,7 @@ import java.util.Observer;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -64,7 +65,7 @@ public class NearestActivity extends Activity  implements Observer {
         @Override
         public void locationCallback(Location location) {
             if(location != null && mService != null) {
-                prepareAdapter();
+                prepareAdapter(location);
             }
         }
 
@@ -139,8 +140,9 @@ public class NearestActivity extends Activity  implements Observer {
     /**
      * 
      */
-    private boolean prepareAdapter() {
+    private boolean prepareAdapter(Location location) {
         int airportnum = mService.getArea().getAirportsNumber();
+        GpsParams params = new GpsParams(location);
         if(0 == airportnum) {
             return false;
         }
@@ -158,7 +160,8 @@ public class NearestActivity extends Activity  implements Observer {
                     mService.getArea().getAirport(id).getId() + ")";
             fuel[id] = mService.getArea().getAirport(id).getFuel();
             dist[id] = "" + ((float)(Math.round(mService.getArea().getAirport(id).getDistance() * 10.f)) / 10.f) + " " + Preferences.distanceConversionUnit;
-            bearing[id] = Helper.correctConvertHeading(Math.round(mService.getArea().getAirport(id).getBearing())) + '\u00B0';
+            double heading = Helper.getMagneticHeading(mService.getArea().getAirport(id).getBearing(), - params.getDeclinition());
+            bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
             color[id] = WeatherHelper.metarSquare(mService.getArea().getAirport(id).getWeather());
         }
         if(null == mNearestAdapter) {
@@ -189,7 +192,7 @@ public class NearestActivity extends Activity  implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-            if(mPref.isSimulationMode() || (!prepareAdapter())) {
+            if(mPref.isSimulationMode() || (!prepareAdapter(null))) {
                 mToast.setText(getString(R.string.AreaNF));
                 mToast.show();
                 return;
