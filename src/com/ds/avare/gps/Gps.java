@@ -144,20 +144,14 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
                 
-            }
-            catch (Exception e) {
-                mLocationManager = null;
-                return;
-            }
-            /*
-             * Also obtain GSM based locations
-             */
-            try {
+                /*
+                 * Also obtain GSM based locations
+                 */
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
                         0, 0, this);
             }
             catch (Exception e) {
-                
+                mLocationManager = null;
             }
         }
 
