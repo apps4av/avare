@@ -41,7 +41,25 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_below="@+id/plan_total_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
-            
+
+    <Button
+        android:id="@+id/plan_button_dest"
+        android:textStyle="bold"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/plan_button_4"
+        android:gravity="left|center"
+        android:text="@string/Destination"
+        android:drawableLeft="@drawable/direct"
+        android:visibility="invisible" />
+    
+    <Button
+        android:id="@+id/plan_button_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/plan_button_delete"
+        android:visibility="invisible" />
+    
     <Button
         android:id="@+id/plan_button_delete"
         android:textStyle="bold"

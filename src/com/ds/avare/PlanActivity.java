@@ -15,6 +15,7 @@ package com.ds.avare;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Destination;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -40,18 +41,19 @@ import android.widget.ToggleButton;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlanActivity extends Activity  {
+public class PlanActivity extends Activity {
     
     private StorageService mService;
     private ListView mPlan;
     private PlanAdapter mPlanAdapter;
     private Toast mToast;
     private Button mDeleteButton;
+    private Button mDestButton;
     private int mIndex;
+
     private ToggleButton mActivateButton;
     private TextView mTotalText;
-    
-
+    private Destination mDestination;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -110,8 +112,6 @@ public class PlanActivity extends Activity  {
         mPlan = (ListView)view.findViewById(R.id.plan_list);
 
         
-        
-
         mService = null;
         mIndex = -1;
         mTotalText = (TextView)view.findViewById(R.id.plan_total_text);
@@ -139,6 +139,39 @@ public class PlanActivity extends Activity  {
                 }
             }
             
+        });
+
+        /*
+         * Dest button
+         */
+        mDestButton = (Button)view.findViewById(R.id.plan_button_dest);
+        mDestButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                mService.setDestination(mDestination);
+                mToast.setText(getString(R.string.DestinationSet) + mDestination.getID());
+                mToast.show();
+                mDestination = null;
+                /*
+                 * Set everything behind this as passed.
+                 */
+                for(int i = 0; i < mIndex; i++) {
+                    mService.getPlan().setPassed(i);
+                }
+                /*
+                 * Set everything after this as not yet passed.
+                 */
+                for(int i = mIndex; i < mService.getPlan().getDestinationNumber(); i++) {
+                    mService.getPlan().setNotPassed(i);
+                }
+                mIndex = -1;
+                ((MainActivity) PlanActivity.this.getParent()).switchTab(0);
+            }   
         });
 
         mActivateButton = (ToggleButton)view.findViewById(R.id.plan_button_activate);
@@ -248,9 +281,13 @@ public class PlanActivity extends Activity  {
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
                     mIndex = index;
-                                    
+                            
+                    mDestination = mService.getPlan().getDestination(index);
+                    mDestButton.setText(mDestination.getID());
                     AnimateButton f = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                    AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     f.animate(true);
+                    g.animate(true);
 
                     return true;
                 }

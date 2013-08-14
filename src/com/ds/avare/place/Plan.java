@@ -188,6 +188,20 @@ public class Plan {
         return mPassed[id];
     }
 
+    /*
+     * If passed
+     */
+    public void setPassed(int id) {
+        mPassed[id] = true;
+    }
+
+    /*
+     * If not passed
+     */
+    public void setNotPassed(int id) {
+        mPassed[id] = false;
+    }
+
     /**
      * 
      * @param lon
