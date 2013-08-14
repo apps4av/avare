@@ -682,11 +682,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Draw distance from point
              */
-            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing(), -mGpsParams.getDeclinition()),
+            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing(), mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
-            canvas.drawText(mPointProjection.getGeneralDirectionFrom(-mGpsParams.getDeclinition()),
-                    0, getHeight() / mTextDiv, mPaint); /* Direction uses -variation */
+            canvas.drawText(mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
+                    0, getHeight() / mTextDiv, mPaint);
         }
         else if(mService != null && mService.getDestination() != null) {
             mPaint.setTextAlign(Align.RIGHT);

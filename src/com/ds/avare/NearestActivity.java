@@ -160,7 +160,7 @@ public class NearestActivity extends Activity  implements Observer {
                     mService.getArea().getAirport(id).getId() + ")";
             fuel[id] = mService.getArea().getAirport(id).getFuel();
             dist[id] = "" + ((float)(Math.round(mService.getArea().getAirport(id).getDistance() * 10.f)) / 10.f) + " " + Preferences.distanceConversionUnit;
-            double heading = Helper.getMagneticHeading(mService.getArea().getAirport(id).getBearing(), - params.getDeclinition());
+            double heading = Helper.getMagneticHeading(mService.getArea().getAirport(id).getBearing(), params.getDeclinition());
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
             color[id] = WeatherHelper.metarSquare(mService.getArea().getAirport(id).getWeather());
         }

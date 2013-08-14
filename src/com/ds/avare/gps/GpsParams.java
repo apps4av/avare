@@ -61,7 +61,7 @@ public class GpsParams {
          */
         GeomagneticField gmf = new GeomagneticField((float)location.getLatitude(), 
                 (float)location.getLongitude(), 0, System.currentTimeMillis());
-        mDeclination = gmf.getDeclination();
+        mDeclination = -gmf.getDeclination();
         gmf = null;
         
         mBearing = (location.getBearing() + 360) % 360;

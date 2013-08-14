@@ -243,7 +243,7 @@ public class Plan {
         /*
          * For display purpose
          */
-        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, -mDeclination); 
+        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, mDeclination); 
     }
 
     /**
