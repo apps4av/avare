@@ -64,7 +64,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_TERRAIN = 7;
     private static final int GROUP_IFRHE = 8;
     private static final int GROUP_TOPO = 9;
-    private static final int GROUP_NUM = 10;
+    private static final int GROUP_HELI = 10;
+    private static final int GROUP_NUM = 11;
     
     /**
      * @param context
@@ -92,6 +93,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resNameTerrain);
         mChildren[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resNameIFRHE);
         mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
+        mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
+        
         /*
          * Assign children file names
          */
@@ -106,6 +109,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
         mChildrenFiles[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
+        mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         
         /*
          * Allocate space for versions
@@ -122,6 +126,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
         mVers[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
+        mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         
         /*
          * Allocate space for checked charts
@@ -137,6 +142,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_TERRAIN] = new boolean[mVers[GROUP_TERRAIN].length];
         mChecked[GROUP_IFRHE] = new boolean[mVers[GROUP_IFRHE].length];
         mChecked[GROUP_TOPO] = new boolean[mVers[GROUP_TOPO].length];
+        mChecked[GROUP_HELI] = new boolean[mVers[GROUP_HELI].length];
         
         /*
          * Get various bitmaps

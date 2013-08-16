@@ -24,6 +24,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Terrain</item>
         <item>IFR High Enroute Charts</item>
         <item>Topographic Maps</item>
+        <item>Heli/Other Charts</item>
     </string-array>
     
     <string-array name="resNameDatabase">
@@ -291,8 +292,12 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Canada Grid 114</item>
     </string-array>
     
+    <string-array name="resNameHeli">
+        <item>Grand Canyon</item>
+    </string-array>
+    
     <string-array name="resFilesDatabase">
-        <item>databases_v2</item>
+        <item>databases_v3</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -556,6 +561,11 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>CAN_104</item>
 		<item>CAN_114</item>
     </string-array>
+    
+    <string-array name="resFilesHeli">
+        <item>GrandCanyon</item>
+    </string-array>
+    
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -565,6 +575,7 @@ Redistribution and use in source and binary forms, with or without modification,
     	<item>Terrain</item>
         <item>Shaded Relief</item>
         <item>Topographic</item>
+        <item>Heli/Other</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
@@ -576,6 +587,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>5</item>
         <item>6</item>
         <item>7</item>
+        <item>8</item>
     </string-array>    
 
     <string-array name="UnitsD">
