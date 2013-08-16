@@ -17,32 +17,40 @@ Redistribution and use in source and binary forms, with or without modification,
         
     <ExpandableListView
         android:id="@+id/chart_download_list"
-        android:layout_below="@+id/chart_download_button_update"
+        android:layout_below="@+id/chart_download_button_lo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
 
-	<Button
-	    android:id="@+id/chart_download_button_dl"
-        android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentRight="true"
-	    android:layout_alignParentTop="true"
-	    android:layout_centerVertical="true"
-	    android:gravity="center"
-	    android:text="@string/Get"
-	    android:visibility="visible" />
-
-    <Button
-        android:id="@+id/chart_download_button_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/chart_download_button_dl"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:text="@string/update"
-        android:visibility="visible" />
-		    
+	   <LinearLayout android:orientation="horizontal"
+           android:id="@+id/chart_download_button_lo"
+	       android:layout_width="fill_parent"
+	       android:layout_height="wrap_content">
+	       <Button
+			    android:layout_weight="1"
+			    android:layout_height="wrap_content"
+			    android:layout_width="0dp"
+			    android:id="@+id/chart_download_button_dl"
+			    android:drawableLeft="@drawable/add"
+			    android:text="@string/Get"
+			    android:visibility="visible" />
+	
+    	   <Button
+		       android:layout_weight="1"
+		       android:layout_height="wrap_content"
+		       android:layout_width="0dp"
+		       android:id="@+id/chart_download_button_update"
+               android:drawableLeft="@drawable/check_red"
+		       android:text="@string/update"
+		       android:visibility="visible" />
+    	   
+           <Button
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:layout_width="0dp"
+               android:id="@+id/chart_download_button_delete"
+               android:drawableLeft="@drawable/delete"
+               android:text="@string/Delete"
+               android:visibility="visible" />
+    	   	   
+	  </LinearLayout> 
 </RelativeLayout>

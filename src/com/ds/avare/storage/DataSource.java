@@ -155,4 +155,12 @@ public class DataSource {
         return dbHelper.findObstacles(lon, lat, height);
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFilesToDelete(String name) {
+        return dbHelper.findFilesToDelete(name);        
+    }
 }

@@ -38,18 +38,23 @@ import android.widget.TextView;
  */
 public class ChartAdapter extends BaseExpandableListAdapter {
 
+    private static final int STATE_UNCHECKED = 0;
+    private static final int STATE_CHECKED = 1;
+    private static final int STATE_DELETE = 2;
+    
     private Context mContext;
     private Preferences mPref;
     private BitmapHolder mOkBitmapHolder;
     private BitmapHolder mAddBitmapHolder;
     private BitmapHolder mUpdateBitmapHolder;
+    private BitmapHolder mDeleteBitmapHolder;
     private BitmapHolder mNoneBitmapHolder;
     private String mVersion;
     private String mVersionTFR;
     private String[] mGroups;
     private String[][] mChildrenFiles;
     private String[][] mChildren;
-    private boolean[][] mChecked;
+    private int[][] mChecked;
     private String[][] mVers;
     
     static final int blocksize = 128;
@@ -131,24 +136,25 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         /*
          * Allocate space for checked charts
          */
-        mChecked = new boolean[GROUP_NUM][];
-        mChecked[GROUP_DATABASE] = new boolean[mVers[GROUP_DATABASE].length];
-        mChecked[GROUP_PLATE] = new boolean[mVers[GROUP_PLATE].length];
-        mChecked[GROUP_SECTIONAL] = new boolean[mVers[GROUP_SECTIONAL].length];
-        mChecked[GROUP_TAC] = new boolean[mVers[GROUP_TAC].length];
-        mChecked[GROUP_WAC] = new boolean[mVers[GROUP_WAC].length];
-        mChecked[GROUP_IFRLE] = new boolean[mVers[GROUP_IFRLE].length];
-        mChecked[GROUP_AFD] = new boolean[mVers[GROUP_AFD].length];
-        mChecked[GROUP_TERRAIN] = new boolean[mVers[GROUP_TERRAIN].length];
-        mChecked[GROUP_IFRHE] = new boolean[mVers[GROUP_IFRHE].length];
-        mChecked[GROUP_TOPO] = new boolean[mVers[GROUP_TOPO].length];
-        mChecked[GROUP_HELI] = new boolean[mVers[GROUP_HELI].length];
+        mChecked = new int[GROUP_NUM][];
+        mChecked[GROUP_DATABASE] = new int[mVers[GROUP_DATABASE].length];
+        mChecked[GROUP_PLATE] = new int[mVers[GROUP_PLATE].length];
+        mChecked[GROUP_SECTIONAL] = new int[mVers[GROUP_SECTIONAL].length];
+        mChecked[GROUP_TAC] = new int[mVers[GROUP_TAC].length];
+        mChecked[GROUP_WAC] = new int[mVers[GROUP_WAC].length];
+        mChecked[GROUP_IFRLE] = new int[mVers[GROUP_IFRLE].length];
+        mChecked[GROUP_AFD] = new int[mVers[GROUP_AFD].length];
+        mChecked[GROUP_TERRAIN] = new int[mVers[GROUP_TERRAIN].length];
+        mChecked[GROUP_IFRHE] = new int[mVers[GROUP_IFRHE].length];
+        mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
+        mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
         
         /*
          * Get various bitmaps
          */
         mOkBitmapHolder = new BitmapHolder(mContext, R.drawable.check);
         mUpdateBitmapHolder = new BitmapHolder(mContext, R.drawable.check_red);
+        mDeleteBitmapHolder = new BitmapHolder(mContext, R.drawable.delete);
         mAddBitmapHolder = new BitmapHolder(mContext, R.drawable.add);
         mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.white_square);
         
@@ -250,14 +256,44 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     }
     
     /**
-     * Toggle the checked state of a chart
+     * checked state of a chart
      * @param name
      */
-    public void toggleChecked(String name) {
+    public void setChecked(String name) {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mChildrenFiles[group][child].equals(name)) {
-                    mChecked[group][child] = !mChecked[group][child];
+                    mChecked[group][child] = STATE_CHECKED;                        
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * checked state of a chart
+     * @param name
+     */
+    public void unsetChecked(String name) {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChildrenFiles[group][child].equals(name)) {
+                    mChecked[group][child] = STATE_UNCHECKED;                        
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * checked state of a chart
+     * @param name
+     */
+    public void setDelete(String name) {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChildrenFiles[group][child].equals(name)) {
+                    mChecked[group][child] = STATE_DELETE;                        
                     break;
                 }
             }
@@ -269,7 +305,15 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @param name
      */
     public void toggleChecked(int group, int child) {
-        mChecked[group][child] = !mChecked[group][child];
+        if(mChecked[group][child] == STATE_CHECKED) {
+            mChecked[group][child] = STATE_DELETE;
+        }
+        else if(mChecked[group][child] == STATE_DELETE) {
+            mChecked[group][child] = STATE_UNCHECKED;                        
+        }
+        else if(mChecked[group][child] == STATE_UNCHECKED) {
+            mChecked[group][child] = STATE_CHECKED;                        
+        }
     }
 
     /**
@@ -279,7 +323,25 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     public String getChecked() {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
-                if(mChecked[group][child]) {
+                if(STATE_CHECKED == mChecked[group][child]) {
+                    return mChildrenFiles[group][child];
+                }
+            }
+        }
+        /*
+         * Nothing checked
+         */
+        return null;
+    }
+
+    /**
+     * Get the next checked chart
+     * @return
+     */
+    public String getDeleteChecked() {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(STATE_DELETE == mChecked[group][child]) {
                     return mChildrenFiles[group][child];
                 }
             }
@@ -294,7 +356,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * Check the downloaded.
      * @return
      */
-    public void checkDownloaded() {
+    public void checkDone() {
         if(mVersion == null) {
             return;
         }
@@ -304,7 +366,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                     continue;
                 }
                 if(!mVersion.equals(mVers[group][child])) {
-                    mChecked[group][child] = true;
+                    mChecked[group][child] = STATE_CHECKED;
                 }
             }
         }
@@ -397,8 +459,11 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             textView2.setText("");
         }
 
-        if(mChecked[groupPosition][childPosition]) {
+        if(mChecked[groupPosition][childPosition] == STATE_CHECKED) {
             imgView.setImageBitmap(mAddBitmapHolder.getBitmap());
+        }
+        else if(mChecked[groupPosition][childPosition] == STATE_DELETE) {
+            imgView.setImageBitmap(mDeleteBitmapHolder.getBitmap());
         }
 
         return rowView;

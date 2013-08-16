@@ -267,34 +267,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public Tile findFiles(String name) {
-        Cursor cursor = doQuery("select files from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'");
-        Tile tile = null;
+    public LinkedList<String> findFilesToDelete(String name) {
+        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'";
+        Cursor cursor = doQuery(query);
+        LinkedList<String> list = new LinkedList<String>();
+        
+        /*
+         * This is to delete the main file, partially downloaded zip file
+         */
+        list.add(name);
+        list.add(name + ".zip");
 
         try {
             if(cursor != null) {
-                if(cursor.moveToFirst()) {
-        
-                    /*
-                     * Database
-                     */
-                    tile = new Tile(
-                            mPref,
-                            cursor.getString(0),
-                            cursor.getDouble(1),
-                            cursor.getDouble(2),
-                            cursor.getDouble(3),
-                            cursor.getDouble(4),
-                            cursor.getDouble(5),
-                            cursor.getDouble(6),
-                            cursor.getDouble(7),
-                            cursor.getDouble(8),
-                            cursor.getDouble(9),
-                            cursor.getDouble(10),
-                            cursor.getString(11));
-                    /*
-                     * Position on tile
-                     */
+                for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                    list.add(cursor.getString(0));
                 }
             }
         }
@@ -302,8 +289,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         
         closes(cursor);
-        return tile;            
-
+        return list;            
     }
 
     /**

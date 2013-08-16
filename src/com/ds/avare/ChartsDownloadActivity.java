@@ -18,6 +18,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.ds.avare.R;
+import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -50,6 +51,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private String mName;
     private ProgressDialog mProgressDialog;
     private Download mDownload;
+    private Delete mDelete;
     
     private Preferences mPref;
     private ChartAdapter mChartAdapter;
@@ -58,6 +60,10 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private StorageService mService;
     private Button mDLButton;
     private Button mUpdateButton;
+    private Button mDeleteButton;
+    
+    private static final int DOWNLOAD = 0;
+    private static final int DELETE = 1;
     
     /**
      * Shows warning message about Avare
@@ -116,10 +122,20 @@ public class ChartsDownloadActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                mChartAdapter.checkDownloaded();
+                mChartAdapter.checkDone();
                 download();
             }
         });
+        
+        mDeleteButton = (Button)view.findViewById(R.id.chart_download_button_delete);
+        mDeleteButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                delete();
+            }
+        });
+
     }
             
     /** Defines callbacks for service binding, passed to bindService() */
@@ -150,7 +166,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
              */
             File dbase = new File(mPref.mapsFolder() + "/" + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
-                mChartAdapter.toggleChecked(mChartAdapter.getDatabaseName());
+                mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
                 mChartAdapter.notifyDataSetChanged();            
                 download();
             }
@@ -170,7 +186,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
              */
             String chart = ChartsDownloadActivity.this.getIntent().getStringExtra(getString(R.string.download));
             if(null != chart) {
-                mChartAdapter.toggleChecked(chart);
+                mChartAdapter.setChecked(chart);
                 mChartAdapter.notifyDataSetChanged();            
                 download();                
             }
@@ -247,7 +263,58 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         mProgressDialog.show();
         return true;
     }
-    
+
+    /**
+     * 
+     */
+    private boolean delete() {
+        
+        if(mService == null) {
+            return false;
+        }
+        /*
+         * Download first chart in list that is checked
+         */
+        mName = mChartAdapter.getDeleteChecked();
+        if(null == mName) {
+            /*
+             * Nothing to download
+             */
+            mToast.setText(getString(R.string.Done));
+            mToast.show();
+            return false;
+        }
+        
+        mDelete = new Delete();
+        mDelete.addObserver(ChartsDownloadActivity.this);
+        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName,
+                mService.getDBResource());
+        
+        mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setMax(100);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setMessage(getString(R.string.Delete) + " " + mName);
+        
+        mProgressDialog.setButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+            /* (non-Javadoc)
+             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+             */
+            public void onClick(DialogInterface dialog, int which) {
+                mDelete.cancel();
+                try {
+                    dialog.dismiss();
+                }
+                catch (Exception e) {
+                    
+                }
+            }
+        });
+        mProgressDialog.show();
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -293,9 +360,18 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     @Override
     public void update(Observable arg0, Object result) {
         
+        /*
+         * Send who sent what
+         */
         Message msg = mHandler.obtainMessage();
         
         msg.what = (Integer)result;
+        if(arg0 instanceof Download) {
+            msg.arg1 = (Integer)DOWNLOAD;
+        }
+        else if(arg0 instanceof Delete) {
+            msg.arg1 = (Integer)DELETE;
+        }
         mHandler.sendMessage(msg);
     }
     
@@ -306,6 +382,8 @@ public class ChartsDownloadActivity extends Activity implements Observer {
 		@Override
         public void handleMessage(Message msg) {
             int result = msg.what;
+            
+            int type = msg.arg1;
             
             /*
              * XXX: Do not know why it happens. Maybe the activity gets restarted, and then
@@ -320,73 +398,134 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                 return;
             }
             
-            if(Download.FAILED == result) {
-                try {
-                    mProgressDialog.dismiss();
-                }
-                catch (Exception e) {
-                    
-                }
-                
-                /*
-                 * Throw a confirm dialog
-                 */
-                
-                mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
-                mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed));
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+            
+            if(DOWNLOAD == type) {
+                if(Download.FAILED == result) {
+                    try {
+                        mProgressDialog.dismiss();
                     }
-                });
-    
-                try {
-                    mAlertDialog.show();
-                }
-                catch (Exception e) {
-                }
-            }
-            if(Download.NONEED == result) {
-                try {
-                    mProgressDialog.dismiss();
-                }
-                catch (Exception e) {
-                }
-            }
-            else if (Download.SUCCESS == result) {
-                try {
-                    mProgressDialog.dismiss();
-                }
-                catch (Exception e) {
+                    catch (Exception e) {
+                        
+                    }
                     
+                    /*
+                     * Throw a confirm dialog
+                     */
+                    
+                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed));
+                    mAlertDialog.setCanceledOnTouchOutside(false);
+                    mAlertDialog.setCancelable(false);
+                    mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+        
+                    try {
+                        mAlertDialog.show();
+                    }
+                    catch (Exception e) {
+                    }
                 }
-                Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " " 
-                        + getString(R.string.Success), Toast.LENGTH_SHORT).show();
-
-                /*
-                 * If TFR fetched, parse it. 
-                 */
-                if(mName.equals(getString(R.string.TFRs))) {
-                    mService.getTFRFetcher().parse();
+                
+                
+                
+                if(Download.NONEED == result) {
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e) {
+                    }
                 }
-
-                mChartAdapter.updateVersion(mName, mDownload.getVersion());
-                mChartAdapter.toggleChecked(mName);
-                mChartAdapter.refresh();
-                download();
+                else if (Download.SUCCESS == result) {
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e) {
+                        
+                    }
+                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " " 
+                            + getString(R.string.Success), Toast.LENGTH_SHORT).show();
+    
+                    /*
+                     * If TFR fetched, parse it. 
+                     */
+                    if(mName.equals(getString(R.string.TFRs))) {
+                        mService.getTFRFetcher().parse();
+                    }
+    
+                    mChartAdapter.updateVersion(mName, mDownload.getVersion());
+                    mChartAdapter.unsetChecked(mName);
+                    mChartAdapter.refresh();
+                    download();
+                }
+                else {
+                    try {
+                        mProgressDialog.setProgress(result);
+                    }
+                    catch (Exception e) {                    
+                    }
+                }           
             }
-            else {
-                try {
-                    mProgressDialog.setProgress(result);
+            else if(DELETE == type) {
+                if(Delete.FAILED == result) {
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e) {
+                        
+                    }
+                    
+                    /*
+                     * Throw a confirm dialog
+                     */
+                    
+                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog.setMessage(getString(R.string.Delete) + " " + getString(R.string.Failed));
+                    mAlertDialog.setCanceledOnTouchOutside(false);
+                    mAlertDialog.setCancelable(false);
+                    mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+        
+                    try {
+                        mAlertDialog.show();
+                    }
+                    catch (Exception e) {
+                    }
                 }
-                catch (Exception e) {                    
+                
+                if (Delete.SUCCESS == result) {
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e) {
+                        
+                    }
+                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " " 
+                            + getString(R.string.Success), Toast.LENGTH_SHORT).show();
+    
+                    mChartAdapter.unsetChecked(mName);
+                    mChartAdapter.refresh();
+                    delete();
                 }
-            }           
-        }
+                else {
+                    try {
+                        mProgressDialog.setProgress(result);
+                    }
+                    catch (Exception e) {                    
+                    }
+                }                
+            }
+		}
     };
 }
