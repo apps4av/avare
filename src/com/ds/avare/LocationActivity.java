@@ -188,7 +188,7 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
-        mAlertDialogExit.setButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+        mAlertDialogExit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
              */
@@ -200,7 +200,7 @@ public class LocationActivity extends Activity implements Observer {
                 dialog.dismiss();
             }
         });
-        mAlertDialogExit.setButton2(getString(R.string.No), new DialogInterface.OnClickListener() {
+        mAlertDialogExit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
              */
@@ -472,7 +472,7 @@ public class LocationActivity extends Activity implements Observer {
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setCancelable(false);
             mGpsWarnDialog.setCanceledOnTouchOutside(false);
-            mGpsWarnDialog.setButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+            mGpsWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
                 /* (non-Javadoc)
                  * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                  */
@@ -482,7 +482,7 @@ public class LocationActivity extends Activity implements Observer {
                     startActivity(i);
                 }
             });
-            mGpsWarnDialog.setButton2(getString(R.string.No), new DialogInterface.OnClickListener() {
+            mGpsWarnDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
                 /* (non-Javadoc)
                  * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                  */
@@ -570,7 +570,7 @@ public class LocationActivity extends Activity implements Observer {
                 mAlertDialogWarn.setMessage(getString(R.string.Warning));
                 mAlertDialogWarn.setCanceledOnTouchOutside(false);
                 mAlertDialogWarn.setCancelable(false);
-                mAlertDialogWarn.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                mAlertDialogWarn.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
                     /* (non-Javadoc)
                      * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                      */

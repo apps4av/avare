@@ -712,8 +712,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Chart
          */
-        else if(null != mOnChart) {
-            canvas.drawText(mOnChart, 0, getHeight() / mTextDiv, mPaint);
+        if(null != mOnChart) {
+            mPaint.setAlpha(127);
+            canvas.drawText(mOnChart, 0, getHeight() / mTextDiv * 3, mPaint);
+            mPaint.setAlpha(255);
         }
 
     }

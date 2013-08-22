@@ -246,7 +246,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         mProgressDialog.setMessage(getString(R.string.Downloading) + "/" + 
                 getString(R.string.Extracting) + " : " + mName + ".zip");
         
-        mProgressDialog.setButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+        mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
              */
@@ -297,7 +297,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setMessage(getString(R.string.Delete) + " " + mName);
         
-        mProgressDialog.setButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+        mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
              */
@@ -416,7 +416,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                     mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed));
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);
-                    mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    mAlertDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
                         /* (non-Javadoc)
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
@@ -488,7 +488,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                     mAlertDialog.setMessage(getString(R.string.Delete) + " " + getString(R.string.Failed));
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);
-                    mAlertDialog.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    mAlertDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
                         /* (non-Javadoc)
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */

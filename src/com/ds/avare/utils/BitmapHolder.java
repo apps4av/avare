@@ -64,11 +64,6 @@ public class BitmapHolder {
      */
     public static final int HEIGHT = 512;
 
-    /*
-     * 
-     */
-    private static String NO_CHART = "no_chart";
-    
     /**
      * @param name
      * Get bitmap from renderer
@@ -116,27 +111,13 @@ public class BitmapHolder {
      * @param name
      * @param opts
      */
-    public static void getBitmapOptions(Preferences pref, String name, int opts[]) {
+    public static void getTileOptions(String name, int opts[]) {
         
         /*
-         * Decode a bitmap header without decoding it.
+         * XXX: No need to decode bitmap header.
          */
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, options);
-        opts[0] = options.outWidth;
-        opts[1] = options.outHeight;
-    }
-
-    /**
-     * @param name
-     * Get bitmap from a bitmap
-     */
-    public BitmapHolder(Bitmap b, String name) {
-            mBitmap = b;
-            mWidth = mBitmap.getWidth();
-            mHeight = mBitmap.getHeight();
-            mName = name;
+        opts[0] = BitmapHolder.WIDTH;
+        opts[1] = BitmapHolder.HEIGHT;
     }
 
     /**
@@ -163,7 +144,7 @@ public class BitmapHolder {
             if(null != mBitmap) {
                 mWidth = mBitmap.getWidth();
                 mHeight = mBitmap.getHeight();
-                mName = NO_CHART;
+                mName = name;
             }
             else {
                 mWidth = 0;
