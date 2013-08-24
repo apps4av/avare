@@ -141,12 +141,11 @@ public class Download extends Observable {
             String path = sUrl[0];
             mName = sUrl[1];
             byte data[] = new byte[blocksize];
-            mVersion = NetworkHelper.getVersion(mName, mRoot);
+            mVersion = NetworkHelper.getVersion(mName);
             int fileLength;
                         
             try {
                 File file = new File(path + "/" + mName);
-                
                 
                 /*
                  * Path in which to install it

@@ -236,7 +236,7 @@ public class SearchActivity extends Activity implements Observer {
                     mAlertDialogEdit.setCanceledOnTouchOutside(true);
                     mAlertDialogEdit.setCancelable(true);
                     mAlertDialogEdit.setView(edit);
-                    mAlertDialogEdit.setButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    mAlertDialogEdit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             /*
                              * Edit and save description field
@@ -249,7 +249,7 @@ public class SearchActivity extends Activity implements Observer {
 
                         }
                     });
-                    mAlertDialogEdit.setButton2(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    mAlertDialogEdit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             mSelected = null;
                             dialog.dismiss();

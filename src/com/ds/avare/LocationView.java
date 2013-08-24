@@ -711,8 +711,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         /*
          * Chart
+         * Anything in line 3 should be removed when proj is shown
          */
-        if(null != mOnChart) {
+        if(null != mOnChart && null == mPointProjection) {
             mPaint.setAlpha(127);
             canvas.drawText(mOnChart, 0, getHeight() / mTextDiv * 3, mPaint);
             mPaint.setAlpha(255);

@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.Helper;
 
 
 import android.content.Context;
@@ -49,8 +49,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private BitmapHolder mUpdateBitmapHolder;
     private BitmapHolder mDeleteBitmapHolder;
     private BitmapHolder mNoneBitmapHolder;
-    private String mVersion;
-    private String mVersionTFR;
     private String[] mGroups;
     private String[][] mChildrenFiles;
     private String[][] mChildren;
@@ -172,15 +170,11 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private class ViewTask extends AsyncTask<Void, Void, Boolean> {
 
         String[][] vers;
-        String mvers;
-        String mtfrvers;
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
             vers = mVers.clone();
-            mvers = NetworkHelper.getVersion("", mPref.getRoot());
-            mtfrvers = NetworkHelper.getVersion(mContext.getString(R.string.TFRs), mPref.getRoot());
                        
             /*
              * Always get version in BG because its a network operation
@@ -216,8 +210,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            mVersion = mvers;
-            mVersionTFR = mtfrvers;
             mVers = vers;
             notifyDataSetChanged();            
         }
@@ -357,15 +349,12 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     public void checkDone() {
-        if(mVersion == null) {
-            return;
-        }
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mVers[group][child] == null) {
                     continue;
                 }
-                if(!mVersion.equals(mVers[group][child])) {
+                if(Helper.isExpired(mVers[group][child])) {
                     mChecked[group][child] = STATE_CHECKED;
                 }
             }
@@ -399,12 +388,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                String vers = mChildrenFiles[group][child].equals(mContext.getString(R.string.TFRs)) ? mVersionTFR : mVersion;
-                if(vers != null) {
-                    if(!mVers[group][child].equals(vers)) {
-                        expired = true;
-                    }
-                }
+                expired = Helper.isExpired(mVers[group][child]);
             }
         }
         if(expired) {
@@ -447,11 +431,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         if(mVers[groupPosition][childPosition] != null) {
             textView2.setText(mVers[groupPosition][childPosition]);
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
-            String vers = mChildrenFiles[groupPosition][childPosition].equals(mContext.getString(R.string.TFRs)) ? mVersionTFR : mVersion;
-            if(vers != null) {
-                if(!vers.equals(mVers[groupPosition][childPosition])) {
-                    imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());
-                }
+            
+            if(Helper.isExpired(mVers[groupPosition][childPosition])) {
+                imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());                    
             }
         }
         else {

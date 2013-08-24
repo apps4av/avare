@@ -14,7 +14,10 @@ package com.ds.avare.utils;
 
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.ds.avare.storage.Preferences;
 
@@ -281,6 +284,76 @@ public class Helper {
         catch (Exception e) {
             
         }
+    }
+    
+    /**
+     * 
+     * @param date
+     * @return
+     */
+    public static boolean isExpired(String date) {
+        
+        int year;
+        int month;
+        int day;
+        int hour;
+        int min;
+        
+        if(null == date) {
+            return true;
+        }
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        GregorianCalendar expires = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        /*
+         * Parse the normal charts date designation
+         * like 08_22_2013
+         */
+        String dates[] = date.split("_");
+        if(dates.length < 3) {
+            return true;            
+        }
+        try {
+            month = Integer.parseInt(dates[0]) - 1;
+            day = Integer.parseInt(dates[1]);
+            year = Integer.parseInt(dates[2]);
+            if(dates.length > 3) {
+                /*
+                 * TFR date
+                 */
+                String time[] = dates[3].split(":");
+                hour = Integer.parseInt(time[0]);
+                min = Integer.parseInt(time[1]);
+                if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
+                    return true;
+                }
+                expires.set(year, month, day, hour, min);
+                expires.add(Calendar.HOUR_OF_DAY, 1);
+            }
+            else {
+                /*
+                 * Chart date
+                 */
+                hour = 9;
+                min = 0;
+                if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
+                    return true;
+                }
+                expires.set(year, month, day, hour, min);
+                expires.add(Calendar.DAY_OF_MONTH, 28);
+            }
+        }
+        catch (Exception e) {
+            return true;
+        }
+
+        /*
+         * expired?
+         */
+        if(now.after(expires)) {
+            return true;
+        }
+
+        return false;
     }
     
     /**

@@ -11,15 +11,16 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,8 +50,6 @@ import android.content.Context;
  */
 public class NetworkHelper {
         
-    private static final int blocksize = 8192;
-
     /**
      * 
      */
@@ -302,38 +301,36 @@ public class NetworkHelper {
         return(root + vers + "/" + file);
     }
     
+    
     /**
      * 
      * @return
      */
-    public static String getVersion(String name, String root) {
-        
-        String vers = null;
-        
-        /*
-         * Do this on background task if possible
-         */
-        try {
-
+    public static String getVersion(String name) {
+        String ret = "";
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        epoch.set(2013, 6, 25, 9, 0, 0);
+        if(!name.equals("TFRs")) {
+            while(epoch.before(now)) {
+                epoch.add(Calendar.DAY_OF_MONTH, 28);
+            }
+            epoch.add(Calendar.DAY_OF_MONTH, -28);
             /*
-             * Location of file on internet
-             * Download which is current folder?
+             * US locale as this is a folder name not language translation
              */
-            URL url;
-            if(name.equals("TFRs")) {
-                url = new URL(root + "TFRs_update.txt");
-            }
-            else {
-                url = new URL(root + "update_a.txt");                
-            }
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()), blocksize);
-
-            vers = in.readLine();
-            in.close();
+            ret = String.format(Locale.US, "%02d_%02d_%04d", epoch.get(Calendar.MONTH) + 1,
+                    epoch.get(Calendar.DAY_OF_MONTH),
+                    epoch.get(Calendar.YEAR));
         }
-        catch (Exception e) {
+        else {
+            ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
+                    now.get(Calendar.DAY_OF_MONTH),
+                    now.get(Calendar.YEAR),
+                    now.get(Calendar.HOUR_OF_DAY),
+                    0);
         }
-        return vers;
+        return ret;
     }
     
     /**
