@@ -70,12 +70,12 @@ public class Pan {
          * Update tiles if we pan outside of current area.
          * But do not update right now so we reduce tearing.
          */
-        float mMoveXTilexOld = -(int)mMoveX / BitmapHolder.WIDTH;
+        float mMoveXTilexOld = -(int)Math.round(mMoveX / BitmapHolder.WIDTH);
         if(mMoveXTilexOld != mMoveXTileOld) {
             mMoveXTileOld = mMoveXTilexOld;
             update = true;
         }
-        int mMoveYTileyOld = -(int)mMoveY / BitmapHolder.HEIGHT;
+        int mMoveYTileyOld = -(int)Math.round(mMoveY / BitmapHolder.HEIGHT);
         if(mMoveYTileyOld != mMoveYTileOld) {
             mMoveYTileOld = mMoveYTileyOld;
             update = true;
