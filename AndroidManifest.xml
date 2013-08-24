@@ -11,8 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="114"
-    android:versionName="4.2.4" >
+    android:versionCode="115"
+    android:versionName="4.2.5" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
@@ -36,6 +36,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".NearestActivity" />
         <activity android:name=".PlatesActivity" />
         <activity android:name=".ChartsDownloadActivity" />
+        <activity android:name=".WeatherActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >

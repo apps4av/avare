@@ -95,7 +95,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mCenterButton;
     private Button mHelpButton;
     private Button mPrefButton;
-    private Button mGpsButton;
+    private Button mPlanButton;
     private Button mDownloadButton;
     private Button mMenuButton;
     private Button mTrackButton;
@@ -103,6 +103,7 @@ public class LocationActivity extends Activity implements Observer {
     private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
+    private boolean mIsWaypoint;
     private boolean mSpinner;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
@@ -177,6 +178,32 @@ public class LocationActivity extends Activity implements Observer {
         }          
     };
     
+    /**
+     * 
+     * @param dst
+     */
+    private void goTo(String dst, String type) {
+        mIsWaypoint = false;
+        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination.addObserver(LocationActivity.this);
+        mToast.setText(getString(R.string.Searching) + " " + dst);
+        mToast.show();
+        mDestination.find();
+    }
+
+    /**
+     * 
+     * @param dst
+     */
+    private void planTo(String dst, String type) {
+        mIsWaypoint = true;
+        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination.addObserver(LocationActivity.this);
+        mToast.setText(getString(R.string.Searching) + " " + dst);
+        mToast.show();
+        mDestination.find();
+    }
+
     /*
      * (non-Javadoc)
      * @see android.app.Activity#onBackPressed()
@@ -255,8 +282,11 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
+                    mPlanButton.setText(airport);
                     AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                    AnimateButton e = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     a.animate(true);
+                    e.animate(true);
                 }
             }
             
@@ -328,11 +358,9 @@ public class LocationActivity extends Activity implements Observer {
             public void onClick(View v) {
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mMenuButton, mCenterButton, mTrackButton, mChartSpinner, mDrawButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mGpsButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 b.animate(true);
                 d.animate(true);
-                e.animate(true);
                 f.animate(true);
             }
             
@@ -350,14 +378,19 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mGpsButton = (Button)view.findViewById(R.id.location_button_gps);
-        mGpsButton.setOnClickListener(new OnClickListener() {
+        mPlanButton = (Button)view.findViewById(R.id.location_button_plan);
+        mPlanButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LocationActivity.this, SatelliteActivity.class));
-            }
-            
+                Button b = (Button)v;
+                
+                String type = Destination.BASE;
+                if(b.getText().toString().contains("&")) {
+                    type = Destination.GPS;
+                }
+                planTo(b.getText().toString(), type);
+            }            
         });
 
         mDownloadButton = (Button)view.findViewById(R.id.location_button_dl);
@@ -408,11 +441,7 @@ public class LocationActivity extends Activity implements Observer {
                     if(b.getText().toString().contains("&")) {
                         type = Destination.GPS;
                     }
-                    mDestination = new Destination(b.getText().toString(), type, mPref, mService);
-                    mDestination.addObserver(LocationActivity.this);
-                    mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
-                    mToast.show();
-                    mDestination.find();
+                    goTo(b.getText().toString(), type);
                 }
                 else if(mService != null) {
                     /*
@@ -734,20 +763,38 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Temporarily move to destination by giving false GPS signal.
                  */
-                if(null == mLocationView || null == mDestination) {
+                if(null == mDestination) {
                     mToast.setText(getString(R.string.DestinationNF));
                     mToast.show();
                     return;
                 }
-                mLocationView.updateParams(new GpsParams(mDestination.getLocation()));
-                if(mService != null) {
-                    mService.setDestination((Destination)arg0);
+                if((Destination)arg0 != mDestination) {
+                    /*
+                     * If user presses a selection repeatedly, reject previous
+                     */
+                    return;                    
                 }
-                mLocationView.updateDestination();
                 mPref.addToRecent(mDestination.getStorageName());
                 
-                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
-                mToast.show();
+                if(!mIsWaypoint) {
+                    if(mService != null) {
+                        mService.setDestination((Destination)arg0);
+                    }
+                    mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                    mToast.show();
+                    ((MainActivity)this.getParent()).switchTab(0);
+                }
+                else {
+                    if(mService != null) {
+                        if(mService.getPlan().appendDestination((Destination)arg0)) {
+                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
+                        }
+                        else {
+                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                        }
+                        mToast.show();                            
+                    }
+                }
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));

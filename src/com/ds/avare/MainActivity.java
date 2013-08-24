@@ -20,8 +20,6 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -52,17 +50,6 @@ public class MainActivity extends TabActivity {
         
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
- 
-        /*
-         * Set tabs height to something non obstructive but decent size.
-         */
-        Display display = getWindowManager().getDefaultDisplay();
-        
-        /*
-         * Get screen density for that reason
-         */
-        mTabHeight = ((float)display.getHeight() + (float)display.getWidth()) / 
-                (60 * getResources().getDisplayMetrics().density);
                 
         setContentView(R.layout.main);
         
@@ -86,6 +73,8 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());        
+        setupTab(new TextView(this), getString(R.string.weather), new Intent(this, WeatherActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
     }
     
     /**
@@ -115,7 +104,6 @@ public class MainActivity extends TabActivity {
     private View createTabView(Context context, String text) {
         View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
         TextView tv = (TextView) view.findViewById(R.id.tabs_text);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mTabHeight);
         tv.setText(text);
         return view;
     }

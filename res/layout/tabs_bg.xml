@@ -16,12 +16,14 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/bg_selector"
-    android:padding="1dp"
+    android:padding="10dp"
     android:gravity="center"
     android:orientation="vertical">
  
-    <TextView android:id="@+id/tabs_text" android:layout_width="wrap_content"
+    <TextView android:id="@+id/tabs_text"
+        android:layout_width="80dp"
+        android:minWidth="80dp"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:textColor="@drawable/text_selector" />
 </LinearLayout>

@@ -14,6 +14,8 @@ package com.ds.avare;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
@@ -28,54 +30,58 @@ import android.content.ServiceConnection;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 /**
  * @author zkhan
  * Main activity
  */
-public class SatelliteActivity extends Activity  {
+public class WeatherActivity extends Activity {
 
     /**
-     * Shows satellites
+     * This view display location on the map.
      */
-    private SatelliteView mSatelliteView;
-    
+    private WeatherView mWeatherView;
+    /**
+     * Service that keeps state even when activity is dead
+     */
     private StorageService mService;
-    
-    /*
-     * Start GPS
+
+    /**
+     * App preferences
      */
+    private Preferences mPref;
+    
+    private Toast mToast;
+    
+
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
         public void statusCallback(GpsStatus gpsStatus) {
-            mSatelliteView.updateGpsStatus(gpsStatus);                
         }
 
         @Override
         public void locationCallback(Location location) {
-            if(location != null) {
-                mSatelliteView.updateLocation(location);
+            if(location != null && mService != null) {
+
+                /*
+                 * Called by GPS. Update everything driven by GPS.
+                 */
+                GpsParams params = new GpsParams(location);
             }
         }
 
         @Override
         public void timeoutCallback(boolean timeout) {
-            if(timeout) {
-                mSatelliteView.updateGpsStatus(null);
-            }
         }
 
         @Override
         public void enabledCallback(boolean enabled) {
-            if(!enabled) {
-                mSatelliteView.updateGpsStatus(null);
-            }
         }          
     };
     
     /*
-     * For being on tab this activity discards back to main activity
      * (non-Javadoc)
      * @see android.app.Activity#onBackPressed()
      */
@@ -89,18 +95,24 @@ public class SatelliteActivity extends Activity  {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mPref = new Preferences(this);
+        /*
+         * Create toast beforehand so multiple clicks dont throw up a new toast
+         */
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.satellite, null);
+        View view = layoutInflater.inflate(R.layout.weather, null);
         setContentView(view);
-        mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
-
-        mService = null;        
-    }
+        mWeatherView = (WeatherView)view.findViewById(R.id.weather);
+        
+        mService = null;
+    }    
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -120,7 +132,8 @@ public class SatelliteActivity extends Activity  {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-        }    
+            
+        }
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -131,14 +144,21 @@ public class SatelliteActivity extends Activity  {
     };
 
     /* (non-Javadoc)
+     * @see android.app.Activity#onStart()
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-     
         Helper.setOrientationAndOn(this);
-        
+
         /*
          * Registering our receiver
          * Bind now.
@@ -154,10 +174,40 @@ public class SatelliteActivity extends Activity  {
     @Override
     protected void onPause() {
         super.onPause();
-        getApplicationContext().unbindService(mConnection);
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
-    }    
+
+        /*
+         * Clean up on pause that was started in on resume
+         */
+        getApplicationContext().unbindService(mConnection);
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onRestart()
+     */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onStop()
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onDestroy()
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
 }

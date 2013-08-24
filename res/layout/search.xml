@@ -39,7 +39,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/search_button_plan"
+        android:layout_above="@+id/search_button_note"
         android:gravity="left|center"
         android:text="@string/Delete"
         android:drawableLeft="@drawable/remove"
@@ -50,7 +50,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/search_button_note"
+        android:layout_above="@+id/search_button_delete"
         android:gravity="left|center"
         android:text="@string/Plan"
         android:drawableLeft="@drawable/plan"
@@ -61,13 +61,21 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:textStyle="bold"
 	    android:layout_width="140dp"
 	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentLeft="true"
+        android:layout_above="@+id/search_button_1"
 	    android:text="@string/Label"
 	    android:drawableLeft="@drawable/edit"
 	    android:gravity="left|center"
 	    android:visibility="invisible" />
         
+    <Button
+        android:id="@+id/search_button_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:visibility="invisible" />
+    
     <ProgressBar
         android:id="@+id/search_progress_bar"
         style="?android:attr/progressBarStyleSmall"
