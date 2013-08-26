@@ -129,7 +129,7 @@ public class WeatherActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mWebView.loadData(ContentGenerator.makeContentImage(), "text/html", null);
+            mWebView.loadData(ContentGenerator.makeContentImage(getApplicationContext(), mService), "text/html", null);
 
         }
 

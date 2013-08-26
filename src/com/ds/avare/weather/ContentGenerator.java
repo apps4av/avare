@@ -15,11 +15,17 @@ import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import android.content.Context;
+
+import com.ds.avare.StorageService;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 
 public class ContentGenerator {
 
-    public static String makeContentImage() {
+    public static String makeContentImage(Context context, StorageService service) {
+        
+        Preferences pref = new Preferences(context);
         
         /*
          * Download the airmet time file
@@ -50,8 +56,22 @@ public class ContentGenerator {
             }
         } 
         catch (Exception e) {
-            return "";
+            airmetString = "";
         }
+        
+        /*
+         * Now find plans
+         */
+        String plans[] = pref.getPlans();
+        String planString = ""; 
+        for (int i = 0; i < plans.length; i++) {
+            /*
+             * Make image names from timestamp
+             */
+            planString += "<option value='" + plans[i] + "'>" + plans[i]
+                    + "</option><br>\n";
+        }
+        
 
         /*
          * Generate the page
@@ -128,12 +148,18 @@ public class ContentGenerator {
                  */
                 + "</head>\n"
                 + "<body>\n"
-                + "<input type='text' id='timetxt' readonly><br>"
+                + "<input type='text' id='timetxt' readonly>"
                 + "<button type='button' id='refreshbutton' onClick='refresh()' >Update</button>"
                 /*
                  * Plan
                  */
-                + "<h1>Plan</h1>Coming soon<br>\n"
+                + "<h1>Plan Area</h1>\n"
+                + "<select id='plans' onChange='newPlan()'>\n"
+                + planString
+                + "</select><br>\n"
+                + "<h3>METARs</h3>Coming soon<br>\n"
+                + "<h3>TAFs</h3>Coming soon\n"
+                + "<h3>PIREPs</h3>Coming soon\n"
                 /*
                  * Images
                  */
@@ -141,17 +167,17 @@ public class ContentGenerator {
                 /*
                  * Main
                  */
-                + "<h2>Main</h2><br>\n"
+                + "<h2>Main</h2>\n"
                 + "<img src='http://aviationweather.gov/data/front/front_page_2color.gif'><br>\n"
                 /*
                  * Conus radar
                  */
-                + "<h2>Radar Loop</h2><br>\n"
+                + "<h2>Radar Loop</h2>\n"
                 + "<img src='http://radar.weather.gov/Conus/Loop/NatLoop_Small.gif'><br>\n"
                 /*
                  * Winds
                  */
-                + "<h2>Winds</h2><br>\n"
+                + "<h2>Winds</h2>\n"
                 + "<select id='windlist' onChange='winds()'>\n"
                 + "<option value='sfc'>sfc</option>\n"
                 + "<option value='900'>3000</option>\n"
@@ -187,27 +213,27 @@ public class ContentGenerator {
                 /*
                  * Sigmet
                  */
-                + "<h2>Sigmets</h2><br>\n"
+                + "<h2>Sigmets</h2>\n"
                 + "<img src='http://aviationweather.gov/adds/data/airmets/airmets_ALL.gif'><br>\n"
                 /*
                  * Airmet
                  */
-                + "<h2>Airmets</h2><br>\n"
+                + "<h2>Airmets</h2>\n"
                 + "<select id='gairmet' onChange='airmets()'>\n"
                 + airmetString
                 + "</select><br>\n"
-                + "<h3>Tango</h3><br>\n"
+                + "<h3>Tango</h3>\n"
                 + "<img id='tango' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_TANGO.gif'><br>\n"
-                + "<h3>Sierra</h3><br>\n"
+                + "<h3>Sierra</h3>\n"
                 + "<img id='sierra' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_SIERRA.gif'><br>\n"
-                + "<h3>Icing</h3><br>\n"
+                + "<h3>Icing</h3>\n"
                 + "<img id='ice' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_ICE.gif'><br>\n"
-                + "<h3>Freezing Level</h3><br>\n"
+                + "<h3>Freezing Level</h3>\n"
                 + "<img id='fzlvl' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_FZLVL.gif'><br>\n"
                 /*
                  * Weather prognostic
                  */
-                + "<h2>Low Level Prognostic (Surface-24000)</h2><br>\n"
+                + "<h2>Low Level Prognostic (Surface-24000)</h2>\n"
                 + "<select id='sigll' onChange='sigllload()'>\n"
                 + "<option value='12'>Valid at 0000 and 1200 UTC</option>\n"
                 + "<option value='18'>Valid at 0600 and 1800 UTC</option>\n"
