@@ -499,6 +499,13 @@ public class StorageService extends Service {
     /**
      * @return
      */
+    public void newPlan() {
+        mPlan = new Plan();
+    }
+
+    /**
+     * @return
+     */
     public WeatherCache getWeatherCache() {
         return mWeatherCache;
     }

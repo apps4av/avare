@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
+    <stroke
+        android:width="2dip"
+        android:color="#FF0000" />
     <gradient android:startColor="#5C5C5C" android:centerColor="#424242"
         android:endColor="#222222" android:angle="-90" />
 </shape>

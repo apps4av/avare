@@ -13,14 +13,20 @@ package com.ds.avare;
 
 
 
+import java.util.ArrayList;
+
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -31,6 +37,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,10 +53,18 @@ public class PlanActivity extends Activity {
     private StorageService mService;
     private ListView mPlan;
     private PlanAdapter mPlanAdapter;
+    private ListView mPlanSave;
+    private ArrayAdapter<String> mPlanSaveAdapter;
     private Toast mToast;
     private Button mDeleteButton;
     private Button mDestButton;
+    private Button mSaveButton;
     private int mIndex;
+    private Preferences mPref;
+    /**
+     * Shows Chooseing message about Avare
+     */
+    private AlertDialog mAlertDialogChoose;
 
     private ToggleButton mActivateButton;
     private TextView mTotalText;
@@ -101,6 +116,8 @@ public class PlanActivity extends Activity {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
+        mPref = new Preferences(getApplicationContext());
+                
         /*
          * Get views from XML
          */
@@ -110,12 +127,12 @@ public class PlanActivity extends Activity {
         
 
         mPlan = (ListView)view.findViewById(R.id.plan_list);
+        mPlanSave = (ListView)view.findViewById(R.id.plan_list_save);
 
-        
         mService = null;
         mIndex = -1;
-        mTotalText = (TextView)view.findViewById(R.id.plan_total_text);
-        
+        mTotalText = (TextView)view.findViewById(R.id.plan_total_text);    
+
         mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
         mDeleteButton.getBackground().setAlpha(255);
         mDeleteButton.setOnClickListener(new OnClickListener() {
@@ -171,6 +188,43 @@ public class PlanActivity extends Activity {
                 }
                 mIndex = -1;
                 ((MainActivity) PlanActivity.this.getParent()).switchTab(0);
+            }   
+        });
+
+        /*
+         * Save button
+         */
+        mSaveButton = (Button)view.findViewById(R.id.plan_button_save);
+        mSaveButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                Plan p;
+                /*
+                 * Get plan, make its string, then send to storage
+                 */
+                if(mService == null) {
+                    return;
+                }
+                p = mService.getPlan();
+                if(p == null) {
+                    return;
+                }
+                int num = p.getDestinationNumber();
+                if(num < 2) {
+                    return;
+                }
+                String planStr = "";
+                for(int i = 0; i < (num - 1); i++) {
+                    /*
+                     * Separate by >
+                     */
+                    planStr += p.getDestination(i).getID() + ">";
+                }
+                planStr += p.getDestination(num - 1).getID();
+                mPref.addToPlans(planStr);
+                prepareAdapterSave();
             }   
         });
 
@@ -231,6 +285,28 @@ public class PlanActivity extends Activity {
     /**
      * 
      */
+    private boolean prepareAdapterSave() {
+        
+        ArrayList<String> list = new ArrayList<String>();
+        String [] name = mPref.getPlans();
+        for (int i = 0; i < name.length; i++) {
+            if(name[i].equals("")) {
+                continue;
+            }
+            list.add(name[i]);
+        }
+        
+        mPlanSaveAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, list);
+        
+        mPlanSave.setAdapter(mPlanSaveAdapter);
+
+        return true;
+    }
+
+    /**
+     * 
+     */
     private boolean prepareAdapter() {
         int destnum = mService.getPlan().getDestinationNumber();
         if(0 == destnum) {
@@ -250,7 +326,25 @@ public class PlanActivity extends Activity {
         mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info, passed);
         return true;
     }
-    
+
+    /**
+     * 
+     * @param dst
+     */
+    private void planTo(String dst) {
+        String type = Destination.BASE;
+        if(dst.contains("&")) {
+            type = Destination.GPS;
+        }
+
+        /*
+         * Add to plan
+         */
+        Destination d = new Destination(dst, type, mPref, mService);
+        mService.getPlan().appendDestination(d);
+        d.find();
+    }
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
@@ -271,8 +365,9 @@ public class PlanActivity extends Activity {
             mService.registerGpsListener(mGpsInfc);
 
             prepareAdapter();
+            prepareAdapterSave();
             mPlan.setAdapter(mPlanAdapter);
-            
+
             mPlan.setClickable(true);
             mPlan.setDividerHeight(10);
             mPlan.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -288,6 +383,58 @@ public class PlanActivity extends Activity {
                     AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     f.animate(true);
                     g.animate(true);
+
+                    return true;
+                }
+            }); 
+
+            mPlanSave.setClickable(true);
+            mPlanSave.setDividerHeight(10);
+            mPlanSave.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                        int index, long arg3) {
+
+                    final int mxindex = index;
+                    
+                    /*
+                     * Confirm what needs to be done
+                     * Delete a plan or load it
+                     */
+                    mAlertDialogChoose = new AlertDialog.Builder(PlanActivity.this).create();
+                    mAlertDialogChoose.setCanceledOnTouchOutside(false);
+                    mAlertDialogChoose.setCancelable(true);
+                    mAlertDialogChoose.setTitle(getString(R.string.Plan));
+                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            mService.newPlan();
+                            mService.getPlan().makeInactive();
+                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
+                            String tokens[] = item.split(">");
+                            for(int i = 0; i < tokens.length; i++) {
+                                planTo(tokens[i]);
+                            }
+                            prepareAdapter();
+                            mPlan.setAdapter(mPlanAdapter);            
+                        }
+                    });
+                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
+                            mPref.deleteAPlan(item);
+                            prepareAdapterSave();
+                        }
+                    });
+
+                    mAlertDialogChoose.show();
+
 
                     return true;
                 }
@@ -322,6 +469,14 @@ public class PlanActivity extends Activity {
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
+        }
+
+        if(null != mAlertDialogChoose) {
+            try {
+                mAlertDialogChoose.dismiss();
+            }
+            catch (Exception e) {
+            }
         }
 
         /*

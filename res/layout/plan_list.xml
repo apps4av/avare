@@ -21,7 +21,7 @@ Redistribution and use in source and binary forms, with or without modification,
          android:layout_height="wrap_content"
          android:layout_marginLeft="2dp"
          android:clickable="false"
-        android:textStyle="bold"
+         android:textStyle="bold"
          android:textSize="30sp">
     </TextView>
     

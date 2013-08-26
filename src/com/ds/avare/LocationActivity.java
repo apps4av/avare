@@ -282,11 +282,13 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the animation button for dest
                      */
                     mDestButton.setText(airport);
-                    mPlanButton.setText(airport);
                     AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    AnimateButton e = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     a.animate(true);
-                    e.animate(true);
+                    
+                    if(!airport.equals("Clear")) {
+                        AnimateButton e = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                        e.animate(true);
+                    }
                 }
             }
             
@@ -383,7 +385,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                Button b = (Button)v;
+                Button b = mDestButton;
                 
                 String type = Destination.BASE;
                 if(b.getText().toString().contains("&")) {

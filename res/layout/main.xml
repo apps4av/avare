@@ -22,9 +22,11 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
             android:layout_above="@+id/tabscroll"
-            android:layout_height="fill_parent"/>
+            android:layout_height="fill_parent">
+        </FrameLayout>
         <HorizontalScrollView 
             android:id="@+id/tabscroll"
+            android:fillViewport="true"
             android:background="#FF000000"   
             android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
@@ -34,5 +36,29 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content" />
         </HorizontalScrollView>
-    </RelativeLayout>
+        <ImageView
+                android:id="@+id/tabs_view_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:contentDescription="@string/Left"
+                android:paddingBottom="2dp"
+                android:background="#00000000"
+                android:visibility="visible"
+                android:src="@drawable/left" />
+        
+        <ImageView
+                android:id="@+id/tabs_view_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/Right"
+                android:paddingBottom="2dp"
+                android:visibility="visible"
+                android:src="@drawable/right" />
+        
+        </RelativeLayout>
 </TabHost>

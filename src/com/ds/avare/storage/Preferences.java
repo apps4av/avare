@@ -44,7 +44,8 @@ public class Preferences {
      */
     public static final int MAX_RECENT = 30; 
     
-    
+    public static final int MAX_PLANS = 20; 
+       
     /*
      * Max memory and max screen size it will support
      */
@@ -235,6 +236,66 @@ public class Preferences {
         editor.putString(mContext.getString(R.string.Recent), recent);
         editor.commit();
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public String[] getPlans() {
+        String plans = mPref.getString(mContext.getString(R.string.Plan), "");
+        String[] tokens = plans.split(",");
+        return tokens;
+    }
+
+
+    /**
+     * 
+     * @return
+     */
+    public void addToPlans(String name) {
+        String[] tokens = getPlans();
+        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
+        for(int id = 0; id < l.size(); id++) {
+            if(l.get(id).equals(name)) {
+                l.remove(id);
+            }
+        }
+        l.add(0, name);
+        if(l.size() > MAX_PLANS) {
+            l = l.subList(0, MAX_PLANS - 1);
+        }
+        
+        String plans = "";
+        for(int id = 0; id < l.size(); id++) {
+            plans = plans + l.get(id) + ",";
+        }
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.Plan), plans);
+        editor.commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void deleteAPlan(String name) {
+        String[] tokens = getPlans();
+        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
+        for(int id = 0; id < l.size(); id++) {
+            if(l.get(id).equals(name)) { 
+                l.remove(id);
+            }
+        }
+        
+        String plans = "";
+        for(int id = 0; id < l.size(); id++) {
+            plans = plans + l.get(id) + ",";
+        }
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.Plan), plans);
+        editor.commit();
+    }
+
 
     /**
      * 
