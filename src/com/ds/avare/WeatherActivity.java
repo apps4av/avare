@@ -4,19 +4,18 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    *
-    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *
+ *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 package com.ds.avare;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.gps.GpsParams;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.weather.ContentGenerator;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -30,18 +29,18 @@ import android.content.ServiceConnection;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
+import android.webkit.WebView;
 
 /**
- * @author zkhan
- * Main activity
+ * @author zkhan Main activity
  */
 public class WeatherActivity extends Activity {
 
     /**
      * This view display location on the map.
      */
-    private WeatherView mWeatherView;
+    private WebView mWebView;
+
     /**
      * Service that keeps state even when activity is dead
      */
@@ -50,10 +49,6 @@ public class WeatherActivity extends Activity {
     /**
      * App preferences
      */
-    private Preferences mPref;
-    
-    private Toast mToast;
-    
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -63,12 +58,11 @@ public class WeatherActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            if(location != null && mService != null) {
+            if (location != null && mService != null) {
 
                 /*
                  * Called by GPS. Update everything driven by GPS.
                  */
-                GpsParams params = new GpsParams(location);
             }
         }
 
@@ -78,41 +72,40 @@ public class WeatherActivity extends Activity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }          
+        }
     };
-    
+
     /*
      * (non-Javadoc)
+     * 
      * @see android.app.Activity#onBackPressed()
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity) this.getParent()).switchTab(0);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
+
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
-        /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
-         */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.weather, null);
         setContentView(view);
-        mWeatherView = (WeatherView)view.findViewById(R.id.weather);
-        
+        mWebView = (WebView) view.findViewById(R.id.weather_mainpage);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+
         mService = null;
-    }    
+    }
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -120,30 +113,41 @@ public class WeatherActivity extends Activity {
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.content.ServiceConnection#onServiceConnected(android.content
+         * .ComponentName, android.os.IBinder)
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            /*
+             * We've bound to LocalService, cast the IBinder and get
+             * LocalService instance
              */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            
+            mWebView.loadData(ContentGenerator.makeContentImage(), "text/html", null);
+
         }
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.content.ServiceConnection#onServiceDisconnected(android.content
+         * .ComponentName)
          */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onStart()
      */
     @Override
@@ -151,7 +155,9 @@ public class WeatherActivity extends Activity {
         super.onStart();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onResume()
      */
     @Override
@@ -160,22 +166,24 @@ public class WeatherActivity extends Activity {
         Helper.setOrientationAndOn(this);
 
         /*
-         * Registering our receiver
-         * Bind now.
+         * Registering our receiver Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent, mConnection,
+                Context.BIND_AUTO_CREATE);
 
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onPause()
      */
     @Override
     protected void onPause() {
         super.onPause();
-        
-        if(null != mService) {
+
+        if (null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
@@ -183,10 +191,12 @@ public class WeatherActivity extends Activity {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
-        
+
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onRestart()
      */
     @Override
@@ -194,7 +204,9 @@ public class WeatherActivity extends Activity {
         super.onRestart();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onStop()
      */
     @Override
@@ -202,7 +214,9 @@ public class WeatherActivity extends Activity {
         super.onStop();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see android.app.Activity#onDestroy()
      */
     @Override

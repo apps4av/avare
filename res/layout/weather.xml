@@ -15,12 +15,11 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-        <com.ds.avare.WeatherView
+        <WebView
             android:background="#FF000000"
-            android:id="@+id/weather"
+            android:id="@+id/weather_mainpage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-        
         
 </RelativeLayout>
 

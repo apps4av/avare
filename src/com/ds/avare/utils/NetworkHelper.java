@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -301,6 +302,13 @@ public class NetworkHelper {
         return(root + vers + "/" + file);
     }
     
+    /**
+     * 
+     * @return
+     */
+    public static String getAirmetTimesURL() {
+        return "http://aviationweather.gov/data/products/gairmet/combined/datestamplist.txt";
+    }
     
     /**
      * 
