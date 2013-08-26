@@ -56,6 +56,10 @@ Redistribution and use in source and binary forms, with or without modification,
 	                    android:text="@string/Save"/>
 	             </RelativeLayout>               
          </LinearLayout>    
+         <View
+            android:layout_width="2dp"
+            android:layout_height="fill_parent"
+            android:background="@android:color/darker_gray"/>
         <LinearLayout 
             android:layout_weight="2"
             android:orientation="vertical"

@@ -706,8 +706,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             else if (name.length() > 8) {
                 name = name.substring(0, 7);
             }
+            mPaint.setColor(Color.GREEN);
             canvas.drawText(name,
                     0, getHeight() / mTextDiv, mPaint);
+            mPaint.setColor(Color.WHITE);
         }
         /*
          * Chart
