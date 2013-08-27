@@ -11,15 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.weather;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import android.content.Context;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.NetworkHelper;
 
 public class ContentGenerator {
 
@@ -30,34 +29,29 @@ public class ContentGenerator {
         /*
          * Download the airmet time file
          */
-        String airmetString = "";
-        String dates[] = new String[1];
-        try {
-            URL url = new URL(NetworkHelper.getAirmetTimesURL());
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int month = now.get(Calendar.MONTH) + 1;
+        int year = now.get(Calendar.YEAR);
+        /*
+         * G-Airmet 3 hour issue
+         */
+        hour = ((int)(hour / 3)) * 3;
+        now.set(Calendar.HOUR_OF_DAY, hour);
 
-            URLConnection connection = url.openConnection();
-            connection.connect();
-            BufferedInputStream input = new BufferedInputStream(
-                    url.openStream(), 4096);
-            byte airmet[] = new byte[4096];
-            input.read(airmet, 0, 4096);
-            input.close();
-            String a = new String(airmet);
-            dates = a.split("\n");
-            for (int i = 0; i < dates.length; i++) {
-                if (!dates[i].matches("[0-9]{12}")) {
-                    continue;
-                }
-                /*
-                 * Make image names from timestamp
-                 */
-                airmetString += "<option value='" + dates[i] + "'>" + dates[i]
-                        + "</option><br>\n";
-            }
-        } 
-        catch (Exception e) {
-            airmetString = "";
+        String airmetString = "";
+        String dates[] = new String[4];
+        for(int i = 0; i < 4; i++) {
+            dates[i] = String.format("%04d%02d%02d%02d00", year , month , day, hour);
+            airmetString += "<option value='" + dates[i] + "'>" + dates[i] + "</option><br>\n";
+            now.add(Calendar.HOUR_OF_DAY, 3);
+            hour = now.get(Calendar.HOUR_OF_DAY);
+            day = now.get(Calendar.DAY_OF_MONTH);
+            month = now.get(Calendar.MONTH) + 1;
+            year = now.get(Calendar.YEAR);
         }
+
         
         /*
          * Now find plans

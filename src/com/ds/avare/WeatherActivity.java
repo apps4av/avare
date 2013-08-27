@@ -45,6 +45,11 @@ public class WeatherActivity extends Activity {
      * Service that keeps state even when activity is dead
      */
     private StorageService mService;
+    
+    /*
+     * If page it loaded
+     */
+    private boolean mIsPageLoaded;
 
     /**
      * App preferences
@@ -105,6 +110,7 @@ public class WeatherActivity extends Activity {
         mWebView.getSettings().setJavaScriptEnabled(true);
 
         mService = null;
+        mIsPageLoaded = false;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -129,7 +135,10 @@ public class WeatherActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mWebView.loadData(ContentGenerator.makeContentImage(getApplicationContext(), mService), "text/html", null);
+            if(mIsPageLoaded == false) {
+                mWebView.loadData(ContentGenerator.makeContentImage(getApplicationContext(), mService), "text/html", null);
+            }
+            mIsPageLoaded = true;
 
         }
 
