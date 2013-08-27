@@ -18,13 +18,10 @@ import java.util.TimeZone;
 import android.content.Context;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.storage.Preferences;
 
 public class ContentGenerator {
 
     public static String makeContentImage(Context context, StorageService service) {
-        
-        Preferences pref = new Preferences(context);
         
         /*
          * Download the airmet time file
@@ -50,20 +47,6 @@ public class ContentGenerator {
             day = now.get(Calendar.DAY_OF_MONTH);
             month = now.get(Calendar.MONTH) + 1;
             year = now.get(Calendar.YEAR);
-        }
-
-        
-        /*
-         * Now find plans
-         */
-        String plans[] = pref.getPlans();
-        String planString = "<option value=''>Select A Plan</option><br>\n"; 
-        for (int i = 0; i < plans.length; i++) {
-            /*
-             * Make image names from timestamp
-             */
-            planString += "<option value='" + plans[i] + "'>" + plans[i]
-                    + "</option><br>\n";
         }
         
 
@@ -110,6 +93,10 @@ public class ContentGenerator {
                 + "var now = new Date();"
                 + "var utc =  (now.getUTCMonth()) + 1 + '/' + now.getUTCDate() + ' ' + zeroPad(now.getUTCHours()) + '' + zeroPad(now.getUTCMinutes()) + ' UTC';\n"
                 + "txt.value=utc;\n"
+                + "var list=document.getElementById('plans');\n"
+                + "list.options.length=0;\n"
+                + "var pla=Android.getPlans();\n"
+                + "list.innerHTML=pla;"
                 + "}\n"
                 /*
                  * LL weather prog
@@ -171,9 +158,8 @@ public class ContentGenerator {
                  */
                 + "<h1>Plan Area</h1>\n"
                 + "<select id='plans' onChange='getData()'>\n"
-                + planString
                 + "</select><br>\n"
-                + "<h3>METARs</h3><br>\n"
+                + "<h3>METARs</h3>\n"
                 + "<form id='metartable' readonly></form>\n"
                 + "<h3>TAFs</h3>\n"
                 + "<form id='taftable' readonly></form>\n"

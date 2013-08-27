@@ -104,9 +104,24 @@ public class WeatherHelper {
      */
     public static String formatWeather(String weather) {
         weather = weather.replace("TAF ", "");
+        weather = weather.replace("AMD ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
         weather = weather.replace("BECMG", "\nBECMG"); 
+        return weather;
+    }
+    
+    /**
+     * 
+     * @param weather
+     * @return
+     */
+    public static String formatWeatherHTML(String weather) {
+        weather = weather.replace("TAF ", "");
+        weather = weather.replace("AMD ", "");
+        weather = weather.replace("\n", "<br>");
+        weather = weather.replace(" FM", "<br>FM");
+        weather = weather.replace("BECMG", "<br>BECMG"); 
         return weather;
     }
 }

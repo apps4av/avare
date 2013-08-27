@@ -17,7 +17,6 @@ import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 /**
@@ -69,7 +68,21 @@ public class WebAppInterface {
 
         return query;
     }
-    
+
+    /** 
+     * Get plans list
+     */
+    @JavascriptInterface
+    public String getPlans() { 
+        String plans[] = mPref.getPlans();
+        String str = "<option value=''>Select a Plan</option>";
+        int i;
+        for(i = 0; i < plans.length; i++) {
+            str += "<option value='" + plans[i] + "'>" + plans[i] + "</option>";
+        }
+        return(str);
+    }
+
     /** 
      * Show METARS
      */
@@ -80,18 +93,25 @@ public class WebAppInterface {
         if(planf.equals("")) {
             return "";
         }
-        /*
-         * 
-         */
-        String out = NetworkHelper.getMETARPlan(planf);
-        String outm[] = out.split("::");
-        String html = "";
-        for(int i = 0; i < outm.length; i++) {
-            String vals[] = outm[i].split(",");
-            String color = WeatherHelper.metarColorString(vals[0]);
-            html += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
-        }
         
+        String html = "";
+        try {
+            /*
+             * 
+             */
+            String out = NetworkHelper.getMETARPlan(planf);
+            String outm[] = out.split("::::");
+            for(int i = 0; i < outm.length; i++) {
+                String vals[] = outm[i].split(",");
+                String vals2[] = vals[1].split(" ");
+                String color = WeatherHelper.metarColorString(vals[0]);
+                html += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
+                html += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
+            }
+        }
+        catch(Exception e) {
+            
+        }
         return (html);
     }
     
@@ -105,15 +125,23 @@ public class WebAppInterface {
         if(planf.equals("")) {
             return "";
         }
-        
-        /*
-         *  Get TAFs 
-         */
-        String out = NetworkHelper.getTAFPlan(planf);
-        String outm[] = out.split("::");
+       
         String html = "";
-        for(int i = 0; i < outm.length; i++) {
-            html += "<font size='5' color='black'>" + WeatherHelper.formatWeather(outm[i]) + "<br></br>";
+        try {
+            /*
+             *  Get TAFs 
+             */
+            String out = NetworkHelper.getTAFPlan(planf);
+            String outm[] = out.split("::::");
+            for(int i = 0; i < outm.length; i++) {
+                String taf = WeatherHelper.formatWeatherHTML(outm[i]);
+                String vals[] = taf.split(" ");
+                html += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
+                html += "<font size='5' color='black'>" + taf + "<br></br>";
+            }
+        }
+        catch(Exception e) {
+            
         }
         
         return (html);
@@ -133,11 +161,16 @@ public class WebAppInterface {
         /*
          *  Get TAFs 
          */
-        String out = NetworkHelper.getPIREPSPlan(planf);
-        String outm[] = out.split("::");
         String html = "";
-        for(int i = 0; i < outm.length; i++) {
-            html += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+        try {
+            String out = NetworkHelper.getPIREPSPlan(planf);
+            String outm[] = out.split("::::");
+            for(int i = 0; i < outm.length; i++) {
+                html += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+            }
+        }
+        catch(Exception e) {
+            
         }
         
         return (html);

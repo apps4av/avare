@@ -336,7 +336,7 @@ public class NetworkHelper {
                     if(cat.equals("") || txt.equals("")) {
                         continue;
                     }
-                    out += cat + "," + txt + "::";
+                    out += cat + "," + txt + "::::";
                 }
                 return out;
             }
@@ -391,7 +391,7 @@ public class NetworkHelper {
                     if(txt.equals("")) {
                         continue;
                     }
-                    out += txt + "::";
+                    out += txt + "::::";
                 }
                 return out;
             }
@@ -447,7 +447,7 @@ public class NetworkHelper {
                     if(txt.equals("")) {
                         continue;
                     }
-                    out += txt + "::";
+                    out += txt + "::::";
                 }
                 return out;
             }
