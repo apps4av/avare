@@ -76,6 +76,26 @@ public class WeatherHelper {
         return(WHITE);
     }
     
+    /**
+     * 
+     * @param TAF
+     * @return
+     */
+    public static String metarColorString(String type) {
+        if(type.equals("VFR")) {
+            return("green");
+        }
+        else if(type.equals("IFR")) {
+            return("red");                        
+        }
+        else if(type.equals("MVFR")) {
+            return("blue");                        
+        }
+        else if(type.equals("LIFR")) {
+            return("magenta");                       
+        }
+        return("black");
+    }
     
     /**
      * 
@@ -83,6 +103,7 @@ public class WeatherHelper {
      * @return
      */
     public static String formatWeather(String weather) {
+        weather = weather.replace("TAF ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
         weather = weather.replace("BECMG", "\nBECMG"); 

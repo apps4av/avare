@@ -283,6 +283,181 @@ public class NetworkHelper {
 
     /**
      * 
+     * @param plan
+     * @return
+     */
+    public static String getMETARPlan(String plan) {
+        
+        String query = 
+                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=metars"
+                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
+                + "&flightPath=50;" + plan;
+        /*
+         * Get TAF
+         */
+        String xml = getXmlFromUrl(query);
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                String out = "";
+                
+                NodeList nl = doc.getElementsByTagName("METAR");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                /*
+                 * Return most recent
+                 */
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    String txt = "";
+                    String cat = "";
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    txt = n.item(0).getTextContent();
+                                }
+                            }
+                        }
+                        n = eElement.getElementsByTagName("flight_category");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    cat = n.item(0).getTextContent();
+                                }
+                            }
+                        }
+                    }
+                    if(cat.equals("") || txt.equals("")) {
+                        continue;
+                    }
+                    out += cat + "," + txt + "::";
+                }
+                return out;
+            }
+        }
+        
+        return "";
+    }
+
+    /**
+     * 
+     * @param plan
+     * @return
+     */
+    public static String getTAFPlan(String plan) {
+        
+        String query = 
+                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
+                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
+                + "&flightPath=50;" + plan;
+        /*
+         * Get TAF
+         */
+        String xml = getXmlFromUrl(query);
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                String out = "";
+                
+                NodeList nl = doc.getElementsByTagName("TAF");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                /*
+                 * Return most recent
+                 */
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    String txt = "";
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    txt = n.item(0).getTextContent();
+                                }
+                            }
+                        }
+                    }
+                    if(txt.equals("")) {
+                        continue;
+                    }
+                    out += txt + "::";
+                }
+                return out;
+            }
+        }
+        
+        return "";
+    }
+
+
+    /**
+     * 
+     * @param plan
+     * @return
+     */
+    public static String getPIREPSPlan(String plan) {
+        
+        String query = 
+                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
+                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=12" 
+                + "&flightPath=50;" + plan;
+        /*
+         * Get PIREPS
+         */
+        String xml = getXmlFromUrl(query);
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                String out = "";
+                
+                NodeList nl = doc.getElementsByTagName("PIREP");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                /*
+                 * Return most recent
+                 */
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    String txt = "";
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    txt = n.item(0).getTextContent();
+                                }
+                            }
+                        }
+                    }
+                    if(txt.equals("")) {
+                        continue;
+                    }
+                    out += txt + "::";
+                }
+                return out;
+            }
+        }
+        
+        return "";
+    }
+
+    /**
+     * 
      */
     public static String getHelpUrl() {
         return("file:///android_asset/avare-offlinehelp.html");

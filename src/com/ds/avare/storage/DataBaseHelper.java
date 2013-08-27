@@ -815,7 +815,36 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);
         return ret;
     }
-      
+
+    /**
+     * Find the lat/lon of an airport
+     * @param names
+     * @return
+     */
+    public String findAirportLonLat(String name) {
+
+        /*
+         * Find with sqlite query
+         */
+        String qry = "select * from " + TABLE_AIRPORTS + 
+                " where " + LOCATION_ID_DB + "=='" + name + "';";
+        Cursor cursor = doQuery(qry);
+        String ret = null;
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    
+                    ret = new String(cursor.getString(LONGITUDE_COL) + "," + cursor.getString(LATITUDE_COL));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return ret;
+    }
+
     /**
      * Find the closets tiles to current position
      * @param lon

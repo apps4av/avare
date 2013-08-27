@@ -57,7 +57,7 @@ public class ContentGenerator {
          * Now find plans
          */
         String plans[] = pref.getPlans();
-        String planString = ""; 
+        String planString = "<option value=''>Select A Plan</option><br>\n"; 
         for (int i = 0; i < plans.length; i++) {
             /*
              * Make image names from timestamp
@@ -80,9 +80,9 @@ public class ContentGenerator {
                  * Javascript functions
                  */
                 + "<script>\n"
-                + "function zeroPad(num, places) {\n"
-                + "var zero = places - num.toString().length + 1;\n"
-                + "return Array(+(zero > 0 && zero)).join(\"0\") + num;\n"
+                + "function zeroPad(num) {\n"
+                + "var out = num.toString();\n"
+                + "if(out.length == 2) {return out;} else {return '0' + out;}\n"
                 + "}\n"
                 /*
                  * winds
@@ -133,9 +133,31 @@ public class ContentGenerator {
                 + "document.getElementById('fzlvl').src=giff;\n"
                 + "}\n"
                 /*
+                 * This function calls back in Android to get METARs for a plan
+                 */
+                + "function getMETARs() {\n"
+                + "var list=document.getElementById('plans');\n"
+                + "var plan=list.options[list.selectedIndex].value;\n"
+                + "var table=document.getElementById('metartable');\n"
+                + "table.innerHTML=Android.getMETARs(plan);\n"
+                + "}\n"
+                + "function getTAFs() {\n"
+                + "var list=document.getElementById('plans');\n"
+                + "var plan=list.options[list.selectedIndex].value;\n"
+                + "var table=document.getElementById('taftable');\n"
+                + "table.innerHTML=Android.getTAFs(plan);\n"
+                + "}\n"
+                + "function getPIREPS() {\n"
+                + "var list=document.getElementById('plans');\n"
+                + "var plan=list.options[list.selectedIndex].value;\n"
+                + "var table=document.getElementById('pireptable');\n"
+                + "table.innerHTML=Android.getPIREPS(plan);\n"
+                + "}\n"
+                + "function getData() {getMETARs(); getTAFs(); getPIREPS()}\n"
+                /*
                  * On start set time
                  */
-                + "window.onload = settext;"
+                + "window.onload = settext;\n"
                 + "</script>\n"
                 /*
                  * HTML
@@ -148,12 +170,15 @@ public class ContentGenerator {
                  * Plan
                  */
                 + "<h1>Plan Area</h1>\n"
-                + "<select id='plans' onChange='newPlan()'>\n"
+                + "<select id='plans' onChange='getData()'>\n"
                 + planString
                 + "</select><br>\n"
-                + "<h3>METARs</h3>Coming soon<br>\n"
-                + "<h3>TAFs</h3>Coming soon\n"
-                + "<h3>PIREPs</h3>Coming soon\n"
+                + "<h3>METARs</h3><br>\n"
+                + "<form id='metartable' readonly></form>\n"
+                + "<h3>TAFs</h3>\n"
+                + "<form id='taftable' readonly></form>\n"
+                + "<h3>PIREPs</h3>\n"
+                + "<form id='pireptable' readonly></form>\n"
                 /*
                  * Images
                  */

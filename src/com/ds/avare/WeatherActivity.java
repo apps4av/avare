@@ -137,6 +137,7 @@ public class WeatherActivity extends Activity {
             mService.registerGpsListener(mGpsInfc);
             if(mIsPageLoaded == false) {
                 mWebView.loadData(ContentGenerator.makeContentImage(getApplicationContext(), mService), "text/html", null);
+                mWebView.addJavascriptInterface(new WebAppInterface(getApplicationContext(), mService), "Android");
             }
             mIsPageLoaded = true;
 

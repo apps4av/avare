@@ -163,4 +163,9 @@ public class DataSource {
     public LinkedList<String> findFilesToDelete(String name) {
         return dbHelper.findFilesToDelete(name);        
     }
+    
+    public String findAirportLonLat(String name) {
+        return dbHelper.findAirportLonLat(name);          
+    }
+
 }
