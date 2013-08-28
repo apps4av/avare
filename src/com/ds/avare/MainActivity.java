@@ -21,15 +21,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
@@ -42,8 +39,6 @@ import android.widget.TextView;
 public class MainActivity extends TabActivity {
 
     TabHost mTabHost;
-    ImageView mLeft;
-    ImageView mRight;
     float    mTabHeight;
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
@@ -62,8 +57,6 @@ public class MainActivity extends TabActivity {
                 
         setContentView(R.layout.main);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
-        mLeft = (ImageView)findViewById(R.id.tabs_view_left);
-        mRight = (ImageView)findViewById(R.id.tabs_view_right);
         ViewTreeObserver vto = mScrollView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -74,36 +67,6 @@ public class MainActivity extends TabActivity {
 
             }
         });        
-        
-        if(mScrollWidth == 0) {
-            mRight.setVisibility(View.INVISIBLE);
-            mLeft.setVisibility(View.INVISIBLE);
-        }
-
-        /*
-         * Show arrows on left or right based on scroll of tabs
-         */
-        mScrollView.setOnTouchListener(new OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                
-                if(mScrollView.getScrollX() > 0) {
-                     mLeft.setVisibility(View.VISIBLE); 
-                }
-                else {
-                      mLeft.setVisibility(View.INVISIBLE);                    
-                }
-                
-                if(mScrollView.getScrollX() == mScrollWidth) {
-                     mRight.setVisibility(View.INVISIBLE);
-                }
-                else {
-                     mRight.setVisibility(View.VISIBLE);
-                }
-                return false;
-            }
-        });
-
         
         /*
          * Start service now, bind later. This will be no-op if service is already running

@@ -818,15 +818,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     /**
      * Find the lat/lon of an airport
-     * @param names
+     * @param name
+     * @param type
      * @return
      */
-    public String findAirportLonLat(String name) {
+    public String findLonLat(String name, String type) {
 
+        String table = null;
+        if(type.equals(Destination.BASE)) {
+            table = TABLE_AIRPORTS;
+        }
+        else if(type.equals(Destination.NAVAID)) {
+            table = TABLE_NAV;
+        }
+        else if(type.equals(Destination.FIX)) {
+            table = TABLE_FIX;
+        }
+        
+        if(null == table) {
+            return null;
+        }
+        
         /*
          * Find with sqlite query
          */
-        String qry = "select * from " + TABLE_AIRPORTS + 
+        String qry = "select * from " + table + 
                 " where " + LOCATION_ID_DB + "=='" + name + "';";
         Cursor cursor = doQuery(qry);
         String ret = null;

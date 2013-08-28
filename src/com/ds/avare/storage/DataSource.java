@@ -164,8 +164,8 @@ public class DataSource {
         return dbHelper.findFilesToDelete(name);        
     }
     
-    public String findAirportLonLat(String name) {
-        return dbHelper.findAirportLonLat(name);          
+    public String findLonLat(String name, String type) {
+        return dbHelper.findLonLat(name, type);          
     }
 
 }

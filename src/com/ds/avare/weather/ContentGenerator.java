@@ -140,7 +140,9 @@ public class ContentGenerator {
                 + "var table=document.getElementById('pireptable');\n"
                 + "table.innerHTML=Android.getPIREPS(plan);\n"
                 + "}\n"
-                + "function getData() {getMETARs(); getTAFs(); getPIREPS()}\n"
+                + "function getData() {\n"
+                + "getMETARs(); getTAFs(); getPIREPS();\n"
+                + "}\n"
                 /*
                  * On start set time
                  */

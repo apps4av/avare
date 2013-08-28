@@ -166,7 +166,7 @@ public class PlanActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                
+
                 /*
                  * On click, find destination that was pressed on in view
                  */
@@ -180,11 +180,13 @@ public class PlanActivity extends Activity {
                 for(int i = 0; i < mIndex; i++) {
                     mService.getPlan().setPassed(i);
                 }
-                /*
-                 * Set everything after this as not yet passed.
-                 */
-                for(int i = mIndex; i < mService.getPlan().getDestinationNumber(); i++) {
-                    mService.getPlan().setNotPassed(i);
+                if(mIndex >= 0) {
+                    /*
+                     * Set everything after this as not yet passed.
+                     */
+                    for(int i = mIndex; i < mService.getPlan().getDestinationNumber(); i++) {
+                        mService.getPlan().setNotPassed(i);
+                    }
                 }
                 mIndex = -1;
                 ((MainActivity) PlanActivity.this.getParent()).switchTab(0);
@@ -220,9 +222,9 @@ public class PlanActivity extends Activity {
                     /*
                      * Separate by >
                      */
-                    planStr += p.getDestination(i).getID() + ">";
+                    planStr += p.getDestination(i).getID() + "(" + p.getDestination(i).getType() + ")" +  ">";
                 }
-                planStr += p.getDestination(num - 1).getID();
+                planStr += p.getDestination(num - 1).getID() + "(" + p.getDestination(num - 1).getType() + ")";
                 mPref.addToPlans(planStr);
                 prepareAdapterSave();
             }   
@@ -331,12 +333,7 @@ public class PlanActivity extends Activity {
      * 
      * @param dst
      */
-    private void planTo(String dst) {
-        String type = Destination.BASE;
-        if(dst.contains("&")) {
-            type = Destination.GPS;
-        }
-
+    private void planTo(String dst, String type) {
         /*
          * Add to plan
          */
@@ -414,9 +411,14 @@ public class PlanActivity extends Activity {
                             mService.newPlan();
                             mService.getPlan().makeInactive();
                             String item = mPlanSaveAdapter.getItem(mxindex).toString();
-                            String tokens[] = item.split(">");
+                            String tokens[] = item.split("\\)>");
                             for(int i = 0; i < tokens.length; i++) {
-                                planTo(tokens[i]);
+                                tokens[i] = tokens[i].replaceAll("\\)", "");
+                                String pair[] = tokens[i].split("\\(");
+                                if(pair.length < 2) {
+                                    continue;
+                                }
+                                planTo(pair[0], pair[1]);
                             }
                             prepareAdapter();
                             mPlan.setAdapter(mPlanAdapter);            

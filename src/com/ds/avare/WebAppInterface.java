@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
@@ -47,18 +48,25 @@ public class WebAppInterface {
         if(plan.equals("")) {
             return("");
         }
-        String places[] = plan.split(">");
+        
         String query = "";
-        /*
-         * Non GPS waypoints must be converted to GPS.
-         */
-        for(int i = 0; i < places.length; i++) {
-            if(!places[i].contains("&")) {
-                query += mService.getDBResource().findAirportLonLat(places[i]) + ";";
+        
+        String tokens[] = plan.split("\\)>");
+        for(int i = 0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].replaceAll("\\)", "");
+            String pair[] = tokens[i].split("\\(");
+            if(pair.length < 2) {
+                continue;
+            }
+            if(!pair[1].equals(Destination.GPS)) {
+                String lonlat = mService.getDBResource().findLonLat(pair[0], pair[1]) + ";";
+                if(null != lonlat) {
+                    query += lonlat;
+                }
             }
             else {
-                String latlon[] = places[i].split("&");
-                query += latlon[1] + "," +latlon[0] + ";";
+                String latlon[] = pair[0].split("&");
+                query += latlon[1] + "," + latlon[0] + ";";
             }
         }
 
