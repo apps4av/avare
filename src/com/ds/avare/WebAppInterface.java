@@ -144,6 +144,7 @@ public class WebAppInterface {
             for(int i = 0; i < outm.length; i++) {
                 String taf = WeatherHelper.formatWeatherHTML(outm[i]);
                 String vals[] = taf.split(" ");
+                taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatWeatherTypeHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
                 html += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
                 html += "<font size='5' color='black'>" + taf + "<br></br>";
             }
