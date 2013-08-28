@@ -286,12 +286,12 @@ public class NetworkHelper {
      * @param plan
      * @return
      */
-    public static String getMETARPlan(String plan) {
+    public static String getMETARPlan(String plan, String miles) {
         
         String query = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=metars"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
-                + "&flightPath=50;" + plan;
+                + "&flightPath=" + miles + ";" + plan;
         /*
          * Get TAF
          */
@@ -350,12 +350,12 @@ public class NetworkHelper {
      * @param plan
      * @return
      */
-    public static String getTAFPlan(String plan) {
+    public static String getTAFPlan(String plan, String miles) {
         
         String query = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
-                + "&flightPath=50;" + plan;
+                + "&flightPath=" + miles + ";" + plan;
         /*
          * Get TAF
          */
@@ -406,12 +406,12 @@ public class NetworkHelper {
      * @param plan
      * @return
      */
-    public static String getPIREPSPlan(String plan) {
+    public static String getPIREPSPlan(String plan, String miles) {
         
         String query = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=12" 
-                + "&flightPath=50;" + plan;
+                + "&flightPath=" + miles + ";" + plan;
         /*
          * Get PIREPS
          */

@@ -109,7 +109,7 @@ public class WebAppInterface {
      * Get weather data async
      */
     @JavascriptInterface
-    public void getWeather(String plan) {
+    public void getWeather(String plan, String miles) {
         mHtmlTaf = "";
         mHtmlPirep = "";
         mHtmlMetar = "";
@@ -119,33 +119,9 @@ public class WebAppInterface {
             }
         }
         mWeatherTask = new WeatherTask();
-        mWeatherTask.execute(plan);
+        mWeatherTask.execute(plan, miles);
     }
 
-
-    /** 
-     * Get weather data TAF
-     */
-    @JavascriptInterface
-    public String getTAFs() {
-        return mHtmlTaf;
-    }
-
-    /** 
-     * Get weather data METAR
-     */
-    @JavascriptInterface
-    public String getMETARs() {
-        return mHtmlMetar;
-    }
-
-    /** 
-     * Get weather data PIREPS
-     */
-    @JavascriptInterface
-    public String getPIREPS() {
-        return mHtmlPirep;
-    }
 
     /**
      * @author zkhan
@@ -161,6 +137,7 @@ public class WebAppInterface {
         protected Boolean doInBackground(String... input) {
             
             String plan = (String)input[0];
+            String miles = (String)input[1];
             String planf = getPlan(plan);
             if(planf.equals("")) {
                 return false;
@@ -174,7 +151,7 @@ public class WebAppInterface {
              *  Get PIREP
              */
             try {
-                String out = NetworkHelper.getPIREPSPlan(planf);
+                String out = NetworkHelper.getPIREPSPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     mHtmlPirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
@@ -188,7 +165,7 @@ public class WebAppInterface {
                 /*
                  *  Get TAFs 
                  */
-                String out = NetworkHelper.getTAFPlan(planf);
+                String out = NetworkHelper.getTAFPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i]);
@@ -206,7 +183,7 @@ public class WebAppInterface {
                 /*
                  * 
                  */
-                String out = NetworkHelper.getMETARPlan(planf);
+                String out = NetworkHelper.getMETARPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     String vals[] = outm[i].split(",");
@@ -219,6 +196,10 @@ public class WebAppInterface {
             catch(Exception e) {
                 mHtmlMetar = mContext.getString(R.string.WeatherError);
             }
+
+            mHtmlMetar = mHtmlMetar.replaceAll("'", "\"");
+            mHtmlTaf = mHtmlTaf.replaceAll("'", "\"");
+            mHtmlPirep = mHtmlPirep.replaceAll("'", "\"");
             return true;
         }
         
@@ -227,7 +208,15 @@ public class WebAppInterface {
          */
         @Override
         protected void onPostExecute(Boolean result) {
-            mWebView.loadUrl("javascript:updateData();");
+            /*
+             * Must run on UI thread!
+             */
+            String load = "javascript:updateData(" + 
+                    "'" + mHtmlMetar + "'" + "," + 
+                    "'" + mHtmlTaf + "'" + "," +
+                    "'" + mHtmlPirep + "'" + 
+                    ");";            
+            mWebView.loadUrl(load);
         }
     }
 
