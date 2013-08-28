@@ -12,13 +12,16 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 /**
  * 
@@ -29,13 +32,24 @@ public class WebAppInterface {
     Context mContext;
     StorageService mService; 
     Preferences mPref;
+    String mHtmlPirep;
+    String mHtmlMetar;
+    String mHtmlTaf;
+    WeatherTask mWeatherTask;
+    WebView mWebView;
+    
 
     /** 
      * Instantiate the interface and set the context
      */
-    WebAppInterface(Context c, StorageService s) {
+    WebAppInterface(Context c, StorageService s, WebView v) {
         mContext = c;
         mService = s;
+        mWebView = v;
+        mHtmlPirep = "";
+        mHtmlTaf = "";
+        mWeatherTask = null;
+        mHtmlMetar = "";
         mPref = new Preferences(c);
     }
 
@@ -92,96 +106,130 @@ public class WebAppInterface {
     }
 
     /** 
-     * Show METARS
+     * Get weather data async
      */
     @JavascriptInterface
-    public String getMETARs(String plan) {
-      
-        String planf = getPlan(plan);
-        if(planf.equals("")) {
-            return "";
-        }
-        
-        String html = "";
-        try {
-            /*
-             * 
-             */
-            String out = NetworkHelper.getMETARPlan(planf);
-            String outm[] = out.split("::::");
-            for(int i = 0; i < outm.length; i++) {
-                String vals[] = outm[i].split(",");
-                String vals2[] = vals[1].split(" ");
-                String color = WeatherHelper.metarColorString(vals[0]);
-                html += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                html += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
+    public void getWeather(String plan) {
+        mHtmlTaf = "";
+        mHtmlPirep = "";
+        mHtmlMetar = "";
+        if(mWeatherTask != null) {
+            if(mWeatherTask.getStatus() != AsyncTask.Status.FINISHED) {
+                mWeatherTask.cancel(true);
             }
         }
-        catch(Exception e) {
-            
-        }
-        return (html);
+        mWeatherTask = new WeatherTask();
+        mWeatherTask.execute(plan);
     }
-    
+
+
     /** 
-     * Show TAFS
+     * Get weather data TAF
      */
     @JavascriptInterface
-    public String getTAFs(String plan) {
-      
-        String planf = getPlan(plan);
-        if(planf.equals("")) {
-            return "";
-        }
-       
-        String html = "";
-        try {
-            /*
-             *  Get TAFs 
-             */
-            String out = NetworkHelper.getTAFPlan(planf);
-            String outm[] = out.split("::::");
-            for(int i = 0; i < outm.length; i++) {
-                String taf = WeatherHelper.formatWeatherHTML(outm[i]);
-                String vals[] = taf.split(" ");
-                taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatWeatherTypeHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
-                html += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
-                html += "<font size='5' color='black'>" + taf + "<br></br>";
-            }
-        }
-        catch(Exception e) {
-            
-        }
-        
-        return (html);
+    public String getTAFs() {
+        return mHtmlTaf;
     }
-    
+
     /** 
-     * Show PIREPS
+     * Get weather data METAR
      */
     @JavascriptInterface
-    public String getPIREPS(String plan) {
-      
-        String planf = getPlan(plan);
-        if(planf.equals("")) {
-            return "";
-        }
-        
-        /*
-         *  Get TAFs 
+    public String getMETARs() {
+        return mHtmlMetar;
+    }
+
+    /** 
+     * Get weather data PIREPS
+     */
+    @JavascriptInterface
+    public String getPIREPS() {
+        return mHtmlPirep;
+    }
+
+    /**
+     * @author zkhan
+     *
+     */
+    private class WeatherTask extends AsyncTask<String, Void, Boolean> {
+
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
          */
-        String html = "";
-        try {
-            String out = NetworkHelper.getPIREPSPlan(planf);
-            String outm[] = out.split("::::");
-            for(int i = 0; i < outm.length; i++) {
-                html += "<font size='5' color='black'>" + outm[i] + "<br></br>";
-            }
-        }
-        catch(Exception e) {
+        @Override
+        protected Boolean doInBackground(String... input) {
             
+            String plan = (String)input[0];
+            String planf = getPlan(plan);
+            if(planf.equals("")) {
+                return false;
+            }
+            
+            if(null == mService) {
+                return false;
+            }
+
+            /*
+             *  Get PIREP
+             */
+            try {
+                String out = NetworkHelper.getPIREPSPlan(planf);
+                String outm[] = out.split("::::");
+                for(int i = 0; i < outm.length; i++) {
+                    mHtmlPirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+                }
+            }
+            catch(Exception e) {
+                mHtmlPirep = mContext.getString(R.string.WeatherError);
+            }
+
+            try {
+                /*
+                 *  Get TAFs 
+                 */
+                String out = NetworkHelper.getTAFPlan(planf);
+                String outm[] = out.split("::::");
+                for(int i = 0; i < outm.length; i++) {
+                    String taf = WeatherHelper.formatWeatherHTML(outm[i]);
+                    String vals[] = taf.split(" ");
+                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatWeatherTypeHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
+                    mHtmlTaf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
+                    mHtmlTaf += "<font size='5' color='black'>" + taf + "<br></br>";
+                }
+            }
+            catch(Exception e) {
+                mHtmlTaf = mContext.getString(R.string.WeatherError);
+            }
+            
+            try {
+                /*
+                 * 
+                 */
+                String out = NetworkHelper.getMETARPlan(planf);
+                String outm[] = out.split("::::");
+                for(int i = 0; i < outm.length; i++) {
+                    String vals[] = outm[i].split(",");
+                    String vals2[] = vals[1].split(" ");
+                    String color = WeatherHelper.metarColorString(vals[0]);
+                    mHtmlMetar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
+                    mHtmlMetar += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
+                }
+            }
+            catch(Exception e) {
+                mHtmlMetar = mContext.getString(R.string.WeatherError);
+            }
+            return true;
         }
         
-        return (html);
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            mWebView.loadUrl("javascript:updateData();");
+        }
     }
+
+
 }

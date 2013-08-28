@@ -51,6 +51,8 @@ public class WeatherActivity extends Activity {
      */
     private boolean mIsPageLoaded;
 
+    private Context mContext;
+    
     /**
      * App preferences
      */
@@ -102,6 +104,7 @@ public class WeatherActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mContext = this;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.weather, null);
@@ -136,8 +139,8 @@ public class WeatherActivity extends Activity {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
             if(mIsPageLoaded == false) {
-                mWebView.loadData(ContentGenerator.makeContentImage(getApplicationContext(), mService), "text/html", null);
-                mWebView.addJavascriptInterface(new WebAppInterface(getApplicationContext(), mService), "Android");
+                mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
+                mWebView.addJavascriptInterface(new WebAppInterface(mContext, mService, mWebView), "Android");
             }
             mIsPageLoaded = true;
 

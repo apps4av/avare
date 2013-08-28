@@ -150,4 +150,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Save">&quot;Save&quot;</string>
     <string name="SavedPlan">&quot;Saved Plans&quot;</string>
     <string name="Load">&quot;Load&quot;</string>
+    <string name="WeatherError">&quot;Could not download weather data&quot;</string>
 </resources>
