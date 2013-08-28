@@ -424,6 +424,27 @@ public class PlanActivity extends Activity {
                             mPlan.setAdapter(mPlanAdapter);            
                         }
                     });
+                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.LoadReverse), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            mService.newPlan();
+                            mService.getPlan().makeInactive();
+                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
+                            String tokens[] = item.split("\\)>");
+                            for(int i = tokens.length - 1; i >= 0; i--) {
+                                tokens[i] = tokens[i].replaceAll("\\)", "");
+                                String pair[] = tokens[i].split("\\(");
+                                if(pair.length < 2) {
+                                    continue;
+                                }
+                                planTo(pair[0], pair[1]);
+                            }
+                            prepareAdapter();
+                            mPlan.setAdapter(mPlanAdapter);            
+                        }
+                    });
                     mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), new DialogInterface.OnClickListener() {
                         /* (non-Javadoc)
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
