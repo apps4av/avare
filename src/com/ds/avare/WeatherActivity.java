@@ -26,10 +26,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 
 /**
  * @author zkhan Main activity
@@ -40,6 +46,11 @@ public class WeatherActivity extends Activity {
      * This view display location on the map.
      */
     private WebView mWebView;
+    private EditText mSearchText;
+    private Button mNextButton;
+    private Button mLastButton;
+    private ProgressBar mProgressBar;
+
 
     /**
      * Service that keeps state even when activity is dead
@@ -109,8 +120,65 @@ public class WeatherActivity extends Activity {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.weather, null);
         setContentView(view);
-        mWebView = (WebView) view.findViewById(R.id.weather_mainpage);
+        mWebView = (WebView)view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
+
+        /*
+         * Progress bar
+         */
+        mProgressBar = (ProgressBar)(view.findViewById(R.id.weather_progress_bar));
+
+        /*
+         * For searching, start search on every new key press
+         */
+        mSearchText = (EditText)view.findViewById(R.id.weather_edit_text);
+        mSearchText.addTextChangedListener(new TextWatcher() { 
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+    
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+    
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int after) {
+                
+                /*
+                 * If text is 0 length or too long, then do not search, show last list
+                 */
+                if(s.length() < 3) {
+                    mWebView.clearMatches();
+                    return;
+                }
+
+                mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                mWebView.findAll(s.toString());
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+            }
+        });
+
+        mNextButton = (Button)view.findViewById(R.id.weather_button_next);
+        mNextButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(true);
+            }
+            
+        });
+
+
+        mLastButton = (Button)view.findViewById(R.id.weather_button_last);
+        mLastButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(false);
+            }
+            
+        });
 
         mService = null;
         mIsPageLoaded = false;
@@ -236,5 +304,5 @@ public class WeatherActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
     }
-
+    
 }

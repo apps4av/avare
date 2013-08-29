@@ -130,7 +130,11 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatTafHTML(String weather) {
+    public static String formatTafHTML(String weatherAll) {
+
+        String strip[] = weatherAll.split("RMK");
+        String weather = strip[0];
+
         /*
          * Qualifiers
          */
@@ -200,6 +204,13 @@ public class WeatherHelper {
         weather = weather.replaceAll("QNH", "QNH(Minimum Altimeter)");
         weather = weather.replaceAll("INS", "INS(Inches)");
 
+        for(int i = 1 ; i < strip.length; i++) {
+            
+            String weather1 = strip[i];
+            
+            weather += " RMK(Remark) " + weather1;
+        }
+
         return weather;
     }
 
@@ -212,7 +223,6 @@ public class WeatherHelper {
         
         String strip[] = weatherAll.split("RMK");
         String weather = strip[0];
-        
         
         /*
          * Remarks

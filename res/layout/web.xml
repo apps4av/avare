@@ -17,7 +17,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     
         <Button
-            android:id="@+id/weather_button_last"
+            android:id="@+id/web_button_last"
             android:contentDescription="@string/Last"
             android:drawableLeft="@drawable/left"
             android:layout_width="40dp"
@@ -26,19 +26,19 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"/>
             
         <EditText
-	        android:id="@+id/weather_edit_text"
-	        android:layout_height="wrap_content"
-	        android:ems="10"
+            android:id="@+id/web_edit_text"
+            android:layout_height="wrap_content"
+            android:ems="10"
             android:layout_marginRight="40dp"
             android:layout_marginLeft="40dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
-	        android:layout_width="wrap_content"
-	        android:hint="@string/Search"
-	        android:inputType="textNoSuggestions" />
+            android:layout_width="wrap_content"
+            android:hint="@string/Search"
+            android:inputType="textNoSuggestions" />
         
         <Button
-            android:id="@+id/weather_button_next"
+            android:id="@+id/web_button_next"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_width="40dp"
@@ -46,18 +46,18 @@ Redistribution and use in source and binary forms, with or without modification,
             android:contentDescription="@string/Next"
             android:layout_height="wrap_content"/>
         
-	    <WebView
-		    android:background="#FF000000"
-		    android:id="@+id/weather_mainpage"
+        <WebView
+            android:background="#FF000000"
+            android:id="@+id/web_mainpage"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-		    android:layout_below="@+id/weather_edit_text"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>
+            android:layout_below="@+id/web_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         
         <ProgressBar
-            android:id="@+id/weather_progress_bar"
+            android:id="@+id/web_progress_bar"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,6 +67,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_marginRight="50dp"
             android:layout_marginTop="14dp" />
     
-	    
+        
 </RelativeLayout>
 

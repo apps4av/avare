@@ -22,6 +22,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.EditText;
 
 /**
  * 
@@ -29,12 +30,11 @@ import android.webkit.WebView;
  * This class feeds the WebView with data
  */
 public class WebAppInterface {
-    Context mContext;
-    StorageService mService; 
-    Preferences mPref;
-    WeatherTask mWeatherTask;
-    WebView mWebView;
-    
+    private Context mContext;
+    private StorageService mService; 
+    private WeatherTask mWeatherTask;
+    private WebView mWebView;
+
 
     /** 
      * Instantiate the interface and set the context
@@ -44,7 +44,6 @@ public class WebAppInterface {
         mService = s;
         mWebView = v;
         mWeatherTask = null;
-        mPref = new Preferences(c);
     }
 
     /** 

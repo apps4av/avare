@@ -15,9 +15,18 @@ package com.ds.avare;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 
 /**
  * @author zkhan
@@ -25,6 +34,12 @@ import android.webkit.WebView;
  */
 public class WebActivity extends Activity  {
     
+    private WebView mWebView;
+    private EditText mSearchText;
+    private Button mNextButton;
+    private Button mLastButton;
+    private ProgressBar mProgressBar;
+
     /*
      * Show views from web
      */
@@ -35,10 +50,68 @@ public class WebActivity extends Activity  {
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         
-        WebView wv;
-        wv = new WebView(this);
-        setContentView(wv);
-        wv.loadUrl(getIntent().getStringExtra("url"));
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.web, null);
+        setContentView(view);
+        mWebView = (WebView) view.findViewById(R.id.web_mainpage);
+        mWebView.loadUrl(getIntent().getStringExtra("url"));
+        /*
+         * Progress bar
+         */
+        mProgressBar = (ProgressBar)(view.findViewById(R.id.web_progress_bar));
+                
+        /*
+         * For searching, start search on every new key press
+         */
+        mSearchText = (EditText)view.findViewById(R.id.web_edit_text);
+        mSearchText.addTextChangedListener(new TextWatcher() { 
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+    
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+    
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int after) {
+                
+                /*
+                 * If text is 0 length or too long, then do not search, show last list
+                 */
+                if(s.length() < 3) {
+                    mWebView.clearMatches();
+                    return;
+                }
+
+                mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                mWebView.findAll(s.toString());
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+            }
+        });
+
+        mNextButton = (Button)view.findViewById(R.id.web_button_next);
+        mNextButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(true);
+            }
+            
+        });
+
+
+        mLastButton = (Button)view.findViewById(R.id.web_button_last);
+        mLastButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(false);
+            }
+            
+        });
+
     }    
     
     /**
@@ -50,4 +123,5 @@ public class WebActivity extends Activity  {
 
         Helper.setOrientationAndOn(this);
     }
+    
 }

@@ -147,6 +147,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WX">&quot;WX&quot;</string>
     <string name="Left">&quot;Left&quot;</string>
     <string name="Right">&quot;Right&quot;</string>
+    <string name="Next">&quot;Next&quot;</string>
+    <string name="Last">&quot;Last&quot;</string>
     <string name="Save">&quot;Save&quot;</string>
     <string name="SavedPlan">&quot;Saved Plans&quot;</string>
     <string name="Load">&quot;Load&quot;</string>
