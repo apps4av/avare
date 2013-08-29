@@ -81,10 +81,13 @@ public class WebAppInterface {
 
             String miles = "30";
             String planf = "";
+            String plan = "";
             int num = mService.getPlan().getDestinationNumber();
             for(int i = 0; i < num; i++) {
                 Location l = mService.getPlan().getDestination(i).getLocation();
                 planf += l.getLongitude() + "," + l.getLatitude() + ";";
+                plan += mService.getPlan().getDestination(i).getID() + "(" +
+                        mService.getPlan().getDestination(i).getType() + ") ";
             }
             if(planf.equals("")) {
                 return mContext.getString(R.string.WeatherPlan);
@@ -145,8 +148,8 @@ public class WebAppInterface {
                 Metar = mContext.getString(R.string.WeatherError);
             }
 
-            planf = "<font size='5' color='black'>" + planf + "</font><br></br>";
-            planf = "<form>" + planf.replaceAll("'", "\"") + "</form>" + planf;
+            plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
+            plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
             Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
             Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
             Taf = "<font size='6' color='black'>TAFs</font><br></br>" + Taf; 
@@ -154,7 +157,7 @@ public class WebAppInterface {
             Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
             Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
             
-            String weather = Metar + Taf + Pirep;
+            String weather = plan + Metar + Taf + Pirep;
 
             return weather;
         }
