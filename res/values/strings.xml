@@ -152,4 +152,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Load">&quot;Load&quot;</string>
     <string name="LoadReverse">&quot;Reverse Load&quot;</string>
     <string name="WeatherError">&quot;Could not download weather data&quot;</string>
+    <string name="WeatherPlan">&quot;Load a plan and press Update to get the latest route weather&quot;</string>
 </resources>

@@ -88,16 +88,11 @@ public class ContentGenerator {
                  */
                 + "function settext()\n"
                 + "{\n"
-                + "var img=document.getElementById('planimg');\n"
-                + "img.style.visibility = 'hidden';\n"
                 + "var txt=document.getElementById('timetxt');\n"
                 + "var now = new Date();"
                 + "var utc =  (now.getUTCMonth()) + 1 + '/' + now.getUTCDate() + ' ' + zeroPad(now.getUTCHours()) + '' + zeroPad(now.getUTCMinutes()) + ' UTC';\n"
                 + "txt.value=utc;\n"
-                + "var list=document.getElementById('plans');\n"
-                + "list.options.length=0;\n"
-                + "var pla=Android.getPlans();\n"
-                + "list.innerHTML=pla;"
+                + "getData();"
                 + "}\n"
                 /*
                  * LL weather prog
@@ -126,22 +121,14 @@ public class ContentGenerator {
                 + "function getData() {\n"
                 + "var img=document.getElementById('planimg');\n"
                 + "img.style.visibility = 'visible';\n"
-                + "var list=document.getElementById('plans');\n"
-                + "var plan=list.options[list.selectedIndex].value;\n"
-                + "var listmiles=document.getElementById('planmile');\n"
-                + "var miles=listmiles.options[listmiles.selectedIndex].value;\n"
-                + "Android.getWeather(plan, miles);\n"
+                + "Android.getWeather();\n"
                 + "}\n"
                 /*
                  * This function is called by Android async task, when done
                  */
-                + "function updateData(metar,taf,pirep) {\n"
-                + "var table=document.getElementById('pireptable');\n"
-                + "table.innerHTML=pirep;\n"
-                + "var table=document.getElementById('taftable');\n"
-                + "table.innerHTML=taf;\n"
-                + "var table=document.getElementById('metartable');\n"
-                + "table.innerHTML=metar;\n"
+                + "function updateData(weather) {\n"
+                + "var table = document.getElementById('plantable');\n"
+                + "table.innerHTML = weather;\n"
                 + "var img=document.getElementById('planimg');\n"
                 + "img.style.visibility = 'hidden';\n"
                 + "}\n"
@@ -155,19 +142,12 @@ public class ContentGenerator {
                  */
                 + "</head>\n"
                 + "<body>\n"
+                + "<h1>Plan Area</h1>\n"
                 + "<input type='text' id='timetxt' readonly>"
                 + "<button type='button' id='refreshbutton' onClick='refresh()' >Update</button>"
                 /*
                  * Plan
                  */
-                + "<h1>Plan Area</h1>\n"
-                + "<select id='plans' onChange='getData()'>\n"
-                + "</select><br>\n"
-                + "<select id='planmile'>\n"
-                + "<option value='10'>10 mile radius</option>\n"
-                + "<option value='50'>50 mile radius</option>\n"
-                + "<option value='100'>100 mile radius</option>\n"
-                + "</select><br>\n"
                 + "<img id='planimg' src='data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPDw8IqKiuDg4EZGRnp6e"
                 + "gAAAFhYWCQkJKysrL6+vhQUFJycnAQEBDY2NmhoaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 + "AAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAA"
@@ -196,13 +176,8 @@ public class ContentGenerator {
                 + "GZpEb7kaQBRlASPg0FQQHAbEEMGDSVEAA1QBhAED1E0NgwFAooCDWljaQIQCE5qMHcNhCkjIQAh+QQJCgAAACwAA"
                 + "AAAEAAQAAAFeSAgAgIpnOSoLgxxvqgKLEcCC65KEAByKK8cSpA4DAiHQ/DkKhGKh4ZCtCyZGo6F6iYYPAqFgYy02x"
                 + "kSaLEMV34tELyRYNEsCQyHlvWkGCzsPgMCEAY7Cg04Uk48LAsDhRA8MVQPEF0GAgqYYwSRlycNcWskCkApIyEAOwA"
-                + "AAAAAAAAAAA==' alt='Loading...' />"
-                + "<h3>METARs</h3>\n"
-                + "<form id='metartable' readonly></form>\n"
-                + "<h3>TAFs</h3>\n"
-                + "<form id='taftable' readonly></form>\n"
-                + "<h3>PIREPs</h3>\n"
-                + "<form id='pireptable' readonly></form>\n"
+                + "AAAAAAAAAAA==' alt='Loading...' />\n"
+                + "<form id='plantable' readonly></form>\n"
                 /*
                  * Images
                  */

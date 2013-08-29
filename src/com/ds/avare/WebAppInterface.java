@@ -13,13 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -32,9 +33,6 @@ public class WebAppInterface {
     Context mContext;
     StorageService mService; 
     Preferences mPref;
-    String mHtmlPirep;
-    String mHtmlMetar;
-    String mHtmlTaf;
     WeatherTask mWeatherTask;
     WebView mWebView;
     
@@ -46,80 +44,22 @@ public class WebAppInterface {
         mContext = c;
         mService = s;
         mWebView = v;
-        mHtmlPirep = "";
-        mHtmlTaf = "";
         mWeatherTask = null;
-        mHtmlMetar = "";
         mPref = new Preferences(c);
-    }
-
-    /**
-     * 
-     * @param plan
-     * @return
-     */
-    private String getPlan(String plan) {
-        if(plan.equals("")) {
-            return("");
-        }
-        
-        String query = "";
-        
-        String tokens[] = plan.split("\\)>");
-        for(int i = 0; i < tokens.length; i++) {
-            tokens[i] = tokens[i].replaceAll("\\)", "");
-            String pair[] = tokens[i].split("\\(");
-            if(pair.length < 2) {
-                continue;
-            }
-            if(!pair[1].equals(Destination.GPS)) {
-                String lonlat = mService.getDBResource().findLonLat(pair[0], pair[1]) + ";";
-                if(null != lonlat) {
-                    query += lonlat;
-                }
-            }
-            else {
-                String latlon[] = pair[0].split("&");
-                query += latlon[1] + "," + latlon[0] + ";";
-            }
-        }
-
-        if(query.equals("")) {
-            return("");
-        }
-
-        return query;
-    }
-
-    /** 
-     * Get plans list
-     */
-    @JavascriptInterface
-    public String getPlans() { 
-        String plans[] = mPref.getPlans();
-        String str = "<option value=''>Select a Plan</option>";
-        int i;
-        for(i = 0; i < plans.length; i++) {
-            str += "<option value='" + plans[i] + "'>" + plans[i] + "</option>";
-        }
-        return(str);
     }
 
     /** 
      * Get weather data async
      */
     @JavascriptInterface
-    public void getWeather(String plan, String miles) {
-        mHtmlTaf = "";
-        mHtmlPirep = "";
-        mHtmlMetar = "";
+    public void getWeather() {
         if(mWeatherTask != null) {
             if(mWeatherTask.getStatus() != AsyncTask.Status.FINISHED) {
                 mWeatherTask.cancel(true);
             }
         }
         mWeatherTask = new WeatherTask();
-        mWeatherTask.execute(plan, miles);
+        mWeatherTask.execute();
     }
 
 
@@ -127,24 +67,32 @@ public class WebAppInterface {
      * @author zkhan
      *
      */
-    private class WeatherTask extends AsyncTask<String, Void, Boolean> {
+    private class WeatherTask extends AsyncTask<String, Void, String> {
 
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected Boolean doInBackground(String... input) {
+        protected String doInBackground(String... input) {
             
-            String plan = (String)input[0];
-            String miles = (String)input[1];
-            String planf = getPlan(plan);
+            String Pirep = "";
+            String Metar = "";
+            String Taf = "";
+
+            String miles = "30";
+            String planf = "";
+            int num = mService.getPlan().getDestinationNumber();
+            for(int i = 0; i < num; i++) {
+                Location l = mService.getPlan().getDestination(i).getLocation();
+                planf += l.getLongitude() + "," + l.getLatitude() + ";";
+            }
             if(planf.equals("")) {
-                return false;
+                return mContext.getString(R.string.WeatherPlan);
             }
             
             if(null == mService) {
-                return false;
+                return mContext.getString(R.string.WeatherPlan);
             }
 
             /*
@@ -154,11 +102,11 @@ public class WebAppInterface {
                 String out = NetworkHelper.getPIREPSPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
-                    mHtmlPirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+                    Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
                 }
             }
             catch(Exception e) {
-                mHtmlPirep = mContext.getString(R.string.WeatherError);
+                Pirep = mContext.getString(R.string.WeatherError);
             }
 
             try {
@@ -171,12 +119,12 @@ public class WebAppInterface {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i]);
                     String vals[] = taf.split(" ");
                     taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatWeatherTypeHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
-                    mHtmlTaf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
-                    mHtmlTaf += "<font size='5' color='black'>" + taf + "<br></br>";
+                    Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
+                    Taf += "<font size='5' color='black'>" + taf + "<br></br>";
                 }
             }
             catch(Exception e) {
-                mHtmlTaf = mContext.getString(R.string.WeatherError);
+                Taf = mContext.getString(R.string.WeatherError);
             }
             
             try {
@@ -189,34 +137,42 @@ public class WebAppInterface {
                     String vals[] = outm[i].split(",");
                     String vals2[] = vals[1].split(" ");
                     String color = WeatherHelper.metarColorString(vals[0]);
-                    mHtmlMetar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    mHtmlMetar += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
+                    Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
+                    Metar += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
                 }
             }
             catch(Exception e) {
-                mHtmlMetar = mContext.getString(R.string.WeatherError);
+                Metar = mContext.getString(R.string.WeatherError);
             }
 
-            mHtmlMetar = mHtmlMetar.replaceAll("'", "\"");
-            mHtmlTaf = mHtmlTaf.replaceAll("'", "\"");
-            mHtmlPirep = mHtmlPirep.replaceAll("'", "\"");
-            return true;
+            planf = "<font size='5' color='black'>" + planf + "</font><br></br>";
+            planf = "<form>" + planf.replaceAll("'", "\"") + "</form>" + planf;
+            Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
+            Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
+            Taf = "<font size='6' color='black'>TAFs</font><br></br>" + Taf; 
+            Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
+            Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
+            Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
+            
+            String weather = Metar + Taf + Pirep;
+
+            return weather;
         }
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(String result) {
             /*
              * Must run on UI thread!
              */
-            String load = "javascript:updateData(" + 
-                    "'" + mHtmlMetar + "'" + "," + 
-                    "'" + mHtmlTaf + "'" + "," +
-                    "'" + mHtmlPirep + "'" + 
-                    ");";            
+            if(result.contains("'")) {
+                Log.d("------------", "invalid");
+            }
+            String load = "javascript:updateData('" + result + "');";
             mWebView.loadUrl(load);
+            
         }
     }
 
