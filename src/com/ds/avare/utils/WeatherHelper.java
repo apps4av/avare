@@ -245,6 +245,44 @@ public class WeatherHelper {
         return output;
     }
     
+    /**
+     * Color code PIREPs
+     * @param weather
+     * @return
+     */
+    public static String formatPirepHTML(String weather) {
+        weather = weather.replaceAll("UA", "UA(Upper Air)");
+        weather = weather.replaceAll("UUA", "UUA(Urgent)");
+        weather = weather.replaceAll("/OV", "/OV(Location)");
+        weather = weather.replaceAll("/TM", "/TM(Time UTC)");
+        weather = weather.replaceAll("/FL", "/FL(Altimeter MSL)");
+        weather = weather.replaceAll("UNKN", "UNKN(Unknown)");
+        weather = weather.replaceAll("DURC", "DURC(During Climb)");
+        weather = weather.replaceAll("DURD", "DURD(During Descent)");
+        weather = weather.replaceAll("/TP", "/TP(Aircraft Type)");
+        weather = weather.replaceAll("/SK", "/SK(Sky Condition)");
+        weather = weather.replaceAll("SKC", "SKC(Sky Clear)");
+        weather = weather.replaceAll("BKN", "BKN(Broken)");
+        weather = weather.replaceAll("SCT", "SCT(Scattered)");
+        weather = weather.replaceAll("OVC", "OVC(Overcast)");
+        weather = weather.replaceAll("/WX", "/WX(Weather)");
+        weather = weather.replaceAll("/TA", "/TA(Temperature)");
+        weather = weather.replaceAll("/WV", "/WV(Wind Velocity)");
+        weather = weather.replaceAll("/IAS", "/IAS(Indicated Airspeed)");
+        weather = weather.replaceAll("/IC", "/IC(Ice)");
+        weather = weather.replaceAll("CLR", "CLR(Clear)");
+        weather = weather.replaceAll("MXD", "MXD(Mixed)");
+        weather = weather.replaceAll("RIM", "RIM(Rime)");
+        weather = weather.replaceAll("TRC", "TRC(Trace)");
+        weather = weather.replaceAll("MOD", "MOD(Moderate)");
+        weather = weather.replaceAll("LGT", "LGT(Light)");
+        weather = weather.replaceAll("SVR", "SVR(Severe)");
+        weather = weather.replaceAll("HVY", "HVY(Heavy)");
+        weather = weather.replaceAll("/RM", "/RM(Remarks)");
+        weather = weather.replaceAll("/TB", "TB(Turbulence)");
+
+        return weather;
+    }
     
     /**
      * Color code winds

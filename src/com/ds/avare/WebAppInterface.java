@@ -20,7 +20,6 @@ import com.ds.avare.utils.WeatherHelper;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -102,6 +101,7 @@ public class WebAppInterface {
                 String out = NetworkHelper.getPIREPSPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
+                    outm[i] = WeatherHelper.formatPirepHTML(outm[i]);
                     Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
                 }
             }
@@ -167,9 +167,6 @@ public class WebAppInterface {
             /*
              * Must run on UI thread!
              */
-            if(result.contains("'")) {
-                Log.d("------------", "invalid");
-            }
             String load = "javascript:updateData('" + result + "');";
             mWebView.loadUrl(load);
             
