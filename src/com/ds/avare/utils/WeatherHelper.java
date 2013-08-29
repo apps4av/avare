@@ -130,7 +130,7 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatWeatherTypeHTML(String weather) {
+    public static String formatTafHTML(String weather) {
         /*
          * Qualifiers
          */
@@ -148,6 +148,9 @@ public class WeatherHelper {
         weather = weather.replaceAll("TS", "<font color='red'>TS(Thunderstorm)<font color='black'>");
         weather = weather.replaceAll("FZ", "<font color='red'>FZ(Freezing)<font color='black'>");
         weather = weather.replaceAll("PR", "<font color='blue'>PR(Partial)<font color='black'>");
+        weather = weather.replaceAll("AMD", "AMD(Amended)");
+        weather = weather.replaceAll("WSCONDS", "WSCONDS(Wind Shear Possible)");
+        
         /*
          * Precip
          */
@@ -192,10 +195,126 @@ public class WeatherHelper {
         weather = weather.replaceAll("VV", "<font color='red'>VV(Vertical Visibility)<font color='black'>");
         weather = weather.replaceAll("CB", "<font color='red'>CB(Cumulonimbus)<font color='black'>");
         weather = weather.replaceAll("WS", "<font color='magenta'>WS(Wind Shear)<font color='black'>");
+        
+        weather = weather.replaceAll(" 9999 ", " 9999(Visibility > 7SM) ");
+        weather = weather.replaceAll("QNH", "QNH(Minimum Altimeter)");
+        weather = weather.replaceAll("INS", "INS(Inches)");
 
         return weather;
     }
-    
+
+    /**
+     * Color code winds
+     * @param weather
+     * @return
+     */
+    public static String formatMetarHTML(String weatherAll) {
+        
+        String strip[] = weatherAll.split("RMK");
+        String weather = strip[0];
+        
+        
+        /*
+         * Remarks
+         */
+        weather = weather.replaceAll("\\+", "+(Heavy)");
+        weather = weather.replaceAll("\\-", "-(Light)");
+        weather = weather.replaceAll("IR", "IR(Runway Ice)");
+        weather = weather.replaceAll("WR", "WR(Wet Runway)");
+        weather = weather.replaceAll("LSR", "LSR(Loose Runway Snow)");
+        weather = weather.replaceAll("PSR", "PSR(Packed Runway Snow)");
+        weather = weather.replaceAll("LTG", "LTG(Lightning)");
+        weather = weather.replaceAll("TCU","TCU(Towering Cumulus)");
+        weather = weather.replaceAll("VRB", "VRB(Variable)");
+        
+        weather = weather.replaceAll("AUTO", "AUTO(Automated)");
+        weather = weather.replaceAll("COR", "COR(Corrected)");
+        weather = weather.replaceAll(" 9999 ", " 9999(Visibility > 7SM) ");
+        weather = weather.replaceAll("SPECI", "SPECI(Special)");
+        
+        /*
+         * Description
+         */
+        weather = weather.replaceAll("MI", "MI(Shallow)");
+        weather = weather.replaceAll("BC", "BC(Patches)");
+        weather = weather.replaceAll("DR", "DR(Low Drifting)");
+        weather = weather.replaceAll("BL", "BL(BLowing)");
+        weather = weather.replaceAll("SH", "SH(Showers)");
+        weather = weather.replaceAll("TS", "TS(Thunderstorm)");
+        weather = weather.replaceAll("FZ", "FZ(Freezing)");
+        weather = weather.replaceAll("PR", "PR(Partial)");
+        /*
+         * Precip
+         */
+        weather = weather.replaceAll("DZ", "DZ(Drizzle)");
+        weather = weather.replaceAll("RA ", "RA (Rain)");
+        weather = weather.replaceAll("SN", "SN(Snow)");
+        weather = weather.replaceAll("SG", "SG(Snow Grains)");
+        weather = weather.replaceAll("IC", "IC(Ice Crystals)");
+        weather = weather.replaceAll("PL", "PL(Ice Pellets)");
+        weather = weather.replaceAll("GR", "GR(Hail)");
+        weather = weather.replaceAll("GS", "GS(Small Hail)");
+        weather = weather.replaceAll("UP", "UP(Unknown Precip.)");
+
+        /*
+         * Obstruction
+         */
+        weather = weather.replaceAll("BR", "BR(Mist)");
+        weather = weather.replaceAll("FG", "FG(Fog)");
+        weather = weather.replaceAll("FU", "FU(Smoke)");
+        weather = weather.replaceAll("DU", "DU(Dust)");
+        weather = weather.replaceAll("SA", "SA(Sand)");
+        weather = weather.replaceAll("HZ", "HZ(Haze)");
+        weather = weather.replaceAll("PY", "PY(Spray)");
+        weather = weather.replaceAll("VA", "VA(Volcanic Ash)");
+
+        /*
+         * Other
+         */
+        weather = weather.replaceAll("SQ", "SQ(Squalls)");
+        weather = weather.replaceAll("FC", "FC(Funnel Cloud)");
+        weather = weather.replaceAll("SS", "SS(Sand Storm)");
+        weather = weather.replaceAll("DS", "DS(Dust Storm)");
+        weather = weather.replaceAll(" VC", " VC(In Vicinity)");
+
+        weather = weather.replaceAll("SKC", "SKC(Sky Clear)");
+        weather = weather.replaceAll("CLR", "CLR(Sky Clear)");
+        weather = weather.replaceAll("BKN", "BKN(Broken)");
+        weather = weather.replaceAll("SCT", "SCT(Scattered)");
+        weather = weather.replaceAll("OVC", "OVC(Overcast)");
+        weather = weather.replaceAll("PROB", "PROB(Probibility%)");
+        weather = weather.replaceAll("VV", "VV(Vertical Visibility)");
+        weather = weather.replaceAll("CB", "CB(Cumulonimbus)");
+        weather = weather.replaceAll("WS", "WS(Wind Shear)");
+
+        /*
+         * These are remarks
+         */
+        
+        for(int i = 1 ; i < strip.length; i++) {
+        
+            String weather1 = strip[i];
+            
+            weather1 = weather1.replaceAll("AO", "AO(Station Type)");
+            weather1 = weather1.replaceAll("RAB", "RAB(Rain Began)");
+            weather1 = weather1.replaceAll("RAE", "RAE(Rain Ended)");
+            weather1 = weather1.replaceAll("CIG", "CIG(Variable Ceiling)");
+            weather1 = weather1.replaceAll("SLP", "SLP(Sea Level Pressure)");
+            weather1 = weather1.replaceAll("RVRNO","RVRNO(No RVR reported)");
+            weather1 = weather1.replaceAll("NOSIG", "NOSIG(No Significant Change Expected)");
+            weather1 = weather1.replaceAll("TSNO", "TSNO(Thunderstom Info Not Available)");
+            weather1 = weather1.replaceAll("PK WND", "PK WND(Peak Wind)");
+            weather1 = weather1.replaceAll("WSHFT", "WSHFT(Wind Shift)");
+            weather1 = weather1.replaceAll("VIS", "VIS(Visibility)");
+            weather1 = weather1.replaceAll("PRESFR", "PRESFR(Rapid Pressure Change)");
+            weather1 = weather1.replaceAll("\\$", "\\$(Station Maintenance Needed)");
+            
+            weather += " RMK(Remark) " + weather1;
+        }
+
+
+        return weather;
+    }
 
     /**
      * Color code winds
@@ -279,7 +398,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("SVR", "SVR(Severe)");
         weather = weather.replaceAll("HVY", "HVY(Heavy)");
         weather = weather.replaceAll("/RM", "/RM(Remarks)");
-        weather = weather.replaceAll("/TB", "TB(Turbulence)");
+        weather = weather.replaceAll("/TB", "/TB(Turbulence)");
 
         return weather;
     }
@@ -307,7 +426,7 @@ public class WeatherHelper {
                 int visstart;
                 String visString;
                 boolean P6 = false;
-                String subportion = portion.substring(portionlen - 6);
+                String subportion = portion.substring(portionlen - 8);
                 /*
                  * Too hard to parse this nonsense. Brute force.
                  */
@@ -316,21 +435,21 @@ public class WeatherHelper {
                     vis = 6;  
                     P6 = true;
                 }
-                else if(subportion.matches(".*[1-9]{1} [1-3]{1}\\/[2-4]{1}")) {
+                else if(subportion.matches(".* [1-9]{1} [1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 1 1/4"
                      */
                     visstart = portionlen - 5;
                     vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
                 }
-                else if(subportion.matches(".*[1]{1}[1-3]{1}\\/[2-4]{1}")) {
+                else if(subportion.matches(".* [1]{1}[1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 11/4"
                      */
                     visstart = portionlen - 4;
                     vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
                 }
-                else if(subportion.matches(".*[1-3]{1}\\/[2-4]{1}")) {
+                else if(subportion.matches(".* [1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 3/4"
                      */

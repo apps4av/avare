@@ -121,7 +121,7 @@ public class WebAppInterface {
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i]);
                     String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatWeatherTypeHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
+                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
                     Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
                     Taf += "<font size='5' color='black'>" + taf + "<br></br>";
                 }
@@ -141,7 +141,7 @@ public class WebAppInterface {
                     String vals2[] = vals[1].split(" ");
                     String color = WeatherHelper.metarColorString(vals[0]);
                     Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    Metar += "<font size='5' color='" + color + "'>" + vals[1] + "<br></br>";
+                    Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], "")) + "<br></br>";
                 }
             }
             catch(Exception e) {
