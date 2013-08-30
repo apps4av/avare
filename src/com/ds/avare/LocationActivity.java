@@ -93,6 +93,7 @@ public class LocationActivity extends Activity implements Observer {
     
     private Button mDestButton;
     private Button mCenterButton;
+    private Button mDrawClearButton;
     private Button mHelpButton;
     private Button mPrefButton;
     private Button mPlanButton;
@@ -177,6 +178,42 @@ public class LocationActivity extends Activity implements Observer {
         public void enabledCallback(boolean enabled) {
         }          
     };
+
+    /**
+     * 
+     * @param dest
+     * @return
+     */
+    private boolean isSameDest(String dest) {
+        if(mService != null) {
+            Destination cdest = mService.getDestination();
+            if(cdest != null) {
+                if(dest.contains("&")) {
+                    /*
+                     * GPS dest needs comparison with closeness.
+                     */
+                    String tokens[] = dest.split("&");
+                    double lon;
+                    double lat;
+                    try {
+                        lon = Double.parseDouble(tokens[1]);
+                        lat = Double.parseDouble(tokens[0]);
+                    }
+                    catch(Exception e) {
+                        return false;
+                    }
+                    if(Helper.isSameGPSLocation(cdest.getLocation().getLongitude(), 
+                            cdest.getLocation().getLatitude(), lon, lat)) {
+                        return true;
+                    }
+                }
+                else if(dest.equals(cdest.getID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     
     /**
      * 
@@ -278,14 +315,30 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void gestureCallBack(int event, String airport) {
                 if(GestureInterface.LONG_PRESS == event) {
-                    /*
-                     * Show the animation button for dest
-                     */
-                    mDestButton.setText(airport);
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    a.animate(true);
-                    
-                    if(!airport.equals("Clear")) {
+                    if(mLocationView.getDraw()) {
+                        /*
+                         * Show animation button for draw clear
+                         */
+                        AnimateButton e = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                        e.animate(true);
+                    }
+                    else {
+                        /*
+                         * Show the animation button for dest
+                         */
+                        if(isSameDest(airport)) {
+                            mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove, 0, 0, 0);
+                        }
+                        else {
+                            mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.direct, 0, 0, 0);
+                        }
+                        mDestButton.setText(airport);
+                        AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                        a.animate(true);
+                        
+                        /*
+                         * Show animation button for dest clear 
+                         */
                         AnimateButton e = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
                         e.animate(true);
                     }
@@ -395,6 +448,19 @@ public class LocationActivity extends Activity implements Observer {
             }            
         });
 
+        mDrawClearButton = (Button)view.findViewById(R.id.location_button_draw_clear);
+        mDrawClearButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mService != null) {
+                    if(mLocationView.getDraw()) {
+                        mService.clearDraw();
+                    }
+                }
+            }            
+        });
+
         mDownloadButton = (Button)view.findViewById(R.id.location_button_dl);
         mDownloadButton.setOnClickListener(new OnClickListener() {
 
@@ -432,25 +498,21 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * On click, find destination that was pressed on in view
                  */
-
                 Button b = (Button)v;
                 /*
-                 * If button pressed was a destination go there, otherwise ask for dest
+                 * If button pressed was a destination go there, otherwise if none, then delete current dest
                  */
-                if(!b.getText().toString().equals(getString(R.string.Clear))) {
-                    
-                    String type = Destination.BASE;
-                    if(b.getText().toString().contains("&")) {
-                        type = Destination.GPS;
-                    }
-                    goTo(b.getText().toString(), type);
-                }
-                else if(mService != null) {
-                    /*
-                     * Clear destination
-                     */
+                String dest = b.getText().toString();
+                if(isSameDest(dest)) {
                     mService.setDestination(null);
+                    return;
+
                 }
+                String type = Destination.BASE;
+                if(dest.contains("&")) {
+                    type = Destination.GPS;
+                }
+                goTo(dest, type);
             }
         });
         

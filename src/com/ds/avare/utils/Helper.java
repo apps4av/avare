@@ -65,6 +65,22 @@ public class Helper {
     }
     
     /**
+     * Same as query for a location in DatabaseHelper.findClosestAirportID() 
+     * @param lon
+     * @param lat
+     * @param lon1
+     * @param lat1
+     * @return
+     */
+    public static boolean isSameGPSLocation(double lon, double lat, double lon1, double lat1) {
+        if(((lon - lon1) * (lon - lon1) + (lat - lat1) * (lat - lat1)) < 0.001) {
+            return true;
+        }
+        return false;
+    }
+    
+
+    /**
      * 
      * @param paint
      */

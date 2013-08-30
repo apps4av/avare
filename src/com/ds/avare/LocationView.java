@@ -405,16 +405,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * on double touch find distance and bearing between two points.
              */
             if(!mTrackUp) {
-                if(mDraw) {
-                    /*
-                     * Clear draw on multi touch
-                     */
-                    if(mService != null) {
-                        mService.clearDraw();
-                    }
-                    return true;
-                }
-                
                 if(mPointProjection == null) {
                     double x0 = mCurrTouchPoint.getXs()[0];
                     double y0 = mCurrTouchPoint.getYs()[0];
@@ -706,10 +696,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             else if (name.length() > 8) {
                 name = name.substring(0, 7);
             }
-            mPaint.setColor(Color.GREEN);
             canvas.drawText(name,
                     0, getHeight() / mTextDiv, mPaint);
-            mPaint.setColor(Color.WHITE);
         }
         /*
          * Chart
@@ -1399,21 +1387,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double y = mCurrTouchPoint.getY();
 
             /*
-             * Clear the destination
+             * In draw, long press has no meaning other than to clear the output from the activity
              */
-            if((y < ((2 * getHeight()) / mTextDiv)) && null != mService) {
-                /*
-                 * If pressed on top of screen
-                 */
-                if(null != mGestureCallBack && null != mService.getDestination()) {
-                    /*
-                     * Pop out a clear destination flag
-                     */
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mContext.getString(R.string.Clear));
-                    return;
-                }            
+            if(mDraw) {
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "");
+                return;
             }
-            
+
             /*
              * XXX:
              * For track up, currently there is no math to find anything with long press.
@@ -1421,7 +1401,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(mTrackUp) {
                 return;
             }
-            
+
             /*
              * Notify activity of gesture.
              */
@@ -1482,6 +1462,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void setDraw(boolean b) {
         mDraw = b;
+    }
+
+    /**
+     * 
+     * @param b
+     */
+    public boolean getDraw() {
+        return mDraw;
     }
 
     /**
