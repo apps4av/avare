@@ -859,6 +859,16 @@ public class LocationActivity extends Activity implements Observer {
                         mToast.show();                            
                     }
                 }
+                
+                /*
+                 * Move to new dest temporarily if sim mode.
+                 */
+                if(mPref.isSimulationMode()) {
+                    Location l = mDestination.getLocation();
+                    mLocationView.updateParams(new GpsParams(l));
+                }
+                mLocationView.forceReload();
+
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));

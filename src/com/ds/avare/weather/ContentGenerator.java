@@ -67,16 +67,6 @@ public class ContentGenerator {
                 + "if(out.length == 2) {return out;} else {return '0' + out;}\n"
                 + "}\n"
                 /*
-                 * winds
-                 */
-                + "function winds()\n"
-                + "{\n"
-                + "var list=document.getElementById('windlist');\n"
-                + "var listfc=document.getElementById('windlistforecast');\n"
-                + "var gif='http://aviationweather.gov/adds/data/winds/ruc' + listfc.options[listfc.selectedIndex].value + 'hr_' + list.options[list.selectedIndex].value + '_wind.gif';\n"
-                + "document.getElementById('windimage').src=gif;\n"
-                + "}\n"
-                /*
                  * Refresh
                  */
                 + "function refresh()\n"
@@ -93,27 +83,6 @@ public class ContentGenerator {
                 + "var utc =  (now.getUTCMonth()) + 1 + '/' + now.getUTCDate() + ' ' + zeroPad(now.getUTCHours()) + '' + zeroPad(now.getUTCMinutes()) + ' UTC';\n"
                 + "txt.value=utc;\n"
                 + "getData();"
-                + "}\n"
-                /*
-                 * LL weather prog
-                 */
-                + "function sigllload()\n"
-                + "{\n"
-                + "var list=document.getElementById('sigll');\n"
-                + "var gif='http://aviationweather.gov/data/products/swl/ll_' + list.options[list.selectedIndex].value + '_4_cl_new.gif';\n"
-                + "document.getElementById('llimg').src=gif;\n"
-                + "}\n"
-                + "function airmets()\n"
-                + "{\n"
-                + "var list=document.getElementById('gairmet');\n"
-                + "var gift='http://aviationweather.gov/data/products/gairmet/combined/' + list.options[list.selectedIndex].value + '_us_TANGO.gif';\n"
-                + "var gifs='http://aviationweather.gov/data/products/gairmet/combined/' + list.options[list.selectedIndex].value + '_us_SIERRA.gif'\n;"
-                + "var gifi='http://aviationweather.gov/data/products/gairmet/combined/' + list.options[list.selectedIndex].value + '_us_ICE.gif';\n"
-                + "var giff='http://aviationweather.gov/data/products/gairmet/combined/' + list.options[list.selectedIndex].value + '_us_FZLVL.gif';\n"
-                + "document.getElementById('tango').src=gift;\n"
-                + "document.getElementById('sierra').src=gifs;\n"
-                + "document.getElementById('ice').src=gifi;\n"
-                + "document.getElementById('fzlvl').src=giff;\n"
                 + "}\n"
                 /*
                  * This function calls back in Android to get METARs for a plan
@@ -178,93 +147,6 @@ public class ContentGenerator {
                 + "kSaLEMV34tELyRYNEsCQyHlvWkGCzsPgMCEAY7Cg04Uk48LAsDhRA8MVQPEF0GAgqYYwSRlycNcWskCkApIyEAOwA"
                 + "AAAAAAAAAAA==' alt='Loading...' />\n"
                 + "<form id='plantable' readonly></form>\n"
-                /*
-                 * Images
-                 */
-                + "<h1>Images</h1><br>\n"
-                /*
-                 * Visibility
-                 */
-                + "<h2>Visibility</h2>\n"
-                + "<h3>West</h3>\n"
-                + "<img src='http://aviationweather.gov/data/obs/sat/goes/vis_goesW.jpg'><br>\n"
-                + "<h3>East</h3>\n"
-                + "<img src='http://aviationweather.gov/data/obs/sat/goes/vis_goesE.jpg'><br>\n"
-                + "<h3>Smoke and Fire</h3>\n"
-                + "<img src='http://www.osdpd.noaa.gov/ml/land/currenthms.jpg'><br>\n"
-                
-                /*
-                 * Conus radar
-                 */
-                + "<h2>Radar Loop</h2>\n"
-                + "<img src='http://radar.weather.gov/Conus/Loop/NatLoop_Small.gif'><br>\n"
-                /*
-                 * Winds
-                 */
-                + "<h2>Winds</h2>\n"
-                + "<select id='windlist' onChange='winds()'>\n"
-                + "<option value='sfc'>sfc</option>\n"
-                + "<option value='900'>3000</option>\n"
-                + "<option value='800'>6000</option>\n"
-                + "<option value='725'>9000</option>\n"
-                + "<option value='650'>12000</option>\n"
-                + "<option value='575'>15000</option>\n"
-                + "<option value='500'>18000</option>\n"
-                + "<option value='400'>24000</option>\n"
-                + "<option value='300'>30000</option>\n"
-                + "<option value='225'>36000</option>\n"
-                + "</select>\n"
-                + "<select id='windlistforecast' onChange='winds()'>\n"
-                + "<option value='00'>now</option>\n"
-                + "<option value='01'>1 hour later</option>\n"
-                + "<option value='02'>2 hour later</option>\n"
-                + "<option value='03'>3 hour later</option>\n"
-                + "<option value='04'>4 hour later</option>\n"
-                + "<option value='05'>5 hour later</option>\n"
-                + "<option value='06'>6 hour later</option>\n"
-                + "<option value='07'>7 hour later</option>\n"
-                + "<option value='08'>8 hour later</option>\n"
-                + "<option value='09'>9 hour later</option>\n"
-                + "<option value='10'>10 hour later</option>\n"
-                + "<option value='11'>11 hour later</option>\n"
-                + "<option value='12'>12 hour later</option>\n"
-                + "<option value='13'>13 hour later</option>\n"
-                + "<option value='14'>14 hour later</option>\n"
-                + "<option value='15'>15 hour later</option>\n"
-                + "<option value='16'>16 hour later</option>\n"
-                + "</select><br>\n"
-                + "<img id='windimage' src='http://aviationweather.gov/adds/data/winds/ruc00hr_sfc_wind.gif'><br>\n"
-                /*
-                 * Sigmet
-                 */
-                + "<h2>Sigmets</h2>\n"
-                + "<img src='http://aviationweather.gov/adds/data/airmets/airmets_ALL.gif'><br>\n"
-                /*
-                 * Airmet
-                 */
-                + "<h2>Airmets</h2>\n"
-                + "<select id='gairmet' onChange='airmets()'>\n"
-                + airmetString
-                + "</select><br>\n"
-                + "<h3>Tango</h3>\n"
-                + "<img id='tango' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_TANGO.gif'><br>\n"
-                + "<h3>Sierra</h3>\n"
-                + "<img id='sierra' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_SIERRA.gif'><br>\n"
-                + "<h3>Icing</h3>\n"
-                + "<img id='ice' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_ICE.gif'><br>\n"
-                + "<h3>Freezing Level</h3>\n"
-                + "<img id='fzlvl' src='http://aviationweather.gov/data/products/gairmet/combined/" + dates[0] + "_us_FZLVL.gif'><br>\n"
-                /*
-                 * Weather prognostic
-                 */
-                + "<h2>Low Level Prognostic (Surface-24000)</h2>\n"
-                + "<select id='sigll' onChange='sigllload()'>\n"
-                + "<option value='12'>Valid at 0000 and 1200 UTC</option>\n"
-                + "<option value='18'>Valid at 0600 and 1800 UTC</option>\n"
-                + "<option value='00'>Valid at 1200 and 0000 UTC</option>\n"
-                + "<option value='06'>Valid at 1800 and 0600 UTC</option>\n"
-                + "</select><br>\n"
-                + "<img id='llimg' src='http://aviationweather.gov/data/products/swl/ll_12_4_cl_new.gif'><br>\n"
                 + "</body>\n"
                 + "</html>\n";
         return data;
