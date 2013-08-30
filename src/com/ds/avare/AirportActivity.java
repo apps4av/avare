@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
+import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -200,16 +201,39 @@ public class AirportActivity extends Activity {
             String[] views = new String[map.size() + freq.size() + runways.size()];
             String[] values = new String[map.size() + freq.size() + runways.size()];
             int iterator = 0;
-            for(String key : map.keySet()){
-                views[iterator] = key;
-                values[iterator] = map.get(key);
+            /*
+             * Add header. Check below if this is not added twice
+             */
+            String s = map.get(DataBaseHelper.LOCATION_ID);
+            if(s != null) {
+                views[iterator] = DataBaseHelper.LOCATION_ID;
+                values[iterator] = s;
                 iterator++;
             }
+            s = map.get(DataBaseHelper.FACILITY_NAME);
+            if(s != null) {
+                views[iterator] = DataBaseHelper.FACILITY_NAME;
+                values[iterator] = s;
+                iterator++;
+            }
+            s = map.get(DataBaseHelper.FUEL_TYPES);
+            if(s != null) {
+                views[iterator] = DataBaseHelper.FUEL_TYPES;
+                values[iterator] = s;
+                iterator++;
+            }
+            
+            /*
+             * Add freq
+             */
             for(String key : freq.keySet()){
                 views[iterator] = key;
                 values[iterator] = freq.get(key);
                 iterator++;
             }
+            /*
+             * Add runways
+             */
             for(Runway run : runways){
                 views[iterator] = "Runway-" + run.getNumber() + " (" + run.getLength() + "X" + run.getWidth() + ")";
                 values[iterator] = 
@@ -223,6 +247,20 @@ public class AirportActivity extends Activity {
                         ;
                 iterator++;
             }
+
+            /*
+             * Add the rest
+             */
+            for(String key : map.keySet()){
+                if(key.equals(DataBaseHelper.LOCATION_ID) || key.equals(DataBaseHelper.FACILITY_NAME) ||
+                        key.equals(DataBaseHelper.FUEL_TYPES)) {
+                    continue;
+                }
+                views[iterator] = key;
+                values[iterator] = map.get(key);
+                iterator++;
+            }
+
             mAirport.setClickable(false);
             mAirport.setDividerHeight(10);
             TypeValueAdapter mAdapter = new TypeValueAdapter(AirportActivity.this, views, values);

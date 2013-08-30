@@ -16,11 +16,11 @@ import com.ds.avare.R;
 
 public class WeatherHelper {
     
-    private static int BLUE = 0x7F0000BF;
-    private static int RED = 0x7FBF0000;
-    private static int GREEN = 0x7F00BF00;
-    private static int MAGENTA = 0x7FBF00BF;
-    private static int WHITE = 0x7FFFFFFF;
+    private static int BLUE = 0xFF0000BF;
+    private static int RED = 0xFFBF0000;
+    private static int GREEN = 0xFF00BF00;
+    private static int MAGENTA = 0xFFBF00BF;
+    private static int WHITE = 0xFFFFFFFF;
     
     /**
      * 
