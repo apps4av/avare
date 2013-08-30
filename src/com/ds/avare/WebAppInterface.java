@@ -77,11 +77,21 @@ public class WebAppInterface {
             String Pirep = "";
             String Metar = "";
             String Taf = "";
+            String station = null;
 
             String miles = "30";
             String planf = "";
             String plan = "";
             int num = mService.getPlan().getDestinationNumber();
+            if(0 == num) {
+                return mContext.getString(R.string.WeatherError);
+            }
+            else if(num == 1) {
+                /*
+                 * This is not a route.
+                 */
+                station = mService.getPlan().getDestination(0).getID();
+            }
             for(int i = 0; i < num; i++) {
                 Location l = mService.getPlan().getDestination(i).getLocation();
                 planf += l.getLongitude() + "," + l.getLatitude() + ";";
@@ -100,7 +110,7 @@ public class WebAppInterface {
              *  Get PIREP
              */
             try {
-                String out = NetworkHelper.getPIREPSPlan(planf, miles);
+                String out = (station != null) ? NetworkHelper.getPIREPS(station) : NetworkHelper.getPIREPSPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     outm[i] = WeatherHelper.formatPirepHTML(outm[i]);
@@ -115,7 +125,7 @@ public class WebAppInterface {
                 /*
                  *  Get TAFs 
                  */
-                String out = NetworkHelper.getTAFPlan(planf, miles);
+                String out = (station != null) ? NetworkHelper.getTAF(station) : NetworkHelper.getTAFPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i]);
@@ -133,7 +143,7 @@ public class WebAppInterface {
                 /*
                  * 
                  */
-                String out = NetworkHelper.getMETARPlan(planf, miles);
+                String out = (station != null) ? NetworkHelper.getMETAR(station) : NetworkHelper.getMETARPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
                     String vals[] = outm[i].split(",");

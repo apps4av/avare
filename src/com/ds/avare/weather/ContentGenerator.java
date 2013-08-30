@@ -183,10 +183,16 @@ public class ContentGenerator {
                  */
                 + "<h1>Images</h1><br>\n"
                 /*
-                 * Main
+                 * Visibility
                  */
-                + "<h2>Main</h2>\n"
-                + "<img src='http://aviationweather.gov/data/front/front_page_2color.gif'><br>\n"
+                + "<h2>Visibility</h2>\n"
+                + "<h3>West</h3>\n"
+                + "<img src='http://aviationweather.gov/data/obs/sat/goes/vis_goesW.jpg'><br>\n"
+                + "<h3>East</h3>\n"
+                + "<img src='http://aviationweather.gov/data/obs/sat/goes/vis_goesE.jpg'><br>\n"
+                + "<h3>Smoke and Fire</h3>\n"
+                + "<img src='http://www.osdpd.noaa.gov/ml/land/currenthms.jpg'><br>\n"
+                
                 /*
                  * Conus radar
                  */

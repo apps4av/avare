@@ -283,6 +283,62 @@ public class NetworkHelper {
 
     /**
      * 
+     * @param airport
+     * @return
+     */
+    public static String getPIREPS(String airport) {
+        
+        /*
+         * Get TAF
+         */
+        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=pireps&requestType=retrieve&format=xml&stationString=K"
+                 + airport + "&hoursBeforeNow=12");
+        if(xml != null) {
+            Document doc = getDomElement(xml);
+            if(null != doc) {
+                
+                NodeList nl = doc.getElementsByTagName("PIREP");
+                if(0 == nl.getLength()) {
+                    return "";
+                }
+                for (int temp = 0; temp < nl.getLength(); temp++) {
+                    
+                    Node nNode = nl.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+             
+                        /*
+                         * Return most recent, discard AIREP
+                         */
+                        NodeList a = eElement.getElementsByTagName("pirep_type");
+                        if(a != null) {
+                            if(a.item(0) != null) {
+                                if(a.item(0).getTextContent() != null) {
+                                    if(a.item(0).getTextContent().equals("AIREP")) {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        NodeList n = eElement.getElementsByTagName("raw_text");
+                        if(n != null) {
+                            if(n.item(0) != null) {
+                                if(n.item(0).getTextContent() != null) {
+                                    return(n.item(0).getTextContent());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return "";
+    }
+
+    /**
+     * 
      * @param plan
      * @return
      */
@@ -434,7 +490,21 @@ public class NetworkHelper {
                     Node nNode = nl.item(temp);
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
-             
+
+                        /*
+                         * Discard AIREP
+                         */
+                        NodeList a = eElement.getElementsByTagName("pirep_type");
+                        if(a != null) {
+                            if(a.item(0) != null) {
+                                if(a.item(0).getTextContent() != null) {
+                                    if(a.item(0).getTextContent().equals("AIREP")) {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+
                         NodeList n = eElement.getElementsByTagName("raw_text");
                         if(n != null) {
                             if(n.item(0) != null) {
