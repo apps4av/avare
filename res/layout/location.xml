@@ -38,7 +38,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:gravity="left|center"
             android:drawableLeft="@drawable/erase"
             android:text="@string/Clear"
-            android:minWidth="140dp"
+            android:minWidth="150dp"
             android:visibility="invisible" />
         
         <Button
@@ -50,7 +50,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
-            android:minWidth="140dp"
+            android:minWidth="150dp"
             android:visibility="invisible" />
         
          <Button
@@ -60,7 +60,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_pref"
             android:gravity="left|center"
-            android:minWidth="140dp"
+            android:minWidth="150dp"
             android:text="@string/Plan"
             android:drawableLeft="@drawable/plan"
             android:visibility="invisible" />
@@ -68,7 +68,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <Button
             android:id="@+id/location_button_pref"
             android:textStyle="bold"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_dl"
             android:text="@string/Settings"
@@ -79,7 +79,7 @@ Redistribution and use in source and binary forms, with or without modification,
          <Button
             android:id="@+id/location_button_dl"
             android:textStyle="bold"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_help"
             android:gravity="left|center"
@@ -90,7 +90,7 @@ Redistribution and use in source and binary forms, with or without modification,
          <Button
             android:id="@+id/location_button_help"
             android:textStyle="bold"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
@@ -110,36 +110,15 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="visible" />
 
         <ToggleButton
-            android:id="@+id/location_button_track"
-            android:layout_width="wrap_content"
+            android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:visibility="invisible"
+            android:layout_above="@+id/location_button_draw"
             android:layout_alignParentRight="true"
-            android:textOff="@string/NorthUp"
-            android:textOn="@string/TrackUp"
-            android:textSize="15sp"
+            android:textOff="@string/gps"
+            android:textOn="@string/SimulationMode"
+            android:layout_width="150dp"
             android:textStyle="bold"/>
-
-        <ToggleButton
-            android:id="@+id/location_button_draw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/location_button_track"
-            android:textOff="@string/Pan"
-            android:textOn="@string/Draw"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-        
-        <Spinner
-            android:id="@+id/location_spinner_chart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/location_button_center"
-            android:layout_toRightOf="@+id/location_button_menu"
-            android:entries="@array/ChartType"
-            android:entryValues="@array/ChartTypeValues" />
 
         <Button
             android:id="@+id/location_button_center"
@@ -150,6 +129,26 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_centerHorizontal="true"
             android:drawableLeft="@drawable/center" />
 
+        <ToggleButton
+            android:id="@+id/location_button_draw"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/location_spinner_chart"
+            android:layout_alignParentRight="true"
+            android:textOff="@string/Pan"
+            android:visibility="invisible"
+            android:layout_width="150dp"
+            android:textOn="@string/Draw"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/location_spinner_chart"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:visibility="invisible"
+            android:entries="@array/ChartType"
+            android:entryValues="@array/ChartTypeValues" />
         
 </RelativeLayout>
 

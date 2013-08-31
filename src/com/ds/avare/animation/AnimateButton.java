@@ -27,20 +27,22 @@ public class AnimateButton {
 
     private boolean mShowing;
     private Context mContext;
-    private Button mButton;
+    private View mView;
     private View mReplaces[];
     private int mDir;
     
     public static final int DIRECTION_L_R = 1;
     public static final int DIRECTION_R_L = 2;
+    public static final int DIRECTION_B_U = 3;
+    public static final int DIRECTION_U_B = 4;
     
     /**
      * 
      */
-    public AnimateButton(Context ctx, Button b, int direction, View... replaces) {
+    public AnimateButton(Context ctx, View b, int direction, View... replaces) {
         mContext = ctx;
         mShowing = false;
-        mButton = b;
+        mView = b;
         mDir = direction;
         /*
          * The view this animate hides
@@ -67,11 +69,23 @@ public class AnimateButton {
          * Animates a button from left to right.
          */
         if(visible) {
+            int id;
+            switch(mDir) {
+                case DIRECTION_L_R:
+                    id = R.anim.xlate_right;
+                    break;
+                case DIRECTION_R_L:
+                    id = R.anim.xlate_left_end;
+                    break;
+                default:
+                    id = R.anim.xlate_up;
+                    break;
+                    
+            }
             /*
              * Bring the button out
              */
-            a = AnimationUtils.loadAnimation(mContext,
-                    mDir == DIRECTION_L_R ? R.anim.xlate_right : R.anim.xlate_left_end);
+            a = AnimationUtils.loadAnimation(mContext, id);
             mShowing = true;
         }
         else {
@@ -81,11 +95,23 @@ public class AnimateButton {
             if(!mShowing) {
                 return;
             }
+            int id;
+            switch(mDir) {
+                case DIRECTION_L_R:
+                    id = R.anim.xlate_left;
+                    break;
+                case DIRECTION_R_L:
+                    id = R.anim.xlate_right_end;
+                    break;
+                default:
+                    id = R.anim.xlate_up_end;
+                    break;
+                    
+            }
             /*
              * Take the button in
              */
-            a = AnimationUtils.loadAnimation(mContext,
-                    mDir == DIRECTION_L_R ? R.anim.xlate_left : R.anim.xlate_right_end);
+            a = AnimationUtils.loadAnimation(mContext, id);
             mShowing = false;
         }
         a.reset();
@@ -97,7 +123,7 @@ public class AnimateButton {
                     /*
                      * Set invisible when not animating
                      */
-                    mButton.setVisibility(Button.INVISIBLE);
+                    mView.setVisibility(Button.INVISIBLE);
                     for(int v = 0; v < mReplaces.length; v++) {
                         mReplaces[v].setVisibility(Button.VISIBLE);
                     }
@@ -123,12 +149,12 @@ public class AnimateButton {
                     for(int v = 0; v < mReplaces.length; v++) {
                         mReplaces[v].setVisibility(Button.INVISIBLE);
                     }
-                    mButton.setVisibility(Button.VISIBLE);
+                    mView.setVisibility(Button.VISIBLE);
                 }
             }
             
         });            
-        mButton.clearAnimation();
-        mButton.startAnimation(a);
+        mView.clearAnimation();
+        mView.startAnimation(a);
     }
 }

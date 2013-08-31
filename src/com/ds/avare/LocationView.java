@@ -183,11 +183,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private LinkedList<Obstacle>        mObstacles;
     
     /*
-     * If showing track up
-     */
-    private boolean                   mTrackUp;
-
-    /*
      * Is it drawing?
      */
     private boolean                   mDraw;
@@ -238,7 +233,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setAntiAlias(true);
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
-        mTrackUp = false;
         mDraw = false;
         mLastXDraw = 0;
         mLastYDraw = 0;
@@ -359,7 +353,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do nnot
              */
-            if(mDraw && !mTrackUp) {
+            if(mDraw && !mPref.isTrackUp()) {
                 float x = mCurrTouchPoint.getX();
                 float y = mCurrTouchPoint.getY();
                 /*
@@ -388,10 +382,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * 
              */
             if(mPan.setMove(
-                    mTrackUp ? 
+                    mPref.isTrackUp() ? 
                             mPan.getMoveX() : 
                             newObjPosAndScale.getXOff(),
-                    mTrackUp ? 
+                    mPref.isTrackUp() ? 
                             mPan.getMoveY() : 
                             newObjPosAndScale.getYOff())) {
                 /*
@@ -404,7 +398,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            if(!mTrackUp) {
+            if(!mPref.isTrackUp()) {
                 if(mPointProjection == null) {
                     double x0 = mCurrTouchPoint.getXs()[0];
                     double y0 = mCurrTouchPoint.getYs()[0];
@@ -700,13 +694,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     0, getHeight() / mTextDiv, mPaint);
         }
         /*
-         * Chart
-         * Anything in line 3 should be removed when proj is shown
+         * Chart only when dest not set
          */
-        if(null != mOnChart && null == mPointProjection) {
-            mPaint.setAlpha(127);
-            canvas.drawText(mOnChart, 0, getHeight() / mTextDiv * 3, mPaint);
-            mPaint.setAlpha(255);
+        if(null != mOnChart && null != mService && null == mPointProjection) {
+            if(null == mService.getDestination()) {
+                canvas.drawText(mOnChart, 0, getHeight() / mTextDiv, mPaint);
+            }
         }
 
     }
@@ -972,7 +965,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	mPaint.setTextSize(getHeight() / mTextDiv);
         mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
     	
-        if(mTrackUp && (mGpsParams != null)) {
+        if(mPref.isTrackUp() && (mGpsParams != null)) {
             canvas.save();
             /*
              * Rotate around current position
@@ -988,7 +981,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
-        if(mTrackUp) {
+        if(mPref.isTrackUp()) {
             canvas.restore();
         }
     	drawMETARText(canvas);
@@ -1398,7 +1391,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * XXX:
              * For track up, currently there is no math to find anything with long press.
              */
-            if(mTrackUp) {
+            if(mPref.isTrackUp()) {
                 return;
             }
 
@@ -1472,15 +1465,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return mDraw;
     }
 
-    /**
-     * 
-     * @param b
-     */
-    public void setTrackUp(boolean b) {
-        mTrackUp = b;
-        postInvalidate();
-    }
-    
     /*
      * Gets chart on which this view is.
      */

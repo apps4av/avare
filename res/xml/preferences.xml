@@ -75,9 +75,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:summary="@string/ShowTrackSummary"
 	    android:defaultValue="true"/>
 	<CheckBoxPreference
-	    android:key="@string/SimulationMode"
-	    android:title="@string/SimulationModeLabel"
-	    android:summary="@string/SimulationModeSummary"
+	    android:key="@string/TrackUp"
+	    android:title="@string/TrackUpLabel"
+	    android:summary="@string/TrackUpSummary"
 	    android:defaultValue="false"/>
 	<CheckBoxPreference
 	    android:key="@string/OrientationP"

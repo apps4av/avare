@@ -389,6 +389,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean isTrackUp() {
+        return(mPref.getBoolean(mContext.getString(R.string.TrackUp), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean isHelicopter() {
         return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
     }
@@ -485,6 +493,16 @@ public class Preferences {
     public void setChartType(String type) {
         SharedPreferences.Editor editor = mPref.edit();
         editor.putString(mContext.getString(R.string.ChartType), type);
+        editor.commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setSimMode(boolean sim) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putBoolean(mContext.getString(R.string.SimulationMode), sim);
         editor.commit();
     }
 
