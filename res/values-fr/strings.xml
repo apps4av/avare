@@ -33,9 +33,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Maps">&quot;Cartes&quot;</string>
     <string name="MapsLabel">&quot;Répertoire des cartes&quot;</string>
     <string name="MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
-    <string name="SimulationMode">&quot;Simulation&quot;</string>
-    <string name="SimulationModeLabel">&quot;Activation du mode simulation&quot;</string>
-    <string name="SimulationModeSummary">&quot;Activation du mode simulation pour la planification&quot;</string>
     <string name="OrientationP">&quot;Orientation&quot;</string>
     <string name="OrientationPLabel">&quot;Mode portrait&quot;</string>
     <string name="OrientationPSummary">&quot;Activation du visionnement en mode portrait&quot;</string>
@@ -115,8 +112,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Background">&quot;Arrière-plan&quot;</string>
     <string name="BackgroundLabel">&quot;Afficher l'arrière-plan&quot;</string>
     <string name="BackgroundSummary">&quot;Afficher un arrière-plan coloré pour améliorer la lecture sur les petits écrans&quot;</string>
-    <string name="NorthUp">&quot;NU&quot;</string>
-    <string name="TrackUp">&quot;TU&quot;</string>
     <string name="SelectPlate">&quot;Sélectionner un diagramme&quot;</string>
     <string name="DownloadDB">&quot;Le ficher requis est manquant et doit être téléchargé.&quot;</string>
     <string name="Agree">&quot;J'accepte&quot;</string>
@@ -148,4 +143,19 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Draw">&quot;Dessiner&quot;</string>
     <string name="Pan">&quot;Dérouler&quot;</string>
     <string name="Clear">&quot;Effacer&quot;</string>
+    <string name="WX">&quot;WX&quot;</string>
+    <string name="Left">&quot;Gauche&quot;</string>
+    <string name="Right">&quot;Droit&quot;</string>
+    <string name="Next">&quot;Suivant&quot;</string>
+    <string name="Last">&quot;Dernier&quot;</string>
+    <string name="Save">&quot;Sauvegarder&quot;</string>
+    <string name="SavedPlan">&quot;Sauvegarder les diagrammes&quot;</string>
+    <string name="Load">&quot;Charger&quot;</string>
+    <string name="LoadReverse">&quot;Inverser la charge&quot;</string>
+    <string name="WeatherError">&quot;Incapable de télécharger les données météo&quot;</string>
+    <string name="WeatherPlan">&quot;Charger un diagramme et cliquer sur mise à jour pour rafraichir les données météo&quot;</string>
+    <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="TrackUp">&quot;Tracé haut&quot;</string>
+    <string name="TrackUpLabel">&quot;Track vers le haut&quot;</string>
+    <string name="TrackUpSummary">&quot;Selectionner pour activer le tracé vers le haut (Expérimental), autrement le nord est vers le haut&quot;</string>
 </resources>
