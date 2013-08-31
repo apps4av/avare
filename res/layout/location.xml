@@ -113,7 +113,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            android:layout_above="@+id/location_button_draw"
+            android:layout_above="@+id/location_spinner_chart"
             android:layout_alignParentRight="true"
             android:textOff="@string/gps"
             android:textOn="@string/SimulationMode"
@@ -132,11 +132,10 @@ Redistribution and use in source and binary forms, with or without modification,
         <ToggleButton
             android:id="@+id/location_button_draw"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/location_spinner_chart"
             android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
             android:textOff="@string/Pan"
-            android:visibility="invisible"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />
 

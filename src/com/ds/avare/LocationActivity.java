@@ -315,10 +315,8 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void gestureCallBack(int event, String airport) {
                 if(GestureInterface.LONG_PRESS == event) {
-                    AnimateButton t = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mCenterButton, mMenuButton);
+                    AnimateButton t = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mCenterButton, mMenuButton, mDrawButton);
                     t.animate(true);
-                    AnimateButton d = new AnimateButton(getApplicationContext(), mDrawButton, AnimateButton.DIRECTION_R_L, (View[])null);
-                    d.animate(true);
                     AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
                     c.animate(true);
                     if(mLocationView.getDraw()) {

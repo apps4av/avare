@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
@@ -22,7 +21,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.EditText;
 
 /**
  * 
@@ -82,9 +80,13 @@ public class WebAppInterface {
             String miles = "30";
             String planf = "";
             String plan = "";
+            if(null == mService) {
+                return mContext.getString(R.string.WeatherPlan);
+            }
+
             int num = mService.getPlan().getDestinationNumber();
-            if(0 == num) {
-                return mContext.getString(R.string.WeatherError);
+            if((0 == num) && (mService.getDestination() != null)) {
+                station = mService.getDestination().getID();
             }
             else if(num == 1) {
                 /*
@@ -98,14 +100,10 @@ public class WebAppInterface {
                 plan += mService.getPlan().getDestination(i).getID() + "(" +
                         mService.getPlan().getDestination(i).getType() + ") ";
             }
-            if(planf.equals("")) {
+            if(planf.equals("") && (station == null)) {
                 return mContext.getString(R.string.WeatherPlan);
             }
             
-            if(null == mService) {
-                return mContext.getString(R.string.WeatherPlan);
-            }
-
             /*
              *  Get PIREP
              */
@@ -157,6 +155,9 @@ public class WebAppInterface {
                 Metar = mContext.getString(R.string.WeatherError);
             }
 
+            if(null != station) {
+                plan = station;
+            }
             plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
             plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
             Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
