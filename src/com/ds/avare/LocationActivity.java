@@ -315,7 +315,7 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void gestureCallBack(int event, String airport) {
                 if(GestureInterface.LONG_PRESS == event) {
-                    AnimateButton t = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, (View[])null);
+                    AnimateButton t = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mCenterButton, mMenuButton);
                     t.animate(true);
                     AnimateButton d = new AnimateButton(getApplicationContext(), mDrawButton, AnimateButton.DIRECTION_R_L, (View[])null);
                     d.animate(true);
@@ -533,6 +533,14 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(mSimButton.getText().equals(getString(R.string.SimulationMode))) {
                     mPref.setSimMode(true);
+                    if(null != mService) {
+                        Destination dest = mService.getDestination();
+                        if(null != dest) {
+                            Location l = dest.getLocation();
+                            mLocationView.updateParams(new GpsParams(l));
+                        }
+                        mLocationView.forceReload();                            
+                    }
                 }
                 else {
                     mPref.setSimMode(false);
