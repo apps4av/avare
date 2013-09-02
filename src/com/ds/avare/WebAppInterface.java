@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
@@ -32,6 +33,7 @@ public class WebAppInterface {
     private StorageService mService; 
     private WeatherTask mWeatherTask;
     private WebView mWebView;
+    private Preferences mPref;
 
 
     /** 
@@ -41,6 +43,7 @@ public class WebAppInterface {
         mContext = c;
         mService = s;
         mWebView = v;
+        mPref = new Preferences(c);
         mWeatherTask = null;
     }
 
@@ -111,7 +114,7 @@ public class WebAppInterface {
                 String out = (station != null) ? NetworkHelper.getPIREPS(station) : NetworkHelper.getPIREPSPlan(planf, miles);
                 String outm[] = out.split("::::");
                 for(int i = 0; i < outm.length; i++) {
-                    outm[i] = WeatherHelper.formatPirepHTML(outm[i]);
+                    outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
                     Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
                 }
             }
@@ -128,7 +131,7 @@ public class WebAppInterface {
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i]);
                     String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""))));
+                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                     Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
                     Taf += "<font size='5' color='black'>" + taf + "<br></br>";
                 }
@@ -148,7 +151,7 @@ public class WebAppInterface {
                     String vals2[] = vals[1].split(" ");
                     String color = WeatherHelper.metarColorString(vals[0]);
                     Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], "")) + "<br></br>";
+                    Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()) + "<br></br>";
                 }
             }
             catch(Exception e) {

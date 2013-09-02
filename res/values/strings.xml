@@ -154,4 +154,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrackUp">&quot;TrackUp&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to Enable Track Up (Experimental), North Up otherwise&quot;</string>
+    <string name="XlateWeather">&quot;XlateWeather&quot;</string>
+    <string name="XlateWeatherLabel">&quot;Translate Weather&quot;</string>
+    <string name="XlateWeatherSummary">&quot;Select to translate weather METAR/TAF/PIREP in the WX brief&quot;</string>
 </resources>

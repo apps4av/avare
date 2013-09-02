@@ -373,6 +373,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean isWeatherTranslated() {
+        return(mPref.getBoolean(mContext.getString(R.string.XlateWeather), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldExtendRunways() {
         return(mPref.getBoolean(mContext.getString(R.string.Runways), true));
     }

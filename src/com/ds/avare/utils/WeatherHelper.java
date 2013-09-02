@@ -130,7 +130,7 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatTafHTML(String weatherAll) {
+    public static String formatTafHTML(String weatherAll, boolean translate) {
 
         String strip[] = weatherAll.split("RMK");
         String weather = strip[0];
@@ -138,77 +138,77 @@ public class WeatherHelper {
         /*
          * Qualifiers
          */
-        weather = weather.replaceAll("\\+", "<font color='magenta'>+(Heavy)<font color='black'>");
-        weather = weather.replaceAll("\\-", "<font color='red'>-(Light)<font color='black'>");
+        weather = weather.replaceAll("\\+", "<font color='magenta'+>" + (translate ? "(Heavy)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("\\-", "<font color='red'>-" + (translate ? "(Light)" : "") + "<font color='black'>");
         
         /*
          * Description
          */
-        weather = weather.replaceAll("MI", "<font color='blue'>MI(Shallow)<font color='black'>");
-        weather = weather.replaceAll("BC", "<font color='blue'>BC(Patches)<font color='black'>");
-        weather = weather.replaceAll("DR", "<font color='blue'>DR(Low Drifting)<font color='black'>");
-        weather = weather.replaceAll("BL", "<font color='blue'>BL(BLowing)<font color='black'>");
-        weather = weather.replaceAll("SH", "<font color='blue'>SH(Showers)<font color='black'>");
-        weather = weather.replaceAll("TS", "<font color='red'>TS(Thunderstorm)<font color='black'>");
-        weather = weather.replaceAll("FZ", "<font color='red'>FZ(Freezing)<font color='black'>");
-        weather = weather.replaceAll("PR", "<font color='blue'>PR(Partial)<font color='black'>");
-        weather = weather.replaceAll("AMD", "AMD(Amended)");
-        weather = weather.replaceAll("WSCONDS", "WSCONDS(Wind Shear Possible)");
+        weather = weather.replaceAll("MI", "<font color='blue'>MI" + (translate ? "(Shallow)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("BC", "<font color='blue'>BC" + (translate ? "(Patches)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("DR", "<font color='blue'>DR" + (translate ? "(Low Drifting)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("BL", "<font color='blue'>BL" + (translate ? "(BLowing)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SH", "<font color='blue'>SH" + (translate ? "(Showers)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("TS", "<font color='red'>TS" + (translate ? "(Thunderstorm)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("FZ", "<font color='red'>FZ" + (translate ? "(Freezing)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("PR", "<font color='blue'>PR" + (translate ? "(Partial)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("AMD", "AMD" + (translate ? "(Amended)" : ""));
+        weather = weather.replaceAll("WSCONDS", "WSCONDS" + (translate ? "(Wind Shear Possible)" : ""));
         
         /*
          * Precip
          */
-        weather = weather.replaceAll("DZ", "<font color='blue'>DZ(Drizzle)<font color='black'>");
-        weather = weather.replaceAll("RA", "<font color='red'>RA(Rain)<font color='black'>");
-        weather = weather.replaceAll("SN", "<font color='red'>SN(Snow)<font color='black'>");
-        weather = weather.replaceAll("SG", "<font color='red'>SG(Snow Grains)<font color='black'>");
-        weather = weather.replaceAll("IC", "<font color='red'>IC(Ice Crystals)<font color='black'>");
-        weather = weather.replaceAll("PL", "<font color='red'>PL(Ice Pellets)<font color='black'>");
-        weather = weather.replaceAll("GR", "<font color='red'>GR(Hail)<font color='black'>");
-        weather = weather.replaceAll("GS", "<font color='blue'>GS(Small Hail)<font color='black'>");
-        weather = weather.replaceAll("UP", "<font color='red'>UP(Unknown Precip.)<font color='black'>");
+        weather = weather.replaceAll("DZ", "<font color='blue'>DZ" + (translate ? "(Drizzle)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("RA", "<font color='red'>RA" + (translate ? "(Rain)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SN", "<font color='red'>SN" + (translate ? "(Snow)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SG", "<font color='red'>SG" + (translate ? "(Snow Grains)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("IC", "<font color='red'>IC" + (translate ? "(Ice Crystals)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("PL", "<font color='red'>PL" + (translate ? "(Ice Pellets)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("GR", "<font color='red'>GR" + (translate ? "(Hail)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("GS", "<font color='blue'>GS" + (translate ? "(Small Hail)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("UP", "<font color='red'>UP" + (translate ? "(Unknown Precip.)" : "") + "<font color='black'>");
 
         /*
          * Obstruction
          */
-        weather = weather.replaceAll("BR", "<font color='red'>BR(Mist)<font color='black'>");
-        weather = weather.replaceAll("FG", "<font color='red'>FG(Fog)<font color='black'>");
-        weather = weather.replaceAll("FU", "<font color='red'>FU(Smoke)<font color='black'>");
-        weather = weather.replaceAll("DU", "<font color='red'>DU(Dust)<font color='black'>");
-        weather = weather.replaceAll("SA", "<font color='red'>SA(Sand)<font color='black'>");
-        weather = weather.replaceAll("HZ", "<font color='red'>HZ(Haze)<font color='black'>");
-        weather = weather.replaceAll("PY", "<font color='red'>PY(Spray)<font color='black'>");
-        weather = weather.replaceAll("VA", "<font color='red'>VA(Volcanic Ash)<font color='black'>");
+        weather = weather.replaceAll("BR", "<font color='red'>BR" + (translate ? "(Mist)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("FG", "<font color='red'>FG" + (translate ? "(Fog)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("FU", "<font color='red'>FU" + (translate ? "(Smoke)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("DU", "<font color='red'>DU" + (translate ? "(Dust)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SA", "<font color='red'>SA" + (translate ? "(Sand)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("HZ", "<font color='red'>HZ" + (translate ? "(Haze)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("PY", "<font color='red'>PY" + (translate ? "(Spray)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("VA", "<font color='red'>VA" + (translate ? "(Volcanic Ash)" : "") + "<font color='black'>");
 
         /*
          * Other
          */
-        weather = weather.replaceAll("P0", "<font color='red'>P0(Dust Whirls)<font color='black'>");
-        weather = weather.replaceAll("SQ", "<font color='red'>SQ(Squalls)<font color='black'>");
-        weather = weather.replaceAll("FC", "<font color='red'>FC(Funnel Cloud)<font color='black'>");
-        weather = weather.replaceAll("SS", "<font color='red'>SS(Sand Storm)<font color='black'>");
-        weather = weather.replaceAll("DS", "<font color='red'>DS(Dust Storm)<font color='black'>");
-        weather = weather.replaceAll(" VC", "<font color='black'> VC(In Vicinity)<font color='black'>");
+        weather = weather.replaceAll("P0", "<font color='red'>P0" + (translate ? "(Dust Whirls)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SQ", "<font color='red'>SQ" + (translate ? "(Squalls)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("FC", "<font color='red'>FC" + (translate ? "(Funnel Cloud)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("SS", "<font color='red'>SS" + (translate ? "(Sand Storm)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("DS", "<font color='red'>DS" + (translate ? "(Dust Storm)" : "") + "<font color='black'>");
+        weather = weather.replaceAll(" VC", "<font color='black'> VC" + (translate ? "(In Vicinity)" : "") + "<font color='black'>");
 
-        weather = weather.replaceAll("SKC", "SKC(Sky Clear)");
-        weather = weather.replaceAll("CLR", "CLR(Sky Clear)");
-        weather = weather.replaceAll("BKN", "BKN(Broken)");
-        weather = weather.replaceAll("SCT", "SCT(Scattered)");
-        weather = weather.replaceAll("OVC", "OVC(Overcast)");
-        weather = weather.replaceAll("PROB", "PROB(Probibility%)");
-        weather = weather.replaceAll("VV", "<font color='red'>VV(Vertical Visibility)<font color='black'>");
-        weather = weather.replaceAll("CB", "<font color='red'>CB(Cumulonimbus)<font color='black'>");
-        weather = weather.replaceAll("WS", "<font color='magenta'>WS(Wind Shear)<font color='black'>");
+        weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
+        weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
+        weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
+        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probibility%)" : ""));
+        weather = weather.replaceAll("VV", "<font color='red'>VV" + (translate ? "(Vertical Visibility)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("CB", "<font color='red'>CB" + (translate ? "(Cumulonimbus)" : "") + "<font color='black'>");
+        weather = weather.replaceAll("WS", "<font color='magenta'>WS" + (translate ? "(Wind Shear)" : "") + "<font color='black'>");
         
-        weather = weather.replaceAll(" 9999 ", " 9999(Visibility > 7SM) ");
-        weather = weather.replaceAll("QNH", "QNH(Minimum Altimeter)");
-        weather = weather.replaceAll("INS", "INS(Inches)");
+        weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
+        weather = weather.replaceAll("QNH", "QNH" + (translate ? "(Minimum Altimeter)" : ""));
+        weather = weather.replaceAll("INS", "INS" + (translate ? "(Inches)" : ""));
 
         for(int i = 1 ; i < strip.length; i++) {
             
             String weather1 = strip[i];
             
-            weather += " RMK(Remark) " + weather1;
+            weather += " RMK" + (translate ? "(Remark) " : " ") + weather1;
         }
 
         return weather;
@@ -219,7 +219,7 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatMetarHTML(String weatherAll) {
+    public static String formatMetarHTML(String weatherAll, boolean translate) {
         
         String strip[] = weatherAll.split("RMK");
         String weather = strip[0];
@@ -227,75 +227,75 @@ public class WeatherHelper {
         /*
          * Remarks
          */
-        weather = weather.replaceAll("\\+", "+(Heavy)");
-        weather = weather.replaceAll("\\-", "-(Light)");
-        weather = weather.replaceAll("IR", "IR(Runway Ice)");
-        weather = weather.replaceAll("WR", "WR(Wet Runway)");
-        weather = weather.replaceAll("LSR", "LSR(Loose Runway Snow)");
-        weather = weather.replaceAll("PSR", "PSR(Packed Runway Snow)");
-        weather = weather.replaceAll("LTG", "LTG(Lightning)");
-        weather = weather.replaceAll("TCU","TCU(Towering Cumulus)");
-        weather = weather.replaceAll("VRB", "VRB(Variable)");
+        weather = weather.replaceAll("\\+", "+" + (translate ? "(Heavy)" : ""));
+        weather = weather.replaceAll("\\-", "-" + (translate ? "(Light)" : ""));
+        weather = weather.replaceAll("IR", "IR" + (translate ? "(Runway Ice)" : ""));
+        weather = weather.replaceAll("WR", "WR" + (translate ? "(Wet Runway)" : ""));
+        weather = weather.replaceAll("LSR", "LSR" + (translate ? "(Loose Runway Snow)" : ""));
+        weather = weather.replaceAll("PSR", "PSR" + (translate ? "(Packed Runway Snow)" : ""));
+        weather = weather.replaceAll("LTG", "LTG" + (translate ? "(Lightning)" : ""));
+        weather = weather.replaceAll("TCU","TCU" + (translate ? "(Towering Cumulus)" : ""));
+        weather = weather.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
         
-        weather = weather.replaceAll("AUTO", "AUTO(Automated)");
-        weather = weather.replaceAll("COR", "COR(Corrected)");
-        weather = weather.replaceAll(" 9999 ", " 9999(Visibility > 7SM) ");
-        weather = weather.replaceAll("SPECI", "SPECI(Special)");
+        weather = weather.replaceAll("AUTO", "AUTO" + (translate ? "(Automated)" : ""));
+        weather = weather.replaceAll("COR", "COR" + (translate ? "(Corrected)" : ""));
+        weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
+        weather = weather.replaceAll("SPECI", "SPECI" + (translate ? "(Special)" : ""));
         
         /*
          * Description
          */
-        weather = weather.replaceAll("MI", "MI(Shallow)");
-        weather = weather.replaceAll("BC", "BC(Patches)");
-        weather = weather.replaceAll("DR", "DR(Low Drifting)");
-        weather = weather.replaceAll("BL", "BL(BLowing)");
-        weather = weather.replaceAll("SH", "SH(Showers)");
-        weather = weather.replaceAll("TS", "TS(Thunderstorm)");
-        weather = weather.replaceAll("FZ", "FZ(Freezing)");
-        weather = weather.replaceAll("PR", "PR(Partial)");
+        weather = weather.replaceAll("MI", "MI" + (translate ? "(Shallow)" : ""));
+        weather = weather.replaceAll("BC", "BC" + (translate ? "(Patches)" : ""));
+        weather = weather.replaceAll("DR", "DR" + (translate ? "(Low Drifting)" : ""));
+        weather = weather.replaceAll("BL", "BL" + (translate ? "(BLowing)" : ""));
+        weather = weather.replaceAll("SH", "SH" + (translate ? "(Showers)" : ""));
+        weather = weather.replaceAll("TS", "TS" + (translate ? "(Thunderstorm)" : ""));
+        weather = weather.replaceAll("FZ", "FZ" + (translate ? "(Freezing)" : ""));
+        weather = weather.replaceAll("PR", "PR" + (translate ? "(Partial)" : ""));
         /*
          * Precip
          */
-        weather = weather.replaceAll("DZ", "DZ(Drizzle)");
-        weather = weather.replaceAll("RA ", "RA (Rain)");
-        weather = weather.replaceAll("SN", "SN(Snow)");
-        weather = weather.replaceAll("SG", "SG(Snow Grains)");
-        weather = weather.replaceAll("IC", "IC(Ice Crystals)");
-        weather = weather.replaceAll("PL", "PL(Ice Pellets)");
-        weather = weather.replaceAll("GR", "GR(Hail)");
-        weather = weather.replaceAll("GS", "GS(Small Hail)");
-        weather = weather.replaceAll("UP", "UP(Unknown Precip.)");
+        weather = weather.replaceAll("DZ", "DZ" + (translate ? "(Drizzle)" : ""));
+        weather = weather.replaceAll("RA ", "RA " + (translate ? "(Rain)" : ""));
+        weather = weather.replaceAll("SN", "SN" + (translate ? "(Snow)" : ""));
+        weather = weather.replaceAll("SG", "SG" + (translate ? "(Snow Grains)" : ""));
+        weather = weather.replaceAll("IC", "IC" + (translate ? "(Ice Crystals)" : ""));
+        weather = weather.replaceAll("PL", "PL" + (translate ? "(Ice Pellets)" : ""));
+        weather = weather.replaceAll("GR", "GR" + (translate ? "(Hail)" : ""));
+        weather = weather.replaceAll("GS", "GS" + (translate ? "(Small Hail)" : ""));
+        weather = weather.replaceAll("UP", "UP" + (translate ? "(Unknown Precip.)" : ""));
 
         /*
          * Obstruction
          */
-        weather = weather.replaceAll("BR", "BR(Mist)");
-        weather = weather.replaceAll("FG", "FG(Fog)");
-        weather = weather.replaceAll("FU", "FU(Smoke)");
-        weather = weather.replaceAll("DU", "DU(Dust)");
-        weather = weather.replaceAll("SA", "SA(Sand)");
-        weather = weather.replaceAll("HZ", "HZ(Haze)");
-        weather = weather.replaceAll("PY", "PY(Spray)");
-        weather = weather.replaceAll("VA", "VA(Volcanic Ash)");
+        weather = weather.replaceAll("BR", "BR" + (translate ? "(Mist)" : ""));
+        weather = weather.replaceAll("FG", "FG" + (translate ? "(Fog)" : ""));
+        weather = weather.replaceAll("FU", "FU" + (translate ? "(Smoke)" : ""));
+        weather = weather.replaceAll("DU", "DU" + (translate ? "(Dust)" : ""));
+        weather = weather.replaceAll("SA", "SA" + (translate ? "(Sand)" : ""));
+        weather = weather.replaceAll("HZ", "HZ" + (translate ? "(Haze)" : ""));
+        weather = weather.replaceAll("PY", "PY" + (translate ? "(Spray)" : ""));
+        weather = weather.replaceAll("VA", "VA" + (translate ? "(Volcanic Ash)" : ""));
 
         /*
          * Other
          */
-        weather = weather.replaceAll("SQ", "SQ(Squalls)");
-        weather = weather.replaceAll("FC", "FC(Funnel Cloud)");
-        weather = weather.replaceAll("SS", "SS(Sand Storm)");
-        weather = weather.replaceAll("DS", "DS(Dust Storm)");
-        weather = weather.replaceAll(" VC", " VC(In Vicinity)");
+        weather = weather.replaceAll("SQ", "SQ" + (translate ? "(Squalls)" : ""));
+        weather = weather.replaceAll("FC", "FC" + (translate ? "(Funnel Cloud)" : ""));
+        weather = weather.replaceAll("SS", "SS" + (translate ? "(Sand Storm)" : ""));
+        weather = weather.replaceAll("DS", "DS" + (translate ? "(Dust Storm)" : ""));
+        weather = weather.replaceAll(" VC", " VC" + (translate ? "(In Vicinity)" : ""));
 
-        weather = weather.replaceAll("SKC", "SKC(Sky Clear)");
-        weather = weather.replaceAll("CLR", "CLR(Sky Clear)");
-        weather = weather.replaceAll("BKN", "BKN(Broken)");
-        weather = weather.replaceAll("SCT", "SCT(Scattered)");
-        weather = weather.replaceAll("OVC", "OVC(Overcast)");
-        weather = weather.replaceAll("PROB", "PROB(Probibility%)");
-        weather = weather.replaceAll("VV", "VV(Vertical Visibility)");
-        weather = weather.replaceAll("CB", "CB(Cumulonimbus)");
-        weather = weather.replaceAll("WS", "WS(Wind Shear)");
+        weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
+        weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
+        weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
+        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probibility%)" : ""));
+        weather = weather.replaceAll("VV", "VV" + (translate ? "(Vertical Visibility)" : ""));
+        weather = weather.replaceAll("CB", "CB" + (translate ? "(Cumulonimbus)" : ""));
+        weather = weather.replaceAll("WS", "WS" + (translate ? "(Wind Shear)" : ""));
 
         /*
          * These are remarks
@@ -305,21 +305,21 @@ public class WeatherHelper {
         
             String weather1 = strip[i];
             
-            weather1 = weather1.replaceAll("AO", "AO(Station Type)");
-            weather1 = weather1.replaceAll("RAB", "RAB(Rain Began)");
-            weather1 = weather1.replaceAll("RAE", "RAE(Rain Ended)");
-            weather1 = weather1.replaceAll("CIG", "CIG(Variable Ceiling)");
-            weather1 = weather1.replaceAll("SLP", "SLP(Sea Level Pressure)");
-            weather1 = weather1.replaceAll("RVRNO","RVRNO(No RVR reported)");
-            weather1 = weather1.replaceAll("NOSIG", "NOSIG(No Significant Change Expected)");
-            weather1 = weather1.replaceAll("TSNO", "TSNO(Thunderstom Info Not Available)");
-            weather1 = weather1.replaceAll("PK WND", "PK WND(Peak Wind)");
-            weather1 = weather1.replaceAll("WSHFT", "WSHFT(Wind Shift)");
-            weather1 = weather1.replaceAll("VIS", "VIS(Visibility)");
-            weather1 = weather1.replaceAll("PRESFR", "PRESFR(Rapid Pressure Change)");
-            weather1 = weather1.replaceAll("\\$", "\\$(Station Maintenance Needed)");
+            weather1 = weather1.replaceAll("AO", "AO" + (translate ? "(Station Type)" : ""));
+            weather1 = weather1.replaceAll("RAB", "RAB" + (translate ? "(Rain Began)" : ""));
+            weather1 = weather1.replaceAll("RAE", "RAE" + (translate ? "(Rain Ended)" : ""));
+            weather1 = weather1.replaceAll("CIG", "CIG" + (translate ? "(Variable Ceiling)" : ""));
+            weather1 = weather1.replaceAll("SLP", "SLP" + (translate ? "(Sea Level Pressure)" : ""));
+            weather1 = weather1.replaceAll("RVRNO","RVRNO" + (translate ? "(No RVR reported)" : ""));
+            weather1 = weather1.replaceAll("NOSIG", "NOSIG" + (translate ? "(No Significant Change Expected)" : ""));
+            weather1 = weather1.replaceAll("TSNO", "TSNO" + (translate ? "(Thunderstom Info Not Available)" : ""));
+            weather1 = weather1.replaceAll("PK WND", "PK WND" + (translate ? "(Peak Wind)" : ""));
+            weather1 = weather1.replaceAll("WSHFT", "WSHFT" + (translate ? "(Wind Shift)" : ""));
+            weather1 = weather1.replaceAll("VIS", "VIS" + (translate ? "(Visibility)" : ""));
+            weather1 = weather1.replaceAll("PRESFR", "PRESFR" + (translate ? "(Rapid Pressure Change)" : ""));
+            weather1 = weather1.replaceAll("\\$", "\\$" + (translate ? "(Station Maintenance Needed)" : ""));
             
-            weather += " RMK(Remark) " + weather1;
+            weather += " RMK" + (translate ? "(Remark)" : " ") + weather1;
         }
 
 
@@ -331,7 +331,7 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatWindsHTML(String weather) {
+    public static String formatWindsHTML(String weather, boolean translate) {
         /*
          * Read wind as XXKT
          */
@@ -370,7 +370,7 @@ public class WeatherHelper {
              */
             output = "<font color='magenta'>" + original + "<font color='black'>";
         }
-        output = output.replaceAll("VRB", "VRB(Variable)");
+        output = output.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
         return output;
     }
     
@@ -379,36 +379,36 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatPirepHTML(String weather) {
-        weather = weather.replaceAll("UA", "UA(Upper Air)");
-        weather = weather.replaceAll("UUA", "UUA(Urgent)");
-        weather = weather.replaceAll("/OV", "/OV(Location)");
-        weather = weather.replaceAll("/TM", "/TM(Time UTC)");
-        weather = weather.replaceAll("/FL", "/FL(Altimeter MSL)");
-        weather = weather.replaceAll("UNKN", "UNKN(Unknown)");
-        weather = weather.replaceAll("DURC", "DURC(During Climb)");
-        weather = weather.replaceAll("DURD", "DURD(During Descent)");
-        weather = weather.replaceAll("/TP", "/TP(Aircraft Type)");
-        weather = weather.replaceAll("/SK", "/SK(Sky Condition)");
-        weather = weather.replaceAll("SKC", "SKC(Sky Clear)");
-        weather = weather.replaceAll("BKN", "BKN(Broken)");
-        weather = weather.replaceAll("SCT", "SCT(Scattered)");
-        weather = weather.replaceAll("OVC", "OVC(Overcast)");
-        weather = weather.replaceAll("/WX", "/WX(Weather)");
-        weather = weather.replaceAll("/TA", "/TA(Temperature)");
-        weather = weather.replaceAll("/WV", "/WV(Wind Velocity)");
-        weather = weather.replaceAll("/IAS", "/IAS(Indicated Airspeed)");
-        weather = weather.replaceAll("/IC", "/IC(Ice)");
-        weather = weather.replaceAll("CLR", "CLR(Clear)");
-        weather = weather.replaceAll("MXD", "MXD(Mixed)");
-        weather = weather.replaceAll("RIM", "RIM(Rime)");
-        weather = weather.replaceAll("TRC", "TRC(Trace)");
-        weather = weather.replaceAll("MOD", "MOD(Moderate)");
-        weather = weather.replaceAll("LGT", "LGT(Light)");
-        weather = weather.replaceAll("SVR", "SVR(Severe)");
-        weather = weather.replaceAll("HVY", "HVY(Heavy)");
-        weather = weather.replaceAll("/RM", "/RM(Remarks)");
-        weather = weather.replaceAll("/TB", "/TB(Turbulence)");
+    public static String formatPirepHTML(String weather, boolean translate) {
+        weather = weather.replaceAll("UA", "UA" + (translate ? "(Upper Air)" : ""));
+        weather = weather.replaceAll("UUA", "UUA" + (translate ? "(Urgent)" : ""));
+        weather = weather.replaceAll("/OV", "/OV" + (translate ? "(Location)" : ""));
+        weather = weather.replaceAll("/TM", "/TM" + (translate ? "(Time UTC)" : ""));
+        weather = weather.replaceAll("/FL", "/FL" + (translate ? "(Altimeter MSL)" : ""));
+        weather = weather.replaceAll("UNKN", "UNKN" + (translate ? "(Unknown)" : ""));
+        weather = weather.replaceAll("DURC", "DURC" + (translate ? "(During Climb)" : ""));
+        weather = weather.replaceAll("DURD", "DURD" + (translate ? "(During Descent)" : ""));
+        weather = weather.replaceAll("/TP", "/TP" + (translate ? "(Aircraft Type)" : ""));
+        weather = weather.replaceAll("/SK", "/SK" + (translate ? "(Sky Condition)" : ""));
+        weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
+        weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
+        weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
+        weather = weather.replaceAll("/WX", "/WX" + (translate ? "(Weather)" : ""));
+        weather = weather.replaceAll("/TA", "/TA" + (translate ? "(Temperature)" : ""));
+        weather = weather.replaceAll("/WV", "/WV" + (translate ? "(Wind Velocity)" : ""));
+        weather = weather.replaceAll("/IAS", "/IAS" + (translate ? "(Indicated Airspeed)" : ""));
+        weather = weather.replaceAll("/IC", "/IC" + (translate ? "(Ice)" : ""));
+        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear)" : ""));
+        weather = weather.replaceAll("MXD", "MXD" + (translate ? "(Mixed)" : ""));
+        weather = weather.replaceAll("RIM", "RIM" + (translate ? "(Rime)" : ""));
+        weather = weather.replaceAll("TRC", "TRC" + (translate ? "(Trace)" : ""));
+        weather = weather.replaceAll("MOD", "MOD" + (translate ? "(Moderate)" : ""));
+        weather = weather.replaceAll("LGT", "LGT" + (translate ? "(Light)" : ""));
+        weather = weather.replaceAll("SVR", "SVR" + (translate ? "(Severe)" : ""));
+        weather = weather.replaceAll("HVY", "HVY" + (translate ? "(Heavy)" : ""));
+        weather = weather.replaceAll("/RM", "/RM" + (translate ? "(Remarks)" : ""));
+        weather = weather.replaceAll("/TB", "/TB" + (translate ? "(Turbulence)" : ""));
 
         return weather;
     }
@@ -477,7 +477,7 @@ public class WeatherHelper {
                 visString = portion.substring(visstart);
                 
                 if(P6) {
-                    portion = portion.substring(0, visstart) + "<font color='green'>" + "P6(6+)" + "<font color='black'>" + "SM";                    
+                    portion = portion.substring(0, visstart) + "<font color='green'>" + "P6" + "<font color='black'>" + "SM";                    
                 }
                 else if(vis >= 5) {
                     portion = portion.substring(0, visstart) + "<font color='green'>" + visString + "<font color='black'>" + "SM";

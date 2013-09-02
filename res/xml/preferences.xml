@@ -74,7 +74,12 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:title="@string/ShowTrackLabel"
 	    android:summary="@string/ShowTrackSummary"
 	    android:defaultValue="true"/>
-	<CheckBoxPreference
+    <CheckBoxPreference
+        android:key="@string/XlateWeather"
+        android:title="@string/XlateWeatherLabel"
+        android:summary="@string/XlateWeatherSummary"
+        android:defaultValue="false"/>
+    <CheckBoxPreference
 	    android:key="@string/TrackUp"
 	    android:title="@string/TrackUpLabel"
 	    android:summary="@string/TrackUpSummary"
