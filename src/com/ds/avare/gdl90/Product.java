@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.gdl90;
 
+import java.util.Calendar;
+
 /**
  * 
  * @author zkhan
@@ -20,6 +22,7 @@ public abstract class Product {
 
     private int mType;
     
+    private Calendar mTime;
     
     public Product(int type) {
         mType = type; 
@@ -28,7 +31,21 @@ public abstract class Product {
     public int getType() {
         return mType;
     }
+    
+    public void setTime(int month, int day, int hour, int min, int sec) {
+        mTime = Calendar.getInstance();
+        mTime.set(mTime.get(Calendar.YEAR),
+                month < 0 ? mTime.get(Calendar.MONTH) : month,
+                day < 0 ? mTime.get(Calendar.DAY_OF_MONTH) : day,
+                hour,
+                min,
+                sec < 0 ? mTime.get(Calendar.SECOND) : sec);
+    }
 
+    public Calendar getTime() {
+        return mTime;
+    }
+    
     protected abstract void parse(byte msg[]);
 
 }

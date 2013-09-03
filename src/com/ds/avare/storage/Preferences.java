@@ -397,14 +397,6 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean isTrackUp() {
-        return(mPref.getBoolean(mContext.getString(R.string.TrackUp), false));
-    }
-
-    /**
-     * 
-     * @return
-     */
     public boolean isHelicopter() {
         return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
     }

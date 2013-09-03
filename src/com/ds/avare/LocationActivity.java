@@ -101,6 +101,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mMenuButton;
     private Button mSimButton;
     private Button mDrawButton;
+    private Button mTrackButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
@@ -315,10 +316,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void gestureCallBack(int event, String airport) {
                 if(GestureInterface.LONG_PRESS == event) {
-                    AnimateButton t = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mCenterButton, mMenuButton, mDrawButton);
-                    t.animate(true);
-                    AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-                    c.animate(true);
                     if(mLocationView.getDraw()) {
                         /*
                          * Show animation button for draw clear
@@ -415,11 +412,17 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton);
+                AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
+                AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
+                AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 b.animate(true);
                 d.animate(true);
+                c.animate(true);
+                s.animate(true);
+                t.animate(true);
                 f.animate(true);
             }
             
@@ -542,6 +545,25 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 else {
                     mPref.setSimMode(false);
+                }
+            }
+            
+        });
+
+        mTrackButton = (Button)view.findViewById(R.id.location_button_track);
+        mTrackButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                if(mSimButton.getText().equals(getString(R.string.TrackUp))) {
+                    mLocationView.setTrackUp(true);
+                }
+                else {
+                    mLocationView.setTrackUp(false);
                 }
             }
             

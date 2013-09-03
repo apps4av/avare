@@ -195,6 +195,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private float                      mLastXDraw;
     private float                      mLastYDraw;
 
+    private boolean                    mTrackUp;
+    
     /*
      * Shadow length 
      */
@@ -227,6 +229,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = null;
         mThreshold = 0;
         mOnChart = null;
+        mTrackUp = false;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -353,7 +356,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do nnot
              */
-            if(mDraw && !mPref.isTrackUp()) {
+            if(mDraw && mTrackUp) {
                 float x = mCurrTouchPoint.getX();
                 float y = mCurrTouchPoint.getY();
                 /*
@@ -382,10 +385,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * 
              */
             if(mPan.setMove(
-                    mPref.isTrackUp() ? 
+                    mTrackUp ? 
                             mPan.getMoveX() : 
                             newObjPosAndScale.getXOff(),
-                    mPref.isTrackUp() ? 
+                    mTrackUp ? 
                             mPan.getMoveY() : 
                             newObjPosAndScale.getYOff())) {
                 /*
@@ -398,7 +401,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            if(!mPref.isTrackUp()) {
+            if(!mTrackUp) {
                 if(mPointProjection == null) {
                     double x0 = mCurrTouchPoint.getXs()[0];
                     double y0 = mCurrTouchPoint.getYs()[0];
@@ -965,7 +968,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	mPaint.setTextSize(getHeight() / mTextDiv);
         mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
     	
-        if(mPref.isTrackUp() && (mGpsParams != null)) {
+        if(mTrackUp && (mGpsParams != null)) {
             canvas.save();
             /*
              * Rotate around current position
@@ -981,7 +984,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
-        if(mPref.isTrackUp()) {
+        if(mTrackUp) {
             canvas.restore();
         }
     	drawMETARText(canvas);
@@ -1391,7 +1394,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * XXX:
              * For track up, currently there is no math to find anything with long press.
              */
-            if(mPref.isTrackUp()) {
+            if(mTrackUp) {
                 return;
             }
 
@@ -1470,5 +1473,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public String getChart() {
         return mOnChart;
+    }
+    
+    /**
+     * 
+     * @param tu
+     */
+    public void setTrackUp(boolean tu) {
+        mTrackUp = tu;
     }
 }

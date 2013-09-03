@@ -22,11 +22,6 @@ public class FisBuffer {
 
     private int mSize;
     private byte mBuffer[];
-    private int mSlotId;
-    private int mFisbId;
-    private float mLat;
-    private float mLon;
-    private boolean mPositionValid;
     private LinkedList<Product> mProducts;
     
     /**
@@ -44,11 +39,6 @@ public class FisBuffer {
         mBuffer = buffer;
         mProducts = new LinkedList<Product>();
         mBuffer = new byte[mSize];
-        mPositionValid = pvalid;
-        mFisbId = fisbId;
-        mSlotId = slotId;
-        mLat = lat;
-        mLon = lon;
         System.arraycopy(buffer, offset, mBuffer, 0, mSize);
     }
     

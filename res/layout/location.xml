@@ -116,6 +116,17 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="visible" />
 
         <ToggleButton
+            android:id="@+id/location_button_track"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_above="@+id/location_button_sim"
+            android:layout_alignParentRight="true"
+            android:textOff="@string/NorthUp"
+            android:textOn="@string/TrackUp"
+            android:layout_width="150dp"
+            android:textStyle="bold"/>
+        
+        <ToggleButton
             android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"
             android:visibility="invisible"

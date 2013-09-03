@@ -18,21 +18,19 @@ package com.ds.avare.gdl90;
  */
 public class ProductFactory {
 
-    
     public static Product buildProduct(byte bufin[]) {
 
         BitInputStream s = new BitInputStream(bufin);
 
-        if(false) {
-            s.getBits(16);
-            /*
-             * Skip this. This over the air does not contain ADPU header.
-             */
-        }
+        /*
+         * XXX:
+         * Skip this. This over the air does not contain ADPU header.
+         *   s.getBits(16);
+         */
 
         boolean flagAppMethod = s.getBits(1) != 0;
         boolean flagGeoLocator = s.getBits(1) != 0;
-        boolean flagProviderSpec = s.getBits(1) != 0;
+        s.getBits(1); /* Provider spec flag, discard */
 
         int productID = s.getBits(11);
       
@@ -52,26 +50,22 @@ public class ProductFactory {
         // 01 - sec
         // 10 - day
         // 11 - day, sec
+        int month = -1, day = -1, hours = -1, mins = -1, secs = -1;
         if((timeOpts & 0x02) != 0) {
-            int month = s.getBits(4);
-            int day   = s.getBits(5);
+            month = s.getBits(4);
+            day   = s.getBits(5);
         }
-        int hours = s.getBits(5);
-        int mins  = s.getBits(6);
+        hours = s.getBits(5);
+        mins  = s.getBits(6);
         if((timeOpts & 0x01) != 0) {
-            int secs = s.getBits(6);
+            secs = s.getBits(6);
         }
       
         if(segFlag) {
-            if(false) {     // do it the DO-267A way
-                int productFileLength = s.getBits(12);
-                int apduNumber = s.getBits(12);  
-            }
-            else {        // do it the mitre way
-                int productFileID = s.getBits(10);
-                int productFileLength = s.getBits(9);
-                int apduNumber = s.getBits(9);
-            }
+            /*
+             * XXX:
+             * Implement this. Uncommon?
+             */
             return null;
         }
       
@@ -126,6 +120,7 @@ public class ProductFactory {
          */
         if(null != p) {
             p.parse(data);
+            p.setTime(month, day, hours, mins, secs);
         }
         
         return(p);   
