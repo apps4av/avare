@@ -356,7 +356,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do nnot
              */
-            if(mDraw && mTrackUp) {
+            if(mDraw && (!mTrackUp)) {
                 float x = mCurrTouchPoint.getX();
                 float y = mCurrTouchPoint.getY();
                 /*
@@ -1458,6 +1458,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void setDraw(boolean b) {
         mDraw = b;
+        invalidate();
     }
 
     /**
@@ -1481,5 +1482,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void setTrackUp(boolean tu) {
         mTrackUp = tu;
+        invalidate();
     }
 }

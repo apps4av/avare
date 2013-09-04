@@ -559,7 +559,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                if(mSimButton.getText().equals(getString(R.string.TrackUp))) {
+                if(mTrackButton.getText().equals(getString(R.string.TrackUp))) {
                     mLocationView.setTrackUp(true);
                 }
                 else {
