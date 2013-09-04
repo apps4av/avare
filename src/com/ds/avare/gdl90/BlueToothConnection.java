@@ -19,6 +19,8 @@ import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.os.Message;
 
 /**
  * 
@@ -27,18 +29,117 @@ import android.bluetooth.BluetoothSocket;
  */
 public class BlueToothConnection {
 
-    private BluetoothAdapter mBtAdapter = null;
-    private BluetoothSocket mBtSocket = null;
-    private InputStream mStream;
+    private static BluetoothAdapter mBtAdapter = null;
+    private static BluetoothSocket mBtSocket = null;
+    private static InputStream mStream = null;
+    private static boolean mConnected = false;
+    private static boolean mRunning = false;
+    private static BlueToothConnectionInterface mListener;
     
+    private static BlueToothConnection mConnection;
+    
+
     /*
      *  Well known SPP UUID
      */
     private static final UUID MY_UUID =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    public BlueToothConnection() {
-        mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+    /**
+     * 
+     */
+    private BlueToothConnection() {
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static BlueToothConnection getInstance() {
+        if(null == mConnection) {
+            mConnection = new BlueToothConnection();
+            mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+            mConnected = false;
+        }
+        return mConnection;
+    }
+
+    /**
+     * 
+     */
+    public void stop() {
+        disconnect();
+        mRunning = false;
+    }
+
+    /**
+     * 
+     */
+    public void registerListener(BlueToothConnectionInterface listener) {
+        mListener = listener;
+    }
+    
+    /**
+     * 
+     */
+    public void start() {
+        mRunning = true;
+
+        /*
+         * Thread that reads BT
+         */
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                
+                byte[] buffer = new byte[32768];
+                DataBuffer dbuffer = new DataBuffer(32768);
+                Decode decode = new Decode();
+                
+                /*
+                 * This state machine will keep trying to connect to 
+                 * ADBS receiver
+                 */
+                while(mRunning) {
+                    if(!mConnected) {
+                        connect("XGPS170");
+                    }
+                    else {
+                        
+                        /*
+                         * Read.
+                         */
+                        int red = 0;
+                        try {
+                            red = read(buffer);
+                        }
+                        catch (Exception e) {                            
+                        }
+                        if(red <= 0) {
+                            mConnected = false;
+                            continue;
+                        }
+                        dbuffer.put(buffer, red);
+                        
+                        byte[] buf;
+                        while(null != (buf = dbuffer.get())) {
+
+                            /*
+                             * Get packets, decode
+                             */
+                            com.ds.avare.gdl90.Message m = decode.decode(buf);
+                            /*
+                             * Post on UI thread.
+                             */
+                            Message msg = mHandler.obtainMessage();
+                            msg.obj = m;
+                            mHandler.sendMessage(msg);
+                        }
+                    }
+                }
+            }
+        };
+        thread.start();
     }
     
     /**
@@ -47,7 +148,7 @@ public class BlueToothConnection {
      * name matched this string.
      * @return
      */
-    public boolean connect(String devNameMatch) {
+    private boolean connect(String devNameMatch) {
         if(null == mBtAdapter) {
             return false;
         }
@@ -102,15 +203,17 @@ public class BlueToothConnection {
             } 
             catch(Exception e2) {
             }
+            mConnected = false;
         } 
 
+        mConnected = true;
         return true;
     }
     
     /**
      * 
      */
-    public void disconnect() {
+    private void disconnect() {
         try {
             mStream.close();
         } 
@@ -122,6 +225,7 @@ public class BlueToothConnection {
         } 
         catch(Exception e2) {
         }    
+        mConnected = false;
         
     }
 
@@ -129,15 +233,35 @@ public class BlueToothConnection {
      * 
      * @return
      */
-    public int read(byte[] buffer) {
+    private int read(byte[] buffer) {
         int red = -1;
         try {
             red = mStream.read(buffer, 0, buffer.length);
         } 
         catch(Exception e) {
-            
+            mConnected = false;
         }
         return red;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isConnected() {
+        return mConnected;
+    }
+    
+    /**
+     * Send a message to the lone listener.
+     */
+    private static Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {            
+            com.ds.avare.gdl90.Message m = (com.ds.avare.gdl90.Message)msg.obj;
+            if(mListener != null) {
+                mListener.messageCallback(m);
+            }
+        }
+    };
 }
