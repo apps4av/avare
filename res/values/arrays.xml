@@ -294,10 +294,19 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resNameHeli">
         <item>Grand Canyon</item>
+        <item>Balt-Washington Heli</item>
+        <item>Boston Heli</item>
+        <item>Chicago Heli</item>
+        <item>Dallas-Ft-Worth Heli</item>
+        <item>Detroit Heli</item>
+        <item>Gulf Coast Heli</item>
+        <item>Houston Heli</item>
+        <item>Los Angeles Heli</item>
+        <item>New York Heli</item>
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v4</item>
+        <item>databases_v5</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -564,6 +573,15 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFilesHeli">
         <item>GrandCanyon</item>
+        <item>BaltimoreWashingtonHeli9Front</item>
+        <item>BostonHeli6Front</item>
+        <item>ChicagoHeli6Front</item>
+        <item>Dallas-FtWorthHeli5Front</item>
+        <item>DetroitHeli1</item>
+        <item>GulfCoastHel-WAC27</item>
+        <item>HoustonHeli7</item>
+        <item>LosAngelesHeli9</item>
+        <item>NewYorkHeli10Front</item>
     </string-array>
     
     <string-array name="ChartType">
