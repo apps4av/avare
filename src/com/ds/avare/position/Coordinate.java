@@ -22,6 +22,8 @@ public class Coordinate {
     private double mLat;
     private double mLon;
    
+    private boolean mSeparate;
+    
     /**
      * 
      * @param lon
@@ -30,6 +32,7 @@ public class Coordinate {
     public Coordinate(double lon, double lat) {
         mLat = lat;
         mLon = lon;
+        mSeparate = false;
     }
     
     /**
@@ -50,4 +53,18 @@ public class Coordinate {
         return mLat;
     }
 
+    /**
+     * 
+     */
+    public void makeSeparate()  {
+       mSeparate = true; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isSeparate() {
+        return mSeparate;
+    }
 }

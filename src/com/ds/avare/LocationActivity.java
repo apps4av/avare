@@ -462,7 +462,7 @@ public class LocationActivity extends Activity implements Observer {
             public void onClick(View v) {
                 if(mService != null) {
                     if(mLocationView.getDraw()) {
-                        mService.clearDraw();
+                        mService.getDraw().clear();
                     }
                 }
             }            
@@ -523,7 +523,14 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
         
+        
         mSimButton = (Button)view.findViewById(R.id.location_button_sim);
+        if(mPref.isSimulationMode()) {
+            mSimButton.setText(getString(R.string.SimulationMode));
+        }
+        else {
+            mSimButton.setText(getString(R.string.gps));            
+        }
         mSimButton.setOnClickListener(new OnClickListener() {
 
             @Override

@@ -21,9 +21,9 @@ import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
+import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
@@ -65,6 +65,8 @@ public class StorageService extends Service {
      * Store this
      */
     private Movement mMovement;
+    
+    private Draw mDraw;
     
     /**
      * GPS
@@ -115,11 +117,6 @@ public class StorageService extends Service {
      * A list of GPS listeners
      */
     private LinkedList<GpsInterface> mGpsCallbacks;
-
-    /*
-     * A list of draw points
-     */
-    private LinkedList<Coordinate> mDrawPoints;
 
     /*
      * A diagram bitmap
@@ -201,7 +198,7 @@ public class StorageService extends Service {
         mPlateIndex = 0;
         mAfdIndex = 0;
         
-        mDrawPoints = new LinkedList<Coordinate>();
+        mDraw = new Draw();
         
         /*
          * Monitor TFR every hour.
@@ -599,24 +596,10 @@ public class StorageService extends Service {
     }
 
     /**
-     * Clear drawing.
-     */
-    public void clearDraw() {
-        mDrawPoints.clear();
-    }
-    
-    /**
-     * Add a point to the drawing points.
-     */
-    public void addDrawPoint(double lon, double lat) {
-        mDrawPoints.add(new Coordinate(lon, lat));
-    }
-
-    /**
      * Get points to draw
      * @return
      */
-    public LinkedList<Coordinate> getDraw() {
-        return mDrawPoints;
+    public Draw getDraw() {
+        return mDraw;
     }
 }
