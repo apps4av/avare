@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.gdl90;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.UUID;
@@ -37,6 +40,8 @@ public class BlueToothConnection {
     private static BlueToothConnectionInterface mListener;
     
     private static BlueToothConnection mConnection;
+    
+    private static final String mStoreFile = "/sdcard/avare1/adsb-bin.dat";
     
 
     /*
@@ -68,7 +73,6 @@ public class BlueToothConnection {
      * 
      */
     public void stop() {
-        disconnect();
         mRunning = false;
     }
 
@@ -84,7 +88,7 @@ public class BlueToothConnection {
      */
     public void start() {
         mRunning = true;
-
+        
         /*
          * Thread that reads BT
          */
@@ -95,6 +99,23 @@ public class BlueToothConnection {
                 byte[] buffer = new byte[32768];
                 DataBuffer dbuffer = new DataBuffer(32768);
                 Decode decode = new Decode();
+                File file;
+                BufferedOutputStream bos = null;
+                
+                /*
+                 * Store file for debug? 
+                 */
+                if(mStoreFile != null) {
+                    try {
+                        file = new File(mStoreFile);
+                        if(!file.exists()){
+                            file.createNewFile();
+                        }
+                        bos = new BufferedOutputStream(new FileOutputStream(file, true));                    
+                    }
+                    catch (Exception e) {
+                    }
+                }               
                 
                 /*
                  * This state machine will keep trying to connect to 
@@ -102,7 +123,13 @@ public class BlueToothConnection {
                  */
                 while(mRunning) {
                     if(!mConnected) {
-                        connect("XGPS170");
+                        try {
+                            Thread.sleep(1000);
+                        }
+                        catch (Exception e) {
+                            
+                        }
+                        continue;
                     }
                     else {
                         
@@ -116,10 +143,27 @@ public class BlueToothConnection {
                         catch (Exception e) {                            
                         }
                         if(red <= 0) {
-                            mConnected = false;
+                            try {
+                                Thread.sleep(1000);
+                            }
+                            catch (Exception e) {
+                                
+                            }
                             continue;
                         }
                         dbuffer.put(buffer, red);
+                     
+                        /**
+                         * Store data to file for debugging if set to debug
+                         */
+                        if(mStoreFile != null) {
+                            try {
+                                bos.write(buffer, 0, red);
+                                bos.flush();
+                            } 
+                            catch (Exception e) {
+                            }
+                        }
                         
                         byte[] buf;
                         while(null != (buf = dbuffer.get())) {
@@ -137,7 +181,15 @@ public class BlueToothConnection {
                         }
                     }
                 }
+                if(mStoreFile != null) {
+                    try {
+                        bos.close();
+                    } 
+                    catch (Exception e) {
+                    }
+                }
             }
+            
         };
         thread.start();
     }
@@ -148,7 +200,7 @@ public class BlueToothConnection {
      * name matched this string.
      * @return
      */
-    private boolean connect(String devNameMatch) {
+    public boolean connect(String devNameMatch) {
         if(null == mBtAdapter) {
             return false;
         }
@@ -157,6 +209,9 @@ public class BlueToothConnection {
         /*
          * Find device
          */
+        if(null == pairedDevices) {
+            return false;
+        }
         BluetoothDevice device = null;
         for(BluetoothDevice bt : pairedDevices) {
            if(bt.getName().contains(devNameMatch)) {
@@ -164,6 +219,16 @@ public class BlueToothConnection {
            }
         }
    
+        /*
+         * Stop discovery
+         */
+        mBtAdapter.cancelDiscovery();
+ 
+        if(null == device) {
+            Logger.Logit("No connect to BT");
+            return false;
+        }
+        
         /*
          * Make socket
          */
@@ -174,11 +239,6 @@ public class BlueToothConnection {
             return false;
         }
     
-        /*
-         * Stop discovery
-         */
-        mBtAdapter.cancelDiscovery();
- 
         /*
          * Establish the connection.  This will block until it connects.
          */
@@ -212,25 +272,6 @@ public class BlueToothConnection {
     
     /**
      * 
-     */
-    private void disconnect() {
-        try {
-            mStream.close();
-        } 
-        catch(Exception e2) {
-        }
-        
-        try {
-            mBtSocket.close();
-        } 
-        catch(Exception e2) {
-        }    
-        mConnected = false;
-        
-    }
-
-    /**
-     * 
      * @return
      */
     private int read(byte[] buffer) {
@@ -250,6 +291,25 @@ public class BlueToothConnection {
      */
     public boolean isConnected() {
         return mConnected;
+    }
+    
+    /**
+     * 
+     */
+    public void disconnect() {
+        try {
+            mStream.close();
+        } 
+        catch(Exception e2) {
+        }
+        
+        try {
+            mBtSocket.close();
+        } 
+        catch(Exception e2) {
+        }    
+        mConnected = false;
+
     }
     
     /**

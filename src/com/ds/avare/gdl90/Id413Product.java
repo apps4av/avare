@@ -35,7 +35,7 @@ public class Id413Product extends Product {
         /*
          * Decode text: begins with @METAR, @TAF, @SPECI, @SUA, @PIREP, @WINDS
          */
-        for(i = 0; i < len; i += 3) { 
+        for(i = 0; i < (len - 3); i += 3) { 
             holder = 
                     (((int)msg[i + 0] & 0xFF) << 24) + 
                     (((int)msg[i + 1] & 0xFF) << 16) +
