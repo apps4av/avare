@@ -622,7 +622,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Heading, Speed
              */
             canvas.drawText(
-                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, "", mGpsParams.getBearing(), mGpsParams.getDeclinition()),
+                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, null, mGpsParams.getBearing(), mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
             
         }

@@ -186,10 +186,14 @@ public class Helper {
      * @return
      */
     public static String makeLine(double value, String unit, String eta, double heading, double variation) {
-        String valTrunc = String.format(Locale.getDefault(), "%4d", (Math.round(value)));
-        return 
+        String valTrunc = String.format(Locale.getDefault(), "%3d", (Math.round(value)));
+        if(eta == null) {
+            eta = "     ";
+        }
+        String ret = 
                 valTrunc + unit + " " +  eta + " " +
-                Helper.correctConvertHeading(Math.round(getMagneticHeading(heading, variation))) + '\u00B0';
+                        Helper.correctConvertHeading(Math.round(getMagneticHeading(heading, variation))) + '\u00B0';
+        return ret; 
     }
     
     /**
