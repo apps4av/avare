@@ -342,7 +342,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldShowBackground() {
-        return(mPref.getBoolean(mContext.getString(R.string.Background), false));
+        return(mPref.getBoolean(mContext.getString(R.string.Background), true));
     }
 
     /**

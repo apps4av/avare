@@ -93,7 +93,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:key="@string/Background"
         android:title="@string/BackgroundLabel"
         android:summary="@string/BackgroundSummary"
-        android:defaultValue="false"/>
+        android:defaultValue="true"/>
     <CheckBoxPreference
         android:key="@string/IconHelicopter"
         android:title="@string/IconHelicopterLabel"
