@@ -418,7 +418,7 @@ public class Destination extends Observable {
 	            if(null != mName) {
     	            FilenameFilter filter = new FilenameFilter() {
     	                public boolean accept(File directory, String fileName) {
-    	                    return fileName.endsWith(".jpg");
+    	                    return fileName.endsWith(Preferences.IMAGE_EXTENSION);
     	                }
     	            };
                     String plates[] = null;
@@ -431,7 +431,7 @@ public class Destination extends Observable {
                             /*
                              * Add plates/AD
                              */
-                            String tokens[] = plates[plate].split(".jpg");
+                            String tokens[] = plates[plate].split(Preferences.IMAGE_EXTENSION);
                             tmp0[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
                                     tokens[0];
                         }
@@ -475,8 +475,8 @@ public class Destination extends Observable {
                 if(null != mAfdName) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
-                            return (fileName.matches(mAfdName + ".jpg") || 
-                                    fileName.matches(mAfdName + "-[0-9]+.jpg"));
+                            return (fileName.matches(mAfdName + Preferences.IMAGE_EXTENSION) || 
+                                    fileName.matches(mAfdName + "-[0-9]+" + Preferences.IMAGE_EXTENSION));
                         }
                     };
                     String afd[] = null;
@@ -489,7 +489,7 @@ public class Destination extends Observable {
                             /*
                              * Add A/FD
                              */
-                            String tokens[] = afd[plate].split(".jpg");
+                            String tokens[] = afd[plate].split(Preferences.IMAGE_EXTENSION);
                             tmp1[plate] = mPref.mapsFolder() + "/afd/" +
                                     tokens[0];             
                         }
@@ -694,10 +694,10 @@ public class Destination extends Observable {
             /*
              * Continued must follow main
              */
-            if(o1.contains(",-CONT.") && o1.startsWith(o2.replace(".jpg", ""))) {
+            if(o1.contains(",-CONT.") && o1.startsWith(o2.replace(Preferences.IMAGE_EXTENSION, ""))) {
                 return 1;
             }
-            if(o2.contains(",-CONT.") && o2.startsWith(o1.replace(".jpg", ""))) {
+            if(o2.contains(",-CONT.") && o2.startsWith(o1.replace(Preferences.IMAGE_EXTENSION, ""))) {
                 return -1;
             }
             

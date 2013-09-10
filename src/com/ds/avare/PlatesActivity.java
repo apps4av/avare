@@ -181,7 +181,7 @@ public class PlatesActivity extends Activity {
                             pos = 0;
                         }
                         mSpinner.setSelection(pos);
-                        mService.loadDiagram(plates[pos] + ".jpg");
+                        mService.loadDiagram(plates[pos] + Preferences.IMAGE_EXTENSION);
                         mPlatesView.setBitmap(mService.getDiagram());
                         String name = mList.get(pos);
                         if(name.equals(Destination.AD)) {

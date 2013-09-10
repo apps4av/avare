@@ -20,6 +20,7 @@ import java.util.List;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -123,7 +124,7 @@ public class AirportActivity extends Activity {
                         }
                         mSpinner.setSelection(pos);
                         if(pos > 0) {
-                            mService.loadDiagram(afd[pos - 1] + ".jpg");
+                            mService.loadDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
                             mAfdView.setBitmap(mService.getDiagram());
                             /*
                              * Show graphics
