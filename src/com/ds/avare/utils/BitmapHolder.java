@@ -87,7 +87,7 @@ public class BitmapHolder {
      * @param b is bitmap to draw
      * @param name is the name to store
      */
-    public void drawInBitmap(BitmapHolder b, String name) {
+    public void drawInBitmap(BitmapHolder b, String name, int x, int y) {
         /*
          * This should mark bitmap dirty
          */
@@ -101,7 +101,7 @@ public class BitmapHolder {
         if(null == b.getBitmap()) {
             return;
         }
-        mTransform.setTranslate(0, 0);
+        mTransform.setTranslate(x, y);
         mCanvas.drawBitmap(b.getBitmap(), mTransform, null);
     }
 
@@ -124,9 +124,13 @@ public class BitmapHolder {
      * @param name
      * Get bitmap from a file
      */
-    public BitmapHolder(Context context, Preferences pref, String name) {
+    public BitmapHolder(Context context, Preferences pref, String name, int sampleSize) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inSampleSize = sampleSize;
+
         try {
-            mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name);
+            mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, opt);
         }
         catch(OutOfMemoryError e) {
         }

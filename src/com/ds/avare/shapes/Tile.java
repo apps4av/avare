@@ -14,6 +14,7 @@ package com.ds.avare.shapes;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 
 /**
@@ -170,33 +171,11 @@ public class Tile {
      */
     public String getNeighbor(int rowm, int colm) {
         
-        /*
-         * This is all magic. Check databse specificaiton.
-         * Tiles are stored row/col as:
-         * 0/row/master_row_col where row, col have leading zeros
-         */
-        String [] tokens = mName.split("[/_.]");
-        
-        try {
-            /*
-             * Do not want to crash if weird situation arises.
-             */
-            int row = (Integer.parseInt(tokens[tokens.length - 3]) + rowm);
-            int col = (Integer.parseInt(tokens[tokens.length - 2]) + colm);
-            int lenr = tokens[tokens.length - 3].length();
-            int lenc = tokens[tokens.length - 2].length();
-            
-            String rformatted = String.format("%0" + lenr + "d", row);
-            String cformatted = String.format("%0" + lenc + "d", col);
-            String pre = tokens[0] + "/" + tokens[1] + "/" + row + "/" + tokens[3];
-            String post = "_" + rformatted + "_" + cformatted + ".jpeg";
-            String mid = (tokens[4].equals("c") ? "_c" : "");
-            return(pre + mid + post);
+        String ret = Helper.incTileName(mName, rowm, colm);
+        if(null == ret) {
+            return("error.jpeg");
         }
-        catch (Exception e) {
-            
-        }
-        return("error.jpeg");
+        return ret;
     }
     
     public double getLatitude() {

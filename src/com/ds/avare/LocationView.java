@@ -199,6 +199,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private static final int SHADOW = 4;
     
+    private int                        mScaleFac;
     /*
      * Text on screen color
      */
@@ -230,6 +231,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mWeatherColor = Color.BLACK;
         mPointProjection = null;
         mDraw = false;
+        mScaleFac = 1;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 15.f;
@@ -1101,7 +1103,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             movex = mPan.getTileMoveXWithoutTear();
             movey = mPan.getTileMoveYWithoutTear();
             
-            String newt = gpsTile.getNeighbor(movey, movex);
+            String newt = gpsTile.getNeighbor(movey * mScaleFac, movex * mScaleFac);
             centerTile = mImageDataSource.findTile(newt);
             if(null != centerTile) {
                 mScale.setScaleAt(centerTile.getLatitude());
@@ -1135,14 +1137,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
                 for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
                         tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
-                    tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
+                    tileNames[i++] = centerTile.getNeighbor(tiley * mScaleFac, tilex * mScaleFac);
                 }
             }
             
             /*
              * Load tiles, draw in UI thread
              */
-            mService.getTiles().reload(tileNames);
+            mService.getTiles().reload(tileNames, mScaleFac);
             
             return true;
         }
