@@ -39,7 +39,7 @@ public class Preferences {
     public static String distanceConversionUnit = "nm";
     public static String speedConversionUnit = "kt";
 
-    public static final String IMAGE_EXTENSION = ".png";
+    public static final String IMAGE_EXTENSION = ".jpg";
     
     /*
      * MAX number of elements
