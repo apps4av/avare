@@ -12,9 +12,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.gdl90;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.UUID;
@@ -41,7 +44,8 @@ public class BlueToothConnection {
     
     private static BlueToothConnection mConnection;
     
-    private static final String mStoreFile = "/sdcard/avare1/adsb-bin.dat";
+    private static final String mStoreFile = null;
+    private static final String mLoadFile = "/sdcard/avare1/adsb-c-bin.dat";
     
 
     /*
@@ -101,6 +105,7 @@ public class BlueToothConnection {
                 Decode decode = new Decode();
                 File file;
                 BufferedOutputStream bos = null;
+                BufferedInputStream bis = null;
                 
                 /*
                  * Store file for debug? 
@@ -116,12 +121,26 @@ public class BlueToothConnection {
                     catch (Exception e) {
                     }
                 }               
+                if(mLoadFile != null) {
+                    try {
+                        file = new File(mLoadFile);
+                        bis = new BufferedInputStream(new FileInputStream(file));                    
+                    }
+                    catch (Exception e) {
+                    }
+                }               
                 
                 /*
                  * This state machine will keep trying to connect to 
                  * ADBS receiver
                  */
                 while(mRunning) {
+                    
+                    int red = 0;
+                    if(mLoadFile != null) {
+                        mConnected = true;
+                    }
+                    
                     if(!mConnected) {
                         try {
                             Thread.sleep(1000);
@@ -132,23 +151,49 @@ public class BlueToothConnection {
                         continue;
                     }
                     else {
-                        
-                        /*
-                         * Read.
-                         */
-                        int red = 0;
-                        try {
-                            red = read(buffer);
-                        }
-                        catch (Exception e) {                            
-                        }
-                        if(red <= 0) {
+
+                        if(mLoadFile == null) {
+
+                            /*
+                             * Read.
+                             */
                             try {
-                                Thread.sleep(1000);
+                                red = read(buffer);
+                            }
+                            catch (Exception e) {                            
+                            }
+                            if(red <= 0) {
+                                try {
+                                    Thread.sleep(1000);
+                                }
+                                catch (Exception e) {
+                                    
+                                }
+                                continue;
+                            }
+                        }
+                        else {
+                            try {
+                                red = bis.read(buffer, 0, buffer.length);
                             }
                             catch (Exception e) {
-                                
+                                try {
+                                    Thread.sleep(1000);
+                                }
+                                catch (Exception e1) {
+                                    
+                                }
                             }
+                            if(red <= 0) {
+                                try {
+                                    Thread.sleep(1000);
+                                }
+                                catch (Exception e) {
+                   
+                                }
+                            }
+                        }
+                        if(red <= 0) {
                             continue;
                         }
                         dbuffer.put(buffer, red);
@@ -184,6 +229,13 @@ public class BlueToothConnection {
                 if(mStoreFile != null) {
                     try {
                         bos.close();
+                    } 
+                    catch (Exception e) {
+                    }
+                }
+                if(mLoadFile != null) {
+                    try {
+                        bis.close();
                     } 
                     catch (Exception e) {
                     }

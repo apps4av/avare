@@ -16,6 +16,14 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.gdl90.BlueToothConnection;
+import com.ds.avare.gdl90.BlueToothConnectionInterface;
+import com.ds.avare.gdl90.Id6364Product;
+import com.ds.avare.gdl90.Message;
+import com.ds.avare.gdl90.NexradBitmap;
+import com.ds.avare.gdl90.NexradImage;
+import com.ds.avare.gdl90.Product;
+import com.ds.avare.gdl90.UplinkMessage;
 import com.ds.avare.gps.*;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
@@ -36,6 +44,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.SparseArray;
 
 /**
  * @author zkhan
@@ -121,7 +130,9 @@ public class StorageService extends Service {
     /*
      * A diagram bitmap
      */
-    private BitmapHolder mDiagramBitmap;
+    private BitmapHolder mDiagramBitmap;                            
+        
+    private BlueToothConnection mBt; 
 
     /**
      * Local binding as this runs in same thread
@@ -138,6 +149,8 @@ public class StorageService extends Service {
     private int mCounter;
     
     private TileMap mTiles;
+    
+    private NexradImage mNexradImg;
     
     /**
      * @author zkhan
@@ -195,6 +208,7 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
+        mNexradImg = new NexradImage();
         mPlateIndex = 0;
         mAfdIndex = 0;
         
@@ -291,6 +305,22 @@ public class StorageService extends Service {
             }
         };
         mGps = new Gps(this, intf);
+        mBt = BlueToothConnection.getInstance();
+        mBt.registerListener(new BlueToothConnectionInterface() {
+            @Override
+            public void messageCallback(Message msg) {
+                if(msg instanceof UplinkMessage) {
+                    LinkedList<Product> pds = ((UplinkMessage) msg).getFis().getProducts();
+                    for(Product p : pds) {
+                        if(p instanceof Id6364Product) {
+                            Id6364Product pn = (Id6364Product)p;
+                            mNexradImg.putImg(pn);
+                        }
+                    }
+                }
+            }
+        });
+        mBt.start();
     }
         
     /* (non-Javadoc)
@@ -308,6 +338,9 @@ public class StorageService extends Service {
             mDiagramBitmap = null;
         }
         mTiles = null;
+        
+        mBt.disconnect();
+        mBt = null;
         
         System.gc();
         
@@ -601,5 +634,13 @@ public class StorageService extends Service {
      */
     public Draw getDraw() {
         return mDraw;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public SparseArray<NexradBitmap> getNexradImages() {
+        return mNexradImg.getImages();
     }
 }
