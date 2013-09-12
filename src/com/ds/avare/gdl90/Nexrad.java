@@ -23,12 +23,12 @@ public class Nexrad {
 
     public static final int INTENSITY[] = {
         0x00000000,
-        0xFF007F00,
+        0xFF00FF00,
         0xFF00FF00,
         0xFFFFFF00,
-        0xFF7F0000,
         0xFFFF0000,
-        0xFF7F007F,
+        0xFFFF0000,
+        0xFFFF007F,
         0xFFFF00FF
     };    
 
@@ -78,7 +78,7 @@ public class Nexrad {
         if (fracLon > 180) {
             fracLon = 360.0f - fracLon;
         }
-        lonlat[0] = fracLon; // XXX: -ve sign?
+        lonlat[0] = -fracLon; // XXX: -ve sign?
     }
 
     /**

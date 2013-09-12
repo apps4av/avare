@@ -81,7 +81,25 @@ public class BitmapHolder {
         catch(OutOfMemoryError e){
         }
     }
-    
+
+    /**
+     * @param name
+     * Get bitmap from renderer
+     */
+    public BitmapHolder(int width, int height) {
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        try {
+            mBitmap = Bitmap.createBitmap(width, height, conf);
+            mBitmap.setDensity(Bitmap.DENSITY_NONE);
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mCanvas = new Canvas(mBitmap);
+            mName = null;
+        }
+        catch(OutOfMemoryError e){
+        }
+    }
+
     /**
      * 
      * @param b is bitmap to draw

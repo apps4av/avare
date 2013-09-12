@@ -21,12 +21,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <com.ds.avare.WeatherView
-            android:background="#00000000"
-            android:id="@+id/location_weather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        
         <com.ds.avare.VerticalSeekBar
             android:id="@+id/location_seekbar_threshold"
             android:layout_width="wrap_content"

@@ -15,6 +15,7 @@ package com.ds.avare;
 
 import java.util.LinkedList;
 
+import com.ds.avare.gdl90.NexradBitmap;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
@@ -50,6 +51,7 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -200,6 +202,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private static final int SHADOW = 4;
     
     private int                        mScaleFac;
+    
+    /**
+     * Resolution pixel / lon , lat of center tile
+     */
+    private double                     mPx;
+    private double                     mPy;
+    
     /*
      * Text on screen color
      */
@@ -222,6 +231,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mMovement = new Movement();
         mErrorStatus = null;
         mThreshold = 0;
+        mPx = 1;
+        mPy = 1;
         mOnChart = null;
         mTrackUp = false;
         mImageDataSource = null;
@@ -786,6 +797,37 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
+    
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawNexrad(Canvas canvas) {
+        SparseArray<NexradBitmap> bitmaps = mService.getNexradImages();
+        if(null == bitmaps) {
+            return;
+        }
+        for(int i = 0; i < bitmaps.size(); i++) {
+            int key = bitmaps.keyAt(i);
+            NexradBitmap b = bitmaps.get(key);
+            BitmapHolder bitmap = b.getBitmap();
+            
+            if(null != bitmap) {                 
+                /*
+                 * 
+                 */
+                float scalex = (float)(b.getScaleX() / mPx);
+                float scaley = (float)(b.getScaleY() / mPy);
+                float x = (float)mOrigin.getOffsetX(b.getLonTopLeft());
+                float y = (float)mOrigin.getOffsetY(b.getLatTopLeft());
+                bitmap.getTransform().setScale(scalex * mScale.getScaleFactor(), scaley * mScale.getScaleCorrected());
+                bitmap.getTransform().postTranslate(x, y);
+    
+                canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
+            }
+        }
+    }
+    
     /**
      * 
      * @param canvas
@@ -932,6 +974,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.rotate(-(int)mGpsParams.getBearing(), x, y);
         }
     	drawTiles(canvas);
+    	drawNexrad(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
     	drawTFR(canvas);
@@ -1175,6 +1218,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mService.setPan(mPan);
                 mMovement = new Movement(offsets, p);
                 mService.setMovement(mMovement);
+                mPy = centerTile.getPy();
+                mPx = centerTile.getPx();
             }
 
             invalidate();

@@ -26,6 +26,9 @@ public class MessageFactory {
         /*
          * Strip flag bytes 0x7E
          */
+        if(len < 5) {
+            return null;
+        }
         byte strp[] = new byte[len - 2];
         System.arraycopy(bufin, 1, strp, 0, len - 2);
         

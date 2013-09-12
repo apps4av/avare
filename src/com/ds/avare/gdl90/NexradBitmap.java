@@ -11,11 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.gdl90;
 
-import android.graphics.Bitmap;
+import com.ds.avare.utils.BitmapHolder;
+
 
 public class NexradBitmap {
 
-    private Bitmap mBitmap;
+    private BitmapHolder mBitmap;
     private double mCoords[];
     private double mScaleX;
     private double mScaleY;
@@ -55,11 +56,10 @@ public class NexradBitmap {
             mBitmap = null;
             return;            
         }
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        mBitmap = Bitmap.createBitmap(Constants.COLS_PER_BIN, Constants.ROWS_PER_BIN, conf); // this creates a MUTABLE bitmap
+        mBitmap = new BitmapHolder(Constants.COLS_PER_BIN, Constants.ROWS_PER_BIN); // this creates a MUTABLE bitmap
         for(int row = 0; row < Constants.ROWS_PER_BIN; row++) {
             for(int col = 0; col < Constants.COLS_PER_BIN; col++) {
-                mBitmap.setPixel(col, row, data[col + row * Constants.COLS_PER_BIN]);
+                mBitmap.getBitmap().setPixel(col, row, data[col + row * Constants.COLS_PER_BIN]);
             }
         }
     }
@@ -82,23 +82,15 @@ public class NexradBitmap {
         return mCoords[0];
     }
 
-    public double getLatBottomRight() {
-        return mCoords[1] - mScaleY * Constants.ROWS_PER_BIN / 60;
-    }
-    
-    public double getLonBottomRight() {
-        return mCoords[0] + mScaleX * Constants.COLS_PER_BIN / 60;
-    }
-
     public double getScaleX() {
-        return mScaleX;
+        return mScaleX / 60.0;
     }
     
     public double getScaleY() {
-        return mScaleY;
+        return mScaleY / 60.0;
     }    
     
-    public Bitmap getBitmap() {
+    public BitmapHolder getBitmap() {
         return mBitmap;
     }
     
