@@ -45,7 +45,7 @@ public class BlueToothConnection {
     private static BlueToothConnection mConnection;
     
     private static final String mStoreFile = null;
-    private static final String mLoadFile = "/sdcard/avare1/adsb-c-bin.dat";
+    private static final String mLoadFile = null;
     
 
     /*
