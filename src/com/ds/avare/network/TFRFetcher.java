@@ -15,7 +15,7 @@ package com.ds.avare.network;
 import java.util.LinkedList;
 
 import com.ds.avare.shapes.TFRShape;
-import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.Helper;
 
 
 import android.content.Context;
@@ -83,7 +83,7 @@ public class TFRFetcher {
         protected Boolean doInBackground(Object... vals) {
             Thread.currentThread().setName("TFR");
 
-            mShapes = NetworkHelper.getShapesInTFR(mContext);
+            mShapes = Helper.getShapesInTFR(mContext);
             return true;
         }
     } 

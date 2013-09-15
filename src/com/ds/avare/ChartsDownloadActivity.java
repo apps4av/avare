@@ -12,10 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.ds.avare.R;
 import com.ds.avare.network.Delete;
@@ -46,7 +43,7 @@ import android.widget.Toast;
  * @author zkhan
  *
  */
-public class ChartsDownloadActivity extends Activity implements Observer {
+public class ChartsDownloadActivity extends Activity {
     
     private String mName;
     private ProgressDialog mProgressDialog;
@@ -61,9 +58,6 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     private Button mDLButton;
     private Button mUpdateButton;
     private Button mDeleteButton;
-    
-    private static final int DOWNLOAD = 0;
-    private static final int DELETE = 1;
     
     /**
      * Shows warning message about Avare
@@ -234,8 +228,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             return false;
         }
         
-        mDownload = new Download(mPref.getRoot());
-        mDownload.addObserver(ChartsDownloadActivity.this);
+        mDownload = new Download(mPref.getRoot(), mHandler);
         mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
@@ -285,8 +278,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             return false;
         }
         
-        mDelete = new Delete();
-        mDelete.addObserver(ChartsDownloadActivity.this);
+        mDelete = new Delete(mHandler);
         mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName,
                 mService.getDBResource());
         
@@ -355,36 +347,13 @@ public class ChartsDownloadActivity extends Activity implements Observer {
     }
      
     /**
-     * 
-     */
-    @Override
-    public void update(Observable arg0, Object result) {
-        
-        /*
-         * Send who sent what
-         */
-        Message msg = mHandler.obtainMessage();
-        
-        msg.what = (Integer)result;
-        if(arg0 instanceof Download) {
-            msg.arg1 = (Integer)DOWNLOAD;
-        }
-        else if(arg0 instanceof Delete) {
-            msg.arg1 = (Integer)DELETE;
-        }
-        mHandler.sendMessage(msg);
-    }
-    
-    /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
 	private Handler mHandler = new Handler() {
 		@Override
         public void handleMessage(Message msg) {
             int result = msg.what;
-            
-            int type = msg.arg1;
-            
+                        
             /*
              * XXX: Do not know why it happens. Maybe the activity gets restarted, and then
              * download sends a message as it was a BG task.  
@@ -399,7 +368,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
             }
             
             
-            if(DOWNLOAD == type) {
+            if(msg.obj instanceof Download) {
                 if(Download.FAILED == result) {
                     try {
                         mProgressDialog.dismiss();
@@ -471,7 +440,7 @@ public class ChartsDownloadActivity extends Activity implements Observer {
                     }
                 }           
             }
-            else if(DELETE == type) {
+            else if(msg.obj instanceof Delete) {
                 if(Delete.FAILED == result) {
                     try {
                         mProgressDialog.dismiss();

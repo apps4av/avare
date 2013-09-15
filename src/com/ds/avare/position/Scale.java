@@ -25,33 +25,78 @@ public class Scale {
     static final double MAX_SCALE = 2;
     static final double MIN_SCALE = 0.5; 
 
+    /**
+     * 
+     */
     public Scale() {
         mScaleFactor = 1;
         mScaleCorrectY = 1;
     }
 
+    /**
+     * 
+     * @param factor
+     */
     public void setScaleFactor(float factor) {
         mScaleFactor = (double)factor;
-        if(mScaleFactor > MAX_SCALE) {
-            mScaleFactor = MAX_SCALE;
-        }
-        if(mScaleFactor < MIN_SCALE) {
-            mScaleFactor = MIN_SCALE;
-        }
     }
 
+    /**
+     * 
+     * @param latitude
+     */
     public void setScaleAt(double latitude) {
         /*
          * http://mysite.du.edu/~jcalvert/math/mercator.htm
          */
         mScaleCorrectY = 1 / Math.cos(Math.toRadians(latitude));
     }
+
+    /**
+     * 
+     * @return
+     */
+    public float getScaleFactorRaw() {
+        return getScaleFactor();
+    }
     
+    /**
+     * 
+     * @return
+     */
     public float getScaleFactor() {
-        return((float)mScaleFactor);
+        double s;
+        if(mScaleFactor > MAX_SCALE) {
+            s = MAX_SCALE;
+        }
+        else if(mScaleFactor < MIN_SCALE) {
+            s = MIN_SCALE;
+        }
+        else {
+            s = mScaleFactor;
+        }
+        return((float)s);
     }
 
+    /**
+     * 
+     * @return
+     */
+    public int getMacroFactor() {
+        return 1;
+    }
+    
     public float getScaleCorrected() {
-        return((float)(mScaleCorrectY * mScaleFactor));
+        double s;
+        if(mScaleFactor > MAX_SCALE) {
+            s = MAX_SCALE;
+        }
+        else if(mScaleFactor < MIN_SCALE) {
+            s = MIN_SCALE;
+        }
+        else {
+            s = mScaleFactor;
+        }
+        return((float)(mScaleCorrectY * s));
     }
 }

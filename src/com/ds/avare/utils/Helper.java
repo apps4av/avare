@@ -14,14 +14,21 @@ package com.ds.avare.utils;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.ds.avare.R;
+import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -424,5 +431,94 @@ public class Helper {
         }
         return null;
     }
+    
+    /**
+     * 
+     * @param data
+     */
+    private static String readFromFile(String filename) {
+        File file = new File(filename);
+        byte b[] = null;
+        try {
+            if(file.exists()) {
+                b = new byte[(int)file.length()];
+                InputStream fi = new FileInputStream(file);              
+                fi.read(b);
+                fi.close();
+            }
+        }
+        catch (Exception e) {
+            return null;
+        }
+        
+        if(null != b) {
+            return new String(b);
+        }
+        return null;
+    }
+    
+
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+    public static LinkedList<TFRShape> getShapesInTFR(Context ctx) {
+        
+        /*
+         * Create a shapes list
+         */
+        LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
+
+        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
+        String data = readFromFile(filename);
+        if(null != data) {
+            /*
+             * Find date of last file download
+             */
+            File file = new File(filename);
+            Date time = new Date(file.lastModified());
+   
+            /*
+             * Now read from file
+             */
+            String tokens[] = data.split(",");
+            TFRShape shape = null;
+            /*
+             * Add shapes from latitude, longitude
+             */
+            for(int id = 0; id < tokens.length; id++) {
+                if(tokens[id].contains("TFR:: ")) {
+                    if(null != shape) {
+                        shapeList.add(shape);
+                    }                                 
+                    shape = new TFRShape(tokens[id].replace(
+                            "TFR:: ", ctx.getString(R.string.TFRReceived) + " " + time.toString() + "-").
+                            replace("Top", "\nTop").
+                            replace("Low", "\nLow").
+                            replace("Eff", "\nEff").
+                            replace("Exp", "\nExp"));
+                    continue;
+                }
+                try {
+                    /*
+                     * If we get bad input from Govt. site. 
+                     */
+                    shape.add(Double.parseDouble(tokens[id + 1]),
+                            Double.parseDouble(tokens[id]));
+                }
+                catch (Exception e) {
+                    
+                }
+                id++;
+            }
+            if(null != shape) {
+                shapeList.add(shape);
+            }
+        }
+        
+        return shapeList;
+    }  
+
 
 }

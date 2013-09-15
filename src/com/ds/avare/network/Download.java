@@ -24,28 +24,27 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
-import java.util.Observable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
-
-
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 
 /**
  * 
  * @author zkhan
  *
  */
-public class Download extends Observable {
+public class Download {
     
     private DownloadTask   mDt;
     private boolean mStop;
     private String mVersion;
-    private String mName;
     private String mRoot;
+    private Handler mHandler;
+    private Thread mThread;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -57,12 +56,12 @@ public class Download extends Observable {
      * 
      * @param act
      */
-    public Download(String root) {
+    public Download(String root, Handler handler) {
         mStop = false;
         mDt = null;
         mVersion = null;
-        mName = null;
         mRoot = root;
+        mHandler = handler;
     }
     
     /**
@@ -78,9 +77,6 @@ public class Download extends Observable {
      */
     public void cancel() {
         mStop = true;
-        if(null != mDt) {
-            mDt.cancel(true);
-        }
     }
 
     /**
@@ -90,13 +86,11 @@ public class Download extends Observable {
      * @param filename
      */
     public void start(String path, String filename) {
-        if(mDt != null) {
-            if(mDt.getStatus() != AsyncTask.Status.RUNNING) {
-                return;
-            }
-        }
         mDt = new DownloadTask();
-        mDt.execute(path, filename);
+        mDt.path = path;
+        mDt.mName = filename;
+        mThread = new Thread(mDt);
+        mThread.start();
     }
 
     /**
@@ -104,8 +98,11 @@ public class Download extends Observable {
      * @author zkhan
      *
      */
-    private class DownloadTask extends AsyncTask<String, Integer, Boolean> {
+    private class DownloadTask implements Runnable {
 
+        String path;
+        String mName;
+        
         /**
          * 
          * @param in
@@ -124,24 +121,17 @@ public class Download extends Observable {
             out.close();
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
         /**
          * 
          */
         @Override
-        protected Boolean doInBackground(String... sUrl) {
+        public void run() {
 
             Thread.currentThread().setName("Download");
 
             BufferedInputStream input;
             BufferedOutputStream output;
             int count;
-            String path = sUrl[0];
-            mName = sUrl[1];
             byte data[] = new byte[blocksize];
             mVersion = NetworkHelper.getVersion(mName);
             int fileLength;
@@ -155,7 +145,9 @@ public class Download extends Observable {
                 File f = new File(path);
                 if(!f.exists()) {
                     if(!f.mkdirs()) {
-                        return false;
+                        Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
+                        mHandler.sendMessage(m);
+                        return;
                     }
                 }
 
@@ -199,14 +191,17 @@ public class Download extends Observable {
                      */
                     if(lastp != newp) {
                         lastp = newp;
-                        publishProgress(newp);
+                        Message m = mHandler.obtainMessage(newp, Download.this);
+                        mHandler.sendMessage(m);
                     }
                     output.write(data, 0, count);
                     if(mStop) {
                         output.flush();
                         output.close();
                         input.close();
-                        return false;
+                        Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
+                        mHandler.sendMessage(m);
+                        return;
                     }
                 }
     
@@ -229,7 +224,9 @@ public class Download extends Observable {
                         if(mStop) {
                             zipFile.close();
                             new File(zipfile).delete();
-                            return false;
+                            Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
+                            mHandler.sendMessage(m);
+                            return;
                         }
 
                         ZipEntry entry = (ZipEntry)entries.nextElement();
@@ -292,7 +289,8 @@ public class Download extends Observable {
                         newp = (int)(50 + totalnum * 50 / filenum);
                         if(lastp != newp) {
                             lastp = newp;
-                            publishProgress(newp);
+                            Message m = mHandler.obtainMessage(newp, Download.this);
+                            mHandler.sendMessage(m);
                         }
                     }
 
@@ -311,32 +309,17 @@ public class Download extends Observable {
                     bw.flush();
                     bw.close();
                     
-                    return true;
+                    Message m = mHandler.obtainMessage(Download.SUCCESS, Download.this);
+                    mHandler.sendMessage(m);
+                    return;
                     
                 } catch (IOException ioe) {
                 }
             } catch (Exception e) {
             }
-            return false;
-        }
-        
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            Download.this.setChanged();
-            Download.this.notifyObservers(progress[0]); 
-        }
-        
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if(result && (!mStop)) {
-                Download.this.setChanged();
-                Download.this.notifyObservers(SUCCESS);
-            }
-            else {
-                Download.this.setChanged();
-                Download.this.notifyObservers(FAILED);
-            }
-        }
+            Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
+            mHandler.sendMessage(m);
+            return;
+        }        
     }
 }

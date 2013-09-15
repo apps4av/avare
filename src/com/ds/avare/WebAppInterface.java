@@ -19,7 +19,8 @@ import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -32,6 +33,7 @@ public class WebAppInterface {
     private Context mContext;
     private StorageService mService; 
     private WeatherTask mWeatherTask;
+    private Thread mWeatherThread;
     private WebView mWebView;
     private Preferences mPref;
 
@@ -45,6 +47,9 @@ public class WebAppInterface {
         mWebView = v;
         mPref = new Preferences(c);
         mWeatherTask = null;
+        mWeatherTask = new WeatherTask();
+        mWeatherThread = new Thread(mWeatherTask);
+        mWeatherThread.start();
     }
 
     /** 
@@ -52,13 +57,7 @@ public class WebAppInterface {
      */
     @JavascriptInterface
     public void getWeather() {
-        if(mWeatherTask != null) {
-            if(mWeatherTask.getStatus() != AsyncTask.Status.FINISHED) {
-                mWeatherTask.cancel(true);
-            }
-        }
-        mWeatherTask = new WeatherTask();
-        mWeatherTask.execute();
+        mWeatherThread.interrupt();
     }
 
 
@@ -66,130 +65,154 @@ public class WebAppInterface {
      * @author zkhan
      *
      */
-    private class WeatherTask extends AsyncTask<String, Void, String> {
+    private class WeatherTask implements Runnable {
 
+        private boolean running = true;
 
         /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected String doInBackground(String... input) {
+        public void run() {
             
             Thread.currentThread().setName("Weather");
-
-            String Pirep = "";
-            String Metar = "";
-            String Taf = "";
-            String station = null;
-
-            String miles = "30";
-            String planf = "";
-            String plan = "";
-            if(null == mService) {
-                return mContext.getString(R.string.WeatherPlan);
-            }
-
-            int num = mService.getPlan().getDestinationNumber();
-            if((0 == num) && (mService.getDestination() != null)) {
-                station = mService.getDestination().getID();
-            }
-            else if(num == 1) {
-                /*
-                 * This is not a route.
-                 */
-                station = mService.getPlan().getDestination(0).getID();
-            }
-            for(int i = 0; i < num; i++) {
-                Location l = mService.getPlan().getDestination(i).getLocation();
-                planf += l.getLongitude() + "," + l.getLatitude() + ";";
-                plan += mService.getPlan().getDestination(i).getID() + "(" +
-                        mService.getPlan().getDestination(i).getType() + ") ";
-            }
-            if(planf.equals("") && (station == null)) {
-                return mContext.getString(R.string.WeatherPlan);
-            }
             
-            /*
-             *  Get PIREP
-             */
-            try {
-                String out = (station != null) ? NetworkHelper.getPIREPS(station) : NetworkHelper.getPIREPSPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
-                    Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+            while(running) {
+    
+                try {
+                    Thread.sleep(1000 * 3600 * 100);
                 }
-            }
-            catch(Exception e) {
-                Pirep = mContext.getString(R.string.WeatherError);
-            }
-
-            try {
-                /*
-                 *  Get TAFs 
-                 */
-                String out = (station != null) ? NetworkHelper.getTAF(station) : NetworkHelper.getTAFPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    String taf = WeatherHelper.formatWeatherHTML(outm[i]);
-                    String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
-                    Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
-                    Taf += "<font size='5' color='black'>" + taf + "<br></br>";
+                catch (Exception e) {
+                    
                 }
-            }
-            catch(Exception e) {
-                Taf = mContext.getString(R.string.WeatherError);
-            }
-            
-            try {
-                /*
-                 * 
-                 */
-                String out = (station != null) ? NetworkHelper.getMETAR(station) : NetworkHelper.getMETARPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    String vals[] = outm[i].split(",");
-                    String vals2[] = vals[1].split(" ");
-                    String color = WeatherHelper.metarColorString(vals[0]);
-                    Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()) + "<br></br>";
+
+                String Pirep = "";
+                String Metar = "";
+                String Taf = "";
+                String station = null;
+    
+                String miles = "30";
+                String planf = "";
+                String plan = "";
+                if(null == mService) {
+                    Message m = new Message();
+                    m.obj = mContext.getString(R.string.WeatherPlan);
+                    mHandler.sendMessage(m);
+                    continue;
                 }
-            }
-            catch(Exception e) {
-                Metar = mContext.getString(R.string.WeatherError);
-            }
-
-            if(null != station) {
-                plan = station;
-            }
-            plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
-            plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
-            Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
-            Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
-            Taf = "<font size='6' color='black'>TAFs</font><br></br>" + Taf; 
-            Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
-            Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
-            Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-            
-            String weather = plan + Metar + Taf + Pirep;
-
-            return weather;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(String result) {
-            /*
-             * Must run on UI thread!
-             */
-            String load = "javascript:updateData('" + result + "');";
-            mWebView.loadUrl(load);
-            
+    
+                int num = mService.getPlan().getDestinationNumber();
+                if((0 == num) && (mService.getDestination() != null)) {
+                    station = mService.getDestination().getID();
+                }
+                else if(num == 1) {
+                    /*
+                     * This is not a route.
+                     */
+                    station = mService.getPlan().getDestination(0).getID();
+                }
+                for(int i = 0; i < num; i++) {
+                    Location l = mService.getPlan().getDestination(i).getLocation();
+                    planf += l.getLongitude() + "," + l.getLatitude() + ";";
+                    plan += mService.getPlan().getDestination(i).getID() + "(" +
+                            mService.getPlan().getDestination(i).getType() + ") ";
+                }
+                if(planf.equals("") && (station == null)) {
+                    Message m = new Message();
+                    m.obj = mContext.getString(R.string.WeatherPlan);
+                    mHandler.sendMessage(m);
+                    continue;
+                }
+                
+                /*
+                 *  Get PIREP
+                 */
+                try {
+                    String out = (station != null) ? NetworkHelper.getPIREPS(station) : NetworkHelper.getPIREPSPlan(planf, miles);
+                    String outm[] = out.split("::::");
+                    for(int i = 0; i < outm.length; i++) {
+                        outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
+                        Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+                    }
+                }
+                catch(Exception e) {
+                    Pirep = mContext.getString(R.string.WeatherError);
+                }
+    
+                try {
+                    /*
+                     *  Get TAFs 
+                     */
+                    String out = (station != null) ? NetworkHelper.getTAF(station) : NetworkHelper.getTAFPlan(planf, miles);
+                    String outm[] = out.split("::::");
+                    for(int i = 0; i < outm.length; i++) {
+                        String taf = WeatherHelper.formatWeatherHTML(outm[i]);
+                        String vals[] = taf.split(" ");
+                        taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                        Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
+                        Taf += "<font size='5' color='black'>" + taf + "<br></br>";
+                    }
+                }
+                catch(Exception e) {
+                    Taf = mContext.getString(R.string.WeatherError);
+                }
+                
+                try {
+                    /*
+                     * 
+                     */
+                    String out = (station != null) ? NetworkHelper.getMETAR(station) : NetworkHelper.getMETARPlan(planf, miles);
+                    String outm[] = out.split("::::");
+                    for(int i = 0; i < outm.length; i++) {
+                        String vals[] = outm[i].split(",");
+                        String vals2[] = vals[1].split(" ");
+                        String color = WeatherHelper.metarColorString(vals[0]);
+                        Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
+                        Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()) + "<br></br>";
+                    }
+                }
+                catch(Exception e) {
+                    Metar = mContext.getString(R.string.WeatherError);
+                }
+    
+                if(null != station) {
+                    plan = station;
+                }
+                plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
+                plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
+                Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
+                Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
+                Taf = "<font size='6' color='black'>TAFs</font><br></br>" + Taf; 
+                Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
+                Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
+                Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
+                
+                String weather = plan + Metar + Taf + Pirep;
+    
+                Message m = new Message();
+                m.obj = weather;
+                mHandler.sendMessage(m);
+            }        
         }
     }
 
+    
+    /**
+     * 
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            String data = (String)msg.obj;
+            String load = "javascript:updateData('" + data + "');";
+            mWebView.loadUrl(load);                        
+        }
+    };
 
+    /**
+     * 
+     */
+    public void cleanup() {
+        mWeatherTask.running = false;
+        mWeatherThread.interrupt();
+    }
 }

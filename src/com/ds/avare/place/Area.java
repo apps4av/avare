@@ -18,7 +18,6 @@ import java.util.List;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.weather.WeatherCache;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
@@ -38,7 +37,6 @@ public class Area {
     private double mVariation;
     private boolean mFound;
     private long mLastTime;
-    private WeatherCache mWeatherCache;
     
     private static final int MAX_AIRPORTS = 20;
     
@@ -48,13 +46,12 @@ public class Area {
      * 
      * @param dataSource
      */
-    public Area(DataSource dataSource, WeatherCache weather) {
+    public Area(DataSource dataSource) {
         mDataSource = dataSource;
         mLon = mLat = 0;
         mVariation = 0;
         mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
-        mWeatherCache = weather;
     }
 
     /**
@@ -173,9 +170,6 @@ public class Area {
             
             for(int id = 0; id < getAirportsNumber(); id++) {
                 mVariation = mAirports[id].getVariation(); 
-                if(null != mAirports[id].getId()) {
-                    mAirports[id].setWeather(mWeatherCache.get(mAirports[id].getId()));
-                }
             }
 
             return null;

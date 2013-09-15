@@ -36,7 +36,6 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -114,11 +113,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Task that would draw tiles on bitmap.
      */
     private TileDrawTask                mTileDrawTask; 
+    private Thread                      mTileDrawThread;
 
     /**
      * Task that would draw obstacles
      */
     private ObstacleTask                mObstacleTask; 
+    private Thread                      mObstacleThread;
 
     /**
      * Task that finds closets airport.
@@ -157,7 +158,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     
     private TextPaint                   mTextPaint;
     
-    private Layout                      mWeatherLayout;
+    private Layout                      mTFRLayout;
     
     private Typeface                    mFace;
     
@@ -169,9 +170,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Origin                      mOrigin;
     
     /*
-     * Weather.
+     * TFR.
      */
-    private int                         mWeatherColor;
+    private int                         mTFRColor;
     
     /*
      * Projection of a touch point
@@ -200,8 +201,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Shadow length 
      */
     private static final int SHADOW = 4;
-    
-    private int                        mScaleFac;
     
     /**
      * Resolution pixel / lon , lat of center tile
@@ -239,10 +238,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mWeatherColor = Color.BLACK;
+        mTFRColor = Color.BLACK;
         mPointProjection = null;
         mDraw = false;
-        mScaleFac = 1;
         
         mPref = new Preferences(context);
         mTextDiv = mPref.isPortrait() ? 24.f : 15.f;
@@ -255,6 +253,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaint.setAntiAlias(true);
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(mFace);
+
+        mTileDrawTask = new TileDrawTask();
+        mTileDrawThread = new Thread(mTileDrawTask);
+        mTileDrawThread.start();
+
+        mObstacleTask = new ObstacleTask();
+        mObstacleThread = new Thread(mObstacleTask);
+        mObstacleThread.start();
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
@@ -322,7 +328,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not draw point. Only when long press and down.
              */
             mPointProjection = null;
-            mWeatherLayout = null;
+            mTFRLayout = null;
         }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
@@ -341,7 +347,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactor(), false, 0, 0, false, 0);
+                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
     }
 
     /* (non-Javadoc)
@@ -460,19 +466,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         /*
-         * Do not overwhelm.
+         * Find
          */
-        if(null != mTileDrawTask) {
-            if (!mTileDrawTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
-                /*
-                 * Always honor the latest query
-                 */
-                return;
-            }
-        }
-
-        mTileDrawTask = new TileDrawTask();
-        mTileDrawTask.execute(mGpsParams.getLongitude(), mGpsParams.getLatitude());
+        mTileDrawTask.lat = mGpsParams.getLatitude();
+        mTileDrawTask.lon = mGpsParams.getLongitude();
+        mTileDrawThread.interrupt();
     }
 
     /**
@@ -573,7 +571,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
         
         /*
-         * Draw TFRs, weather
+         * Draw TFRs, TFR
          */            
         LinkedList<TFRShape> shapes = null;
         if(null != mService) {
@@ -762,21 +760,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawMETARText(Canvas canvas) {
         /*
-         * Draw TFRs, weather
+         * Draw TFRs, TFR
          */
         /*
-         * Write weather report
+         * Write TFR report
          * Use a static layout for showing as overlay and formatted to fit
          */
         float top = getHeight() / mTextDiv * 2 + mFontHeight;
-        if(null != mWeatherLayout) {
-            mPaint.setColor(mWeatherColor);
+        if(null != mTFRLayout) {
+            mPaint.setColor(mTFRColor);
             mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-            canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mWeatherLayout.getHeight() + top, mPaint);
+            canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mTFRLayout.getHeight() + top, mPaint);
             canvas.save();
             canvas.translate(SHADOW + 2, top);
             mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-            mWeatherLayout.draw(canvas);
+            mTFRLayout.draw(canvas);
             canvas.restore();        
         }
     }
@@ -1048,17 +1046,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Do not overwhelm, obstacles
          */
-        if(null != mObstacleTask) {
-            if (!mObstacleTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
-                /*
-                 * Always honor the latest query
-                 */
-                return;
-            }
-        }
+        mObstacleTask.alt = mGpsParams.getAltitude();
+        mObstacleTask.lon = mGpsParams.getLongitude();
+        mObstacleTask.lat = mGpsParams.getLatitude();
         
-        mObstacleTask = new ObstacleTask();
-        mObstacleTask.execute(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+        mObstacleThread.interrupt();
     }
 
     
@@ -1111,108 +1103,88 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      *
      */
-    private class TileDrawTask extends AsyncTask<Object, Void, Boolean> {
+    private class TileDrawTask implements Runnable {
         double offsets[] = new double[2];
         double p[] = new double[2];
-        double lon;
-        double lat;
+        public double lon;
+        public double lat;
         int     movex;
         int     movey;
-        String        tileNames[];
+        String   tileNames[];
         private Tile centerTile;
         private Tile gpsTile;
-        
+        public boolean running = true;
 
-        
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected Boolean doInBackground(Object... vals) {
+        public void run() {
             
             Thread.currentThread().setName("Tile");
 
-            /*
-             * Load tiles from image files in background, then send them to handler.
-             */
-            lon = (Double)vals[0];
-            lat = (Double)vals[1];
-
-            /*
-             * Now draw in background
-             */
-            gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
-            
-            if(gpsTile == null) {
-                return false;
-            }
-            
-            movex = mPan.getTileMoveXWithoutTear();
-            movey = mPan.getTileMoveYWithoutTear();
-            
-            String newt = gpsTile.getNeighbor(movey * mScaleFac, movex * mScaleFac);
-            centerTile = mImageDataSource.findTile(newt);
-            if(null != centerTile) {
-                mScale.setScaleAt(centerTile.getLatitude());
-                mOnChart = centerTile.getChart();
-            }
-            else {
-                return false;
-            }
-            
-            if(null == mService) {
-                return false;
-            }
-
-            /*
-             * Update TFR shapes if they exist in this area.
-             */
-            LinkedList<TFRShape> shapes = mService.getTFRShapes();
-            if(null != shapes) {
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
-                            centerTile.getLatitude());
+            while(running) {
+                try {
+                    Thread.sleep(1000 * 3600);
                 }
-            }
-                        
-            /*
-             * Neighboring tiles with center and pan
-             */
-            int i = 0;
-            tileNames = new String[mService.getTiles().getTilesNum()];
-            for(int tiley = -(int)(mService.getTiles().getYTilesNum() / 2) ; 
-                    tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
-                for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
-                        tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
-                    tileNames[i++] = centerTile.getNeighbor(tiley * mScaleFac, tilex * mScaleFac);
+                catch(Exception e) {
+                    
                 }
-            }
             
-            /*
-             * Load tiles, draw in UI thread
-             */
-            mService.getTiles().reload(tileNames, mScaleFac);
-            
-            return true;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            /*
-             * This runs on UI
-             */
-            if(true == result) {
+                /*
+                 * Now draw in background
+                 */
+                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
+                
+                if(gpsTile == null) {
+                    continue;
+                }
+                
+                movex = mPan.getTileMoveXWithoutTear();
+                movey = mPan.getTileMoveYWithoutTear();
+                
+                String newt = gpsTile.getNeighbor(movey * mScale.getMacroFactor(), movex * mScale.getMacroFactor());
+                centerTile = mImageDataSource.findTile(newt);
+                if(null != centerTile) {
+                    mScale.setScaleAt(centerTile.getLatitude());
+                    mOnChart = centerTile.getChart();
+                }
+                else {
+                    continue;
+                }
+                
+                if(null == mService) {
+                    continue;
+                }
+    
+                /*
+                 * Update TFR shapes if they exist in this area.
+                 */
+                LinkedList<TFRShape> shapes = mService.getTFRShapes();
+                if(null != shapes) {
+                    for(int shape = 0; shape < shapes.size(); shape++) {
+                        shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
+                                centerTile.getLatitude());
+                    }
+                }
+                            
+                /*
+                 * Neighboring tiles with center and pan
+                 */
+                int i = 0;
+                tileNames = new String[mService.getTiles().getTilesNum()];
+                for(int tiley = -(int)(mService.getTiles().getYTilesNum() / 2) ; 
+                        tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
+                    for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
+                            tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
+                        tileNames[i++] = centerTile.getNeighbor(tiley * mScale.getMacroFactor(), tilex * mScale.getMacroFactor());
+                    }
+                }
                 
                 /*
-                 * Back buffer to front buffer
+                 * Load tiles, draw in UI thread
                  */
-                if(null == mService) {
-                    return;
-                }
-                
+                mService.getTiles().reload(tileNames, mScale.getMacroFactor());
                 mService.getTiles().flip();
 
                 /*
@@ -1224,13 +1196,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mService.setMovement(mMovement);
                 mPy = centerTile.getPy();
                 mPx = centerTile.getPx();
+    
+                postInvalidate();
             }
-
-            invalidate();
         }
     }    
-    
-    
 
     /**
      * @author zkhan
@@ -1250,72 +1220,38 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             Thread.currentThread().setName("Closest");
 
             String airport = null;
-            String weather = null;
             lon = (Double)vals[0];
             lat = (Double)vals[1];
             text = (String)vals[2];
-            boolean found = false;
             if(null != mService) {
                 airport = mService.getDBResource().findClosestAirportID(lon, lat);
             }
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
-            else {
-                found = true;
-            }
-            publishProgress(airport);            
-            
-            /*
-             * Dont wait to weather to arrive from Internet to notify user of airport
-             */
- 
-            if((null == mService) || (!found)) {
-                weather = null;
-            }
-            else {
-                /*
-                 * Do weather now.
-                 */
-                weather = mService.getWeatherCache().get(airport);
-            }
-            return weather;
+            return airport;
         }
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
-        protected void onPostExecute(String weather) {
+        protected void onPostExecute(String airport) {
             if(text != null) {
                 /*
-                 * Take TFR text over weather text
+                 * Take TFR text over TFR text
                  */
                 mTextPaint.setColor(Color.WHITE);
-                mWeatherLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
+                mTFRLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
                         Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
             }
-            else if(null != weather) {
-                String tokens[] = weather.split(",");
-                if(tokens.length >= 2) {
-                    mWeatherColor = WeatherHelper.metarColor(tokens[0]);
-                    mTextPaint.setColor(Color.WHITE);
-                    mWeatherLayout = new StaticLayout(tokens[1].trim(), mTextPaint, getWidth() - SHADOW * 2,
-                            Layout.Alignment.ALIGN_NORMAL, 1, 0, true);               
-                }
+
+            if(null != mGestureCallBack) {
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
             }
             invalidate();
         }
         
-        /**
-         * 
-         */
-        @Override
-        protected void onProgressUpdate(String... result) {
-            if(null != mGestureCallBack) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, result[0]);
-            }
-        }
     }
 
     
@@ -1323,39 +1259,35 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      * Find obstacles
      */
-    private class ObstacleTask extends AsyncTask<Double, Void, Boolean> {
-        private LinkedList<Obstacle> obs;
+    private class ObstacleTask implements Runnable {
+        public Double lon;
+        public Double lat;
+        public Double alt;
+        
+        public boolean running = true;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected Boolean doInBackground(Double... vals) {
-            
+        public void run() {
             Thread.currentThread().setName("Obstacle");
 
-            Double lon;
-            Double lat;
-            Double alt;
-            lon = (Double)vals[0];
-            lat = (Double)vals[1];
-            alt = (Double)vals[2];
-            if(null != mService) {
-                /*
-                 * Find obstacles in background as well
-                 */
-                obs = mImageDataSource.findObstacles(lon, lat, alt.intValue());
-                return true;
+            while(running) {
+
+                try {
+                    Thread.sleep(1000 * 3600);
+                }
+                catch (Exception e) {
+                    
+                }
+                if(null != mService) {
+                    /*
+                     * Find obstacles in background as well
+                     */
+                    mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
+                }                
             }
-            return false;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            mObstacles = obs;
         }
     }
 
@@ -1441,9 +1373,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     if(cshape.isVisible()) {
 
                         /*
-                         * Hijack weather color
+                         * Set TFR color
                          */
-                        mWeatherColor = Color.RED;
+                        mTFRColor = Color.RED;
                         text = cshape.getTextIfTouched(x, y);
                         if(null != text) {
                             break;
@@ -1503,5 +1435,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void setTrackUp(boolean tu) {
         mTrackUp = tu;
         invalidate();
+    }
+    
+    /**
+     * 
+     */
+    public void cleanup() {
+        mObstacleTask.running = false;
+        mTileDrawTask.running = false;
+        mTileDrawThread.interrupt();
+        mObstacleThread.interrupt();
     }
 }

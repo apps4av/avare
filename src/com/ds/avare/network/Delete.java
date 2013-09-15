@@ -17,10 +17,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 
 import com.ds.avare.storage.DataSource;
-
-
-
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 
 /**
  * 
@@ -31,7 +29,8 @@ public class Delete extends Observable {
     
     private DeleteTask   mDt;
     private boolean     mStop;
-    private DataSource   mData;
+    private Handler      mHandler;
+    private Thread       mThread;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -41,9 +40,10 @@ public class Delete extends Observable {
      * 
      * @param act
      */
-    public Delete() {
+    public Delete(Handler handler) {
         mStop = false;
         mDt = null;
+        mHandler = handler;
     }
     
     /**
@@ -51,9 +51,6 @@ public class Delete extends Observable {
      */
     public void cancel() {
         mStop = true;
-        if(null != mDt) {
-            mDt.cancel(true);
-        }
     }
 
     /**
@@ -64,14 +61,12 @@ public class Delete extends Observable {
      * @param filename
      */
     public void start(String path, String name, DataSource dataSource) {
-        mData = dataSource;
-        if(mDt != null) {
-            if(mDt.getStatus() != AsyncTask.Status.RUNNING) {
-                return;
-            }
-        }
         mDt = new DeleteTask();
-        mDt.execute(path, name);
+        mDt.path = path;
+        mDt.chart = name;
+        mDt.data = dataSource;
+        mThread = new Thread(mDt);
+        mThread.start();
     }
 
     /**
@@ -79,23 +74,25 @@ public class Delete extends Observable {
      * @author zkhan
      *
      */
-    private class DeleteTask extends AsyncTask<String, Integer, Boolean> {
+    private class DeleteTask implements Runnable {
 
+        public String path;
+        public String chart;
+        public DataSource data;
+        
         /**
          * 
          */
         @Override
-        protected Boolean doInBackground(String... sUrl) {
+        public void run() {
             
             Thread.currentThread().setName("Delete");
 
-            String path = sUrl[0];
-            String chart = sUrl[1];
-            
-            if(mData == null || path == null || chart == null) {
-                return false;
+            if(data == null || path == null || chart == null) {
+                Message m = mHandler.obtainMessage(Download.FAILED, Delete.this);
+                mHandler.sendMessage(m);
             }
-            LinkedList<String> list = mData.findFilesToDelete(chart);
+            LinkedList<String> list = data.findFilesToDelete(chart);
             
             int fileLength = list.size();
             int total = 0;
@@ -103,6 +100,12 @@ public class Delete extends Observable {
             int lastp = FAILED;
 
             for(String name : list) {
+                
+                if(mStop) {
+                    Message m = mHandler.obtainMessage(Download.FAILED, Delete.this);
+                    mHandler.sendMessage(m);
+                    return;
+                }
                 newp = (int) (total * 50 / fileLength);
                 
                 String toDelete = path + "/" + name;
@@ -116,30 +119,13 @@ public class Delete extends Observable {
                 
                 if(lastp != newp) {
                     lastp = newp;
-                    publishProgress(newp);
+                    Message m = mHandler.obtainMessage(newp, Delete.this);
+                    mHandler.sendMessage(m);
                 }
             }
             
-            return true;
-        }
-        
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            Delete.this.setChanged();
-            Delete.this.notifyObservers(progress[0]); 
-        }
-        
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if(result && (!mStop)) {
-                Delete.this.setChanged();
-                Delete.this.notifyObservers(SUCCESS);
-            }
-            else {
-                Delete.this.setChanged();
-                Delete.this.notifyObservers(FAILED);
-            }
-        }
+            Message m = mHandler.obtainMessage(Download.SUCCESS, Delete.this);
+            mHandler.sendMessage(m);
+        }      
     }
 }

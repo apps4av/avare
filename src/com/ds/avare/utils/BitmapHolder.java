@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
+import java.io.File;
+
 import com.ds.avare.R;
 import com.ds.avare.storage.Preferences;
 
@@ -49,7 +51,7 @@ public class BitmapHolder {
      * 
      */
     private String mName = null;
-
+    
     /**
      * Transform for scale/translate
      */
@@ -147,6 +149,19 @@ public class BitmapHolder {
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inSampleSize = sampleSize;
 
+        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
+            try {
+                mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.nochart);
+            }
+            catch(OutOfMemoryError e){
+            }
+            if(null != mBitmap) {
+                mWidth = mBitmap.getWidth();
+                mHeight = mBitmap.getHeight();
+                mName = name;
+            }
+            return;
+        }
         try {
             mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, opt);
         }
@@ -158,21 +173,9 @@ public class BitmapHolder {
             mName = name;
         }
         else {
-            try {
-                mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.nochart);
-            }
-            catch(OutOfMemoryError e){
-            }
-            if(null != mBitmap) {
-                mWidth = mBitmap.getWidth();
-                mHeight = mBitmap.getHeight();
-                mName = name;
-            }
-            else {
-                mWidth = 0;
-                mHeight = 0;
-                mName = null;
-            }
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
         }
     }
 

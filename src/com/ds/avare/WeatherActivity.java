@@ -52,6 +52,7 @@ public class WeatherActivity extends Activity {
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
+    private WebAppInterface mInfc;
 
 
     /**
@@ -222,7 +223,8 @@ public class WeatherActivity extends Activity {
             mService.registerGpsListener(mGpsInfc);
             if(mIsPageLoaded == false) {
                 mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
-                mWebView.addJavascriptInterface(new WebAppInterface(mContext, mService, mWebView), "Android");
+                mInfc = new WebAppInterface(mContext, mService, mWebView);
+                mWebView.addJavascriptInterface(mInfc, "Android");
             }
             mIsPageLoaded = true;
 
@@ -237,6 +239,7 @@ public class WeatherActivity extends Activity {
          */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            mInfc.cleanup();
         }
     };
 

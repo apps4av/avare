@@ -32,13 +32,11 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.weather.WeatherCache;
 
 import android.app.Service;
 import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.SparseArray;
@@ -114,11 +112,6 @@ public class StorageService extends Service {
      */
     private Timer mTimer;
     
-    /** 
-     * Keep temp weather here.
-     */
-    private WeatherCache mWeatherCache;
-    
     /*
      * A list of GPS listeners
      */
@@ -186,9 +179,7 @@ public class StorageService extends Service {
 
         mImageDataSource = new DataSource(getApplicationContext());
         
-        mWeatherCache = new WeatherCache(getApplicationContext());
-
-        mArea = new Area(mImageDataSource, mWeatherCache);
+        mArea = new Area(mImageDataSource);
         mPlan = new Plan();
         
         /*
@@ -518,13 +509,6 @@ public class StorageService extends Service {
      */
     public void newPlan() {
         mPlan = new Plan();
-    }
-
-    /**
-     * @return
-     */
-    public WeatherCache getWeatherCache() {
-        return mWeatherCache;
     }
 
     /**

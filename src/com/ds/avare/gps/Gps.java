@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.ds.avare.gdl90.BlueToothConnection;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
@@ -148,15 +147,16 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 mLocationManager.removeGpsStatusListener(this);
                 mLocationManager = null;
             }
-            BlueToothConnection.getInstance().registerListener(mGpsCallback);
-            BlueToothConnection.getInstance().start();
+            
+            //BlueToothConnection.getInstance().registerListener(mGpsCallback);
+            //BlueToothConnection.getInstance().start();
         }
         else if(null == mLocationManager) {
             
             /*
              * If GPS to be used, stop BT
              */
-            BlueToothConnection.getInstance().stop();
+            //BlueToothConnection.getInstance().stop();
             
             mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
 
@@ -197,7 +197,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     public void stop() {
         
-        BlueToothConnection.getInstance().stop();
+        //BlueToothConnection.getInstance().stop();
         /*
          * Stop but dont stop if already stopped
          */

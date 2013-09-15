@@ -866,6 +866,7 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mLocationView.cleanup();
     }
 
     /**
