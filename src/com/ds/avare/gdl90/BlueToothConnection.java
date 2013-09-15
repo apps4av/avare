@@ -17,14 +17,17 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
+
+import com.ds.avare.gps.GpsInterface;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
 
@@ -38,16 +41,16 @@ public class BlueToothConnection {
     private static BluetoothAdapter mBtAdapter = null;
     private static BluetoothSocket mBtSocket = null;
     private static InputStream mStream = null;
-    private static boolean mConnected = false;
     private static boolean mRunning = false;
-    private static BlueToothConnectionInterface mListener;
+    private static GpsInterface mListener;
     
     private static BlueToothConnection mConnection;
     
     private static final String mStoreFile = null;
     private static final String mLoadFile = null;
+    private static AdsbStatus mAdsbStatus;
+    private static final String device = "XGPS170";
     
-
     /*
      *  Well known SPP UUID
      */
@@ -59,16 +62,19 @@ public class BlueToothConnection {
      */
     private BlueToothConnection() {
     }
+
     
     /**
      * 
      * @return
      */
     public static BlueToothConnection getInstance() {
+
         if(null == mConnection) {
             mConnection = new BlueToothConnection();
             mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-            mConnected = false;
+            mAdsbStatus = new AdsbStatus();
+            mAdsbStatus.setState(AdsbStatus.DISCONNECTED);
         }
         return mConnection;
     }
@@ -76,14 +82,28 @@ public class BlueToothConnection {
     /**
      * 
      */
+    private void sleepit() {
+        try {
+            Thread.sleep(1000);
+        }
+        catch(Exception e) {            
+        }
+    }
+    
+    /**
+     * 
+     */
     public void stop() {
+        if(mAdsbStatus.getState() != AdsbStatus.CONNECTED) {
+            return;
+        }
         mRunning = false;
     }
 
     /**
      * 
      */
-    public void registerListener(BlueToothConnectionInterface listener) {
+    public void registerListener(GpsInterface listener) {
         mListener = listener;
     }
     
@@ -91,6 +111,11 @@ public class BlueToothConnection {
      * 
      */
     public void start() {
+        
+        if(mAdsbStatus.getState() != AdsbStatus.DISCONNECTED) {
+            return;
+        }
+        
         mRunning = true;
         
         /*
@@ -107,6 +132,9 @@ public class BlueToothConnection {
                 BufferedOutputStream bos = null;
                 BufferedInputStream bis = null;
                 
+                if(!connect(device)) {
+                    return;
+                }
                 /*
                  * Store file for debug? 
                  */
@@ -137,95 +165,61 @@ public class BlueToothConnection {
                 while(mRunning) {
                     
                     int red = 0;
-                    if(mLoadFile != null) {
-                        mConnected = true;
-                    }
                     
-                    if(!mConnected) {
-                        try {
-                            Thread.sleep(1000);
-                        }
-                        catch (Exception e) {
-                            
-                        }
-                        continue;
-                    }
-                    else {
-
-                        if(mLoadFile == null) {
-
-                            /*
-                             * Read.
-                             */
-                            try {
-                                red = read(buffer);
-                            }
-                            catch (Exception e) {                            
-                            }
-                            if(red <= 0) {
-                                try {
-                                    Thread.sleep(1000);
-                                }
-                                catch (Exception e) {
-                                    
-                                }
-                                continue;
-                            }
-                        }
-                        else {
-                            try {
-                                red = bis.read(buffer, 0, buffer.length);
-                            }
-                            catch (Exception e) {
-                                try {
-                                    Thread.sleep(1000);
-                                }
-                                catch (Exception e1) {
-                                    
-                                }
-                            }
-                            if(red <= 0) {
-                                try {
-                                    Thread.sleep(1000);
-                                }
-                                catch (Exception e) {
-                   
-                                }
-                            }
-                        }
+                    if(mLoadFile == null) {
+                        /*
+                         * Read.
+                         */
+                        red = read(buffer);
                         if(red <= 0) {
+                            BlueToothConnection.this.stop();
                             continue;
                         }
-                        dbuffer.put(buffer, red);
-                     
-                        /**
-                         * Store data to file for debugging if set to debug
-                         */
-                        if(mStoreFile != null) {
-                            try {
-                                bos.write(buffer, 0, red);
-                                bos.flush();
-                            } 
-                            catch (Exception e) {
-                            }
+                    }
+                    else {
+                        try {
+                            red = bis.read(buffer, 0, buffer.length);
                         }
-                        
-                        byte[] buf;
-                        while(null != (buf = dbuffer.get())) {
-
-                            /*
-                             * Get packets, decode
-                             */
-                            com.ds.avare.gdl90.Message m = decode.decode(buf);
-                            /*
-                             * Post on UI thread.
-                             */
-                            Message msg = mHandler.obtainMessage();
-                            msg.obj = m;
-                            mHandler.sendMessage(msg);
+                        catch (Exception e) {
+                            sleepit();
+                            continue;
+                        }
+                        if(red <= 0) {
+                            sleepit();
+                            continue;
                         }
                     }
+                    
+                    dbuffer.put(buffer, red);
+                 
+                    /**
+                     * Store data to file for debugging if set to debug
+                     */
+                    if(mStoreFile != null) {
+                        try {
+                            bos.write(buffer, 0, red);
+                            bos.flush();
+                        } 
+                        catch (Exception e) {
+                        }
+                    }
+                    
+                    byte[] buf;
+                    while(null != (buf = dbuffer.get())) {
+
+                        /*
+                         * Get packets, decode
+                         */
+                        com.ds.avare.gdl90.Message m = decode.decode(buf);
+                        /*
+                         * Post on UI thread.
+                         */
+                        Message msg = mHandler.obtainMessage();
+                        msg.obj = m;
+                        mHandler.sendMessage(msg);
+                    }
                 }
+
                 if(mStoreFile != null) {
                     try {
                         bos.close();
@@ -240,10 +234,38 @@ public class BlueToothConnection {
                     catch (Exception e) {
                     }
                 }
+                
+                /*
+                 * Exit
+                 */
+                try {
+                    mStream.close();
+                } 
+                catch(Exception e2) {
+                }
+                
+                try {
+                    mBtSocket.close();
+                } 
+                catch(Exception e2) {
+                }    
+                setState(AdsbStatus.DISCONNECTED);
             }
-            
         };
         thread.start();
+    }
+    
+    /**
+     * 
+     * @param state
+     */
+    private void setState(int state) {
+        if(mListener != null) {
+            mAdsbStatus.setState(state);
+            Message msg = mHandler.obtainMessage();
+            msg.obj = mAdsbStatus;
+            mHandler.sendMessage(msg);
+        }
     }
     
     /**
@@ -252,8 +274,16 @@ public class BlueToothConnection {
      * name matched this string.
      * @return
      */
-    public boolean connect(String devNameMatch) {
+    private boolean connect(String devNameMatch) {
+        /*
+         * Only when not connected, connect
+         */
+        if(mAdsbStatus.getState() != AdsbStatus.DISCONNECTED) {
+            return false;
+        }
+        setState(AdsbStatus.CONNECTING);
         if(null == mBtAdapter) {
+            setState(AdsbStatus.DISCONNECTED);
             return false;
         }
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
@@ -261,7 +291,8 @@ public class BlueToothConnection {
         /*
          * Find device
          */
-        if(null == pairedDevices) {
+        if(null == pairedDevices) {            
+            setState(AdsbStatus.DISCONNECTED);
             return false;
         }
         BluetoothDevice device = null;
@@ -277,7 +308,7 @@ public class BlueToothConnection {
         mBtAdapter.cancelDiscovery();
  
         if(null == device) {
-            Logger.Logit("No connect to BT");
+            setState(AdsbStatus.DISCONNECTED);
             return false;
         }
         
@@ -288,6 +319,7 @@ public class BlueToothConnection {
             mBtSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
         } 
         catch(Exception e) {
+            setState(AdsbStatus.DISCONNECTED);
             return false;
         }
     
@@ -303,6 +335,7 @@ public class BlueToothConnection {
             } 
             catch(Exception e2) {
             }
+            setState(AdsbStatus.DISCONNECTED);
             return false;
         } 
 
@@ -315,10 +348,11 @@ public class BlueToothConnection {
             } 
             catch(Exception e2) {
             }
-            mConnected = false;
+            setState(AdsbStatus.DISCONNECTED);
         } 
 
-        mConnected = true;
+        setState(AdsbStatus.CONNECTED);
+
         return true;
     }
     
@@ -332,7 +366,7 @@ public class BlueToothConnection {
             red = mStream.read(buffer, 0, buffer.length);
         } 
         catch(Exception e) {
-            mConnected = false;
+            red = -1;
         }
         return red;
     }
@@ -342,38 +376,50 @@ public class BlueToothConnection {
      * @return
      */
     public boolean isConnected() {
-        return mConnected;
+        return mAdsbStatus.getState() == AdsbStatus.CONNECTED;
     }
-    
-    /**
-     * 
-     */
-    public void disconnect() {
-        try {
-            mStream.close();
-        } 
-        catch(Exception e2) {
-        }
-        
-        try {
-            mBtSocket.close();
-        } 
-        catch(Exception e2) {
-        }    
-        mConnected = false;
 
-    }
-    
     /**
      * Send a message to the lone listener.
      */
     private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {            
-            com.ds.avare.gdl90.Message m = (com.ds.avare.gdl90.Message)msg.obj;
             if(mListener != null) {
-                mListener.messageCallback(m);
+                
+                if(msg.obj instanceof UplinkMessage) {
+                    /*
+                     * Send an uplink nexrad message
+                     */
+                    LinkedList<Product> pds = ((UplinkMessage) msg.obj).getFis().getProducts();
+                    for(Product p : pds) {
+                        if(p instanceof Id6364Product) {
+                            Id6364Product pn = (Id6364Product)p;
+                            mListener.adbsMessageCallbackNexrad(pn);
+                        }
+                    }
+                }
+                else if(msg.obj instanceof OwnshipMessage) {
+                    
+                    /*
+                     * Make a GPS locaiton message from ADSB ownship message.
+                     */
+                    OwnshipMessage om = (OwnshipMessage)msg.obj;
+                    Location l = new Location(device);
+                    l.setAltitude(om.mAltitude / 3.28);  // ft to m
+                    l.setLatitude(om.mLat);
+                    l.setLongitude(om.mLon);
+                    l.setSpeed((float)(om.mHorizontalVelocity / 1.944)); // kt to ms/s
+                    l.setBearing(om.mDirection);
+                    l.setTime(om.getTime());
+                    mListener.locationCallback(l);
+                }
+                else if(msg.obj instanceof AdsbStatus) {
+                    mListener.timeoutCallback(false);
+                    mListener.adbsStatusCallback(mAdsbStatus);
+                }
             }
         }
     };
+
 }

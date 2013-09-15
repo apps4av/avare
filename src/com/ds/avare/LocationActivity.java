@@ -17,6 +17,8 @@ import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gdl90.AdsbStatus;
+import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -177,7 +179,20 @@ public class LocationActivity extends Activity implements Observer {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }          
+        }
+
+        @Override
+        public void adbsMessageCallbackNexrad(Id6364Product pn) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void adbsStatusCallback(AdsbStatus adsbStatus) {
+            // TODO Auto-generated method stub
+            
+        }
+
     };
 
     /**

@@ -12,11 +12,38 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.gdl90;
 
 /**
+ * 
  * @author zkhan
  *
  */
-public interface BlueToothConnectionInterface {
+public class AdsbStatus {
 
-    void messageCallback(Message msg);
+    public static final int CONNECTED = 1;
+    public static final int CONNECTING = 2;
+    public static final int DISCONNECTED = 0;
     
+    private int mState;
+   
+    /**
+     * 
+     */
+    public AdsbStatus() {
+        mState = DISCONNECTED;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getState() {
+        return mState;
+    }
+    
+    /**
+     * 
+     * @param state
+     */
+    public void setState(int state) {
+        mState = state;
+    }
 }

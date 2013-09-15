@@ -331,6 +331,8 @@ public class Destination extends Observable {
         @Override
         protected Boolean doInBackground(Object... vals) {
 
+            Thread.currentThread().setName("Destination");
+
 	        if(null == mDataSource) {
 	        	return false;
         	}

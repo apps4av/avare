@@ -81,6 +81,8 @@ public class TFRFetcher {
          */
         @Override
         protected Boolean doInBackground(Object... vals) {
+            Thread.currentThread().setName("TFR");
+
             mShapes = NetworkHelper.getShapesInTFR(mContext);
             return true;
         }

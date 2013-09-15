@@ -135,6 +135,8 @@ public class Download extends Observable {
         @Override
         protected Boolean doInBackground(String... sUrl) {
 
+            Thread.currentThread().setName("Download");
+
             BufferedInputStream input;
             BufferedOutputStream output;
             int count;

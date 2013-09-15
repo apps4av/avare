@@ -35,6 +35,12 @@ Redistribution and use in source and binary forms, with or without modification,
         android:defaultValue="0"
         android:entryValues="@array/UnitsDValues"/>
     <CheckBoxPreference
+        android:enabled="false"
+        android:key="@string/adsb"
+        android:title="@string/adsbLabel"
+        android:summary="@string/adsbSummary"
+        android:defaultValue="false"/>
+	<CheckBoxPreference
         android:key="@string/NightMode"
         android:title="@string/NightModeLabel"
         android:summary="@string/NightModeSummary"

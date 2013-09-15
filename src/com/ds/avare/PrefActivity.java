@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
+import com.ds.avare.gdl90.AdsbStatus;
+import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -52,7 +54,18 @@ public class PrefActivity extends PreferenceActivity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }          
+        }
+
+        @Override
+        public void adbsMessageCallbackNexrad(Id6364Product pn) {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void adbsStatusCallback(AdsbStatus adsbStatus) {
+            // TODO Auto-generated method stub
+            
+        }
     };
 
     @Override

@@ -16,6 +16,8 @@ package com.ds.avare;
 import java.util.ArrayList;
 
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gdl90.AdsbStatus;
+import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -89,7 +91,19 @@ public class PlanActivity extends Activity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }          
+        }
+
+        @Override
+        public void adbsMessageCallbackNexrad(Id6364Product pn) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void adbsStatusCallback(AdsbStatus adsbStatus) {
+            // TODO Auto-generated method stub
+            
+        }
     };
 
     /*

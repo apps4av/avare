@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.gdl90.BlueToothConnection;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
@@ -47,6 +48,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * Time of last GPS message
      */
     private long mGpsLastUpdate;
+    
 
     /**
      * A timer that clicks to check GPS status
@@ -125,7 +127,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * Must be called to use GPS
      */
     public void start() {
-
+        
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
         }
@@ -136,7 +138,26 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         /*
          * Start GPS but dont start if already started
          */
-        if(null == mLocationManager) {
+        if(mPref.useAdsb()) {
+            
+            /*
+             * If ADSB should be used, and location manager is working, stop it.
+             */
+            if(null != mLocationManager) {
+                mLocationManager.removeUpdates(this);
+                mLocationManager.removeGpsStatusListener(this);
+                mLocationManager = null;
+            }
+            BlueToothConnection.getInstance().registerListener(mGpsCallback);
+            BlueToothConnection.getInstance().start();
+        }
+        else if(null == mLocationManager) {
+            
+            /*
+             * If GPS to be used, stop BT
+             */
+            BlueToothConnection.getInstance().stop();
+            
             mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
 
             try {
@@ -176,6 +197,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     public void stop() {
         
+        BlueToothConnection.getInstance().stop();
         /*
          * Stop but dont stop if already stopped
          */
@@ -223,7 +245,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onLocationChanged(Location location) {
-        if ((location != null) && (!mPref.isSimulationMode())
+        if ((location != null)
                 && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 
 
@@ -234,15 +256,16 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             /*
              * Called by GPS. Update everything driven by GPS.
              */
-            mGpsCallback.locationCallback(location);
+            if(!mPref.isSimulationMode()) {
+                mGpsCallback.locationCallback(location);
+            }
         }
     }
     
     /**
      * @author zkhan
      *
-     */
-    
+     */ 
     private class UpdateGps extends TimerTask {
         
         /* (non-Javadoc)
@@ -289,6 +312,15 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 (status == LocationProvider.OUT_OF_SERVICE)
                 && (!mPref.isSimulationMode())) {
             mGpsCallback.statusCallback(null);
+        }
+    }
+    
+    /**
+     * This is to not let the timer expire 
+     */
+    public void updateTimeout() {
+        synchronized(this) {
+            mGpsLastUpdate = SystemClock.elapsedRealtime();
         }
     }
 }

@@ -51,8 +51,8 @@ public class SatelliteView extends View {
     private Context         mContext;
     private float          mFontHeight;
     private int            mAccuracy;
-    private int            mAltitude;
     String 				     mLastTime;
+    String                   mName;
 
     /**
      * 
@@ -61,6 +61,7 @@ public class SatelliteView extends View {
         mContext = context;        
         mLatitude = 0;
         mLongitude = 0;
+        mName = "";
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.WHITE);
@@ -118,9 +119,9 @@ public class SatelliteView extends View {
         }
         mLatitude = Helper.truncGeo(location.getLatitude());
         mLongitude = Helper.truncGeo(location.getLongitude());
+        mName = location.getProvider() == null ? "" : location.getProvider();
         mAccuracy = (int) Math.round(location.getAccuracy() * Preferences.heightConversion);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mAltitude = (int) Math.round(location.getAltitude() * Preferences.heightConversion);
         mLastTime = sdf.format(new Date(System.currentTimeMillis()));
     }
     
@@ -132,18 +133,17 @@ public class SatelliteView extends View {
      * @param lat
      * @param accuracy
      */
-    private void drawParamsText(Canvas canvas, String num, String lon, String lat, String accuracy, String altitude) {
+    private void drawParamsText(Canvas canvas, String num, String lon, String lat, String accuracy) {
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
 
         /*
          * Now draw stats text
          */
-        canvas.drawText(mContext.getString(R.string.gps) + "(@" + mLastTime + ")" + ":" + num, 4, mFontHeight, mPaint);
+        canvas.drawText(mName + "(@" + mLastTime + ")" + ":" + num, 4, mFontHeight, mPaint);
         canvas.drawText(mContext.getString(R.string.Lon) + ":" + lon, 4, mFontHeight * 2, mPaint);
         canvas.drawText(mContext.getString(R.string.Lat) + ":" + lat, 4, mFontHeight * 3, mPaint);
-        canvas.drawText(mContext.getString(R.string.Altitude) + ":" + altitude, 4, mFontHeight * 4, mPaint);
-        canvas.drawText(mContext.getString(R.string.accuracy) + ":" + accuracy, 4, mFontHeight * 5, mPaint);
+        canvas.drawText(mContext.getString(R.string.accuracy) + ":" + accuracy, 4, mFontHeight * 4, mPaint);
 
     }
 
@@ -213,17 +213,18 @@ public class SatelliteView extends View {
 	         */
 	        drawParamsText(canvas, Integer.toString(i),
 	        		Double.toString(mLongitude), Double.toString(mLatitude),
-	        		Integer.toString(mAccuracy),
-	        		Integer.toString(mAltitude));
+	        		Integer.toString(mAccuracy));
         }
         
         else {
         	
             canvas.restore();
-	        /*
-	         * Now draw stats text
-	         */
-	        drawParamsText(canvas, "?", "?", "?", "?", "?");
+            /*
+             * Now draw stats text
+             */
+            drawParamsText(canvas, "0",
+                    Double.toString(mLongitude), Double.toString(mLatitude),
+                    Integer.toString(mAccuracy));
         }
     }
 }

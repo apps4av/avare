@@ -75,6 +75,8 @@ public class WebAppInterface {
         @Override
         protected String doInBackground(String... input) {
             
+            Thread.currentThread().setName("Weather");
+
             String Pirep = "";
             String Metar = "";
             String Taf = "";

@@ -86,6 +86,9 @@ public class Delete extends Observable {
          */
         @Override
         protected Boolean doInBackground(String... sUrl) {
+            
+            Thread.currentThread().setName("Delete");
+
             String path = sUrl[0];
             String chart = sUrl[1];
             

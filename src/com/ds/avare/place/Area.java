@@ -144,6 +144,8 @@ public class Area {
         @Override
         protected Void doInBackground(Object... vals) {
 
+            Thread.currentThread().setName("Area");
+            
             if(null == mDataSource) {
                 return null;
             }

@@ -803,6 +803,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawNexrad(Canvas canvas) {
+        if(mService == null) {
+            return;
+        }
         SparseArray<NexradBitmap> bitmaps = mService.getNexradImages();
         if(null == bitmaps) {
             return;
@@ -1127,6 +1130,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         @Override
         protected Boolean doInBackground(Object... vals) {
             
+            Thread.currentThread().setName("Tile");
 
             /*
              * Load tiles from image files in background, then send them to handler.
@@ -1239,9 +1243,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
-         */
+         */     
         @Override
         protected String doInBackground(Object... vals) {
+            
+            Thread.currentThread().setName("Closest");
+
             String airport = null;
             String weather = null;
             lon = (Double)vals[0];
@@ -1324,6 +1331,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected Boolean doInBackground(Double... vals) {
+            
+            Thread.currentThread().setName("Obstacle");
+
             Double lon;
             Double lat;
             Double alt;
@@ -1365,7 +1375,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
     /**
      * @author zkhan
-     *
+     *s
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
