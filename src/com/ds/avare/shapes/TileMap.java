@@ -16,6 +16,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import com.ds.avare.R;
 import android.content.Context;
 
 /**
@@ -37,6 +38,8 @@ public class TileMap {
     
     private int numTiles;
     private int numTilesMax;
+    
+    private BitmapHolder mNoImg;
         
     private BitmapHolder[] mBitmapCache;
     
@@ -61,6 +64,7 @@ public class TileMap {
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
         mBitmapCache = new BitmapHolder[numTilesMax];
+        mNoImg = new BitmapHolder(context, R.drawable.nochart);
         for(int tile = 0; tile < numTilesMax; tile++) {
             mBitmapCache[tile] = new BitmapHolder();
         }
@@ -188,9 +192,14 @@ public class TileMap {
                 for(int x = 0; x < factor; x++) {
                     for(int y = 0; y < factor; y++) {
                         BitmapHolder b = new BitmapHolder(mContext, mPref, Helper.incTileName(tileNames[tilen], y, x), factor);
-                        h.drawInBitmap(b, tileNames[tilen], x * BitmapHolder.WIDTH / factor, y * BitmapHolder.HEIGHT / factor);
-                        b.recycle();
-                        b = null;
+                        if(b.getName() == null) {
+                            h.drawInBitmap(mNoImg, tileNames[tilen], x * BitmapHolder.WIDTH / factor, y * BitmapHolder.HEIGHT / factor);
+                        }
+                        else {
+                            h.drawInBitmap(b, tileNames[tilen], x * BitmapHolder.WIDTH / factor, y * BitmapHolder.HEIGHT / factor);
+                            b.recycle();
+                            b = null;
+                        }
                     }
                 }
                 mapB[tilen] = h;
@@ -213,6 +222,8 @@ public class TileMap {
             mBitmapCache[tile].recycle();
             mBitmapCache[tile] = null;
         }
+        mNoImg.recycle();
+        mNoImg = null;
     }
     
     /**

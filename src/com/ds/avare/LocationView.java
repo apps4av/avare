@@ -1190,7 +1190,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * And pan
                  */
-                mPan.setTileMove(movex, movey);
+                mPan.setTileMove(movex * mScale.getMacroFactor(), movey * mScale.getMacroFactor());
                 mService.setPan(mPan);
                 mMovement = new Movement(offsets, p);
                 mService.setMovement(mMovement);

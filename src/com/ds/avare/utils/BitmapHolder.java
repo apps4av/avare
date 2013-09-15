@@ -14,7 +14,6 @@ package com.ds.avare.utils;
 
 import java.io.File;
 
-import com.ds.avare.R;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
@@ -150,16 +149,7 @@ public class BitmapHolder {
         opt.inSampleSize = sampleSize;
 
         if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
-            try {
-                mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.nochart);
-            }
-            catch(OutOfMemoryError e){
-            }
-            if(null != mBitmap) {
-                mWidth = mBitmap.getWidth();
-                mHeight = mBitmap.getHeight();
-                mName = name;
-            }
+            mName = null;
             return;
         }
         try {
@@ -173,8 +163,6 @@ public class BitmapHolder {
             mName = name;
         }
         else {
-            mWidth = 0;
-            mHeight = 0;
             mName = null;
         }
     }
