@@ -41,15 +41,22 @@ public class WebAppInterface {
     /** 
      * Instantiate the interface and set the context
      */
-    WebAppInterface(Context c, StorageService s, WebView v) {
-        mContext = c;
-        mService = s;
+    WebAppInterface(Context c, WebView v) {
         mWebView = v;
+        mContext = c;
         mPref = new Preferences(c);
         mWeatherTask = null;
         mWeatherTask = new WeatherTask();
         mWeatherThread = new Thread(mWeatherTask);
         mWeatherThread.start();
+    }
+    
+    /**
+     * When service connects.
+     * @param s
+     */
+    public void connect(StorageService s) { 
+        mService = s;
     }
 
     /** 

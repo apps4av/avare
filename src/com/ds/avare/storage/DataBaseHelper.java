@@ -368,6 +368,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put(LATITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LATITUDE_COL))));
                         params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                         params.put(MAGNETIC_VARIATION, cursor.getString(MAGNETIC_VARIATION_COL).trim());
+                        String parts[] = cursor.getString(9).trim().split("[.]");
+                        params.put("Elevation", parts[0] + "ft");
                         airports[id] = new Airport(params, lon, lat);
                         id++;
                     }

@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -31,21 +30,21 @@ public class NearestAdapter extends ArrayAdapter<String> {
     private String[] mName;
     private String[] mBearing;
     private String[] mFuel;
-    private Integer[] mColor;
+    private String[] mElevation;
         
     /**
      * @param context
      * @param textViewResourceId
      */
     public NearestAdapter(Context context, String[] distance, String name[], 
-            String bearing[], String[] fuel, Integer[] color) {
+            String bearing[], String[] fuel, String[] runway) {
         super(context, R.layout.nearest, distance);
         mContext = context;
         mBearing = bearing;
         mDistance = distance;
         mName = name;
         mFuel = fuel;
-        mColor = color;
+        mElevation = runway;
     }
 
     /**
@@ -54,15 +53,15 @@ public class NearestAdapter extends ArrayAdapter<String> {
      * @param name
      * @param bearing
      * @param fuel
-     * @param color
+     * @param elevation
      */
     public void updateList(String[] distance, String name[], 
-            String bearing[], String[] fuel, Integer[] color) {
+            String bearing[], String[] fuel, String[] elevation) {
         mBearing = bearing;
         mDistance = distance;
         mName = name;
         mFuel = fuel;
-        mColor = color;
+        mElevation = elevation;
         notifyDataSetChanged();
     }
     
@@ -83,8 +82,8 @@ public class NearestAdapter extends ArrayAdapter<String> {
         textView.setText(mName[position]);
         textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
         textView.setText(mFuel[position]);
-        ImageView imageView = (ImageView)rowView.findViewById(R.id.nearest_list_image_weather);
-        imageView.setImageResource(mColor[position]);
+        textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);
+        textView.setText(mElevation[position]);
         
         return rowView;
     }

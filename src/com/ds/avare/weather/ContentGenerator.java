@@ -11,44 +11,13 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.weather;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
 import android.content.Context;
 
 import com.ds.avare.StorageService;
 
 public class ContentGenerator {
 
-    public static String makeContentImage(Context context, StorageService service) {
-        
-        /*
-         * Download the airmet time file
-         */
-        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        int hour = now.get(Calendar.HOUR_OF_DAY);
-        int day = now.get(Calendar.DAY_OF_MONTH);
-        int month = now.get(Calendar.MONTH) + 1;
-        int year = now.get(Calendar.YEAR);
-        /*
-         * G-Airmet 3 hour issue
-         */
-        hour = ((int)(hour / 3)) * 3;
-        now.set(Calendar.HOUR_OF_DAY, hour);
-
-        String airmetString = "";
-        String dates[] = new String[4];
-        for(int i = 0; i < 4; i++) {
-            dates[i] = String.format("%04d%02d%02d%02d00", year , month , day, hour);
-            airmetString += "<option value='" + dates[i] + "'>" + dates[i] + "</option><br>\n";
-            now.add(Calendar.HOUR_OF_DAY, 3);
-            hour = now.get(Calendar.HOUR_OF_DAY);
-            day = now.get(Calendar.DAY_OF_MONTH);
-            month = now.get(Calendar.MONTH) + 1;
-            year = now.get(Calendar.YEAR);
-        }
-        
+    public static String makeContentImage(Context context, StorageService service) {        
         /*
          * Generate the page
          */

@@ -23,7 +23,6 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.WeatherHelper;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -166,7 +165,7 @@ public class NearestActivity extends Activity  implements Observer {
         final String [] dist = new String[airportnum];
         final String [] bearing = new String[airportnum];
         final String [] fuel = new String[airportnum];
-        final Integer[] color = new Integer[airportnum];
+        final String[] elevation = new String[airportnum];
 
         for(int id = 0; id < airportnum; id++) {
             airport[id] = mService.getArea().getAirport(id).getId();
@@ -176,13 +175,13 @@ public class NearestActivity extends Activity  implements Observer {
             dist[id] = "" + ((float)(Math.round(mService.getArea().getAirport(id).getDistance() * 10.f)) / 10.f) + " " + Preferences.distanceConversionUnit;
             double heading = Helper.getMagneticHeading(mService.getArea().getAirport(id).getBearing(), params.getDeclinition());
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
-            color[id] = WeatherHelper.metarSquare(mService.getArea().getAirport(id).getWeather());
+            elevation[id] = mService.getArea().getAirport(id).getElevation();
         }
         if(null == mNearestAdapter) {
-            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, color);
+            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation);
         }
         else {
-            mNearestAdapter.updateList(dist, airportname, bearing, fuel, color);
+            mNearestAdapter.updateList(dist, airportname, bearing, fuel, elevation);
         }
         return true;
     }

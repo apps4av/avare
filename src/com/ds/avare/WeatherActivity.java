@@ -137,6 +137,12 @@ public class WeatherActivity extends Activity {
         setContentView(view);
         mWebView = (WebView)view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mInfc = new WebAppInterface(mContext, mWebView);
+        mWebView.addJavascriptInterface(mInfc, "Android");
+        if(mIsPageLoaded == false) {
+            mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
+        }
+        mIsPageLoaded = true;
 
         /*
          * Progress bar
@@ -184,7 +190,6 @@ public class WeatherActivity extends Activity {
             
         });
 
-
         mLastButton = (Button)view.findViewById(R.id.weather_button_last);
         mLastButton.setOnClickListener(new OnClickListener() {
 
@@ -221,12 +226,7 @@ public class WeatherActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            if(mIsPageLoaded == false) {
-                mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
-                mInfc = new WebAppInterface(mContext, mService, mWebView);
-                mWebView.addJavascriptInterface(mInfc, "Android");
-            }
-            mIsPageLoaded = true;
+            mInfc.connect(mService);
 
         }
 
@@ -239,7 +239,6 @@ public class WeatherActivity extends Activity {
          */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mInfc.cleanup();
         }
     };
 
@@ -320,6 +319,7 @@ public class WeatherActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mInfc.cleanup();
     }
     
 }

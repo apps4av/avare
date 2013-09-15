@@ -33,7 +33,7 @@ public class Airport implements Comparable<Airport> {
     private Projection mProj;
     private String mName;
     private String mFuel;
-    private String mWeather;
+    private String mElevation;
    
     /**
      * 
@@ -49,7 +49,7 @@ public class Airport implements Comparable<Airport> {
         mId = params.get(DataBaseHelper.LOCATION_ID);
         mName = params.get(DataBaseHelper.FACILITY_NAME);
         mFuel = params.get(DataBaseHelper.FUEL_TYPES);
-        mWeather = null;
+        mElevation = params.get("Elevation");
         mVariation = Helper.parseVariation(params.get(DataBaseHelper.MAGNETIC_VARIATION));
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
@@ -116,16 +116,8 @@ public class Airport implements Comparable<Airport> {
      * 
      * @return
      */
-    public String getWeather() {
-        return mWeather;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public void setWeather(String weather) {
-        mWeather = weather;
+    public String getElevation() {
+        return mElevation;
     }
 
     /**
