@@ -37,6 +37,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.SparseArray;
@@ -244,6 +245,13 @@ public class StorageService extends Service {
                     GpsInterface infc = it.next();
                     infc.locationCallback(location);
                     if(null != location) {
+                        if(!location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+                            /*
+                             * Getting location from somewhere other than built in GPS.
+                             * Update timeout so we do not timeout on GPS timer.
+                             */
+                            mGps.updateTimeout();
+                        }
                         setGpsParams(new GpsParams(location));
                         getArea().updateLocation(getGpsParams());
                         getPlan().updateLocation(getGpsParams());
