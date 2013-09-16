@@ -116,12 +116,18 @@ public class WeatherHelper {
      * @param weather
      * @return
      */
-    public static String formatWeatherHTML(String weather) {
+    public static String formatWeatherHTML(String weather, boolean translate) {
         weather = weather.replace("TAF ", "");
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n", "<br>");
-        weather = weather.replace(" FM", "<br></br>FM(From)<br>");
-        weather = weather.replace("BECMG", "<br></br>BECMG(Becoming)<br>"); 
+        if(translate) {
+            weather = weather.replace(" FM", "<br></br>FM(From)<br>");
+            weather = weather.replace("BECMG", "<br></br>BECMG(Becoming)<br>");
+        }
+        else {
+            weather = weather.replace(" FM", "<br></br>FM");
+            weather = weather.replace("BECMG", "<br></br>BECMG");            
+        }
         return weather;
     }
 

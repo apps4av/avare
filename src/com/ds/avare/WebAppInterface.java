@@ -152,7 +152,7 @@ public class WebAppInterface {
                     String out = (station != null) ? NetworkHelper.getTAF(station) : NetworkHelper.getTAFPlan(planf, miles);
                     String outm[] = out.split("::::");
                     for(int i = 0; i < outm.length; i++) {
-                        String taf = WeatherHelper.formatWeatherHTML(outm[i]);
+                        String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
                         String vals[] = taf.split(" ");
                         taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                         Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";

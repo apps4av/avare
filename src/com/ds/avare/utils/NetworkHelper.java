@@ -11,25 +11,16 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-import java.io.StringReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 
 /**
@@ -43,29 +34,6 @@ public class NetworkHelper {
      * 
      */
     public NetworkHelper() {
-    }
-
-    /**
-     * 
-     * @param url
-     * @return
-     */
-    private static String getXmlFromUrl(String url) {
-        String xml = null;
- 
-        try {
-            
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(url);
- 
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            xml = EntityUtils.toString(httpEntity);
- 
-        } 
-        catch (Exception e) {
-        }
-        return xml;
     }
     
     /**
@@ -87,53 +55,23 @@ public class NetworkHelper {
         /*
          * Get TAF
          */
-        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" + 
-                airport + "&hoursBeforeNow=2");
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                
-                NodeList nl = doc.getElementsByTagName("METAR");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-             
-                        /*
-                         * Return most recent
-                         */
-                        String txt = "";
-                        String cat = "";
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    txt = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                        n = eElement.getElementsByTagName("flight_category");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    cat = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                        if(cat.equals("") || txt.equals("")) {
-                            return "";
-                        }
-                        return(cat + "," + txt);
-                    }
-                }
+        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" + 
+                airport + "&hoursBeforeNow=2";
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerMETAR saxHandler = new SAXXMLHandlerMETAR();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                return text;
             }
         }
-        
-        return null;
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
         
     /**
@@ -146,41 +84,23 @@ public class NetworkHelper {
         /*
          * Get TAF
          */
-        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
-                 + airport + "&hoursBeforeNow=2");
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                
-                NodeList nl = doc.getElementsByTagName("TAF");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-             
-                        /*
-                         * Return most recent
-                         */
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    return(n.item(0).getTextContent());
-                                }
-                            }
-                        }
-                    }
-                }
+        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
+                 + airport + "&hoursBeforeNow=2";
+        
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerTAF saxHandler = new SAXXMLHandlerTAF();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                return text;
             }
         }
-        
-        /*
-         * TAFS concatenate to METARS
-         */
+        catch (Exception e) {
+            
+        }
         return "";
     }
 
@@ -192,52 +112,29 @@ public class NetworkHelper {
     public static String getPIREPS(String airport) {
         
         /*
-         * Get TAF
+         * Get PIREPS
          */
-        String xml = getXmlFromUrl("http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=pireps&requestType=retrieve&format=xml&stationString=K"
-                 + airport + "&hoursBeforeNow=12");
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                
-                NodeList nl = doc.getElementsByTagName("PIREP");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-             
-                        /*
-                         * Return most recent, discard AIREP
-                         */
-                        NodeList a = eElement.getElementsByTagName("pirep_type");
-                        if(a != null) {
-                            if(a.item(0) != null) {
-                                if(a.item(0).getTextContent() != null) {
-                                    if(a.item(0).getTextContent().equals("AIREP")) {
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                        
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    return(n.item(0).getTextContent());
-                                }
-                            }
-                        }
-                    }
-                }
+        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=pireps&requestType=retrieve&format=xml&stationString=K"
+                 + airport + "&hoursBeforeNow=12";
+        /*
+         * Get PIREPS
+         */
+        String out = "";
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                out += text + "::::";
             }
         }
-        
-        return "";
+        catch (Exception e) {
+            
+        }        
+        return out;
     }
 
     /**
@@ -247,61 +144,30 @@ public class NetworkHelper {
      */
     public static String getMETARPlan(String plan, String miles) {
         
-        String query = 
+        String xml = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=metars"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
-         * Get TAF
+         * Get METAR
          */
-        String xml = getXmlFromUrl(query);
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                String out = "";
-                
-                NodeList nl = doc.getElementsByTagName("METAR");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                /*
-                 * Return most recent
-                 */
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    String txt = "";
-                    String cat = "";
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-             
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    txt = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                        n = eElement.getElementsByTagName("flight_category");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    cat = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                    }
-                    if(cat.equals("") || txt.equals("")) {
-                        continue;
-                    }
-                    out += cat + "," + txt + "::::";
-                }
-                return out;
+        String out = "";
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerMETAR saxHandler = new SAXXMLHandlerMETAR();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                out += text + "::::";
             }
         }
+        catch (Exception e) {
+            
+        }
         
-        return "";
+        return out;
     }
 
     /**
@@ -311,52 +177,30 @@ public class NetworkHelper {
      */
     public static String getTAFPlan(String plan, String miles) {
         
-        String query = 
+        String xml = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
          * Get TAF
          */
-        String xml = getXmlFromUrl(query);
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                String out = "";
-                
-                NodeList nl = doc.getElementsByTagName("TAF");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                /*
-                 * Return most recent
-                 */
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    String txt = "";
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-             
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    txt = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                    }
-                    if(txt.equals("")) {
-                        continue;
-                    }
-                    out += txt + "::::";
-                }
-                return out;
+        String out = "";
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerTAF saxHandler = new SAXXMLHandlerTAF();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                out += text + "::::";
             }
         }
+        catch (Exception e) {
+            
+        }
         
-        return "";
+        return out;
     }
 
 
@@ -367,66 +211,30 @@ public class NetworkHelper {
      */
     public static String getPIREPSPlan(String plan, String miles) {
         
-        String query = 
+        String xml = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=12" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
          * Get PIREPS
          */
-        String xml = getXmlFromUrl(query);
-        if(xml != null) {
-            Document doc = getDomElement(xml);
-            if(null != doc) {
-                String out = "";
-                
-                NodeList nl = doc.getElementsByTagName("PIREP");
-                if(0 == nl.getLength()) {
-                    return "";
-                }
-                /*
-                 * Return most recent
-                 */
-                for (int temp = 0; temp < nl.getLength(); temp++) {
-                    
-                    String txt = "";
-                    Node nNode = nl.item(temp);
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element eElement = (Element) nNode;
-
-                        /*
-                         * Discard AIREP
-                         */
-                        NodeList a = eElement.getElementsByTagName("pirep_type");
-                        if(a != null) {
-                            if(a.item(0) != null) {
-                                if(a.item(0).getTextContent() != null) {
-                                    if(a.item(0).getTextContent().equals("AIREP")) {
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-
-                        NodeList n = eElement.getElementsByTagName("raw_text");
-                        if(n != null) {
-                            if(n.item(0) != null) {
-                                if(n.item(0).getTextContent() != null) {
-                                    txt = n.item(0).getTextContent();
-                                }
-                            }
-                        }
-                    }
-                    if(txt.equals("")) {
-                        continue;
-                    }
-                    out += txt + "::::";
-                }
-                return out;
+        String out = "";
+        XMLReader xmlReader;
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
+            xmlReader.setContentHandler(saxHandler);
+            xmlReader.parse(new InputSource(xml));
+            List<String> texts = saxHandler.getText();
+            for(String text : texts) {
+                out += text + "::::";
             }
         }
+        catch (Exception e) {
+            
+        }
         
-        return "";
+        return out;
     }
 
     /**
@@ -480,29 +288,4 @@ public class NetworkHelper {
         return ret;
     }
     
-    /**
-     * 
-     * @param xml
-     * @return
-     */
-    private static Document getDomElement(String xml){
-        
-        /*
-         * XML parser
-         */
-        Document doc = null;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
- 
-            DocumentBuilder db = dbf.newDocumentBuilder();
- 
-            InputSource is = new InputSource();
-                is.setCharacterStream(new StringReader(xml));
-                doc = db.parse(is); 
-        }
-        catch (Exception e) {
-        }
-        return doc;
-    }
-
 }
