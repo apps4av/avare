@@ -22,7 +22,6 @@ import com.ds.avare.utils.Helper;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -392,10 +391,10 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             }
         }
         if(expired) {
-            tv.setTextColor(Color.RED);
+            tv.setTextColor(0xFF7F0000);
         }
         else {
-            tv.setTextColor(Color.GREEN);
+            tv.setTextColor(0xFF007F00);
         }
         tv.setText(mGroups[group] + "(" + total + ")");
         if(isExpanded) {

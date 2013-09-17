@@ -67,6 +67,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     public Gps(Context ctx, GpsInterface callback) {
         mPref = new Preferences(ctx);
+        BlueToothConnection.getInstance();
         mContext = ctx;
         mLocationManager = null;
         mTimer = null;
