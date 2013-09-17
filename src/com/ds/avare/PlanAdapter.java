@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -27,17 +29,17 @@ import android.widget.TextView;
 public class PlanAdapter extends ArrayAdapter<String> {
 
     private Context  mContext;
-    private String[] mName;
-    private String[] mInfo;
-    private boolean[] mPassed;
+    private ArrayList<String> mName;
+    private ArrayList<String> mInfo;
+    private ArrayList<Boolean> mPassed;
     private int mNext;
         
     /**
      * @param context
      * @param textViewResourceId
      */
-    public PlanAdapter(Context context, String name[], String info[], boolean[] passed) {
-        super(context, R.layout.plan, name);
+    public PlanAdapter(Context context, ArrayList<String> name, ArrayList<String> info, ArrayList<Boolean> passed) {
+        super(context, R.layout.plan_list, name);
         mContext = context;
         mName = name;
         mInfo = info;
@@ -51,7 +53,7 @@ public class PlanAdapter extends ArrayAdapter<String> {
      * @param bearing
      * @param eta
      */
-    public void updateList(String name[], String info[], boolean passed[]) {
+    public void updateList(ArrayList<String> name, ArrayList<String> info, ArrayList<Boolean> passed) {
         mName = name;
         mInfo = info;
         mPassed = passed;
@@ -67,8 +69,8 @@ public class PlanAdapter extends ArrayAdapter<String> {
         /*
          * Find the next not passed.
          */
-        for(int id = 0; id < mPassed.length; id++) {
-            if(!mPassed[id]) {
+        for(int id = 0; id < mPassed.size(); id++) {
+            if(!mPassed.get(id)) {
                 mNext = id;
                 break;
             }
@@ -78,12 +80,12 @@ public class PlanAdapter extends ArrayAdapter<String> {
             rowView = inflater.inflate(R.layout.plan_list, parent, false);
         }
         TextView textView = (TextView)rowView.findViewById(R.id.plan_list_aid_name);
-        textView.setText(mName[position]);            
+        textView.setText(mName.get(position));            
         if(mNext == position) {
             /*
              * Add an arrow to indicate next way point in the plan
              */
-            textView.setText("> " + mName[position]);
+            textView.setText("> " + mName.get(position));
             textView.setTypeface(Typeface.DEFAULT_BOLD);
         }
         else if (position < mNext) {
@@ -96,7 +98,7 @@ public class PlanAdapter extends ArrayAdapter<String> {
             textView.setTypeface(Typeface.DEFAULT);
         }
         textView = (TextView)rowView.findViewById(R.id.plan_list_info);
-        textView.setText(mInfo[position]);
+        textView.setText(mInfo.get(position));
         
         return rowView;
     }

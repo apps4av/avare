@@ -127,6 +127,29 @@ public class Plan {
      * 
      * @return
      */
+    public void switchit(int from, int to) {
+        int num = getDestinationNumber() - 1;
+        if(from > num || to > num) {
+            return;
+        }
+        Destination tmp = mDestination[to];
+        mDestination[to] = mDestination[from];
+        mDestination[from] = tmp;
+        if(getDestinationNumber() > 0) {
+            if(mLastLocation != null) {
+                mTrackShape.updateShapeFromPlan(getCoordinates(
+                        mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+            }
+        }
+        else {
+            mTrackShape = new TrackShape();
+        }        
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean hasDestinationChanged() {
         /*
          * Auto change to next dest.

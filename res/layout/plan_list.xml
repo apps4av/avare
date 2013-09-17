@@ -15,9 +15,19 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <ImageView android:id="@+id/icon"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/Delete"
+        android:src="@drawable/grabber"/>
+    
     <TextView
          android:id="@+id/plan_list_aid_name"
          android:layout_width="match_parent"
+         android:layout_toRightOf="@+id/icon"
          android:layout_height="wrap_content"
          android:layout_marginLeft="2dp"
          android:clickable="false"
@@ -31,6 +41,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/icon"
         android:typeface="monospace"
         android:clickable="false"
         android:textSize="25sp"

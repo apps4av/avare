@@ -22,6 +22,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.TouchListView;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -53,12 +54,11 @@ import android.widget.ToggleButton;
 public class PlanActivity extends Activity {
     
     private StorageService mService;
-    private ListView mPlan;
+    private TouchListView mPlan;
     private PlanAdapter mPlanAdapter;
     private ListView mPlanSave;
     private ArrayAdapter<String> mPlanSaveAdapter;
     private Toast mToast;
-    private Button mDeleteButton;
     private Button mDestButton;
     private Button mSaveButton;
     private int mIndex;
@@ -95,14 +95,10 @@ public class PlanActivity extends Activity {
 
         @Override
         public void adbsMessageCallbackNexrad(Id6364Product pn) {
-            // TODO Auto-generated method stub
-            
         }
 
         @Override
         public void adbsStatusCallback(AdsbStatus adsbStatus) {
-            // TODO Auto-generated method stub
-            
         }
     };
 
@@ -116,6 +112,42 @@ public class PlanActivity extends Activity {
         ((MainActivity)this.getParent()).switchTab(0);
     }
 
+    /**
+     * 
+     */
+    private TouchListView.DropListener onDrop = new TouchListView.DropListener() {
+        @Override
+        public void drop(int from, int to) {
+            if(mService == null) {
+                return;
+            }
+            String item = mPlanAdapter.getItem(from);
+            mService.getPlan().switchit(from, to);
+            mPlanAdapter.remove(item);
+            mPlanAdapter.insert(item, to);
+            PlanActivity.this.updateAdapter();
+        }
+    };
+    
+    /**
+     * 
+     */
+    private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
+        @Override
+        public void remove(int which) {
+            if(mService == null) {
+                return;
+            }
+            String item = mPlanAdapter.getItem(which);
+            mService.getPlan().remove(which);
+            mPlanAdapter.remove(item);
+            PlanActivity.this.updateAdapter();
+            if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
+                mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
+            }
+        }
+    };
+    
     /**
      * 
      */
@@ -140,37 +172,14 @@ public class PlanActivity extends Activity {
         setContentView(view);
         
 
-        mPlan = (ListView)view.findViewById(R.id.plan_list);
+        mPlan = (TouchListView)view.findViewById(R.id.plan_list);
+        mPlan.setDropListener(onDrop);
+        mPlan.setRemoveListener(onRemove);
         mPlanSave = (ListView)view.findViewById(R.id.plan_list_save);
 
         mService = null;
         mIndex = -1;
         mTotalText = (TextView)view.findViewById(R.id.plan_total_text);    
-
-        mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
-        mDeleteButton.getBackground().setAlpha(255);
-        mDeleteButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            /*
-             * (non-Javadoc)
-             * Delete the plan destination
-             * @see android.view.View.OnClickListener#onClick(android.view.View)
-             */
-            public void onClick(View v) {
-                if(mIndex >= 0) {
-                    mService.getPlan().remove(mIndex);
-                    prepareAdapter();
-                    mPlan.setAdapter(mPlanAdapter);
-                    mPlanAdapter.notifyDataSetChanged();
-                    if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
-                        mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
-                    }
-                    mIndex = -1;
-                }
-            }
-            
-        });
 
         /*
          * Dest button
@@ -284,14 +293,14 @@ public class PlanActivity extends Activity {
         }
         int destnum = mService.getPlan().getDestinationNumber();
         
-        final String [] name = new String[destnum];
-        final String [] info = new String[destnum];
-        final boolean [] passed = new boolean[destnum];
+        ArrayList<String> name = new ArrayList<String>();
+        ArrayList<String> info = new ArrayList<String>();
+        ArrayList<Boolean> passed = new ArrayList<Boolean>();
 
         for(int id = 0; id < destnum; id++) {
-            name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
-            info[id] = mService.getPlan().getDestination(id).toString();
-            passed[id] = mService.getPlan().isPassed(id);
+            name.add(mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")");
+            info.add(mService.getPlan().getDestination(id).toString());
+            passed.add(mService.getPlan().isPassed(id));
         }
         mPlanAdapter.updateList(name, info, passed);
         mTotalText.setText(getString(R.string.Total) + " " + mService.getPlan().toString());
@@ -330,14 +339,14 @@ public class PlanActivity extends Activity {
             mToast.show();
         }
         
-        final String [] name = new String[destnum];
-        final String [] info = new String[destnum];
-        final boolean [] passed = new boolean[destnum];
+        ArrayList<String> name = new ArrayList<String>();
+        ArrayList<String> info = new ArrayList<String>();
+        ArrayList<Boolean> passed = new ArrayList<Boolean>();
 
         for(int id = 0; id < destnum; id++) {
-            name[id] = mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")";
-            info[id] = mService.getPlan().getDestination(id).toString();
-            passed[id] = mService.getPlan().isPassed(id);
+            name.add(mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")");
+            info.add(mService.getPlan().getDestination(id).toString());
+            passed.add(mService.getPlan().isPassed(id));
         }
         mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info, passed);
         return true;
@@ -379,6 +388,7 @@ public class PlanActivity extends Activity {
             prepareAdapterSave();
             mPlan.setAdapter(mPlanAdapter);
 
+            
             mPlan.setClickable(true);
             mPlan.setDividerHeight(10);
             mPlan.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -390,9 +400,7 @@ public class PlanActivity extends Activity {
                             
                     mDestination = mService.getPlan().getDestination(index);
                     mDestButton.setText(mDestination.getID());
-                    AnimateButton f = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    f.animate(true);
                     g.animate(true);
 
                     return true;
