@@ -115,6 +115,14 @@ public class PlanActivity extends Activity {
     /**
      * 
      */
+    private void inactivatePlan() {
+        mService.getPlan().makeInactive();
+        mActivateButton.setChecked(false);
+    }
+    
+    /**
+     * 
+     */
     private TouchListView.DropListener onDrop = new TouchListView.DropListener() {
         @Override
         public void drop(int from, int to) {
@@ -126,6 +134,7 @@ public class PlanActivity extends Activity {
             mPlanAdapter.remove(item);
             mPlanAdapter.insert(item, to);
             PlanActivity.this.updateAdapter();
+            inactivatePlan();
         }
     };
     
@@ -145,6 +154,7 @@ public class PlanActivity extends Activity {
             if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
                 mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
             }
+            inactivatePlan();
         }
     };
     
@@ -270,7 +280,6 @@ public class PlanActivity extends Activity {
                 if(null != mService) {
                     if(mActivateButton.getText().equals(getString(R.string.Inactive))) {
                         mService.getPlan().makeInactive();
-                        mService.getGpsParams();
                     }
                     else {
                         if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
@@ -431,7 +440,7 @@ public class PlanActivity extends Activity {
                          */
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
-                            mService.getPlan().makeInactive();
+                            inactivatePlan();
                             String item = mPlanSaveAdapter.getItem(mxindex).toString();
                             String tokens[] = item.split("\\)>");
                             for(int i = 0; i < tokens.length; i++) {
@@ -452,7 +461,7 @@ public class PlanActivity extends Activity {
                          */
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
-                            mService.getPlan().makeInactive();
+                            inactivatePlan();
                             String item = mPlanSaveAdapter.getItem(mxindex).toString();
                             String tokens[] = item.split("\\)>");
                             for(int i = tokens.length - 1; i >= 0; i--) {

@@ -255,6 +255,7 @@ public class LocationActivity extends Activity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
+        mService.getPlan().makeInactive();
     }
 
     /*
