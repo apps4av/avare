@@ -96,6 +96,7 @@ public class WebAppInterface {
                 String Metar = "";
                 String Taf = "";
                 String station = null;
+                String stationp = null;
     
                 String miles = "30";
                 String planf = "";
@@ -110,12 +111,16 @@ public class WebAppInterface {
                 int num = mService.getPlan().getDestinationNumber();
                 if((0 == num) && (mService.getDestination() != null)) {
                     station = mService.getDestination().getID();
+                    stationp = mService.getDestination().getLocation().getLongitude() + "," + 
+                            mService.getDestination().getLocation().getLatitude();
                 }
                 else if(num == 1) {
                     /*
                      * This is not a route.
                      */
                     station = mService.getPlan().getDestination(0).getID();
+                    stationp = mService.getPlan().getDestination(0).getLocation().getLongitude() + "," + 
+                            mService.getPlan().getDestination(0).getLocation().getLatitude();
                 }
                 for(int i = 0; i < num; i++) {
                     Location l = mService.getPlan().getDestination(i).getLocation();
@@ -128,13 +133,13 @@ public class WebAppInterface {
                     m.obj = mContext.getString(R.string.WeatherPlan);
                     mHandler.sendMessage(m);
                     continue;
-                }
+                }                
                 
                 /*
                  *  Get PIREP
                  */
                 try {
-                    String out = (station != null) ? NetworkHelper.getPIREPS(station) : NetworkHelper.getPIREPSPlan(planf, miles);
+                    String out = (station != null) ? NetworkHelper.getPIREPS(stationp, miles) : NetworkHelper.getPIREPSPlan(planf, miles);
                     String outm[] = out.split("::::");
                     for(int i = 0; i < outm.length; i++) {
                         outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());

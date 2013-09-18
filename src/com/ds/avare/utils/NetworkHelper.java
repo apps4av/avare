@@ -109,13 +109,15 @@ public class NetworkHelper {
      * @param airport
      * @return
      */
-    public static String getPIREPS(String airport) {
+    public static String getPIREPS(String plan, String miles) {
         
         /*
          * Get PIREPS
          */
-        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=pireps&requestType=retrieve&format=xml&stationString=K"
-                 + airport + "&hoursBeforeNow=12";
+        String xml = 
+                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
+                + "&requestType=retrieve&format=xml&hoursBeforeNow=12" 
+                + "&radialDistance=" + miles + ";" + plan;
         /*
          * Get PIREPS
          */
@@ -213,7 +215,7 @@ public class NetworkHelper {
         
         String xml = 
                 "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
-                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=12" 
+                + "&requestType=retrieve&format=xml&hoursBeforeNow=12" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
          * Get PIREPS
