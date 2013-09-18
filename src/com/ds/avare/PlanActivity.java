@@ -130,7 +130,7 @@ public class PlanActivity extends Activity {
                 return;
             }
             String item = mPlanAdapter.getItem(from);
-            mService.getPlan().switchit(from, to);
+            mService.getPlan().move(from, to);
             mPlanAdapter.remove(item);
             mPlanAdapter.insert(item, to);
             PlanActivity.this.updateAdapter();

@@ -127,15 +127,33 @@ public class Plan {
      * 
      * @return
      */
-    public void switchit(int from, int to) {
-        int num = getDestinationNumber() - 1;
-        if(from > num || to > num) {
+    public void move(int from, int to) {
+        int num = getDestinationNumber();
+        if(from >= num || to >= num) {
             return;
         }
-        Destination tmp = mDestination[to];
-        mDestination[to] = mDestination[from];
-        mDestination[from] = tmp;
-        if(getDestinationNumber() > 0) {
+        if(from > to) {
+            /*
+             * Move everything down
+             */
+            Destination tmp = mDestination[from];
+            for(int i = from; i > to; i--) {
+                mDestination[i] = mDestination[i - 1];
+            }
+            mDestination[to] = tmp;
+        }
+        else if (from < to) {
+            /*
+             * Move everything up
+             */
+            Destination tmp = mDestination[from];
+            for(int i = from; i < to; i++) {
+                mDestination[i] = mDestination[i + 1];
+            }
+            mDestination[to] = tmp;
+        }
+        
+        if(num > 0) {
             if(mLastLocation != null) {
                 mTrackShape.updateShapeFromPlan(getCoordinates(
                         mLastLocation.getLongitude(), mLastLocation.getLatitude()));
