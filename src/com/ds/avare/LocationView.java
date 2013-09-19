@@ -1130,7 +1130,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 catch(Exception e) {
                     
                 }
-            
+
+                if(mImageDataSource == null) {
+                    continue;
+                }
+                
                 /*
                  * Now draw in background
                  */
@@ -1281,7 +1285,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 catch (Exception e) {
                     
                 }
-                if(null != mService) {
+                if(null != mImageDataSource) {
                     /*
                      * Find obstacles in background as well
                      */
