@@ -203,12 +203,7 @@ public class SearchActivity extends Activity implements Observer {
          * Progress bar
          */
         mProgressBar = (ProgressBar)(view.findViewById(R.id.search_progress_bar));
-        
-        /*
-         * Now initialize the list to recent in case someone needs to go there, and not search
-         */
-        initList();
-        
+                
         mSelectedButton = (Button)view.findViewById(R.id.search_button_delete);
         mSelectedButton.getBackground().setAlpha(255);
         mSelectedButton.setOnClickListener(new OnClickListener() {
@@ -415,6 +410,11 @@ public class SearchActivity extends Activity implements Observer {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+
+            /*
+             * Now initialize the list to recent in case someone needs to go there, and not search
+             */
+            initList();
 
         }
 
