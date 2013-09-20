@@ -423,7 +423,7 @@ public class Helper {
             String rformatted = String.format("%0" + lenr + "d", row);
             String cformatted = String.format("%0" + lenc + "d", col);
             String pre = tokens[0] + "/" + tokens[1] + "/" + row + "/" + tokens[3];
-            String post = "_" + rformatted + "_" + cformatted + ".jpeg";
+            String post = "_" + rformatted + "_" + cformatted + "." + tokens[6];
             String mid = (tokens[4].equals("c") ? "_c" : "");
             return(pre + mid + post);
         }
