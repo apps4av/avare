@@ -40,6 +40,7 @@ public class Tile {
     private double mLatC;
     private double mWidth;
     private double mHeight;
+    private double mFactor;
     private String mChart;
 
     /**
@@ -57,6 +58,7 @@ public class Tile {
         mLatLR = 0;
         mLonC = 0;
         mLatC = 0;
+        mFactor = 1;
         mWidth = BitmapHolder.WIDTH;
         mHeight = BitmapHolder.HEIGHT;
     }
@@ -67,7 +69,8 @@ public class Tile {
                double lonul, double latul, double lonll, double latll,
                double lonur, double latur, double lonlr, double latlr,
                double lonc, double latc,
-               String chart) {
+               String chart,
+               double factor) {
         mName = name;
         mLonUL = lonul;
         mLonLL = lonll;
@@ -80,10 +83,32 @@ public class Tile {
         mLonC = lonc;
         mLatC = latc;
         mChart = chart;
+        mFactor = factor;
         int opts[] = new int[2];
         BitmapHolder.getTileOptions(name, opts);
         mWidth = opts[0];
         mHeight = opts[1];
+
+        double px = getPx();
+        double py = getPy();
+        /*
+         * Adjust based on factor.
+         * When factor is 1, we already have this info from the database.
+         */
+        if(mFactor != 1) {
+            mLonUL = lonul;
+            mLonLL = lonll;
+            mLonUR = lonul + px * mWidth * mFactor;
+            mLonLR = lonll + px * mWidth * mFactor;
+            mLatUL = latul;
+            mLatUR = latur;
+            mLatLL = latul + py * mHeight * mFactor;
+            mLatLR = latur + py * mHeight * mFactor;
+    
+            mLonC = lonul + px  * mWidth * mFactor / 2;
+            mLatC = latul + py * mHeight * mFactor / 2;
+        }
+
     }
 
     /**

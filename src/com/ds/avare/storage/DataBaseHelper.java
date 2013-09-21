@@ -297,7 +297,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public Tile findTile(String name) {
+    public Tile findTile(String name, double factor) {
         Cursor cursor = doQuery("select * from " + TABLE_FILES + " where " + TILE_NAME + "=='" + name +"'");
         Tile tile = null;
 
@@ -321,7 +321,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(8),
                             cursor.getDouble(9),
                             cursor.getDouble(10),
-                            cursor.getString(11));
+                            cursor.getString(11),
+                            factor);
                     /*
                      * Position on tile
                      */
@@ -872,7 +873,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public Tile findClosest(double lon, double lat, double offset[], double p[]) {
+    public Tile findClosest(double lon, double lat, double offset[], double p[], double factor) {
       
         /*
          * In case we fail
@@ -907,7 +908,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(8),
                             cursor.getDouble(9),
                             cursor.getDouble(10),
-                            cursor.getString(11));
+                            cursor.getString(11),
+                            factor);
                   
                     /*
                      * Position on tile

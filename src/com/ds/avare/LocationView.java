@@ -1138,7 +1138,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Now draw in background
                  */
-                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p);
+                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, mScale.getMacroFactor());
                 
                 if(gpsTile == null) {
                     continue;
@@ -1148,7 +1148,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 movey = mPan.getTileMoveYWithoutTear();
                 
                 String newt = gpsTile.getNeighbor(movey * mScale.getMacroFactor(), movex * mScale.getMacroFactor());
-                centerTile = mImageDataSource.findTile(newt);
+                centerTile = mImageDataSource.findTile(newt, mScale.getMacroFactor());
                 if(null != centerTile) {
                     mScale.setScaleAt(centerTile.getLatitude());
                     mOnChart = centerTile.getChart();
@@ -1194,7 +1194,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * And pan
                  */
-                mPan.setTileMove(movex * mScale.getMacroFactor(), movey * mScale.getMacroFactor());
+                mPan.setTileMove(movex, movey);
                 mService.setPan(mPan);
                 mMovement = new Movement(offsets, p);
                 mService.setMovement(mMovement);
@@ -1303,7 +1303,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * On double tap, move to center
          */
         mPan = new Pan();
-        mScale = new Scale();
+        mScale.setScaleFactor(1);
+        mScale.setScaleAt(mGpsParams.getLatitude());
         dbquery(true);
         tfrReset();
         postInvalidate();

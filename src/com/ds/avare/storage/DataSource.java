@@ -56,16 +56,16 @@ public class DataSource {
      * @param p
      * @return
      */
-    public Tile findClosest(double lon, double lat, double offset[], double p[]) {
-        return(dbHelper.findClosest(lon, lat, offset, p));
+    public Tile findClosest(double lon, double lat, double offset[], double p[], double factor) {
+        return(dbHelper.findClosest(lon, lat, offset, p, factor));
     }
 
     /**
      * @param name
      * @return
      */
-    public Tile findTile(String name) {
-        return(dbHelper.findTile(name));
+    public Tile findTile(String name, double factor) {
+        return(dbHelper.findTile(name, factor));
     }
 
     /**

@@ -21,6 +21,7 @@ public class Scale {
 
     private double mScaleFactor;
     private double mScaleCorrectY;
+    private int mMacro;
     
     static final double MAX_SCALE = 2;
     static final double MIN_SCALE = 0.5; 
@@ -31,6 +32,7 @@ public class Scale {
     public Scale() {
         mScaleFactor = 1;
         mScaleCorrectY = 1;
+        mMacro = 1;
     }
 
     /**
@@ -83,7 +85,7 @@ public class Scale {
      * @return
      */
     public int getMacroFactor() {
-        return 1;
+        return mMacro;
     }
     
     public float getScaleCorrected() {
