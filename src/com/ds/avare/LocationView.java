@@ -1305,6 +1305,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPan = new Pan();
         mScale.setScaleFactor(1);
         mScale.setScaleAt(mGpsParams.getLatitude());
+        if(mService != null) {
+            mService.getTiles().forceReload();
+        }
         dbquery(true);
         tfrReset();
         postInvalidate();
@@ -1450,5 +1453,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask.running = false;
         mTileDrawThread.interrupt();
         mObstacleThread.interrupt();
+    }
+    
+    /**
+     * 
+     * @param in
+     */
+    public boolean zoomIn(boolean in) {
+        int fac = mScale.getMacroFactor();
+        boolean changed;
+        if(in) {
+            changed = mScale.setMacroFactor(fac / 2);
+        }
+        else {
+            changed = mScale.setMacroFactor(fac * 2);
+        }
+        
+        if(changed && mService != null) {
+            mService.getTiles().forceReload();
+            dbquery(true);
+        }
+        return changed;
     }
 }

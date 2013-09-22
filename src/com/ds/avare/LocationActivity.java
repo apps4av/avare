@@ -51,6 +51,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.ZoomControls;
 
 /**
  * @author zkhan
@@ -101,11 +103,12 @@ public class LocationActivity extends Activity implements Observer {
     private Button mPlanButton;
     private Button mDownloadButton;
     private Button mMenuButton;
-    private Button mSimButton;
+    private ToggleButton mSimButton;
     private Button mDrawButton;
-    private Button mTrackButton;
+    private ToggleButton mTrackButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
+    private ZoomControls mZoom;
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
     private boolean mSpinner;
@@ -410,7 +413,26 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateThreshold(progress);
             }       
         });
-
+        
+        mZoom = (ZoomControls)view.findViewById(R.id.location_zoom_controls);
+        mZoom.setVisibility(View.INVISIBLE);
+        mZoom.setOnZoomInClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                if(!mLocationView.zoomIn(true)) {
+                    mToast.setText(getString(R.string.noZoomIn));
+                    mToast.show();
+                }
+            }
+        });
+        mZoom.setOnZoomOutClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                if(!mLocationView.zoomIn(false)) {
+                    mToast.setText(getString(R.string.noZoomOut));
+                    mToast.show();
+                }
+            }
+        });
+        
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
@@ -429,6 +451,7 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
+                AnimateButton z = new AnimateButton(getApplicationContext(), mZoom, AnimateButton.DIRECTION_R_L);
                 AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
@@ -440,6 +463,7 @@ public class LocationActivity extends Activity implements Observer {
                 s.animate(true);
                 t.animate(true);
                 f.animate(true);
+                z.animate(true);
             }
             
         });
@@ -540,12 +564,14 @@ public class LocationActivity extends Activity implements Observer {
         });
         
         
-        mSimButton = (Button)view.findViewById(R.id.location_button_sim);
+        mSimButton = (ToggleButton)view.findViewById(R.id.location_button_sim);
         if(mPref.isSimulationMode()) {
             mSimButton.setText(getString(R.string.SimulationMode));
+            mSimButton.setChecked(true);
         }
         else {
             mSimButton.setText(getString(R.string.gps));            
+            mSimButton.setChecked(false);
         }
         mSimButton.setOnClickListener(new OnClickListener() {
 
@@ -573,7 +599,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mTrackButton = (Button)view.findViewById(R.id.location_button_track);
+        mTrackButton = (ToggleButton)view.findViewById(R.id.location_button_track);
         mTrackButton.setOnClickListener(new OnClickListener() {
 
             @Override

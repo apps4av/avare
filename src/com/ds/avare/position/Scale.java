@@ -23,8 +23,11 @@ public class Scale {
     private double mScaleCorrectY;
     private int mMacro;
     
-    static final double MAX_SCALE = 2;
-    static final double MIN_SCALE = 0.5; 
+    private static final double MAX_SCALE = 2;
+    private static final double MIN_SCALE = 0.5; 
+    private static final int MAX_MACRO = 8;
+    private static final int MIN_MACRO = 1;
+    
 
     /**
      * 
@@ -87,7 +90,22 @@ public class Scale {
     public int getMacroFactor() {
         return mMacro;
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public boolean setMacroFactor(int macro) {
+        if(macro > MAX_MACRO) {
+            return false;
+        }
+        if(macro < MIN_MACRO) {
+            return false;
+        }
+        mMacro = macro;
+        return true;
+    }
+
     public float getScaleCorrected() {
         double s;
         if(mScaleFactor > MAX_SCALE) {
