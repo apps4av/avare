@@ -154,7 +154,7 @@ public class TileMap {
      * @param name
      * @return
      */
-    public void reload(String[] tileNames, int factor) {
+    public void reload(String[] tileNames, int factor, boolean force) {
 
         mapB = new BitmapHolder[numTiles];
         
@@ -162,7 +162,7 @@ public class TileMap {
          * For all tiles that will be re-used, find from cache.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
-            mapB[tilen] = findTile(tileNames[tilen]);
+            mapB[tilen] = force ? null : findTile(tileNames[tilen]);
         }
 
         /*

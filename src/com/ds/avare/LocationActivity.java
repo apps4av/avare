@@ -923,7 +923,7 @@ public class LocationActivity extends Activity implements Observer {
                     return;                    
                 }
                 mPref.addToRecent(mDestination.getStorageName());
-                
+                mLocationView.updateDestination();
                 if(!mIsWaypoint) {
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);

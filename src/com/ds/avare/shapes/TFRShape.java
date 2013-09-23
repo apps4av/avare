@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.shapes;
 
-import com.ds.avare.position.Projection;
 
 /**
  * 
@@ -23,11 +22,6 @@ public class TFRShape extends Shape {
 
     private boolean mVisible;
 
-    /**
-     * Distance from current location for draw
-     */
-    private static final int MAXDISTANCE = 100;
-   
     /**
      * 
      */
@@ -52,27 +46,9 @@ public class TFRShape extends Shape {
      * @param latl
      */
     public void prepareIfVisible(double lon, double lat) {
-        mVisible = false;
-        Projection p;
-        
-        /*
-         * If TFR is within max distance range, draw it
+        /**
+         * XXX: Draw all TFRs. This is true since added continental zoom.
          */
-        p = new Projection(super.mLonMin, super.mLatMin, lon, lat);
-        if(p.getDistance() < MAXDISTANCE) {
-            mVisible = true;
-        }
-        p = new Projection(super.mLonMax, super.mLatMax, lon, lat);
-        if(p.getDistance() < MAXDISTANCE) {
-            mVisible = true;
-        }
-        p = new Projection(super.mLonMin, super.mLatMax, lon, lat);
-        if(p.getDistance() < MAXDISTANCE) {
-            mVisible = true;
-        }
-        p = new Projection(super.mLonMax, super.mLatMin, lon, lat);
-        if(p.getDistance() < MAXDISTANCE) {
-            mVisible = true;
-        }        
+        mVisible = true;
     }
 }

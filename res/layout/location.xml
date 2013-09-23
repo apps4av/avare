@@ -153,8 +153,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <ZoomControls
 		    android:id="@+id/location_zoom_controls"
 		    android:layout_alignParentRight="true"
-            android:layout_width="150dp"
 		    android:layout_above="@+id/location_button_track"
+		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"/>
         
         <Spinner

@@ -106,6 +106,10 @@ public class Scale {
         return true;
     }
 
+    /**
+     * 
+     * @return
+     */
     public float getScaleCorrected() {
         double s;
         if(mScaleFactor > MAX_SCALE) {
@@ -118,5 +122,13 @@ public class Scale {
             s = mScaleFactor;
         }
         return((float)(mScaleCorrectY * s));
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getZoomFactor() {
+        return (int)MAX_SCALE;
     }
 }

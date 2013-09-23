@@ -208,6 +208,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private double                     mPx;
     private double                     mPy;
     
+    private double                     mAdjustPan;
+    
     /*
      * Text on screen color
      */
@@ -232,6 +234,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mThreshold = 0;
         mPx = 1;
         mPy = 1;
+        mAdjustPan = 1;
         mOnChart = null;
         mTrackUp = false;
         mImageDataSource = null;
@@ -1104,13 +1107,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      *
      */
     private class TileDrawTask implements Runnable {
-        double offsets[] = new double[2];
-        double p[] = new double[2];
+        private double offsets[] = new double[2];
+        private double p[] = new double[2];
         public double lon;
         public double lat;
-        int     movex;
-        int     movey;
-        String   tileNames[];
+        private int     movex;
+        private int     movey;
+        private String   tileNames[];
         private Tile centerTile;
         private Tile gpsTile;
         public boolean running = true;
@@ -1149,11 +1152,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 
                 String newt = gpsTile.getNeighbor(movey * mScale.getMacroFactor(), movex * mScale.getMacroFactor());
                 centerTile = mImageDataSource.findTile(newt, mScale.getMacroFactor());
-                if(null != centerTile) {
-                    mScale.setScaleAt(centerTile.getLatitude());
-                    mOnChart = centerTile.getChart();
-                }
-                else {
+                if(null == centerTile) {
                     continue;
                 }
                 
@@ -1161,17 +1160,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     continue;
                 }
     
-                /*
-                 * Update TFR shapes if they exist in this area.
-                 */
-                LinkedList<TFRShape> shapes = mService.getTFRShapes();
-                if(null != shapes) {
-                    for(int shape = 0; shape < shapes.size(); shape++) {
-                        shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
-                                centerTile.getLatitude());
-                    }
-                }
-                            
                 /*
                  * Neighboring tiles with center and pan
                  */
@@ -1188,8 +1176,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
-                mService.getTiles().reload(tileNames, mScale.getMacroFactor());
+                mPan.setMove((float)(mPan.getMoveX() * mAdjustPan), (float)(mPan.getMoveY() * mAdjustPan));
+                mService.getTiles().reload(tileNames, mScale.getMacroFactor(), mAdjustPan != 1);
                 mService.getTiles().flip();
+
+                mScale.setScaleAt(centerTile.getLatitude());
+                mOnChart = centerTile.getChart();
+
+                /*
+                 * Update TFR shapes if they exist in this area.
+                 */
+                LinkedList<TFRShape> shapes = mService.getTFRShapes();
+                if(null != shapes) {
+                    for(int shape = 0; shape < shapes.size(); shape++) {
+                        shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
+                                centerTile.getLatitude());
+                    }
+                }
+                            
 
                 /*
                  * And pan
@@ -1200,6 +1204,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mService.setMovement(mMovement);
                 mPy = centerTile.getPy();
                 mPx = centerTile.getPx();
+                
+                synchronized(LocationView.this) {
+                    mAdjustPan = 1;
+                }
     
                 postInvalidate();
             }
@@ -1460,19 +1468,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param in
      */
     public boolean zoomIn(boolean in) {
-        int fac = mScale.getMacroFactor();
-        boolean changed;
-        if(in) {
-            changed = mScale.setMacroFactor(fac / 2);
+        if(mAdjustPan != 1) {
+            /**
+             * Make sure that last operation finished. 
+             */
+            return true;
         }
-        else {
-            changed = mScale.setMacroFactor(fac * 2);
+        boolean changed;
+        synchronized(this) {
+            int fac = mScale.getMacroFactor();
+            int scale = mScale.getZoomFactor();
+            if(in) {
+                changed = mScale.setMacroFactor(fac / scale);
+                if(changed) {
+                    mAdjustPan = (double)scale;
+                }
+            }
+            else {
+                changed = mScale.setMacroFactor(fac * scale);
+                if(changed) {
+                    mAdjustPan = 1.0 / (double)scale;
+                }
+            }
+            if(changed && mService != null) {
+                forceReload();
+            }
         }
         
-        if(changed && mService != null) {
-            mService.getTiles().forceReload();
-            dbquery(true);
-        }
         return changed;
     }
 }
