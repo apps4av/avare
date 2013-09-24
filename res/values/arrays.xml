@@ -306,7 +306,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesDatabase">
-        <item>databases_v5</item>
+        <item>databases</item>
         <item>@string/TFRs</item>
     </string-array>    
     <string-array name="resFilesIFRLE">
@@ -608,6 +608,18 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>8</item>
     </string-array>    
 
+    <string-array name="ChartDbNames">
+        <item>maps.sec.db</item>
+        <item>maps.tac.db</item>
+        <item>maps.wac.db</item>
+        <item>maps.el.db</item>
+        <item>maps.eh.db</item>
+        <item>maps.elv.db</item>
+        <item>maps.rel.db</item>
+        <item>maps.topo.db</item>
+        <item>maps.other.db</item>
+    </string-array>    
+    
     <string-array name="UnitsD">
         <item>Nautical Miles</item>
         <item>Statute Miles</item>

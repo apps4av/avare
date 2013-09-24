@@ -415,17 +415,16 @@ public class Helper {
              */
             String [] tokens = name.split("[/_.]");
     
-            int row = (Integer.parseInt(tokens[tokens.length - 3]) + rowm);
-            int col = (Integer.parseInt(tokens[tokens.length - 2]) + colm);
-            int lenr = tokens[tokens.length - 3].length();
-            int lenc = tokens[tokens.length - 2].length();
+            int row = (Integer.parseInt(tokens[6]) + rowm);
+            int col = (Integer.parseInt(tokens[7]) + colm);
+            int lenr = tokens[6].length();
+            int lenc = tokens[7].length();
             
             String rformatted = String.format("%0" + lenr + "d", row);
             String cformatted = String.format("%0" + lenc + "d", col);
-            String pre = tokens[0] + "/" + tokens[1] + "/" + row + "/" + tokens[3];
-            String post = "_" + rformatted + "_" + cformatted + "." + tokens[6];
-            String mid = (tokens[4].equals("c") ? "_c" : "");
-            return(pre + mid + post);
+            String pre = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + row + "/";
+            String post = tokens[5] + "_" + rformatted + "_" + cformatted + "." + tokens[8];
+            return(pre + post);
         }
         catch(Exception e) {
         }

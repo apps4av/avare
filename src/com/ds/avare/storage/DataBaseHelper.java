@@ -114,7 +114,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     private static final String TILE_NAME = "name";
-       
+    
+    /**
+     * 
+     * @return
+     */
+    private String getFilesDb() {
+        int db = Integer.parseInt(mPref.getChartType());
+        String dbs[] = mContext.getResources().getStringArray(R.array.ChartDbNames);
+        return dbs[db];
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private String getMainDb() {
+        return "other.db";
+    }
+
     /**
      * @param context
      */
@@ -130,7 +148,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public boolean isPresent() {
-        String path = mPref.mapsFolder() + "/" + mContext.getString(R.string.DatabaseName);
+        String path = mPref.mapsFolder() + "/" + getMainDb();
         File f = new File(path);
         return(f.exists());
     }
@@ -177,10 +195,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param statement
      * @return
      */
-    private Cursor doQuery(String statement) {
+    private Cursor doQuery(String statement, String name) {
         Cursor c = null;
         
-        String path = mPref.mapsFolder() + "/" + mContext.getString(R.string.DatabaseName);
+        String path = mPref.mapsFolder() + "/" + name;
 
         /*
          * 
@@ -241,7 +259,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             ret[it] = 0;
         }
         
-        Cursor cursor = doQuery("select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "=='" + name +"'");
+        String qry = "select * from " + TABLE_AIRPORT_DIAGS + " where " + LOCATION_ID_DB + "=='" + name +"'";
+        Cursor cursor = doQuery(qry, getMainDb());
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
@@ -268,8 +287,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public LinkedList<String> findFilesToDelete(String name) {
+        String dbs[] = mContext.getResources().getStringArray(R.array.ChartDbNames);
+
         String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'";
-        Cursor cursor = doQuery(query);
+
         LinkedList<String> list = new LinkedList<String>();
         
         /*
@@ -277,18 +298,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          */
         list.add(name);
         list.add(name + ".zip");
-
-        try {
-            if(cursor != null) {
-                for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                    list.add(cursor.getString(0));
+        
+        /*
+         * Delete files from all databases
+         */
+        for(int i = 0; i < dbs.length; i++) {
+            Cursor cursor = doQuery(query, dbs[i]);
+    
+            try {
+                if(cursor != null) {
+                    for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                        list.add(cursor.getString(0));
+                    }
                 }
             }
+            catch (Exception e) {
+            }
+            
+            closes(cursor);
         }
-        catch (Exception e) {
-        }
-        
-        closes(cursor);
         return list;            
     }
 
@@ -297,10 +325,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public Tile findTile(String name, double factor) {
-        Cursor cursor = doQuery("select * from " + TABLE_FILES + " where " + TILE_NAME + "=='" + name +"'");
+    public Tile findTile(String name) {
+        String query = "select * from " + TABLE_FILES + " where " + TILE_NAME + "=='" + name +"'";
+        Cursor cursor = doQuery(query, getFilesDb());
         Tile tile = null;
-
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
@@ -321,8 +349,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(8),
                             cursor.getDouble(9),
                             cursor.getDouble(10),
-                            cursor.getString(11),
-                            factor);
+                            cursor.getString(11));
                     /*
                      * Position on tile
                      */
@@ -355,7 +382,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
                 lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + airports.length + ";";            
 
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             int id = 0;
@@ -399,7 +426,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          */
 
         qry = qbasic + TABLE_NAV + " where " + qend;
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
@@ -419,7 +446,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         qry += qend;
 
-        cursor = doQuery(qry);
+        cursor = doQuery(qry, getMainDb());
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
@@ -434,7 +461,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
         qry = qbasic + TABLE_FIX + " where " + qend;
-        cursor = doQuery(qry);
+        cursor = doQuery(qry, getMainDb());
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
@@ -469,7 +496,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             types = TABLE_FIX;
         }
 
-        cursor = doQuery("select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';");
+        String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';";
+        cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
@@ -580,8 +608,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             return;
         }
             
-        cursor = doQuery("select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
-                + "' or " + LOCATION_ID_DB + "=='K" + name + "';");
+        qry = "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
+        cursor = doQuery(qry, getMainDb());
 
         try {
             /*
@@ -626,8 +655,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);
 
 
-        cursor = doQuery("select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
-                + "' or " + LOCATION_ID_DB + "=='K" + name + "';");
+        qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
+        cursor = doQuery(qry, getMainDb());
         
         try {
             /*
@@ -802,7 +832,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "(" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
                 + ") < 0.001) limit 1;";
         
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;
 
         try {
@@ -847,7 +877,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          */
         String qry = "select * from " + table + 
                 " where " + LOCATION_ID_DB + "=='" + name + "';";
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;
 
         try {
@@ -873,20 +903,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public Tile findClosest(double lon, double lat, double offset[], double p[], double factor) {
+    public Tile findClosest(double lon, double lat, double offset[], double p[], int factor) {
       
+        String qry =
+                "select * from " + TABLE_FILES + " where " + 
+                "((latul - " + lat + ") > 0) and " +
+                "((latll - " + lat + ") < 0) and " + 
+                "((lonul - " + lon + ") < 0) and " + 
+                "((lonur - " + lon + ") > 0) and " +
+                "level=='" + factor + "';";
+        
         /*
          * In case we fail
          */
         offset[0] = 0;
         offset[1] = 0;
         
-        Cursor cursor = doQuery(
-                "select * from " + TABLE_FILES + " where " + TILE_NAME + " like '%tiles/" + mPref.getChartType() + "/%' and " + 
-                "((latul - " + lat + ") > 0) and " +
-                "((latll - " + lat + ") < 0) and " + 
-                "((lonul - " + lon + ") < 0) and " + 
-                "((lonur - " + lon + ") > 0);");
+        Cursor cursor = doQuery(qry, getFilesDb());
         
         try {
             if(cursor != null) {
@@ -908,8 +941,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(8),
                             cursor.getDouble(9),
                             cursor.getDouble(10),
-                            cursor.getString(11),
-                            factor);
+                            cursor.getString(11));
                   
                     /*
                      * Position on tile
@@ -945,7 +977,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 " or " + LOCATION_ID_DB + "==" + "'K" + airportId + "'" +
                 " or " + LOCATION_ID_DB + "==" + "'P" + airportId + "'";
         
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
@@ -963,7 +995,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 " or " + LOCATION_ID_DB + "==" + "'K" + airportId + "'" +
                 " or " + LOCATION_ID_DB + "==" + "'P" + airportId + "'";
         
-        cursor = doQuery(qry);
+        cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
@@ -1001,7 +1033,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String ret = null;
         String qry = "select File from " + TABLE_AFD + " where " + LOCATION_ID_DB + "==" + "'" + airportId + "'";
         
-        Cursor cursor = doQuery(qry);
+        Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
@@ -1028,13 +1060,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         
         LinkedList<Obstacle> list = new LinkedList<Obstacle>();
         
+        String qry = "select * from " + TABLE_OBSTACLES + " where (Height > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
+                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
+                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
         /*
          * Find obstacles at below or higher in lon/lat radius
          * We ignore all obstacles 500 AGL below in our script
          */
-        Cursor cursor = doQuery("select * from " + TABLE_OBSTACLES + " where (Height > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
-                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
-                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");");
+        Cursor cursor = doQuery(qry, getMainDb());
         
         try {
             if(cursor != null) {

@@ -1141,7 +1141,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Now draw in background
                  */
-                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, mScale.getMacroFactor());
+                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, mScale.downSample());
                 
                 if(gpsTile == null) {
                     continue;
@@ -1150,8 +1150,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 movex = mPan.getTileMoveXWithoutTear();
                 movey = mPan.getTileMoveYWithoutTear();
                 
-                String newt = gpsTile.getNeighbor(movey * mScale.getMacroFactor(), movex * mScale.getMacroFactor());
-                centerTile = mImageDataSource.findTile(newt, mScale.getMacroFactor());
+                String newt = gpsTile.getNeighbor(movey, movex);
+                centerTile = mImageDataSource.findTile(newt);
                 if(null == centerTile) {
                     continue;
                 }
@@ -1169,7 +1169,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
                     for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
                             tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
-                        tileNames[i++] = centerTile.getNeighbor(tiley * mScale.getMacroFactor(), tilex * mScale.getMacroFactor());
+                        tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
                     }
                 }
                 
@@ -1177,7 +1177,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Load tiles, draw in UI thread
                  */
                 mPan.setMove((float)(mPan.getMoveX() * mAdjustPan), (float)(mPan.getMoveY() * mAdjustPan));
-                mService.getTiles().reload(tileNames, mScale.getMacroFactor(), mAdjustPan != 1);
+                mService.getTiles().reload(tileNames, mAdjustPan != 1);
                 mService.getTiles().flip();
 
                 mScale.setScaleAt(centerTile.getLatitude());

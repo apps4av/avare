@@ -25,7 +25,7 @@ public class Scale {
     
     private static final double MAX_SCALE = 2;
     private static final double MIN_SCALE = 0.5; 
-    private static final int MAX_MACRO = 8;
+    private static final int MAX_MACRO = 16;
     private static final int MIN_MACRO = 1;
     
 
@@ -131,4 +131,13 @@ public class Scale {
     public int getZoomFactor() {
         return (int)MAX_SCALE;
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public int downSample() {
+        return (int)(Math.log(mMacro) / Math.log(2));
+    }
+
 }
