@@ -1,4 +1,4 @@
 avare
 =====
 
-Avare Aviation GPS for Android
+Avare Aviation GPS for Android.
