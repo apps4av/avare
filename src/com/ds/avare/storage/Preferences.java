@@ -139,10 +139,10 @@ public class Preferences {
             /*
              * I hope Android comes up with a better resource solution some time soon.
              */
-            return "http://www.mamba.dreamhosters.com/";
+            return "http://www.mamba.dreamhosters.com/new/";
         }
         else if (val.equals("1")) {
-            return "http://avare.kitepilot.org/";
+            return "http://avare.kitepilot.org/new/";
         }
         return("");
     }
