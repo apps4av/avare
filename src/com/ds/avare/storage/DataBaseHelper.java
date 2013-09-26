@@ -129,15 +129,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * 
      * @return
      */
-    private String getMainDb() {
-        return "other.db";
+    private static String getMainDb() {
+        return "main.db";
     }
 
     /**
      * @param context
      */
     public DataBaseHelper(Context context) {
-        super(context, context.getString(R.string.DatabaseName), null, DATABASE_VERSION);
+        super(context, getMainDb(), null, DATABASE_VERSION);
         mPref = new Preferences(context);
         mCenterTile = null;
         mContext = context;

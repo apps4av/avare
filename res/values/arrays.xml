@@ -617,7 +617,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>maps.elv.db</item>
         <item>maps.rel.db</item>
         <item>maps.topo.db</item>
-        <item>maps.other.db</item>
+        <item>maps.oth.db</item>
     </string-array>    
     
     <string-array name="UnitsD">

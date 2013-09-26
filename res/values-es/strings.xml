@@ -20,7 +20,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Cercanos &quot;</string>
     <string name="Success">&quot;Éxito&quot;</string>
-    <string name="DatabaseName">&quot;mapas.db&quot;</string>
     <string name="WarningMsg">&quot;Advertencia&quot;</string>
     <string name="DestinationPrompt">&quot;Escriba código de destino&quot;</string>
     <string name="DestinationNF">&quot;Destino inexistente &quot;</string>
