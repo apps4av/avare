@@ -180,7 +180,7 @@ public class PlatesActivity extends Activity {
                     /*
                      * If moving to invalid position (this happens with spinner automatically,
                      * then if last plate was not 0, then use it.
-                     * Persistance of plates.
+                     * Persistence of plates.
                      */
                     /*
                      * mIgnoreFocus will get rid of spinner position 0 call on onResume()
@@ -215,7 +215,7 @@ public class PlatesActivity extends Activity {
         });
             
         /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
+         * Create toast beforehand so multiple clicks don't throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 

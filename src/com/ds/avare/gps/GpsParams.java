@@ -1,5 +1,6 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Copyright (c) 2012, Zubair Khan (governer@gmail.com), 
+Jesse McGraw (jlmcgraw@gmail.com) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,24 +72,28 @@ public class GpsParams {
     
     /**
      * @return
+     * double Speed in (miles or knots) per hour depending on preference settings
      */
     public double getSpeed() {
         return mSpeed;
     }
     /**
-     * @return
+     * @return 
+     * double Current longitude
      */
     public double getLongitude() {
         return mLongitude;
     }
     /**
-     * @return
+     * @return 
+     * double Current latitude
      */
     public double getLatitude() {
         return mLatitude;
     }
     /**
      * @return
+     * double Current altitude preferred distance unit (e.g. feet or meters)
      */
     public double getAltitude() {
         return mAltitude;

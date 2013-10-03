@@ -106,6 +106,7 @@ public class Runway {
     /**
      * 
      * @return
+     * string Runway Number
      */
     public String getNumber() {
         return mNumber;
@@ -135,7 +136,7 @@ public class Runway {
         if(INVALID == ret) {
             try {
                 /*
-                 * This is an approxmation.
+                 * This is an approximation.
                  */
                 ret = (float)Integer.parseInt(mNumber.replace("L", "").replace("R", "").replace("C", "")) * 10.f - (float)mVariation;
             }

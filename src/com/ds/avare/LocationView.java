@@ -367,7 +367,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
             /*
-             * Do nnot
+             * Do not move on multitouch
              */
             if(mDraw && (!mTrackUp) && mService != null) {
                 float x = mCurrTouchPoint.getX();
@@ -380,7 +380,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
 
             /*
-             * XXX: Till track up pan in problematic, freeze it to current location.
+             * TODO: track up pan is problematic, so freeze it to current location.
              * 
              */
             if(mPan.setMove(
@@ -582,7 +582,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         if(null != shapes) {
             mPaint.setColor(Color.RED);
-            mPaint.setStrokeWidth(8);
+            mPaint.setStrokeWidth(8); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
                 TFRShape cshape = shapes.get(shape);
@@ -688,7 +688,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     0, getHeight() / mTextDiv, mPaint);
         }
         /*
-         * Chart only when dest not set
+         * Show only chart name when dest is not set
          */
         if(null != mOnChart && null != mService && null == mPointProjection) {
             if(null == mService.getDestination()) {

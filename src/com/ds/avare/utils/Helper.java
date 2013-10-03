@@ -402,14 +402,14 @@ public class Helper {
     public static String incTileName(String name, int rowm, int colm) {
         
         /*
-         * This is all magic. Check databse specificaiton.
+         * This is all magic. Check database specification.
          * Tiles are stored row/col as:
          * 0/row/master_row_col where row, col have leading zeros
          */
 
         try {
             /*
-             * This is all magic. Check databse specificaiton.
+             * This is all magic. Check database specification.
              * Tiles are stored row/col as:
              * 0/row/master_row_col where row, col have leading zeros
              */

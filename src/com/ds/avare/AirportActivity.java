@@ -78,7 +78,7 @@ public class AirportActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
+         * Create toast beforehand so multiple clicks don't throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
@@ -225,7 +225,7 @@ public class AirportActivity extends Activity {
             }
             
             /*
-             * Add freq
+             * Add frequencies (unicom, atis, tower etc)  Does not currently include AWOS
              */
             for(String key : freq.keySet()){
                 views[iterator] = key;
@@ -236,7 +236,16 @@ public class AirportActivity extends Activity {
              * Add runways
              */
             for(Runway run : runways){
-                views[iterator] = "Runway-" + run.getNumber() + " (" + run.getLength() + "X" + run.getWidth() + ")";
+				String mRunwayName = "Runway-";
+				if (run.getNumber().startsWith("H")) {
+					mRunwayName = "Helipad-";
+				} else {
+					if (run.getNumber().endsWith("W")) {
+						mRunwayName = "Waterway-";
+					}
+				}
+            	mRunwayName = mRunwayName+run.getNumber();
+            	views[iterator] = mRunwayName + " (" + run.getLength() + "'x" + run.getWidth() + "')";
                 values[iterator] = 
                         "DT: " + run.getThreshold() + ",\n" +
                         "Elev: " + run.getElevation() + ",\n" +

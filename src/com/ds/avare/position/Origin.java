@@ -137,8 +137,10 @@ public class Origin {
     }
     
     /**
-     * 
+     * @param
+     * double longitude
      * @return
+     * double The X offset on the screen of the given longitude
      */
     public double getOffsetX(double lon) {
         double diff = lon - mLonL;
@@ -146,8 +148,10 @@ public class Origin {
     }
 
     /**
-     * 
+     * @param
+     * double latitude
      * @return
+     * double The Y offset on the screen of the given latitude
      */
     public double getOffsetY(double lat) {
         double diff = lat - mLatU;

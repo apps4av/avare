@@ -25,7 +25,7 @@ public class Obstacle {
      * params that make this obstacle dangerous
      * Lon/lat degrees radius
      */
-    public static final float RADIUS = 0.1f;
+    public static final float RADIUS = 0.2f;	// .1 degree = ~5nm
     public static final float HEIGHT_BELOW = 200;
 
     /**

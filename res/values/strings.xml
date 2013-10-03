@@ -17,7 +17,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
     <string name="Success">&quot;Success&quot;</string>
-    <string name="WarningMsg">&quot;Warning&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;USE AT YOUR OWN RISK!&quot;</string>
     <string name="DestinationPrompt">&quot;Enter Destination Code&quot;</string>
     <string name="DestinationNF">&quot;Destination Not Found&quot;</string>
     <string name="AirDia">&quot;Airport Diagram&quot;</string>
@@ -53,7 +54,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GPSLost">&quot;No GPS Signal&quot;</string>
     <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
     <string name="Init">&quot;Initializing&quot;</string>
-    <string name="Warning">&quot;This is not a FAA certified GPS.\nUse at your own risk.\nConsider this software to fail when life and/or property are at risk.\nThe author of this software is not liable for any injuries or damages caused by its use.\n&quot;</string>
+    <string name="Warning">&quot;This is not an FAA certified GPS.\n\nYou must assume this software will fail when life and/or property are at risk.\n\nThe authors of this software are not liable for any injuries or damages caused by its use.\n&quot;</string>
     <string name="Recent">&quot;Recent&quot;</string>
    	<string name="ChartType">&quot;Chart Type&quot;</string>
 	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
@@ -134,7 +135,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Find">&quot;Find&quot;</string>
     <string name="IconHelicopter">&quot;Helicopter Icon&quot;</string>
     <string name="IconHelicopterLabel">&quot;Helicopter Icon&quot;</string>
-    <string name="IconHelicopterSummary">&quot;Select to make the location icon a helicopter (requires restart)&quot;</string>
+    <string name="IconHelicopterSummary">&quot;Select to make the location icon a helicopter&quot;</string>
     <string name="Draw">&quot;Draw&quot;</string>
     <string name="Pan">&quot;Pan&quot;</string>
     <string name="Clear">&quot;Clear&quot;</string>
@@ -151,6 +152,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherPlan">&quot;Load a plan and press Update to get the latest route weather&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
+    <string name="Understand">&quot;I Understand&quot;</string>
     <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="XlateWeather">&quot;XlateWeather&quot;</string>
     <string name="XlateWeatherLabel">&quot;Translate Weather&quot;</string>
