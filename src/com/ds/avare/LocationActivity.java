@@ -570,7 +570,7 @@ public class LocationActivity extends Activity implements Observer {
             mSimButton.setChecked(true);
         }
         else {
-            mSimButton.setText(getString(R.string.gps));            
+            mSimButton.setText(getString(R.string.Navigate));            
             mSimButton.setChecked(false);
         }
         mSimButton.setOnClickListener(new OnClickListener() {

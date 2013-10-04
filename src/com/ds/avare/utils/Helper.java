@@ -353,8 +353,11 @@ public class Helper {
                 if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
                     return true;
                 }
+                /*
+                 * so many min expiry
+                 */
                 expires.set(year, month, day, hour, min);
-                expires.add(Calendar.HOUR_OF_DAY, 1);
+                expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
             }
             else {
                 /*

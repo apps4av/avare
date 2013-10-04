@@ -29,7 +29,9 @@ import org.xml.sax.XMLReader;
  *
  */
 public class NetworkHelper {
-        
+    
+    public static final int EXPIRES = 10;
+    
     /**
      * 
      */
@@ -256,6 +258,9 @@ public class NetworkHelper {
         if(file.equals("TFRs.zip")) {
             return(root + "/" + file);
         }
+        else if(file.equals("weather.zip")) {
+            return(root + "/" + file);
+        }
         return(root + vers + "/" + file);
     }
     
@@ -268,7 +273,17 @@ public class NetworkHelper {
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         epoch.set(2013, 6, 25, 9, 0, 0);
-        if(!name.equals("TFRs")) {
+        /*
+         * Expires every so many mins
+         */
+        if(name.equals("TFRs") || name.equals("weather")) {
+            ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
+                    now.get(Calendar.DAY_OF_MONTH),
+                    now.get(Calendar.YEAR),
+                    now.get(Calendar.HOUR_OF_DAY),
+                    EXPIRES * (int)(now.get(Calendar.MINUTE) / EXPIRES));
+        }
+        else {
             while(epoch.before(now)) {
                 epoch.add(Calendar.DAY_OF_MONTH, 28);
             }
@@ -279,13 +294,6 @@ public class NetworkHelper {
             ret = String.format(Locale.US, "%02d_%02d_%04d", epoch.get(Calendar.MONTH) + 1,
                     epoch.get(Calendar.DAY_OF_MONTH),
                     epoch.get(Calendar.YEAR));
-        }
-        else {
-            ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
-                    now.get(Calendar.DAY_OF_MONTH),
-                    now.get(Calendar.YEAR),
-                    now.get(Calendar.HOUR_OF_DAY),
-                    0);
         }
         return ret;
     }
