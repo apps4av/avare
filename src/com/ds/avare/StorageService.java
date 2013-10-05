@@ -32,6 +32,7 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.weather.InternetWeatherCache;
 
 import android.app.Service;
 import android.content.Intent;
@@ -72,6 +73,8 @@ public class StorageService extends Service {
     private Movement mMovement;
     
     private Draw mDraw;
+    
+    private InternetWeatherCache mInternetWeatherCache;
     
     /**
      * GPS
@@ -187,7 +190,8 @@ public class StorageService extends Service {
          * All tiles
          */
         mTiles = new TileMap(getApplicationContext());
-                
+          
+        mInternetWeatherCache = new InternetWeatherCache();
         mTFRFetcher = new TFRFetcher(getApplicationContext());
         mTFRFetcher.parse();
         mTimer = new Timer();
@@ -625,5 +629,13 @@ public class StorageService extends Service {
      */
     public SparseArray<NexradBitmap> getNexradImages() {
         return mNexradImg.getImages();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public InternetWeatherCache getInternetWeatherCache() {
+        return mInternetWeatherCache;
     }
 }

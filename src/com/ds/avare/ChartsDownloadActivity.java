@@ -427,6 +427,10 @@ public class ChartsDownloadActivity extends Activity {
                         mService.getTFRFetcher().parse();
                     }
     
+                    if(mName.equals("weather")) {
+                        mService.getInternetWeatherCache().parse(mPref.mapsFolder());
+                    }
+                    
                     mChartAdapter.updateVersion(mName, mDownload.getVersion());
                     mChartAdapter.unsetChecked(mName);
                     mChartAdapter.refresh();
