@@ -53,7 +53,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
      * @param context
      * @param textViewResourceId
      */
-    public PopoutAdapter(Context context, StorageService service, String location, String info) {
+    public PopoutAdapter(Context context, StorageService service, String location, String info, String tfr) {
         mContext = context;
         
         /*
@@ -77,7 +77,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildrenText[GROUP_METAR] = mContext.getString(R.string.NotAvailable);
         mChildrenText[GROUP_TAF] = mContext.getString(R.string.NotAvailable);
         mChildrenText[GROUP_PIREP] = mContext.getString(R.string.NotAvailable);
-        mChildrenText[GROUP_TFR] = info == null ? "" : info;
+        mChildrenText[GROUP_TFR] = tfr == null ? "" : tfr;
 
         if(service != null && location != null) {
             if(!location.contains("&")) {
@@ -145,7 +145,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 String txt = "";
                 for(int i = 0; i < mAirep.size(); i++) {
                     Airep a = mAirep.get(i);
-                    txt += "\n" + a.reportType + "@ " + a.time + "\n" + a.rawText + "\n";
+                    txt += a.reportType + "@ " + a.time + "\n" + a.rawText + "\n\n";
                 }
                 mChildrenText[GROUP_PIREP] = txt;
             }

@@ -46,8 +46,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.text.Layout;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -104,10 +102,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * GPS status string if it fails, set by activity
      */
     private String                      mErrorStatus;
-    /**
-     * For use of text alignment
-     */
-    private float                       mFontHeight;
    
     /**
      * Task that would draw tiles on bitmap.
@@ -158,8 +152,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     
     private TextPaint                   mTextPaint;
     
-    private Layout                      mTFRLayout;
-    
     private Typeface                    mFace;
     
     private String                      mOnChart;
@@ -168,11 +160,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * These are longitude and latitude at top left (0,0)
      */
     private Origin                      mOrigin;
-    
-    /*
-     * TFR.
-     */
-    private int                         mTFRColor;
     
     /*
      * Projection of a touch point
@@ -241,7 +228,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mTFRColor = Color.BLACK;
         mPointProjection = null;
         mDraw = false;
         
@@ -250,7 +236,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
         mPaint.setTypeface(mFace);
-        mFontHeight = 8; // This is just double of all shadows
 
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
@@ -331,7 +316,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not draw point. Only when long press and down.
              */
             mPointProjection = null;
-            mTFRLayout = null;
         }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
@@ -748,30 +732,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
     }
 
-    /**
-     * 
-     * @param canvas
-     */
-    private void drawMETARText(Canvas canvas) {
-        /*
-         * Draw TFRs, TFR
-         */
-        /*
-         * Write TFR report
-         * Use a static layout for showing as overlay and formatted to fit
-         */
-        float top = getHeight() / mTextDiv * 2 + mFontHeight;
-        if(null != mTFRLayout) {
-            mPaint.setColor(mTFRColor);
-            mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-            canvas.drawRect(SHADOW, top, getWidth() - SHADOW, mTFRLayout.getHeight() + top, mPaint);
-            canvas.save();
-            canvas.translate(SHADOW + 2, top);
-            mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-            mTFRLayout.draw(canvas);
-            canvas.restore();        
-        }
-    }
 
     /**
      * 
@@ -979,7 +939,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mTrackUp) {
             canvas.restore();
         }
-    	drawMETARText(canvas);
     	drawCornerTexts(canvas);
     }    
 
@@ -1232,11 +1191,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
-            else {
-                /*
-                 * Get weather for this airport
-                 */
-            }
             return airport;
         }
         
@@ -1245,21 +1199,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected void onPostExecute(String airport) {
-            if(text != null) {
-                /*
-                 * Take TFR text over TFR text
-                 */
-                mTextPaint.setColor(Color.WHITE);
-                mTFRLayout = new StaticLayout(text.trim(), mTextPaint, getWidth(),
-                        Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
-            }
-
             if(null != mGestureCallBack && null != mPointProjection) {
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport, 
                         Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0', 
-                        mOnChart);
+                        mOnChart,
+                        text);
             }
             invalidate();
         }
@@ -1354,7 +1300,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "");
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "", "");
                 return;
             }
 
@@ -1391,7 +1337,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Set TFR color
                          */
-                        mTFRColor = Color.RED;
                         text = cshape.getTextIfTouched(x, y);
                         if(null != text) {
                             break;
