@@ -34,37 +34,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_plan"
+            android:layout_above="@+id/location_button_pref"
             android:gravity="left|center"
             android:drawableLeft="@drawable/erase"
             android:text="@string/Clear"
             android:minWidth="150dp"
             android:visibility="invisible" />
-        
-        <Button
-            android:id="@+id/location_button_dest"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_plan"
-            android:gravity="left|center"
-            android:drawableLeft="@drawable/direct"
-            android:text="@string/Destination"
-            android:minWidth="150dp"
-            android:visibility="invisible" />
-        
-         <Button
-            android:id="@+id/location_button_plan"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_pref"
-            android:gravity="left|center"
-            android:minWidth="150dp"
-            android:text="@string/Plan"
-            android:drawableLeft="@drawable/plan"
-            android:visibility="invisible" />
-        
+                
         <Button
             android:id="@+id/location_button_pref"
             android:textStyle="bold"
@@ -166,6 +142,80 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="invisible"
             android:entries="@array/ChartType"
             android:entryValues="@array/ChartTypeValues" />
+
+        <RelativeLayout
+            android:layout_margin="5dp"
+            android:id="@+id/location_popout_layout"
+            android:visibility="invisible"
+            android:background="@drawable/border"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            
+	        <Button
+	            android:id="@+id/location_button_cross"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_margin="5dp"
+	            android:background="@drawable/border_red_small"
+	            android:textColor="#FFFFFFFF"
+	            android:textStyle="bold"
+                android:minWidth="160dp"
+                android:minHeight="40dp"
+                android:textSize="15sp"
+                android:gravity="left|center"
+                android:drawableLeft="@drawable/delete"/>
+
+	        <TextView
+                android:id="@+id/location_text_info"
+                android:textStyle="bold"
+                android:textColor="#FFFFFFFF"
+                android:layout_toRightOf="@+id/location_button_cross"
+                android:layout_margin="5dp"
+                android:minHeight="40dp"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center"
+                android:minWidth="120dp"
+                android:text="@string/Plan"
+                />
+	        	        
+	        <Button
+	            android:id="@+id/location_button_dest"
+	            android:textStyle="bold"
+                android:layout_margin="5dp"
+	            android:layout_below="@+id/location_button_cross"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="left|center"
+	            android:text="@string/Direct"
+	            android:drawableLeft="@drawable/direct"
+	            android:minWidth="120dp"
+	            />
+        
+	         <Button
+	            android:id="@+id/location_button_plan"
+	            android:textStyle="bold"
+                android:layout_below="@+id/location_button_cross"
+                android:layout_toRightOf="@+id/location_button_dest"
+                android:layout_margin="5dp"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="left|center"
+	            android:minWidth="120dp"
+	            android:text="@string/Plan"
+	            android:drawableLeft="@drawable/plan"
+	            />
+	        
+            <ExpandableListView
+	            android:id="@+id/location_list_popout"
+                android:layout_margin="5dp"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"/>
+            
+        </RelativeLayout>
+        
         
 </RelativeLayout>
 

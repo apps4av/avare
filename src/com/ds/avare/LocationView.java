@@ -36,7 +36,6 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.weather.Metar;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -688,15 +687,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(name,
                     0, getHeight() / mTextDiv, mPaint);
         }
-        /*
-         * Show only chart name when dest is not set
-         */
-        if(null != mOnChart && null != mService && null == mPointProjection) {
-            if(null == mService.getDestination()) {
-                canvas.drawText(mOnChart, 0, getHeight() / mTextDiv, mPaint);
-            }
-        }
-
     }
 
     /**
@@ -1264,8 +1254,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         Layout.Alignment.ALIGN_NORMAL, 1, 0, true);
             }
 
-            if(null != mGestureCallBack) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport);
+            if(null != mGestureCallBack && null != mPointProjection) {
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport, 
+                        Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
+                        "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
+                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0' + 
+                        " " + mContext.getString(R.string.On) + " " + 
+                        mOnChart);
             }
             invalidate();
         }
@@ -1360,7 +1355,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "");
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "");
                 return;
             }
 

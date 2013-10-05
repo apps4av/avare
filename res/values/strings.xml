@@ -163,4 +163,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="noZoomIn">&quot;Cannot zoom in further&quot;</string>
     <string name="noZoomOut">&quot;Cannot zoom out further&quot;</string>
     <string name="Navigate">&quot;Navigate&quot;</string>
+    <string name="Direct">&quot;Direct&quot;</string>
+    <string name="On">&quot;On&quot;</string>
 </resources>
