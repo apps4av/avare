@@ -35,9 +35,11 @@ public class InternetWeatherCache {
 
     private static final String AIREP_FILE = "/aircraftreports.cache.csv.stripped";
     private static final String METAR_FILE = "/metars.cache.csv.stripped";
+    private static final String TAF_FILE = "/tafs.cache.csv.stripped";
     
     private List<Airep> mAirep;
     private List<Metar> mMetar;
+    private List<Taf> mTaf;
 
     /**
      * Task that would draw tiles on bitmap.
@@ -85,13 +87,30 @@ public class InternetWeatherCache {
         }
         for(int m = 0; m < mMetar.size(); m++) {
             Metar mm = mMetar.get(m);
-            if(mm.stationId.endsWith(station)) {
+            if(mm.stationId.equals(station) || mm.stationId.equals("K" + station)) {
                 return mm;
             }
         }
         return null;
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public Taf getTaf(String station) {
+        if(null == mTaf || null == station) {
+            return null;
+        }
+        for(int m = 0; m < mTaf.size(); m++) {
+            Taf mm = mTaf.get(m);
+            if(mm.stationId.equals(station) || mm.stationId.equals("K" + station)) {
+                return mm;
+            }
+        }
+        return null;
+    }
+
     private class WeatherTask implements Runnable {
 
         /* (non-Javadoc)
@@ -125,6 +144,16 @@ public class InternetWeatherCache {
                 CSVReader<Metar> metarReader = new CSVReaderBuilder<Metar>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
                                 new AnnotationEntryParser<Metar>(Metar.class, vpp)).build();
                 mMetar = metarReader.readAll();
+
+                /*
+                 * TAF.
+                 */
+                csvFile = new InputStreamReader(new FileInputStream(mRoot + TAF_FILE));
+                
+                vpp = new ValueProcessorProvider();
+                CSVReader<Taf> tafReader = new CSVReaderBuilder<Taf>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
+                                new AnnotationEntryParser<Taf>(Taf.class, vpp)).build();
+                mTaf = tafReader.readAll();
 
             }
             catch(Exception e) {
