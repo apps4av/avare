@@ -31,8 +31,10 @@ import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 public class InternetWeatherCache {
 
     private static final String AIREP_FILE = "/aircraftreports.cache.csv.stripped";
+    private static final String METAR_FILE = "/metars.cache.csv.stripped";
     
     private List<Airep> mAirep;
+    private List<Metar> mMetar;
 
     /**
      * Task that would draw tiles on bitmap.
@@ -70,6 +72,13 @@ public class InternetWeatherCache {
         return mAirep;
     }
     
+    /**
+     * 
+     * @return
+     */
+    public List<Metar> getMetar() {
+        return mMetar;
+    }
     
     private class WeatherTask implements Runnable {
 
@@ -83,12 +92,28 @@ public class InternetWeatherCache {
                 /*
                  * Read the CSV
                  */
+                
+                /*
+                 * AIREP
+                 */
                 Reader csvFile = new InputStreamReader(new FileInputStream(mRoot + AIREP_FILE));
             
                 ValueProcessorProvider vpp = new ValueProcessorProvider();
                 CSVReader<Airep> airepReader = new CSVReaderBuilder<Airep>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
                                 new AnnotationEntryParser<Airep>(Airep.class, vpp)).build();
                 mAirep = airepReader.readAll();
+                
+                
+                /*
+                 * METAR.
+                 */
+                csvFile = new InputStreamReader(new FileInputStream(mRoot + METAR_FILE));
+                
+                vpp = new ValueProcessorProvider();
+                CSVReader<Metar> metarReader = new CSVReaderBuilder<Metar>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
+                                new AnnotationEntryParser<Metar>(Metar.class, vpp)).build();
+                mMetar = metarReader.readAll();
+
             }
             catch(Exception e) {
             }
