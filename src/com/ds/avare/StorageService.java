@@ -192,6 +192,7 @@ public class StorageService extends Service {
         mTiles = new TileMap(getApplicationContext());
           
         mInternetWeatherCache = new InternetWeatherCache();
+        mInternetWeatherCache.parse(getApplicationContext());
         mTFRFetcher = new TFRFetcher(getApplicationContext());
         mTFRFetcher.parse();
         mTimer = new Timer();

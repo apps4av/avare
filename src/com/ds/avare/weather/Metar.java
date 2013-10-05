@@ -22,6 +22,8 @@ import com.googlecode.jcsv.annotations.MapToColumn;
 public class Metar {
     @MapToColumn(column=0)
     public String rawText;
+    @MapToColumn(column=1)
+    public String stationId;
     @MapToColumn(column=30)
     public String flightCategory;
 }

@@ -17,6 +17,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import android.content.Context;
+
+import com.ds.avare.storage.Preferences;
 import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.annotations.internal.ValueProcessorProvider;
 import com.googlecode.jcsv.reader.CSVReader;
@@ -48,12 +51,12 @@ public class InternetWeatherCache {
      * 
      * @param root
      */
-    public void parse(String root) {
+    public void parse(Context ctx) {
         
         /*
          * Do weather parsing in background. It takes a long time.
          */
-        mRoot = root;
+        mRoot = (new Preferences(ctx)).mapsFolder();
         if(mWeatherThread != null) {
             if(mWeatherThread.isAlive()) {
                 return;
@@ -76,8 +79,17 @@ public class InternetWeatherCache {
      * 
      * @return
      */
-    public List<Metar> getMetar() {
-        return mMetar;
+    public Metar getMetar(String station) {
+        if(null == mMetar || null == station) {
+            return null;
+        }
+        for(int m = 0; m < mMetar.size(); m++) {
+            Metar mm = mMetar.get(m);
+            if(mm.stationId.endsWith(station)) {
+                return mm;
+            }
+        }
+        return null;
     }
     
     private class WeatherTask implements Runnable {

@@ -36,6 +36,7 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.weather.Metar;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -1240,6 +1241,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
+            }
+            else {
+                /*
+                 * Get weather for this airport
+                 */
             }
             return airport;
         }

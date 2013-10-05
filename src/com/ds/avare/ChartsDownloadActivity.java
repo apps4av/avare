@@ -428,7 +428,7 @@ public class ChartsDownloadActivity extends Activity {
                     }
     
                     if(mName.equals("weather")) {
-                        mService.getInternetWeatherCache().parse(mPref.mapsFolder());
+                        mService.getInternetWeatherCache().parse(getApplicationContext());
                     }
                     
                     mChartAdapter.updateVersion(mName, mDownload.getVersion());
