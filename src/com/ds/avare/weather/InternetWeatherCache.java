@@ -15,10 +15,12 @@ package com.ds.avare.weather;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 
+import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.annotations.internal.ValueProcessorProvider;
@@ -36,6 +38,8 @@ public class InternetWeatherCache {
     private static final String AIREP_FILE = "/aircraftreports.cache.csv.stripped";
     private static final String METAR_FILE = "/metars.cache.csv.stripped";
     private static final String TAF_FILE = "/tafs.cache.csv.stripped";
+    
+    private static final int AIREP_DISTANCE = 200;
     
     private List<Airep> mAirep;
     private List<Metar> mMetar;
@@ -73,8 +77,33 @@ public class InternetWeatherCache {
      * 
      * @return
      */
-    public List<Airep> getAirep() {
-        return mAirep;
+    public List<Airep> getAirep(double lon, double lat) {
+        List<Airep> l = new ArrayList<Airep>();
+
+        /*
+         * Limit airep based of distance from this point
+         */
+        double lon2;
+        double lat2;
+        if(null == mAirep) {
+            return null;
+        }
+        for(int m = 0; m < mAirep.size(); m++) {
+            Airep mm = mAirep.get(m);
+            try {
+                lon2 = Double.parseDouble(mm.longitude);
+                lat2 = Double.parseDouble(mm.latitude);
+            }
+            catch (Exception e) {
+                continue;
+            }
+        
+            Projection p = new Projection(lon, lat, lon2, lat2);
+            if(p.getDistance() < AIREP_DISTANCE) {
+                l.add(mm);
+            }
+        }
+        return l;
     }
     
     /**

@@ -1258,8 +1258,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport, 
                         Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0' + 
-                        " " + mContext.getString(R.string.On) + " " + 
+                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0', 
                         mOnChart);
             }
             invalidate();
@@ -1355,7 +1354,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "");
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "");
                 return;
             }
 

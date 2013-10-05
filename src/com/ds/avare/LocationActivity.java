@@ -47,6 +47,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -117,7 +118,9 @@ public class LocationActivity extends Activity implements Observer {
     private boolean mIsWaypoint;
     private boolean mSpinner;
     private TextView mInfoText;
+    private TextView mChartText;
 
+    private ExpandableListView mListPopout;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -343,7 +346,7 @@ public class LocationActivity extends Activity implements Observer {
              * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
              */
             @Override
-            public void gestureCallBack(int event, String airport, String info) {
+            public void gestureCallBack(int event, String airport, String info, String chart) {
                 if(GestureInterface.LONG_PRESS == event) {
                     if(mLocationView.getDraw()) {
                         /*
@@ -357,6 +360,7 @@ public class LocationActivity extends Activity implements Observer {
                          * Show the animation button for dest
                          */
                         mInfoText.setText(info);
+                        mChartText.setText(chart);
                         if(isSameDest(airport)) {
                             mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove, 0, 0, 0);
                             mDestButton.setText(getString(R.string.Delete));
@@ -367,6 +371,12 @@ public class LocationActivity extends Activity implements Observer {
                         }
                         mCrossButton.setText(airport);
                         mDestLayout.setVisibility(View.VISIBLE);
+                        
+                        /*
+                         * Now populate the pop out weather etc.
+                         */
+                        PopoutAdapter p = new PopoutAdapter(getApplicationContext(), mService, airport, info);
+                        mListPopout.setAdapter(p);
                     }
                 }
             }
@@ -374,7 +384,10 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mInfoText = (TextView)view.findViewById(R.id.location_text_info);
-        
+        mChartText = (TextView)view.findViewById(R.id.location_text_chart);
+
+        mListPopout = (ExpandableListView)view.findViewById(R.id.location_list_popout);
+
         mChartSpinner = (Spinner)view.findViewById(R.id.location_spinner_chart);
         mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             

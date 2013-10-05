@@ -23,7 +23,7 @@ import com.googlecode.jcsv.annotations.MapToColumn;
 public class Airep {
 
     @MapToColumn(column=1)
-    public String observationTime;
+    public String time;
     @MapToColumn(column=9)
     public String latitude;
     @MapToColumn(column=10)

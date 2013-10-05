@@ -148,6 +148,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_popout_layout"
             android:visibility="invisible"
             android:background="@drawable/border"
+            android:layout_alignParentBottom="true"
+            android:scrollbars="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
@@ -166,8 +168,8 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:gravity="left|center"
                 android:drawableLeft="@drawable/delete"/>
 
-	        <TextView
-                android:id="@+id/location_text_info"
+            <TextView
+                android:id="@+id/location_text_chart"
                 android:textStyle="bold"
                 android:textColor="#FFFFFFFF"
                 android:layout_toRightOf="@+id/location_button_cross"
@@ -177,7 +179,19 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left|center"
-                android:minWidth="120dp"
+                android:text="@string/Plan"
+                />
+	        
+	        <TextView
+                android:id="@+id/location_text_info"
+                android:textStyle="bold"
+                android:textColor="#FFFFFFFF"
+                android:layout_below="@+id/location_button_cross"
+                android:layout_margin="5dp"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center"
                 android:text="@string/Plan"
                 />
 	        	        
@@ -185,25 +199,25 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:id="@+id/location_button_dest"
 	            android:textStyle="bold"
                 android:layout_margin="5dp"
-	            android:layout_below="@+id/location_button_cross"
+	            android:layout_below="@+id/location_text_info"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:gravity="left|center"
 	            android:text="@string/Direct"
 	            android:drawableLeft="@drawable/direct"
-	            android:minWidth="120dp"
+	            android:minWidth="150dp"
 	            />
         
 	         <Button
 	            android:id="@+id/location_button_plan"
 	            android:textStyle="bold"
-                android:layout_below="@+id/location_button_cross"
+                android:layout_below="@+id/location_text_info"
                 android:layout_toRightOf="@+id/location_button_dest"
                 android:layout_margin="5dp"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:gravity="left|center"
-	            android:minWidth="120dp"
+	            android:minWidth="150dp"
 	            android:text="@string/Plan"
 	            android:drawableLeft="@drawable/plan"
 	            />
@@ -211,6 +225,7 @@ Redistribution and use in source and binary forms, with or without modification,
             <ExpandableListView
 	            android:id="@+id/location_list_popout"
                 android:layout_margin="5dp"
+                android:layout_below="@+id/location_button_dest"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"/>
             

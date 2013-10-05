@@ -24,6 +24,8 @@ public class Metar {
     public String rawText;
     @MapToColumn(column=1)
     public String stationId;
+    @MapToColumn(column=2)
+    public String time;
     @MapToColumn(column=30)
     public String flightCategory;
 }

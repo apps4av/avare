@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.shapes.Tile;
 
 import android.content.Context;
@@ -85,6 +86,12 @@ public class DataSource {
      */
     public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
         dbHelper.findDestination(name, type, params, runways, freq);
+    }
+    
+    /**
+     */
+    public Coordinate getCoordinate(String name) {
+        return dbHelper.getCoordinate(name);  
     }
     
     /**

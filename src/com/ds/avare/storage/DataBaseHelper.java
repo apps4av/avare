@@ -22,6 +22,7 @@ import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
 
@@ -360,6 +361,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Find coordinate of center tile.
+     */
+    public Coordinate getCoordinate(String name) {
+            
+        Cursor cursor;
+        
+        String types = TABLE_AIRPORTS;
+        Coordinate c = null;
+
+        String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                        
+                        /*
+                         * Put ID and name first
+                         */
+                    c = new Coordinate(
+                            cursor.getDouble(LONGITUDE_COL),
+                            cursor.getDouble(LATITUDE_COL));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return c;
+    }
+    
+    /**
      * Search something in database
      * @param name
      * @param params
@@ -670,8 +703,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     
                     runways.add(r);
                    
-                    //If the first runway is a helipad, don't add a second end
-					if(!run.toUpperCase().startsWith("H")) {
+                    /*
+                     * If the first runway is a helipad, don't add a second end
+                     */
+					if(!(run.startsWith("H") || run.startsWith("h"))) {
 						run = Helper.removeLeadingZeros(cursor.getString(5));
 						lat = Helper.removeLeadingZeros(cursor.getString(7));
 						lon = Helper.removeLeadingZeros(cursor.getString(9));
