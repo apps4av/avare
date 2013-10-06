@@ -224,6 +224,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        
             <ExpandableListView
 	            android:id="@+id/location_list_popout"
+	            android:clickable="false"
                 android:layout_margin="5dp"
                 android:layout_below="@+id/location_button_dest"
 	            android:layout_width="wrap_content"

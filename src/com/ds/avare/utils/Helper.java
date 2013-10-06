@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import com.ds.avare.R;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
@@ -495,11 +494,11 @@ public class Helper {
                         shapeList.add(shape);
                     }                                 
                     shape = new TFRShape(tokens[id].replace(
-                            "TFR:: ", ctx.getString(R.string.TFRReceived) + " " + time.toString() + "-").
-                            replace("Top", "\nTop").
-                            replace("Low", "\nLow").
-                            replace("Eff", "\nEff").
-                            replace("Exp", "\nExp"));
+                            "TFR:: ", "@ " + time.toString()).
+                            replace("Top", "\n" + "Top      ").
+                            replace("Low", "\n" + "Bottom   ").
+                            replace("Eff", "\n" + "Effective").
+                            replace("Exp", "\n" + "Expires  "));
                     continue;
                 }
                 try {

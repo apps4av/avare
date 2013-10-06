@@ -21,6 +21,7 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,8 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private Metar mMetar;
     private Taf mTaf;
     private List<Airep> mAirep;
+    private String mTfr;
+    private Typeface mFace;
 
     private static final int GROUP_METAR = 0;
     private static final int GROUP_TAF = 1;
@@ -55,6 +58,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
      */
     public PopoutAdapter(Context context, StorageService service, String location, String info, String tfr) {
         mContext = context;
+        mFace = Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf");
         
         /*
          * Get all groups
@@ -74,10 +78,11 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         /*
          * Show view
          */
+        mTfr = tfr;
         mChildrenText[GROUP_METAR] = mContext.getString(R.string.NotAvailable);
         mChildrenText[GROUP_TAF] = mContext.getString(R.string.NotAvailable);
         mChildrenText[GROUP_PIREP] = mContext.getString(R.string.NotAvailable);
-        mChildrenText[GROUP_TFR] = tfr == null ? "" : tfr;
+        mChildrenText[GROUP_TFR] = tfr == null ? mContext.getString(R.string.NotAvailable) : tfr;
 
         if(service != null && location != null) {
             if(!location.contains("&")) {
@@ -125,14 +130,17 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 mChildrenText[GROUP_METAR] = mContext.getString(R.string.NotAvailable);
             }
             else {
-                mChildrenText[GROUP_METAR] = WeatherHelper.formatWeather(mMetar.rawText);          
+                mChildrenText[GROUP_METAR] = "@ " + mMetar.time + "\n" + 
+                        WeatherHelper.formatWeather(mMetar.rawText);          
             }
 
             if(mTaf == null) {
                 mChildrenText[GROUP_TAF] = mContext.getString(R.string.NotAvailable);
             }
             else {
-                mChildrenText[GROUP_TAF] = WeatherHelper.formatWeather(mTaf.rawText);          
+                mChildrenText[GROUP_TAF] = 
+                        mChildrenText[GROUP_TAF] = "@ " + mTaf.time + "\n" + 
+                        WeatherHelper.formatWeather(mTaf.rawText);          
             }
 
             if(mAirep == null) {
@@ -149,7 +157,6 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 }
                 mChildrenText[GROUP_PIREP] = txt;
             }
-
             notifyDataSetChanged();            
         }
     }
@@ -180,36 +187,31 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         }
         
         TextView tv = (TextView)rowView.findViewById(R.id.textview_textview);
-        tv.setTextColor(0xFFFFFFFF);
-        
         
         /*
          * Set different values from different outputs.
          */
         switch(group) {
             case GROUP_METAR:
-                String txt = (mMetar == null) ? "" : ("@ " + mMetar.time);
                 int col = (mMetar == null) ? 0xFFFFFFFF : WeatherHelper.metarColor(mMetar.flightCategory);
-                tv.setText(mGroups[group] + txt);
+                tv.setText(mGroups[group]);
                 tv.setTextColor(col);
                 break;
             case GROUP_TAF:
-                String txtf = (mTaf == null) ? "" : ("@ " + mTaf.time);
-                tv.setText(mGroups[group] + txtf);
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
                 break;
             case GROUP_PIREP:
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;
             case GROUP_TFR:
-                tv.setTextColor(0xFFFF0000);
+                tv.setTextColor((mTfr == null) ? 0xFFFFFFFF : 0xFFFF0000);
                 tv.setText(mGroups[group]);
                 break;
         }
        
-        /*
-         * Inform with red color if any child is expired
-         */
+
         return rowView;
     }
     
@@ -229,6 +231,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
 
         TextView tv = (TextView)rowView;
         tv.setTextColor(0xFFFFFFFF);
+        tv.setTypeface(mFace);
         tv.setText(mChildrenText[groupPosition]);
         
         return rowView;
