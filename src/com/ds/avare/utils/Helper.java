@@ -292,6 +292,12 @@ public class Helper {
             act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
+
+        /*
+         * Do not open keyboard automatically.
+         */
+        act.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
     }    
     
     /**

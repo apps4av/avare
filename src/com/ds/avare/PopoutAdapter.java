@@ -79,10 +79,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
          * Show view
          */
         mTfr = tfr;
-        mChildrenText[GROUP_METAR] = mContext.getString(R.string.NotAvailable);
-        mChildrenText[GROUP_TAF] = mContext.getString(R.string.NotAvailable);
-        mChildrenText[GROUP_PIREP] = mContext.getString(R.string.NotAvailable);
-        mChildrenText[GROUP_TFR] = tfr == null ? mContext.getString(R.string.NotAvailable) : tfr;
+        mChildrenText[GROUP_METAR] = "";
+        mChildrenText[GROUP_TAF] = "";
+        mChildrenText[GROUP_PIREP] = "";
+        mChildrenText[GROUP_TFR] = tfr == null ? "" : tfr;
 
         if(service != null && location != null) {
             if(!location.contains("&")) {
@@ -127,7 +127,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         @Override
         protected void onPostExecute(Boolean result) {
             if(mMetar == null) {
-                mChildrenText[GROUP_METAR] = mContext.getString(R.string.NotAvailable);
+                mChildrenText[GROUP_METAR] = "";
             }
             else {
                 mChildrenText[GROUP_METAR] = "@ " + mMetar.time + "\n" + 
@@ -135,7 +135,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
             }
 
             if(mTaf == null) {
-                mChildrenText[GROUP_TAF] = mContext.getString(R.string.NotAvailable);
+                mChildrenText[GROUP_TAF] = "";
             }
             else {
                 mChildrenText[GROUP_TAF] = 
@@ -144,16 +144,22 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
             }
 
             if(mAirep == null) {
-                mChildrenText[GROUP_PIREP] = mContext.getString(R.string.NotAvailable);
+                mChildrenText[GROUP_PIREP] = "";
             }
             else {
                 /*
-                 * All aireps/pireps
+                 * All aireps/pireps sep by \n
                  */
                 String txt = "";
                 for(int i = 0; i < mAirep.size(); i++) {
                     Airep a = mAirep.get(i);
                     txt += a.reportType + "@ " + a.time + "\n" + a.rawText + "\n\n";
+                }
+                /*
+                 * Remove last \n
+                 */
+                if(txt.length() > 1) {
+                    txt = txt.substring(0, txt.length() - 2);
                 }
                 mChildrenText[GROUP_PIREP] = txt;
             }
@@ -211,6 +217,16 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 break;
         }
        
+        /*
+         * If not available show gray
+         */
+        if(mChildrenText[group].equals("")) {
+            tv.setTextColor(0xFF7F7F7F);
+            tv.setTypeface(null, Typeface.ITALIC);
+        }
+        else {
+            tv.setTypeface(null, Typeface.BOLD);            
+        }
 
         return rowView;
     }

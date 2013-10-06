@@ -20,6 +20,7 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.googlecode.jcsv.CSVStrategy;
@@ -38,12 +39,14 @@ public class InternetWeatherCache {
     private static final String AIREP_FILE = "/aircraftreports.cache.csv.stripped";
     private static final String METAR_FILE = "/metars.cache.csv.stripped";
     private static final String TAF_FILE = "/tafs.cache.csv.stripped";
+    private static final String MET_FILE = "/airsigmets.cache.csv.stripped";
     
     private static final int AIREP_DISTANCE = 200;
     
     private List<Airep> mAirep;
     private List<Metar> mMetar;
     private List<Taf> mTaf;
+    private List<AirSigMet> mAirSig;
 
     /**
      * Task that would draw tiles on bitmap.
@@ -51,7 +54,6 @@ public class InternetWeatherCache {
     private WeatherTask                mWeatherTask; 
     private Thread                     mWeatherThread;
     private String                     mRoot;
-
     
     /**
      * 
@@ -105,7 +107,15 @@ public class InternetWeatherCache {
         }
         return l;
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public List<AirSigMet> getAirSigMet() {
+        return mAirSig;
+    }
+
     /**
      * 
      * @return
@@ -184,6 +194,29 @@ public class InternetWeatherCache {
                                 new AnnotationEntryParser<Taf>(Taf.class, vpp)).build();
                 mTaf = tafReader.readAll();
 
+                /*
+                 * AIR/SIG MET
+                 */
+                csvFile = new InputStreamReader(new FileInputStream(mRoot + MET_FILE));
+                
+                vpp = new ValueProcessorProvider();
+                CSVReader<AirSigMet> asmReader = new CSVReaderBuilder<AirSigMet>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
+                                new AnnotationEntryParser<AirSigMet>(AirSigMet.class, vpp)).build();
+                mAirSig = asmReader.readAll();
+                
+                /*
+                 * Convert AIRMET/SIGMETS to shapes compatible coordinates
+                 */
+                for(int i = 0; i < mAirSig.size(); i++) {
+                    AirSigMet asm = mAirSig.get(i);
+                    asm.coords = new ArrayList<Coordinate>();
+                    String tokens[] = asm.points.split("[;]");
+                    for(int j = 0; j < tokens.length; j++) {
+                        String point[] = tokens[i].split("[:]");
+                        asm.coords.add(new Coordinate(Double.parseDouble(point[0]), 
+                                Double.parseDouble(point[1])));
+                    }
+                }
             }
             catch(Exception e) {
             }
