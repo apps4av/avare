@@ -44,19 +44,21 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private Taf mTaf;
     private List<Airep> mAirep;
     private String mTfr;
+    private String mMets;
     private Typeface mFace;
 
     private static final int GROUP_METAR = 0;
     private static final int GROUP_TAF = 1;
     private static final int GROUP_PIREP = 2;
     private static final int GROUP_TFR = 3;
-    private static final int GROUP_NUM = 4;
+    private static final int GROUP_METS = 4;
+    private static final int GROUP_NUM = 5;
     
     /**
      * @param context
      * @param textViewResourceId
      */
-    public PopoutAdapter(Context context, StorageService service, String location, String info, String tfr) {
+    public PopoutAdapter(Context context, StorageService service, String location, String info, String tfr, String mets) {
         mContext = context;
         mFace = Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf");
         
@@ -72,6 +74,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TAF] = new String[1];
         mChildren[GROUP_PIREP] = new String[1];
         mChildren[GROUP_TFR] = new String[1];
+        mChildren[GROUP_METS] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -79,10 +82,12 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
          * Show view
          */
         mTfr = tfr;
+        mMets = mets;
         mChildrenText[GROUP_METAR] = "";
         mChildrenText[GROUP_TAF] = "";
         mChildrenText[GROUP_PIREP] = "";
         mChildrenText[GROUP_TFR] = tfr == null ? "" : tfr;
+        mChildrenText[GROUP_METS] = mets == null ? "" : mets;
 
         if(service != null && location != null) {
             if(!location.contains("&")) {
@@ -213,6 +218,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 break;
             case GROUP_TFR:
                 tv.setTextColor((mTfr == null) ? 0xFFFFFFFF : 0xFFFF0000);
+                tv.setText(mGroups[group]);
+                break;
+            case GROUP_METS:
+                tv.setTextColor((mMets == null) ? 0xFFFFFFFF : 0xFF0000FF);
                 tv.setText(mGroups[group]);
                 break;
         }

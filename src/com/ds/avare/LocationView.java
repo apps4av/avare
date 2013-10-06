@@ -14,6 +14,7 @@ package com.ds.avare;
 
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.ds.avare.gdl90.NexradBitmap;
 import com.ds.avare.gps.GpsParams;
@@ -25,6 +26,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.MetShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.DataSource;
@@ -36,6 +38,7 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -569,17 +572,37 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(8); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
-                TFRShape cshape = shapes.get(shape);
-                if(cshape.isVisible()) {
-                    /*
-                     * Find offsets of TFR then draw it
-                     */
-                    cshape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
-                }
+                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
             }
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawAirSigMet(Canvas canvas) {
+        mPaint.setShadowLayer(0, 0, 0, 0);
+        
+        /*
+         * Draw TFRs, TFR
+         */            
+        List<AirSigMet> mets = null;
+        if(null != mService) {
+            mets = mService.getInternetWeatherCache().getAirSigMet();
+        }
+        if(null != mets) {
+            mPaint.setStrokeWidth(4); //TODO Should probably be dynamic based on device resolution
+            mPaint.setShadowLayer(0, 0, 0, 0);
+            mPaint.setColor(Color.BLUE);                    
+            for(int i = 0; i < mets.size(); i++) {
+                AirSigMet met = mets.get(i);
+                if(met.shape != null && met.reportType.equals("SIGMET")) {
+                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                }
+            }
+        }
+    }
 
     /**
      * 
@@ -933,6 +956,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDrawing(canvas);
         drawRunways(canvas);
     	drawTFR(canvas);
+    	drawAirSigMet(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
@@ -1134,18 +1158,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mOnChart = centerTile.getChart();
 
                 /*
-                 * Update TFR shapes if they exist in this area.
-                 */
-                LinkedList<TFRShape> shapes = mService.getTFRShapes();
-                if(null != shapes) {
-                    for(int shape = 0; shape < shapes.size(); shape++) {
-                        shapes.get(shape).prepareIfVisible(centerTile.getLongitude(),
-                                centerTile.getLatitude());
-                    }
-                }
-                            
-
-                /*
                  * And pan
                  */
                 mPan.setTileMove(movex, movey);
@@ -1172,6 +1184,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Double lon;
         private Double lat;
         private String text;
+        private String textMets;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1185,6 +1198,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             lon = (Double)vals[0];
             lat = (Double)vals[1];
             text = (String)vals[2];
+            textMets = (String)vals[3];
             if(null != mService) {
                 airport = mService.getDBResource().findClosestAirportID(lon, lat);
             }
@@ -1205,7 +1219,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0', 
                         mOnChart,
-                        text);
+                        text,
+                        textMets);
             }
             invalidate();
         }
@@ -1300,7 +1315,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "", "");
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "", "", "");
                 return;
             }
 
@@ -1321,24 +1336,41 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
             
             String text = null;
+            String textMets = null;
                        
             /*
              * Get TFR text if touched on its top
              */
             LinkedList<TFRShape> shapes = null;
+            List<AirSigMet> mets = null;
             if(null != mService) {
                 shapes = mService.getTFRShapes();
+                mets = mService.getInternetWeatherCache().getAirSigMet();
             }
             if(null != shapes) {
                 for(int shape = 0; shape < shapes.size(); shape++) {
                     TFRShape cshape = shapes.get(shape);
-                    if(cshape.isVisible()) {
-
+                    /*
+                     * Set TFR text
+                     */
+                    text = cshape.getTextIfTouched(x, y);
+                    if(null != text) {
+                        break;
+                    }
+                }
+            }
+            /*
+             * Air/sigmets
+             */
+            if(null != mets) {
+                for(int i = 0; i < mets.size(); i++) {
+                    MetShape cshape = mets.get(i).shape;
+                    if(null != cshape) {
                         /*
-                         * Set TFR color
+                         * Set MET text
                          */
-                        text = cshape.getTextIfTouched(x, y);
-                        if(null != text) {
+                        textMets = cshape.getTextIfTouched(x, y);
+                        if(null != textMets) {
                             break;
                         }
                     }
@@ -1352,7 +1384,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mClosestTask.cancel(true);
             }
             mClosestTask = new ClosestAirportTask();
-            mClosestTask.execute(lon2, lat2, text);
+            mClosestTask.execute(lon2, lat2, text, textMets);
         }
     }
 

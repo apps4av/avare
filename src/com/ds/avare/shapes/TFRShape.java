@@ -20,35 +20,10 @@ package com.ds.avare.shapes;
  */
 public class TFRShape extends Shape {
 
-    private boolean mVisible;
-
     /**
      * 
      */
     public TFRShape(String text) {
         super(text);
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public boolean isVisible() {
-        return mVisible;
-    }
-    
-    /**
-     * Update from display bound the visibility of this TFR shape,
-     * and if visible, draw in a bitmap.
-     * @param lonl
-     * @param lonr
-     * @param latu
-     * @param latl
-     */
-    public void prepareIfVisible(double lon, double lat) {
-        /**
-         * XXX: Draw all TFRs. This is true since added continental zoom.
-         */
-        mVisible = true;
-    }
+    }    
 }

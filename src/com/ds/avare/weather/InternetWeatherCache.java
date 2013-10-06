@@ -20,8 +20,8 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
+import com.ds.avare.shapes.MetShape;
 import com.ds.avare.storage.Preferences;
 import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.annotations.internal.ValueProcessorProvider;
@@ -162,13 +162,46 @@ public class InternetWeatherCache {
                 /*
                  * Read the CSV
                  */
+
+                /*
+                 * AIR/SIG MET
+                 */
+                Reader csvFile = new InputStreamReader(new FileInputStream(mRoot + MET_FILE));
                 
+                ValueProcessorProvider vpp = new ValueProcessorProvider();
+                CSVReader<AirSigMet> asmReader = new CSVReaderBuilder<AirSigMet>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
+                                new AnnotationEntryParser<AirSigMet>(AirSigMet.class, vpp)).build();
+                mAirSig = asmReader.readAll();
+                
+                /*
+                 * Convert AIRMET/SIGMETS to shapes compatible coordinates
+                 */
+                for(int i = 0; i < mAirSig.size(); i++) {
+                    AirSigMet asm = mAirSig.get(i);
+                    asm.shape = new MetShape(
+                            asm.timeFrom + "-" + asm.timeTo + "\n" +
+                            asm.hazard + "\n" +
+                            asm.reportType + "\n" +
+                            asm.severity + "\n" +
+                            asm.rawText);
+                    String tokens[] = asm.points.split("[;]");
+                    for(int j = 0; j < tokens.length; j++) {
+                        String point[] = tokens[j].split("[:]");
+                        double lon = Double.parseDouble(point[0]);
+                        double lat = Double.parseDouble(point[1]);
+                        if(0 == lat || 0 == lon) {
+                            continue;
+                        }
+                        asm.shape.add(lon, lat);
+                    }
+                }
+
                 /*
                  * AIREP
                  */
-                Reader csvFile = new InputStreamReader(new FileInputStream(mRoot + AIREP_FILE));
+                csvFile = new InputStreamReader(new FileInputStream(mRoot + AIREP_FILE));
             
-                ValueProcessorProvider vpp = new ValueProcessorProvider();
+                vpp = new ValueProcessorProvider();
                 CSVReader<Airep> airepReader = new CSVReaderBuilder<Airep>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
                                 new AnnotationEntryParser<Airep>(Airep.class, vpp)).build();
                 mAirep = airepReader.readAll();
@@ -194,29 +227,6 @@ public class InternetWeatherCache {
                                 new AnnotationEntryParser<Taf>(Taf.class, vpp)).build();
                 mTaf = tafReader.readAll();
 
-                /*
-                 * AIR/SIG MET
-                 */
-                csvFile = new InputStreamReader(new FileInputStream(mRoot + MET_FILE));
-                
-                vpp = new ValueProcessorProvider();
-                CSVReader<AirSigMet> asmReader = new CSVReaderBuilder<AirSigMet>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
-                                new AnnotationEntryParser<AirSigMet>(AirSigMet.class, vpp)).build();
-                mAirSig = asmReader.readAll();
-                
-                /*
-                 * Convert AIRMET/SIGMETS to shapes compatible coordinates
-                 */
-                for(int i = 0; i < mAirSig.size(); i++) {
-                    AirSigMet asm = mAirSig.get(i);
-                    asm.coords = new ArrayList<Coordinate>();
-                    String tokens[] = asm.points.split("[;]");
-                    for(int j = 0; j < tokens.length; j++) {
-                        String point[] = tokens[i].split("[:]");
-                        asm.coords.add(new Coordinate(Double.parseDouble(point[0]), 
-                                Double.parseDouble(point[1])));
-                    }
-                }
             }
             catch(Exception e) {
             }

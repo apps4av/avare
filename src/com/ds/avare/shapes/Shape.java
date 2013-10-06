@@ -79,7 +79,7 @@ public abstract class Shape {
     }
 
     /**
-     * This will draw the TFR shape in canvas with given screen params
+     * This will draw the closed shape in canvas with given screen params
      * @param c
      * @param origin
      * @param scale
@@ -96,7 +96,7 @@ public abstract class Shape {
         float facy = sy / (float)movement.getLatitudePerPixel();
         
         /*
-         * Draw the TFR segment by segment
+         * Draw the shape segment by segment
          */
         for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
             float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
@@ -113,9 +113,9 @@ public abstract class Shape {
         mYtop = y;
 
         /*
-         * Do a tab on top of shape for TFR
+         * Do a tab on top of shape
          */
-        if(this instanceof TFRShape) {
+        if(this instanceof TFRShape || this instanceof MetShape) {
             c.drawLine((float)mXtop, (float)mYtop, (float)mXtop, (float)mYtop - WIDTHTOP / 4, paint);
         }
         /*

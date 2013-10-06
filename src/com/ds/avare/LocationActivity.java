@@ -346,7 +346,7 @@ public class LocationActivity extends Activity implements Observer {
              * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
              */
             @Override
-            public void gestureCallBack(int event, String airport, String info, String chart, String tfr) {
+            public void gestureCallBack(int event, String airport, String info, String chart, String tfr, String mets) {
                 if(GestureInterface.LONG_PRESS == event) {
                     if(mLocationView.getDraw()) {
                         /*
@@ -375,7 +375,7 @@ public class LocationActivity extends Activity implements Observer {
                         /*
                          * Now populate the pop out weather etc.
                          */
-                        PopoutAdapter p = new PopoutAdapter(getApplicationContext(), mService, airport, info, tfr);
+                        PopoutAdapter p = new PopoutAdapter(getApplicationContext(), mService, airport, info, tfr, mets);
                         mListPopout.setAdapter(p);
                     }
                 }
