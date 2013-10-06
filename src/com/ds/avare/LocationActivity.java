@@ -195,14 +195,10 @@ public class LocationActivity extends Activity implements Observer {
 
         @Override
         public void adbsMessageCallbackNexrad(Id6364Product pn) {
-            // TODO Auto-generated method stub
-            
         }
 
         @Override
         public void adbsStatusCallback(AdsbStatus adsbStatus) {
-            // TODO Auto-generated method stub
-            
         }
 
     };

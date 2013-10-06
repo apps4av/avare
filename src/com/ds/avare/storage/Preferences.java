@@ -500,6 +500,14 @@ public class Preferences {
      * 
      * @return
      */
+    public String getAirSigMetType() {
+        return(mPref.getString(mContext.getString(R.string.AirSigType), "NONE"));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public void setChartType(String type) {
         SharedPreferences.Editor editor = mPref.edit();
         editor.putString(mContext.getString(R.string.ChartType), type);

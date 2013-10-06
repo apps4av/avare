@@ -649,5 +649,25 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0</item>
         <item>1</item>
     </string-array>
+
+    <string-array name="AirSig">
+        <item>NONE</item>
+        <item>IFR AIRMET</item>
+        <item>ICE AIRMET</item>
+        <item>TURB AIRMET</item>
+        <item>MTN OBSCN AIRMET</item>
+        <item>CONVECTIVE SIGMET</item>
+        <item>CONVECTIVE OUTLOOK</item>
+    </string-array>
+
+    <integer-array name="AirSigColor">
+        <item>0x00000000</item>
+        <item>0xFF800080</item>
+        <item>0xFF0000FF</item>
+        <item>0xFF00FF00</item>
+        <item>0xFFFF00FF</item>
+        <item>0xFF7F0000</item>
+        <item>0xFFFFA500</item>
+    </integer-array>
     
 </resources>

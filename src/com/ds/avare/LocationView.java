@@ -38,6 +38,7 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.R;
 
@@ -594,10 +595,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != mets) {
             mPaint.setStrokeWidth(4); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
-            mPaint.setColor(Color.BLUE);                    
+            String typeArray[] = mContext.getResources().getStringArray(R.array.AirSig);
+            int colorArray[] = mContext.getResources().getIntArray(R.array.AirSigColor);
+            String storeType = mPref.getAirSigMetType();
             for(int i = 0; i < mets.size(); i++) {
                 AirSigMet met = mets.get(i);
-                if(met.shape != null && met.reportType.equals("SIGMET")) {
+                int color = 0;
+                
+                String type = met.hazard + " " + met.reportType;
+                if(!storeType.equals(type)) {
+                    /*
+                     * This should not be drawn.
+                     */
+                    continue;
+                }
+                
+                for(int j = 0; j < typeArray.length; j++) {
+                    if(typeArray[j].equals(type)) {
+                        color = colorArray[j];
+                        break;
+                    }
+                }
+                
+                /*
+                 * Now draw
+                 */
+                if(met.shape != null && color != 0) {
+                    mPaint.setColor(color);
                     met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
                 }
             }

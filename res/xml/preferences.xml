@@ -34,7 +34,14 @@ Redistribution and use in source and binary forms, with or without modification,
         android:entries="@array/UnitsD"
         android:defaultValue="0"
         android:entryValues="@array/UnitsDValues"/>
-    <CheckBoxPreference
+    <ListPreference
+        android:key="@string/AirSigType"
+        android:title="@string/AirSigTypeLabel"
+        android:summary="@string/AirSigTypeSummary"
+        android:entries="@array/AirSig"
+        android:defaultValue="NONE"
+        android:entryValues="@array/AirSig"/>
+	<CheckBoxPreference
         android:enabled="true"
         android:key="@string/adsb"
         android:title="@string/adsbLabel"

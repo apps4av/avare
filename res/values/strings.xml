@@ -165,4 +165,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Navigate">&quot;Navigate&quot;</string>
     <string name="Direct">&quot;Direct&quot;</string>
     <string name="NotAvailable">&quot;Not available&quot;</string>
+    <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
+    <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
+    <string name="AirSigTypeSummary">&quot;Select the type of weather to draw&quot;</string>
 </resources>
