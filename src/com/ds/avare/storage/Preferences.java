@@ -336,7 +336,7 @@ public class Preferences {
      * @return
      */
     public boolean useAdsb() {
-        return(mPref.getBoolean(mContext.getString(R.string.adsb), false));
+        return(false);
     }
 
     /**

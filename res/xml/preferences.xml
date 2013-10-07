@@ -42,12 +42,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:defaultValue="NONE"
         android:entryValues="@array/AirSig"/>
 	<CheckBoxPreference
-        android:enabled="true"
-        android:key="@string/adsb"
-        android:title="@string/adsbLabel"
-        android:summary="@string/adsbSummary"
-        android:defaultValue="false"/>
-	<CheckBoxPreference
         android:key="@string/NightMode"
         android:title="@string/NightModeLabel"
         android:summary="@string/NightModeSummary"
