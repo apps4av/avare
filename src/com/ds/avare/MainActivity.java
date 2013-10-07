@@ -87,6 +87,7 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());        
+        setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
     }
