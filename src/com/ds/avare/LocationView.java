@@ -38,7 +38,6 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.R;
 

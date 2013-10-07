@@ -161,7 +161,17 @@ public class TileMap {
          * For all tiles that will be re-used, find from cache.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
-            mapB[tilen] = force ? null : findTile(tileNames[tilen]);
+            if(force) {
+                /*
+                 * Discard everything
+                 */
+                mapB[tilen] = null;
+                mapA[tilen].getBitmap().eraseColor(0);
+                mapA[tilen].drawInBitmap(null, null, 0, 0);
+            }
+            else {
+                mapB[tilen] = findTile(tileNames[tilen]);                
+            }
         }
 
         /*
