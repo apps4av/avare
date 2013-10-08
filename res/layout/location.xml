@@ -203,7 +203,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:gravity="left|center"
-	            android:text="@string/Direct"
+	            android:text="@string/Destination"
 	            android:drawableLeft="@drawable/direct"
 	            android:minWidth="150dp"
 	            />

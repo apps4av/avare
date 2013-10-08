@@ -275,6 +275,17 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onBackPressed() {
         
+        /*
+         * Back button hides some controls
+         */
+        if(mDestLayout.getVisibility() == View.VISIBLE) {
+            mDestLayout.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        /*
+         * And may exit
+         */
         mAlertDialogExit = new AlertDialog.Builder(LocationActivity.this).create();
         mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
@@ -363,7 +374,7 @@ public class LocationActivity extends Activity implements Observer {
                         }
                         else {
                             mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.direct, 0, 0, 0);
-                            mDestButton.setText(getString(R.string.Direct));
+                            mDestButton.setText(getString(R.string.Destination));
                         }
                         mCrossButton.setText(airport);
                         mDestLayout.setVisibility(View.VISIBLE);
