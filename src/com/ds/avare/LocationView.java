@@ -572,7 +572,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         if(null != shapes) {
             mPaint.setColor(Color.RED);
-            mPaint.setStrokeWidth(8); //TODO Should probably be dynamic based on device resolution
+            mPaint.setStrokeWidth(4); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
                 shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
@@ -605,7 +605,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 int color = 0;
                 
                 String type = met.hazard + " " + met.reportType;
-                if(!storeType.equals(type)) {
+                if(storeType.equals("ALL")) {
+                    /*
+                     * All draw all shapes
+                     */
+                }
+                else if(!storeType.equals(type)) {
                     /*
                      * This should not be drawn.
                      */
@@ -776,7 +781,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Get draw points.
          */
         mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(8);
+        mPaint.setStrokeWidth(4);
         mService.getDraw().drawShape(canvas, mPaint, mOrigin);
         
     }

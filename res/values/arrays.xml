@@ -15,6 +15,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resGroups">
         <item>Databases</item>
+        <item>Weather</item>
         <item>Plates/d-TPP/ADs</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
@@ -38,9 +39,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>@string/TFRs</item>
-        <item>@string/weather</item>
      </string-array>
-
+     
+    <string-array name="resNameWeather">
+        <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs</item>
+     </string-array>
+        
     <string-array name="resNameAFD">
         <item>A/FD NE</item>
         <item>A/FD NC</item>
@@ -318,7 +322,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>databases</item>
         <item>TFRs</item>
         <item>weather</item>
-    </string-array>    
+    </string-array>
+    
+    <string-array name="resFilesWeather">
+        <item>weather</item>
+    </string-array>
+        
     <string-array name="resFilesIFRLE">
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>
@@ -651,6 +660,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="AirSig">
+        <item>ALL</item>
         <item>NONE</item>
         <item>IFR AIRMET</item>
         <item>ICE AIRMET</item>
@@ -661,6 +671,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <integer-array name="AirSigColor">
+        <item>0xFFFFFFFF</item>
         <item>0x00000000</item>
         <item>0xFF800080</item>
         <item>0xFF0000FF</item>

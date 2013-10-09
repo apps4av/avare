@@ -57,17 +57,18 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     static final int blocksize = 128;
     
     private static final int GROUP_DATABASE = 0;
-    private static final int GROUP_PLATE = 1;
-    private static final int GROUP_SECTIONAL = 2;
-    private static final int GROUP_TAC = 3;
-    private static final int GROUP_WAC = 4;
-    private static final int GROUP_IFRLE = 5;
-    private static final int GROUP_AFD = 6;
-    private static final int GROUP_TERRAIN = 7;
-    private static final int GROUP_IFRHE = 8;
-    private static final int GROUP_TOPO = 9;
-    private static final int GROUP_HELI = 10;
-    private static final int GROUP_NUM = 11;
+    private static final int GROUP_WEATHER = 1;
+    private static final int GROUP_PLATE = 2;
+    private static final int GROUP_SECTIONAL = 3;
+    private static final int GROUP_TAC = 4;
+    private static final int GROUP_WAC = 5;
+    private static final int GROUP_IFRLE = 6;
+    private static final int GROUP_AFD = 7;
+    private static final int GROUP_TERRAIN = 8;
+    private static final int GROUP_IFRHE = 9;
+    private static final int GROUP_TOPO = 10;
+    private static final int GROUP_HELI = 11;
+    private static final int GROUP_NUM = 12;
     
     /**
      * @param context
@@ -86,6 +87,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resNameDatabase);
+        mChildren[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resNameWeather);
         mChildren[GROUP_PLATE] = context.getResources().getStringArray(R.array.resNamePlate);
         mChildren[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resNameSectional);
         mChildren[GROUP_TAC] = context.getResources().getStringArray(R.array.resNameTAC);
@@ -102,6 +104,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mChildrenFiles = new String[GROUP_NUM][];
         mChildrenFiles[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
+        mChildrenFiles[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
         mChildrenFiles[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mChildrenFiles[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
         mChildrenFiles[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
@@ -119,6 +122,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mVers = new String[GROUP_NUM][];
         mVers[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
+        mVers[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
         mVers[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mVers[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
         mVers[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
@@ -135,6 +139,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mChecked = new int[GROUP_NUM][];
         mChecked[GROUP_DATABASE] = new int[mVers[GROUP_DATABASE].length];
+        mChecked[GROUP_WEATHER] = new int[mVers[GROUP_WEATHER].length];
         mChecked[GROUP_PLATE] = new int[mVers[GROUP_PLATE].length];
         mChecked[GROUP_SECTIONAL] = new int[mVers[GROUP_SECTIONAL].length];
         mChecked[GROUP_TAC] = new int[mVers[GROUP_TAC].length];
