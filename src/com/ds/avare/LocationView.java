@@ -42,6 +42,7 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -1218,6 +1219,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String textMets;
         private String aireps;
         private Taf taf;
+        private WindsAloft wa;
         private Metar metar;
         
         /* (non-Javadoc)
@@ -1227,15 +1229,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         protected String doInBackground(Object... vals) {
             
             Thread.currentThread().setName("Closest");
+            if(null == mService) {
+                return null;
+            }
 
             String airport = null;
             lon = (Double)vals[0];
             lat = (Double)vals[1];
             text = (String)vals[2];
             textMets = (String)vals[3];
-            if(null != mService) {
-                airport = mService.getDBResource().findClosestAirportID(lon, lat);
-            }
+            airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
@@ -1244,6 +1247,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 metar = mService.getDBResource().getMETAR(airport);
             }
             aireps = mService.getDBResource().getAireps(lon, lat);
+            wa = mService.getDBResource().getWindsAloft(lon, lat);
             return airport;
         }
         
@@ -1252,7 +1256,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjection) {
+            if(null != mGestureCallBack && null != mPointProjection && null != airport) {
                 LongTouchDestination data = new LongTouchDestination();
                 data.airport = airport;
                 data.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
@@ -1264,6 +1268,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.metar = metar;
                 data.airep = aireps;
                 data.mets = textMets;
+                data.wa = wa;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();

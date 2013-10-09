@@ -17,6 +17,7 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -42,6 +43,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private String mAirep;
     private String mTfr;
     private String mMets;
+    private WindsAloft mWa;
     private Typeface mFace;
 
     private static final int GROUP_METAR = 0;
@@ -49,7 +51,8 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_PIREP = 2;
     private static final int GROUP_TFR = 3;
     private static final int GROUP_METS = 4;
-    private static final int GROUP_NUM = 5;
+    private static final int GROUP_WA = 5;
+    private static final int GROUP_NUM = 6;
     
     /**
      * @param context
@@ -74,6 +77,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_PIREP] = new String[1];
         mChildren[GROUP_TFR] = new String[1];
         mChildren[GROUP_METS] = new String[1];
+        mChildren[GROUP_WA] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -85,9 +89,9 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mMetar = data.metar;
         mTaf = data.taf;
         mAirep = data.airep;
-        mChildrenText[GROUP_METAR] = "";
-        mChildrenText[GROUP_TAF] = "";
-        mChildrenText[GROUP_PIREP] = "";
+        mWa = data.wa;
+
+        
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
 
@@ -103,9 +107,24 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
             mChildrenText[GROUP_TAF] = "";
         }
         else {
-            mChildrenText[GROUP_TAF] = 
-                    mChildrenText[GROUP_TAF] = "@ " + mTaf.time + "\n" + 
+            mChildrenText[GROUP_TAF] = "@ " + mTaf.time + "\n" + 
                     WeatherHelper.formatWeather(mTaf.rawText);          
+        }
+        
+        if(mWa == null) {
+            mChildrenText[GROUP_WA] = "";
+        }
+        else {
+            mChildrenText[GROUP_WA] = mWa.station + " " + mWa.time + "\n" +
+                    "@030 "  + mWa.w3k + "\n" + 
+                    "@060 " + mWa.w6k + "\n" +
+                    "@090 " + mWa.w9k + "\n" +
+                    "@120 " + mWa.w12k + "\n" +
+                    "@180 " + mWa.w18k + "\n" +
+                    "@240 " + mWa.w24k + "\n" +
+                    "@300 " + mWa.w30k + "\n" +
+                    "@340 " + mWa.w34k + "\n" +
+                    "@390 " + mWa.w39k;
         }
 
         if(mAirep == null) {
@@ -159,6 +178,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 break;
             case GROUP_METS:
                 tv.setTextColor((mMets == null) ? 0xFFFFFFFF : 0xFF0000FF);
+                tv.setText(mGroups[group]);
+                break;
+            case GROUP_WA:
+                tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;
         }

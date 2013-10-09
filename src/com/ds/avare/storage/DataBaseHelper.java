@@ -29,6 +29,7 @@ import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -1359,6 +1360,49 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         
         closesWeather(cursor);
         return metar;        
+    }
+
+    
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @return
+     */
+    public WindsAloft getWindsAloft(double lon, double lat) {
+      
+        WindsAloft wa = null;
+        String qry =
+                "select * from wa order by " +
+                "((longitude - " + lon + ")*" + "(longitude - " + lon + ") + " +    
+                "(latitude - " + lat + ")*" + "(latitude - " + lat + ")) limit 1;";
+
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    wa = new WindsAloft();
+                    wa.station = cursor.getString(0);
+                    wa.time = cursor.getString(1);
+                    wa.w3k = cursor.getString(4);
+                    wa.w6k = cursor.getString(5);
+                    wa.w9k = cursor.getString(6);
+                    wa.w12k = cursor.getString(7);
+                    wa.w18k = cursor.getString(8);
+                    wa.w24k = cursor.getString(9);
+                    wa.w30k = cursor.getString(10);
+                    wa.w34k = cursor.getString(11);
+                    wa.w39k = cursor.getString(12);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesWeather(cursor);
+        return wa;        
     }
 
     /**

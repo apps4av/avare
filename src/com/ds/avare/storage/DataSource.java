@@ -23,6 +23,7 @@ import com.ds.avare.shapes.Tile;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
 
 import android.content.Context;
 
@@ -210,7 +211,16 @@ public class DataSource {
     public String getAireps(double lon, double lat) {
         return dbHelper.getAireps(lon, lat);          
     }
-    
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public WindsAloft getWindsAloft(double lon, double lat) {
+        return dbHelper.getWindsAloft(lon, lat);          
+    }
+
     /**
      * 
      * @return
