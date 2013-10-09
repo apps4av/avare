@@ -1401,6 +1401,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             txt = txt.substring(0, txt.length() - 2);
         }
 
+        closesWeather(cursor);
         return txt;
     }
 
@@ -1444,6 +1445,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         catch (Exception e) {
         }
         
+        closesWeather(cursor);
         return airsig;
     }
 
