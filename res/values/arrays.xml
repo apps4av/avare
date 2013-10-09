@@ -677,7 +677,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0xFF800080</item>
         <item>0xFF0000FF</item>
         <item>0xFF00FF00</item>
-        <item>0xFFFF00FF</item>
+        <item>0xFF66FFFF</item>
         <item>0xFF7F0000</item>
         <item>0xFFFFA500</item>
     </integer-array>
