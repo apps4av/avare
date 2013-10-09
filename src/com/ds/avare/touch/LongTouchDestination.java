@@ -12,15 +12,22 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.touch;
 
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
 
 /**
- * 
+ * Works with LongTouchGesture
  * @author zkhan
- * Just a simple way to notify activities of gestures in view.
+ *
  */
-public interface GestureInterface {
+public class LongTouchDestination {
 
-    public static final int LONG_PRESS = 1;
-    
-    void gestureCallBack(int event, LongTouchDestination data);
+    public String airport;
+    public String info;
+    public String chart;
+    public String tfr;
+    public String mets;
+    public Taf taf;
+    public Metar metar;
+    public String airep;
 }

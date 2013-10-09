@@ -32,6 +32,7 @@ import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
+import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.touch.MultiTouchController;
 import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
@@ -39,6 +40,8 @@ import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
 import com.ds.avare.R;
 
 import android.content.Context;
@@ -1208,6 +1211,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Double lat;
         private String text;
         private String textMets;
+        private String aireps;
+        private Taf taf;
+        private Metar metar;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1228,6 +1234,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
+            else {
+                taf = mService.getDBResource().getTAF(airport);
+                metar = mService.getDBResource().getMETAR(airport);
+            }
+            aireps = mService.getDBResource().getAireps(lon, lat);
             return airport;
         }
         
@@ -1237,13 +1248,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         @Override
         protected void onPostExecute(String airport) {
             if(null != mGestureCallBack && null != mPointProjection) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, airport, 
-                        Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
+                LongTouchDestination data = new LongTouchDestination();
+                data.airport = airport;
+                data.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0', 
-                        mOnChart,
-                        text,
-                        textMets);
+                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
+                data.chart = mOnChart;
+                data.tfr = text;
+                data.taf = taf;
+                data.metar = metar;
+                data.airep = aireps;
+                data.mets = textMets;
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();
         }
@@ -1338,7 +1354,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, "", "", "", "", "");
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, null);
                 return;
             }
 

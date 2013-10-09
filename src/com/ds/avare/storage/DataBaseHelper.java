@@ -25,6 +25,10 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Airep;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -47,6 +51,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     private SQLiteDatabase mDataBase; 
     private SQLiteDatabase mDataBaseFiles; 
+    private SQLiteDatabase mDataBaseWeather; 
     
     /*
      * Center tile info
@@ -69,6 +74,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     private Integer mUsers;
     private Integer mUsersFiles;
+    private Integer mUsersWeather;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -133,7 +139,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         super(context, null, null, DATABASE_VERSION);
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = 0;
+        mUsers = mUsersFiles = mUsersWeather = 0;
         mContext = context;
     }
 
@@ -1203,5 +1209,242 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
+
+    /**
+     * 
+     * @return
+     */
+    private String getWeatherDb() {
+        return "weather.db";
+    }
+
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryWeather(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+
+        /*
+         * 
+         */
+        synchronized(mUsersWeather) {
+            if(mDataBaseWeather == null) {
+                mUsersWeather = 0;
+                try {
+                    
+                    mDataBaseWeather = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseWeather = null;
+                }
+            }
+            if(mDataBaseWeather == null) {
+                return c;
+            }
+            mUsersWeather++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseWeather == null) {
+            return c;
+        }
+        
+        if(!mDataBaseWeather.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseWeather.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    /**
+     * Close database
+     */
+    private void closesWeather(Cursor c) {
+        if(null != c) {
+            c.close();
+        }
+
+        synchronized(mUsersWeather) {
+            mUsersWeather--;
+            if((mDataBaseWeather != null) && (mUsersWeather <= 0)) {
+                try {
+                    mDataBaseWeather.close();
+                    super.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBaseWeather = null;
+                mUsersWeather = 0;
+            }
+        }
+    }
+
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public Taf getTAF(String station) {
+      
+        Taf taf = null;
+        String qry =
+                "select * from tafs where station_id='K" + station + "';";
+        
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    taf = new Taf();
+                    taf.rawText = cursor.getString(0);
+                    taf.time = cursor.getString(1);
+                    taf.stationId = cursor.getString(1);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesWeather(cursor);
+        return taf;        
+    }
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public Metar getMETAR(String station) {
+      
+        Metar metar = null;
+        String qry =
+                "select * from metars where station_id='K" + station + "';";
+        
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    metar = new Metar();
+                    metar.rawText = cursor.getString(0);
+                    metar.time = cursor.getString(1);
+                    metar.stationId = cursor.getString(2);
+                    metar.flightCategory = cursor.getString(3);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesWeather(cursor);
+        return metar;        
+    }
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public String getAireps(double lon, double lat) {
+
+        /*
+         * All aireps/pireps sep by \n
+         */
+        
+        String txt = "";
+        String qry =
+                "select * from apirep where " +                
+                "(" + "latitude"  + " > " + (lat - Airep.RADIUS) + ") and (" + "latitude"  + " < " + (lat + Airep.RADIUS) + ") and " +
+                "(" + "longitude" + " > " + (lon - Airep.RADIUS) + ") and (" + "longitude" + " < " + (lon + Airep.RADIUS) + ");";
+     
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+        
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    Airep a = new Airep();
+                    a.rawText = cursor.getString(0);
+                    a.time = cursor.getString(1);
+                    a.reportType = cursor.getString(4);
+                    txt += a.reportType + "@ " + a.time + "\n" + a.rawText + "\n\n";
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        /*
+         * Remove last \n
+         */
+        if(txt.length() > 1) {
+            txt = txt.substring(0, txt.length() - 2);
+        }
+
+        return txt;
+    }
+
+    
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public LinkedList<AirSigMet> getAirSigMets() {
+
+        LinkedList<AirSigMet> airsig = new LinkedList<AirSigMet>();
+        
+        /*
+         * Get all
+         */
+        String qry =
+                "select * from airsig"; 
+     
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+        
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    AirSigMet a = new AirSigMet();
+                    a.rawText = cursor.getString(0);
+                    a.timeFrom = cursor.getString(1);
+                    a.timeTo = cursor.getString(2);
+                    a.points = cursor.getString(3);
+                    a.minFt = cursor.getString(4);
+                    a.maxFt = cursor.getString(5);
+                    a.movementDeg = cursor.getString(6);
+                    a.movementKt = cursor.getString(7);
+                    a.hazard = cursor.getString(8);
+                    a.severity = cursor.getString(9);
+                    a.reportType = cursor.getString(10);
+                    airsig.add(a);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        return airsig;
+    }
 
 }

@@ -20,6 +20,9 @@ import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.shapes.Tile;
+import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
 
 import android.content.Context;
 
@@ -170,9 +173,50 @@ public class DataSource {
     public LinkedList<String> findFilesToDelete(String name) {
         return dbHelper.findFilesToDelete(name);        
     }
-    
+
+    /**
+     * 
+     * @param name
+     * @param type
+     * @return
+     */
     public String findLonLat(String name, String type) {
         return dbHelper.findLonLat(name, type);          
+    }
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public Taf getTAF(String station) {
+        return dbHelper.getTAF(station);          
+    }
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public Metar getMETAR(String station) {
+        return dbHelper.getMETAR(station);          
+    }
+
+    /**
+     * 
+     * @param station
+     * @return
+     */
+    public String getAireps(double lon, double lat) {
+        return dbHelper.getAireps(lon, lat);          
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public LinkedList<AirSigMet> getAirSigMets() {
+        return dbHelper.getAirSigMets();
     }
 
 }

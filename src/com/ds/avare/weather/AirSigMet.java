@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.weather;
 
 import com.ds.avare.shapes.MetShape;
-import com.googlecode.jcsv.annotations.MapToColumn;
 
 /**
  * Auto generated from CSV header, cleared to only needed fields
@@ -23,27 +22,16 @@ import com.googlecode.jcsv.annotations.MapToColumn;
  */
 public class AirSigMet {
 
-    @MapToColumn(column=0)
     public String rawText;
-    @MapToColumn(column=1)
     public String timeFrom;
-    @MapToColumn(column=2)
     public String timeTo;
-    @MapToColumn(column=3)
     public String points;
-    @MapToColumn(column=4)
     public String minFt;
-    @MapToColumn(column=5)
     public String maxFt;
-    @MapToColumn(column=6)
     public String movementDeg;
-    @MapToColumn(column=7)
     public String movementKt;
-    @MapToColumn(column=8)
     public String hazard;
-    @MapToColumn(column=9)
     public String severity;
-    @MapToColumn(column=10)
     public String reportType;
     
     public MetShape shape;

@@ -11,19 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.weather;
 
-import com.googlecode.jcsv.annotations.MapToColumn;
-
 /**
- * Auto generated from CSV header, cleared to only needed fields
- * 
  * @author zkhan
  *
  */
 public class Taf {
-    @MapToColumn(column=0)
     public String rawText;
-    @MapToColumn(column=1)
     public String stationId;
-    @MapToColumn(column=2)
     public String time;
 }

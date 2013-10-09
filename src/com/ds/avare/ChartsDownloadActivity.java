@@ -144,7 +144,7 @@ public class ChartsDownloadActivity extends Activity {
         @Override
         public void onServiceConnected(ComponentName className,
                 IBinder service) {
-            /* 
+            /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
@@ -428,7 +428,7 @@ public class ChartsDownloadActivity extends Activity {
                     }
     
                     if(mName.equals("weather")) {
-                        mService.getInternetWeatherCache().parse(getApplicationContext());
+                        mService.getInternetWeatherCache().parse(mService);
                     }
                     
                     mChartAdapter.updateVersion(mName, mDownload.getVersion());

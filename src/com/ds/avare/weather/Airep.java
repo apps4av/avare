@@ -12,25 +12,19 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.weather;
 
-import com.googlecode.jcsv.annotations.MapToColumn;
-
 /**
- * Auto generated from CSV header, cleared to only needed fields
  * 
  * @author zkhan
  *
  */
 public class Airep {
 
-    @MapToColumn(column=1)
+    public static final int RADIUS = 5; // degrees;
+    
     public String time;
-    @MapToColumn(column=9)
     public String latitude;
-    @MapToColumn(column=10)
     public String longitude;
-    @MapToColumn(column=42)
     public String reportType;
-    @MapToColumn(column=43)
     public String rawText;    
 }
 

@@ -12,22 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.weather;
 
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
-import android.content.Context;
-
-import com.ds.avare.position.Projection;
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.MetShape;
-import com.ds.avare.storage.Preferences;
-import com.googlecode.jcsv.CSVStrategy;
-import com.googlecode.jcsv.annotations.internal.ValueProcessorProvider;
-import com.googlecode.jcsv.reader.CSVReader;
-import com.googlecode.jcsv.reader.internal.AnnotationEntryParser;
-import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
+
 
 /**
  * 
@@ -36,35 +25,27 @@ import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
  */
 public class InternetWeatherCache {
 
-    private static final String AIREP_FILE = "/aircraftreports.cache.csv.stripped";
-    private static final String METAR_FILE = "/metars.cache.csv.stripped";
-    private static final String TAF_FILE = "/tafs.cache.csv.stripped";
-    private static final String MET_FILE = "/airsigmets.cache.csv.stripped";
-    
-    private static final int AIREP_DISTANCE = 200;
-    
-    private List<Airep> mAirep;
-    private List<Metar> mMetar;
-    private List<Taf> mTaf;
-    private List<AirSigMet> mAirSig;
-
     /**
      * Task that would draw tiles on bitmap.
      */
     private WeatherTask                mWeatherTask; 
     private Thread                     mWeatherThread;
-    private String                     mRoot;
+    private LinkedList<AirSigMet>      mAirSig;
+    private StorageService             mService;
     
     /**
      * 
      * @param root
      */
-    public void parse(Context ctx) {
+    public void parse(StorageService service) {
         
+        if(service == null) {
+            return;
+        }
+        mService = service;
         /*
          * Do weather parsing in background. It takes a long time.
          */
-        mRoot = (new Preferences(ctx)).mapsFolder();
         if(mWeatherThread != null) {
             if(mWeatherThread.isAlive()) {
                 return;
@@ -79,75 +60,8 @@ public class InternetWeatherCache {
      * 
      * @return
      */
-    public List<Airep> getAirep(double lon, double lat) {
-        List<Airep> l = new ArrayList<Airep>();
-
-        /*
-         * Limit airep based of distance from this point
-         */
-        double lon2;
-        double lat2;
-        if(null == mAirep) {
-            return null;
-        }
-        for(int m = 0; m < mAirep.size(); m++) {
-            Airep mm = mAirep.get(m);
-            try {
-                lon2 = Double.parseDouble(mm.longitude);
-                lat2 = Double.parseDouble(mm.latitude);
-            }
-            catch (Exception e) {
-                continue;
-            }
-        
-            Projection p = new Projection(lon, lat, lon2, lat2);
-            if(p.getDistance() < AIREP_DISTANCE) {
-                l.add(mm);
-            }
-        }
-        return l;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public List<AirSigMet> getAirSigMet() {
+    public LinkedList<AirSigMet> getAirSigMet() {
         return mAirSig;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public Metar getMetar(String station) {
-        if(null == mMetar || null == station) {
-            return null;
-        }
-        for(int m = 0; m < mMetar.size(); m++) {
-            Metar mm = mMetar.get(m);
-            if(mm.stationId.equals(station) || mm.stationId.equals("K" + station)) {
-                return mm;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public Taf getTaf(String station) {
-        if(null == mTaf || null == station) {
-            return null;
-        }
-        for(int m = 0; m < mTaf.size(); m++) {
-            Taf mm = mTaf.get(m);
-            if(mm.stationId.equals(station) || mm.stationId.equals("K" + station)) {
-                return mm;
-            }
-        }
-        return null;
     }
 
     private class WeatherTask implements Runnable {
@@ -160,18 +74,9 @@ public class InternetWeatherCache {
             try {
                 
                 /*
-                 * Read the CSV
+                 * Create a list of air/sigmets
                  */
-
-                /*
-                 * AIR/SIG MET
-                 */
-                Reader csvFile = new InputStreamReader(new FileInputStream(mRoot + MET_FILE));
-                
-                ValueProcessorProvider vpp = new ValueProcessorProvider();
-                CSVReader<AirSigMet> asmReader = new CSVReaderBuilder<AirSigMet>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
-                                new AnnotationEntryParser<AirSigMet>(AirSigMet.class, vpp)).build();
-                mAirSig = asmReader.readAll();
+                mAirSig = mService.getDBResource().getAirSigMets();
                 
                 /*
                  * Convert AIRMET/SIGMETS to shapes compatible coordinates
@@ -195,38 +100,6 @@ public class InternetWeatherCache {
                         asm.shape.add(lon, lat);
                     }
                 }
-
-                /*
-                 * AIREP
-                 */
-                csvFile = new InputStreamReader(new FileInputStream(mRoot + AIREP_FILE));
-            
-                vpp = new ValueProcessorProvider();
-                CSVReader<Airep> airepReader = new CSVReaderBuilder<Airep>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
-                                new AnnotationEntryParser<Airep>(Airep.class, vpp)).build();
-                mAirep = airepReader.readAll();
-                
-                
-                /*
-                 * METAR.
-                 */
-                csvFile = new InputStreamReader(new FileInputStream(mRoot + METAR_FILE));
-                
-                vpp = new ValueProcessorProvider();
-                CSVReader<Metar> metarReader = new CSVReaderBuilder<Metar>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
-                                new AnnotationEntryParser<Metar>(Metar.class, vpp)).build();
-                mMetar = metarReader.readAll();
-
-                /*
-                 * TAF.
-                 */
-                csvFile = new InputStreamReader(new FileInputStream(mRoot + TAF_FILE));
-                
-                vpp = new ValueProcessorProvider();
-                CSVReader<Taf> tafReader = new CSVReaderBuilder<Taf>(csvFile).strategy(CSVStrategy.UK_DEFAULT).entryParser(
-                                new AnnotationEntryParser<Taf>(Taf.class, vpp)).build();
-                mTaf = tafReader.readAll();
-
             }
             catch(Exception e) {
             }
