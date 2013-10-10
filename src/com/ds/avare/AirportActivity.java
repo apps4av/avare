@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Jesse McGraw (jlmcgraw@gmail.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
@@ -197,6 +199,7 @@ public class AirportActivity extends Activity {
              * Get Text A/FD
              */
             LinkedHashMap <String, String>map = mDestination.getParams();
+            LinkedList<Awos> awos = mDestination.getAwos();
             LinkedHashMap <String, String>freq = mDestination.getFrequencies();
             LinkedList<Runway> runways = mDestination.getRunways();
             String[] views = new String[map.size() + freq.size() + runways.size()];
@@ -224,6 +227,22 @@ public class AirportActivity extends Activity {
                 iterator++;
             }
             
+            /*
+             * Add AWOS
+             */
+            for(Awos awos1 : awos){
+				String mAwosType = awos1.getType();
+            	
+            	views[iterator] = mAwosType;
+                values[iterator] = 
+                        "Freq: " + awos1.getFreq() + ",\n" +
+                        "Phone: " + awos1.getPhone() + ",\n" +
+                        "Lat: " + awos1.getLat() + ",\n" +
+                        "Lon: " + awos1.getLon() + ",\n" +
+                        "Remarks: " + awos1.getRemarks()
+                        ;
+                iterator++;
+            }
             /*
              * Add frequencies (unicom, atis, tower etc)  Does not currently include AWOS
              */
