@@ -1,5 +1,7 @@
 /*
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Jesse McGraw (jlmcgraw@gmail.com)
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +21,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
+import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -113,6 +116,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
+    private static final String TABLE_AIRPORT_AWOS = "awos";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
@@ -470,7 +474,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
         
         Cursor cursor;
         
@@ -596,7 +600,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(!type.equals(Destination.BASE)) {
             return;
         }
-            
+        
+        /*
+         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
+         */
+        
         qry = "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
                 + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
         cursor = doQuery(qry, getMainDb());
@@ -642,7 +650,53 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         catch (Exception e) {
         }
         closes(cursor);
+        
+		/*
+		 * Get AWOS frequency
+		 */
 
+		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
+				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+				+ "=='K" + name + "';";
+		cursor = doQuery(qry, getMainDb());
+
+		try {
+			/*
+			 * Add all of them
+			 */
+			if (cursor != null) {
+				while (cursor.moveToNext()) {
+					String Type = cursor.getString(1);
+					String Name = cursor.getString(2);
+					String Phone = cursor.getString(3);
+					String lat = Helper.removeLeadingZeros(cursor.getString(4));
+					String lon = Helper.removeLeadingZeros(cursor.getString(5));
+					String Frequency = cursor.getString(6);
+					String aptId = cursor.getString(7);
+					String remark = cursor.getString(8);
+
+					Awos a = new Awos(Type);
+
+					a.setType(Type);
+					a.setName(Name);
+					a.setPhone(Phone);
+					a.setLat(lat);
+					a.setLon(lon);
+					a.setFreq(Frequency);
+					a.setAptId(aptId);
+					a.setRemark(remark);
+
+					awos.add(a);
+
+				}
+			}
+		} catch (Exception e) {
+		}
+		closes(cursor);
+
+        /*
+         *Find runways        
+         */
 
         qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
                 + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
