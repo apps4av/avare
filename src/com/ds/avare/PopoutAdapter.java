@@ -51,10 +51,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
 
     private static final int GROUP_METAR = 0;
     private static final int GROUP_TAF = 1;
-    private static final int GROUP_PIREP = 2;
-    private static final int GROUP_TFR = 3;
+    private static final int GROUP_WA = 2;
+    private static final int GROUP_PIREP = 3;
     private static final int GROUP_METS = 4;
-    private static final int GROUP_WA = 5;
+    private static final int GROUP_TFR = 5;
     private static final int GROUP_NUM = 6;
     
     /**
@@ -77,10 +77,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_METAR] = new String[1];
         mChildren[GROUP_TAF] = new String[1];
-        mChildren[GROUP_PIREP] = new String[1];
-        mChildren[GROUP_TFR] = new String[1];
-        mChildren[GROUP_METS] = new String[1];
         mChildren[GROUP_WA] = new String[1];
+        mChildren[GROUP_PIREP] = new String[1];
+        mChildren[GROUP_METS] = new String[1];
+        mChildren[GROUP_TFR] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -119,15 +119,15 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         }
         else {
             mChildrenText[GROUP_WA] = mWa.station + " " + mWa.time + "\n" +
-                    "@030 "  + mWa.w3k + "\n" + 
-                    "@060 " + mWa.w6k + "\n" +
-                    "@090 " + mWa.w9k + "\n" +
-                    "@120 " + mWa.w12k + "\n" +
-                    "@180 " + mWa.w18k + "\n" +
-                    "@240 " + mWa.w24k + "\n" +
-                    "@300 " + mWa.w30k + "\n" +
-                    "@340 " + mWa.w34k + "\n" +
-                    "@390 " + mWa.w39k;
+                    "@030 " + WeatherHelper.decodeWind(mWa.w3k) + "\n" + 
+                    "@060 " + WeatherHelper.decodeWind(mWa.w6k) + "\n" +
+                    "@090 " + WeatherHelper.decodeWind(mWa.w9k) + "\n" +
+                    "@120 " + WeatherHelper.decodeWind(mWa.w12k) + "\n" +
+                    "@180 " + WeatherHelper.decodeWind(mWa.w18k) + "\n" +
+                    "@240 " + WeatherHelper.decodeWind(mWa.w24k) + "\n" +
+                    "@300 " + WeatherHelper.decodeWind(mWa.w30k) + "\n" +
+                    "@340 " + WeatherHelper.decodeWind(mWa.w34k) + "\n" +
+                    "@390 " + WeatherHelper.decodeWind(mWa.w39k);
         }
 
         

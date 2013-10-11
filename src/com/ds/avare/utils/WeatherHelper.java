@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import java.util.Locale;
+
 import com.ds.avare.R;
 
 
@@ -511,4 +513,81 @@ public class WeatherHelper {
         return output;
     }
 
+    /**
+     * Wind decoder
+     * @param wind
+     * @return
+     */
+    public static String decodeWind(String wind) {
+        
+        if(wind.length() < 4) {
+            return "";
+        }
+        
+        int dir;
+        int speed;
+        try {
+            dir = Integer.parseInt(wind.substring(0, 2)) * 10; 
+            speed = Integer.parseInt(wind.substring(2, 4));
+        }
+        catch(Exception e) {
+            return "";            
+        }
+        
+        if(wind.length() == 4) {
+
+            if(dir == 990 && speed == 0) {
+                /*
+                 * Light and variable
+                 */
+                return "000°000kt";
+            }
+            if(dir >= 510) {
+                dir -= 500;
+                speed += 100;
+            }
+
+            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed);
+            return(out);
+        }
+
+        if(wind.length() == 7) {
+            String temp = wind.substring(4, 7);
+
+            if(dir == 990 && speed == 0) {
+                /*
+                 * Light and variable
+                 */
+                return "000°000kt" + temp + "C";
+            }
+            if(dir >= 510) {
+                dir -= 500;
+                speed += 100;
+            }
+
+            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
+            return(out);
+            
+        }
+
+        if(wind.length() == 6) {
+            String temp = "-" + wind.substring(4, 6);
+
+            if(dir == 990 && speed == 0) {
+                /*
+                 * Light and variable
+                 */
+                return "000°000kt" + temp + "C";
+            }
+            if(dir >= 510) {
+                dir -= 500;
+                speed += 100;
+            }
+
+            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
+            return(out);
+        }
+
+        return "";
+    }
 }

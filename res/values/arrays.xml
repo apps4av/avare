@@ -42,10 +42,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroupsPopout">
         <item>METAR</item>
         <item>TAF</item>
-        <item>AIREP/PIREP</item>
-        <item>TFR</item>
-        <item>AIRMET/SIGMET</item>
         <item>Winds/Temp.</item>
+        <item>AIREP/PIREP</item>
+        <item>AIRMET/SIGMET</item>
+        <item>TFR</item>
     </string-array>
     
     <string-array name="resNameDatabase">
