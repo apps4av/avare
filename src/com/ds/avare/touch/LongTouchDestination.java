@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.touch;
 
+import java.util.LinkedList;
+
+import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
@@ -31,5 +34,5 @@ public class LongTouchDestination {
     public Taf taf;
     public WindsAloft wa;
     public Metar metar;
-    public String airep;
+    public LinkedList<Airep> airep;
 }

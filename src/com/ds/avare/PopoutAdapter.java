@@ -13,8 +13,11 @@ package com.ds.avare;
 
 
 
+import java.util.LinkedList;
+
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
@@ -40,7 +43,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     
     private Metar mMetar;
     private Taf mTaf;
-    private String mAirep;
+    private LinkedList<Airep> mAirep;
     private String mTfr;
     private String mMets;
     private WindsAloft mWa;
@@ -127,11 +130,25 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                     "@390 " + mWa.w39k;
         }
 
+        
         if(mAirep == null) {
             mChildrenText[GROUP_PIREP] = "";
         }
         else {
-            mChildrenText[GROUP_PIREP] = mAirep;
+
+            String txt = "";
+            for(Airep a : mAirep) {
+                txt += a.reportType + "@ " + a.time + "\n" + a.rawText + "\n\n";                
+            }
+    
+            /*
+             * Remove last \n
+             */
+            if(txt.length() > 1) {
+                txt = txt.substring(0, txt.length() - 2);
+            }
+
+            mChildrenText[GROUP_PIREP] = txt;
         }
 
     }

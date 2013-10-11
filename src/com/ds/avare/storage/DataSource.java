@@ -21,6 +21,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
@@ -208,7 +209,7 @@ public class DataSource {
      * @param station
      * @return
      */
-    public String getAireps(double lon, double lat) {
+    public LinkedList<Airep> getAireps(double lon, double lat) {
         return dbHelper.getAireps(lon, lat);          
     }
 

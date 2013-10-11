@@ -11,6 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.weather;
 
+import com.ds.avare.position.Projection;
+import com.ds.avare.storage.Preferences;
+
 /**
  * 
  * @author zkhan
@@ -29,5 +32,20 @@ public class WindsAloft {
     public String w30k; 
     public String w34k; 
     public String w39k; 
+    public float lon;
+    public float lat;
     
+    /**
+     * 
+     * @param lon0
+     * @param lat0
+     * @param variation
+     */
+    public void updateStationWithLocation(double lon0, double lat0, double variation) {
+        Projection p = new Projection(lon, lat, lon0, lat0);
+        station += "(" +
+                Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " + 
+                p.getGeneralDirectionFrom(variation)+ ")";
+
+    }
 }

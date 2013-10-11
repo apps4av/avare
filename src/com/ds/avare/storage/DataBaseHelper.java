@@ -1386,6 +1386,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     wa = new WindsAloft();
                     wa.station = cursor.getString(0);
                     wa.time = cursor.getString(1);
+                    wa.lon = cursor.getFloat(2);
+                    wa.lat = cursor.getFloat(3);
                     wa.w3k = cursor.getString(4);
                     wa.w6k = cursor.getString(5);
                     wa.w9k = cursor.getString(6);
@@ -1410,13 +1412,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param station
      * @return
      */
-    public String getAireps(double lon, double lat) {
+    public LinkedList<Airep> getAireps(double lon, double lat) {
+
+        LinkedList<Airep> airep = new LinkedList<Airep>();
 
         /*
          * All aireps/pireps sep by \n
          */
         
-        String txt = "";
         String qry =
                 "select * from apirep where " +                
                 "(" + "latitude"  + " > " + (lat - Airep.RADIUS) + ") and (" + "latitude"  + " < " + (lat + Airep.RADIUS) + ") and " +
@@ -1430,23 +1433,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     Airep a = new Airep();
                     a.rawText = cursor.getString(0);
                     a.time = cursor.getString(1);
+                    a.lon = cursor.getFloat(2);
+                    a.lat = cursor.getFloat(3);
                     a.reportType = cursor.getString(4);
-                    txt += a.reportType + "@ " + a.time + "\n" + a.rawText + "\n\n";
+                    airep.add(a);
                 }
             }
         }
         catch (Exception e) {
         }
         
-        /*
-         * Remove last \n
-         */
-        if(txt.length() > 1) {
-            txt = txt.substring(0, txt.length() - 2);
-        }
-
         closesWeather(cursor);
-        return txt;
+        return airep;
     }
 
     

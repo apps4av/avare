@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 
 /**
@@ -102,23 +103,6 @@ public class Preferences {
             earthRadiusConversion = 3963.1676;            
             distanceConversionUnit = "mi";
             speedConversionUnit = "mh";
-        }
-        String path = mPref.getString(mContext.getString(R.string.Maps), null);
-        if(null == path) {
-            File dir = mContext.getExternalFilesDir(null);
-            if(dir == null) {
-                dir = mContext.getFilesDir();
-            }
-            if(dir == null) {
-                dir = mContext.getExternalCacheDir();
-            }
-            if(dir == null) {
-                dir = mContext.getCacheDir();
-            }
-            path = dir.getAbsolutePath();
-            SharedPreferences.Editor editor = mPref.edit();
-            editor.putString(mContext.getString(R.string.Maps), path);
-            editor.commit();
         }
     }
 
@@ -543,8 +527,34 @@ public class Preferences {
      * @return
      */
     public String mapsFolder() {
-        String path = mPref.getString(mContext.getString(R.string.Maps), null);
-        return(path);
+        String loc = mPref.getString(mContext.getString(R.string.Maps), "Internal");
+        File path = null;
+        if(loc.equals("External")) {
+            path = mContext.getExternalFilesDir(null);
+        }
+        else {
+            path = mContext.getFilesDir();        
+        }
+
+        /*
+         * Make it fail safe?
+         */
+        if(path == null) {
+            path = mContext.getCacheDir();
+            if(path == null) {
+                path = mContext.getExternalCacheDir();
+                if(path == null) {
+                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    if(path == null) {
+                        path = Environment.getExternalStorageDirectory();
+                    }
+                }
+            }
+        }
+        if(null == path) {
+            return "/sdcard/data";
+        }
+        return(path.getAbsolutePath() + "/data");
     }
 
     /**

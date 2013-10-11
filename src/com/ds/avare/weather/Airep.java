@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.weather;
 
+import com.ds.avare.position.Projection;
+import com.ds.avare.storage.Preferences;
+
 /**
  * 
  * @author zkhan
@@ -25,7 +28,25 @@ public class Airep {
     public String latitude;
     public String longitude;
     public String reportType;
-    public String rawText;    
+    public String rawText;
+    public float lon;
+    public float lat;
+    
+    
+    /**
+     * 
+     * @param lon0
+     * @param lat0
+     * @param variation
+     */
+    public void updateTextWithLocation(double lon0, double lat0, double variation) {
+        Projection p = new Projection(lon, lat, lon0, lat0);
+        reportType += "(" +
+                Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " + 
+                p.getGeneralDirectionFrom(variation)+ ")";
+
+    }
+
 }
 
 

@@ -14,12 +14,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<EditTextPreference
+	<ListPreference
 	    android:key="@string/Maps"
 	    android:title="@string/MapsLabel"
 	    android:summary="@string/MapsSummary"
-	    android:dialogTitle="@string/MapsLabel"
-	    android:dialogMessage="@string/MapsSummary"/>
+	    android:entries="@array/Folders"
+	    android:defaultValue="Internal"
+        android:entryValues="@array/FoldersValues"/>
     <ListPreference
         android:key="@string/Root"
         android:title="@string/RootLabel"

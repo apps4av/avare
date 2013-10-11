@@ -40,6 +40,7 @@ import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
@@ -1217,7 +1218,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Double lat;
         private String text;
         private String textMets;
-        private String aireps;
+        private LinkedList<Airep> aireps;
         private Taf taf;
         private WindsAloft wa;
         private Metar metar;
@@ -1247,7 +1248,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 metar = mService.getDBResource().getMETAR(airport);
             }
             aireps = mService.getDBResource().getAireps(lon, lat);
+            for(Airep a : aireps) {
+                a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
+            }
             wa = mService.getDBResource().getWindsAloft(lon, lat);
+            wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
+            
             return airport;
         }
         
