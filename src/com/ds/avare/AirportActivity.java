@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Jesse McGraw (jlmcgraw@gmail.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
@@ -30,6 +32,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,6 +41,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -197,10 +201,11 @@ public class AirportActivity extends Activity {
              * Get Text A/FD
              */
             LinkedHashMap <String, String>map = mDestination.getParams();
+            LinkedList<Awos> awos = mDestination.getAwos();
             LinkedHashMap <String, String>freq = mDestination.getFrequencies();
             LinkedList<Runway> runways = mDestination.getRunways();
-            String[] views = new String[map.size() + freq.size() + runways.size()];
-            String[] values = new String[map.size() + freq.size() + runways.size()];
+            String[] views = new String[map.size() + freq.size() + awos.size() + runways.size()];
+            String[] values = new String[map.size() + freq.size() + awos.size() + runways.size()];
             int iterator = 0;
             /*
              * Add header. Check below if this is not added twice
@@ -224,8 +229,43 @@ public class AirportActivity extends Activity {
                 iterator++;
             }
             
+			/*
+			 * Add AWOS
+			 */
+			for (Awos awos1 : awos) {
+				// We should hide/display UHF frequencies as a preference.
+				// Military pilots may want to use Avare too!
+				String separator = new String("");
+				String f1p1 = new String("");
+				String f2p2 = new String("");
+
+				views[iterator] = awos1.getType();
+				// Create the string for the first frequency/phone pair
+				String f1 = awos1.getFreq1();
+				String p1 = awos1.getPhone1();
+				separator = (f1.equals("") || p1.equals("")) ? "" : " / ";
+				if (!f1.equals("") || !p1.equals("")) {
+					f1p1 = f1 + separator + p1;
+				}
+				// Create the string for the second frequency/phone pair
+				String f2 = awos1.getFreq2();
+				String p2 = awos1.getPhone2();
+				separator = (f2.equals("") || p2.equals("")) ? "" : " / ";
+				if (!f2.equals("") || !p2.equals("")) {
+					f2p2 = "\n" + f2 + separator + p2;
+				}
+				// Create the string for the remarks
+				String rem = awos1.getRemarks();
+				if (!rem.equals("") && (!f1p1.equals("") || !f2p2.equals(""))) {
+					rem = "\n\n" + rem;
+				}
+
+				// Add them all to our array
+				values[iterator] = f1p1 + f2p2 + rem;
+				iterator++;
+			}
             /*
-             * Add frequencies (unicom, atis, tower etc)  Does not currently include AWOS
+             * Add frequencies (unicom, atis, tower etc)  
              */
             for(String key : freq.keySet()){
                 views[iterator] = key;
@@ -274,6 +314,7 @@ public class AirportActivity extends Activity {
             mAirport.setClickable(false);
             mAirport.setDividerHeight(10);
             TypeValueAdapter mAdapter = new TypeValueAdapter(AirportActivity.this, views, values);
+            
             mAirport.setAdapter(mAdapter);
 
             mAirport.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

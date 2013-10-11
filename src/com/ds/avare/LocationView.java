@@ -1252,8 +1252,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
             }
             wa = mService.getDBResource().getWindsAloft(lon, lat);
-            wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
-            
+            if(null != wa) {
+                wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
+            }
             return airport;
         }
         
