@@ -652,39 +652,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);
         
 		/*
-		 * Get AWOS frequency
+		 * Get AWOS info
 		 */
 
 		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
 				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
 				+ "=='K" + name + "';";
 		cursor = doQuery(qry, getMainDb());
-
+		// 0 1 2 3 4 5 6 7 8 9 10
+		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
 		try {
 			/*
-			 * Add all of them
+			 * Add each AWOS
 			 */
 			if (cursor != null) {
 				while (cursor.moveToNext()) {
-					String Type = cursor.getString(1);
-					String Name = cursor.getString(2);
-					String Phone = cursor.getString(3);
-					String lat = Helper.removeLeadingZeros(cursor.getString(4));
-					String lon = Helper.removeLeadingZeros(cursor.getString(5));
-					String Frequency = cursor.getString(6);
-					String aptId = cursor.getString(7);
-					String remark = cursor.getString(8);
 
-					Awos a = new Awos(Type);
+					Awos a = new Awos(cursor.getString(0)); // New AWOS instance
 
-					a.setType(Type);
-					a.setName(Name);
-					a.setPhone(Phone);
-					a.setLat(lat);
-					a.setLon(lon);
-					a.setFreq(Frequency);
-					a.setAptId(aptId);
-					a.setRemark(remark);
+					a.setType(cursor.getString(1));
+
+					a.setLat(Helper.removeLeadingZeros(cursor.getString(3)));
+					a.setLon(Helper.removeLeadingZeros(cursor.getString(4)));
+					a.setFreq1(cursor.getString(6));
+					a.setFreq2(cursor.getString(7));
+					a.setPhone1(cursor.getString(8));
+					a.setPhone2(cursor.getString(9));
+					a.setRemark(cursor.getString(10));
 
 					awos.add(a);
 

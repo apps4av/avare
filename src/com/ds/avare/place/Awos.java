@@ -13,8 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
  */
 package com.ds.avare.place;
 
-import com.ds.avare.utils.Helper;
-
 /**
  * 
  * @author zkhan
@@ -22,22 +20,24 @@ import com.ds.avare.utils.Helper;
  * 
  */
 public class Awos {
-
+	// ident,type,commstatus,lat,lon,elevation,freq1,freq2,tel1,tel2,remark
 	private String mLocationID;
 	private String mType;
-	private String mFacilityName;
-	private String mPhone;
+	private String mCommissionStatus;
 	private double mLatitude;
 	private double mLongitude;
-	private String mFrequency;
-	private String mAptId;
+	private double mElevation;
+	private String mFrequency1;
+	private String mFrequency2;
+	private String mPhone1;
+	private String mPhone2;
 	private String mRemarks;
 
 	public static final float INVALID = -1000;
 
 	/**
-     * 
-     */
+	 * Create a new awos instance of type
+	 */
 	public Awos(String type) {
 		mType = type;
 		mLongitude = INVALID;
@@ -45,32 +45,9 @@ public class Awos {
 
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public double getLongitude() {
-		return mLongitude;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public double getLatitude() {
-		return mLatitude;
-	}
-
+	// Get operations
 	public String getType() {
 		return mType;
-	}
-
-	public String getFreq() {
-		return mFrequency;
-	}
-
-	public String getPhone() {
-		return mPhone;
 	}
 
 	public double getLat() {
@@ -85,18 +62,27 @@ public class Awos {
 		return mRemarks;
 	}
 
+	public String getFreq1() {
+
+		return mFrequency1;
+	}
+
+	public String getPhone1() {
+
+		return mPhone1;
+	}
+
+	public String getFreq2() {
+		return mFrequency2;
+	}
+
+	public String getPhone2() {
+		return mPhone2;
+	}
+
+	// Set operations
 	public void setType(String type) {
 		mType = type;
-
-	}
-
-	public void setName(String name) {
-		mFacilityName = name;
-
-	}
-
-	public void setPhone(String phone) {
-		mPhone = phone;
 
 	}
 
@@ -115,18 +101,28 @@ public class Awos {
 
 	}
 
-	public void setFreq(String frequency) {
-		mFrequency = frequency;
-
-	}
-
-	public void setAptId(String aptId) {
-		mAptId = aptId;
-
-	}
-
 	public void setRemark(String remark) {
 		mRemarks = remark;
+
+	}
+
+	public void setFreq1(String _freq1) {
+		mFrequency1 = _freq1;
+
+	}
+
+	public void setFreq2(String _freq2) {
+		mFrequency2 = _freq2;
+
+	}
+
+	public void setPhone1(String _phone1) {
+		mPhone1 = _phone1;
+
+	}
+
+	public void setPhone2(String _phone2) {
+		mPhone2 = _phone2;
 
 	}
 
