@@ -102,16 +102,14 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
             mChildrenText[GROUP_METAR] = "";
         }
         else {
-            mChildrenText[GROUP_METAR] = "@ " + mMetar.time + "\n" + 
-                    WeatherHelper.formatWeather(mMetar.rawText);          
+            mChildrenText[GROUP_METAR] = WeatherHelper.formatWeather(mMetar.rawText) + "\n";          
         }
 
         if(mTaf == null) {
             mChildrenText[GROUP_TAF] = "";
         }
         else {
-            mChildrenText[GROUP_TAF] = "@ " + mTaf.time + "\n" + 
-                    WeatherHelper.formatWeather(mTaf.rawText);          
+            mChildrenText[GROUP_TAF] = WeatherHelper.formatWeather(mTaf.rawText) +"\n";          
         }
         
         if(mWa == null) {

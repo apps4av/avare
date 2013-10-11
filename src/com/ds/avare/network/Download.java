@@ -29,6 +29,8 @@ import java.util.zip.ZipFile;
 
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
+
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
@@ -45,6 +47,7 @@ public class Download {
     private String mRoot;
     private Handler mHandler;
     private Thread mThread;
+    private String mCode;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -61,6 +64,7 @@ public class Download {
         mDt = null;
         mVersion = null;
         mRoot = root;
+        mCode = "";
         mHandler = handler;
     }
     
@@ -124,6 +128,17 @@ public class Download {
         /**
          * 
          */
+        private void sendFailure() {
+            Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
+            Bundle b = new Bundle();
+            b.putString("code", mCode);
+            m.setData(b);
+            mHandler.sendMessage(m);            
+        }
+        
+        /**
+         * 
+         */
         @Override
         public void run() {
 
@@ -137,16 +152,20 @@ public class Download {
             int fileLength;
                         
             try {
+                /*
+                 * mCode allows debugging from users
+                 */
+                mCode = "code invalid path/file name";
                 File file = new File(path + "/" + mName);
                 
                 /*
                  * Path in which to install it
                  */
                 File f = new File(path);
+                mCode = "code unable to create folder " + f.getAbsolutePath();
                 if(!f.exists()) {
                     if(!f.mkdirs()) {
-                        Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
-                        mHandler.sendMessage(m);
+                        sendFailure();
                         return;
                     }
                 }
@@ -156,6 +175,7 @@ public class Download {
                  */
                 String nomedia = path + "/.nomedia";
                 f = new File(nomedia);
+                mCode = "code unable to create file " + f.getAbsolutePath();
                 if(!f.exists()) {
                     f.createNewFile();
                 }
@@ -163,23 +183,30 @@ public class Download {
                 /*
                  * Path with file name on local storage
                  */
+                mCode = "code unable to get zipped file name";
                 String zipfile = path + "/" + mName + ".zip";
+                mCode = "code unable to get network file name ";
                 String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot);
 
                 /* 
                  * Download the file
                  */
+                mCode = "code unable to get network file URL ";
                 URL url = new URL(netfile);
+                mCode = "code unable to connect to server ";
                 URLConnection connection = url.openConnection();
                 connection.connect();
+                mCode = "code unable to get file from server ";
                 input = new BufferedInputStream(url.openStream(), blocksize);
                 fileLength = connection.getContentLength();
+                mCode = "code unable to store the zip file ";
                 output = new BufferedOutputStream(new FileOutputStream(zipfile), blocksize);
     
                 long total = 0;
                 int lastp = FAILED;
                 int newp;
                 while(true) {
+                    mCode = "code unable to read zip file from server ";
                     count = input.read(data, 0, blocksize);
                     if(count <= 0) {
                         break;
@@ -194,41 +221,48 @@ public class Download {
                         Message m = mHandler.obtainMessage(newp, Download.this);
                         mHandler.sendMessage(m);
                     }
+                    mCode = "code unable to write zip file to flash, disk full";
                     output.write(data, 0, count);
                     if(mStop) {
+                        mCode = "code stopped by user during download";
                         output.flush();
                         output.close();
                         input.close();
-                        Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
-                        mHandler.sendMessage(m);
+                        sendFailure();
                         return;
                     }
                 }
     
+                mCode = "code unable to close retrieved file ";
                 output.flush();
                 output.close();
                 input.close();
                 
+                mCode = "";
                 /*
                  * Now unzip
                  */
                 try {
+                    mCode = "code unable to start unzip process ";
                     ZipFile zipFile = new ZipFile(zipfile);
                     int filenum = zipFile.size();
                     int totalnum = 0;
 
+                    mCode = "code corrupt zip file ";
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
                     String lastName = "";
                     while(entries.hasMoreElements()) {
+                        mCode = "code unzip file error, disk full";
                         if(mStop) {
+                            mCode = "code stopped by user during unzip";
                             zipFile.close();
                             new File(zipfile).delete();
-                            Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
-                            mHandler.sendMessage(m);
+                            sendFailure();
                             return;
                         }
 
+                        mCode = "code stopped by unzip, corrupt file";
                         ZipEntry entry = (ZipEntry)entries.nextElement();
 
                         /*
@@ -243,6 +277,7 @@ public class Download {
                          * This is a new folder, do something with it.
                          * Mostly needed for delete
                          */
+                        mCode = "code invalid overwrite folder";
                         File dir = new File(fn.substring(0, fn.lastIndexOf("/")));
                         if(!folder.equals(lastName)) {
                             
@@ -251,6 +286,7 @@ public class Download {
                                  * Delete older plates
                                  */
                                 if(folder.equals("plates")) {
+                                    mCode = "code unable to delete/replace plates";
                                     Helper.deleteDir(dir);
                                 }
 
@@ -258,6 +294,7 @@ public class Download {
                                  * Delete older minimums
                                  */
                                 else if(folder.equals("minimums")) {
+                                    mCode = "code unable to delete/replace minimums";
                                     Helper.deleteDir(dir);
                                 }
 
@@ -265,6 +302,7 @@ public class Download {
                                  * Delete older A/FD
                                  */
                                 else if(folder.equals("afd")) {
+                                    mCode = "code unable to delete/replace A/FD";
                                     String newRegion = (tokens[1].split("_"))[0];
                                     String[] info = dir.list();
                                     for(int i = 0; i < info.length; i++) {
@@ -278,11 +316,13 @@ public class Download {
                         }
                         dir.mkdirs();
                         
+                        mCode = "code unable to delete old file";
                         File outf = new File(path + "/" + entry.getName());
                         if(outf.exists()) {
                             outf.delete();
                         }
                         
+                        mCode = "code unable to unzip file, disk full";
                         copyInputStream(zipFile.getInputStream(entry),
                             new BufferedOutputStream(new FileOutputStream(path + "/" + entry.getName()), blocksize));
                         totalnum++;
@@ -294,31 +334,36 @@ public class Download {
                         }
                     }
 
+                    mCode = "code unable to close zip file";
                     zipFile.close();
                     
                     /*
                      * Delete the downloaded file to save space
                      */
+                    mCode = "code unable to delete downloaded zip file";
                     new File(zipfile).delete();
 
                     /*
                      * Now create a version file
                      */
+                    mCode = "code unable to create version file";
                     BufferedWriter bw = new BufferedWriter(new FileWriter(file), blocksize);                    
                     bw.write(mVersion);
                     bw.flush();
                     bw.close();
                     
+                    mCode = "";
                     Message m = mHandler.obtainMessage(Download.SUCCESS, Download.this);
                     mHandler.sendMessage(m);
                     return;
                     
-                } catch (IOException ioe) {
+                } catch (Exception e) {
+                    mCode += e.getCause();
                 }
             } catch (Exception e) {
+                mCode += e.getCause();
             }
-            Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
-            mHandler.sendMessage(m);
+            sendFailure();
             return;
         }        
     }
