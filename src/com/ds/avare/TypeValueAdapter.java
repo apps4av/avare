@@ -64,7 +64,6 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
 		 * This will make links out of certain text patterns eg. Phone numbers,
 		 * email, web address
 		 */
-		// Linkify.addLinks(textView, Linkify.ALL);
 		/*
 		 * The next three lines are a more custom version of the commented out
 		 * default linkify above. It was catching things like lat/lon, times etc
@@ -72,7 +71,7 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
 		 * is for numbers but it's probably generally more intelligent than this
 		 * one but it matches too much
 		 */
-		String phoneRegex = "1?[-. ]?(\\(\\d{3}\\)?[-. ]?|\\d{3}?[-. ]?)?\\d{3}?[-. ]?\\d{4}\\b";
+		String phoneRegex = "(?:(?:\\+?1\\s*(?:[.-]\\s*)?)?(?:(\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]‌​)\\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\s*(?:[.-]\\s*)?)?([2-9]1[02-‌​9]|[2-9][02-9]1|[2-9][02-9]{2})\\s*(?:[.-]\\s*)?([0-9]{4})\\b";
 		Pattern phoneMatcher = Pattern.compile(phoneRegex);
 		Linkify.addLinks(textView, phoneMatcher, "tel:");
 

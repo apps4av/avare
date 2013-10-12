@@ -585,8 +585,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             fee = mContext.getString(R.string.No);
                         }
                         params.put("Landing Fee", fee);
-                        
-                        params.put(FSSPHONE, cursor.getString(FSSPHONE_COL));
+                        String fss = cursor.getString(FSSPHONE_COL);
+						if (fss.equals("1-800-WX-BRIEF")) {
+							fss = fss + " / 1-800-992-7433";
+						}
+                        params.put(FSSPHONE, fss);
 
                     }
                 }
@@ -659,7 +662,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
 				+ "=='K" + name + "';";
 		cursor = doQuery(qry, getMainDb());
-		// 0 1 2 3 4 5 6 7 8 9 10
+		// 0     1    2          3  4  5    6     7     8    9    10
 		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
 		try {
 			/*
