@@ -35,4 +35,5 @@ public class LongTouchDestination {
     public WindsAloft wa;
     public Metar metar;
     public LinkedList<Airep> airep;
+    public LinkedList<String> freq;
 }

@@ -825,7 +825,63 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         closes(cursor);        
     }
 
-    
+
+    /**
+     * Find all frequencies based on its name
+     * @param name
+     * @param params
+     * @return
+     */
+    public LinkedList<String> findFrequencies(String name) {
+        
+        Cursor cursor;
+        LinkedList<String> freq = new LinkedList<String>();
+        
+        /*
+         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
+         */
+        
+        String qry = "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    String typeof = cursor.getString(1);
+                    typeof = typeof.replace("LCL", "TWR");
+                    /*
+                     * Filter out silly frequencies
+                     */
+                    if(typeof.equals("EMERG") || typeof.contains("GATE") || typeof.equals("EMERGENCY")) {
+                        continue;
+                    }
+                    /*
+                     * Filter out UHF
+                     */
+                    try {
+                        double frequency = Double.parseDouble(cursor.getString(2));
+                        if(frequency > 136) {
+                            continue;
+                        }
+                    }
+                    catch (Exception e) {
+                    }
+                    
+                    freq.add(typeof + " " + cursor.getString(2));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        return freq;
+    }
+
     /**
      * If we are within the tile of last query, return just offsets.
      * Always call this before calling sister function findClosest() which does the 

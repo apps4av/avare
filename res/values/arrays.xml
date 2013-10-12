@@ -40,6 +40,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     
     <string-array name="resGroupsPopout">
+        <item>COMM</item>
         <item>METAR</item>
         <item>TAF</item>
         <item>Winds/Temp.</item>

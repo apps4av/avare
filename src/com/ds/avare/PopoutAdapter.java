@@ -44,18 +44,20 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private Metar mMetar;
     private Taf mTaf;
     private LinkedList<Airep> mAirep;
+    private LinkedList<String> mFreq;
     private String mTfr;
     private String mMets;
     private WindsAloft mWa;
     private Typeface mFace;
 
-    private static final int GROUP_METAR = 0;
-    private static final int GROUP_TAF = 1;
-    private static final int GROUP_WA = 2;
-    private static final int GROUP_PIREP = 3;
-    private static final int GROUP_METS = 4;
-    private static final int GROUP_TFR = 5;
-    private static final int GROUP_NUM = 6;
+    private static final int GROUP_COMM = 0;
+    private static final int GROUP_METAR = 1;
+    private static final int GROUP_TAF = 2;
+    private static final int GROUP_WA = 3;
+    private static final int GROUP_PIREP = 4;
+    private static final int GROUP_METS = 5;
+    private static final int GROUP_TFR = 6;
+    private static final int GROUP_NUM = 7;
     
     /**
      * @param context
@@ -75,6 +77,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
          * Assign children
          */
         mChildren = new String[GROUP_NUM][];
+        mChildren[GROUP_COMM] = new String[1];
         mChildren[GROUP_METAR] = new String[1];
         mChildren[GROUP_TAF] = new String[1];
         mChildren[GROUP_WA] = new String[1];
@@ -93,6 +96,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mTaf = data.taf;
         mAirep = data.airep;
         mWa = data.wa;
+        mFreq = data.freq;
 
         
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
@@ -149,6 +153,26 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
             mChildrenText[GROUP_PIREP] = txt;
         }
 
+        if(mFreq == null) {
+            mChildrenText[GROUP_COMM] = "";
+        }
+        else {
+
+            String txt = "";
+            for(String f : mFreq) {
+                txt += f + "\n\n";                
+            }
+    
+            /*
+             * Remove last \n
+             */
+            if(txt.length() > 1) {
+                txt = txt.substring(0, txt.length() - 2);
+            }
+
+            mChildrenText[GROUP_COMM] = txt;
+        }
+
     }
 
     /**
@@ -174,6 +198,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
          * Set different values from different outputs.
          */
         switch(group) {
+            case GROUP_COMM:
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
+                break;
             case GROUP_METAR:
                 int col = (mMetar == null) ? 0xFFFFFFFF : WeatherHelper.metarColor(mMetar.flightCategory);
                 tv.setText(mGroups[group]);
