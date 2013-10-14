@@ -15,18 +15,14 @@ package com.ds.avare.place;
 
 /**
  * 
- * @author zkhan
+ * @author jmcgraw
  * 
  * 
  */
 public class Awos {
-	// ident,type,commstatus,lat,lon,elevation,freq1,freq2,tel1,tel2,remark
-	private String mLocationID;
 	private String mType;
-	private String mCommissionStatus;
 	private double mLatitude;
 	private double mLongitude;
-	private double mElevation;
 	private String mFrequency1;
 	private String mFrequency2;
 	private String mPhone1;
@@ -42,7 +38,6 @@ public class Awos {
 		mType = type;
 		mLongitude = INVALID;
 		mLatitude = INVALID;
-
 	}
 
 	// Get operations
@@ -103,26 +98,25 @@ public class Awos {
 
 	public void setRemark(String remark) {
 		mRemarks = remark;
+	}
+
+	public void setFreq1(String freq1) {
+		mFrequency1 = freq1;
 
 	}
 
-	public void setFreq1(String _freq1) {
-		mFrequency1 = _freq1;
+	public void setFreq2(String freq2) {
+		mFrequency2 = freq2;
 
 	}
 
-	public void setFreq2(String _freq2) {
-		mFrequency2 = _freq2;
+	public void setPhone1(String phone1) {
+		mPhone1 = phone1;
 
 	}
 
-	public void setPhone1(String _phone1) {
-		mPhone1 = _phone1;
-
-	}
-
-	public void setPhone2(String _phone2) {
-		mPhone2 = _phone2;
+	public void setPhone2(String phone2) {
+		mPhone2 = phone2;
 
 	}
 

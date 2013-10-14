@@ -233,4 +233,13 @@ public class DataSource {
         return dbHelper.getAirSigMets();
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFrequencies(String name) {
+        return  dbHelper.findFrequencies(name);
+
+    }
 }
