@@ -52,11 +52,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -859,112 +862,206 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     }
 
+	/**
+	 * 
+	 * @param canvas
+	 */
+	private void drawRunways(Canvas canvas) {
+		if (!mPref.shouldExtendRunways()) {
+			return;
+		}
+		if (null == mService) {
+			return;
+		}
 
-    /**
-     * 
-     * @param canvas
-     */
-    private void drawRunways(Canvas canvas) {
-        
-        if(!mPref.shouldExtendRunways()) {
-            return;
-        }
-        if(null == mService) {
-            return;
-        }
+		if (null != mRunwayBitmap && null != mService.getDestination()
+				&& null == mPointProjection) {
 
-        if(null != mRunwayBitmap && null != mService.getDestination() && null == mPointProjection) {
+			LinkedList<Runway> runways = mService.getDestination().getRunways();
+			if (runways != null) {
 
-            LinkedList<Runway> runways = mService.getDestination().getRunways();
-            if(runways != null) {
-                
-                for(Runway r : runways) {
-                    /*
-                     * Rotate and move to a panned location
-                     */
-                    float heading = r.getTrue();
-                    if(Runway.INVALID == heading) {
-                        continue;
-                    }
-                    
-                    double lon = r.getLongitude();
-                    double lat = r.getLatitude();
-                    if(Runway.INVALID == lon || Runway.INVALID == lat) {
-                        /*
-                         * If we did not get any lon/lat of this runway, use airport lon/lat
-                         */
-                        lon = mService.getDestination().getLocation().getLongitude();
-                        lat = mService.getDestination().getLocation().getLatitude();
-                    }
-                    
-                    rotateBitmapIntoPlace(mRunwayBitmap, heading, lon, lat, false);
+				int xfactor;
+				int yfactor;
 
-                    /*
-                     * Draw it.
-                     */
-                    canvas.drawBitmap(mRunwayBitmap.getBitmap(), mRunwayBitmap.getTransform(), mPaint);
-                }
+				/*
+				 *  Converts 1 dip (device independent pixel) into its equivalent
+				 */
+				float px = TypedValue.applyDimension(
+						TypedValue.COMPLEX_UNIT_DIP, 1, getResources()
+								.getDisplayMetrics());
+				/*
+				 *  Copy the existing paint to a new paint so we don't mess it up
+				 */
+				Paint rPaint = new Paint(mPaint);
 
-                /*
-                 * Loop again to over write text
-                 */
-                mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                mPaint.setColor(TEXT_COLOR);
-                mPaint.setTextAlign(Align.CENTER);
+				for (Runway r : runways) {
 
-                for(Runway r : runways) {
-                    /*
-                     * Rotate and move to a panned location
-                     */
-                    float heading = r.getTrue();
-                    if(Runway.INVALID == heading) {
-                        continue;
-                    }
-                    
-                    double lon = r.getLongitude();
-                    double lat = r.getLatitude();
-                    float x;
-                    float y;
-                    if(Runway.INVALID == lon || Runway.INVALID == lat) {
-                        /*
-                         * If we did not get any lon/lat of this runway, use airport lon/lat
-                         */
-                        lon = mService.getDestination().getLocation().getLongitude();
-                        lat = mService.getDestination().getLocation().getLatitude();
-                    }
-                    x = (float)mOrigin.getOffsetX(lon);
-                    y = (float)mOrigin.getOffsetY(lat);                        
-                                        
-                    /*
-                     * Draw it.
-                     */
-                    String num = r.getNumber();
-                    int xfact;
-                    int yfact;
-                    /*
-                     * If parallel runways, draw their text displaced so it does not overlap
-                     */
-                    if(num.contains("C")) {
-                        xfact = yfact = mRunwayBitmap.getHeight() * 3 / 4;
-                    }
-                    else if(num.contains("L")){
-                        xfact = yfact = mRunwayBitmap.getHeight() / 2;                        
-                    }
-                    else {
-                        xfact = yfact = mRunwayBitmap.getHeight();                                                
-                    }
-                    
-                    /*
-                     * Draw text with simple rotation math.
-                     */
-                    canvas.drawText(num,
-                            x + xfact * (float)Math.sin(Math.toRadians(heading - 180)),
-                            y - yfact * (float)Math.cos(Math.toRadians(heading - 180)), mPaint);
-                }
-            }
-        }   
-    }
+					float heading = r.getTrue();
+					if (Runway.INVALID == heading) {
+						continue;
+					}
 
+					/*
+					 * Get lat/lon of the runway. If either one is invalid, use
+					 * airport lon/lat
+					 */
+					double lon = r.getLongitude();
+					double lat = r.getLatitude();
+
+					if (Runway.INVALID == lon || Runway.INVALID == lat) {
+
+						lon = mService.getDestination().getLocation()
+								.getLongitude();
+						lat = mService.getDestination().getLocation()
+								.getLatitude();
+					}
+					/*
+					 * Rotate and position the runway bitmap
+					 */
+					rotateBitmapIntoPlace(mRunwayBitmap, heading, lon, lat,
+							false);
+
+					/*
+					 * Draw it.
+					 */
+					canvas.drawBitmap(mRunwayBitmap.getBitmap(),
+							mRunwayBitmap.getTransform(), mPaint);
+					/*
+					 * Get the canvas x/y coordinates of the runway itself
+					 */
+					float x = (float) mOrigin.getOffsetX(lon);
+					float y = (float) mOrigin.getOffsetY(lat);
+
+					/*
+					 * The runway number, i.e. What's
+                     * painted on the runway
+					 */
+
+					String num = r.getNumber(); 
+					/*
+					 * If there are parallel runways, offset their text
+					 * so it does not overlap
+					 */
+				
+					if (num.contains("C")) {
+						xfactor = yfactor = mRunwayBitmap.getHeight() * 3 / 4;
+					} else if (num.contains("L")) {
+						xfactor = yfactor = mRunwayBitmap.getHeight() / 2;
+					} else {
+						xfactor = yfactor = mRunwayBitmap.getHeight();
+					}
+
+					/*
+					 * Determine canvas coordinates of where to draw the runway
+					 * numbers with simple rotation math.
+					 */
+					float mRunwayNumberCoordinatesX = x + xfactor
+							* (float) Math.sin(Math.toRadians(heading - 180));
+					float mRunwayNumberCoordinatesY = y - yfactor
+							* (float) Math.cos(Math.toRadians(heading - 180));
+
+					rPaint.setColor(Color.BLUE);
+					rPaint.setStyle(Style.FILL_AND_STROKE);
+					rPaint.setAlpha(162);
+					rPaint.setShadowLayer(0, 0, 0, 0);
+
+					/* 
+					 * set the width of the line. dips->px
+					 */
+					rPaint.setStrokeWidth(px * 5);
+
+					/*
+					 *  Get a vector perpendicular to the vector of the
+					 *  runway heading bitmap
+					 */
+					float vXP = -(mRunwayNumberCoordinatesY - y);
+					float vYP = (mRunwayNumberCoordinatesX - x);
+
+					/*
+					 *  Reverse the vector of the pattern line if right
+					 *  traffic is indicated for this runway
+					 */
+					if (r.getPattern().equalsIgnoreCase("Right")) {
+						vXP = -(vXP);
+						vYP = -(vYP);
+					}
+					/*
+					 *  Draw the base leg of the pattern
+					 */
+					canvas.drawLine(mRunwayNumberCoordinatesX,
+							mRunwayNumberCoordinatesY,
+							mRunwayNumberCoordinatesX + vXP / 3,
+							mRunwayNumberCoordinatesY + vYP / 3, rPaint);
+					/*
+					 * If in track-up mode, rotate canvas around screen x/y of
+					 * where we want to draw runway numbers in opposite
+					 * direction to bearing so they appear upright
+					 */
+					if (mTrackUp && (mGpsParams != null)) {
+						canvas.save();
+						canvas.rotate((int) mGpsParams.getBearing(),
+								mRunwayNumberCoordinatesX,
+								mRunwayNumberCoordinatesY);
+					}
+					/*
+					 *  Get the size of the text to draw and create a new
+					 *  rectangle of that size
+					 */
+					Rect rect = new Rect();
+					rPaint.getTextBounds(num, 0, num.length(), rect);
+					if (mPref.shouldShowBackground()) {
+						/*
+						 * If the "show background" preference is true, draw a
+						 * shaded square behind runway numbers to make them easier
+						 * to see. Perhaps there's a simpler way to do this? TODO:
+						 * Make this into a nice, rounded rectangle with a border
+						 */
+						rPaint.setStyle(Style.FILL);
+				
+			
+						/*
+						 *  Make that rectangle a little bigger to account for
+						 *  the shadow effect
+						 */
+						rect.set(0, 0, rect.width() + SHADOW * 3, rect.height()
+								+ SHADOW * 3);
+						rPaint.setShadowLayer(0, 0, 0, 0);
+						rPaint.setColor(TEXT_COLOR_OPPOSITE);
+						rPaint.setAlpha(0x7f);
+
+						/*
+						 * Draw the rectangle off the end of its associated
+						 * runway
+						 */
+						canvas.save();
+						canvas.translate(
+								mRunwayNumberCoordinatesX - (rect.width() / 2),
+								mRunwayNumberCoordinatesY - (rect.height() / 2));
+						canvas.drawRect(rect, rPaint);
+						canvas.restore();
+
+					}
+					rPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+					rPaint.setColor(TEXT_COLOR);
+					rPaint.setAlpha(0xff);
+					rPaint.setTextAlign(Paint.Align.CENTER);
+
+					/*
+					 * Draw the text so it's centered within the shadow
+                     * rectangle, which is itself centered at the end of the
+                     * extended runway centerline
+					 */
+					canvas.drawText(num,
+							mRunwayNumberCoordinatesX,
+							mRunwayNumberCoordinatesY
+									+ (rect.height() / 2 - SHADOW * 2), rPaint);
+					if (mTrackUp) {
+						canvas.restore();
+					}
+				}
+			}
+		}
+	}
     
     /**
      * @param canvas
