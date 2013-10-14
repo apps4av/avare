@@ -527,5 +527,13 @@ public class Helper {
         return shapeList;
     }  
 
+    /**
+     * 
+     * @param freq
+     * @return
+     */
+    public static boolean isFrequencyUHF(double freq) {
+        return freq > 136;
+    }
 
 }

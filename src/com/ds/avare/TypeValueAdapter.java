@@ -67,11 +67,9 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
 		/*
 		 * The next three lines are a more custom version of the commented out
 		 * default linkify above. It was catching things like lat/lon, times etc
-		 * This is for US numbers only, I couldn't find what the default regex
-		 * is for numbers but it's probably generally more intelligent than this
-		 * one but it matches too much
 		 */
-		String phoneRegex = "(?:(?:\\+?1\\s*(?:[.-]\\s*)?)?(?:(\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]‌​)\\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\s*(?:[.-]\\s*)?)?([2-9]1[02-‌​9]|[2-9][02-9]1|[2-9][02-9]{2})\\s*(?:[.-]\\s*)?([0-9]{4})\\b";
+		
+		String phoneRegex = "\\b(?:(?:\\+?1\\s*(?:[.-]\\s*)?)?(?:(\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]‌​)\\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\s*(?:[.-]\\s*)?)?([2-9]1[02-‌​9]|[2-9][02-9]1|[2-9][02-9]{2})\\s*(?:[.-]\\s*)?([0-9]{4})\\b";
 		Pattern phoneMatcher = Pattern.compile(phoneRegex);
 		Linkify.addLinks(textView, phoneMatcher, "tel:");
 

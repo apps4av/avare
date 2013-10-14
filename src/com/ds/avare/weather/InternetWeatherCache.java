@@ -83,6 +83,12 @@ public class InternetWeatherCache {
                  */
                 for(int i = 0; i < mAirSig.size(); i++) {
                     AirSigMet asm = mAirSig.get(i);
+                    /*
+                     * Discard none intensity
+                     */
+                    if(asm.severity.equals("NONE")) {
+                        continue;
+                    }
                     asm.shape = new MetShape(
                             asm.timeFrom + "-" + asm.timeTo + "\n" +
                             asm.hazard + "\n" +
