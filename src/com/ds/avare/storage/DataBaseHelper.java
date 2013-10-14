@@ -879,6 +879,93 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         closes(cursor);
         
+		/*
+		 * Get AWOS info
+		 */
+
+		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
+				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+				+ "=='K" + name + "';";
+		cursor = doQuery(qry, getMainDb());
+		// 0     1    2          3  4  5    6     7     8    9    10
+		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
+		try {
+			/*
+			 * Add each AWOS
+			 */
+			if (cursor != null) {
+				while (cursor.moveToNext()) {
+					String typeof = cursor.getString(1);
+					/*
+					 * Filter out UHF
+					 */
+					try {
+						double frequency = Double.parseDouble(cursor
+								.getString(6));
+						if (frequency > 136) {
+							continue;
+						}
+					} catch (Exception e) {
+					}
+
+					freq.add(typeof + " " + cursor.getString(6));
+
+				}
+			}
+		} catch (Exception e) {
+		}
+		closes(cursor);
+		/*
+		 * Get CTAF and UNICOM info
+		 */
+		qry = "select * from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB
+				+ "=='" + name + "' or " + LOCATION_ID_DB + "=='K" + name
+				+ "';";
+		cursor = doQuery(qry, getMainDb());
+
+		try {
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+
+					String unicomfreq = cursor.getString(18).trim();
+					String ctaffreq = cursor.getString(19).trim();
+
+					String typeof = "UNICOM";
+					if (!unicomfreq.equals("")) {
+						try {
+							/*
+							 * Filter out UHF
+							 */
+							double frequency = Double.parseDouble(unicomfreq);
+							if (frequency < 136) {
+								freq.add(typeof + " " + unicomfreq);
+							}
+						} catch (Exception e) {
+						}
+
+					}
+					typeof = "CTAF";
+					if (!ctaffreq.equals("")) {
+						try {
+							/*
+							 * Filter out UHF
+							 */
+							double frequency = Double.parseDouble(ctaffreq);
+							if (frequency < 136) {
+								freq.add(typeof + " " + ctaffreq);
+							}
+						} catch (Exception e) {
+						}
+
+					}
+				}
+			}
+		} catch (Exception e) {
+		}
+
+		closes(cursor);
+		
+        
         return freq;
     }
 
