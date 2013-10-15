@@ -209,6 +209,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private double                     mAdjustPan;
     
     /*
+     *  Copy the existing paint to a new paint so we don't mess it up
+     */
+    Paint mRunwayPaint;
+
+    /*
      * Text on screen color
      */
     private static final int TEXT_COLOR = Color.WHITE; 
@@ -271,6 +276,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mCurrTouchPoint = new PointInfo();
         
         mGestureDetector = new GestureDetector(context, new GestureListener());
+        
+        mRunwayPaint = new Paint(mPaint);
     }
     
     /**
@@ -655,7 +662,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setShadowLayer(0, 0, 0, 0);
             mPaint.setColor(TEXT_COLOR_OPPOSITE);
             mPaint.setAlpha(0x7f);
-            canvas.drawRect(0, 0, getWidth(), getHeight() / mTextDiv * 2 + SHADOW, mPaint);            
+            canvas.drawRect(0, 0, getWidth(), getHeight() / mTextDiv * 2 + SHADOW, mPaint);
             mPaint.setAlpha(0xff);
         }
         mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
@@ -889,10 +896,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 				float px = TypedValue.applyDimension(
 						TypedValue.COMPLEX_UNIT_DIP, 1, getResources()
 								.getDisplayMetrics());
-				/*
-				 *  Copy the existing paint to a new paint so we don't mess it up
-				 */
-				Paint rPaint = new Paint(mPaint);
 
 				for (Runway r : runways) {
 
@@ -955,43 +958,43 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 					 * Determine canvas coordinates of where to draw the runway
 					 * numbers with simple rotation math.
 					 */
-					float mRunwayNumberCoordinatesX = x + xfactor
+					float runwayNumberCoordinatesX = x + xfactor
 							* (float) Math.sin(Math.toRadians(heading - 180));
-					float mRunwayNumberCoordinatesY = y - yfactor
+					float runwayNumberCoordinatesY = y - yfactor
 							* (float) Math.cos(Math.toRadians(heading - 180));
+					mRunwayPaint.setStyle(Style.FILL);
 
-					rPaint.setColor(Color.BLUE);
-					rPaint.setStyle(Style.FILL_AND_STROKE);
-					rPaint.setAlpha(162);
-					rPaint.setShadowLayer(0, 0, 0, 0);
-
-					/* 
-					 * set the width of the line. dips->px
+					mRunwayPaint.setColor(Color.BLUE);
+					
+					mRunwayPaint.setAlpha(162);
+					mRunwayPaint.setShadowLayer(0, 0, 0, 0);
+					/*
+					 *  set the width of the line. dips->px
 					 */
-					rPaint.setStrokeWidth(px * 5);
+					mRunwayPaint.setStrokeWidth(px * 4);
 
 					/*
 					 *  Get a vector perpendicular to the vector of the
 					 *  runway heading bitmap
 					 */
-					float vXP = -(mRunwayNumberCoordinatesY - y);
-					float vYP = (mRunwayNumberCoordinatesX - x);
+					float vXP = -(runwayNumberCoordinatesY - y);
+					float vYP = (runwayNumberCoordinatesX - x);
 
 					/*
-					 *  Reverse the vector of the pattern line if right
-					 *  traffic is indicated for this runway
+					 * Reverse the vector of the pattern line if right
+					 * traffic is indicated for this runway
 					 */
 					if (r.getPattern().equalsIgnoreCase("Right")) {
 						vXP = -(vXP);
 						vYP = -(vYP);
 					}
 					/*
-					 *  Draw the base leg of the pattern
+					 * Draw the base leg of the pattern
 					 */
-					canvas.drawLine(mRunwayNumberCoordinatesX,
-							mRunwayNumberCoordinatesY,
-							mRunwayNumberCoordinatesX + vXP / 3,
-							mRunwayNumberCoordinatesY + vYP / 3, rPaint);
+					canvas.drawLine(runwayNumberCoordinatesX,
+							runwayNumberCoordinatesY,
+							runwayNumberCoordinatesX + vXP / 3,
+							runwayNumberCoordinatesY + vYP / 3, mRunwayPaint);
 					/*
 					 * If in track-up mode, rotate canvas around screen x/y of
 					 * where we want to draw runway numbers in opposite
@@ -1000,24 +1003,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 					if (mTrackUp && (mGpsParams != null)) {
 						canvas.save();
 						canvas.rotate((int) mGpsParams.getBearing(),
-								mRunwayNumberCoordinatesX,
-								mRunwayNumberCoordinatesY);
+								runwayNumberCoordinatesX,
+								runwayNumberCoordinatesY);
 					}
 					/*
 					 *  Get the size of the text to draw and create a new
 					 *  rectangle of that size
 					 */
 					Rect rect = new Rect();
-					rPaint.getTextBounds(num, 0, num.length(), rect);
+					mRunwayPaint.getTextBounds(num, 0, num.length(), rect);
 					if (mPref.shouldShowBackground()) {
 						/*
 						 * If the "show background" preference is true, draw a
 						 * shaded square behind runway numbers to make them easier
 						 * to see. Perhaps there's a simpler way to do this? TODO:
-						 * Make this into a nice, rounded rectangle with a border
-						 */
-						rPaint.setStyle(Style.FILL);
-				
+						 * Make this into a nice,rounded rectangle with a border
+						 */				
 			
 						/*
 						 *  Make that rectangle a little bigger to account for
@@ -1025,9 +1026,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 						 */
 						rect.set(0, 0, rect.width() + SHADOW * 3, rect.height()
 								+ SHADOW * 3);
-						rPaint.setShadowLayer(0, 0, 0, 0);
-						rPaint.setColor(TEXT_COLOR_OPPOSITE);
-						rPaint.setAlpha(0x7f);
+						mRunwayPaint.setShadowLayer(0, 0, 0, 0);
+						mRunwayPaint.setColor(TEXT_COLOR_OPPOSITE);
+						mRunwayPaint.setAlpha(0x7f);
 
 						/*
 						 * Draw the rectangle off the end of its associated
@@ -1035,16 +1036,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 						 */
 						canvas.save();
 						canvas.translate(
-								mRunwayNumberCoordinatesX - (rect.width() / 2),
-								mRunwayNumberCoordinatesY - (rect.height() / 2));
-						canvas.drawRect(rect, rPaint);
+								runwayNumberCoordinatesX - (rect.width() / 2),
+								runwayNumberCoordinatesY - (rect.height() / 2));
+						canvas.drawRect(rect, mRunwayPaint);
 						canvas.restore();
 
 					}
-					rPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-					rPaint.setColor(TEXT_COLOR);
-					rPaint.setAlpha(0xff);
-					rPaint.setTextAlign(Paint.Align.CENTER);
+					mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+					mRunwayPaint.setColor(TEXT_COLOR);
+					mRunwayPaint.setAlpha(0xff);
+					mRunwayPaint.setTextAlign(Paint.Align.CENTER);
 
 					/*
 					 * Draw the text so it's centered within the shadow
@@ -1052,9 +1053,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * extended runway centerline
 					 */
 					canvas.drawText(num,
-							mRunwayNumberCoordinatesX,
-							mRunwayNumberCoordinatesY
-									+ (rect.height() / 2 - SHADOW * 2), rPaint);
+							runwayNumberCoordinatesX,
+							runwayNumberCoordinatesY
+									+ (rect.height() / 2 - SHADOW * 2), mRunwayPaint);
 					if (mTrackUp) {
 						canvas.restore();
 					}
@@ -1070,6 +1071,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawMap(Canvas canvas) {
     	
     	mPaint.setTextSize(getHeight() / mTextDiv);
+    	mRunwayPaint.setTextSize(getHeight() / mTextDiv);
         mTextPaint.setTextSize(getHeight() / mTextDiv * 3 / 4);
     	
         if(mTrackUp && (mGpsParams != null)) {
