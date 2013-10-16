@@ -81,7 +81,7 @@ public class Tile {
         mLatC = latc;
         mChart = chart;
         int opts[] = new int[2];
-        BitmapHolder.getTileOptions(name, opts);
+        BitmapHolder.getTileOptions(name, pref, opts);
         mWidth = opts[0];
         mHeight = opts[1];
     }

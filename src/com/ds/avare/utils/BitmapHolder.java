@@ -130,13 +130,16 @@ public class BitmapHolder {
      * @param name
      * @param opts
      */
-    public static void getTileOptions(String name, int opts[]) {
+    public static void getTileOptions(String name, Preferences pref, int opts[]) {
         
         /*
-         * XXX: No need to decode bitmap header.
+         * Bitmap dims without decoding
          */
-        opts[0] = BitmapHolder.WIDTH;
-        opts[1] = BitmapHolder.HEIGHT;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, options);
+        opts[0] = options.outWidth;
+        opts[1] = options.outHeight;
     }
 
     /**
