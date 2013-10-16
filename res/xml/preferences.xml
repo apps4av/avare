@@ -14,28 +14,28 @@ Redistribution and use in source and binary forms, with or without modification,
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<ListPreference
+	<com.ds.avare.utils.ListPreferenceWithSummary
 	    android:key="@string/Maps"
 	    android:title="@string/MapsLabel"
 	    android:summary="@string/MapsSummary"
 	    android:entries="@array/Folders"
 	    android:defaultValue="Internal"
         android:entryValues="@array/FoldersValues"/>
-    <ListPreference
+    <com.ds.avare.utils.ListPreferenceWithSummary
         android:key="@string/Root"
         android:title="@string/RootLabel"
         android:summary="@string/RootSummary"
         android:defaultValue="0"
         android:entries="@array/Server"
         android:entryValues="@array/ServerValues"/>
-	<ListPreference
+	<com.ds.avare.utils.ListPreferenceWithSummary
         android:key="@string/Units"
         android:title="@string/UnitsLabel"
         android:summary="@string/UnitsSummary"
         android:entries="@array/UnitsD"
         android:defaultValue="0"
         android:entryValues="@array/UnitsDValues"/>
-    <ListPreference
+    <com.ds.avare.utils.ListPreferenceWithSummary
         android:key="@string/AirSigType"
         android:title="@string/AirSigTypeLabel"
         android:summary="@string/AirSigTypeSummary"
