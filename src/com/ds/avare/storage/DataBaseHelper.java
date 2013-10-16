@@ -305,6 +305,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         list.add(name + ".zip");
         
         /*
+         * Delete weather
+         */
+        if(name.equals("weather")) {
+            list.add(name + ".db");
+            return list;
+        }
+
+        if(name.equals("TFRs")) {
+            list.add("tfr.txt");
+            return list;
+        }
+
+        /*
+         * Delete databases
+         */
+        if(name.startsWith("databases") && dbs != null) {
+            for(int i = 0; i < dbs.length; i++) {
+                list.add(dbs[i]);
+            }
+            list.add(getMainDb());
+            return list;                    
+        }
+
+        /*
          * Delete files from all databases
          */
         for(int i = 0; i < dbs.length; i++) {
