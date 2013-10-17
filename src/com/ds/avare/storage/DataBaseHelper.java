@@ -569,15 +569,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
                         String pa = cursor.getString(11).trim();
+                        String paout = "";
                         if(pa.equals("")) {
                             try {
-                                pa = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
                             }
                             catch (Exception e) {
                                 
                             }
                         }
-                        params.put("Pattern Altitude", pa);
+                        else {
+                            try {
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
+                                        (Double.parseDouble(pa)));
+                            }
+                            catch (Exception e) {
+                                
+                            }                            
+                        }
+                        params.put("Pattern Altitude", paout);
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
                             fuel = mContext.getString(R.string.No);

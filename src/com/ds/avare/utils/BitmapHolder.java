@@ -140,6 +140,12 @@ public class BitmapHolder {
         BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, options);
         opts[0] = options.outWidth;
         opts[1] = options.outHeight;
+        if(opts[0] == 0) {
+            opts[0] = WIDTH;
+        }
+        if(opts[1] == 0) {
+            opts[1] = HEIGHT;
+        }
     }
 
     /**
