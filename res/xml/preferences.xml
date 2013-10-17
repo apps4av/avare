@@ -40,7 +40,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:title="@string/AirSigTypeLabel"
         android:summary="@string/AirSigTypeSummary"
         android:entries="@array/AirSig"
-        android:defaultValue="NONE"
+        android:defaultValue="ALL"
         android:entryValues="@array/AirSig"/>
 	<CheckBoxPreference
         android:key="@string/NightMode"
