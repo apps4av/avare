@@ -1303,7 +1303,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mAdjustPan = 1;
                 }
     
-                postInvalidate();
+                LocationView.this.postInvalidate();
             }
         }
     }    

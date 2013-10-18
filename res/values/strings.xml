@@ -167,4 +167,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
     <string name="AirSigTypeSummary">&quot;Select the type of weather to draw&quot;</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">Storage and Downloads</string>
+    <string name="prefGpsCategoryTitle">GPS</string>
+    <string name="prefWeatherCategoryTitle">Weather</string>
+    <string name="prefDisplayCategoryTitle">Display</string>
+    <string name="prefAppStateCategoryTitle">Application State</string>
 </resources>
