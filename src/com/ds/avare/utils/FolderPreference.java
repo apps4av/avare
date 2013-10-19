@@ -227,7 +227,7 @@ public class FolderPreference extends DialogPreference {
                     /*
                      * Filters based on whether the file is hidden or not, and is a folder
                      */
-                    return (sel.isDirectory()) && !sel.isHidden();
+                    return (!sel.isHidden());
                 }
             };
 
@@ -247,11 +247,19 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Set drawables
                  */
-                if (sel.canWrite()) {
-                    mFileList[i].icon = R.drawable.directory_icon;
-                } 
+                if(sel.isDirectory()) {
+                    if (sel.canWrite()) {
+                        mFileList[i].icon = R.drawable.directory_icon;
+                    } 
+                    else {
+                        mFileList[i].icon = R.drawable.lock_pink;
+                    }
+                }
+                /*
+                 * File is for information only
+                 */
                 else {
-                    mFileList[i].icon = R.drawable.lock_pink;
+                    mFileList[i].icon = R.drawable.file_icon;                    
                 }
             }
 
