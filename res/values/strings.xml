@@ -172,4 +172,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefWeatherCategoryTitle">Weather</string>
     <string name="prefDisplayCategoryTitle">Display</string>
     <string name="prefAppStateCategoryTitle">Application State</string>
+    <string name="Up">Up</string>
+    <string name="PrivateFolder">Use the default folder</string>
+    <string name="FileStore">Files will be stored in:</string>
+    <string name="FileStoreInvalid">Unable to write to folder:</string>
 </resources>

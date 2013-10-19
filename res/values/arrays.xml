@@ -28,17 +28,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Heli/Other Charts</item>
     </string-array>
 
-    <string-array name="Folders">
-        <item>Internal</item>
-        <item>External</item>
-    </string-array>
-    
-    <string-array name="FoldersValues">
-        <item>Internal</item>
-        <item>External</item>
-     </string-array>
-    
-    
     <string-array name="resGroupsPopout">
         <item>COMM</item>
         <item>METAR</item>
