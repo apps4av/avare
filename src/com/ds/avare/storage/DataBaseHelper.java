@@ -1616,15 +1616,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     wa.time = cursor.getString(1);
                     wa.lon = cursor.getFloat(2);
                     wa.lat = cursor.getFloat(3);
-                    wa.w3k = cursor.getString(4);
-                    wa.w6k = cursor.getString(5);
-                    wa.w9k = cursor.getString(6);
-                    wa.w12k = cursor.getString(7);
-                    wa.w18k = cursor.getString(8);
-                    wa.w24k = cursor.getString(9);
-                    wa.w30k = cursor.getString(10);
-                    wa.w34k = cursor.getString(11);
-                    wa.w39k = cursor.getString(12);
+                    wa.w3k = cursor.getString(4).replaceAll("[ ]", "");
+                    wa.w6k = cursor.getString(5).replaceAll("[ ]", "");
+                    wa.w9k = cursor.getString(6).replaceAll("[ ]", "");
+                    wa.w12k = cursor.getString(7).replaceAll("[ ]", "");
+                    wa.w18k = cursor.getString(8).replaceAll("[ ]", "");
+                    wa.w24k = cursor.getString(9).replaceAll("[ ]", "");
+                    wa.w30k = cursor.getString(10).replaceAll("[ ]", "");
+                    wa.w34k = cursor.getString(11).replaceAll("[ ]", "");
+                    wa.w39k = cursor.getString(12).replaceAll("[ ]", "");
                 }
             }
         }

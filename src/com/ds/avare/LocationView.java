@@ -1493,8 +1493,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double lat2 = mOrigin.getLatitudeOf(y);
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
             
-            String text = null;
-            String textMets = null;
+            String text = "";
+            String textMets = "";
                        
             /*
              * Get TFR text if touched on its top
@@ -1511,9 +1511,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Set TFR text
                      */
-                    text = cshape.getTextIfTouched(x, y);
-                    if(null != text) {
-                        break;
+                    String txt = cshape.getTextIfTouched(x, y);
+                    if(null != txt) {
+                        text += txt + "\n--\n";
                     }
                 }
             }
@@ -1527,9 +1527,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Set MET text
                          */
-                        textMets = cshape.getTextIfTouched(x, y);
-                        if(null != textMets) {
-                            break;
+                        String txt = cshape.getTextIfTouched(x, y);
+                        if(null != txt) {
+                            textMets += txt + "\n--\n";
                         }
                     }
                 }
