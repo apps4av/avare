@@ -86,6 +86,18 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="visible" />
 
         <ToggleButton
+            android:id="@+id/location_button_tracks"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_width="150dp"
+            android:layout_above="@+id/location_button_track"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:text="@string/Tracks"
+            android:textOff="@string/Tracks"
+            android:textOn="@string/Tracks" />
+        
+        <ToggleButton
             android:id="@+id/location_button_track"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -129,7 +141,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <ZoomControls
 		    android:id="@+id/location_zoom_controls"
 		    android:layout_alignParentRight="true"
-		    android:layout_above="@+id/location_button_track"
+		    android:layout_above="@+id/location_button_tracks"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"/>
         
@@ -142,7 +154,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="invisible"
             android:entries="@array/ChartType"
             android:entryValues="@array/ChartTypeValues" />
-
+        
         <RelativeLayout
             android:layout_margin="5dp"
             android:id="@+id/location_popout_layout"

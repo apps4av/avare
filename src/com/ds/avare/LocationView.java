@@ -21,6 +21,7 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
@@ -223,7 +224,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
-    
 
     /**
      * @param context
@@ -297,7 +297,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mShadowPaint.setColor(TEXT_COLOR_OPPOSITE);
         mShadowPaint.setAlpha(0x7f);
         mShadowPaint.setStyle(Style.FILL);
-
     }
     
     /**
@@ -1127,6 +1126,87 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
+     * Draw the tracks to show our previous positions. If tracking is enabled, there is
+     * a linked list of gps coordinates attached to this view with the most recent one at the end
+     * of that list. Start at the end value to begin the drawing and as soon as we find one that is 
+     * not in the range of this display, we can assume that we're done.
+     * @param canvas
+     */
+    private void drawTracks(Canvas canvas) {
+    	/*
+    	 * Some pre-conditions that would prevent us from drawing anything
+    	 */
+        if(mService == null) {
+            return;
+        }
+    	LinkedList<GpsParams> ph = mService.getKMLRecorder().getPositionHistory();
+        if(mPref.shouldDrawTracks() && ph != null) {
+            if((ph.size() > 1) && (null == mPointProjection)) {
+
+                /*
+                 *  Get the position point at the end of the list. This is our starting
+                 *  location. From here, search backward until we find the first location
+                 *  that is in the current display range. 
+                 */
+                int idx = 0;
+                for (idx = ph.size() - 1; idx > 0; idx--) {
+                	if (mOrigin.isInDisplayRange(new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude())) == true) {
+                		break;
+                	}
+                }
+
+                /*
+                 *  If no points are found in range, then there is nothing to plot
+                 */
+                if (idx == 0) { 
+                	return;
+                }
+                
+            	/*
+            	 *  Set the brush color and width
+            	 */
+            	mPaint.setColor(Color.MAGENTA);
+                mPaint.setStrokeWidth(6);
+            	mPaint.setStyle(Paint.Style.FILL);
+
+                /*
+                 *  Get the first visible GPS point to start at
+                 */
+                Coordinate gpsPos1 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
+            	for(--idx ; idx >= 0; idx--) {
+            		
+            		/*
+            		 *  Get the next position to draw to
+            		 */
+            		Coordinate gpsPos2 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
+            		
+            		/* Check the location against our display bounds. If this point is still on our 
+            		 * display area then it is OK to draw the line. If it is out of bounds, assume that 
+            		 * we are done with our plotting
+            		 */
+            		if(mOrigin.isInDisplayRange(gpsPos2)) {
+        	            float x1 = (float)(mOrigin.getOffsetX(gpsPos1.getLongitude()));
+        	            float y1 = (float)(mOrigin.getOffsetY(gpsPos1.getLatitude()));                        
+
+        	            float x2 = (float)(mOrigin.getOffsetX(gpsPos2.getLongitude()));
+        	            float y2 = (float)(mOrigin.getOffsetY(gpsPos2.getLatitude()));                        
+
+        	            canvas.drawLine(x1, y1, x2, y2, mPaint);
+
+        	            /*
+        	             *  Set the end point as our new start point and do this all again
+        	             */
+        	            gpsPos1 = gpsPos2;
+            		} 
+            		else {
+            		    return; /* Point is out of range, we are done */
+            		}
+            	}
+            }
+        }
+    }
+
+    /**
      * Display the text in the indicated paint with a shadow'd background. This aids in readability.
      * 
      * @param canvas where to draw
@@ -1181,6 +1261,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawObstacles(canvas);
         drawAircraft(canvas);
         drawDistanceRings(canvas);
+        drawTracks(canvas);
         if(mTrackUp) {
             canvas.restore();
         }
