@@ -215,6 +215,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     Paint mRunwayPaint;
     Paint mTextPaintShadow;
     Paint mShadowPaint;
+    Rect mTextSize;
+    RectF mShadowBox;
 
     /*
      * Text on screen color
@@ -268,6 +270,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mObstacleTask = new ObstacleTask();
         mObstacleThread = new Thread(mObstacleTask);
         mObstacleThread.start();
+
+        mTextSize = new Rect();
+        mShadowBox = new RectF(mTextSize);
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
@@ -698,10 +703,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             mPaint.setTextAlign(Align.RIGHT);
             /*
-             * Heading, Speed
+             * Heading, Speed, timer
              */
             canvas.drawText(
-                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, null, mGpsParams.getBearing(), mGpsParams.getDeclinition()),
+                    Helper.makeLine(mGpsParams.getSpeed(),
+                            Preferences.speedConversionUnit,
+                            (mPref.useFlightTimer() && mService != null) ? mService.getFlightTimer().getValue() : null,
+                                    mGpsParams.getBearing(), mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
             
         }
@@ -725,7 +733,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Draw distance from point
              */
-            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing(), mGpsParams.getDeclinition()),
+            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(),
+                    Preferences.distanceConversionUnit, "     ",
+                    mPointProjection.getBearing(),
+                    mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
             canvas.drawText(mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
@@ -1124,22 +1135,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawShadowedText(Canvas canvas, String text, float height, float x, float y) {
 
-    	Rect textSize = new Rect();
-    	RectF shadowBox = new RectF(textSize);
-
         mTextPaintShadow.setTextSize(height);
 
     	final int XMARGIN = 20;
     	final int YMARGIN = 10;
-    	mTextPaintShadow.getTextBounds(text, 0, text.length(), textSize);
-    	shadowBox.bottom = textSize.bottom + YMARGIN + y;
-    	shadowBox.top    = textSize.top - YMARGIN + y;
-    	shadowBox.left   = textSize.left - XMARGIN + x  - (textSize.right / 2);
-    	shadowBox.right  = textSize.right + XMARGIN + x  - (textSize.right / 2);
+    	mTextPaintShadow.getTextBounds(text, 0, text.length(), mTextSize);
+    	mShadowBox.bottom = mTextSize.bottom + YMARGIN + y;
+    	mShadowBox.top    = mTextSize.top - YMARGIN + y;
+    	mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
+    	mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
 
     	final int SHADOWRECTRADIUS = 20;
-    	canvas.drawRoundRect(shadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
-    	canvas.drawText(text,  x - (textSize.right / 2), y, mTextPaintShadow);
+    	canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
+    	canvas.drawText(text,  x - (mTextSize.right / 2), y, mTextPaintShadow);
     }
 
     /**
@@ -1223,6 +1231,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Comes from location manager
          */
         mGpsParams = params;
+
+        if(mService != null) {
+            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	// Tell the timer how fast we are going
+        }
 
         tfrReset();
         /*
@@ -1554,6 +1566,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(mDraw) {
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, null);
                 return;
+            }
+
+            /* If the long press is in the top 2 lines, then clear the HOBBS meter
+             * XXX - perhaps pop up a menu to change the units as well ? Could be a gesture
+             * to bring up a dialog dealing with all things in the top 2 text lines.
+             */
+            if(y < (mTextDiv * 2) && mService != null) {
+            	mService.getFlightTimer().reset();
+            	return;
             }
 
             /*

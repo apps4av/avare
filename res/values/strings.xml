@@ -187,6 +187,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTimerRingSize">TimerRingSize</string>
     <string name="TimerRingSizeLabel">&quot;Timer Ring Size&quot;</string>
     <string name="TimerRingSizeSummary">&quot;Select the timer ring size in minutes.&quot;</string>
+    <string name="prefUseFlightTimer">UseFlightTimer</string>
+    <string name="UseFlightTimerLabel">&quot;Display Flight Timer&quot;</string>
+    <string name="UseFlightTimerSummary">&quot;Display the current flight timer value.&quot;</string>
     <string name="Up">Up</string>
     <string name="PrivateFolder">Use the default folder</string>
     <string name="FileStore">Files will be stored in:</string>

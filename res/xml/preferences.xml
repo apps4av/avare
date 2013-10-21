@@ -126,5 +126,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
-    
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefUseFlightTimer"
+            android:summary="@string/UseFlightTimerSummary"
+            android:title="@string/UseFlightTimerLabel" />    
 </PreferenceScreen>

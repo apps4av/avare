@@ -21,6 +21,7 @@ import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gdl90.NexradBitmap;
 import com.ds.avare.gdl90.NexradImage;
 import com.ds.avare.gps.*;
+import com.ds.avare.hobbsMeter.FlightTimer;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -144,6 +145,12 @@ public class StorageService extends Service {
     
     private NexradImage mNexradImg;
     
+    /*
+     * Hobbs time
+     */
+    private FlightTimer  mFlightTimer;
+
+
     /**
      * @author zkhan
      *
@@ -206,6 +213,11 @@ public class StorageService extends Service {
         
         mDraw = new Draw();
         
+        /*
+         * Allocate a flight timer object
+         */
+        mFlightTimer = new FlightTimer();
+
         /*
          * Monitor TFR every hour.
          */
@@ -638,5 +650,13 @@ public class StorageService extends Service {
      */
     public InternetWeatherCache getInternetWeatherCache() {
         return mInternetWeatherCache;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public FlightTimer getFlightTimer() {
+        return mFlightTimer;
     }
 }

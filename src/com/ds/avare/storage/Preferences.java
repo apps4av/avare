@@ -442,6 +442,14 @@ public class Preferences {
 
     /**
      * 
+     * @return
+     */
+    public boolean useFlightTimer() {
+        return(mPref.getBoolean(mContext.getString(R.string.prefUseFlightTimer), false));
+    }
+
+    /**
+     * 
      * @param activity
      * @return
      */
