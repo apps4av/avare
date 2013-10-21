@@ -72,6 +72,10 @@ public class Preferences {
     private SharedPreferences mPref;
     private Context mContext;
 
+    public static double NM_TO_MI = 1.15078;
+    public static double NM_TO_KM = 1.852;
+    public static double NM_TO_LATITUDE = 1.0 / 60.0;
+    
     /**
      * 
      * @param ctx
@@ -85,19 +89,25 @@ public class Preferences {
          * Set default prefs.
          */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if(getDistanceUnit().equals("kt")) {
+        if(getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             distanceConversion = 1.944; // m/s to kt/hr
             heightConversion = 3.28;
             earthRadiusConversion = 3440.069;
-            distanceConversionUnit = "nm";
-            speedConversionUnit = "kt";
+            distanceConversionUnit = mContext.getString(R.string.DistKnot);
+            speedConversionUnit = mContext.getString(R.string.SpeedKnot);
         }
-        else if(getDistanceUnit().equals("mi")) {
+        else if(getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
             distanceConversion = 2.2396; // m/s to mi/hr
             heightConversion = 3.28;
             earthRadiusConversion = 3963.1676;            
-            distanceConversionUnit = "mi";
-            speedConversionUnit = "mh";
+            distanceConversionUnit = mContext.getString(R.string.DistMile);
+            speedConversionUnit = mContext.getString(R.string.SpeedMile);
+        } else if(getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
+            distanceConversion = 3.6; // m/s to kph
+            heightConversion = 3.28;
+            earthRadiusConversion = 6378.09999805;            
+            distanceConversionUnit = mContext.getString(R.string.DistKilometer);
+            speedConversionUnit = mContext.getString(R.string.SpeedKilometer);
         }
     }
 
@@ -510,10 +520,12 @@ public class Preferences {
     public String getDistanceUnit() {
         String val = mPref.getString(mContext.getString(R.string.Units), "0");
         if(val.equals("0")) {
-            return ("kt");
+            return (mContext.getString(R.string.UnitKnot));
         }
-        else {
-            return ("mi");
+        else if(val.equals("1")){
+            return (mContext.getString(R.string.UnitMile));
+        } else {
+            return (mContext.getString(R.string.UnitKilometer));
         }
     }
 
@@ -570,4 +582,23 @@ public class Preferences {
         editor.commit();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public String loadString(String name) {
+        return(mPref.getString(name, null));
+    }
+
+    public boolean showDistanceRings() {
+        return(mPref.getBoolean(mContext.getString(R.string.prefShowDistanceRings), false));
+    }
+
+    public int getTimerRingSize() {
+    	try {
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
+		} catch (NumberFormatException x) {
+			return 5;
+		}
+    }
 }

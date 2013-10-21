@@ -54,6 +54,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.TextPaint;
@@ -212,6 +213,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      *  Copy the existing paint to a new paint so we don't mess it up
      */
     Paint mRunwayPaint;
+    Paint mTextPaintShadow;
+    Paint mShadowPaint;
 
     /*
      * Text on screen color
@@ -278,6 +281,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         mRunwayPaint = new Paint(mPaint);
+        
+        mTextPaintShadow = new Paint();
+        mTextPaintShadow.setTypeface(mFace);
+        mTextPaintShadow.setColor(TEXT_COLOR);
+        mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+        mTextPaintShadow.setStyle(Paint.Style.FILL);
+        mShadowPaint = new Paint(mTextPaintShadow);
+        mShadowPaint.setShadowLayer(0, 0, 0, 0);
+        mShadowPaint.setColor(TEXT_COLOR_OPPOSITE);
+        mShadowPaint.setAlpha(0x7f);
+        mShadowPaint.setStyle(Style.FILL);
+
     }
     
     /**
@@ -606,7 +621,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != mService) {
             mets = mService.getInternetWeatherCache().getAirSigMet();
         }
-        if(null != mets) {
+        if(null != mets && null == mPointProjection) {
             mPaint.setStrokeWidth(4); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
             String typeArray[] = mContext.getResources().getStringArray(R.array.AirSig);
@@ -1006,56 +1021,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 								runwayNumberCoordinatesX,
 								runwayNumberCoordinatesY);
 					}
-					/*
-					 *  Get the size of the text to draw and create a new
-					 *  rectangle of that size
-					 */
-					Rect rect = new Rect();
-					mRunwayPaint.getTextBounds(num, 0, num.length(), rect);
-					if (mPref.shouldShowBackground()) {
-						/*
-						 * If the "show background" preference is true, draw a
-						 * shaded square behind runway numbers to make them easier
-						 * to see. Perhaps there's a simpler way to do this? TODO:
-						 * Make this into a nice,rounded rectangle with a border
-						 */				
-			
-						/*
-						 *  Make that rectangle a little bigger to account for
-						 *  the shadow effect
-						 */
-						rect.set(0, 0, rect.width() + SHADOW * 3, rect.height()
-								+ SHADOW * 3);
-						mRunwayPaint.setShadowLayer(0, 0, 0, 0);
-						mRunwayPaint.setColor(TEXT_COLOR_OPPOSITE);
-						mRunwayPaint.setAlpha(0x7f);
-
-						/*
-						 * Draw the rectangle off the end of its associated
-						 * runway
-						 */
-						canvas.save();
-						canvas.translate(
-								runwayNumberCoordinatesX - (rect.width() / 2),
-								runwayNumberCoordinatesY - (rect.height() / 2));
-						canvas.drawRect(rect, mRunwayPaint);
-						canvas.restore();
-
-					}
-					mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-					mRunwayPaint.setColor(TEXT_COLOR);
-					mRunwayPaint.setAlpha(0xff);
-					mRunwayPaint.setTextAlign(Paint.Align.CENTER);
 
 					/*
 					 * Draw the text so it's centered within the shadow
                      * rectangle, which is itself centered at the end of the
                      * extended runway centerline
 					 */
-					canvas.drawText(num,
+					drawShadowedText(canvas, num, mRunwayPaint.getTextSize(),
 							runwayNumberCoordinatesX,
-							runwayNumberCoordinatesY
-									+ (rect.height() / 2 - SHADOW * 2), mRunwayPaint);
+							runwayNumberCoordinatesY);
 					if (mTrackUp) {
 						canvas.restore();
 					}
@@ -1063,7 +1037,111 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 			}
 		}
 	}
-    
+
+    /**
+     * Draws concentric circles around the current aircraft position showing distance.
+     * author: rwalker
+     * 
+     * @param canvas upon which to draw the circles
+     */
+    private void drawDistanceRings(Canvas canvas) {
+        
+        if((mPref.showDistanceRings() != false) && (null == mPointProjection)) {
+            /*
+             * Find pixels per nautical mile
+             */
+            float sy = mScale.getScaleCorrected();
+
+            float facy = sy / (float)mMovement.getLatitudePerPixel();
+            float pixPerNm = Math.abs(facy * (float)Preferences.NM_TO_LATITUDE);
+            
+        	/*
+        	 *  We are configured to show distance rings and the chart is currently NOT undergoing
+        	 *  a "pinch-zoom"
+        	 */
+        	float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));	// Get where we are
+            float y = (float)(mOrigin.getOffsetY(mGpsParams.getLatitude()));                        
+
+        	/*
+        	 *  Using the tables and the radius factor, come up with the radius of the circle to
+        	 *  draw 
+        	 */
+            double fac = 1;
+            if(mPref.getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
+                fac *= Preferences.NM_TO_MI;
+            }
+            else if(mPref.getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
+                fac *= Preferences.NM_TO_KM;
+            }
+
+            /*
+             * Draw 3 rings, 2, 5, and 10.
+             */
+        	float ring1R = (float)(pixPerNm * 2 / fac);
+        	float ring2R = (float)(pixPerNm * 5 / fac);
+        	float ring3R = (float)(pixPerNm * 10 / fac);
+
+        	/*
+        	 *  Draw all 3 circles now
+        	 */
+            mPaint.setStrokeWidth(6);
+            mPaint.setShadowLayer(0, 0, 0, 0);
+        	mPaint.setColor(Color.GREEN);
+        	mPaint.setStyle(Style.STROKE);
+        	canvas.drawCircle(x, y, ring1R, mPaint);
+        	canvas.drawCircle(x, y, ring2R, mPaint);
+        	canvas.drawCircle(x, y, ring3R, mPaint);
+
+        	/*
+        	 *  Draw our "speed ring" in green if we are going faster than stall
+        	 *  speed 
+        	 */
+        	final int STALLSPEED = 25;
+        	if((mGpsParams.getSpeed() >= STALLSPEED) && (mPref.getTimerRingSize() != 0)) {
+        	    /*
+        	     * its / 60 as units is in minutes
+        	     */
+	        	double speedRadius = (mGpsParams.getSpeed() / 60) * pixPerNm * mPref.getTimerRingSize() / fac;
+	        	mPaint.setColor(Color.YELLOW);
+	        	canvas.drawCircle(x, y, (float)speedRadius, mPaint);
+        	}
+
+            mPaint.setStyle(Style.FILL);
+        	/*
+        	 * No need to draw distance text because its already evident by touch.
+        	 */
+        }
+    }
+
+    /**
+     * Display the text in the indicated paint with a shadow'd background. This aids in readability.
+     * 
+     * @param canvas where to draw
+     * @param text what to display
+     * @param height is the vertical size of the text
+     * @param x center position of the text on the canvas
+     * @param y top edge of text on the canvas
+     */
+    private void drawShadowedText(Canvas canvas, String text, float height, float x, float y) {
+
+    	Rect textSize = new Rect();
+    	RectF shadowBox = new RectF(textSize);
+
+        mTextPaintShadow.setTextSize(height);
+
+    	final int XMARGIN = 20;
+    	final int YMARGIN = 10;
+    	mTextPaintShadow.getTextBounds(text, 0, text.length(), textSize);
+    	shadowBox.bottom = textSize.bottom + YMARGIN + y;
+    	shadowBox.top    = textSize.top - YMARGIN + y;
+    	shadowBox.left   = textSize.left - XMARGIN + x  - (textSize.right / 2);
+    	shadowBox.right  = textSize.right + XMARGIN + x  - (textSize.right / 2);
+
+    	final int SHADOWRECTRADIUS = 20;
+    	canvas.drawRoundRect(shadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
+    	canvas.drawText(text,  x - (textSize.right / 2), y, mTextPaintShadow);
+    }
+
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1092,6 +1170,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
+        drawDistanceRings(canvas);
         if(mTrackUp) {
             canvas.restore();
         }

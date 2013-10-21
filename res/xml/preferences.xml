@@ -113,6 +113,18 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-    </PreferenceCategory>
-
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefShowDistanceRings"
+            android:summary="@string/ShowDistanceRingsSummary"
+            android:title="@string/ShowDistanceRingsLabel" />
+        </PreferenceCategory>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/TimerRingSizePrompt"
+            android:entryValues="@array/TimerRingSizeValues"
+            android:key="@string/prefTimerRingSize"
+            android:summary="@string/TimerRingSizeSummary"
+            android:title="@string/TimerRingSizeLabel" />
+    
 </PreferenceScreen>
