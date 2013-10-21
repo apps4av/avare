@@ -621,7 +621,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("Landing Fee", fee);
                         String fss = cursor.getString(FSSPHONE_COL);
 						if (fss.equals("1-800-WX-BRIEF")) {
-							fss = fss + " / 1-800-992-7433";
+							fss = "1-800-992-7433";
 						}
                         params.put(FSSPHONE, fss);
 
@@ -674,9 +674,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     
                     if(freq.containsKey(typeof)) {
                         /*
-                         * Add a hash if duplicate value
+                         * Append this string to the existing one if duplicate key
                          */
-                        freq.put(typeof + "#", cursor.getString(2));                                
+                        freq.put(typeof, freq.get(typeof)+"\n\n"+cursor.getString(2));                                
                     }
                     else {
                         freq.put(typeof, cursor.getString(2));

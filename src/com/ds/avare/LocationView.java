@@ -1099,6 +1099,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setShadowLayer(0, 0, 0, 0);
         	mPaint.setColor(Color.GREEN);
         	mPaint.setStyle(Style.STROKE);
+        	mPaint.setAlpha(0x7F);
         	canvas.drawCircle(x, y, ring1R, mPaint);
         	canvas.drawCircle(x, y, ring2R, mPaint);
         	canvas.drawCircle(x, y, ring3R, mPaint);
@@ -1117,6 +1118,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	        	canvas.drawCircle(x, y, (float)speedRadius, mPaint);
         	}
 
+            mPaint.setAlpha(0xFF);
             mPaint.setStyle(Style.FILL);
         	/*
         	 * No need to draw distance text because its already evident by touch.
