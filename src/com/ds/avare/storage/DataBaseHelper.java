@@ -674,9 +674,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     
                     if(freq.containsKey(typeof)) {
                         /*
-                         * Add a hash if duplicate value
+                         * Append this string to the existing one if duplicate key
                          */
-                        freq.put(typeof + "#", cursor.getString(2));                                
+                        freq.put(typeof, freq.get(typeof)+"\n\n"+cursor.getString(2));                                
                     }
                     else {
                         freq.put(typeof, cursor.getString(2));
