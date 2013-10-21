@@ -167,4 +167,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
     <string name="AirSigTypeSummary">&quot;Select the type of weather to draw&quot;</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">Storage and Downloads</string>
+    <string name="prefGpsCategoryTitle">GPS</string>
+    <string name="prefWeatherCategoryTitle">Weather</string>
+    <string name="prefDisplayCategoryTitle">Display</string>
+    <string name="prefAppStateCategoryTitle">Application State</string>
+    <string name="Up">Up</string>
+    <string name="PrivateFolder">Use the default folder</string>
+    <string name="FileStore">Files will be stored in:</string>
+    <string name="FileStoreInvalid">Unable to write to folder:</string>
 </resources>

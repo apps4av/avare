@@ -82,12 +82,7 @@ public class Preferences {
          */
         mContext = ctx;
         /*
-         * Get/set path for maps:
-         * If path not already set, then set in this order:
-         * 1. External
-         * 2. Internal
-         * 3. External Cache
-         * 4. Internal Cache
+         * Set default prefs.
          */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         if(getDistanceUnit().equals("kt")) {
@@ -485,7 +480,7 @@ public class Preferences {
      * @return
      */
     public String getAirSigMetType() {
-        return(mPref.getString(mContext.getString(R.string.AirSigType), "NONE"));
+        return(mPref.getString(mContext.getString(R.string.AirSigType), "ALL"));
     }
 
     /**
@@ -527,15 +522,7 @@ public class Preferences {
      * @return
      */
     public String mapsFolder() {
-        String loc = mPref.getString(mContext.getString(R.string.Maps), "Internal");
-        File path = null;
-        if(loc.equals("External")) {
-            path = mContext.getExternalFilesDir(null);
-        }
-        else {
-            path = mContext.getFilesDir();        
-        }
-
+        File path = mContext.getFilesDir();
         /*
          * Make it fail safe?
          */
@@ -547,32 +534,40 @@ public class Preferences {
                     path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                     if(path == null) {
                         path = Environment.getExternalStorageDirectory();
+                        if(null == path) {
+                            path = new File("/mnt/sdcard/avare");
+                        }
                     }
                 }
             }
         }
-        if(null == path) {
-            return "/sdcard/data";
+        /*
+         * If no path, use internal folder.
+         * If cannot get internal folder, return / at least
+         */
+        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
+        
+        /*
+         * XXX: Legacy for 5.1.0 and 5.1.1.
+         */
+        if(loc.equals("Internal")) {
+            loc = mContext.getFilesDir().getAbsolutePath() + "/data";
         }
-        return(path.getAbsolutePath() + "/data");
+        else if(loc.equals("External")) {
+            loc = mContext.getExternalFilesDir(null) + "/data"; 
+        }
+        
+        return(loc);
     }
 
     /**
      * 
      * @return
      */
-    public void saveString(String name, String value) {
+    public void setMapsFolder(String folder) {
         SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(name, value);
+        editor.putString(mContext.getString(R.string.Maps), folder);
         editor.commit();
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String loadString(String name) {
-        return(mPref.getString(name, null));
     }
 
 }

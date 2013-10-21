@@ -305,6 +305,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         list.add(name + ".zip");
         
         /*
+         * Delete weather
+         */
+        if(name.equals("weather")) {
+            list.add(name + ".db");
+            return list;
+        }
+
+        if(name.equals("TFRs")) {
+            list.add("tfr.txt");
+            return list;
+        }
+
+        /*
+         * Delete databases
+         */
+        if(name.startsWith("databases") && dbs != null) {
+            for(int i = 0; i < dbs.length; i++) {
+                list.add(dbs[i]);
+            }
+            list.add(getMainDb());
+            return list;                    
+        }
+
+        /*
          * Delete files from all databases
          */
         for(int i = 0; i < dbs.length; i++) {
@@ -545,15 +569,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
                         String pa = cursor.getString(11).trim();
+                        String paout = "";
                         if(pa.equals("")) {
                             try {
-                                pa = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
                             }
                             catch (Exception e) {
                                 
                             }
                         }
-                        params.put("Pattern Altitude", pa);
+                        else {
+                            try {
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
+                                        (Double.parseDouble(pa)));
+                            }
+                            catch (Exception e) {
+                                
+                            }                            
+                        }
+                        params.put("Pattern Altitude", paout);
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
                             fuel = mContext.getString(R.string.No);
@@ -631,7 +665,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                      */
                     try {
                         double frequency = Double.parseDouble(cursor.getString(2));
-                        if(frequency > 136) {
+                        if(Helper.isFrequencyUHF(frequency)) {
                             continue;
                         }
                     }
@@ -864,7 +898,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                      */
                     try {
                         double frequency = Double.parseDouble(cursor.getString(2));
-                        if(frequency > 136) {
+                        if(Helper.isFrequencyUHF(frequency)) {
                             continue;
                         }
                     }
@@ -902,14 +936,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 					try {
 						double frequency = Double.parseDouble(cursor
 								.getString(6));
-						if (frequency > 136) {
-							continue;
-						}
+                        if(Helper.isFrequencyUHF(frequency)) {
+                            continue;
+                        }
 					} catch (Exception e) {
+					    continue;
 					}
 
 					freq.add(typeof + " " + cursor.getString(6));
-
 				}
 			}
 		} catch (Exception e) {
@@ -937,7 +971,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 							 * Filter out UHF
 							 */
 							double frequency = Double.parseDouble(unicomfreq);
-							if (frequency < 136) {
+	                        if(!Helper.isFrequencyUHF(frequency)) {
 								freq.add(typeof + " " + unicomfreq);
 							}
 						} catch (Exception e) {
@@ -951,7 +985,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 							 * Filter out UHF
 							 */
 							double frequency = Double.parseDouble(ctaffreq);
-							if (frequency < 136) {
+	                        if(!Helper.isFrequencyUHF(frequency)) {
 								freq.add(typeof + " " + ctaffreq);
 							}
 						} catch (Exception e) {
@@ -1582,15 +1616,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     wa.time = cursor.getString(1);
                     wa.lon = cursor.getFloat(2);
                     wa.lat = cursor.getFloat(3);
-                    wa.w3k = cursor.getString(4);
-                    wa.w6k = cursor.getString(5);
-                    wa.w9k = cursor.getString(6);
-                    wa.w12k = cursor.getString(7);
-                    wa.w18k = cursor.getString(8);
-                    wa.w24k = cursor.getString(9);
-                    wa.w30k = cursor.getString(10);
-                    wa.w34k = cursor.getString(11);
-                    wa.w39k = cursor.getString(12);
+                    wa.w3k = cursor.getString(4).replaceAll("[ ]", "");
+                    wa.w6k = cursor.getString(5).replaceAll("[ ]", "");
+                    wa.w9k = cursor.getString(6).replaceAll("[ ]", "");
+                    wa.w12k = cursor.getString(7).replaceAll("[ ]", "");
+                    wa.w18k = cursor.getString(8).replaceAll("[ ]", "");
+                    wa.w24k = cursor.getString(9).replaceAll("[ ]", "");
+                    wa.w30k = cursor.getString(10).replaceAll("[ ]", "");
+                    wa.w34k = cursor.getString(11).replaceAll("[ ]", "");
+                    wa.w39k = cursor.getString(12).replaceAll("[ ]", "");
                 }
             }
         }

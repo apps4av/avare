@@ -39,7 +39,7 @@ public abstract class Shape {
     private double mYtop;
     private String mText;
     
-    private static final int WIDTHTOP = 60;
+    private static final int WIDTHTOP = 30;
     
     /**
      * 
