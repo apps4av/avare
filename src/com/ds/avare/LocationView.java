@@ -1090,19 +1090,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
         	float ring1R = (float)(pixPerNm * 2 / fac);
         	float ring2R = (float)(pixPerNm * 5 / fac);
-        	float ring3R = (float)(pixPerNm * 10 / fac);
+            float ring3R = (float)(pixPerNm * 10 / fac);
+            float ring4R = (float)(pixPerNm * 20 / fac);
 
         	/*
         	 *  Draw all 3 circles now
         	 */
             mPaint.setStrokeWidth(6);
             mPaint.setShadowLayer(0, 0, 0, 0);
-        	mPaint.setColor(Color.MAGENTA);
+        	mPaint.setColor(Color.BLUE);
         	mPaint.setStyle(Style.STROKE);
         	mPaint.setAlpha(0x7F);
         	canvas.drawCircle(x, y, ring1R, mPaint);
         	canvas.drawCircle(x, y, ring2R, mPaint);
-        	canvas.drawCircle(x, y, ring3R, mPaint);
+            canvas.drawCircle(x, y, ring3R, mPaint);
+            canvas.drawCircle(x, y, ring4R, mPaint);
 
         	/*
         	 *  Draw our "speed ring" in green if we are going faster than stall
