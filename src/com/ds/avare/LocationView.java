@@ -1317,7 +1317,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = params;
 
         if(mService != null) {
-            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	// Tell the timer how fast we are going
+            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
+            mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are 	*/
         }
 
         tfrReset();

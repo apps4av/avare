@@ -197,22 +197,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTracksCategoryTitle">Flight Tracking</string>
     <string name="TracksOn">Tracks On</string>
     <string name="TracksOff">Tracks Off</string>
-    <string name="TrkUpdTim">&quot;TrkUpdTim&quot;</string>
-    <string name="TrkUpdTimLabel">&quot;Update Interval&quot;</string>
-    <string name="TrkUpdTimSummary">&quot;Select the time interval that positions will be saved.&quot;</string>
-    <string name="TrkUpdSpd">&quot;TrkUpdSpd&quot;</string>
-    <string name="TrkUpdSpdLabel">&quot;Update Threshold&quot;</string>
-    <string name="TrkUpdSpdSummary">&quot;Select the speed at which to begin tracking position points.&quot;</string>
     <string name="TrkUpdAllow">TrkUpdAllow</string>
     <string name="TrkUpdAllowLabel">&quot;Enable Tracking&quot;</string>
-    <string name="TrkUpdAllowSummary">&quot;Enable to allow position tracking to be recorded. (requires restart)&quot;</string>
+    <string name="TrkUpdAllowSummary">&quot;Enable to allow position tracking to be recorded.&quot;</string>
     <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
     <string name="TrkUpdShowHistoryLabel">&quot;Track History&quot;</string>
     <string name="TrkUpdShowHistorySummary">&quot;Display the flight path track on the active chart.&quot;</string>
-    <string name="UseDetailedPositionReporting">&quot;UseDetailedPositionReporting&quot;</string>
-    <string name="UseDetailedPositionReportingLabel">&quot;Detailed Reporting&quot;</string>
-    <string name="UseDetailedPositionReportingSummary">&quot;Include all details in KML file when reporting positions.&quot;</string>
-    <string name="ClearListOnStart">&quot;ClearListOnStart&quot;</string>
-    <string name="ClearListOnStartLabel">&quot;Clear Tracks&quot;</string>
-    <string name="ClearListOnStartSummary">&quot;Clear out GPS history each time a new track is started.&quot;</string>
 </resources>

@@ -699,36 +699,4 @@ Redistribution and use in source and binary forms, with or without modification,
         <item >10 Minutes</item>
     </string-array>
 
-	<string-array name="SpeedIntervalValue">
-        <item >0</item>
-        <item >1</item>
-        <item >5</item>
-        <item >10</item>
-        <item >20</item>
-    </string-array>
-
-	<string-array name="SpeedIntervalPrompt">
-        <item >Always</item>
-        <item >1</item>
-        <item >5</item>
-        <item >10</item>
-        <item >20</item>
-    </string-array>
-
-    <string-array name="LocationIntervalValue">
-        <item >5</item>
-        <item >15</item>
-        <item >30</item>
-        <item >60</item>
-        <item >300</item>
-    </string-array>
-
-    <string-array name="LocationIntervalPrompt">
-        <item >5 Seconds</item>
-        <item >15 Seconds</item>
-        <item >30 Seconds</item>
-        <item >1 Minute</item>
-        <item >5 Minutes</item>
-    </string-array>
-
 </resources>

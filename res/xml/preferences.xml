@@ -140,26 +140,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
-        <CheckBoxPreference
-            android:key="@string/UseDetailedPositionReporting"
-            android:title="@string/UseDetailedPositionReportingLabel"
-            android:summary="@string/UseDetailedPositionReportingSummary"/>
-        <CheckBoxPreference
-            android:key="@string/ClearListOnStart"
-            android:title="@string/ClearListOnStartLabel"
-            android:summary="@string/ClearListOnStartSummary"/>
-        <ListPreference
-            android:entries="@array/LocationIntervalPrompt"
-            android:summary="@string/TrkUpdTimSummary"
-            android:title="@string/TrkUpdTimLabel"
-            android:key="@string/TrkUpdTim"
-            android:entryValues="@array/LocationIntervalValue"/>
-        <ListPreference
-            android:entryValues="@array/SpeedIntervalValue"
-            android:entries="@array/SpeedIntervalPrompt"
-            android:summary="@string/TrkUpdSpdSummary"
-            android:title="@string/TrkUpdSpdLabel"
-            android:key="@string/TrkUpdSpd"/>
     </PreferenceCategory>
     
 </PreferenceScreen>
