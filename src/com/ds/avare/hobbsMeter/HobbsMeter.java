@@ -23,7 +23,6 @@ import java.util.TimerTask;
  *
  */
 public class HobbsMeter {
-	int 	mSeconds = 0;
 	int		mHundredths = 0;
 	int		mTenths = 0;
 	int		mHours = 0;
@@ -38,19 +37,15 @@ public class HobbsMeter {
 
         public void run() {
         	synchronized(this) {
-        		mSeconds++;
-        		if(mSeconds >= 36) {	// 36 seconds in 1/100 of an hr
-        			mSeconds = 0;
-		        	mHundredths++;
-		        	if(mHundredths > 9) {
-		        		mHundredths = 0;
-		        		mTenths++;
-		        		if(mTenths > 9) {
-		        			mTenths = 0;
-		        			mHours++;
-		        		}
-		        	}
-        		}
+	        	mHundredths++;
+	        	if(mHundredths > 9) {
+	        		mHundredths = 0;
+	        		mTenths++;
+	        		if(mTenths > 9) {
+	        			mTenths = 0;
+	        			mHours++;
+	        		}
+	        	}
         	}
         }
     }
@@ -85,8 +80,7 @@ public class HobbsMeter {
 	 * blink every second when the clock is running.
 	 */
 	public String getValue() {
-		char c = (mTimer == null) ? '.' : (((mSeconds % 2) == 0) ? '.' : ' ');
-		return String.format(Locale.getDefault(), "%2d%c%d%d", mHours, c, mTenths, mHundredths);
+		return String.format(Locale.getDefault(), "%02d.%d%d", mHours, mTenths, mHundredths);
 	}
 	
 	/**
@@ -94,7 +88,7 @@ public class HobbsMeter {
 	 */
 	public void reset() {
 		synchronized (this) {	// Don't want the timer event to fire and
-			mSeconds = 0;		// adjust any of these values until we have
+			                    // adjust any of these values until we have
 	    	mHundredths = 0;	// them all cleared
 	    	mTenths = 0;
 	    	mHours = 0;
@@ -107,7 +101,7 @@ public class HobbsMeter {
 	public void start() {
         mTimer = new Timer();					// Create a timer for the hobbs meter
         TimerTask taskHobbs = new HobbsTask();	// The task thread that does the work
-        mTimer.scheduleAtFixedRate(taskHobbs, 1, 1000);	// Set to run every second
+        mTimer.scheduleAtFixedRate(taskHobbs, 1, 36 * 1000);	// Set to run every 1/100 of an hour
 	}
 	
 	/**
