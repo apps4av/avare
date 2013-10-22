@@ -289,6 +289,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         mTextPaintShadow = new Paint();
         mTextPaintShadow.setTypeface(mFace);
+        mTextPaintShadow.setAntiAlias(true);
         mTextPaintShadow.setColor(TEXT_COLOR);
         mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
         mTextPaintShadow.setStyle(Paint.Style.FILL);
@@ -1096,7 +1097,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	 */
             mPaint.setStrokeWidth(6);
             mPaint.setShadowLayer(0, 0, 0, 0);
-        	mPaint.setColor(Color.GREEN);
+        	mPaint.setColor(Color.MAGENTA);
         	mPaint.setStyle(Style.STROKE);
         	mPaint.setAlpha(0x7F);
         	canvas.drawCircle(x, y, ring1R, mPaint);

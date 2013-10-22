@@ -195,7 +195,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FileStore">Files will be stored in:</string>
     <string name="FileStoreInvalid">Unable to write to folder:</string>
     <string name="prefTracksCategoryTitle">Flight Tracking</string>
-    <string name="Tracks">Tracks</string>
+    <string name="TracksOn">Tracks On</string>
+    <string name="TracksOff">Tracks Off</string>
     <string name="TrkUpdTim">&quot;TrkUpdTim&quot;</string>
     <string name="TrkUpdTimLabel">&quot;Update Interval&quot;</string>
     <string name="TrkUpdTimSummary">&quot;Select the time interval that positions will be saved.&quot;</string>

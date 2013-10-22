@@ -499,7 +499,7 @@ public class LocationActivity extends Activity implements Observer {
                 AnimateButton z = new AnimateButton(getApplicationContext(), mZoom, AnimateButton.DIRECTION_R_L);
                 AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton, mTracksButton);
+                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
                 AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
                 b.animate(true);
