@@ -699,4 +699,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item >10 Minutes</item>
     </string-array>
 
+	<string-array name="DistanceRingTypeValues">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+    </string-array>
+
+	<string-array name="DistanceRingTypePrompts">
+        <item >None</item>
+        <item >Dynamic</item>
+        <item >Fixed at 2/5/10</item>
+    </string-array>
+
 </resources>

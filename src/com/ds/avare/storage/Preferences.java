@@ -602,10 +602,6 @@ public class Preferences {
         return(mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
     }
 
-    public boolean showDistanceRings() {
-        return(mPref.getBoolean(mContext.getString(R.string.prefShowDistanceRings), false));
-    }
-
     public int getTimerRingSize() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
@@ -614,5 +610,16 @@ public class Preferences {
 		}
     }
 
+    /**
+     * What type of distance rings are we supposed to show, 0=none, 1=dynamic, 2=static at 2/5/10
+     * @return
+     */
+    public int getDistanceRingType() {
+    	try {
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefDistanceRingType), "0")));
+		} catch (NumberFormatException x) {
+			return 0;
+		}
+    }
 
 }

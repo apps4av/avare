@@ -113,12 +113,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/prefShowDistanceRings"
-            android:summary="@string/ShowDistanceRingsSummary"
-            android:title="@string/ShowDistanceRingsLabel" />
-        </PreferenceCategory>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/DistanceRingTypePrompts"
+            android:entryValues="@array/DistanceRingTypeValues"
+            android:key="@string/prefDistanceRingType"
+            android:summary="@string/DistanceRingTypeSummary"
+            android:title="@string/DistanceRingTypeLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/TimerRingSizePrompt"
@@ -131,7 +132,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/prefUseFlightTimer"
             android:summary="@string/UseFlightTimerSummary"
             android:title="@string/UseFlightTimerLabel" />
-	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
+        </PreferenceCategory>
+        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
     	<CheckBoxPreference
     	    android:key="@string/TrkUpdAllow"
     	    android:title="@string/TrkUpdAllowLabel"

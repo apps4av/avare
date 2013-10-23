@@ -13,6 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.position;
 
+import com.ds.avare.storage.Preferences;
+
 /**
  * @author zkhan
  * A class that holds movement on a tile
@@ -87,4 +89,17 @@ public class Movement {
     public double getOffsetLatitude() {
         return offsety;
     }
+    
+
+    /**
+     * 
+     * @param scale
+     * @return
+     */
+    public float getNMPerLatitude(Scale scale) {
+        float sy = scale.getScaleCorrected();
+        float facy = sy / (float)getLatitudePerPixel();
+        return Math.abs(facy * (float)Preferences.NM_TO_LATITUDE);
+    }
+
 }
