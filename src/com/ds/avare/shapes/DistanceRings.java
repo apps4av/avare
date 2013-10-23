@@ -97,15 +97,15 @@ public class DistanceRings {
          */
         if(pref.getDistanceRingType() == 1) {
             float totalZoom = (scale.getScaleFactor() * scale.getZoomFactor()) / scale.getMacroFactor();
-            if(totalZoom > 10) {                /* the larger totalZoom is, the more zoomed in we are   */
+            if(totalZoom >= 8) {                /* the larger totalZoom is, the more zoomed in we are   */
                 ringScale = RINGS_1_2_5;        
-            } else if (totalZoom > 5) {
+            } else if (totalZoom >= 4) {
                 ringScale = RINGS_2_5_10;
-            } else if (totalZoom > 2.5) {
+            } else if (totalZoom >= 2.0) {
                 ringScale = RINGS_5_10_20;
-            } else if (totalZoom > 1.25) {
+            } else if (totalZoom >= 1) {
                 ringScale = RINGS_10_20_40;
-            }  else if (totalZoom > .625) {
+            }  else if (totalZoom >= .5) {
                 ringScale = RINGS_20_40_80;
             } else {
                 ringScale = RINGS_40_80_160;
