@@ -16,11 +16,7 @@ Redistribution and use in source and binary forms, with or without modification,
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/prefStorageAndDownloadsCategoryTitle" >
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="Internal"
-            android:entries="@array/Folders"
-            android:entryValues="@array/FoldersValues"
-            android:key="@string/Maps"
+        <com.ds.avare.utils.FolderPreference
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
@@ -45,7 +41,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="NONE"
+            android:defaultValue="ALL"
             android:entries="@array/AirSig"
             android:entryValues="@array/AirSig"
             android:key="@string/AirSigType"
@@ -57,6 +53,23 @@ Redistribution and use in source and binary forms, with or without modification,
             android:summary="@string/XlateWeatherSummary"
             android:title="@string/XlateWeatherLabel" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefAppStateCategoryTitle" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ScreenOn"
+            android:summary="@string/ScreenOnSummary"
+            android:title="@string/ScreenOnLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/LeaveRunning"
+            android:summary="@string/LeaveRunningSummary"
+            android:title="@string/LeaveRunningLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/OrientationP"
+            android:summary="@string/OrientationPSummary"
+            android:title="@string/OrientationPLabel" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
@@ -65,7 +78,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/Units"
             android:summary="@string/UnitsSummary"
             android:title="@string/UnitsLabel" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/NightMode"
@@ -83,24 +95,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:title="@string/RunwaysLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/ScreenOn"
-            android:summary="@string/ScreenOnSummary"
-            android:title="@string/ScreenOnLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/LeaveRunning"
-            android:summary="@string/LeaveRunningSummary"
-            android:title="@string/LeaveRunningLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="@string/ShowTrack"
             android:summary="@string/ShowTrackSummary"
             android:title="@string/ShowTrackLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/OrientationP"
-            android:summary="@string/OrientationPSummary"
-            android:title="@string/OrientationPLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/AllFacilities"
@@ -116,6 +113,33 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefShowDistanceRings"
+            android:summary="@string/ShowDistanceRingsSummary"
+            android:title="@string/ShowDistanceRingsLabel" />
+        </PreferenceCategory>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/TimerRingSizePrompt"
+            android:entryValues="@array/TimerRingSizeValues"
+            android:key="@string/prefTimerRingSize"
+            android:summary="@string/TimerRingSizeSummary"
+            android:title="@string/TimerRingSizeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefUseFlightTimer"
+            android:summary="@string/UseFlightTimerSummary"
+            android:title="@string/UseFlightTimerLabel" />
+	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
+    	<CheckBoxPreference
+    	    android:key="@string/TrkUpdAllow"
+    	    android:title="@string/TrkUpdAllowLabel"
+    	    android:summary="@string/TrkUpdAllowSummary"/>
+        <CheckBoxPreference
+            android:key="@string/TrkUpdShowHistory"
+            android:title="@string/TrkUpdShowHistoryLabel"
+            android:summary="@string/TrkUpdShowHistorySummary"/>
     </PreferenceCategory>
-
+    
 </PreferenceScreen>

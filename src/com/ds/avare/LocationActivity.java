@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
@@ -29,6 +30,7 @@ import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.SingleMediaScanner;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -102,6 +104,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDestButton;
     private Button mCenterButton;
     private Button mDrawClearButton;
+    private Button mTracksButton;
     private Button mHelpButton;
     private Button mCrossButton;
     private Button mPrefButton;
@@ -491,6 +494,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
+                AnimateButton k = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton z = new AnimateButton(getApplicationContext(), mZoom, AnimateButton.DIRECTION_R_L);
                 AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
@@ -505,6 +509,7 @@ public class LocationActivity extends Activity implements Observer {
                 t.animate(true);
                 f.animate(true);
                 z.animate(true);
+                k.animate(true);
             }
             
         });
@@ -680,6 +685,31 @@ public class LocationActivity extends Activity implements Observer {
                 }
             }
             
+        });
+
+        /*
+         * The tracking button handler. Enable/Disable the saving of track points
+         * to a KML file
+         */
+        mTracksButton = (Button)view.findViewById(R.id.location_button_tracks);
+        mTracksButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+            	/* The fileURI is returned when the tracks are closed off. Future would
+            	 * be to have this (auto)post to users timline on facebook/google etc ?
+            	 */
+                if(null != mService) {
+                	URI fileURI = mService.setTracks(mPref, !mService.getTracks());
+                	if(fileURI != null) {
+                		/* 
+                         * A file was created. Tell the system to re-scan for it so that it 
+                		 * shows up in a connected file browser
+                         */
+                	    new SingleMediaScanner(getApplicationContext(), fileURI.getPath());
+                	}
+                }
+            }        
         });
 
         /*

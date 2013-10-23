@@ -32,7 +32,8 @@ public class GpsParams {
     private double mAltitude;
     private double mBearing;
     private Scale  mScale;
-    private float mDeclination;
+    private float  mDeclination;
+    private long   mTime;
     
     
     /**
@@ -49,6 +50,7 @@ public class GpsParams {
             mScale = new Scale();
             mScale.setScaleAt(mLatitude);
             mDeclination = 0;
+            mTime = 0;
             return;
         }
         
@@ -68,8 +70,28 @@ public class GpsParams {
         mBearing = (location.getBearing() + 360) % 360;
         mScale = new Scale();
         mScale.setScaleAt(mLatitude);
+        
+        mTime = location.getTime();
     }
-    
+
+    /***
+     * Make an exact copy from the RightHandSide into a newly allocated LeftHandSide object
+     * @param rhs
+     * @return Duplicate copy of the right hand side
+     */
+    public static GpsParams copy(GpsParams rhs) {
+    	GpsParams lhs = new GpsParams(null);
+        lhs.mSpeed       = rhs.mSpeed;
+        lhs.mLongitude   = rhs.mLongitude;
+        lhs.mLatitude    = rhs.mLatitude;
+        lhs.mAltitude    = rhs.mAltitude;
+        lhs.mBearing     = rhs.mBearing;
+        lhs.mScale       = rhs.mScale;
+        lhs.mDeclination = rhs.mDeclination;
+        lhs.mTime        = rhs.mTime;
+        return lhs;
+    }
+
     /**
      * @return
      * double Speed in (miles or knots) per hour depending on preference settings
@@ -119,5 +141,13 @@ public class GpsParams {
      */
     public double getDeclinition() {
         return mDeclination;
+    }
+
+    /**
+     * Return  the UTS time of this fix, in milliseconds since Jan 1, 1970.
+     * @return long mTime
+     */
+    public long getTime() {
+    	return mTime;
     }
 }

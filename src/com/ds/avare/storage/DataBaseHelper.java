@@ -305,6 +305,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         list.add(name + ".zip");
         
         /*
+         * Delete weather
+         */
+        if(name.equals("weather")) {
+            list.add(name + ".db");
+            return list;
+        }
+
+        if(name.equals("TFRs")) {
+            list.add("tfr.txt");
+            return list;
+        }
+
+        /*
+         * Delete databases
+         */
+        if(name.startsWith("databases") && dbs != null) {
+            for(int i = 0; i < dbs.length; i++) {
+                list.add(dbs[i]);
+            }
+            list.add(getMainDb());
+            return list;                    
+        }
+
+        /*
          * Delete files from all databases
          */
         for(int i = 0; i < dbs.length; i++) {
@@ -545,15 +569,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
                         String pa = cursor.getString(11).trim();
+                        String paout = "";
                         if(pa.equals("")) {
                             try {
-                                pa = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
                             }
                             catch (Exception e) {
                                 
                             }
                         }
-                        params.put("Pattern Altitude", pa);
+                        else {
+                            try {
+                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
+                                        (Double.parseDouble(pa)));
+                            }
+                            catch (Exception e) {
+                                
+                            }                            
+                        }
+                        params.put("Pattern Altitude", paout);
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
                             fuel = mContext.getString(R.string.No);
@@ -587,7 +621,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("Landing Fee", fee);
                         String fss = cursor.getString(FSSPHONE_COL);
 						if (fss.equals("1-800-WX-BRIEF")) {
-							fss = fss + " / 1-800-992-7433";
+							fss = "1-800-992-7433";
 						}
                         params.put(FSSPHONE, fss);
 
@@ -640,9 +674,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     
                     if(freq.containsKey(typeof)) {
                         /*
-                         * Add a hash if duplicate value
+                         * Append this string to the existing one if duplicate key
                          */
-                        freq.put(typeof + "#", cursor.getString(2));                                
+                        freq.put(typeof, freq.get(typeof)+"\n\n"+cursor.getString(2));                                
                     }
                     else {
                         freq.put(typeof, cursor.getString(2));
@@ -1582,15 +1616,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     wa.time = cursor.getString(1);
                     wa.lon = cursor.getFloat(2);
                     wa.lat = cursor.getFloat(3);
-                    wa.w3k = cursor.getString(4);
-                    wa.w6k = cursor.getString(5);
-                    wa.w9k = cursor.getString(6);
-                    wa.w12k = cursor.getString(7);
-                    wa.w18k = cursor.getString(8);
-                    wa.w24k = cursor.getString(9);
-                    wa.w30k = cursor.getString(10);
-                    wa.w34k = cursor.getString(11);
-                    wa.w39k = cursor.getString(12);
+                    wa.w3k = cursor.getString(4).replaceAll("[ ]", "");
+                    wa.w6k = cursor.getString(5).replaceAll("[ ]", "");
+                    wa.w9k = cursor.getString(6).replaceAll("[ ]", "");
+                    wa.w12k = cursor.getString(7).replaceAll("[ ]", "");
+                    wa.w18k = cursor.getString(8).replaceAll("[ ]", "");
+                    wa.w24k = cursor.getString(9).replaceAll("[ ]", "");
+                    wa.w30k = cursor.getString(10).replaceAll("[ ]", "");
+                    wa.w34k = cursor.getString(11).replaceAll("[ ]", "");
+                    wa.w39k = cursor.getString(12).replaceAll("[ ]", "");
                 }
             }
         }
