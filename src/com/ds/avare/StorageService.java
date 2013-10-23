@@ -159,7 +159,7 @@ public class StorageService extends Service {
      * Declare our KML position tracker
      * For writing plots to a KML file
      */
-    KMLRecorder mKMLRecorder;
+    private KMLRecorder mKMLRecorder;
 
     /**
      * @author zkhan

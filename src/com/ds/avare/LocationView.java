@@ -1124,70 +1124,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-    	LinkedList<GpsParams> ph = mService.getKMLRecorder().getPositionHistory();
-        if(mPref.shouldDrawTracks() && ph != null) {
-            if((ph.size() > 1) && (null == mPointProjection)) {
-
-                /*
-                 *  Get the position point at the end of the list. This is our starting
-                 *  location. From here, search backward until we find the first location
-                 *  that is in the current display range. 
-                 */
-                int idx = 0;
-                for (idx = ph.size() - 1; idx > 0; idx--) {
-                	if (mOrigin.isInDisplayRange(new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude())) == true) {
-                		break;
-                	}
-                }
-
-                /*
-                 *  If no points are found in range, then there is nothing to plot
-                 */
-                if (idx == 0) { 
-                	return;
-                }
+        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
                 
-            	/*
-            	 *  Set the brush color and width
-            	 */
-            	mPaint.setColor(Color.MAGENTA);
-                mPaint.setStrokeWidth(6);
-            	mPaint.setStyle(Paint.Style.FILL);
+        	/*
+        	 *  Set the brush color and width
+        	 */
+        	mPaint.setColor(Color.MAGENTA);
+            mPaint.setStrokeWidth(6);
+        	mPaint.setStyle(Paint.Style.FILL);
 
-                /*
-                 *  Get the first visible GPS point to start at
-                 */
-                Coordinate gpsPos1 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
-            	for(--idx ; idx >= 0; idx--) {
-            		
-            		/*
-            		 *  Get the next position to draw to
-            		 */
-            		Coordinate gpsPos2 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
-            		
-            		/* Check the location against our display bounds. If this point is still on our 
-            		 * display area then it is OK to draw the line. If it is out of bounds, assume that 
-            		 * we are done with our plotting
-            		 */
-            		if(mOrigin.isInDisplayRange(gpsPos2)) {
-        	            float x1 = (float)(mOrigin.getOffsetX(gpsPos1.getLongitude()));
-        	            float y1 = (float)(mOrigin.getOffsetY(gpsPos1.getLatitude()));                        
-
-        	            float x2 = (float)(mOrigin.getOffsetX(gpsPos2.getLongitude()));
-        	            float y2 = (float)(mOrigin.getOffsetY(gpsPos2.getLatitude()));                        
-
-        	            canvas.drawLine(x1, y1, x2, y2, mPaint);
-
-        	            /*
-        	             *  Set the end point as our new start point and do this all again
-        	             */
-        	            gpsPos1 = gpsPos2;
-            		} 
-            		else {
-            		    return; /* Point is out of range, we are done */
-            		}
-            	}
-            }
+        	mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
         }
     }
 
