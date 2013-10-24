@@ -21,7 +21,6 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
@@ -1089,7 +1088,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	 */
         	if(ringR[DistanceRings.RING_SPEED] != 0) {
 	        	mPaint.setColor(DistanceRings.COLOR_SPEED_RING);
-	        	canvas.drawCircle(x, y, ringR[4], mPaint);
+	        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED], mPaint);
         	}
 
             /*
