@@ -22,23 +22,27 @@ import android.util.AttributeSet;
  *
  */
 public class ListPreferenceWithSummary extends ListPreference {
+    private String originalSummary = "";
 
-	public ListPreferenceWithSummary(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public ListPreferenceWithSummary(Context context, AttributeSet attrs) {
+	super(context, attrs);
+	originalSummary = super.getSummary().toString();
+    }
 
-	public ListPreferenceWithSummary(Context context) {
-		super(context);
-	}
+    public ListPreferenceWithSummary(Context context) {
+	super(context);
+	originalSummary = super.getSummary().toString();
+    }
 
-	@Override
-	public void setValue(String value) {
-		super.setValue(value);
-		setSummary(value);
-	}
+    @Override
+    public void setValue(String value) {
+	super.setValue(value);
+	setSummary(originalSummary + "\nCurrently set to: " + value);
+    }
 
-	@Override
-	public void setSummary(CharSequence summary) {
-		super.setSummary(getEntry());
-	}
+    @Override
+    public void setSummary(CharSequence summary) {
+
+	super.setSummary(originalSummary + "\nCurrently set to: " + getEntry());
+    }
 }
