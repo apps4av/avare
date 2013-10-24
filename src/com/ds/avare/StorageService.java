@@ -16,11 +16,13 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gdl90.AdsbStatus;
 import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gdl90.NexradBitmap;
 import com.ds.avare.gdl90.NexradImage;
 import com.ds.avare.gps.*;
+import com.ds.avare.hobbsMeter.FlightTimer;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -31,6 +33,7 @@ import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.weather.InternetWeatherCache;
 
@@ -40,8 +43,11 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.SparseArray;
+import java.io.File;
+import java.net.URI;
 
 /**
  * @author zkhan
@@ -144,6 +150,17 @@ public class StorageService extends Service {
     
     private NexradImage mNexradImg;
     
+    /*
+     * Hobbs time
+     */
+    private FlightTimer  mFlightTimer;
+
+    /*
+     * Declare our KML position tracker
+     * For writing plots to a KML file
+     */
+    private KMLRecorder mKMLRecorder;
+
     /**
      * @author zkhan
      *
@@ -206,6 +223,16 @@ public class StorageService extends Service {
         
         mDraw = new Draw();
         
+        /*
+         * Allocate a flight timer object
+         */
+        mFlightTimer = new FlightTimer();
+
+        /*
+         * Start up the KML recorder feature
+         */
+        mKMLRecorder = new KMLRecorder();
+
         /*
          * Monitor TFR every hour.
          */
@@ -638,5 +665,51 @@ public class StorageService extends Service {
      */
     public InternetWeatherCache getInternetWeatherCache() {
         return mInternetWeatherCache;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public FlightTimer getFlightTimer() {
+        return mFlightTimer;
+    }
+    
+    /**
+     * Called when the user presses the "tracks" button on the locationview screen to
+     * toggle the state of the saving of GPS positions.
+     * @param b enable/disable tracking
+     * @return URI of the file that was just closed, or null if it was just opened
+     */
+    public URI setTracks(Preferences pref, boolean shouldTrack) {
+        if(shouldTrack) {
+            KMLRecorder.Config config = mKMLRecorder.new Config(
+                true,	/* always remove tracks from display on start */
+                10,		/* 10 seconds between position updates */
+                true,	/* use verbose details */
+                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
+                20);	/* How fast we are going before starting to track, 20 knots */
+            mKMLRecorder.start(config);
+            return null;
+        }
+        else {
+            return mKMLRecorder.stop();
+        }
+    }
+
+    /**
+     * Are we currently saving the location information
+     * @return Boolean to indicate whether we are actively writing tracks
+     */
+    public boolean getTracks() {
+        return mKMLRecorder.isRecording();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public KMLRecorder getKMLRecorder() {
+        return mKMLRecorder;
     }
 }

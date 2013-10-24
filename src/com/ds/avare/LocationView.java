@@ -26,6 +26,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.DistanceRings;
 import com.ds.avare.shapes.MetShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
@@ -54,6 +55,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.TextPaint;
@@ -212,13 +214,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      *  Copy the existing paint to a new paint so we don't mess it up
      */
     Paint mRunwayPaint;
+    Paint mTextPaintShadow;
+    Paint mShadowPaint;
+    Rect mTextSize;
+    RectF mShadowBox;
 
     /*
      * Text on screen color
      */
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
-    
 
     /**
      * @param context
@@ -266,6 +271,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mObstacleThread = new Thread(mObstacleTask);
         mObstacleThread.start();
 
+        mTextSize = new Rect();
+        mShadowBox = new RectF(mTextSize);
+
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
@@ -278,6 +286,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         mRunwayPaint = new Paint(mPaint);
+        
+        mTextPaintShadow = new Paint();
+        mTextPaintShadow.setTypeface(mFace);
+        mTextPaintShadow.setAntiAlias(true);
+        mTextPaintShadow.setColor(TEXT_COLOR);
+        mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+        mTextPaintShadow.setStyle(Paint.Style.FILL);
+        mShadowPaint = new Paint(mTextPaintShadow);
+        mShadowPaint.setShadowLayer(0, 0, 0, 0);
+        mShadowPaint.setAlpha(0x7f);
+        mShadowPaint.setStyle(Style.FILL);
     }
     
     /**
@@ -606,7 +625,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != mService) {
             mets = mService.getInternetWeatherCache().getAirSigMet();
         }
-        if(null != mets) {
+        if(null != mets && null == mPointProjection) {
             mPaint.setStrokeWidth(4); //TODO Should probably be dynamic based on device resolution
             mPaint.setShadowLayer(0, 0, 0, 0);
             String typeArray[] = mContext.getResources().getStringArray(R.array.AirSig);
@@ -683,10 +702,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             mPaint.setTextAlign(Align.RIGHT);
             /*
-             * Heading, Speed
+             * Heading, Speed, timer
              */
             canvas.drawText(
-                    Helper.makeLine(mGpsParams.getSpeed(), Preferences.speedConversionUnit, null, mGpsParams.getBearing(), mGpsParams.getDeclinition()),
+                    Helper.makeLine(mGpsParams.getSpeed(),
+                            Preferences.speedConversionUnit,
+                            (mPref.useFlightTimer() && mService != null) ? mService.getFlightTimer().getValue() : null,
+                                    mGpsParams.getBearing(), mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv * 2, mPaint);
             
         }
@@ -710,7 +732,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Draw distance from point
              */
-            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(), Preferences.distanceConversionUnit, "     ", mPointProjection.getBearing(), mGpsParams.getDeclinition()),
+            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(),
+                    Preferences.distanceConversionUnit, "     ",
+                    mPointProjection.getBearing(),
+                    mGpsParams.getDeclinition()),
                     getWidth(), getHeight() / mTextDiv, mPaint);
             mPaint.setTextAlign(Align.LEFT);
             canvas.drawText(mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
@@ -1006,56 +1031,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 								runwayNumberCoordinatesX,
 								runwayNumberCoordinatesY);
 					}
-					/*
-					 *  Get the size of the text to draw and create a new
-					 *  rectangle of that size
-					 */
-					Rect rect = new Rect();
-					mRunwayPaint.getTextBounds(num, 0, num.length(), rect);
-					if (mPref.shouldShowBackground()) {
-						/*
-						 * If the "show background" preference is true, draw a
-						 * shaded square behind runway numbers to make them easier
-						 * to see. Perhaps there's a simpler way to do this? TODO:
-						 * Make this into a nice,rounded rectangle with a border
-						 */				
-			
-						/*
-						 *  Make that rectangle a little bigger to account for
-						 *  the shadow effect
-						 */
-						rect.set(0, 0, rect.width() + SHADOW * 3, rect.height()
-								+ SHADOW * 3);
-						mRunwayPaint.setShadowLayer(0, 0, 0, 0);
-						mRunwayPaint.setColor(TEXT_COLOR_OPPOSITE);
-						mRunwayPaint.setAlpha(0x7f);
-
-						/*
-						 * Draw the rectangle off the end of its associated
-						 * runway
-						 */
-						canvas.save();
-						canvas.translate(
-								runwayNumberCoordinatesX - (rect.width() / 2),
-								runwayNumberCoordinatesY - (rect.height() / 2));
-						canvas.drawRect(rect, mRunwayPaint);
-						canvas.restore();
-
-					}
-					mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-					mRunwayPaint.setColor(TEXT_COLOR);
-					mRunwayPaint.setAlpha(0xff);
-					mRunwayPaint.setTextAlign(Paint.Align.CENTER);
 
 					/*
 					 * Draw the text so it's centered within the shadow
                      * rectangle, which is itself centered at the end of the
                      * extended runway centerline
 					 */
-					canvas.drawText(num,
+					drawShadowedText(canvas, num, mRunwayPaint.getTextSize(), Color.DKGRAY,
 							runwayNumberCoordinatesX,
-							runwayNumberCoordinatesY
-									+ (rect.height() / 2 - SHADOW * 2), mRunwayPaint);
+							runwayNumberCoordinatesY);
 					if (mTrackUp) {
 						canvas.restore();
 					}
@@ -1063,7 +1047,124 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 			}
 		}
 	}
-    
+
+    /**
+     * Draws concentric circles around the current aircraft position showing distance.
+     * author: rwalker
+     * 
+     * @param canvas upon which to draw the circles
+     */
+    private void drawDistanceRings(Canvas canvas) {
+        
+        if((mPref.getDistanceRingType() != 0) && (null == mPointProjection)) {
+        	/*
+        	 *  We are configured to show distance rings and the chart is currently NOT undergoing
+        	 *  a "pinch-zoom"
+        	 */
+            float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));   /* Get where we are */
+            float y = (float)(mOrigin.getOffsetY(mGpsParams.getLatitude()));                        
+
+        	/*
+        	 *  Set the paint accordingly
+        	 */
+            mPaint.setStrokeWidth(8);
+            mPaint.setShadowLayer(0, 0, 0, 0);
+        	mPaint.setColor(DistanceRings.COLOR_DISTANCE_RING);
+        	mPaint.setStyle(Style.STROKE);
+        	mPaint.setAlpha(0x7F);
+
+        	DistanceRings.calculateRings(mContext, mPref, mScale,
+        	        mMovement, mGpsParams.getSpeed());
+        	float ringR[] = DistanceRings.getRings();
+        	/*
+        	 * Draw the 3 distance circles now
+        	 */
+        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_INNER], mPaint);
+        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_MIDDLE], mPaint);
+            canvas.drawCircle(x, y, ringR[DistanceRings.RING_OUTER], mPaint);
+
+        	/*
+        	 *  Draw our "speed ring" if we are going faster than stall speed 
+        	 */
+        	if(ringR[DistanceRings.RING_SPEED] != 0) {
+	        	mPaint.setColor(DistanceRings.COLOR_SPEED_RING);
+	        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED], mPaint);
+        	}
+
+            /*
+             * Restore some paint settings back to what they were soas not 
+             * to mess things up
+             */
+            mPaint.setAlpha(0xFF);
+            mPaint.setStyle(Style.FILL);
+            mPaint.setColor(Color.WHITE);
+            /*
+             * Draw the corresponding text
+             */
+            String text[] = DistanceRings.getRingsText();
+            mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+            canvas.drawText(text[DistanceRings.RING_INNER], x + ringR[DistanceRings.RING_INNER], y, mPaint);
+            canvas.drawText(text[DistanceRings.RING_MIDDLE], x + ringR[DistanceRings.RING_MIDDLE], y, mPaint);
+            canvas.drawText(text[DistanceRings.RING_OUTER], x + ringR[DistanceRings.RING_OUTER], y, mPaint);
+        }
+    }
+
+    /**
+     * Draw the tracks to show our previous positions. If tracking is enabled, there is
+     * a linked list of gps coordinates attached to this view with the most recent one at the end
+     * of that list. Start at the end value to begin the drawing and as soon as we find one that is 
+     * not in the range of this display, we can assume that we're done.
+     * @param canvas
+     */
+    private void drawTracks(Canvas canvas) {
+    	/*
+    	 * Some pre-conditions that would prevent us from drawing anything
+    	 */
+        if(mService == null) {
+            return;
+        }
+        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
+                
+        	/*
+        	 *  Set the brush color and width
+        	 */
+        	mPaint.setColor(Color.MAGENTA);
+            mPaint.setStrokeWidth(6);
+        	mPaint.setStyle(Paint.Style.FILL);
+
+        	mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+        }
+    }
+
+    /**
+     * Display the text in the indicated paint with a shadow'd background. This aids in readability.
+     * 
+     * @param canvas where to draw
+     * @param text what to display
+     * @param height is the vertical size of the text
+     * @param shadowColor is the color of the shadow of course
+     * @param x center position of the text on the canvas
+     * @param y top edge of text on the canvas
+     */
+    private void drawShadowedText(Canvas canvas, String text, float height, int shadowColor, float x, float y) {
+
+        mTextPaintShadow.setTextSize(height);
+
+    	final int XMARGIN = 20;
+    	final int YMARGIN = 10;
+    	mTextPaintShadow.getTextBounds(text, 0, text.length(), mTextSize);
+    	mShadowBox.bottom = mTextSize.bottom + YMARGIN + y;
+    	mShadowBox.top    = mTextSize.top - YMARGIN + y;
+    	mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
+    	mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
+
+    	final int SHADOWRECTRADIUS = 20;
+    	mShadowPaint.setColor(shadowColor);
+    	mShadowPaint.setAlpha(0x80);
+    	canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
+    	canvas.drawText(text,  x - (mTextSize.right / 2), y, mTextPaintShadow);
+    }
+
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1092,6 +1193,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas);
         drawObstacles(canvas);
         drawAircraft(canvas);
+        drawDistanceRings(canvas);
+        drawTracks(canvas);
         if(mTrackUp) {
             canvas.restore();
         }
@@ -1144,6 +1247,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Comes from location manager
          */
         mGpsParams = params;
+
+        if(mService != null) {
+            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
+            mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are 	*/
+        }
 
         tfrReset();
         /*
@@ -1475,6 +1583,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(mDraw) {
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, null);
                 return;
+            }
+
+            /* If the long press is in the top 2 lines, then clear the HOBBS meter
+             * XXX - perhaps pop up a menu to change the units as well ? Could be a gesture
+             * to bring up a dialog dealing with all things in the top 2 text lines.
+             */
+            if(y < (mTextDiv * 2) && mService != null) {
+            	mService.getFlightTimer().reset();
+            	return;
             }
 
             /*

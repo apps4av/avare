@@ -595,7 +595,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         params.put("Landing Fee", fee);
                         String fss = cursor.getString(FSSPHONE_COL);
 						if (fss.equals("1-800-WX-BRIEF")) {
-							fss = fss + " / 1-800-992-7433";
+							fss = "1-800-992-7433";
 						}
                         params.put(FSSPHONE, fss);
                         landingSiteFacilityNumber = cursor.getString(22);
