@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
+import org.apache.http.util.LangUtils;
+
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
@@ -118,6 +120,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
     private static final String TABLE_AIRPORT_AWOS = "awos";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
+    private static final String TABLE_AIRPORT_REMARKS = "airportremarks";
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
@@ -501,6 +504,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
         
         Cursor cursor;
+        String landingSiteFacilityNumber = null;
         
         String types = "";
         if(type.equals(Destination.BASE)) {
@@ -530,15 +534,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     params.put(TYPE, cursor.getString(TYPE_COL).trim());
                     if(type.equals(Destination.BASE)) {
                         String use = cursor.getString(5).trim();
-                        if(use.equals("PU")) {
-                            use = "PUBLIC";
-                        }
-                        else if(use.equals("PR")) {
-                            use = "PRIVATE";                            
-                        }
-                        else  {
-                            use = "MILITARY";                            
-                        }
+                        params.put("Owner", cursor.getString(21));
                         params.put("Use", use);
                         params.put("Manager", cursor.getString(7).trim());
                         params.put(MANAGER_PHONE, cursor.getString(8).trim());
@@ -556,11 +552,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         else {
                             params.put(CUSTOMS, mContext.getString(R.string.No));                            
                         }
-                        String bcn = cursor.getString(BEACON_COL);
-                        if(bcn.equals("")) {
-                            bcn = mContext.getString(R.string.No);
-                        }
-                        params.put(BEACON, bcn);
+
+                        params.put(BEACON, cursor.getString(BEACON_COL));
                         String sc = cursor.getString(SEGCIRCLE_COL);
                         if(sc.equals("Y")) {
                             params.put(SEGCIRCLE, mContext.getString(R.string.Yes));
@@ -568,26 +561,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         else {
                             params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
-                        String pa = cursor.getString(11).trim();
-                        String paout = "";
-                        if(pa.equals("")) {
-                            try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
-                            }
-                            catch (Exception e) {
-                                
-                            }
-                        }
-                        else {
-                            try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
-                                        (Double.parseDouble(pa)));
-                            }
-                            catch (Exception e) {
-                                
-                            }                            
-                        }
-                        params.put("Pattern Altitude", paout);
+                        params.put("Pattern Altitude", cursor.getString(11));
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
                             fuel = mContext.getString(R.string.No);
@@ -624,6 +598,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 							fss = fss + " / 1-800-992-7433";
 						}
                         params.put(FSSPHONE, fss);
+                        landingSiteFacilityNumber = cursor.getString(22);
+                        
 
                     }
                 }
@@ -856,7 +832,41 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         catch (Exception e) {
         }
 
-        closes(cursor);        
+        closes(cursor);
+        
+        //------------
+        /*
+         * Find remarks
+         */
+        
+        qry = "select * from " + TABLE_AIRPORT_REMARKS + " where LandingFacilitySiteNumber" + "=='" + landingSiteFacilityNumber + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    String element = cursor.getString(1);
+                    
+                    if(freq.containsKey(element)) {
+                        /*
+                         * Append this string to the existing one if duplicate key
+                         */
+                        params.put(element, params.get(element)+"\n\n"+cursor.getString(2));                                
+                    }
+                    else {
+                        params.put(element, cursor.getString(2));
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        //-----------
     }
 
 

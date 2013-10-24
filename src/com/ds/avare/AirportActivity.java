@@ -200,7 +200,7 @@ public class AirportActivity extends Activity {
             /*
              * Get Text A/FD
              */
-            LinkedHashMap <String, String>map = mDestination.getParams();
+            LinkedHashMap <String, String> map = mDestination.getParams();
             LinkedList<Awos> awos = mDestination.getAwos();
             LinkedHashMap <String, String>freq = mDestination.getFrequencies();
             LinkedList<Runway> runways = mDestination.getRunways();
