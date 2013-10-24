@@ -30,10 +30,10 @@ import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
-import com.ds.avare.utils.SingleMediaScanner;
 
 import android.location.GpsStatus;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.app.Activity;
@@ -703,10 +703,17 @@ public class LocationActivity extends Activity implements Observer {
                 	URI fileURI = mService.setTracks(mPref, !mService.getTracks());
                 	if(fileURI != null) {
                 		/* 
-                         * A file was created. Tell the system to re-scan for it so that it 
-                		 * shows up in a connected file browser
+                         * A file was created. Send it as an email attachment
                          */
-                	    new SingleMediaScanner(getApplicationContext(), fileURI.getPath());
+                	    try {
+                    	    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND); 
+                    	    emailIntent.setType("application/kml");
+                            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.Save) + " " + fileURI.getPath()); 
+                    	    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(fileURI.getPath())));
+                    	    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                	    }
+                	    catch (Exception e) {
+                	    }
                 	}
                 }
             }        
