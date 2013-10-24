@@ -19,7 +19,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <com.ds.avare.utils.FolderPreference
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
+        <ListPreference
             android:defaultValue="0"
             android:entries="@array/Server"
             android:entryValues="@array/ServerValues"
@@ -40,7 +40,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:title="@string/GpsOffWarnLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
-        <com.ds.avare.utils.ListPreferenceWithSummary
+        <ListPreference
             android:defaultValue="ALL"
             android:entries="@array/AirSig"
             android:entryValues="@array/AirSig"
@@ -71,7 +71,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:title="@string/OrientationPLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
-        <com.ds.avare.utils.ListPreferenceWithSummary
+        <ListPreference
             android:defaultValue="0"
             android:entries="@array/UnitsD"
             android:entryValues="@array/UnitsDValues"
@@ -113,13 +113,14 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/prefShowDistanceRings"
-            android:summary="@string/ShowDistanceRingsSummary"
-            android:title="@string/ShowDistanceRingsLabel" />
-        </PreferenceCategory>
-        <com.ds.avare.utils.ListPreferenceWithSummary
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/DistanceRingTypePrompts"
+            android:entryValues="@array/DistanceRingTypeValues"
+            android:key="@string/prefDistanceRingType"
+            android:summary="@string/DistanceRingTypeSummary"
+            android:title="@string/DistanceRingTypeLabel" />
+        <ListPreference
             android:defaultValue="0"
             android:entries="@array/TimerRingSizePrompt"
             android:entryValues="@array/TimerRingSizeValues"
@@ -131,7 +132,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/prefUseFlightTimer"
             android:summary="@string/UseFlightTimerSummary"
             android:title="@string/UseFlightTimerLabel" />
-	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
+        </PreferenceCategory>
+        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
     	<CheckBoxPreference
     	    android:key="@string/TrkUpdAllow"
     	    android:title="@string/TrkUpdAllowLabel"

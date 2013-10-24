@@ -21,12 +21,12 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.DistanceRings;
 import com.ds.avare.shapes.MetShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
@@ -295,7 +295,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaintShadow.setStyle(Paint.Style.FILL);
         mShadowPaint = new Paint(mTextPaintShadow);
         mShadowPaint.setShadowLayer(0, 0, 0, 0);
-        mShadowPaint.setColor(TEXT_COLOR_OPPOSITE);
         mShadowPaint.setAlpha(0x7f);
         mShadowPaint.setStyle(Style.FILL);
     }
@@ -1038,7 +1037,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * rectangle, which is itself centered at the end of the
                      * extended runway centerline
 					 */
-					drawShadowedText(canvas, num, mRunwayPaint.getTextSize(),
+					drawShadowedText(canvas, num, mRunwayPaint.getTextSize(), Color.DKGRAY,
 							runwayNumberCoordinatesX,
 							runwayNumberCoordinatesY);
 					if (mTrackUp) {
@@ -1057,74 +1056,56 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawDistanceRings(Canvas canvas) {
         
-        if((mPref.showDistanceRings() != false) && (null == mPointProjection)) {
-            /*
-             * Find pixels per nautical mile
-             */
-            float sy = mScale.getScaleCorrected();
-
-            float facy = sy / (float)mMovement.getLatitudePerPixel();
-            float pixPerNm = Math.abs(facy * (float)Preferences.NM_TO_LATITUDE);
-            
+        if((mPref.getDistanceRingType() != 0) && (null == mPointProjection)) {
         	/*
         	 *  We are configured to show distance rings and the chart is currently NOT undergoing
         	 *  a "pinch-zoom"
         	 */
-        	float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));	// Get where we are
+            float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));   /* Get where we are */
             float y = (float)(mOrigin.getOffsetY(mGpsParams.getLatitude()));                        
 
         	/*
-        	 *  Using the tables and the radius factor, come up with the radius of the circle to
-        	 *  draw 
+        	 *  Set the paint accordingly
         	 */
-            double fac = 1;
-            if(mPref.getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
-                fac *= Preferences.NM_TO_MI;
-            }
-            else if(mPref.getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
-                fac *= Preferences.NM_TO_KM;
-            }
-
-            /*
-             * Draw 3 rings, 2, 5, and 10.
-             */
-        	float ring1R = (float)(pixPerNm * 2 / fac);
-        	float ring2R = (float)(pixPerNm * 5 / fac);
-            float ring3R = (float)(pixPerNm * 10 / fac);
-            float ring4R = (float)(pixPerNm * 20 / fac);
-
-        	/*
-        	 *  Draw all 3 circles now
-        	 */
-            mPaint.setStrokeWidth(6);
+            mPaint.setStrokeWidth(8);
             mPaint.setShadowLayer(0, 0, 0, 0);
-        	mPaint.setColor(Color.BLUE);
+        	mPaint.setColor(DistanceRings.COLOR_DISTANCE_RING);
         	mPaint.setStyle(Style.STROKE);
         	mPaint.setAlpha(0x7F);
-        	canvas.drawCircle(x, y, ring1R, mPaint);
-        	canvas.drawCircle(x, y, ring2R, mPaint);
-            canvas.drawCircle(x, y, ring3R, mPaint);
-            canvas.drawCircle(x, y, ring4R, mPaint);
+
+        	DistanceRings.calculateRings(mContext, mPref, mScale,
+        	        mMovement, mGpsParams.getSpeed());
+        	float ringR[] = DistanceRings.getRings();
+        	/*
+        	 * Draw the 3 distance circles now
+        	 */
+        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_INNER], mPaint);
+        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_MIDDLE], mPaint);
+            canvas.drawCircle(x, y, ringR[DistanceRings.RING_OUTER], mPaint);
 
         	/*
-        	 *  Draw our "speed ring" in green if we are going faster than stall
-        	 *  speed 
+        	 *  Draw our "speed ring" if we are going faster than stall speed 
         	 */
-        	final int STALLSPEED = 25;
-        	if((mGpsParams.getSpeed() >= STALLSPEED) && (mPref.getTimerRingSize() != 0)) {
-        	    /*
-        	     * its / 60 as units is in minutes
-        	     */
-	        	double speedRadius = (mGpsParams.getSpeed() / 60) * pixPerNm * mPref.getTimerRingSize() / fac;
-	        	mPaint.setColor(Color.YELLOW);
-	        	canvas.drawCircle(x, y, (float)speedRadius, mPaint);
+        	if(ringR[DistanceRings.RING_SPEED] != 0) {
+	        	mPaint.setColor(DistanceRings.COLOR_SPEED_RING);
+	        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED], mPaint);
         	}
 
+            /*
+             * Restore some paint settings back to what they were soas not 
+             * to mess things up
+             */
             mPaint.setAlpha(0xFF);
             mPaint.setStyle(Style.FILL);
-        	/*
-        	 * No need to draw distance text because its already evident by touch.
-        	 */
+            mPaint.setColor(Color.WHITE);
+            /*
+             * Draw the corresponding text
+             */
+            String text[] = DistanceRings.getRingsText();
+            mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+            canvas.drawText(text[DistanceRings.RING_INNER], x + ringR[DistanceRings.RING_INNER], y, mPaint);
+            canvas.drawText(text[DistanceRings.RING_MIDDLE], x + ringR[DistanceRings.RING_MIDDLE], y, mPaint);
+            canvas.drawText(text[DistanceRings.RING_OUTER], x + ringR[DistanceRings.RING_OUTER], y, mPaint);
         }
     }
 
@@ -1142,70 +1123,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-    	LinkedList<GpsParams> ph = mService.getKMLRecorder().getPositionHistory();
-        if(mPref.shouldDrawTracks() && ph != null) {
-            if((ph.size() > 1) && (null == mPointProjection)) {
-
-                /*
-                 *  Get the position point at the end of the list. This is our starting
-                 *  location. From here, search backward until we find the first location
-                 *  that is in the current display range. 
-                 */
-                int idx = 0;
-                for (idx = ph.size() - 1; idx > 0; idx--) {
-                	if (mOrigin.isInDisplayRange(new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude())) == true) {
-                		break;
-                	}
-                }
-
-                /*
-                 *  If no points are found in range, then there is nothing to plot
-                 */
-                if (idx == 0) { 
-                	return;
-                }
+        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
                 
-            	/*
-            	 *  Set the brush color and width
-            	 */
-            	mPaint.setColor(Color.MAGENTA);
-                mPaint.setStrokeWidth(6);
-            	mPaint.setStyle(Paint.Style.FILL);
+        	/*
+        	 *  Set the brush color and width
+        	 */
+        	mPaint.setColor(Color.MAGENTA);
+            mPaint.setStrokeWidth(6);
+        	mPaint.setStyle(Paint.Style.FILL);
 
-                /*
-                 *  Get the first visible GPS point to start at
-                 */
-                Coordinate gpsPos1 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
-            	for(--idx ; idx >= 0; idx--) {
-            		
-            		/*
-            		 *  Get the next position to draw to
-            		 */
-            		Coordinate gpsPos2 = new Coordinate(ph.get(idx).getLongitude(), ph.get(idx).getLatitude());
-            		
-            		/* Check the location against our display bounds. If this point is still on our 
-            		 * display area then it is OK to draw the line. If it is out of bounds, assume that 
-            		 * we are done with our plotting
-            		 */
-            		if(mOrigin.isInDisplayRange(gpsPos2)) {
-        	            float x1 = (float)(mOrigin.getOffsetX(gpsPos1.getLongitude()));
-        	            float y1 = (float)(mOrigin.getOffsetY(gpsPos1.getLatitude()));                        
-
-        	            float x2 = (float)(mOrigin.getOffsetX(gpsPos2.getLongitude()));
-        	            float y2 = (float)(mOrigin.getOffsetY(gpsPos2.getLatitude()));                        
-
-        	            canvas.drawLine(x1, y1, x2, y2, mPaint);
-
-        	            /*
-        	             *  Set the end point as our new start point and do this all again
-        	             */
-        	            gpsPos1 = gpsPos2;
-            		} 
-            		else {
-            		    return; /* Point is out of range, we are done */
-            		}
-            	}
-            }
+        	mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
         }
     }
 
@@ -1215,10 +1142,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas where to draw
      * @param text what to display
      * @param height is the vertical size of the text
+     * @param shadowColor is the color of the shadow of course
      * @param x center position of the text on the canvas
      * @param y top edge of text on the canvas
      */
-    private void drawShadowedText(Canvas canvas, String text, float height, float x, float y) {
+    private void drawShadowedText(Canvas canvas, String text, float height, int shadowColor, float x, float y) {
 
         mTextPaintShadow.setTextSize(height);
 
@@ -1231,6 +1159,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
 
     	final int SHADOWRECTRADIUS = 20;
+    	mShadowPaint.setColor(shadowColor);
+    	mShadowPaint.setAlpha(0x80);
     	canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
     	canvas.drawText(text,  x - (mTextSize.right / 2), y, mTextPaintShadow);
     }

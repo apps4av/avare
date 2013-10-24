@@ -172,9 +172,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefWeatherCategoryTitle">Weather</string>
     <string name="prefDisplayCategoryTitle">Display</string>
     <string name="prefAppStateCategoryTitle">Application State</string>
-    <string name="prefShowDistanceRings">ShowDistanceRings</string>
-    <string name="ShowDistanceRingsLabel">&quot;Show Distance Rings&quot;</string>
-    <string name="ShowDistanceRingsSummary">&quot;Select to display distance rings around current location on chart.&quot;</string>
+    <string name="prefDistanceRingType">DistanceRingType</string>
+    <string name="DistanceRingTypeLabel">&quot;Distance Ring Style&quot;</string>
+    <string name="DistanceRingTypeSummary">&quot;Select the style of distance rings to display.&quot;</string>
     <string name="UnitKnot">kt</string>
     <string name="UnitMile">mi</string>
     <string name="UnitKilometer">km</string>

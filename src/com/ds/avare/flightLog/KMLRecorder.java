@@ -22,7 +22,10 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import android.annotation.SuppressLint;
+
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.shapes.CrumbsShape;
+import com.ds.avare.shapes.Shape;
 
 /**
  * Class to record GPS Position information to a file formatted in KML suitable
@@ -76,6 +79,7 @@ public class KMLRecorder {
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
 	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
 	private long			mTimeOfLastFix;			// Time the last fix we used occurred
+	private CrumbsShape    mShape;
 	
 	/**
 	 * Statics that all class instances share
@@ -155,6 +159,7 @@ public class KMLRecorder {
      */
     public KMLRecorder(){
     	mPositionHistory = new LinkedList<GpsParams>();
+    	mShape = new CrumbsShape();
     }
     
     /** 
@@ -170,6 +175,7 @@ public class KMLRecorder {
      * @return A URI of the file just closed
      */
 	public URI stop(){
+	    mShape.clearShape();
     	if(mTracksFile != null) {
     		// File operations can cause exceptions and we need to account for that
     		try {
@@ -214,6 +220,7 @@ public class KMLRecorder {
      */
     @SuppressLint("SimpleDateFormat")
 	public void start(Config config) {
+        mShape.clearShape();
     	mConfig = config;
     	
 		// Build the file name based upon the current date/time
@@ -304,6 +311,7 @@ public class KMLRecorder {
 	    				// Add this position to our linked list for possible display
 	    				// on the charts
 	    				mPositionHistory.add(GpsParams.copy(gpsParams));
+	    				mShape.updateShape(gpsParams);
 	    			} catch (IOException ioe) { }
 	    		}
     		}
@@ -317,5 +325,13 @@ public class KMLRecorder {
      */
     public void setClearListOnStart(boolean clearListOnStart){
     	mConfig.mClearListOnStart = clearListOnStart;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public Shape getShape() {
+       return mShape; 
     }
 }
