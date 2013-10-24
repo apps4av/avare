@@ -19,11 +19,9 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import org.apache.http.util.LangUtils;
-
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Awos;
+
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -118,7 +116,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
-    private static final String TABLE_AIRPORT_AWOS = "awos";
+    private static final String TABLE_AIRPORT_AWOS_STATIONS = "awosStations";
+    private static final String TABLE_AIRPORT_AWOS_REMARKS = "awosRemarks";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
     private static final String TABLE_AIRPORT_REMARKS = "airportremarks";
     private static final String TABLE_FILES = "files";
@@ -501,10 +500,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
         
         Cursor cursor;
         String landingSiteFacilityNumber = null;
+        String weatherSensorIdent = null;
         
         String types = "";
         if(type.equals(Destination.BASE)) {
@@ -533,9 +533,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                     params.put(TYPE, cursor.getString(TYPE_COL).trim());
                     if(type.equals(Destination.BASE)) {
-                        String use = cursor.getString(5).trim();
-                        params.put("Owner", cursor.getString(21));
-                        params.put("Use", use);
+                       
+                        params.put("Owner", cursor.getString(21));                       
+                        params.put("Use", cursor.getString(5).trim());
                         params.put("Manager", cursor.getString(7).trim());
                         params.put(MANAGER_PHONE, cursor.getString(8).trim());
                         params.put("Elevation", cursor.getString(9).trim());
@@ -616,7 +616,42 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(!type.equals(Destination.BASE)) {
             return;
         }
-        
+	/*
+	 * Get AWOS frequency/telephone info for this particular airport
+	 */
+	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where LFSN" + "=='" + landingSiteFacilityNumber + "';";
+	cursor = doQuery(qry, getMainDb());
+	
+	// 0     1    2  3  4     5    6     7    8
+	// ident,type,lt,ln,freq1,tel1,freq2,tel2,lfsn
+	try {
+	    /*
+	     * Add each AWOS
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    weatherSensorIdent = cursor.getString(0);
+		    String typeof = cursor.getString(1);
+		    String info1 =        cursor.getString(4) + " " + cursor.getString(5);
+	            String info2 = "\n" + cursor.getString(6) + " " + cursor.getString(7);
+
+		    if (freq.containsKey(typeof)) {
+			/*
+			 * Append this string to the existing one if duplicate
+			 * key
+			 */
+			freq.put(typeof,
+				freq.get(typeof) + "\n\n" + info1 + info2);
+		    } else {
+			freq.put(typeof, info1 + info2);
+		    }
+		}
+
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor); 
+	
         /*
          * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
          */
@@ -632,7 +667,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
                     String typeof = cursor.getString(1);
-                    typeof = typeof.replace("LCL", "TWR");
                     /*
                      * Filter out silly frequencies
                      */
@@ -666,43 +700,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         catch (Exception e) {
         }
         closes(cursor);
-        
-		/*
-		 * Get AWOS info
-		 */
-
-		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
-				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
-				+ "=='K" + name + "';";
-		cursor = doQuery(qry, getMainDb());
-		// 0     1    2          3  4  5    6     7     8    9    10
-		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
-		try {
-			/*
-			 * Add each AWOS
-			 */
-			if (cursor != null) {
-				while (cursor.moveToNext()) {
-
-					Awos a = new Awos(cursor.getString(0)); // New AWOS instance
-
-					a.setType(cursor.getString(1));
-
-					a.setLat(Helper.removeLeadingZeros(cursor.getString(3)));
-					a.setLon(Helper.removeLeadingZeros(cursor.getString(4)));
-					a.setFreq1(cursor.getString(6));
-					a.setFreq2(cursor.getString(7));
-					a.setPhone1(cursor.getString(8));
-					a.setPhone2(cursor.getString(9));
-					a.setRemark(cursor.getString(10));
-
-					awos.add(a);
-
-				}
-			}
-		} catch (Exception e) {
-		}
-		closes(cursor);
 
         /*
          *Find runways        
@@ -880,140 +877,142 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public LinkedList<String> findFrequencies(String name) {
-        
-        Cursor cursor;
-        LinkedList<String> freq = new LinkedList<String>();
-        
-        /*
-         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
-         */
-        
-        String qry = "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
-                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
-        cursor = doQuery(qry, getMainDb());
 
-        try {
-            /*
-             * Add all of them
-             */
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    String typeof = cursor.getString(1);
-                    typeof = typeof.replace("LCL", "TWR");
-                    /*
-                     * Filter out silly frequencies
-                     */
-                    if(typeof.equals("EMERG") || typeof.contains("GATE") || typeof.equals("EMERGENCY")) {
-                        continue;
-                    }
-                    /*
-                     * Filter out UHF
-                     */
-                    try {
-                        double frequency = Double.parseDouble(cursor.getString(2));
-                        if(Helper.isFrequencyUHF(frequency)) {
-                            continue;
-                        }
-                    }
-                    catch (Exception e) {
-                    }
-                    
-                    freq.add(typeof + " " + cursor.getString(2));
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closes(cursor);
-        
-		/*
-		 * Get AWOS info
-		 */
+	Cursor cursor;
+	LinkedList<String> freq = new LinkedList<String>();
+	String qry = null;
 
-		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
-				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
-				+ "=='K" + name + "';";
-		cursor = doQuery(qry, getMainDb());
-		// 0     1    2          3  4  5    6     7     8    9    10
-		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
-		try {
-			/*
-			 * Add each AWOS
-			 */
-			if (cursor != null) {
-				while (cursor.moveToNext()) {
-					String typeof = cursor.getString(1);
-					/*
-					 * Filter out UHF
-					 */
-					try {
-						double frequency = Double.parseDouble(cursor
-								.getString(6));
-                        if(Helper.isFrequencyUHF(frequency)) {
-                            continue;
-                        }
-					} catch (Exception e) {
-					    continue;
-					}
+	/*
+	 * Get AWOS info
+	 */
 
-					freq.add(typeof + " " + cursor.getString(6));
-				}
+	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where "
+		+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+		+ "=='K" + name + "';";
+	cursor = doQuery(qry, getMainDb());
+	// 0 1 2 3 4 5 6 7 8
+	// ident,type,lt,ln,freq1,tel1,freq2,tel2,lfsn
+	try {
+	    /*
+	     * Add each AWOS
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    String typeof = cursor.getString(1);
+		    /*
+		     * Filter out UHF
+		     */
+		    try {
+			double frequency = Double.parseDouble(cursor
+				.getString(4));
+			if (Helper.isFrequencyUHF(frequency)) {
+			    continue;
 			}
-		} catch (Exception e) {
+		    } catch (Exception e) {
+			continue;
+		    }
+
+		    freq.add(typeof + " " + cursor.getString(4));
 		}
-		closes(cursor);
-		/*
-		 * Get CTAF and UNICOM info
-		 */
-		qry = "select * from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB
-				+ "=='" + name + "' or " + LOCATION_ID_DB + "=='K" + name
-				+ "';";
-		cursor = doQuery(qry, getMainDb());
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor);
 
-		try {
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
+	/*
+	 * Get CTAF and UNICOM info
+	 */
+	qry = "select * from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB
+		+ "=='" + name + "' or " + LOCATION_ID_DB + "=='K" + name
+		+ "';";
+	cursor = doQuery(qry, getMainDb());
 
-					String unicomfreq = cursor.getString(18).trim();
-					String ctaffreq = cursor.getString(19).trim();
+	try {
+	    if (cursor != null) {
+		if (cursor.moveToFirst()) {
 
-					String typeof = "UNICOM";
-					if (!unicomfreq.equals("")) {
-						try {
-							/*
-							 * Filter out UHF
-							 */
-							double frequency = Double.parseDouble(unicomfreq);
-	                        if(!Helper.isFrequencyUHF(frequency)) {
-								freq.add(typeof + " " + unicomfreq);
-							}
-						} catch (Exception e) {
-						}
+		    String unicomfreq = cursor.getString(18).trim();
+		    String ctaffreq = cursor.getString(19).trim();
 
-					}
-					typeof = "CTAF";
-					if (!ctaffreq.equals("")) {
-						try {
-							/*
-							 * Filter out UHF
-							 */
-							double frequency = Double.parseDouble(ctaffreq);
-	                        if(!Helper.isFrequencyUHF(frequency)) {
-								freq.add(typeof + " " + ctaffreq);
-							}
-						} catch (Exception e) {
-						}
-
-					}
-				}
+		    String typeof = "UNICOM";
+		    if (!unicomfreq.equals("")) {
+			try {
+			    /*
+			     * Filter out UHF
+			     */
+			    double frequency = Double.parseDouble(unicomfreq);
+			    if (!Helper.isFrequencyUHF(frequency)) {
+				freq.add(typeof + " " + unicomfreq);
+			    }
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
-		}
 
-		closes(cursor);
-		
-        
-        return freq;
+		    }
+		    typeof = "CTAF";
+		    if (!ctaffreq.equals("")) {
+			try {
+			    /*
+			     * Filter out UHF
+			     */
+			    double frequency = Double.parseDouble(ctaffreq);
+			    if (!Helper.isFrequencyUHF(frequency)) {
+				freq.add(typeof + " " + ctaffreq);
+			    }
+			} catch (Exception e) {
+			}
+
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	}
+
+	closes(cursor);
+
+	/*
+	 * Find frequencies (ATIS, TOWER, GROUND, etc) Not AWOS
+	 */
+
+	qry = "select * from " + TABLE_AIRPORT_FREQ + " where "
+		+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+		+ "=='K" + name + "';";
+	cursor = doQuery(qry, getMainDb());
+
+	try {
+	    /*
+	     * Add all of them
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    String typeof = cursor.getString(1);
+		    typeof = typeof.replace("LCL", "TWR");
+		    /*
+		     * Filter out silly frequencies
+		     */
+		    if (typeof.equals("EMERG") || typeof.contains("GATE")
+			    || typeof.equals("EMERGENCY")) {
+			continue;
+		    }
+		    /*
+		     * Filter out UHF
+		     */
+		    try {
+			double frequency = Double.parseDouble(cursor
+				.getString(2));
+			if (Helper.isFrequencyUHF(frequency)) {
+			    continue;
+			}
+		    } catch (Exception e) {
+		    }
+
+		    freq.add(typeof + " " + cursor.getString(2));
+		}
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor);
+
+	return freq;
     }
 
     /**

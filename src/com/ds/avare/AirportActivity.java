@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.ds.avare.place.Awos;
+
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
@@ -198,15 +198,15 @@ public class AirportActivity extends Activity {
             /*
              * Get Text A/FD
              */
-            LinkedHashMap <String, String> map = mDestination.getParams();
-            LinkedList<Awos> awos = mDestination.getAwos();
-            LinkedHashMap <String, String>freq = mDestination.getFrequencies();
-            LinkedList<Runway> runways = mDestination.getRunways();
-            String[] views = new String[map.size() + freq.size() + awos.size() + runways.size()];
-            String[] values = new String[map.size() + freq.size() + awos.size() + runways.size()];
+	    LinkedHashMap<String, String> map = mDestination.getParams();
+
+	    LinkedHashMap<String, String> freq = mDestination.getFrequencies();
+	    LinkedList<Runway> runways = mDestination.getRunways();
+	    String[] views = new String[map.size() + freq.size() + runways.size()];
+	    String[] values = new String[map.size() + freq.size() + runways.size()];
             int iterator = 0;
             /*
-             * Add header. Check below if this is not added twice
+             * Add header. Check below that this info is not added twice
              */
             String s = map.get(DataBaseHelper.LOCATION_ID);
             if(s != null) {
@@ -226,42 +226,8 @@ public class AirportActivity extends Activity {
                 values[iterator] = s;
                 iterator++;
             }
-            
-			/*
-			 * Add AWOS
-			 */
-			for (Awos awos1 : awos) {
-				// We should hide/display UHF frequencies as a preference.
-				// Military pilots may want to use Avare too!
-				String separator = new String("");
-				String f1p1 = new String("");
-				String f2p2 = new String("");
 
-				views[iterator] = awos1.getType();
-				// Create the string for the first frequency/phone pair
-				String f1 = awos1.getFreq1();
-				String p1 = awos1.getPhone1();
-				separator = (f1.equals("") || p1.equals("")) ? "" : " / ";
-				if (!f1.equals("") || !p1.equals("")) {
-					f1p1 = f1 + separator + p1;
-				}
-				// Create the string for the second frequency/phone pair
-				String f2 = awos1.getFreq2();
-				String p2 = awos1.getPhone2();
-				separator = (f2.equals("") || p2.equals("")) ? "" : " / ";
-				if (!f2.equals("") || !p2.equals("")) {
-					f2p2 = "\n" + f2 + separator + p2;
-				}
-				// Create the string for the remarks
-				String rem = awos1.getRemarks();
-				if (!rem.equals("") && (!f1p1.equals("") || !f2p2.equals(""))) {
-					rem = "\n\n" + rem;
-				}
-
-				// Add them all to our array
-				values[iterator] = f1p1 + f2p2 + rem;
-				iterator++;
-			}
+	    
             /*
              * Add frequencies (unicom, atis, tower etc)  
              */
@@ -273,28 +239,26 @@ public class AirportActivity extends Activity {
             /*
              * Add runways
              */
-            for(Runway run : runways){
-				String mRunwayName = "Runway-";
-				if (run.getNumber().startsWith("H")) {
-					mRunwayName = "Helipad-";
-				} else {
-					if (run.getNumber().endsWith("W")) {
-						mRunwayName = "Waterway-";
-					}
-				}
-            	mRunwayName = mRunwayName+run.getNumber();
-            	views[iterator] = mRunwayName + " (" + run.getLength() + "'x" + run.getWidth() + "')";
-                values[iterator] = 
-                        "DT: " + run.getThreshold() + ",\n" +
-                        "Elev: " + run.getElevation() + ",\n" +
-                        "Surf: " + run.getSurface() + ",\n" +
-                        "Ptrn: " + run.getPattern() + ",\n" +
-                        "ALS: " + run.getLights() + ",\n" +
-                        "ILS: " + run.getILS() + ",\n" +
-                        "VGSI: " + run.getVGSI()
-                        ;
-                iterator++;
-            }
+	    for (Runway run : runways) {
+		String mRunwayName = "Runway-";
+		
+		if (run.getNumber().startsWith("H")) {
+		    mRunwayName = "Helipad-";
+		} else if (run.getNumber().endsWith("W")) {
+		    mRunwayName = "Waterway-";
+
+		}
+		mRunwayName = mRunwayName + run.getNumber();
+		views[iterator] = mRunwayName + " (" + run.getLength() + "'x"
+			+ run.getWidth() + "')";
+		values[iterator] = "DT: " + run.getThreshold() + ",\n"
+			+ "Elev: " + run.getElevation() + ",\n" + "Surf: "
+			+ run.getSurface() + ",\n" + "Ptrn: "
+			+ run.getPattern() + ",\n" + "ALS: " + run.getLights()
+			+ ",\n" + "ILS: " + run.getILS() + ",\n" + "VGSI: "
+			+ run.getVGSI();
+		iterator++;
+	    }
 
             /*
              * Add the rest

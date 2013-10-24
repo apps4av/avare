@@ -112,8 +112,7 @@ public class Destination extends Observable {
     private String mDbType;
     private LinkedList<Runway> mRunways;
     private LinkedHashMap <String, String>mFreq;
-    private LinkedList<Awos> mAwos;
-    
+
     public static final String GPS = "GPS";
     public static final String MAPS = "Maps";
     public static final String BASE = "Base";
@@ -149,7 +148,7 @@ public class Destination extends Observable {
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
         mFreq = new LinkedHashMap<String, String>();
-        mAwos = new LinkedList<Awos> ();
+    
         mPlateFound = null;
         mAfdFound = null;
         
@@ -290,7 +289,7 @@ public class Destination extends Observable {
 	         */
             mParams = new LinkedHashMap<String, String>();
             mFreq = new LinkedHashMap<String, String>();
-            mAwos = new LinkedList<Awos> ();
+
             mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
             mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
             mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
@@ -397,7 +396,7 @@ public class Destination extends Observable {
                  */
                 mParams = new LinkedHashMap<String, String>();
                 mFreq = new LinkedHashMap<String, String>();
-                mAwos = new LinkedList<Awos> ();
+          
                 mPlateFound = null;
                 mAfdFound = null;
                 mDbType = mDestType;
@@ -410,7 +409,7 @@ public class Destination extends Observable {
                 return true;                    
 	        }
 	        
-	        mDataSource.findDestination(mName, mDestType, mParams, mRunways, mFreq, mAwos);
+	        mDataSource.findDestination(mName, mDestType, mParams, mRunways, mFreq);
 
 	        if(mDestType.equals(BASE)) {
 	            
@@ -713,9 +712,6 @@ public class Destination extends Observable {
         }
     }
 
-	public LinkedList<Awos> getAwos() {
-		return(mAwos);
-		
-	} 
+
 
 }

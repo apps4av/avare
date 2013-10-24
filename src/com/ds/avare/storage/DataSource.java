@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Awos;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
@@ -92,8 +91,8 @@ public class DataSource {
      * @param name
      * @param params
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
-        dbHelper.findDestination(name, type, params, runways, freq, awos);
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
+        dbHelper.findDestination(name, type, params, runways, freq);
     }
     
     /**
