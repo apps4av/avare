@@ -116,8 +116,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
-    private static final String TABLE_AIRPORT_AWOS_STATIONS = "awosStations";
-    private static final String TABLE_AIRPORT_AWOS_REMARKS = "awosRemarks";
+    private static final String TABLE_AIRPORT_AWOS_STATIONS = "awos";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
     private static final String TABLE_AIRPORT_REMARKS = "airportremarks";
     private static final String TABLE_FILES = "files";
@@ -504,7 +503,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         
         Cursor cursor;
         String landingSiteFacilityNumber = null;
-        String weatherSensorIdent = null;
+      
         
         String types = "";
         if(type.equals(Destination.BASE)) {
@@ -619,21 +618,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	/*
 	 * Get AWOS frequency/telephone info for this particular airport
 	 */
-	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where LFSN" + "=='" + landingSiteFacilityNumber + "';";
+	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where LandingFacilitySiteNumber" + "=='" + landingSiteFacilityNumber + "';";
 	cursor = doQuery(qry, getMainDb());
 	
-	// 0     1    2  3  4     5    6     7    8
-	// ident,type,lt,ln,freq1,tel1,freq2,tel2,lfsn
+	// 0     1    2     3   
+	// ident,type,lfsn, data
 	try {
 	    /*
 	     * Add each AWOS
 	     */
 	    if (cursor != null) {
 		while (cursor.moveToNext()) {
-		    weatherSensorIdent = cursor.getString(0);
+		    
 		    String typeof = cursor.getString(1);
-		    String info1 =        cursor.getString(4) + " " + cursor.getString(5);
-	            String info2 = "\n" + cursor.getString(6) + " " + cursor.getString(7);
+		
 
 		    if (freq.containsKey(typeof)) {
 			/*
@@ -641,9 +639,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 			 * key
 			 */
 			freq.put(typeof,
-				freq.get(typeof) + "\n\n" + info1 + info2);
+				freq.get(typeof) + "\n\n" + cursor.getString(3));
 		    } else {
-			freq.put(typeof, info1 + info2);
+			freq.put(typeof, cursor.getString(3));
 		    }
 		}
 
@@ -890,8 +888,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
 		+ "=='K" + name + "';";
 	cursor = doQuery(qry, getMainDb());
-	// 0 1 2 3 4 5 6 7 8
-	// ident,type,lt,ln,freq1,tel1,freq2,tel2,lfsn
+	// 0     1    2     3  
+	// ident,type,lfsn, data
 	try {
 	    /*
 	     * Add each AWOS
@@ -899,20 +897,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	    if (cursor != null) {
 		while (cursor.moveToNext()) {
 		    String typeof = cursor.getString(1);
-		    /*
-		     * Filter out UHF
-		     */
-		    try {
-			double frequency = Double.parseDouble(cursor
-				.getString(4));
-			if (Helper.isFrequencyUHF(frequency)) {
-			    continue;
-			}
-		    } catch (Exception e) {
-			continue;
-		    }
-
-		    freq.add(typeof + " " + cursor.getString(4));
+		    freq.add(typeof + " " + cursor.getString(3));
 		}
 	    }
 	} catch (Exception e) {
