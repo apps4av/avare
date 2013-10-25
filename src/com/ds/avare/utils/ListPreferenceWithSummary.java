@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
+
+import com.ds.avare.R;
+
 import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
@@ -37,12 +40,12 @@ public class ListPreferenceWithSummary extends ListPreference {
     @Override
     public void setValue(String value) {
 	super.setValue(value);
-	setSummary(originalSummary + "\nCurrently set to: " + value);
+	setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + value);
     }
 
     @Override
     public void setSummary(CharSequence summary) {
 
-	super.setSummary(originalSummary + "\nCurrently set to: " + getEntry());
+	super.setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + getEntry());
     }
 }

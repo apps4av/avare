@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
+import com.ds.avare.R;
+
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
@@ -37,12 +39,12 @@ public class EditTextPreferenceWithSummary extends EditTextPreference {
     @Override
     public void setText(String value) {
 	super.setText(value);
-	setSummary(originalSummary + "\nCurrently set to: " + value);
+	setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + value);
     }
 
     @Override
     public void setSummary(CharSequence summary) {
-	super.setSummary(originalSummary + "\nCurrently set to: " + getText());
+	super.setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + getText());
 
     }
 }

@@ -1,4 +1,4 @@
-<!--  
+<!--
 Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
 All rights reserved.
 
@@ -10,6 +10,7 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <resources>
+
     <string name="app_name">&quot;Avare&quot;</string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Download Charts&quot;</string>
@@ -56,9 +57,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Init">&quot;Initializing&quot;</string>
     <string name="Warning">&quot;This is not an FAA certified GPS.\n\nYou must assume this software will fail when life and/or property are at risk.\n\nThe authors of this software are not liable for any injuries or damages caused by its use.\n&quot;</string>
     <string name="Recent">&quot;Recent&quot;</string>
-   	<string name="ChartType">&quot;Chart Type&quot;</string>
-	<string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
-	<string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
+    <string name="ChartType">&quot;Chart Type&quot;</string>
+    <string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
+    <string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
     <string name="weather">&quot;Weather&quot;</string>
     <string name="TFRReceived">&quot;TFR Received&quot;</string>
     <string name="databases">&quot;Databases (Required)&quot;</string>
@@ -203,4 +204,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
     <string name="TrkUpdShowHistoryLabel">&quot;Track History&quot;</string>
     <string name="TrkUpdShowHistorySummary">&quot;Display the flight path track on the active chart.&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+
 </resources>
