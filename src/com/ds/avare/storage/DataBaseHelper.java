@@ -554,7 +554,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                         params.put(BEACON, cursor.getString(BEACON_COL));
                         String sc = cursor.getString(SEGCIRCLE_COL);
-                        if(sc.equals("Y")) {
+                        if(sc.equals("Y") || sc.equals("Y-L")) {
                             params.put(SEGCIRCLE, mContext.getString(R.string.Yes));
                         }
                         else {

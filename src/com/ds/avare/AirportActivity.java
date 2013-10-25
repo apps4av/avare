@@ -249,7 +249,7 @@ public class AirportActivity extends Activity {
 
 		}
 		mRunwayName = mRunwayName + run.getNumber();
-		views[iterator] = mRunwayName + " (" + run.getLength() + "'x"
+		views[iterator] = mRunwayName + "\n(" + run.getLength() + "'x"
 			+ run.getWidth() + "')";
 		values[iterator] = "DT: " + run.getThreshold() + ",\n"
 			+ "Elev: " + run.getElevation() + ",\n" + "Surf: "
