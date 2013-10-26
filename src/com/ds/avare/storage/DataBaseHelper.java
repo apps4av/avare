@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
-Jesse McGraw (jlmcgraw@gmail.com)
+Copyright (c) 2012, Zubair Khan (apps4av.com) 
 
 All rights reserved.
 
@@ -40,7 +39,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * @author zkhan
+ * @author zkhan, jlmcgraw
  * The class that does the grunt wortk of dealing with the databse
  */
 public class DataBaseHelper extends SQLiteOpenHelper {

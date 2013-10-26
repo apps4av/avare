@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Copyright (c) 2012, Zubair Khan (apps4av.com) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1104,8 +1104,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             String text[] = DistanceRings.getRingsText();
             mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
             canvas.drawText(text[DistanceRings.RING_INNER], x + ringR[DistanceRings.RING_INNER], y, mPaint);
-            canvas.drawText(text[DistanceRings.RING_MIDDLE], x + ringR[DistanceRings.RING_MIDDLE], y, mPaint);
-            canvas.drawText(text[DistanceRings.RING_OUTER], x + ringR[DistanceRings.RING_OUTER], y, mPaint);
+            canvas.drawText(text[DistanceRings.RING_MIDDLE], x + ringR[DistanceRings.RING_MIDDLE], y + mPaint.getTextSize(), mPaint);
+            canvas.drawText(text[DistanceRings.RING_OUTER], x + ringR[DistanceRings.RING_OUTER], y + mPaint.getTextSize() * 2, mPaint);
         }
     }
 
