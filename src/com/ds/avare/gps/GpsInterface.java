@@ -11,9 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.gps;
 
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
-
 import android.location.GpsStatus;
 import android.location.Location;
 
@@ -34,8 +31,4 @@ public interface GpsInterface {
     void timeoutCallback(boolean timeout);
 
     void enabledCallback(boolean enabled);
-    
-    void adbsMessageCallbackNexrad(Id6364Product pn);
-    
-    void adbsStatusCallback(AdsbStatus adsbStatus);
 }

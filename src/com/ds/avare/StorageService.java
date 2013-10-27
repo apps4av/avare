@@ -17,10 +17,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.flightLog.KMLRecorder;
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
-import com.ds.avare.gdl90.NexradBitmap;
-import com.ds.avare.gdl90.NexradImage;
 import com.ds.avare.gps.*;
 import com.ds.avare.hobbsMeter.FlightTimer;
 import com.ds.avare.network.TFRFetcher;
@@ -45,7 +41,6 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
-import android.util.SparseArray;
 import java.io.File;
 import java.net.URI;
 
@@ -148,8 +143,6 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
-    private NexradImage mNexradImg;
-    
     /*
      * Hobbs time
      */
@@ -217,7 +210,6 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
-        mNexradImg = new NexradImage();
         mPlateIndex = 0;
         mAfdIndex = 0;
         
@@ -327,21 +319,6 @@ public class StorageService extends Service {
                     if(!mGpsCallbacks.isEmpty()) {
                         mGps.start();
                     }
-                }
-            }
-
-            @Override
-            public void adbsMessageCallbackNexrad(Id6364Product pn) {
-                mNexradImg.putImg(pn);
-            }
-
-            @Override
-            public void adbsStatusCallback(AdsbStatus adsbStatus) {
-                LinkedList<GpsInterface> list = extracted();
-                Iterator<GpsInterface> it = list.iterator();
-                while (it.hasNext()) {
-                    GpsInterface infc = it.next();
-                    infc.adbsStatusCallback(adsbStatus);
                 }
             }
         };
@@ -649,14 +626,6 @@ public class StorageService extends Service {
      */
     public Draw getDraw() {
         return mDraw;
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public SparseArray<NexradBitmap> getNexradImages() {
-        return mNexradImg.getImages();
     }
     
     /**

@@ -13,8 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import com.ds.avare.R;
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
 
@@ -73,14 +71,6 @@ public class SatelliteActivity extends Activity  {
             if(!enabled) {
                 mSatelliteView.updateGpsStatus(null);
             }
-        }
-
-        @Override
-        public void adbsMessageCallbackNexrad(Id6364Product pn) {
-        }
-
-        @Override
-        public void adbsStatusCallback(AdsbStatus adsbStatus) {
         }
     };
     
