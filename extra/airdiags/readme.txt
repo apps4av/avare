@@ -2,7 +2,7 @@ Live Taxi coordinates determination.
 
 //+++2013-01-10
 //    Copyright (C) 2013, Mike Rieker, Beverly, MA USA
-//    Avare, open source moving map aviation GPS (support@apps4av.net)
+//    Avare, open source moving map aviation GPS (apps4av.com)
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-Copyright (c) 2012, Zubair Khan (governer@gmail.com)
-Jesse McGraw (jlmcgraw@gmail.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -11,6 +10,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan, jlmcgraw    
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
@@ -48,7 +49,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/AirSigType"
             android:summary="@string/AirSigTypeSummary"
             android:title="@string/AirSigTypeLabel" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/XlateWeather"
@@ -80,7 +80,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/Units"
             android:summary="@string/UnitsSummary"
             android:title="@string/UnitsLabel" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/NightMode"
@@ -131,22 +130,21 @@ Redistribution and use in source and binary forms, with or without modification,
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefUseFlightTimer"
             android:summary="@string/UseFlightTimerSummary"
             android:title="@string/UseFlightTimerLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
-        <CheckBoxPreference
-            android:key="@string/TrkUpdAllow"
-            android:summary="@string/TrkUpdAllowSummary"
-            android:title="@string/TrkUpdAllowLabel" />
+        </PreferenceCategory>
+        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
+    	<CheckBoxPreference
+    	    android:key="@string/TrkUpdAllow"
+    	    android:title="@string/TrkUpdAllowLabel"
+    	    android:summary="@string/TrkUpdAllowSummary"/>
         <CheckBoxPreference
             android:key="@string/TrkUpdShowHistory"
-            android:summary="@string/TrkUpdShowHistorySummary"
-            android:title="@string/TrkUpdShowHistoryLabel" />
+            android:title="@string/TrkUpdShowHistoryLabel"
+            android:summary="@string/TrkUpdShowHistorySummary"/>
     </PreferenceCategory>
-
+    
 </PreferenceScreen>

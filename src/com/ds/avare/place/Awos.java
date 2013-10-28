@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
-Jesse McGraw (jlmcgraw@gmail.com)
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 
 All rights reserved.
 

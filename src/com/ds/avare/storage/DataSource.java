@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
-Jesse McGraw (jlmcgraw@gmail.com)
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 
 All rights reserved.
 
@@ -32,7 +31,7 @@ import com.ds.avare.weather.WindsAloft;
 import android.content.Context;
 
 /**
- * @author zkhan
+ * @author zkhan, jlmcgraw
  * Gets entries from database
  * The class that actually does something is DataBaseHelper
  */
