@@ -92,12 +92,6 @@ public class PlatesActivity extends Activity {
             if(mPref.isSimulationMode()) {
                 mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
             }
-            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-                /*
-                 * Prompt user to enable GPS.
-                 */
-                mPlatesView.updateErrorStatus(getString(R.string.GPSEnable)); 
-            }
             else if(timeout) {
                 mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
             }

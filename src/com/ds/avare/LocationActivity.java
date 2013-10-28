@@ -174,12 +174,6 @@ public class LocationActivity extends Activity implements Observer {
             else if(mPref.isSimulationMode()) {
                 mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
             }
-            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-                /*
-                 * Prompt user to enable GPS.
-                 */
-                mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
-            }
             else if(timeout) {
                 mLocationView.updateErrorStatus(getString(R.string.GPSLost));
             }
