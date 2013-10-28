@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import com.ds.avare.R;
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.ContentGenerator;
@@ -33,7 +31,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -94,18 +91,6 @@ public class WeatherActivity extends Activity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }
-
-        @Override
-        public void adbsMessageCallbackNexrad(Id6364Product pn) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void adbsStatusCallback(AdsbStatus adsbStatus) {
-            // TODO Auto-generated method stub
-            
         }
     };
 

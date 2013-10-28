@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,8 +15,6 @@ package com.ds.avare;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -94,12 +92,6 @@ public class PlatesActivity extends Activity {
             if(mPref.isSimulationMode()) {
                 mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
             }
-            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-                /*
-                 * Prompt user to enable GPS.
-                 */
-                mPlatesView.updateErrorStatus(getString(R.string.GPSEnable)); 
-            }
             else if(timeout) {
                 mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
             }
@@ -113,18 +105,6 @@ public class PlatesActivity extends Activity {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }
-
-        @Override
-        public void adbsMessageCallbackNexrad(Id6364Product pn) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void adbsStatusCallback(AdsbStatus adsbStatus) {
-            // TODO Auto-generated method stub
-            
         }
     };
 

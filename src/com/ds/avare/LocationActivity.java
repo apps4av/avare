@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com), Jesse McGraw (jlmcgraw@gmail.com)
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,6 @@ import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
 import com.ds.avare.animation.AnimateButton;
-import com.ds.avare.gdl90.AdsbStatus;
-import com.ds.avare.gdl90.Id6364Product;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -61,7 +59,7 @@ import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
 /**
- * @author zkhan
+ * @author zkhan, jlmcgraw
  * Main activity
  */
 public class LocationActivity extends Activity implements Observer {
@@ -176,12 +174,6 @@ public class LocationActivity extends Activity implements Observer {
             else if(mPref.isSimulationMode()) {
                 mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
             }
-            else if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-                /*
-                 * Prompt user to enable GPS.
-                 */
-                mLocationView.updateErrorStatus(getString(R.string.GPSEnable)); 
-            }
             else if(timeout) {
                 mLocationView.updateErrorStatus(getString(R.string.GPSLost));
             }
@@ -195,14 +187,6 @@ public class LocationActivity extends Activity implements Observer {
 
         @Override
         public void enabledCallback(boolean enabled) {
-        }
-
-        @Override
-        public void adbsMessageCallbackNexrad(Id6364Product pn) {
-        }
-
-        @Override
-        public void adbsStatusCallback(AdsbStatus adsbStatus) {
         }
 
     };

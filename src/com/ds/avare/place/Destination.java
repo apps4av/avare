@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2012, Zubair Khan (governer@gmail.com) 
-Jesse McGraw (jlmcgraw@gmail.com)
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 
 All rights reserved.
 
@@ -41,7 +40,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 
 /**
- * @author zkhan
+ * @author zkhan, jlmcgraw
  * Stores everything about destination, its name (ICAO code)
  * Does databse query to find the destination as well.
  */

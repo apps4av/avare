@@ -11,63 +11,29 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.location.GpsStatus;
 import android.location.Location;
-import android.os.Bundle;
+import android.location.LocationManager;
+import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceActivity;
+import android.os.Message;
 
 /**
- * 
- * @author zkhan
- *
+ * This class exposes the remote service to the client.
+ * The client will be the Avare Helper, sending data to Avare
+ * author zkhan
  */
-public class PrefActivity extends PreferenceActivity {
+public class IHelperService extends Service {
+
     private StorageService mService;
-
-    /*
-     * Start GPS
-     */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
-        super.onCreate(savedInstanceState); 
-
-        addPreferencesFromResource(R.xml.preferences);
-        setContentView(R.layout.preferences);
-        mService = null;        
-    }
-
-    /** Defines callbacks for service binding, passed to bindService() */
+    
     /**
-     * 
+     * We need to bind to storage service to do anything useful 
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -82,7 +48,6 @@ public class PrefActivity extends PreferenceActivity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
         }    
 
         /* (non-Javadoc)
@@ -92,45 +57,73 @@ public class PrefActivity extends PreferenceActivity {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
-
-    /**
-     * 
+    
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
-    public void onResume() {
-        super.onResume();
-        
-        Helper.setOrientationAndOn(this);
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
+    public void onCreate() {       
+        mService = null;
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    public void onDestroy() {
+        getApplicationContext().unbindService(mConnection);
+        mService = null;
+    }
 
     /**
      * 
      */
     @Override
-    public void onPause() {
-        super.onPause();
-
-        /*
-         * This should update preferences in static memory
-         */
-        new Preferences(this);
-
-        getApplicationContext().unbindService(mConnection);
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+    
+    /**
+     * 
+     */
+    private final IHelper.Stub mBinder = new IHelper.Stub() {
+        @Override
+        public void sendDataText(String text) {
             
             /*
-             * This will will sure we update tiles when someone changes storage folder
+             * This is where we are all messages
+             * All messages are comma separated
              */
-            mService.getTiles().forceReload();
+            Message msg = mHandler.obtainMessage();
+            msg.obj = text;
+            mHandler.sendMessage(msg);
         }
-    }
+    };
+    
+    /**
+     * Posting a location hence do from UI thread
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {            
+
+            String text = (String)msg.obj;
+            
+            if(text == null || mService == null) {
+                return;
+            }
+            
+            String tokens[] = text.split(",");
+            if(tokens[0].equals("ownship")) {
+                Location l = new Location(LocationManager.GPS_PROVIDER);
+                l.setLongitude(Double.parseDouble(tokens[1]));
+                l.setLatitude(Double.parseDouble(tokens[2]));
+                l.setSpeed((float)Double.parseDouble(tokens[3]));
+                l.setBearing((float)Double.parseDouble(tokens[4]));
+                l.setAltitude(Double.parseDouble(tokens[5]));
+                l.setTime(Long.parseLong(tokens[6]));
+                mService.getGps().onLocationChanged(l);
+            }
+        }
+    };
 }
