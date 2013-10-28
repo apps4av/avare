@@ -1012,13 +1012,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawDistanceRings(Canvas canvas) {
         
-        if((mPref.getDistanceRingType() != 0) && (null == mPointProjection)) {
-        	/*
-        	 *  We are configured to show distance rings and the chart is currently NOT undergoing
-        	 *  a "pinch-zoom"
-        	 */
-            float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));   /* Get where we are */
-            float y = (float)(mOrigin.getOffsetY(mGpsParams.getLatitude()));                        
+    	/* Calculate the size of distance and speed rings
+    	 * 
+    	 */
+    	double currentSpeed = mGpsParams.getSpeed();
+    	DistanceRings.calculateRings(mContext, mPref, mScale,
+    	        mMovement, currentSpeed);
+    	float ringR[] = DistanceRings.getRings();
+
+    	/* Get our current position. That will be the center of all the rings
+    	 */
+        float x = (float)(mOrigin.getOffsetX(mGpsParams.getLongitude()));   /* Get where we are */
+        float y = (float)(mOrigin.getOffsetY(mGpsParams.getLatitude()));                        
+
+        /* If the user wants the distance rings display, now is the time
+    	 * 
+    	 */
+    	if((mPref.getDistanceRingType() != 0) && (null == mPointProjection)) {
 
         	/*
         	 *  Set the paint accordingly
@@ -1029,23 +1039,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	mPaint.setStyle(Style.STROKE);
         	mPaint.setAlpha(0x7F);
 
-        	DistanceRings.calculateRings(mContext, mPref, mScale,
-        	        mMovement, mGpsParams.getSpeed());
-        	float ringR[] = DistanceRings.getRings();
         	/*
         	 * Draw the 3 distance circles now
         	 */
         	canvas.drawCircle(x, y, ringR[DistanceRings.RING_INNER], mPaint);
         	canvas.drawCircle(x, y, ringR[DistanceRings.RING_MIDDLE], mPaint);
             canvas.drawCircle(x, y, ringR[DistanceRings.RING_OUTER], mPaint);
-
-        	/*
-        	 *  Draw our "speed ring" if we are going faster than stall speed 
-        	 */
-        	if(ringR[DistanceRings.RING_SPEED] != 0) {
-	        	mPaint.setColor(DistanceRings.COLOR_SPEED_RING);
-	        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED], mPaint);
-        	}
 
             /*
              * Restore some paint settings back to what they were soas not 
@@ -1054,6 +1053,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setAlpha(0xFF);
             mPaint.setStyle(Style.FILL);
             mPaint.setColor(Color.WHITE);
+            
             /*
              * Draw the corresponding text
              */
@@ -1063,6 +1063,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawText(text[DistanceRings.RING_MIDDLE], x + ringR[DistanceRings.RING_MIDDLE], y + mPaint.getTextSize(), mPaint);
             canvas.drawText(text[DistanceRings.RING_OUTER], x + ringR[DistanceRings.RING_OUTER], y + mPaint.getTextSize() * 2, mPaint);
         }
+
+    	/*
+    	 *  Draw our "speed ring" if one was calculated for us 
+    	 */
+    	if((ringR[DistanceRings.RING_SPEED] != 0) && (null == mPointProjection)) {
+            mPaint.setStyle(Style.STROKE);
+        	mPaint.setColor(DistanceRings.COLOR_SPEED_RING);
+        	canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED], mPaint);
+            mPaint.setStyle(Style.FILL);
+    	}
     }
 
     /**
