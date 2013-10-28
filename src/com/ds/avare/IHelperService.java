@@ -13,8 +13,15 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 
 /**
  * This class exposes the remote service to the client.
@@ -22,6 +29,51 @@ import android.os.IBinder;
  * author zkhan
  */
 public class IHelperService extends Service {
+
+    private StorageService mService;
+    
+    /**
+     * We need to bind to storage service to do anything useful 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+        }    
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+    
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreate(android.os.Bundle)
+     */
+    @Override
+    public void onCreate() {       
+        mService = null;
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy() {
+        getApplicationContext().unbindService(mConnection);
+        mService = null;
+    }
 
     /**
      * 
@@ -37,6 +89,41 @@ public class IHelperService extends Service {
     private final IHelper.Stub mBinder = new IHelper.Stub() {
         @Override
         public void sendDataText(String text) {
+            
+            /*
+             * This is where we are all messages
+             * All messages are comma separated
+             */
+            Message msg = mHandler.obtainMessage();
+            msg.obj = text;
+            mHandler.sendMessage(msg);
+        }
+    };
+    
+    /**
+     * Posting a location hence do from UI thread
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {            
+
+            String text = (String)msg.obj;
+            
+            if(text == null || mService == null) {
+                return;
+            }
+            
+            String tokens[] = text.split(",");
+            if(tokens[0].equals("ownship")) {
+                Location l = new Location(LocationManager.GPS_PROVIDER);
+                l.setLongitude(Double.parseDouble(tokens[1]));
+                l.setLatitude(Double.parseDouble(tokens[2]));
+                l.setSpeed((float)Double.parseDouble(tokens[3]));
+                l.setBearing((float)Double.parseDouble(tokens[4]));
+                l.setAltitude(Double.parseDouble(tokens[5]));
+                l.setTime(Long.parseLong(tokens[6]));
+                mService.getGps().onLocationChanged(l);
+            }
         }
     };
 }

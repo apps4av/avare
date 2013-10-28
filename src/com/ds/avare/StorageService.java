@@ -681,4 +681,12 @@ public class StorageService extends Service {
     public KMLRecorder getKMLRecorder() {
         return mKMLRecorder;
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public Gps getGps() {
+        return mGps;
+    }
 }
