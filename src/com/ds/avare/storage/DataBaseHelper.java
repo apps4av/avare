@@ -20,7 +20,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Awos;
+
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -115,8 +115,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
-    private static final String TABLE_AIRPORT_AWOS = "awos";
+    private static final String TABLE_AIRPORT_AWOS_STATIONS = "awos";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
+    private static final String TABLE_AIRPORT_REMARKS = "airportremarks";
     private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
@@ -497,9 +498,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param params
      * @return
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
+    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq) {
         
         Cursor cursor;
+        String landingSiteFacilityNumber = null;
+      
         
         String types = "";
         if(type.equals(Destination.BASE)) {
@@ -528,17 +531,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                     params.put(TYPE, cursor.getString(TYPE_COL).trim());
                     if(type.equals(Destination.BASE)) {
-                        String use = cursor.getString(5).trim();
-                        if(use.equals("PU")) {
-                            use = "PUBLIC";
-                        }
-                        else if(use.equals("PR")) {
-                            use = "PRIVATE";                            
-                        }
-                        else  {
-                            use = "MILITARY";                            
-                        }
-                        params.put("Use", use);
+                       
+                        params.put("Owner", cursor.getString(21));                       
+                        params.put("Use", cursor.getString(5).trim());
                         params.put("Manager", cursor.getString(7).trim());
                         params.put(MANAGER_PHONE, cursor.getString(8).trim());
                         params.put("Elevation", cursor.getString(9).trim());
@@ -555,38 +550,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         else {
                             params.put(CUSTOMS, mContext.getString(R.string.No));                            
                         }
-                        String bcn = cursor.getString(BEACON_COL);
-                        if(bcn.equals("")) {
-                            bcn = mContext.getString(R.string.No);
-                        }
-                        params.put(BEACON, bcn);
+
+                        params.put(BEACON, cursor.getString(BEACON_COL));
                         String sc = cursor.getString(SEGCIRCLE_COL);
-                        if(sc.equals("Y")) {
+                        if(sc.equals("Y") || sc.equals("Y-L")) {
                             params.put(SEGCIRCLE, mContext.getString(R.string.Yes));
                         }
                         else {
                             params.put(SEGCIRCLE, mContext.getString(R.string.No));                            
                         }
-                        String pa = cursor.getString(11).trim();
-                        String paout = "";
-                        if(pa.equals("")) {
-                            try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
-                            }
-                            catch (Exception e) {
-                                
-                            }
-                        }
-                        else {
-                            try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
-                                        (Double.parseDouble(pa)));
-                            }
-                            catch (Exception e) {
-                                
-                            }                            
-                        }
-                        params.put("Pattern Altitude", paout);
+                        params.put("Pattern Altitude", cursor.getString(11));
                         String fuel = cursor.getString(FUEL_TYPES_COL).trim();
                         if(fuel.equals("")) {
                             fuel = mContext.getString(R.string.No);
@@ -623,6 +596,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 							fss = "1-800-992-7433";
 						}
                         params.put(FSSPHONE, fss);
+                        /*
+                         * Store the LFSN for this airtport, it is the key for joining the other tables
+                         */
+                        landingSiteFacilityNumber = cursor.getString(22);
+                        
 
                     }
                 }
@@ -636,7 +614,41 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(!type.equals(Destination.BASE)) {
             return;
         }
-        
+	/*
+	 * Get AWOS frequency/telephone info for this particular airport
+	 */
+	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where LandingFacilitySiteNumber" + "=='" + landingSiteFacilityNumber + "';";
+	cursor = doQuery(qry, getMainDb());
+	
+	// 0     1    2     3   
+	// ident,type,lfsn, data
+	try {
+	    /*
+	     * Add each AWOS
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    
+		    String typeof = cursor.getString(1);
+		
+
+		    if (freq.containsKey(typeof)) {
+			/*
+			 * Append this string to the existing one if duplicate
+			 * key
+			 */
+			freq.put(typeof,
+				freq.get(typeof) + "\n\n" + cursor.getString(3));
+		    } else {
+			freq.put(typeof, cursor.getString(3));
+		    }
+		}
+
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor); 
+	
         /*
          * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
          */
@@ -652,7 +664,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
                     String typeof = cursor.getString(1);
-                    typeof = typeof.replace("LCL", "TWR");
                     /*
                      * Filter out silly frequencies
                      */
@@ -686,43 +697,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         catch (Exception e) {
         }
         closes(cursor);
-        
-		/*
-		 * Get AWOS info
-		 */
-
-		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
-				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
-				+ "=='K" + name + "';";
-		cursor = doQuery(qry, getMainDb());
-		// 0     1    2          3  4  5    6     7     8    9    10
-		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
-		try {
-			/*
-			 * Add each AWOS
-			 */
-			if (cursor != null) {
-				while (cursor.moveToNext()) {
-
-					Awos a = new Awos(cursor.getString(0)); // New AWOS instance
-
-					a.setType(cursor.getString(1));
-
-					a.setLat(Helper.removeLeadingZeros(cursor.getString(3)));
-					a.setLon(Helper.removeLeadingZeros(cursor.getString(4)));
-					a.setFreq1(cursor.getString(6));
-					a.setFreq2(cursor.getString(7));
-					a.setPhone1(cursor.getString(8));
-					a.setPhone2(cursor.getString(9));
-					a.setRemark(cursor.getString(10));
-
-					awos.add(a);
-
-				}
-			}
-		} catch (Exception e) {
-		}
-		closes(cursor);
 
         /*
          *Find runways        
@@ -732,130 +706,167 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
         cursor = doQuery(qry, getMainDb());
         
-        try {
-            /*
-             * Add all of them
-             */
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    
-                    String Length = cursor.getString(1);
-                    String Width = cursor.getString(2);
-                    String Surface = cursor.getString(3);
-                    String Variation = params.get(MAGNETIC_VARIATION);
-                    
-                    String run = Helper.removeLeadingZeros(cursor.getString(4));
-                    String lat = Helper.removeLeadingZeros(cursor.getString(6));
-                    String lon = Helper.removeLeadingZeros(cursor.getString(8));
-                    
-                    String Elevation = cursor.getString(10);
-                    if(Elevation.equals("")) {
-                        Elevation = params.get("Elevation");
-                    }
-                    String Heading = cursor.getString(12);
-                    String DT = cursor.getString(14);
-                    if(DT.equals("")) {
-                        DT = "0";
-                    }
-                    String Lighted = cursor.getString(16);
-                    if(Lighted.equals("0") || Lighted.equals("")) {
-                        Lighted = mContext.getString(R.string.No);
-                    }
-                    String ILS = cursor.getString(18);
-                    if(ILS.equals("")) {
-                        ILS = mContext.getString(R.string.No);
-                    }
-                    String VGSI = cursor.getString(20);
-                    if(VGSI.equals("")) {
-                        VGSI = mContext.getString(R.string.No);
-                    }
-                    String Pattern = cursor.getString(22);
-                    if(Pattern.equals("Y")) {
-                        Pattern = "Right";
-                    }
-                    else {
-                        Pattern = "Left";                        
-                    }
-                    
-                    Runway r = new Runway(run);
-                    r.setElevation(Elevation);
-                    r.setHeading(Heading);
-                    r.setSurface(Surface);
-                    r.setLength(Length);
-                    r.setWidth(Width);
-                    r.setThreshold(DT);
-                    r.setLights(Lighted);
-                    r.setPattern(Pattern);
-                    r.setLongitude(lon);
-                    r.setLatitude(lat);
-                    r.setVariation(Variation);
-                    r.setILS(ILS);
-                    r.setVGSI(VGSI);
-                    
-                    runways.add(r);
-                   
-                    /*
-                     * If the first runway is a helipad, don't add a second end
-                     */
-					if(!(run.startsWith("H") || run.startsWith("h"))) {
-						run = Helper.removeLeadingZeros(cursor.getString(5));
-						lat = Helper.removeLeadingZeros(cursor.getString(7));
-						lon = Helper.removeLeadingZeros(cursor.getString(9));
+	try {
+	    /*
+	     * Add all of them
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
 
-						Elevation = cursor.getString(11);
-						if(Elevation.equals("")) {
-							Elevation = params.get("Elevation");
-						}
-						Heading = cursor.getString(13);
-						DT = cursor.getString(15);
-						if(DT.equals("")) {
-							DT = "0";
-						}
-						Lighted = cursor.getString(17);
-						if(Lighted.equals("0") || Lighted.equals("")) {
-							Lighted = mContext.getString(R.string.No);
-						}
-						ILS = cursor.getString(19);
-						if(ILS.equals("")) {
-							ILS = mContext.getString(R.string.No);
-						}
-						VGSI = cursor.getString(21);
-						if(VGSI.equals("")) {
-							VGSI = mContext.getString(R.string.No);
-						}
-						Pattern = cursor.getString(23);
-						if(Pattern.equals("Y")) {
-							Pattern = "Right";
-						}else {
-							Pattern = "Left";
-						}
+		    String Length = cursor.getString(1);
+		    String Width = cursor.getString(2);
+		    String Surface = cursor.getString(3);
+		    String Variation = params.get(MAGNETIC_VARIATION);
 
-						r = new Runway(run);
-						r.setElevation(Elevation);
-						r.setHeading(Heading);
-						r.setSurface(Surface);
-						r.setLength(Length);
-						r.setWidth(Width);
-						r.setThreshold(DT);
-						r.setLights(Lighted);
-						r.setPattern(Pattern);
-						r.setLongitude(lon);
-						r.setLatitude(lat);
-						r.setVariation(Variation);
-						r.setILS(ILS);
-						r.setVGSI(VGSI);
+		    String run = Helper.removeLeadingZeros(cursor.getString(4));
+		    String lat = Helper.removeLeadingZeros(cursor.getString(6));
+		    String lon = Helper.removeLeadingZeros(cursor.getString(8));
 
-						runways.add(r);
+		    String Elevation = cursor.getString(10);
+		    if (Elevation.equals("")) {
+			Elevation = params.get("Elevation");
+		    }
+		    String Heading = cursor.getString(12);
+		    String DT = cursor.getString(14);
+		    if (DT.equals("")) {
+			DT = "0";
+		    }
+		    String Lighted = cursor.getString(16);
+		    if (Lighted.equals("0") || Lighted.equals("")) {
+			Lighted = mContext.getString(R.string.No);
+		    }
+		    String ILS = cursor.getString(18);
+		    if (ILS.equals("")) {
+			ILS = mContext.getString(R.string.No);
+		    }
+		    String VGSI = cursor.getString(20);
+		    if (VGSI.equals("")) {
+			VGSI = mContext.getString(R.string.No);
+		    }
+		    String Pattern = cursor.getString(22);
+		    if (Pattern.equals("Y")) {
+			Pattern = "Right";
+		    } else {
+			Pattern = "Left";
+		    }
 
-					}
-    
-                }
-            }
-        }
+		    Runway r = new Runway(run);
+		    r.setElevation(Elevation);
+		    r.setHeading(Heading);
+		    r.setSurface(Surface);
+		    r.setLength(Length);
+		    r.setWidth(Width);
+		    r.setThreshold(DT);
+		    r.setLights(Lighted);
+		    r.setPattern(Pattern);
+		    r.setLongitude(lon);
+		    r.setLatitude(lat);
+		    r.setVariation(Variation);
+		    r.setILS(ILS);
+		    r.setVGSI(VGSI);
+
+		    runways.add(r);
+
+		    /*
+		     * If runway name is null don't add the runway
+		     */
+		    run = Helper.removeLeadingZeros(cursor.getString(5));
+		    
+		    if (run == "")
+			continue;
+		    run = Helper.removeLeadingZeros(cursor.getString(5));
+		    lat = Helper.removeLeadingZeros(cursor.getString(7));
+		    lon = Helper.removeLeadingZeros(cursor.getString(9));
+
+		    Elevation = cursor.getString(11);
+		    if (Elevation.equals("")) {
+			Elevation = params.get("Elevation");
+		    }
+		    Heading = cursor.getString(13);
+		    DT = cursor.getString(15);
+		    if (DT.equals("")) {
+			DT = "0";
+		    }
+		    Lighted = cursor.getString(17);
+		    if (Lighted.equals("0") || Lighted.equals("")) {
+			Lighted = mContext.getString(R.string.No);
+		    }
+		    ILS = cursor.getString(19);
+		    if (ILS.equals("")) {
+			ILS = mContext.getString(R.string.No);
+		    }
+		    VGSI = cursor.getString(21);
+		    if (VGSI.equals("")) {
+			VGSI = mContext.getString(R.string.No);
+		    }
+		    Pattern = cursor.getString(23);
+		    if (Pattern.equals("Y")) {
+			Pattern = "Right";
+		    } else {
+			Pattern = "Left";
+		    }
+
+		    r = new Runway(run);
+		    r.setElevation(Elevation);
+		    r.setHeading(Heading);
+		    r.setSurface(Surface);
+		    r.setLength(Length);
+		    r.setWidth(Width);
+		    r.setThreshold(DT);
+		    r.setLights(Lighted);
+		    r.setPattern(Pattern);
+		    r.setLongitude(lon);
+		    r.setLatitude(lat);
+		    r.setVariation(Variation);
+		    r.setILS(ILS);
+		    r.setVGSI(VGSI);
+
+		    runways.add(r);
+
+		    
+
+		}
+	    }
+	}
         catch (Exception e) {
         }
 
-        closes(cursor);        
+        closes(cursor);
+        
+        //------------
+        /*
+         * Find remarks via matching the landingSiteFacilityNumber from "airports"
+         */
+        
+        qry = "select * from " + TABLE_AIRPORT_REMARKS + " where LandingFacilitySiteNumber" + "=='" + landingSiteFacilityNumber + "';";
+        cursor = doQuery(qry, getMainDb());
+
+	try {
+	    /*
+	     * Add all of them
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    String element = cursor.getString(1);
+		    String newValue = cursor.getString(2);
+		    if (params.containsKey(element)) {
+			/*
+			 * Append this string to the existing one if it is a  duplicate
+			 * key
+			 */
+			params.put(element, params.get(element) + "\n\n"
+				+ newValue);
+		    } else {
+			params.put(element, newValue);
+		    }
+		}
+	    }
+	}
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        //-----------
     }
 
 
@@ -866,140 +877,129 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public LinkedList<String> findFrequencies(String name) {
-        
-        Cursor cursor;
-        LinkedList<String> freq = new LinkedList<String>();
-        
-        /*
-         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
-         */
-        
-        String qry = "select * from " + TABLE_AIRPORT_FREQ + " where " + LOCATION_ID_DB + "=='" + name                            
-                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
-        cursor = doQuery(qry, getMainDb());
 
-        try {
-            /*
-             * Add all of them
-             */
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    String typeof = cursor.getString(1);
-                    typeof = typeof.replace("LCL", "TWR");
-                    /*
-                     * Filter out silly frequencies
-                     */
-                    if(typeof.equals("EMERG") || typeof.contains("GATE") || typeof.equals("EMERGENCY")) {
-                        continue;
-                    }
-                    /*
-                     * Filter out UHF
-                     */
-                    try {
-                        double frequency = Double.parseDouble(cursor.getString(2));
-                        if(Helper.isFrequencyUHF(frequency)) {
-                            continue;
-                        }
-                    }
-                    catch (Exception e) {
-                    }
-                    
-                    freq.add(typeof + " " + cursor.getString(2));
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closes(cursor);
-        
-		/*
-		 * Get AWOS info
-		 */
+	Cursor cursor;
+	LinkedList<String> freq = new LinkedList<String>();
+	String qry = null;
 
-		qry = "select * from " + TABLE_AIRPORT_AWOS + " where "
-				+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
-				+ "=='K" + name + "';";
-		cursor = doQuery(qry, getMainDb());
-		// 0     1    2          3  4  5    6     7     8    9    10
-		// ident,type,commstatus,lt,ln,elev,freq1,freq2,tel1,tel2,remark
-		try {
-			/*
-			 * Add each AWOS
-			 */
-			if (cursor != null) {
-				while (cursor.moveToNext()) {
-					String typeof = cursor.getString(1);
-					/*
-					 * Filter out UHF
-					 */
-					try {
-						double frequency = Double.parseDouble(cursor
-								.getString(6));
-                        if(Helper.isFrequencyUHF(frequency)) {
-                            continue;
-                        }
-					} catch (Exception e) {
-					    continue;
-					}
+	/*
+	 * Get AWOS info
+	 */
 
-					freq.add(typeof + " " + cursor.getString(6));
-				}
-			}
-		} catch (Exception e) {
+	qry = "select * from " + TABLE_AIRPORT_AWOS_STATIONS + " where "
+		+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+		+ "=='K" + name + "';";
+	cursor = doQuery(qry, getMainDb());
+	// 0     1    2     3  
+	// ident,type,lfsn, data
+	try {
+	    /*
+	     * Add each AWOS
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    String typeof = cursor.getString(1);
+		    freq.add(typeof + " " + cursor.getString(3));
 		}
-		closes(cursor);
-		/*
-		 * Get CTAF and UNICOM info
-		 */
-		qry = "select * from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB
-				+ "=='" + name + "' or " + LOCATION_ID_DB + "=='K" + name
-				+ "';";
-		cursor = doQuery(qry, getMainDb());
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor);
 
-		try {
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
+	/*
+	 * Get CTAF and UNICOM info
+	 */
+	qry = "select * from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB
+		+ "=='" + name + "' or " + LOCATION_ID_DB + "=='K" + name
+		+ "';";
+	cursor = doQuery(qry, getMainDb());
 
-					String unicomfreq = cursor.getString(18).trim();
-					String ctaffreq = cursor.getString(19).trim();
+	try {
+	    if (cursor != null) {
+		if (cursor.moveToFirst()) {
 
-					String typeof = "UNICOM";
-					if (!unicomfreq.equals("")) {
-						try {
-							/*
-							 * Filter out UHF
-							 */
-							double frequency = Double.parseDouble(unicomfreq);
-	                        if(!Helper.isFrequencyUHF(frequency)) {
-								freq.add(typeof + " " + unicomfreq);
-							}
-						} catch (Exception e) {
-						}
+		    String unicomfreq = cursor.getString(18).trim();
+		    String ctaffreq = cursor.getString(19).trim();
 
-					}
-					typeof = "CTAF";
-					if (!ctaffreq.equals("")) {
-						try {
-							/*
-							 * Filter out UHF
-							 */
-							double frequency = Double.parseDouble(ctaffreq);
-	                        if(!Helper.isFrequencyUHF(frequency)) {
-								freq.add(typeof + " " + ctaffreq);
-							}
-						} catch (Exception e) {
-						}
-
-					}
-				}
+		    String typeof = "UNICOM";
+		    if (!unicomfreq.equals("")) {
+			try {
+			    /*
+			     * Filter out UHF
+			     */
+			    double frequency = Double.parseDouble(unicomfreq);
+			    if (!Helper.isFrequencyUHF(frequency)) {
+				freq.add(typeof + " " + unicomfreq);
+			    }
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
-		}
 
-		closes(cursor);
-		
-        
-        return freq;
+		    }
+		    typeof = "CTAF";
+		    if (!ctaffreq.equals("")) {
+			try {
+			    /*
+			     * Filter out UHF
+			     */
+			    double frequency = Double.parseDouble(ctaffreq);
+			    if (!Helper.isFrequencyUHF(frequency)) {
+				freq.add(typeof + " " + ctaffreq);
+			    }
+			} catch (Exception e) {
+			}
+
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	}
+
+	closes(cursor);
+
+	/*
+	 * Find frequencies (ATIS, TOWER, GROUND, etc) Not AWOS
+	 */
+
+	qry = "select * from " + TABLE_AIRPORT_FREQ + " where "
+		+ LOCATION_ID_DB + "=='" + name + "' or " + LOCATION_ID_DB
+		+ "=='K" + name + "';";
+	cursor = doQuery(qry, getMainDb());
+
+	try {
+	    /*
+	     * Add all of them
+	     */
+	    if (cursor != null) {
+		while (cursor.moveToNext()) {
+		    String typeof = cursor.getString(1);
+		    typeof = typeof.replace("LCL", "TWR");
+		    /*
+		     * Filter out silly frequencies
+		     */
+		    if (typeof.equals("EMERG") || typeof.contains("GATE")
+			    || typeof.equals("EMERGENCY")) {
+			continue;
+		    }
+		    /*
+		     * Filter out UHF
+		     */
+		    try {
+			double frequency = Double.parseDouble(cursor
+				.getString(2));
+			if (Helper.isFrequencyUHF(frequency)) {
+			    continue;
+			}
+		    } catch (Exception e) {
+		    }
+
+		    freq.add(typeof + " " + cursor.getString(2));
+		}
+	    }
+	} catch (Exception e) {
+	}
+	closes(cursor);
+
+	return freq;
     }
 
     /**

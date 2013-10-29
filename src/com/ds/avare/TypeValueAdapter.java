@@ -64,6 +64,7 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
 		 * This will make links out of certain text patterns eg. Phone numbers,
 		 * email, web address
 		 */
+		// Linkify.addLinks(textView, Linkify.ALL);
 		/*
 		 * The next three lines are a more custom version of the commented out
 		 * default linkify above. It was catching things like lat/lon, times etc
