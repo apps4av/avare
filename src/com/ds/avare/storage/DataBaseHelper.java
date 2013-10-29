@@ -768,59 +768,62 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		    runways.add(r);
 
 		    /*
-		     * If the first runway is a helipad, don't add a second end
+		     * If runway name is null don't add the runway
 		     */
-		    if (!(run.startsWith("H") || run.startsWith("h"))) {
-			run = Helper.removeLeadingZeros(cursor.getString(5));
-			lat = Helper.removeLeadingZeros(cursor.getString(7));
-			lon = Helper.removeLeadingZeros(cursor.getString(9));
+		    run = Helper.removeLeadingZeros(cursor.getString(5));
+		    
+		    if (run == "")
+			continue;
+		    run = Helper.removeLeadingZeros(cursor.getString(5));
+		    lat = Helper.removeLeadingZeros(cursor.getString(7));
+		    lon = Helper.removeLeadingZeros(cursor.getString(9));
 
-			Elevation = cursor.getString(11);
-			if (Elevation.equals("")) {
-			    Elevation = params.get("Elevation");
-			}
-			Heading = cursor.getString(13);
-			DT = cursor.getString(15);
-			if (DT.equals("")) {
-			    DT = "0";
-			}
-			Lighted = cursor.getString(17);
-			if (Lighted.equals("0") || Lighted.equals("")) {
-			    Lighted = mContext.getString(R.string.No);
-			}
-			ILS = cursor.getString(19);
-			if (ILS.equals("")) {
-			    ILS = mContext.getString(R.string.No);
-			}
-			VGSI = cursor.getString(21);
-			if (VGSI.equals("")) {
-			    VGSI = mContext.getString(R.string.No);
-			}
-			Pattern = cursor.getString(23);
-			if (Pattern.equals("Y")) {
-			    Pattern = "Right";
-			} else {
-			    Pattern = "Left";
-			}
-
-			r = new Runway(run);
-			r.setElevation(Elevation);
-			r.setHeading(Heading);
-			r.setSurface(Surface);
-			r.setLength(Length);
-			r.setWidth(Width);
-			r.setThreshold(DT);
-			r.setLights(Lighted);
-			r.setPattern(Pattern);
-			r.setLongitude(lon);
-			r.setLatitude(lat);
-			r.setVariation(Variation);
-			r.setILS(ILS);
-			r.setVGSI(VGSI);
-
-			runways.add(r);
-
+		    Elevation = cursor.getString(11);
+		    if (Elevation.equals("")) {
+			Elevation = params.get("Elevation");
 		    }
+		    Heading = cursor.getString(13);
+		    DT = cursor.getString(15);
+		    if (DT.equals("")) {
+			DT = "0";
+		    }
+		    Lighted = cursor.getString(17);
+		    if (Lighted.equals("0") || Lighted.equals("")) {
+			Lighted = mContext.getString(R.string.No);
+		    }
+		    ILS = cursor.getString(19);
+		    if (ILS.equals("")) {
+			ILS = mContext.getString(R.string.No);
+		    }
+		    VGSI = cursor.getString(21);
+		    if (VGSI.equals("")) {
+			VGSI = mContext.getString(R.string.No);
+		    }
+		    Pattern = cursor.getString(23);
+		    if (Pattern.equals("Y")) {
+			Pattern = "Right";
+		    } else {
+			Pattern = "Left";
+		    }
+
+		    r = new Runway(run);
+		    r.setElevation(Elevation);
+		    r.setHeading(Heading);
+		    r.setSurface(Surface);
+		    r.setLength(Length);
+		    r.setWidth(Width);
+		    r.setThreshold(DT);
+		    r.setLights(Lighted);
+		    r.setPattern(Pattern);
+		    r.setLongitude(lon);
+		    r.setLatitude(lat);
+		    r.setVariation(Variation);
+		    r.setILS(ILS);
+		    r.setVGSI(VGSI);
+
+		    runways.add(r);
+
+		    
 
 		}
 	    }
