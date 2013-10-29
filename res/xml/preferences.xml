@@ -20,7 +20,8 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.FolderPreference
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
-        <ListPreference
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/Server"
             android:entryValues="@array/ServerValues"
@@ -41,7 +42,7 @@ authors: zkhan, jlmcgraw
             android:title="@string/GpsOffWarnLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="ALL"
             android:entries="@array/AirSig"
             android:entryValues="@array/AirSig"
@@ -72,7 +73,7 @@ authors: zkhan, jlmcgraw
             android:title="@string/OrientationPLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"
             android:entryValues="@array/UnitsDValues"
@@ -114,14 +115,15 @@ authors: zkhan, jlmcgraw
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-        <ListPreference
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DistanceRingTypePrompts"
             android:entryValues="@array/DistanceRingTypeValues"
             android:key="@string/prefDistanceRingType"
             android:summary="@string/DistanceRingTypeSummary"
             android:title="@string/DistanceRingTypeLabel" />
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/TimerRingSizePrompt"
             android:entryValues="@array/TimerRingSizeValues"

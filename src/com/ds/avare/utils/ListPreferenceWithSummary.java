@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
+
+import com.ds.avare.R;
+
 import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
@@ -22,23 +25,27 @@ import android.util.AttributeSet;
  *
  */
 public class ListPreferenceWithSummary extends ListPreference {
+    private String originalSummary = "";
 
-	public ListPreferenceWithSummary(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public ListPreferenceWithSummary(Context context, AttributeSet attrs) {
+	super(context, attrs);
+	originalSummary = super.getSummary().toString();
+    }
 
-	public ListPreferenceWithSummary(Context context) {
-		super(context);
-	}
+    public ListPreferenceWithSummary(Context context) {
+	super(context);
+	originalSummary = super.getSummary().toString();
+    }
 
-	@Override
-	public void setValue(String value) {
-		super.setValue(value);
-		setSummary(value);
-	}
+    @Override
+    public void setValue(String value) {
+	super.setValue(value);
+	setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + value);
+    }
 
-	@Override
-	public void setSummary(CharSequence summary) {
-		super.setSummary(getEntry());
-	}
+    @Override
+    public void setSummary(CharSequence summary) {
+
+	super.setSummary(originalSummary + getContext().getString(R.string.CurrentlySetTo) + getEntry());
+    }
 }

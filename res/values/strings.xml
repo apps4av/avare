@@ -203,4 +203,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
     <string name="TrkUpdShowHistoryLabel">&quot;Track History&quot;</string>
     <string name="TrkUpdShowHistorySummary">&quot;Display the flight path track on the active chart.&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+
 </resources>
