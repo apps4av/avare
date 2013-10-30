@@ -1214,7 +1214,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         
         LinkedList<Obstacle> list = new LinkedList<Obstacle>();
         
-        String qry = "select * from " + TABLE_OBSTACLES + " where (Height > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
+        String qry = "select * from " + TABLE_OBSTACLES + " where (HeightMsl > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
                 "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
                 "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
         /*
@@ -1226,7 +1226,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
-                    list.add(new Obstacle(cursor.getFloat(1), cursor.getFloat(0), (int)cursor.getFloat(2)));
+                    list.add(new Obstacle(cursor.getFloat(1), cursor.getFloat(0), (int)cursor.getFloat(2),(int)cursor.getFloat(3) ));
                 }
             }
         }

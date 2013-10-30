@@ -87,6 +87,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private BitmapHolder               mRunwayBitmap;
     private BitmapHolder               mLineBitmap;
     private BitmapHolder               mObstacleBitmap;
+    private BitmapHolder               mObstacleBitmapBelow1000;
+    private BitmapHolder               mObstacleBitmapAbove1000;
     private BitmapHolder               mLineHeadingBitmap;
     
     /**
@@ -271,6 +273,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
         mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
+        mObstacleBitmapBelow1000 = new BitmapHolder(context, R.drawable.obstaclebelow1000);
+        mObstacleBitmapAbove1000 = new BitmapHolder(context, R.drawable.obstacleabove1000);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         
@@ -822,10 +826,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mPref.shouldShowObstacles()) {
             if((mObstacles != null) && (null == mPointProjection)) {
                 mPaint.setShadowLayer(0, 0, 0, 0);
-                for (Obstacle o : mObstacles) {
-                    rotateBitmapIntoPlace(mObstacleBitmap, 0, o.getLongitude(), o.getLatitude(), false);
-                    canvas.drawBitmap(mObstacleBitmap.getBitmap(), mObstacleBitmap.getTransform(), mPaint);
-                }
+		for (Obstacle o : mObstacles) {
+		    if (o.getHeightAgl() > 1000) {
+			rotateBitmapIntoPlace(mObstacleBitmapAbove1000, 0,
+				o.getLongitude(), o.getLatitude(), false);
+			canvas.drawBitmap(mObstacleBitmapAbove1000.getBitmap(),
+				mObstacleBitmapAbove1000.getTransform(), mPaint);
+		    } else {
+			rotateBitmapIntoPlace(mObstacleBitmapBelow1000, 0,
+				o.getLongitude(), o.getLatitude(), false);
+			canvas.drawBitmap(mObstacleBitmapBelow1000.getBitmap(),
+				mObstacleBitmapBelow1000.getTransform(), mPaint);
+		    }
+		}
             }
         }
     }

@@ -19,7 +19,8 @@ public class Obstacle {
 
     private double mLon;
     private double mLat;
-    private int mHeight; 
+    private int mHeightMsl; 
+    private int mHeightAgl;
 
     /*
      * params that make this obstacle dangerous
@@ -34,11 +35,12 @@ public class Obstacle {
      * @param latitude
      * @param height
      */
-    public Obstacle(double longitude, double latitude, int height) {
+    public Obstacle(double longitude, double latitude, int heightmsl, int heightagl) {
         
         mLon = longitude;
         mLat = latitude;
-        mHeight = height; 
+        mHeightMsl = heightmsl;
+        mHeightAgl = heightagl; 
     }
     
     /**
@@ -61,7 +63,10 @@ public class Obstacle {
      * 
      * @return
      */
-    public int getHeight() {
-        return mHeight;
+    public int getHeightMsl() {
+        return mHeightMsl;
+    }
+    public int getHeightAgl() {
+        return mHeightAgl;
     }
 }
