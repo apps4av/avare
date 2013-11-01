@@ -826,6 +826,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mPref.shouldShowObstacles()) {
             if((mObstacles != null) && (null == mPointProjection)) {
                 mPaint.setShadowLayer(0, 0, 0, 0);
+                mPaint.setAlpha(255);
 		for (Obstacle o : mObstacles) {
 		    if (o.getHeightAgl() > 1000) {
 			rotateBitmapIntoPlace(mObstacleBitmapAbove1000, 0,
