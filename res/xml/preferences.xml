@@ -21,7 +21,7 @@ authors: zkhan, jlmcgraw
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="@string/Zero"
             android:entries="@array/Server"
             android:entryValues="@array/ServerValues"
             android:key="@string/Root"
@@ -65,15 +65,17 @@ authors: zkhan, jlmcgraw
             android:key="@string/LeaveRunning"
             android:summary="@string/LeaveRunningSummary"
             android:title="@string/LeaveRunningLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
+        <ListPreference
+            android:defaultValue="Portrait"
+            android:entries="@array/Orientation"
+            android:entryValues="@array/Orientation"
             android:key="@string/OrientationP"
             android:summary="@string/OrientationPSummary"
             android:title="@string/OrientationPLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="@string/Zero"
             android:entries="@array/UnitsD"
             android:entryValues="@array/UnitsDValues"
             android:key="@string/Units"
@@ -115,14 +117,14 @@ authors: zkhan, jlmcgraw
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="@string/Zero"
             android:entries="@array/DistanceRingTypePrompts"
             android:entryValues="@array/DistanceRingTypeValues"
             android:key="@string/prefDistanceRingType"
             android:summary="@string/DistanceRingTypeSummary"
             android:title="@string/DistanceRingTypeLabel" />
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="@string/Zero"
             android:entries="@array/TimerRingSizePrompt"
             android:entryValues="@array/TimerRingSizeValues"
             android:key="@string/prefTimerRingSize"
@@ -144,7 +146,7 @@ authors: zkhan, jlmcgraw
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
         <ListPreference
-            android:defaultValue="2"
+            android:defaultValue="@string/Zero"
             android:entries="@array/AutoPostTracksPrompts"
             android:entryValues="@array/AutoPostTracksValues"
             android:key="@string/prefAutoPostTracks"

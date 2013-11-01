@@ -680,7 +680,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                if(null != mService) {
+                if(null != mService && mPref.shouldSaveTracks()) {
                 	URI fileURI = mService.setTracks(mPref, !mService.getTracks());
                 	/* The fileURI is returned when the tracks are closed off.
                 	 */

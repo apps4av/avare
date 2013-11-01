@@ -268,7 +268,7 @@ public class TileMap {
      * Set the correct tile orientation
      */
     public void setOrientation() {
-        if((new Preferences(mContext)).isPortrait()) {
+        if((new Preferences(mContext)).getOrientation().contains("Portrait")) {
             /*
              * Have more tiles in Y on portrait
              */

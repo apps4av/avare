@@ -285,13 +285,19 @@ public class Helper {
             act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
         }
 
-        if(pref.isPortrait()) {
-            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);            
+        String orn = pref.getOrientation();
+        if(orn.equals("Portrait")) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        else {
+        else if(orn.equals("Reverse Portrait")) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        }
+        if(orn.equals("Landscape")) {
             act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
+        else if(orn.equals("Reverse Landscape")) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        }
 
         /*
          * Do not open keyboard automatically.
@@ -497,6 +503,7 @@ public class Helper {
             for(int id = 0; id < tokens.length; id++) {
                 if(tokens[id].contains("TFR:: ")) {
                     if(null != shape) {
+                        shape.makePolygon();
                         shapeList.add(shape);
                     }                                 
                     shape = new TFRShape(tokens[id].replace(

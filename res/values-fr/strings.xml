@@ -32,7 +32,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Maps">&quot;Cartes&quot;</string>
     <string name="MapsLabel">&quot;Répertoire des cartes&quot;</string>
     <string name="MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
-    <string name="OrientationP">&quot;Orientation&quot;</string>
+    <string name="OrientationP">&quot;OrientationP&quot;</string>
     <string name="OrientationPLabel">&quot;Mode portrait&quot;</string>
     <string name="OrientationPSummary">&quot;Activation du visionnement en mode portrait&quot;</string>
     <string name="GpsTime">&quot;Heure du GPS&quot;</string>

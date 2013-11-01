@@ -412,8 +412,8 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean isPortrait() {
-        return(mPref.getBoolean(mContext.getString(R.string.OrientationP), true));
+    public String getOrientation() {
+        return(mPref.getString(mContext.getString(R.string.OrientationP), "Portrait"));
     }
 
     /**
@@ -598,10 +598,26 @@ public class Preferences {
         return(mPref.getString(name, null));
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean shouldDrawTracks() {
         return(mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldSaveTracks() {
+        return(mPref.getBoolean(mContext.getString(R.string.TrkUpdAllow), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public int getTimerRingSize() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));

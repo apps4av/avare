@@ -34,7 +34,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SimulationMode">&quot;Simulación&quot;</string>
     <string name="SimulationModeLabel">&quot;Active Simulación Mode&quot;</string>
     <string name="SimulationModeSummary">&quot;Active modo de Simulación para planear&quot;</string>
-    <string name="OrientationP">&quot;Orientación&quot;</string>
+    <string name="OrientationP">&quot;OrientaciónP&quot;</string>
     <string name="OrientationPLabel">&quot;Modo Vertical &quot;</string>
     <string name="OrientationPSummary">&quot;Active para operación en Modo Vertical&quot;</string>
     <string name="GpsTime">&quot;Tiempo de GPS&quot;</string>

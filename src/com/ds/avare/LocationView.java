@@ -243,7 +243,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mDraw = false;
         
         mPref = new Preferences(context);
-        mTextDiv = mPref.isPortrait() ? 24.f : 15.f;
+        mTextDiv = mPref.getOrientation().contains("Portrait") ? 24.f : 15.f;
         
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
         mPaint.setTypeface(mFace);
