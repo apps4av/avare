@@ -143,6 +143,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
-    </PreferenceCategory>
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/AutoPostTracksPrompts"
+            android:entryValues="@array/AutoPostTracksValues"
+            android:key="@string/prefAutoPostTracks"
+            android:summary="@string/AutoPostTracksSummary"
+            android:title="@string/AutoPostTracksLabel" />
+        </PreferenceCategory>
     
 </PreferenceScreen>

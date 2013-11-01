@@ -149,6 +149,8 @@ public abstract class Shape {
      * 
      */
     public void makePolygon() {
-        mPoly = mPolyBuilder.build();
+        if(getNumCoords() > 2) {
+            mPoly = mPolyBuilder.build();
+        }
     } 
 }

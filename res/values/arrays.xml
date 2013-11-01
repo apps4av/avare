@@ -711,4 +711,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item >Fixed at 2/5/10</item>
     </string-array>
 
+	<string-array name="AutoPostTracksValues">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+    </string-array>
+
+	<string-array name="AutoPostTracksPrompts">
+        <item >None</item>
+        <item >Send email</item>
+        <item >Send to all applications</item>
+    </string-array>
+
 </resources>

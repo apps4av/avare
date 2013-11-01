@@ -105,9 +105,7 @@ public class InternetWeatherCache {
                         }
                         asm.shape.add(lon, lat);
                     }
-                    if(asm.shape.getNumCoords() > 2) {
-                        asm.shape.makePolygon();
-                    }
+                    asm.shape.makePolygon();
                 }
             }
             catch(Exception e) {

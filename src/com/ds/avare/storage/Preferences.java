@@ -622,4 +622,14 @@ public class Preferences {
 		}
     }
 
+    /**
+     * @return 0-Do not auto post, 1-send in an email, 2-user selects an app to handle KML
+     */
+    public int autoPostTracks() {
+    	try {
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefAutoPostTracks), "1")));
+		} catch (Exception x) {
+			return 1;
+		}
+    }
 }

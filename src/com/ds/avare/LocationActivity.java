@@ -680,24 +680,47 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-            	/* The fileURI is returned when the tracks are closed off. Future would
-            	 * be to have this (auto)post to users timline on facebook/google etc ?
-            	 */
                 if(null != mService) {
                 	URI fileURI = mService.setTracks(mPref, !mService.getTracks());
+                	/* The fileURI is returned when the tracks are closed off.
+                	 */
                 	if(fileURI != null) {
-                		/* 
-                         * A file was created. Send it as an email attachment
-                         */
-                	    try {
-                    	    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND); 
-                    	    emailIntent.setType("application/kml");
-                            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.Save) + " " + fileURI.getPath()); 
-                    	    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(fileURI.getPath())));
-                    	    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                	    }
-                	    catch (Exception e) {
-                	    }
+	                	String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
+	        			switch(mPref.autoPostTracks()) {
+		    				case 0:
+		    	    			/* Just display a toast message to the user that the file was saved
+		    	    			 */
+		    	    			Toast.makeText(getApplicationContext(), 
+		    	    							String.format(getString(R.string.AutoPostTracksDialogText), fileName), 
+		    	    							Toast.LENGTH_LONG).show();
+		    	    			break;
+		
+		    				case 1:
+		    	    			/* Send this file out as an email attachment
+		    	    			 */
+		    	        	    try {
+		    	            	    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+		    	            	    emailIntent.setType("application/kml");
+		    	                    emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.AutoPostTracksSubject) + " " + fileName); 
+		    	            	    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(fileURI.getPath())));
+		    	            	    startActivity(emailIntent);
+		    	        	    } catch (Exception e) { 
+		    	        	        
+		    	        	    }
+		    	        	    break;
+		
+		    				case 2:
+		    	    			/* Send it somewhere as KML. Let the user choose where.
+		    	    			 */
+		    	        	    try {
+		    	            	    Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
+		    	            	    viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())), "application/vnd.google-earth.kml+xml");
+		    	            	    startActivity(Intent.createChooser(viewIntent, getString(R.string.AutoPostTracksTitle)));
+		    	        	    } catch (Exception e) { 
+		    	        	        
+		    	        	    }
+		    	        	    break;
+		    			}
                 	}
                 }
             }        
