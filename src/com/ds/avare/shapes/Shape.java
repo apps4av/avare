@@ -17,6 +17,9 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Scale;
+import com.sromku.polygon.Point;
+import com.sromku.polygon.Polygon;
+import com.sromku.polygon.Polygon.Builder;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -34,12 +37,10 @@ public abstract class Shape {
     protected double mLatMin;
     protected double mLatMax;
     
-    private double mLonOfLatMax;
-    private double mXtop;
-    private double mYtop;
     private String mText;
     
-    private static final int WIDTHTOP = 30;
+    private Builder mPolyBuilder;
+    private Polygon mPoly;
     
     /**
      * 
@@ -50,10 +51,8 @@ public abstract class Shape {
         mLonMax = -180;
         mLatMin = 180;
         mLatMax = -180;
-        mXtop = 1E10;
-        mYtop = 1E10;
         mText = label;
-        mLonOfLatMax = 180;
+        mPolyBuilder = Polygon.Builder(); 
     }
 
     /**
@@ -63,19 +62,7 @@ public abstract class Shape {
     public void add(double lon, double lat) {
         Coordinate c = new Coordinate(lon, lat);
         mCoords.add(c);
-        if(lon < mLonMin) {
-            mLonMin = lon;
-        }
-        if(lon >= mLonMax) {
-            mLonMax = lon;
-        }
-        if(lat < mLatMin) {
-            mLatMin = lat;
-        }
-        if(lat >= mLatMax) {
-            mLatMax = lat;
-            mLonOfLatMax = lon;
-        }
+        mPolyBuilder.addVertex(new Point((float)lon, (float)lat));
     }
 
     /**
@@ -106,22 +93,14 @@ public abstract class Shape {
             c.drawLine(x1, y1, x2, y2, paint);
         }
         
-        /*
-         * Save this
-         */
-        mXtop = x + (float)(mLonOfLatMax - mLonMin) * facx;
-        mYtop = y;
 
         /*
          * Do a tab on top of shape
          */
-        if(this instanceof TFRShape || this instanceof MetShape) {
-            c.drawLine((float)mXtop, (float)mYtop, (float)mXtop, (float)mYtop - WIDTHTOP / 4, paint);
-        }
         /*
          * Draw pivots at end of track
          */
-        else if (this instanceof TrackShape) {
+        if (this instanceof TrackShape) {
             if(getNumCoords() < 2) {
                 return;
             }
@@ -152,14 +131,24 @@ public abstract class Shape {
     
     /**
      * 
-     * @param x
-     * @param y
+     * @param lon
+     * @param lat
      * @return
      */
-    public String getTextIfTouched(double x, double y) {
-        if((Math.abs(x - mXtop) < WIDTHTOP) && (Math.abs(y - mYtop) < WIDTHTOP)) {
+    public String getTextIfTouched(double lon, double lat) {
+        if(null == mPoly) {
+            return null;
+        }
+        if(mPoly.contains(new Point((float)lon, (float)lat))) {
             return mText;
         }
         return null;
     }
+    
+    /**
+     * 
+     */
+    public void makePolygon() {
+        mPoly = mPolyBuilder.build();
+    } 
 }

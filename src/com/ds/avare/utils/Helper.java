@@ -520,6 +520,9 @@ public class Helper {
                 id++;
             }
             if(null != shape) {
+                if(shape.getNumCoords() > 2) {
+                    shape.makePolygon();
+                }
                 shapeList.add(shape);
             }
         }
