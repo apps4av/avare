@@ -20,7 +20,7 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.FolderPreference
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/Server"
             android:entryValues="@array/ServerValues"
@@ -41,7 +41,7 @@ authors: zkhan, jlmcgraw
             android:title="@string/GpsOffWarnLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="ALL"
             android:entries="@array/AirSig"
             android:entryValues="@array/AirSig"
@@ -65,7 +65,7 @@ authors: zkhan, jlmcgraw
             android:key="@string/LeaveRunning"
             android:summary="@string/LeaveRunningSummary"
             android:title="@string/LeaveRunningLabel" />
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="Portrait"
             android:entries="@array/Orientation"
             android:entryValues="@array/Orientation"
@@ -74,8 +74,8 @@ authors: zkhan, jlmcgraw
             android:title="@string/OrientationPLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
-        <ListPreference
-            android:defaultValue="@string/Zero"
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
             android:entries="@array/UnitsD"
             android:entryValues="@array/UnitsDValues"
             android:key="@string/Units"
@@ -116,15 +116,16 @@ authors: zkhan, jlmcgraw
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-        <ListPreference
-            android:defaultValue="@string/Zero"
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
             android:entries="@array/DistanceRingTypePrompts"
             android:entryValues="@array/DistanceRingTypeValues"
             android:key="@string/prefDistanceRingType"
             android:summary="@string/DistanceRingTypeSummary"
             android:title="@string/DistanceRingTypeLabel" />
-        <ListPreference
-            android:defaultValue="@string/Zero"
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
             android:entries="@array/TimerRingSizePrompt"
             android:entryValues="@array/TimerRingSizeValues"
             android:key="@string/prefTimerRingSize"
@@ -145,7 +146,7 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
-        <ListPreference
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/AutoPostTracksPrompts"
             android:entryValues="@array/AutoPostTracksValues"
