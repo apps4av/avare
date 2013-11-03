@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -113,16 +116,28 @@ public class IHelperService extends Service {
                 return;
             }
             
-            String tokens[] = text.split(",");
-            if(tokens[0].equals("ownship")) {
-                Location l = new Location(LocationManager.GPS_PROVIDER);
-                l.setLongitude(Double.parseDouble(tokens[1]));
-                l.setLatitude(Double.parseDouble(tokens[2]));
-                l.setSpeed((float)Double.parseDouble(tokens[3]));
-                l.setBearing((float)Double.parseDouble(tokens[4]));
-                l.setAltitude(Double.parseDouble(tokens[5]));
-                l.setTime(Long.parseLong(tokens[6]));
-                mService.getGps().onLocationChanged(l);
+            /*
+             * Get JSON
+             */
+            try {
+                JSONObject object = new JSONObject(text);
+
+                String type = object.getString("type");
+                if(type == null) {
+                    return;
+                }
+                if(type.equals("ownship")) {
+                    Location l = new Location(LocationManager.GPS_PROVIDER);
+                    l.setLongitude(object.getDouble("longitude"));
+                    l.setLatitude(object.getDouble("latitude"));
+                    l.setSpeed((float)object.getDouble("speed"));
+                    l.setBearing((float)object.getDouble("bearing"));
+                    l.setAltitude(object.getDouble("altitude"));
+                    l.setTime(object.getLong("time"));
+                    mService.getGps().onLocationChanged(l);
+                }
+            } catch (JSONException e) {
+                return;
             }
         }
     };
