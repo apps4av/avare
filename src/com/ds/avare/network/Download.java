@@ -81,6 +81,9 @@ public class Download {
      */
     public void cancel() {
         mStop = true;
+        if(mThread != null) {
+            mThread.interrupt();
+        }
     }
 
     /**
