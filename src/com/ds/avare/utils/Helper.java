@@ -32,6 +32,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.util.TypedValue;
 import android.view.WindowManager;
 
 /**
@@ -542,6 +543,15 @@ public class Helper {
      */
     public static boolean isFrequencyUHF(double freq) {
         return freq > 136;
+    }
+    
+    
+    /**
+     *  Converts 1 dip (device independent pixel) into its equivalent physical pixels
+     */
+    public static float getDpiToPix(Context ctx) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, 
+                ctx.getResources().getDisplayMetrics());
     }
 
 }

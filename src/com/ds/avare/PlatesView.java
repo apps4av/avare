@@ -56,6 +56,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
     private float[]                     mMatrix;
+    private float			             mDipToPix;
     
     /**
      * 
@@ -77,6 +78,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
+	/*
+	 *  Converts 1 dip (device independent pixel) into its equivalent physical pixels
+	 */
+        mDipToPix = Helper.getDpiToPix(context);
     }
     
     /**
@@ -240,7 +245,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
         Helper.restoreCanvasColors(mPaint);
         
-    	mPaint.setStrokeWidth(4);
+    	mPaint.setStrokeWidth(4 * mDipToPix);
     	
     	
         if(mErrorStatus != null) {

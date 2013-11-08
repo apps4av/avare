@@ -53,6 +53,7 @@ public class SatelliteView extends View {
     private int            mAccuracy;
     String 				     mLastTime;
     String                   mName;
+    private float 	        mDipToPix;
 
     /**
      * 
@@ -66,7 +67,9 @@ public class SatelliteView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.WHITE);
         mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
-        mPaint.setStrokeWidth(4);
+
+        mDipToPix = Helper.getDpiToPix(context);
+        mPaint.setStrokeWidth(4 * mDipToPix);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         mLastTime = "";
     }
