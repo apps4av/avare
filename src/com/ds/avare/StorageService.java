@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
 
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
@@ -76,6 +77,12 @@ public class StorageService extends Service {
     private Draw mDraw;
     
     private InternetWeatherCache mInternetWeatherCache;
+    
+    /*
+     * Last location and its sem for sending NMEA to the world
+     */
+    private Semaphore mLocationSem;
+    private Location mLocation;
     
     /**
      * GPS
@@ -212,6 +219,7 @@ public class StorageService extends Service {
         mDiagramBitmap = null;
         mPlateIndex = 0;
         mAfdIndex = 0;
+        mLocationSem = new Semaphore(0);
         
         mDraw = new Draw();
         
@@ -277,6 +285,18 @@ public class StorageService extends Service {
                             mGps.updateTimeout();
                         }
                         setGpsParams(new GpsParams(location));
+                        /*
+                         * Do a binary semaphore as old locations are not interesting
+                         * Remove old values
+                         */
+                        while(mLocationSem.availablePermits() > 0) {
+                            try {
+                                mLocationSem.acquire();
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        mLocation = location;
+                        mLocationSem.release();
                         getArea().updateLocation(getGpsParams());
                         getPlan().updateLocation(getGpsParams());
                         if(getPlan().hasDestinationChanged()) {
@@ -688,5 +708,16 @@ public class StorageService extends Service {
      */
     public Gps getGps() {
         return mGps;
+    }
+    
+    /**
+     * 
+     */
+    public Location getLocationBlocking() {
+        try {
+            mLocationSem.acquire();
+        } catch (Exception e) {
+        }
+        return mLocation;
     }
 }

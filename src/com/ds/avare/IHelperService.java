@@ -101,6 +101,25 @@ public class IHelperService extends Service {
             msg.obj = text;
             mHandler.sendMessage(msg);
         }
+
+        @Override
+        public String recvDataText() {
+            // TODO Auto-generated method stub
+            Location l = mService.getLocationBlocking();
+            JSONObject object = new JSONObject();
+            try {
+                object.put("type", "ownship");
+                object.put("longitude", (double)l.getLongitude());
+                object.put("latitude", (double)l.getLatitude());
+                object.put("speed", (double)l.getSpeed());
+                object.put("bearing", (double)l.getBearing());
+                object.put("altitude", (double)l.getAltitude());
+                object.put("time", l.getTime());
+            } catch (JSONException e1) {
+                return null;
+            }
+            return object.toString();
+        }
     };
     
     /**

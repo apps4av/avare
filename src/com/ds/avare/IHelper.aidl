@@ -12,8 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-/** Example service interface */
 interface IHelper {
-    /** Request the process ID of this service, to do evil things with it. */
     void sendDataText(String text);
+    String recvDataText();
 }
