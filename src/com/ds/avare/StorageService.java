@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Semaphore;
 
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
@@ -32,6 +31,7 @@ import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Mutex;
 import com.ds.avare.weather.InternetWeatherCache;
 
 import android.app.Service;
@@ -81,7 +81,7 @@ public class StorageService extends Service {
     /*
      * Last location and its sem for sending NMEA to the world
      */
-    private Semaphore mLocationSem;
+    private Mutex mLocationSem;
     private Location mLocation;
     
     /**
@@ -219,7 +219,7 @@ public class StorageService extends Service {
         mDiagramBitmap = null;
         mPlateIndex = 0;
         mAfdIndex = 0;
-        mLocationSem = new Semaphore(-1);
+        mLocationSem = new Mutex();
         
         mDraw = new Draw();
         
@@ -286,7 +286,7 @@ public class StorageService extends Service {
                         }
                         setGpsParams(new GpsParams(location));
                         mLocation = location;
-                        mLocationSem.release();
+                        mLocationSem.unlock();
                         getArea().updateLocation(getGpsParams());
                         getPlan().updateLocation(getGpsParams());
                         if(getPlan().hasDestinationChanged()) {
@@ -705,7 +705,7 @@ public class StorageService extends Service {
      */
     public Location getLocationBlocking() {
         try {
-            mLocationSem.acquire();
+            mLocationSem.lock();
         } catch (Exception e) {
         }
         return mLocation;
