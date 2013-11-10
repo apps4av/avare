@@ -219,7 +219,7 @@ public class StorageService extends Service {
         mDiagramBitmap = null;
         mPlateIndex = 0;
         mAfdIndex = 0;
-        mLocationSem = new Semaphore(0);
+        mLocationSem = new Semaphore(-1);
         
         mDraw = new Draw();
         
@@ -285,16 +285,6 @@ public class StorageService extends Service {
                             mGps.updateTimeout();
                         }
                         setGpsParams(new GpsParams(location));
-                        /*
-                         * Do a binary semaphore as old locations are not interesting
-                         * Remove old values
-                         */
-                        while(mLocationSem.availablePermits() > 0) {
-                            try {
-                                mLocationSem.acquire();
-                            } catch (InterruptedException e) {
-                            }
-                        }
                         mLocation = location;
                         mLocationSem.release();
                         getArea().updateLocation(getGpsParams());
