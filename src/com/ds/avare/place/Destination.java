@@ -716,5 +716,48 @@ public class Destination extends Observable {
 		return(mAwos);
 		
 	} 
+	
+	/**
+	 * Find vertical speed to this dest in feet/m per minute
+	 * 
+	 */
+	public String getVerticalSpeedTo(GpsParams params) {
+	    
+	    double time = (mDistance / params.getSpeed()) * 60;
+	    double height = params.getAltitude();
+	    if(mDestType.equals(BASE)) {
+	        try {
+	            /*
+	             * For bases, go to pattern altitude
+	             */
+	            String pa = mParams.get("Pattern Altitude");
+	            height -= Double.parseDouble(pa);
+	        }
+	        catch(Exception e) {
+	            
+	        }
+	    }
+	    
+	    
+	    long vs = Math.round(height / time);
+	    if(vs < 0) {
+	        /*
+	         * Must go up, show up symbol
+	         */
+	        vs = -vs;
+	        if(vs > 9999) {
+	            vs = 9999;
+	        }
+	        return "\u2191" + vs + Preferences.vsConversionUnit;
+	    }
+	    
+	    /*
+	     * Down symbol
+	     */
+        if(vs > 9999) {
+            vs = 9999;
+        }
+	    return "\u2193" + vs + Preferences.vsConversionUnit;
+	}
 
 }

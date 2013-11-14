@@ -39,6 +39,7 @@ public class Preferences {
     public static double earthRadiusConversion = 3440.069;
     public static String distanceConversionUnit = "nm";
     public static String speedConversionUnit = "kt";
+    public static String vsConversionUnit = "fpm";
 
     public static final String IMAGE_EXTENSION = ".png";
     
@@ -75,7 +76,7 @@ public class Preferences {
     public static double NM_TO_MI = 1.15078;
     public static double NM_TO_KM = 1.852;
     public static double NM_TO_LATITUDE = 1.0 / 60.0;
-    
+
     /**
      * 
      * @param ctx
@@ -95,6 +96,7 @@ public class Preferences {
             earthRadiusConversion = 3440.069;
             distanceConversionUnit = mContext.getString(R.string.DistKnot);
             speedConversionUnit = mContext.getString(R.string.SpeedKnot);
+            vsConversionUnit = mContext.getString(R.string.VsFpm);
         }
         else if(getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
             distanceConversion = 2.2396; // m/s to mi/hr
@@ -102,12 +104,14 @@ public class Preferences {
             earthRadiusConversion = 3963.1676;            
             distanceConversionUnit = mContext.getString(R.string.DistMile);
             speedConversionUnit = mContext.getString(R.string.SpeedMile);
+            vsConversionUnit = mContext.getString(R.string.VsFpm);
         } else if(getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
             distanceConversion = 3.6; // m/s to kph
             heightConversion = 3.28;
-            earthRadiusConversion = 6378.09999805;            
+            earthRadiusConversion = 6378.09999805; 
             distanceConversionUnit = mContext.getString(R.string.DistKilometer);
             speedConversionUnit = mContext.getString(R.string.SpeedKilometer);
+            vsConversionUnit = mContext.getString(R.string.VsMpm);
         }
     }
 

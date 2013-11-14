@@ -177,11 +177,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DistanceRingTypeSummary">&quot;Select the style of distance rings to display.&quot;</string>
     <string name="UnitKnot">kt</string>
     <string name="UnitMile">mi</string>
+    <string name="VsFpm">fpm</string>
     <string name="UnitKilometer">km</string>
     <string name="DistKnot">nm</string>
     <string name="DistMile">mi</string>
     <string name="DistKilometer">km</string>
     <string name="SpeedKnot">kt</string>
+    <string name="VsMpm">mpm</string>
     <string name="SpeedMile">mh</string>
     <string name="SpeedKilometer">kh</string>
     <string name="prefTimerRingSize">TimerRingSize</string>

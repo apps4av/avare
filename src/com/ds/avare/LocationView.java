@@ -729,6 +729,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setTextAlign(Align.LEFT);
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
 
+        if(mService != null) {
+            if(mService.getDestination() != null && mPointProjection == null) {
+                float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
+                float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude());
+                canvas.drawText(mService.getDestination().getVerticalSpeedTo(mGpsParams), x, y, mPaint);                
+            }
+        }
+
         /*
          * Point top right
          */

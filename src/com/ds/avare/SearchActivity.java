@@ -126,6 +126,7 @@ public class SearchActivity extends Activity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
+        mSearchText.setText("");
     }
 
     /**
@@ -140,6 +141,7 @@ public class SearchActivity extends Activity implements Observer {
         mToast.show();
         mDestination.find();
         mService.getPlan().makeInactive();
+        mSearchText.setText("");
     }
 
     /**
@@ -199,6 +201,7 @@ public class SearchActivity extends Activity implements Observer {
                 if(null != mSelected) {
                     mPref.deleteARecent(mSelected);
                     initList();
+                    mSearchText.setText("");
                 }
                 mSelected = null;
             }
