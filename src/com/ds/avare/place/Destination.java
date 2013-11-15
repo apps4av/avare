@@ -748,7 +748,7 @@ public class Destination extends Observable {
 	        if(vs > 9999) {
 	            vs = 9999;
 	        }
-	        return "\u2191" + vs + Preferences.vsConversionUnit;
+	        return "-" + vs + Preferences.vsConversionUnit;
 	    }
 	    
 	    /*
@@ -757,7 +757,7 @@ public class Destination extends Observable {
         if(vs > 9999) {
             vs = 9999;
         }
-	    return "\u2193" + vs + Preferences.vsConversionUnit;
+	    return "+" + vs + Preferences.vsConversionUnit;
 	}
 
 }

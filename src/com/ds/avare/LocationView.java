@@ -729,13 +729,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setTextAlign(Align.LEFT);
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
 
-        if(mService != null) {
-            if(mService.getDestination() != null && mPointProjection == null) {
-                float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
-                float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude());
-                canvas.drawText(mService.getDestination().getVerticalSpeedTo(mGpsParams), x, y, mPaint);                
-            }
-        }
 
         /*
          * Point top right
@@ -862,6 +855,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
 
+        /*
+         * Vertical speed to dest.
+         */
+        if(mService != null && !mPref.isSimulationMode()) {
+            if(mService.getDestination() != null && mPointProjection == null) {
+                float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
+                float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude()) + mRunwayPaint.getTextSize() * 2;                        
+                drawShadowedText(canvas, mRunwayPaint, 
+                        mService.getDestination().getVerticalSpeedTo(mGpsParams), Color.BLACK, x, y);
+            }
+        }
+
         if(null != mAirplaneBitmap && null == mPointProjection) {
             
             /*
@@ -870,8 +875,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             rotateBitmapIntoPlace(mAirplaneBitmap, (float)mGpsParams.getBearing(),
                     mGpsParams.getLongitude(), mGpsParams.getLatitude(), true);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
-        }        
-
+        }
     }
 
     /**
@@ -1170,9 +1174,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
-        drawAircraft(canvas);
         drawDistanceRings(canvas);
         drawRunways(canvas);
+        drawAircraft(canvas);
         
         if(mTrackUp) {
             canvas.restore();
