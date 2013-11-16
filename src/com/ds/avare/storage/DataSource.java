@@ -239,6 +239,15 @@ public class DataSource {
      */
     public LinkedList<String> findFrequencies(String name) {
         return  dbHelper.findFrequencies(name);
-
+    }
+    
+    /**
+     * 
+     * @param lon
+     * @param lat
+     * @return
+     */
+    public Tile findElevTile(double lon, double lat) {
+        return  dbHelper.findElevTile(lon, lat);        
     }
 }

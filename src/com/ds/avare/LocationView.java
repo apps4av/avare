@@ -192,6 +192,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private boolean                    mTrackUp;
     
     /*
+     * Current ground elevation
+     */
+    private int                         mElev;
+    
+    /*
      * Shadow length 
      */
     private static final int SHADOW = 4;
@@ -237,6 +242,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mAdjustPan = 1;
         mOnChart = null;
         mTrackUp = false;
+        mElev = Integer.MIN_VALUE;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -727,9 +733,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mPaint.setColor(TEXT_COLOR);
         mPaint.setTextAlign(Align.LEFT);
+        
+        /*
+         * MSL/AGL
+         */
+        String format = (mElev == Integer.MIN_VALUE) ? "?????ft" : "%05dft";
+        int elev = (int)(mGpsParams.getAltitude() - (double)mElev * Preferences.heightConversion / 3.0);
+        elev = elev < 0 ? 0 : elev;
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
-
-
+        canvas.drawText(String.format(format, elev), 0, mPaint.getTextSize() * 3, mPaint);
+        
         /*
          * Point top right
          */
@@ -1493,6 +1506,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         public void run() {
             Thread.currentThread().setName("Obstacle");
 
+            /*
+             * Elevation tile to find AGL and ground proximity warning
+             */
+            Tile lastElevTile = null;
+            BitmapHolder elevBitmap = null;
             while(running) {
 
                 try {
@@ -1506,6 +1524,39 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * Find obstacles in background as well
                      */
                     mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
+                    
+                    /*
+                     * Find elevation tile in background, and load 
+                     */
+                    Tile t = mImageDataSource.findElevTile(lon, lat);
+                    if(t != null) {
+                        /*
+                         * Load only if needed.
+                         */
+                        if(lastElevTile == null) {
+                            lastElevTile = t;
+                            elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
+                        }
+                        if(!lastElevTile.getName().equals(t.getName())) {
+                            lastElevTile = t;
+                            elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
+                        }
+                        if(null != elevBitmap && null != lastElevTile) {
+                            double x = lastElevTile.getOffsetX(lon) + elevBitmap.getWidth() / 2;
+                            double y = lastElevTile.getOffsetY(lat) + elevBitmap.getHeight() / 2;
+                            if(elevBitmap.getBitmap() != null) {
+                                int p = elevBitmap.getBitmap().getPixel((int)x, (int)y);
+                                /*
+                                 * Each pixel level is 25 meters. Average the RGB value.
+                                 * This is in feet.
+                                 */
+                                mElev = (((p & 0x000000FF) + ((p & 0x0000FF00) >> 8) + ((p & 0x00FF0000) >> 16)) * 25);
+                            }
+                        }
+                    }
+                    else {
+                        mElev = Integer.MIN_VALUE;
+                    }
                 }                
             }
         }

@@ -1393,6 +1393,60 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return mCenterTile;        
     }
 
+    
+    /**
+     * Find the closets tiles to current position
+     * @param lon
+     * @param lat
+     * @param offset
+     * @param p
+     * @param names
+     * @return
+     */
+    public Tile findElevTile(double lon, double lat) {
+      
+        String qry =
+                "select * from " + TABLE_FILES + " where " + 
+                "((latul - " + lat + ") > 0) and " +
+                "((latll - " + lat + ") < 0) and " + 
+                "((lonul - " + lon + ") < 0) and " + 
+                "((lonur - " + lon + ") > 0) and " +
+                "level like '%" + "0" + "%';";
+        
+        Tile t = null;
+        Cursor cursor = doQueryFiles(qry, "maps.elv.db");
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+    
+                    /*
+                     * Database only return center tile, we find tiles around it using arithmetic
+                     */
+                    t = new Tile(
+                            mPref,
+                            cursor.getString(0),
+                            cursor.getDouble(1),
+                            cursor.getDouble(2),
+                            cursor.getDouble(3),
+                            cursor.getDouble(4),
+                            cursor.getDouble(5),
+                            cursor.getDouble(6),
+                            cursor.getDouble(7),
+                            cursor.getDouble(8),
+                            cursor.getDouble(9),
+                            cursor.getDouble(10),
+                            cursor.getString(11));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesFiles(cursor);
+        return t;        
+    }
+
     /**
      * 
      * @param name
