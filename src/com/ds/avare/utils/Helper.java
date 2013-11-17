@@ -114,6 +114,21 @@ public class Helper {
 
     /**
      * See the explanation in the function setThreshold. 
+     * @param altitude in FL for printing
+     * @return
+     */
+    public static String calculateAGLFromThreshold(float threshold, float elevation) {
+        String format = (elevation == Double.MIN_VALUE) ? "" : "%05dft";
+        double altitude = (threshold) * Preferences.heightConversion * 50.0;
+        altitude -= elevation;
+        if(altitude < 0) {
+            altitude = 0;
+        }
+        return(String.format(Locale.getDefault(), format, (int)altitude));
+    }
+
+    /**
+     * See the explanation in the function setThreshold. 
      * @param altitude
      * @return
      */
@@ -158,6 +173,18 @@ public class Helper {
        paint.setColorFilter(new ColorMatrixColorFilter(cm));
     }
 
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixel(int px) {
+        /*
+         * Average the RGB value. The elevation chart is already in gray scale
+         */
+        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * (25.0 - 1.0) / 3.0);
+    }
+    
     /**
      * 
      * @param paint

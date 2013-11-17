@@ -205,7 +205,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
     <string name="TrkUpdShowHistoryLabel">&quot;Track History&quot;</string>
     <string name="TrkUpdShowHistorySummary">&quot;Display the flight path track on the active chart.&quot;</string>
-    <string name="AutoPostTracksTitle">&quot;Send tracks file to ...&quot;</string>
+    <string name="AutoPostTracksTitle">&quot;Send tracks file to &quot;</string>
     <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
     <string name="prefAutoPostTracks">AutoPostTracks</string>
     <string name="AutoPostTracksLabel">&quot;Automatic Track Post&quot;</string>
@@ -213,4 +213,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoPostTracksDialogText">&quot;The tracks file %s has been saved.&quot;</string>
     <string name="Zero">&quot;0&quot;</string>
     <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+    <string name="GlideSlope">Glide Slope</string>
+    <string name="GlideSlopeLabel">&quot;Show Glide Slope&quot;</string>
+    <string name="GlideSlopeSummary">&quot;Enable to show glide slope to the destination.&quot;</string>
+    <string name="AGL">AGL</string>
+    <string name="AGLLabel">&quot;Show AGL&quot;</string>
+    <string name="AGLSummary">&quot;Enable to show height AGL calculated from the Elevation Charts&quot;</string>
 </resources>

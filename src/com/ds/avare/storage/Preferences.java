@@ -622,6 +622,22 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean shouldShowGlideslope() {
+        return(mPref.getBoolean(mContext.getString(R.string.GlideSlope), true));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldShowAGL() {
+        return(mPref.getBoolean(mContext.getString(R.string.AGL), true));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public int getTimerRingSize() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));

@@ -194,7 +194,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Current ground elevation
      */
-    private int                         mElev;
+    private double                      mElev;
     
     /*
      * Shadow length 
@@ -242,7 +242,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mAdjustPan = 1;
         mOnChart = null;
         mTrackUp = false;
-        mElev = Integer.MIN_VALUE;
+        mElev = Double.MIN_VALUE;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -737,13 +737,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * MSL/AGL
          */
-        if(!mPref.isSimulationMode()) {
-            String format = (mElev == Integer.MIN_VALUE) ? "?????ft" : "%05dft";
-            int elev = (int)(mGpsParams.getAltitude() - (double)mElev * Preferences.heightConversion / 3.0);
-            elev = elev < 0 ? 0 : elev;
-            canvas.drawText(String.format(format, elev), 0, mPaint.getTextSize() * 3, mPaint);
-        }
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
+        if(!mPref.isSimulationMode() && mPref.shouldShowAGL() && mPointProjection == null) {
+            mPaint.setTextAlign(Align.CENTER);
+            canvas.drawText(Helper.calculateAGLFromThreshold(mThreshold, (float)mElev),
+                    /*
+                     * Draw AGL close to airplane, but do not obstruct the view.
+                     */
+                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
+                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight(),
+                    mPaint);
+        }
         
         /*
          * Point top right
@@ -873,7 +877,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Vertical speed to dest.
          */
-        if(mService != null && !mPref.isSimulationMode()) {
+        if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowGlideslope()) {
             if(mService.getDestination() != null && mPointProjection == null) {
                 float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
                 float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude()) + mRunwayPaint.getTextSize() * 2;                        
@@ -1547,19 +1551,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                             elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
                         }
                         if(null != elevBitmap && null != lastElevTile) {
-                            if(elevBitmap.getBitmap() != null  && offsets[0] >= 0 && offsets[1] >= 0) {
+                            if(elevBitmap.getBitmap() != null  && offsets[0] >= 0 && offsets[1] >= 0
+                                    && offsets[0] <= elevBitmap.getBitmap().getWidth() && 
+                                    offsets[1] <= elevBitmap.getBitmap().getHeight()) {
                                 
-                                int px = elevBitmap.getBitmap().getPixel((int)offsets[0], (int)offsets[1]);
-                                /*
-                                 * Each pixel level is 25 meters. Average the RGB value.
-                                 * This is in feet.
-                                 */
-                                mElev = (((px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * 25);
+                                int px = elevBitmap.getBitmap().getPixel(
+                                        (int)Math.round(offsets[0]), (int)Math.round(offsets[1]));
+                                mElev = Helper.findElevationFromPixel(px);
                             }
                         }
-                    }
-                    else {
-                        mElev = Integer.MIN_VALUE;
                     }
                 }                
             }
