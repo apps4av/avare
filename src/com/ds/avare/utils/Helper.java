@@ -118,7 +118,7 @@ public class Helper {
      * @return
      */
     public static String calculateAGLFromThreshold(float threshold, float elevation) {
-        String format = (elevation == Double.MIN_VALUE) ? "" : "%05dft";
+        String format = (elevation == Double.MIN_VALUE) ? "" : "%dft";
         double altitude = (threshold) * Preferences.heightConversion * 50.0;
         altitude -= elevation;
         if(altitude < 0) {
