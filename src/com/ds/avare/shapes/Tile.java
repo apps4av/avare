@@ -120,7 +120,38 @@ public class Tile {
     public double getPy() {
         return(-((mLatUL - mLatLL)  + (mLatUR - mLatLR)) / (mHeight * 2));
     }
-    
+
+    /**
+     * Find offsetTopX from top of tile
+     * @param lon
+     * @return
+     */
+    public double getOffsetTopX(double lon) {
+        double px = getPx();
+        
+        if(px != 0) {
+            return(lon - mLonUL) / px;
+        }
+        else {
+            return(0);
+        }        
+    }
+
+    /**
+     * Find offsetTopY from top of tile
+     * @param lon
+     * @return
+     */
+    public double getOffsetTopY(double lat) {
+        double py = getPy();
+        
+        if(py != 0) {
+            return(lat - mLatUL) / py;
+        }
+        else {
+            return(0);
+        }        
+    }
 
     /**
      * Find offsetX from center of tile

@@ -247,7 +247,7 @@ public class DataSource {
      * @param lat
      * @return
      */
-    public Tile findElevTile(double lon, double lat) {
-        return  dbHelper.findElevTile(lon, lat);        
+    public Tile findElevTile(double lon, double lat, double offset[], double p[], int factor) {
+        return  dbHelper.findElevTile(lon, lat, offset, p, factor);        
     }
 }

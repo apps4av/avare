@@ -737,11 +737,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * MSL/AGL
          */
-        String format = (mElev == Integer.MIN_VALUE) ? "?????ft" : "%05dft";
-        int elev = (int)(mGpsParams.getAltitude() - (double)mElev * Preferences.heightConversion / 3.0);
-        elev = elev < 0 ? 0 : elev;
+        if(!mPref.isSimulationMode()) {
+            String format = (mElev == Integer.MIN_VALUE) ? "?????ft" : "%05dft";
+            int elev = (int)(mGpsParams.getAltitude() - (double)mElev * Preferences.heightConversion / 3.0);
+            elev = elev < 0 ? 0 : elev;
+            canvas.drawText(String.format(format, elev), 0, mPaint.getTextSize() * 3, mPaint);
+        }
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
-        canvas.drawText(String.format(format, elev), 0, mPaint.getTextSize() * 3, mPaint);
         
         /*
          * Point top right
@@ -1511,6 +1513,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             Tile lastElevTile = null;
             BitmapHolder elevBitmap = null;
+            double offsets[] = new double[2];
+            double p[] = new double[2];
+
             while(running) {
 
                 try {
@@ -1528,7 +1533,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Find elevation tile in background, and load 
                      */
-                    Tile t = mImageDataSource.findElevTile(lon, lat);
+                    Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
                     if(t != null) {
                         /*
                          * Load only if needed.
@@ -1542,15 +1547,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                             elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
                         }
                         if(null != elevBitmap && null != lastElevTile) {
-                            double x = lastElevTile.getOffsetX(lon) + elevBitmap.getWidth() / 2;
-                            double y = lastElevTile.getOffsetY(lat) + elevBitmap.getHeight() / 2;
-                            if(elevBitmap.getBitmap() != null) {
-                                int p = elevBitmap.getBitmap().getPixel((int)x, (int)y);
+                            if(elevBitmap.getBitmap() != null  && offsets[0] >= 0 && offsets[1] >= 0) {
+                                
+                                int px = elevBitmap.getBitmap().getPixel((int)offsets[0], (int)offsets[1]);
                                 /*
                                  * Each pixel level is 25 meters. Average the RGB value.
                                  * This is in feet.
                                  */
-                                mElev = (((p & 0x000000FF) + ((p & 0x0000FF00) >> 8) + ((p & 0x00FF0000) >> 16)) * 25);
+                                mElev = (((px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * 25);
                             }
                         }
                     }

@@ -1403,7 +1403,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param names
      * @return
      */
-    public Tile findElevTile(double lon, double lat) {
+    public Tile findElevTile(double lon, double lat, double offset[], double p[], int factor) {
       
         String qry =
                 "select * from " + TABLE_FILES + " where " + 
@@ -1411,7 +1411,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 "((latll - " + lat + ") < 0) and " + 
                 "((lonul - " + lon + ") < 0) and " + 
                 "((lonur - " + lon + ") > 0) and " +
-                "level like '%" + "0" + "%';";
+                "level like '%" + factor + "%';"; /* Get highest level tile for elev */
         
         Tile t = null;
         Cursor cursor = doQueryFiles(qry, "maps.elv.db");
@@ -1437,6 +1437,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             cursor.getDouble(9),
                             cursor.getDouble(10),
                             cursor.getString(11));
+                    /*
+                     * Position on tile
+                     */
+                    offset[0] = t.getOffsetTopX(lon);
+                    offset[1] = t.getOffsetTopY(lat);
+                    p[0] = t.getPx();
+                    p[1] = t.getPy();
                 }
             }
         }
