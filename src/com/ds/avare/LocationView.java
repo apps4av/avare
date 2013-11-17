@@ -735,19 +735,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setTextAlign(Align.LEFT);
         
         /*
-         * MSL/AGL
+         * MSL
          */
         canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
-        if(!mPref.isSimulationMode() && mPref.shouldShowAGL() && mPointProjection == null) {
-            mPaint.setTextAlign(Align.CENTER);
-            canvas.drawText(Helper.calculateAGLFromThreshold(mThreshold, (float)mElev),
-                    /*
-                     * Draw AGL close to airplane, but do not obstruct the view.
-                     */
-                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
-                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight(),
-                    mPaint);
-        }
         
         /*
          * Point top right
@@ -884,6 +874,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 drawShadowedText(canvas, mRunwayPaint, 
                         mService.getDestination().getVerticalSpeedTo(mGpsParams), Color.BLACK, x, y);
             }
+            
+        }
+
+        if(!mPref.isSimulationMode() && mPref.shouldShowAGL() && mPointProjection == null) {
+            mRunwayPaint.setColor(Color.WHITE);
+            drawShadowedText(canvas, mRunwayPaint, Helper.calculateAGLFromThreshold(mThreshold, (float)mElev),
+                    Color.BLACK,
+                    /*
+                     * Draw AGL close to airplane, but do not obstruct the view.
+                     */
+                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
+                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight());
         }
 
         if(null != mAirplaneBitmap && null == mPointProjection) {
