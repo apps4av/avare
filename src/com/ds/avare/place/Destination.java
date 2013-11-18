@@ -723,12 +723,6 @@ public class Destination extends Observable {
 	 */
 	public String getVerticalSpeedTo(GpsParams params) {
 	    
-	    /*
-	     * Do not show this when farther than 30 miles.
-	     */
-	    if(mDistance > 30) {
-	        return "";
-	    }
 	    double time = (mDistance / params.getSpeed()) * 60;
 	    double height = params.getAltitude();
 	    if(mDestType.equals(BASE)) {
@@ -742,6 +736,12 @@ public class Destination extends Observable {
 	        catch(Exception e) {
 	            
 	        }
+	    }
+	    else {
+	        /*
+	         * Only for airport
+	         */
+	        return "";
 	    }
 	    
 	    

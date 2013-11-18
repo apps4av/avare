@@ -867,7 +867,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Vertical speed to dest.
          */
-        if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowGlideslope()) {
+        if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowVerticalRate()) {
             if(mService.getDestination() != null && mPointProjection == null) {
                 float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
                 float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude()) + mRunwayPaint.getTextSize() * 2;                        

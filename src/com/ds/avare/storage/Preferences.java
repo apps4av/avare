@@ -111,7 +111,7 @@ public class Preferences {
             earthRadiusConversion = 6378.09999805; 
             distanceConversionUnit = mContext.getString(R.string.DistKilometer);
             speedConversionUnit = mContext.getString(R.string.SpeedKilometer);
-            vsConversionUnit = mContext.getString(R.string.VsMpm);
+            vsConversionUnit = mContext.getString(R.string.VsFpm);
         }
     }
 
@@ -622,8 +622,8 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean shouldShowGlideslope() {
-        return(mPref.getBoolean(mContext.getString(R.string.GlideSlope), true));
+    public boolean shouldShowVerticalRate() {
+        return(mPref.getBoolean(mContext.getString(R.string.VerticalRate), true));
     }
 
     /**

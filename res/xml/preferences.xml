@@ -98,9 +98,9 @@ authors: zkhan, jlmcgraw
             android:title="@string/RunwaysLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/GlideSlope"
-            android:summary="@string/GlideSlopeSummary"
-            android:title="@string/GlideSlopeLabel" />
+            android:key="@string/VerticalRate"
+            android:summary="@string/VerticalRateSummary"
+            android:title="@string/VerticalRateLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/AGL"
