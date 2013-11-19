@@ -118,13 +118,16 @@ public class Helper {
      * @return
      */
     public static String calculateAGLFromThreshold(float threshold, float elevation) {
-        String format = (elevation == Double.MIN_VALUE) ? "" : "%dft";
+        boolean valid = (elevation < 0) ? false : true;
         double altitude = (threshold) * Preferences.heightConversion * 50.0;
-        altitude -= elevation;
+        altitude -= elevation * Preferences.heightConversion;
         if(altitude < 0) {
             altitude = 0;
         }
-        return(String.format(Locale.getDefault(), format, (int)altitude));
+        if(valid) {
+            return(String.format(Locale.getDefault(), "%dft", (int)altitude));
+        }
+        return("");
     }
 
     /**

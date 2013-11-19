@@ -242,7 +242,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mAdjustPan = 1;
         mOnChart = null;
         mTrackUp = false;
-        mElev = Double.MIN_VALUE;
+        mElev = -1;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -1534,35 +1534,45 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Find obstacles in background as well
                      */
-                    mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
+                    if(mPref.shouldShowObstacles()) {
+                        mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
+                    }
                     
                     /*
                      * Find elevation tile in background, and load 
                      */
-                    Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                    if(t != null) {
-                        /*
-                         * Load only if needed.
-                         */
-                        if(lastElevTile == null) {
-                            lastElevTile = t;
-                            elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
-                        }
-                        if(!lastElevTile.getName().equals(t.getName())) {
-                            lastElevTile = t;
-                            elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
-                        }
-                        if(null != elevBitmap && null != lastElevTile) {
-                            if(elevBitmap.getBitmap() != null  && offsets[0] >= 0 && offsets[1] >= 0
-                                    && offsets[0] <= elevBitmap.getBitmap().getWidth() && 
-                                    offsets[1] <= elevBitmap.getBitmap().getHeight()) {
+                    if(mPref.shouldShowAGL()) {
+                        Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
+                        if(t != null) {
+                            /*
+                             * Load only if needed.
+                             */
+                            if(lastElevTile == null) {
+                                lastElevTile = t;
+                                elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
+                            }
+                            if(!lastElevTile.getName().equals(t.getName())) {
+                                lastElevTile = t;
+                                elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
+                            }
+                            if(null != elevBitmap && null != lastElevTile) {
+                                int x = (int)Math.round(offsets[0]);
+                                int y = (int)Math.round(offsets[1]);
+                                if(elevBitmap.getBitmap() != null) {
                                 
-                                int px = elevBitmap.getBitmap().getPixel(
-                                        (int)Math.round(offsets[0]), (int)Math.round(offsets[1]));
-                                mElev = Helper.findElevationFromPixel(px);
+                                    if(x < elevBitmap.getBitmap().getWidth()
+                                        && y < elevBitmap.getBitmap().getHeight()
+                                        && x >= 0 && y >= 0) {
+                                    
+                                        int px = elevBitmap.getBitmap().getPixel(x, y);
+                                        mElev = Helper.findElevationFromPixel(px);
+                                        continue;
+                                    }
+                                }
                             }
                         }
                     }
+                    mElev = -1;
                 }                
             }
         }
