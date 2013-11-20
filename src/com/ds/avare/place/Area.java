@@ -34,7 +34,6 @@ public class Area {
     private DataBaseAreaTask mDt;
     private double mLon;
     private double mLat;
-    private double mVariation;
     private boolean mFound;
     private long mLastTime;
     
@@ -49,7 +48,6 @@ public class Area {
     public Area(DataSource dataSource) {
         mDataSource = dataSource;
         mLon = mLat = 0;
-        mVariation = 0;
         mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
     }
@@ -65,13 +63,6 @@ public class Area {
             return null;
         }
         return(mAirports[index]);
-    }
-
-    /**
-     *
-     */
-    public double getVariation() {
-        return(mVariation);
     }
 
     /**
@@ -158,20 +149,6 @@ public class Area {
                 mFound = true;
             }
             
-            /*
-             * Variation in this area is equal to the variation at nearest airport
-             */
-            for(int id = 0; id < getAirportsNumber(); id++) {
-                mVariation = mAirports[id].getVariation(); 
-                if(mVariation != 0) {
-                    break;
-                }
-            }
-            
-            for(int id = 0; id < getAirportsNumber(); id++) {
-                mVariation = mAirports[id].getVariation(); 
-            }
-
             return null;
         }
     }
