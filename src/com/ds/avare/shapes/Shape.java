@@ -63,6 +63,22 @@ public abstract class Shape {
         Coordinate c = new Coordinate(lon, lat);
         mCoords.add(c);
         mPolyBuilder.addVertex(new Point((float)lon, (float)lat));
+        
+        /*
+         * Calculate start points
+         */
+        if(lon < mLonMin) {
+             mLonMin = lon;
+        }
+        if(lon >= mLonMax) {
+             mLonMax = lon;
+        }
+        if(lat < mLatMin) {
+             mLatMin = lat;
+        }
+        if(lat >= mLatMax) {
+             mLatMax = lat;
+        }
     }
 
     /**

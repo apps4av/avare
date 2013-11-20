@@ -109,7 +109,7 @@ public class Helper {
      */
     public static String calculateAltitudeFromThreshold(float threshold) {
         double altitude = (threshold) * Preferences.heightConversion * 50.0;
-        return(String.format(Locale.getDefault(), "%05dft", (int)altitude));
+        return(String.format(Locale.getDefault(), "%dft", (int)altitude));
     }
 
     /**

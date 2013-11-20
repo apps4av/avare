@@ -316,7 +316,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * 
      */
-    private void tfrReset() {
+    private void updateCoordinates() {
         mOrigin.update(mGpsParams, mScale, mPan,
                 mMovement.getLongitudePerPixel(), mMovement.getLatitudePerPixel(),
                 getWidth(), getHeight()); 
@@ -457,7 +457,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mScale.setScaleFactor(newObjPosAndScale.getScale());
 
         }
-        tfrReset();
+        updateCoordinates();
         invalidate();
         return true;
     }
@@ -727,18 +727,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
         }
 
-
-        /*
-         * Altitude
-         */
-        mPaint.setColor(TEXT_COLOR);
-        mPaint.setTextAlign(Align.LEFT);
-        
-        /*
-         * MSL
-         */
-        canvas.drawText(Helper.calculateAltitudeFromThreshold(mThreshold), 0, mPaint.getTextSize() * 2, mPaint);
-        
         /*
          * Point top right
          */
@@ -877,12 +865,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
         }
 
-        if(!mPref.isSimulationMode() && mPref.shouldShowAGL() && mPointProjection == null) {
+        /*
+         * MSL/AGL
+         */
+        if(mPointProjection == null) {
             mRunwayPaint.setColor(Color.WHITE);
-            drawShadowedText(canvas, mRunwayPaint, Helper.calculateAGLFromThreshold(mThreshold, (float)mElev),
-                    Color.BLACK,
+            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold);
+
+            /*
+             * Add AGL
+             */
+            if(!mPref.isSimulationMode() && mPref.shouldShowAGL()) {
+                String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev);
+                if(!agl.equals("")) {
+                    altitude += "/" + agl;
+                }
+            }
+            drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
                     /*
-                     * Draw AGL close to airplane, but do not obstruct the view.
+                     * Draw MSL/AGL close to airplane, but do not obstruct the view.
                      */
                     (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
                     (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight());
@@ -1134,7 +1135,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              *  Set the brush color and width
              */
-            mPaint.setColor(Color.MAGENTA);
+            mPaint.setColor(Color.DKGRAY);
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
@@ -1231,7 +1232,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * and we want to show it without pan.
                  */
                 mPan = new Pan();
-                tfrReset();                
+                updateCoordinates();                
             }
         }
     }
@@ -1257,7 +1258,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.getKMLRecorder().setGpsParams(mGpsParams);            /* Tell the KML recorder where we are     */
         }
 
-        tfrReset();
+        updateCoordinates();
         /*
          * Database query for new location / pan location.
          */
@@ -1592,7 +1593,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.getTiles().forceReload();
         }
         dbquery(true);
-        tfrReset();
+        updateCoordinates();
         postInvalidate();
     }
             
