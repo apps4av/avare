@@ -254,10 +254,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         View rowView = convertView;
 
         if(null == rowView) {
-            rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            rowView = inflater.inflate(R.layout.textview_wrap, parent, false);
         }
 
-        TextView tv = (TextView)rowView;
+        TextView tv = (TextView)rowView.findViewById(R.id.textview_textview_wrap);
         tv.setTextColor(0xFFFFFFFF);
         tv.setTypeface(mFace);
         tv.setText(mChildrenText[groupPosition]);

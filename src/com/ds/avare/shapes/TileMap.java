@@ -166,8 +166,12 @@ public class TileMap {
                  * Discard everything
                  */
                 mapB[tilen] = null;
-                mapA[tilen].getBitmap().eraseColor(0);
-                mapA[tilen].drawInBitmap(null, null, 0, 0);
+                if(mapA[tilen] != null) {
+                    if(mapA[tilen].getBitmap() != null) {
+                        mapA[tilen].getBitmap().eraseColor(0);
+                    }
+                    mapA[tilen].drawInBitmap(null, null, 0, 0);    
+                }
             }
             else {
                 mapB[tilen] = findTile(tileNames[tilen]);                
