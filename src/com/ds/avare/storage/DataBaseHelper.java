@@ -203,6 +203,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor c = null;
         
         String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
 
         /*
          * 
@@ -1256,6 +1259,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor c = null;
         
         String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
 
         /*
          * 
@@ -1516,6 +1522,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor c = null;
         
         String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
 
         /*
          * 

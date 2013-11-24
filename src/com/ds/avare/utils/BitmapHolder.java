@@ -132,6 +132,12 @@ public class BitmapHolder {
      */
     public static void getTileOptions(String name, Preferences pref, int opts[]) {
         
+        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
+            opts[0] = WIDTH;
+            opts[1] = HEIGHT;
+            return;
+        }
+        
         /*
          * Bitmap dims without decoding
          */
@@ -184,6 +190,12 @@ public class BitmapHolder {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inSampleSize = 1;
+        
+        if(!(new File(name).exists())) {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;            
+        }
 
         try {
             mBitmap = BitmapFactory.decodeFile(name, opt);

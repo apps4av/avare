@@ -174,16 +174,6 @@ public class Download {
                 }
 
                 /*
-                 * Make sure someone does not index avare's images.
-                 */
-                String nomedia = path + "/.nomedia";
-                f = new File(nomedia);
-                mCode = "code unable to create file " + f.getAbsolutePath();
-                if(!f.exists()) {
-                    f.createNewFile();
-                }
-                
-                /*
                  * Path with file name on local storage
                  */
                 mCode = "code unable to get zipped file name";
@@ -319,6 +309,20 @@ public class Download {
                         }
                         dir.mkdirs();
                         
+                        
+                        /*
+                         * Make sure someone does not index avare's images.
+                         */
+                        if(dir.isDirectory()) {
+                            String nomedia = dir.getAbsolutePath() + "/.nomedia";
+                            f = new File(nomedia);
+                            mCode = "code unable to create file " + f.getAbsolutePath();
+                            if(!f.exists()) {
+                                f.createNewFile();
+                            } 
+                        }
+
+
                         mCode = "code unable to delete old file";
                         File outf = new File(path + "/" + entry.getName());
                         if(outf.exists()) {
