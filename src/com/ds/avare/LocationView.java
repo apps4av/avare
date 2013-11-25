@@ -1518,8 +1518,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Elevation tile to find AGL and ground proximity warning
              */
-            Tile lastElevTile = null;
-            BitmapHolder elevBitmap = null;
             double offsets[] = new double[2];
             double p[] = new double[2];
 
@@ -1542,33 +1540,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Find elevation tile in background, and load 
                      */
-                    if(mPref.shouldShowAGL()) {
+                    if(mPref.shouldShowAGL() && mService != null) {
                         Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                        if(t != null) {
-                            /*
-                             * Load only if needed.
-                             */
-                            if(lastElevTile == null) {
-                                lastElevTile = t;
-                                elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
-                            }
-                            if(!lastElevTile.getName().equals(t.getName())) {
-                                lastElevTile = t;
-                                elevBitmap = new BitmapHolder(mContext, mPref, t.getName(), 1);
-                            }
-                            if(null != elevBitmap && null != lastElevTile) {
-                                int x = (int)Math.round(offsets[0]);
-                                int y = (int)Math.round(offsets[1]);
-                                if(elevBitmap.getBitmap() != null) {
+                        mService.getTiles().setElevationTile(t);
+                        BitmapHolder elevBitmap = mService.getTiles().getElevationBitmap();
+                        /*
+                         * Load only if needed.
+                         */
+                        if(null != elevBitmap) {
+                            int x = (int)Math.round(offsets[0]);
+                            int y = (int)Math.round(offsets[1]);
+                            if(elevBitmap.getBitmap() != null) {
+                            
+                                if(x < elevBitmap.getBitmap().getWidth()
+                                    && y < elevBitmap.getBitmap().getHeight()
+                                    && x >= 0 && y >= 0) {
                                 
-                                    if(x < elevBitmap.getBitmap().getWidth()
-                                        && y < elevBitmap.getBitmap().getHeight()
-                                        && x >= 0 && y >= 0) {
-                                    
-                                        int px = elevBitmap.getBitmap().getPixel(x, y);
-                                        mElev = Helper.findElevationFromPixel(px);
-                                        continue;
-                                    }
+                                    int px = elevBitmap.getBitmap().getPixel(x, y);
+                                    mElev = Helper.findElevationFromPixel(px);
+                                    continue;
                                 }
                             }
                         }
