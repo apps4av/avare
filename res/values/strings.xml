@@ -215,7 +215,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerticalRate">Vertical Rate</string>
     <string name="VerticalRateLabel">&quot;Show Vertical Rate&quot;</string>
     <string name="VerticalRateSummary">&quot;Enable to show climb/descent rate to the destination&quot;</string>
-    <string name="AGL">AGL</string>
-    <string name="AGLLabel">&quot;Show AGL&quot;</string>
-    <string name="AGLSummary">&quot;Enable to show height AGL calculated from the Elevation Charts&quot;</string>
+    <string name="AGLMSL">AGLMSL</string>
+    <string name="AGLMSLLabel">&quot;Show MSL/AGL&quot;</string>
+    <string name="AGLMSLSummary">&quot;Enable to show height in MSL, and in AGL calculated from the Elevation Charts&quot;</string>
 </resources>

@@ -630,8 +630,8 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean shouldShowAGL() {
-        return(mPref.getBoolean(mContext.getString(R.string.AGL), true));
+    public boolean shouldShowAGLMSL() {
+        return(mPref.getBoolean(mContext.getString(R.string.AGLMSL), false));
     }
 
     /**

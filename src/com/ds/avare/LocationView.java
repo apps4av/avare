@@ -765,6 +765,30 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             canvas.drawText(name, 0, mPaint.getTextSize(), mPaint);
         }
+        
+        
+        /*
+         * MSL/AGL
+         */
+        if(mPointProjection == null && !mPref.isSimulationMode() && mPref.shouldShowAGLMSL()) {
+            mRunwayPaint.setColor(Color.WHITE);
+            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold);
+
+            /*
+             * Add AGL
+             */
+            String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev);
+            if(!agl.equals("")) {
+                altitude += "/" + agl;
+            }
+            drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
+                    /*
+                     * Draw MSL/AGL close to airplane, but do not obstruct the view.
+                     */
+                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
+                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight());
+        }
+
     }
 
     /**
@@ -865,29 +889,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
         }
 
-        /*
-         * MSL/AGL
-         */
-        if(mPointProjection == null) {
-            mRunwayPaint.setColor(Color.WHITE);
-            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold);
-
-            /*
-             * Add AGL
-             */
-            if(!mPref.isSimulationMode() && mPref.shouldShowAGL()) {
-                String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev);
-                if(!agl.equals("")) {
-                    altitude += "/" + agl;
-                }
-            }
-            drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
-                    /*
-                     * Draw MSL/AGL close to airplane, but do not obstruct the view.
-                     */
-                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
-                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight());
-        }
 
         if(null != mAirplaneBitmap && null == mPointProjection) {
             
@@ -1540,7 +1541,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Find elevation tile in background, and load 
                      */
-                    if(mPref.shouldShowAGL() && mService != null) {
+                    if(mPref.shouldShowAGLMSL() && mService != null) {
                         Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
                         mService.getTiles().setElevationTile(t);
                         BitmapHolder elevBitmap = mService.getTiles().getElevationBitmap();

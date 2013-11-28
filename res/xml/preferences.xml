@@ -102,10 +102,10 @@ authors: zkhan, jlmcgraw
             android:summary="@string/VerticalRateSummary"
             android:title="@string/VerticalRateLabel" />
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/AGL"
-            android:summary="@string/AGLSummary"
-            android:title="@string/AGLLabel" />
+            android:defaultValue="false"
+            android:key="@string/AGLMSL"
+            android:summary="@string/AGLMSLSummary"
+            android:title="@string/AGLMSLLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ShowTrack"
