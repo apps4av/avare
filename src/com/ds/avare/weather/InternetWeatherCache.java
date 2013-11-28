@@ -66,9 +66,6 @@ public class InternetWeatherCache {
 
     private class WeatherTask implements Runnable {
 
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
         @Override
         public void run() {
             try {

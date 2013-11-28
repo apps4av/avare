@@ -286,8 +286,12 @@ public class SearchActivity extends Activity implements Observer {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                     long arg3) {
-                String id = StringPreference.parseHashedNameId(mAdapter.getItem(position)); 
-                String destType = StringPreference.parseHashedNameDestType(mAdapter.getItem(position)); 
+                /*
+                 * Commas not allowed
+                 */
+                String txt = mAdapter.getItem(position).replace(",", " ");
+                String id = StringPreference.parseHashedNameId(txt); 
+                String destType = StringPreference.parseHashedNameDestType(txt); 
                 if(id == null || destType == null) {
                     return;
                 }
