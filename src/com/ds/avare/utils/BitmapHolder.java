@@ -194,7 +194,8 @@ public class BitmapHolder {
         if(!(new File(name).exists())) {
             mWidth = 0;
             mHeight = 0;
-            mName = null;            
+            mName = null;
+            return;
         }
 
         try {
