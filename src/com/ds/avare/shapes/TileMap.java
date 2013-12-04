@@ -43,6 +43,7 @@ public class TileMap {
     private BitmapHolder mNoImg;
         
     private BitmapHolder[] mBitmapCache;
+    private BitmapHolder[] mFreeList;
     
     /**
      * 
@@ -65,6 +66,7 @@ public class TileMap {
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
         mBitmapCache = new BitmapHolder[numTilesMax];
+        mFreeList = new BitmapHolder[numTilesMax];
         mNoImg = new BitmapHolder(context, R.drawable.nochart);
         for(int tile = 0; tile < numTilesMax; tile++) {
             mBitmapCache[tile] = new BitmapHolder();
@@ -157,9 +159,13 @@ public class TileMap {
      * @return
      */
     public void reload(String[] tileNames, boolean force) {
-
+    	int FreeIndex = 0;
         mapB = new BitmapHolder[numTiles];
-        
+        for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
+        	if (mBitmapCache[tilen] != null) {
+        		mBitmapCache[tilen].setFree(1);
+        	}
+        }
         /*
          * For all tiles that will be re-used, find from cache.
          */
@@ -177,8 +183,17 @@ public class TileMap {
                 }
             }
             else {
-                mapB[tilen] = findTile(tileNames[tilen]);                
+                mapB[tilen] = findTile(tileNames[tilen]);
+                if (mapB[tilen] != null) {
+                	mapB[tilen].setFree(0);
+                }
             }
+        }
+        for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
+        	if (mBitmapCache[tilen] != null && mBitmapCache[tilen].getFree() == 1) {
+        		mFreeList[FreeIndex] = mBitmapCache[tilen];
+        		FreeIndex++;
+        	}
         }
 
         /*
@@ -199,8 +214,11 @@ public class TileMap {
                  */
                 continue;
             }
-            
-            BitmapHolder h = findTileNotInMapB();
+            BitmapHolder h = null;
+            if (FreeIndex > 0 ) {
+            	FreeIndex--;
+            	h = mFreeList[FreeIndex];
+            }
             if(h != null) {
                 /*
                  * At max scale, down sample by down sampling 

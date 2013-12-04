@@ -50,6 +50,7 @@ public class BitmapHolder {
      * 
      */
     private String mName = null;
+    private int mFree = 1;
     
     /**
      * Transform for scale/translate
@@ -272,6 +273,12 @@ public class BitmapHolder {
      */
     public Bitmap getBitmap() {
         return mBitmap;
+    }
+    public int getFree() {
+    	return mFree;
+    }
+    public void setFree(int i) {
+    	mFree = i;
     }
         
     /**
