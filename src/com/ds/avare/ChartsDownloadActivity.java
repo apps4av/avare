@@ -15,6 +15,7 @@ package com.ds.avare;
 import java.io.File;
 
 import com.ds.avare.R;
+import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
 import com.ds.avare.storage.Preferences;
@@ -28,6 +29,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -63,6 +66,28 @@ public class ChartsDownloadActivity extends Activity {
      * Shows warning message about Avare
      */
     private AlertDialog mAlertDialog;
+
+    /*
+     * Start GPS
+     */
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
+        }
+    };
 
     /**
      * 
@@ -149,6 +174,9 @@ public class ChartsDownloadActivity extends Activity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+            
+            mService.registerGpsListener(mGpsInfc);
+
             
             /*
              * Since we are downloading new charts, clear everything old on screen.
@@ -314,6 +342,10 @@ public class ChartsDownloadActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */

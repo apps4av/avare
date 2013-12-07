@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
@@ -29,6 +30,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -58,6 +61,24 @@ public class AirportActivity extends Activity {
     private boolean mIgnoreFocus;
     private Button mCenterButton;
 
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
+        }
+    };
 
     /*
      * For being on tab this activity discards back to main activity
@@ -172,6 +193,8 @@ public class AirportActivity extends Activity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+
+            mService.registerGpsListener(mGpsInfc);
 
             mList = new ArrayList<String>();
             mList.add(getApplicationContext().getString(R.string.AFD));
@@ -370,6 +393,10 @@ public class AirportActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */

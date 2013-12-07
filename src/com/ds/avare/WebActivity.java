@@ -12,11 +12,19 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+
+import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -39,6 +47,26 @@ public class WebActivity extends Activity  {
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
+    private StorageService mService;
+
+    private GpsInterface mGpsInfc = new GpsInterface() {
+
+        @Override
+        public void statusCallback(GpsStatus gpsStatus) {
+        }
+
+        @Override
+        public void locationCallback(Location location) {
+        }
+
+        @Override
+        public void timeoutCallback(boolean timeout) {
+        }
+
+        @Override
+        public void enabledCallback(boolean enabled) {
+        }
+    };
 
     /*
      * Show views from web
@@ -122,6 +150,59 @@ public class WebActivity extends Activity  {
         super.onResume();
 
         Helper.setOrientationAndOn(this);
+        
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
     }
-    
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * 
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            /* 
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+
+            mService.registerGpsListener(mGpsInfc);
+
+        }    
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
+
+    /**
+     * 
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        getApplicationContext().unbindService(mConnection);
+        
+        if(null != mService) {
+            mService.unregisterGpsListener(mGpsInfc);
+        }
+    }
+            
+
 }
