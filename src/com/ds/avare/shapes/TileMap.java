@@ -84,60 +84,6 @@ public class TileMap {
     public void clear() {
     }
 
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    private BitmapHolder findTile(String name) {
-        if(null == name) {
-            return null;
-        }
-        for(int tile = 0; tile < numTilesMax; tile++) {
-            if(mBitmapCache[tile] != null) {
-                if(mBitmapCache[tile].getName() != null) {
-                    if(mBitmapCache[tile].getName().equals(name)) {
-                        return(mBitmapCache[tile]);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    private BitmapHolder findTileNotInMapB() {
-        boolean found;
-        for(int tile = 0; tile < numTilesMax; tile++) {
-            if(mBitmapCache[tile] == null) {
-                continue;
-            }
-            found = false;
-            for(int tileb = 0; tileb < numTiles; tileb++) {
-                if(mapB[tileb] == null) {
-                    continue;
-                }
-                if(mapB[tileb].getName() == null) {
-                    continue;
-                }
-                if(mBitmapCache[tile].getName() == null) {
-                    return(mBitmapCache[tile]);
-                }
-                if(mBitmapCache[tile].getName().equals(mapB[tileb].getName())) {
-                    found = true;
-                }
-            }
-            if(!found) {
-                return(mBitmapCache[tile]);
-            }
-        }
-        return null;
-    }
-
     /*
      * Force a reload.
      */
@@ -161,9 +107,16 @@ public class TileMap {
      */
     public void reload(String[] tileNames, boolean force) {
     	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
-    	int FreeIndex = 0;
+    	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
+        /* 
+         * Initial setup, mark all as candidates for the freelist(1).
+         * Next section will mark the used ones.
+         * Also populate the hashmap for fast name->BitmapHolder mapping
+         */
+        
         for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
+        	mFreeList[tilen]=null;
         	if (mBitmapCache[tilen] != null) {
         		mBitmapCache[tilen].setFree(1);
         		if (mBitmapCache[tilen].getName() != null ){
@@ -188,16 +141,22 @@ public class TileMap {
                 }
             }
             else {
+            	/* 
+            	 * Setup for later, add entry to hashmap and mark as not free(0)
+            	 */
                 mapB[tilen] = hm.get(tileNames[tilen]);
                 if (mapB[tilen] != null) {
                 	mapB[tilen].setFree(0);
                 }
             }
         }
+        /*
+         * Build the list of free tiles based on the flags
+         */
         for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
         	if (mBitmapCache[tilen] != null && mBitmapCache[tilen].getFree() == 1) {
-        		mFreeList[FreeIndex] = mBitmapCache[tilen];
-        		FreeIndex++;
+        		mFreeList[freeIndex] = mBitmapCache[tilen];
+        		freeIndex++;
         	}
         }
 
@@ -219,10 +178,13 @@ public class TileMap {
                  */
                 continue;
             }
+            /*
+             * Pull a free bitmap off the list
+             */
             BitmapHolder h = null;
-            if (FreeIndex > 0 ) {
-            	FreeIndex--;
-            	h = mFreeList[FreeIndex];
+            if (freeIndex > 0 ) {
+            	freeIndex--;
+            	h = mFreeList[freeIndex];
             }
             if(h != null) {
                 /*
