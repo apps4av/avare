@@ -110,7 +110,7 @@ public class TileMap {
     	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
         /* 
-         * Initial setup, mark all as candidates for the freelist(1).
+         * Initial setup, mark all as candidates for the freelist.
          * Next section will mark the used ones.
          * Also populate the hashmap for fast name->BitmapHolder mapping
          */
@@ -142,7 +142,7 @@ public class TileMap {
             }
             else {
             	/* 
-            	 * Setup for later, add entry to hashmap and mark as not free(0)
+            	 * Setup for later mark as not free.
             	 */
                 mapB[tilen] = hm.get(tileNames[tilen]);
                 if (mapB[tilen] != null) {
