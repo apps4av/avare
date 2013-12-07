@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -124,8 +125,11 @@ public class SatelliteView extends View {
         mLongitude = Helper.truncGeo(location.getLongitude());
         mName = location.getProvider() == null ? "" : location.getProvider();
         mAccuracy = (int) Math.round(location.getAccuracy() * Preferences.heightConversion);
+        Date dt = new Date(System.currentTimeMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mLastTime = sdf.format(new Date(System.currentTimeMillis()));
+        mLastTime = sdf.format(dt);
+        sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
+        mLastTime += "/" + sdf.format(dt) + "Z";
     }
     
     /**
