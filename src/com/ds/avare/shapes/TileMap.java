@@ -17,6 +17,8 @@ import com.ds.avare.utils.BitmapHolder;
 
 import com.ds.avare.R;
 import android.content.Context;
+import java.util.HashMap;
+
 
 /**
  * 
@@ -44,7 +46,6 @@ public class TileMap {
         
     private BitmapHolder[] mBitmapCache;
     private BitmapHolder[] mFreeList;
-    
     /**
      * 
      * @param x
@@ -159,11 +160,15 @@ public class TileMap {
      * @return
      */
     public void reload(String[] tileNames, boolean force) {
+    	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
     	int FreeIndex = 0;
         mapB = new BitmapHolder[numTiles];
         for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
         	if (mBitmapCache[tilen] != null) {
         		mBitmapCache[tilen].setFree(1);
+        		if (mBitmapCache[tilen].getName() != null ){
+        			hm.put(mBitmapCache[tilen].getName(),mBitmapCache[tilen]);
+        		}
         	}
         }
         /*
@@ -183,7 +188,7 @@ public class TileMap {
                 }
             }
             else {
-                mapB[tilen] = findTile(tileNames[tilen]);
+                mapB[tilen] = hm.get(tileNames[tilen]);
                 if (mapB[tilen] != null) {
                 	mapB[tilen].setFree(0);
                 }
