@@ -66,6 +66,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High Enroute SE</item>
         <item>IFR High Enroute SC</item>
         <item>IFR High Enroute SW</item>
+        <item>IFR High Enroute AK</item>
     </string-array>
     
     <string-array name="resNameIFRLE">
@@ -75,6 +76,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Low Enroute SE</item>
         <item>IFR Low Enroute SC</item>
         <item>IFR Low Enroute SW</item>
+        <item>IFR Low Enroute AK</item>
     </string-array>
     <string-array name="resNameWAC">
         <item>CC-9  (Fairbanks AK)</item>
@@ -337,6 +339,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ELUS_SE</item>
         <item>ELUS_SC</item>
         <item>ELUS_SW</item>
+        <item>ELUS_AK</item>
     </string-array>
 
     <string-array name="resFilesIFRHE">
@@ -346,6 +349,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>EHUS_SE</item>
         <item>EHUS_SC</item>
         <item>EHUS_SW</item>
+        <item>EHUS_AK</item>
     </string-array>
     
     <string-array name="resFilesAFD">
