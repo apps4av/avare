@@ -105,7 +105,7 @@ public class TileMap {
      * @param name
      * @return
      */
-    public void reload(String[] tileNames, boolean force) {
+    public void reload(String[] tileNames) {
     	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
     	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
@@ -128,26 +128,12 @@ public class TileMap {
          * For all tiles that will be re-used, find from cache.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
-            if(force) {
-                /*
-                 * Discard everything
-                 */
-                mapB[tilen] = null;
-                if(mapA[tilen] != null) {
-                    if(mapA[tilen].getBitmap() != null) {
-                        mapA[tilen].getBitmap().eraseColor(0);
-                    }
-                    mapA[tilen].drawInBitmap(null, null, 0, 0);    
-                }
-            }
-            else {
-            	/* 
-            	 * Setup for later mark as not free.
-            	 */
-                mapB[tilen] = hm.get(tileNames[tilen]);
-                if (mapB[tilen] != null) {
-                	mapB[tilen].setFree(false);
-                }
+        	/* 
+        	 * Setup for later mark as not free.
+        	 */
+            mapB[tilen] = hm.get(tileNames[tilen]);
+            if (mapB[tilen] != null) {
+            	mapB[tilen].setFree(false);
             }
         }
         /*

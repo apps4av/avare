@@ -1365,7 +1365,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 catch(Exception e) {
                     
                 }
-
+                
+                if(null == mService) {
+                    continue;
+                }
+                
                 if(mImageDataSource == null) {
                     continue;
                 }
@@ -1377,6 +1381,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, level);
                 
                 if(gpsTile == null) {
+                    mFactor = 1;
                     continue;
                 }
                 
@@ -1387,10 +1392,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 String newt = gpsTile.getNeighbor(movey, movex);
                 centerTile = mImageDataSource.findTile(newt);
                 if(null == centerTile) {
-                    continue;
-                }
-                
-                if(null == mService) {
+                    mFactor = 1;
                     continue;
                 }
     
@@ -1410,7 +1412,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
-                mService.getTiles().reload(tileNames, mFactor != 1);
+                mService.getTiles().reload(tileNames);
                 mService.getTiles().flip();
  
                 mScale.setScaleAt(centerTile.getLatitude());
@@ -1591,8 +1593,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * On double tap, move to center
          */
         mPan = new Pan();
-        mScale.setScaleFactor(1);
-        mScale.setScaleAt(mGpsParams.getLatitude());
         if(mService != null) {
             mService.getTiles().forceReload();
         }
