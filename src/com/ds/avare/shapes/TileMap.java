@@ -17,10 +17,12 @@ import com.ds.avare.utils.BitmapHolder;
 
 import com.ds.avare.R;
 import android.content.Context;
+import java.util.HashMap;
+
 
 /**
  * 
- * @author zkhan
+ * @author zkhan, SteveAtChartbundle
  * A cache of tiles
  */
 public class TileMap {
@@ -43,7 +45,7 @@ public class TileMap {
     private BitmapHolder mNoImg;
         
     private BitmapHolder[] mBitmapCache;
-    
+    private BitmapHolder[] mFreeList;
     /**
      * 
      * @param x
@@ -65,6 +67,7 @@ public class TileMap {
         mapA = new BitmapHolder[numTiles];
         mapB = new BitmapHolder[numTiles];
         mBitmapCache = new BitmapHolder[numTilesMax];
+        mFreeList = new BitmapHolder[numTilesMax];
         mNoImg = new BitmapHolder(context, R.drawable.nochart);
         for(int tile = 0; tile < numTilesMax; tile++) {
             mBitmapCache[tile] = new BitmapHolder();
@@ -79,60 +82,6 @@ public class TileMap {
      * @return
      */
     public void clear() {
-    }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    private BitmapHolder findTile(String name) {
-        if(null == name) {
-            return null;
-        }
-        for(int tile = 0; tile < numTilesMax; tile++) {
-            if(mBitmapCache[tile] != null) {
-                if(mBitmapCache[tile].getName() != null) {
-                    if(mBitmapCache[tile].getName().equals(name)) {
-                        return(mBitmapCache[tile]);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    private BitmapHolder findTileNotInMapB() {
-        boolean found;
-        for(int tile = 0; tile < numTilesMax; tile++) {
-            if(mBitmapCache[tile] == null) {
-                continue;
-            }
-            found = false;
-            for(int tileb = 0; tileb < numTiles; tileb++) {
-                if(mapB[tileb] == null) {
-                    continue;
-                }
-                if(mapB[tileb].getName() == null) {
-                    continue;
-                }
-                if(mBitmapCache[tile].getName() == null) {
-                    return(mBitmapCache[tile]);
-                }
-                if(mBitmapCache[tile].getName().equals(mapB[tileb].getName())) {
-                    found = true;
-                }
-            }
-            if(!found) {
-                return(mBitmapCache[tile]);
-            }
-        }
-        return null;
     }
 
     /*
@@ -157,9 +106,24 @@ public class TileMap {
      * @return
      */
     public void reload(String[] tileNames, boolean force) {
-
+    	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
+    	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
+        /* 
+         * Initial setup, mark all as candidates for the freelist.
+         * Next section will mark the used ones.
+         * Also populate the hashmap for fast name->BitmapHolder mapping
+         */
         
+        for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
+        	mFreeList[tilen] = null;
+        	if (mBitmapCache[tilen] != null) {
+        		mBitmapCache[tilen].setFree(true);
+        		if (mBitmapCache[tilen].getName() != null ){
+        			hm.put(mBitmapCache[tilen].getName(), mBitmapCache[tilen]);
+        		}
+        	}
+        }
         /*
          * For all tiles that will be re-used, find from cache.
          */
@@ -177,8 +141,23 @@ public class TileMap {
                 }
             }
             else {
-                mapB[tilen] = findTile(tileNames[tilen]);                
+            	/* 
+            	 * Setup for later mark as not free.
+            	 */
+                mapB[tilen] = hm.get(tileNames[tilen]);
+                if (mapB[tilen] != null) {
+                	mapB[tilen].setFree(false);
+                }
             }
+        }
+        /*
+         * Build the list of free tiles based on the flags
+         */
+        for (int tilen = 0 ; tilen < numTilesMax ; tilen++ ) {
+        	if (mBitmapCache[tilen] != null && mBitmapCache[tilen].getFree()) {
+        		mFreeList[freeIndex] = mBitmapCache[tilen];
+        		freeIndex++;
+        	}
         }
 
         /*
@@ -199,8 +178,14 @@ public class TileMap {
                  */
                 continue;
             }
-            
-            BitmapHolder h = findTileNotInMapB();
+            /*
+             * Pull a free bitmap off the list
+             */
+            BitmapHolder h = null;
+            if (freeIndex > 0 ) {
+            	freeIndex--;
+            	h = mFreeList[freeIndex];
+            }
             if(h != null) {
                 /*
                  * At max scale, down sample by down sampling 
