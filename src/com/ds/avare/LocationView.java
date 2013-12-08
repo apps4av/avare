@@ -197,11 +197,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private double                      mElev;
     
     /*
+     * Macro of zoom
+     */
+    private int                         mMacro;
+    private float                       mFactor;
+    
+    /*
      * Shadow length 
      */
     private static final int SHADOW = 4;
-    
-    private double                     mAdjustPan;
     
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
@@ -239,10 +243,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mMovement = new Movement();
         mErrorStatus = null;
         mThreshold = 0;
-        mAdjustPan = 1;
         mOnChart = null;
         mTrackUp = false;
         mElev = -1;
+        mMacro = 1;
+        mFactor = 1.f;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
@@ -455,7 +460,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             
             mScale.setScaleFactor(newObjPosAndScale.getScale());
-
+            /*
+             * Now that we have moved passed the macro level, re-query for new tiles.
+             * Do not query repeatedly hence check for mFactor = 1
+             */
+            if(mMacro != mScale.getMacroFactor() && mFactor == 1) {
+                mFactor = (float)mMacro / (float)mScale.getMacroFactor();
+                dbquery(true);
+            }
         }
         updateCoordinates();
         invalidate();
@@ -1361,12 +1373,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Now draw in background
                  */
-                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, mScale.downSample());
+                int level = mScale.downSample();
+                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, level);
                 
                 if(gpsTile == null) {
                     continue;
                 }
                 
+                mPan.setMove((float)(mPan.getMoveX() * mFactor), (float)(mPan.getMoveY() * mFactor));
                 movex = mPan.getTileMoveXWithoutTear();
                 movey = mPan.getTileMoveYWithoutTear();
                 
@@ -1396,10 +1410,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
-                mPan.setMove((float)(mPan.getMoveX() * mAdjustPan), (float)(mPan.getMoveY() * mAdjustPan));
-                mService.getTiles().reload(tileNames, mAdjustPan != 1);
+                mService.getTiles().reload(tileNames, mFactor != 1);
                 mService.getTiles().flip();
-
+ 
                 mScale.setScaleAt(centerTile.getLatitude());
                 mOnChart = centerTile.getChart();
 
@@ -1410,11 +1423,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mService.setPan(mPan);
                 mMovement = new Movement(offsets, p);
                 mService.setMovement(mMovement);
+                mMacro = mScale.getMacroFactor();
+                mScale.updateMacro();
+                mFactor = 1;
                 
-                synchronized(LocationView.this) {
-                    mAdjustPan = 1;
-                }
-    
                 LocationView.this.postInvalidate();
             }
         }
@@ -1530,6 +1542,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 catch (Exception e) {
                     
                 }
+                
                 if(null != mImageDataSource) {
                     /*
                      * Find obstacles in background as well
@@ -1755,38 +1768,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mObstacleThread.interrupt();
     }
     
-    /**
-     * 
-     * @param in
-     */
-    public boolean zoomIn(boolean in) {
-        if(mAdjustPan != 1) {
-            /**
-             * Make sure that last operation finished. 
-             */
-            return true;
-        }
-        boolean changed;
-        synchronized(this) {
-            int fac = mScale.getMacroFactor();
-            int scale = mScale.getZoomFactor();
-            if(in) {
-                changed = mScale.setMacroFactor(fac / scale);
-                if(changed) {
-                    mAdjustPan = (double)scale;
-                }
-            }
-            else {
-                changed = mScale.setMacroFactor(fac * scale);
-                if(changed) {
-                    mAdjustPan = 1.0 / (double)scale;
-                }
-            }
-            if(changed && mService != null) {
-                forceReload();
-            }
-        }
-        
-        return changed;
-    }
 }

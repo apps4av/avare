@@ -56,7 +56,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.ZoomControls;
 
 /**
  * @author zkhan, jlmcgraw
@@ -115,7 +114,6 @@ public class LocationActivity extends Activity implements Observer {
     private ToggleButton mTrackButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
-    private ZoomControls mZoom;
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
     private boolean mSpinner;
@@ -430,24 +428,6 @@ public class LocationActivity extends Activity implements Observer {
             }       
         });
         
-        mZoom = (ZoomControls)view.findViewById(R.id.location_zoom_controls);
-        mZoom.setVisibility(View.INVISIBLE);
-        mZoom.setOnZoomInClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if(!mLocationView.zoomIn(true)) {
-                    mToast.setText(getString(R.string.noZoomIn));
-                    mToast.show();
-                }
-            }
-        });
-        mZoom.setOnZoomOutClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                if(!mLocationView.zoomIn(false)) {
-                    mToast.setText(getString(R.string.noZoomOut));
-                    mToast.show();
-                }
-            }
-        });
         
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -480,7 +460,6 @@ public class LocationActivity extends Activity implements Observer {
             public void onClick(View v) {
                 AnimateButton k = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton z = new AnimateButton(getApplicationContext(), mZoom, AnimateButton.DIRECTION_R_L);
                 AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
                 AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
                 AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
@@ -492,7 +471,6 @@ public class LocationActivity extends Activity implements Observer {
                 s.animate(true);
                 t.animate(true);
                 f.animate(true);
-                z.animate(true);
                 k.animate(true);
             }
             

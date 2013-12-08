@@ -96,20 +96,26 @@ public class DistanceRings {
          * If we are supposed to dynamically scale the rings, then do that now
          */
         if(pref.getDistanceRingType() == 1) {
-            float totalZoom = (scale.getScaleFactor() * scale.getZoomFactor()) / scale.getMacroFactor();
-            if(totalZoom >= 8) {                /* the larger totalZoom is, the more zoomed in we are   */
+            int macro = scale.getMacroFactor();
+            /* the larger totalZoom is, the more zoomed in we are  */
+            if(macro <= 1 && scale.getScaleFactorRaw() > 1) {  
                 ringScale = RINGS_1_2_5;        
-            } else if (totalZoom >= 4) {
+            } 
+            if(macro <= 1 && scale.getScaleFactorRaw() < 1) {  
                 ringScale = RINGS_2_5_10;
-            } else if (totalZoom >= 2.0) {
+            } 
+            else if (macro <= 2) {
                 ringScale = RINGS_5_10_20;
-            } else if (totalZoom >= 1) {
+            } 
+            else if (macro <= 4) {
                 ringScale = RINGS_10_20_40;
-            }  else if (totalZoom >= .5) {
+            } 
+            else if (macro <= 8) {
                 ringScale = RINGS_20_40_80;
-            } else {
+            }  
+            else {
                 ringScale = RINGS_40_80_160;
-            }
+            } 
         }
         
         /*

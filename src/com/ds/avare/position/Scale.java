@@ -21,12 +21,10 @@ public class Scale {
 
     private double mScaleFactor;
     private double mScaleCorrectY;
-    private int mMacro;
+    private double mMacroMultiply;
     
     private static final double MAX_SCALE = 2;
-    private static final double MIN_SCALE = 0.5; 
-    private static final int MAX_MACRO = 16;
-    private static final int MIN_MACRO = 1;
+    private static final double MIN_SCALE = 0.03125; 
     
 
     /**
@@ -35,7 +33,7 @@ public class Scale {
     public Scale() {
         mScaleFactor = 1;
         mScaleCorrectY = 1;
-        mMacro = 1;
+        mMacroMultiply = 1;
     }
 
     /**
@@ -57,14 +55,25 @@ public class Scale {
         mScaleCorrectY = 1 / Math.cos(Math.toRadians(latitude));
     }
 
+    
     /**
      * 
      * @return
      */
     public float getScaleFactorRaw() {
-        return getScaleFactor();
+        double s;
+        if(mScaleFactor > MAX_SCALE) {
+            s = MAX_SCALE;
+        }
+        else if(mScaleFactor < MIN_SCALE) {
+            s = MIN_SCALE;
+        }
+        else {
+            s = mScaleFactor;
+        }
+        return((float)s);        
     }
-    
+
     /**
      * 
      * @return
@@ -80,6 +89,7 @@ public class Scale {
         else {
             s = mScaleFactor;
         }
+        s = s * mMacroMultiply;
         return((float)s);
     }
 
@@ -87,57 +97,56 @@ public class Scale {
      * 
      * @return
      */
-    public int getMacroFactor() {
-        return mMacro;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public boolean setMacroFactor(int macro) {
-        if(macro > MAX_MACRO) {
-            return false;
-        }
-        if(macro < MIN_MACRO) {
-            return false;
-        }
-        mMacro = macro;
-        return true;
-    }
-
-    /**
-     * 
-     * @return
-     */
     public float getScaleCorrected() {
-        double s;
-        if(mScaleFactor > MAX_SCALE) {
-            s = MAX_SCALE;
-        }
-        else if(mScaleFactor < MIN_SCALE) {
-            s = MIN_SCALE;
-        }
-        else {
-            s = mScaleFactor;
-        }
-        return((float)(mScaleCorrectY * s));
+        return((float)(getScaleFactor() * mScaleCorrectY));
     }
-    
+
     /**
      * 
      * @return
      */
-    public int getZoomFactor() {
-        return (int)MAX_SCALE;
+    public int getMacroFactor() {
+        if(mScaleFactor >= 0.5) {
+            return 1;
+        }
+        else if(mScaleFactor >= 0.25) {
+            return 2;
+        }
+        else if(mScaleFactor >= 0.125) {
+            return 4;
+        }
+        else if(mScaleFactor >= 0.0625) {
+            return 8;
+        }
+        return 16;
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public void updateMacro() {
+        mMacroMultiply = getMacroFactor();
+    }
+
     /**
      * 
      * @return
      */
     public int downSample() {
-        return (int)(Math.log(mMacro) / Math.log(2));
+        if(mScaleFactor >= 0.5) {
+            return 0;
+        }
+        else if(mScaleFactor >= 0.25) {
+            return 1;
+        }
+        else if(mScaleFactor >= 0.125) {
+            return 2;
+        }
+        else if(mScaleFactor >= 0.0625) {
+            return 3;
+        }
+        return 4;
     }
 
 }

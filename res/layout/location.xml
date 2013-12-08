@@ -137,13 +137,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOn="@string/Draw"
             android:textStyle="bold" />
 
-        <ZoomControls
-		    android:id="@+id/location_zoom_controls"
-		    android:layout_alignParentRight="true"
-		    android:layout_above="@+id/location_button_tracks"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>
-        
         <Spinner
             android:id="@+id/location_spinner_chart"
             android:layout_width="150dp"
