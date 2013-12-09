@@ -57,6 +57,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -1413,23 +1415,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Load tiles, draw in UI thread
                  */
                 mService.getTiles().reload(tileNames);
-                mService.getTiles().flip();
- 
-                mScale.setScaleAt(centerTile.getLatitude());
-                mOnChart = centerTile.getChart();
-
+                
                 /*
-                 * And pan
+                 * UI thread
                  */
-                mPan.setTileMove(movex, movey);
-                mService.setPan(mPan);
-                mMovement = new Movement(offsets, p);
-                mService.setMovement(mMovement);
-                mMacro = mScale.getMacroFactor();
-                mScale.updateMacro();
-                mFactor = 1;
-                updateCoordinates();
-                postInvalidate();
+                TileUpdate t = new TileUpdate();
+                t.movex = movex;
+                t.movey = movey;
+                t.centerTile = centerTile;
+                t.offsets = offsets;
+                t.p = p;
+                Message m = mHandler.obtainMessage();
+                m.obj = t;
+                mHandler.sendMessage(m);
             }
         }
     }    
@@ -1767,5 +1765,51 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawThread.interrupt();
         mObstacleThread.interrupt();
     }
+
     
+    /**
+     * Use this with handler to update tiles in UI thread
+     * @author zkhan
+     *
+     */
+    private class TileUpdate {
+        
+        double offsets[];
+        double p[];
+        int movex;
+        int movey;
+        Tile centerTile;
+        
+    }
+    
+    /**
+     * This leak warning is not an issue if we do not post delayed messages, which is true here.
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            TileUpdate t = (TileUpdate)msg.obj;
+            
+            mService.getTiles().flip();
+            
+            mScale.setScaleAt(t.centerTile.getLatitude());
+            mOnChart = t.centerTile.getChart();
+
+            /*
+             * And pan
+             */
+            mPan.setTileMove(t.movex, t.movey);
+            mService.setPan(mPan);
+            mMovement = new Movement(t.offsets, t.p);
+            mService.setMovement(mMovement);
+            mMacro = mScale.getMacroFactor();
+            mScale.updateMacro();
+            mFactor = 1;
+            updateCoordinates();
+
+            invalidate();
+        }
+    };
+
 }
