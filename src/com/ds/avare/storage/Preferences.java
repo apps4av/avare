@@ -58,11 +58,11 @@ public class Preferences {
     public static final long MEM_32 = 32 * 1024 * 1024;
     public static final long MEM_16 = 16 * 1024 * 1024;
     
-    public static final int MEM_128_X = 9;
+    public static final int MEM_128_X = 7;
     public static final int MEM_128_Y = 7;
-    public static final int MEM_64_X = 7;
+    public static final int MEM_64_X = 5;
     public static final int MEM_64_Y = 5;
-    public static final int MEM_32_X = 5;
+    public static final int MEM_32_X = 3;
     public static final int MEM_32_Y = 3;
     public static final int MEM_16_X = 3;
     public static final int MEM_16_Y = 3;

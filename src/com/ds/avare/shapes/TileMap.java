@@ -15,8 +15,9 @@ package com.ds.avare.shapes;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
-import com.ds.avare.R;
 import android.content.Context;
+import android.graphics.Color;
+
 import java.util.HashMap;
 
 
@@ -42,8 +43,6 @@ public class TileMap {
     private int numTiles;
     private int numTilesMax;
     
-    private BitmapHolder mNoImg;
-        
     private BitmapHolder[] mBitmapCache;
     private BitmapHolder[] mFreeList;
     /**
@@ -68,7 +67,6 @@ public class TileMap {
         mapB = new BitmapHolder[numTiles];
         mBitmapCache = new BitmapHolder[numTilesMax];
         mFreeList = new BitmapHolder[numTilesMax];
-        mNoImg = new BitmapHolder(context, R.drawable.nochart);
         for(int tile = 0; tile < numTilesMax; tile++) {
             mBitmapCache[tile] = new BitmapHolder();
         }
@@ -177,14 +175,10 @@ public class TileMap {
                  * At max scale, down sample by down sampling 
                  */
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
-                if(b.getName() == null) {
-                    h.drawInBitmap(mNoImg, tileNames[tilen], 0, 0);
-                }
-                else {
-                    h.drawInBitmap(b, tileNames[tilen], 0, 0);
-                    b.recycle();
-                    b = null;
-                }
+                h.getBitmap().eraseColor(Color.GRAY);
+                h.drawInBitmap(b, tileNames[tilen], 0, 0);
+                b.recycle();
+                b = null;
                 mapB[tilen] = h;
             }
         }
@@ -205,9 +199,8 @@ public class TileMap {
             mBitmapCache[tile].recycle();
             mBitmapCache[tile] = null;
         }
-        mNoImg.recycle();
         mElevBitmap.recycle();
-        mNoImg = null;
+        mElevBitmap = null;
     }
     
     /**

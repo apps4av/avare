@@ -627,7 +627,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != mService) {
             shapes = mService.getTFRShapes();
         }
-        if(null != shapes) {
+        if(null != shapes && null == mPointProjection) {
             mPaint.setColor(Color.RED);
             mPaint.setStrokeWidth(3 * mDipToPix);
             mPaint.setShadowLayer(0, 0, 0, 0);
@@ -1428,8 +1428,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mMacro = mScale.getMacroFactor();
                 mScale.updateMacro();
                 mFactor = 1;
-                
-                LocationView.this.postInvalidate();
+                updateCoordinates();
+                postInvalidate();
             }
         }
     }    
