@@ -374,6 +374,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not draw point. Only when long press and down.
              */
             mPointProjection = null;
+            /*
+             * Now that we have moved passed the macro level, re-query for new tiles.
+             * Do not query repeatedly hence check for mFactor = 1
+             */
+            if(mMacro != mScale.getMacroFactor() && mFactor == 1) {
+                mFactor = (float)mMacro / (float)mScale.getMacroFactor();
+                dbquery(true);
+            }
+
         }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
@@ -462,14 +471,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             
             mScale.setScaleFactor(newObjPosAndScale.getScale());
-            /*
-             * Now that we have moved passed the macro level, re-query for new tiles.
-             * Do not query repeatedly hence check for mFactor = 1
-             */
-            if(mMacro != mScale.getMacroFactor() && mFactor == 1) {
-                mFactor = (float)mMacro / (float)mScale.getMacroFactor();
-                dbquery(true);
-            }
         }
         updateCoordinates();
         invalidate();
