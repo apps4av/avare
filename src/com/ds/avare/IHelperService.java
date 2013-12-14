@@ -157,7 +157,7 @@ public class IHelperService extends Service {
                     mService.getGps().onLocationChanged(l);
                 }
                 else if(type.equals("nexrad")) {
-                    //long time = object.getLong("time");
+                    long time = object.getLong("time");
                     int cols = object.getInt("x");
                     int rows = object.getInt("y");
                     int block = object.getInt("blocknumber");
@@ -186,7 +186,7 @@ public class IHelperService extends Service {
                     /*
                      * Put in nexrad.
                      */
-                    mService.getNexrad().putImg(block, empty, conus, data, cols, rows);
+                    mService.getNexrad().putImg(time, block, empty, conus, data, cols, rows);
                 }
 
             } catch (JSONException e) {

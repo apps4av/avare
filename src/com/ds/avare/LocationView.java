@@ -718,10 +718,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
 
+        long now = System.currentTimeMillis();
         for(int i = 0; i < bitmaps.size(); i++) {
             int key = bitmaps.keyAt(i);
             NexradBitmap b = bitmaps.get(key);
             BitmapHolder bitmap = b.getBitmap();
+            if(b.isOld(now)) {
+                b.discard();
+                bitmaps.remove(key);
+            }
             if(null != bitmap) {                 
                 /*
                  * 

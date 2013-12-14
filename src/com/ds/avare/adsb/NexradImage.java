@@ -30,34 +30,30 @@ public class NexradImage {
      * 
      * @param product
      */
-    public void putImg(int block, int empty[], boolean isConus, int data[], int cols, int rows) {
+    public void putImg(long time, int block, int empty[], boolean isConus, int data[], int cols, int rows) {
         
-        if(null == data && null != empty) {
+        if(null != empty) {
             /*
              * Empty, make dummy bitmaps of all.
              */
-            for(int b : empty) {
-                if(mImg.get(b) != null) {
+            for(int i = 0; i < empty.length; i++) {
+                if(mImg.get(i) != null) {
                     /*
-                     * Replace same block, but clears the bitmap
+                     * Clears the bitmap and discards it, since nothing draws here.
                      */
-                    mImg.get(b).discard();
-                    mImg.delete(b);
+                    mImg.get(i).discard();
                 }
-                mImg.put((Integer)b, new NexradBitmap(null, b, isConus, cols, rows));
             }
         }
-        else {
+        if(null != data) {
             if(mImg.get(block) != null) {
                 /*
                  * Replace same block
                  */
                 mImg.get(block).discard();
-                mImg.delete(block);
             }
-            mImg.put((Integer)block, new NexradBitmap(data, block, isConus, cols, rows));
+            mImg.put(block, new NexradBitmap(time, data, block, isConus, cols, rows));
         }
-        
     }
     
     /**
