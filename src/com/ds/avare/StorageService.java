@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.adsb.NexradImage;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.hobbsMeter.FlightTimer;
@@ -150,6 +151,9 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
+    private NexradImage mNexrad;
+
+    
     /*
      * Hobbs time
      */
@@ -220,6 +224,7 @@ public class StorageService extends Service {
         mPlateIndex = 0;
         mAfdIndex = 0;
         mLocationSem = new Mutex();
+        mNexrad = new NexradImage();
         
         mDraw = new Draw();
         
@@ -709,5 +714,13 @@ public class StorageService extends Service {
         } catch (Exception e) {
         }
         return mLocation;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public NexradImage getNexrad() {
+       return mNexrad; 
     }
 }

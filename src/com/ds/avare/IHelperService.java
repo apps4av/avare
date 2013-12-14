@@ -12,8 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.ds.avare.adsb.NexradImage;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -155,6 +158,35 @@ public class IHelperService extends Service {
                     l.setTime(object.getLong("time"));
                     mService.getGps().onLocationChanged(l);
                 }
+                else if(type.equals("nexrad")) {
+                    long time = object.getLong("time");
+                    int x = object.getInt("x");
+                    int y = object.getInt("y");
+                    int cols = object.getInt("cols");
+                    int rows = object.getInt("rows");
+                    int block = object.getInt("blocknumber");
+                    boolean conus = object.getBoolean("conus");
+                    JSONArray emptyArray = object.getJSONArray("empty");
+                    JSONArray dataArray = object.getJSONArray("data");
+                    
+                    if(emptyArray == null || dataArray == null) {
+                        return;
+                    }
+                    int empty[] = new int[emptyArray.length()];
+                    for(int i = 0; i < empty.length; i++) {
+                        empty[i] = emptyArray.getInt(i);
+                    }
+                    int data[] = new int[dataArray.length()];
+                    for(int i = 0; i < data.length; i++) {
+                        data[i] = dataArray.getInt(i);
+                    }
+                    
+                    /*
+                     * Put in nexrad.
+                     */
+                    mService.getNexrad().putImg(block, empty, conus, data, cols, rows);
+                }
+
             } catch (JSONException e) {
                 return;
             }

@@ -27,7 +27,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:allowBackup="true">
         <service android:name=".StorageService"/>
         <service
-            android:name=".IHelperService"
+            android:name="com.ds.avare.IHelperService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.ds.avare.START_SERVICE" />
@@ -45,7 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".WeatherActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.ds.avare.MainActivity"
             android:label="@string/title_activity_main" >
             <!-- Intent for mock gps built into app -->
             <intent-filter>
