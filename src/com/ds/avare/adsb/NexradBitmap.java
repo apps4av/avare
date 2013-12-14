@@ -78,12 +78,12 @@ public class NexradBitmap {
          * Scales are in minutes as well.
          */
         if(conus) {
-            mScaleX = 1.5;
-            mScaleY = 1;
-        }
-        else {
             mScaleX = 7.5;
             mScaleY = 5;
+        }
+        else {
+            mScaleX = 1.5;
+            mScaleY = 1;
         }
         convertBlockNumberToLatLon(block, mCoords);
         
@@ -108,8 +108,10 @@ public class NexradBitmap {
      * 
      */
     public void discard() {
-        mBitmap.recycle();
-        mBitmap = null;
+        if(mBitmap != null) {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
     }
     
     public double getLatTopLeft() {

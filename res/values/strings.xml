@@ -157,9 +157,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="XlateWeather">&quot;XlateWeather&quot;</string>
     <string name="XlateWeatherLabel">&quot;Translate Weather&quot;</string>
     <string name="XlateWeatherSummary">&quot;Select to translate weather METAR/TAF/PIREP in the WX brief&quot;</string>
-    <string name="com.ds.avare.adsb">&quot;ADS-B&quot;</string>
-    <string name="adsbLabel">&quot;Use ADS-B Receiver&quot;</string>
-    <string name="adsbSummary">&quot;Use a compatible ADS-B receiver instead of the built in GPS&quot;</string>
     <string name="noZoomIn">&quot;Cannot zoom in further&quot;</string>
     <string name="noZoomOut">&quot;Cannot zoom out further&quot;</string>
     <string name="Navigate">&quot;Navigate&quot;</string>

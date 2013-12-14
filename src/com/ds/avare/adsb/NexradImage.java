@@ -42,6 +42,7 @@ public class NexradImage {
                      * Replace same block, but clears the bitmap
                      */
                     mImg.get(b).discard();
+                    mImg.delete(b);
                 }
                 mImg.put((Integer)b, new NexradBitmap(null, b, isConus, cols, rows));
             }
@@ -52,6 +53,7 @@ public class NexradImage {
                  * Replace same block
                  */
                 mImg.get(block).discard();
+                mImg.delete(block);
             }
             mImg.put((Integer)block, new NexradBitmap(data, block, isConus, cols, rows));
         }

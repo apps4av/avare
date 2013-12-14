@@ -16,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ds.avare.adsb.NexradImage;
-
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -159,13 +157,17 @@ public class IHelperService extends Service {
                     mService.getGps().onLocationChanged(l);
                 }
                 else if(type.equals("nexrad")) {
-                    long time = object.getLong("time");
-                    int x = object.getInt("x");
-                    int y = object.getInt("y");
-                    int cols = object.getInt("cols");
-                    int rows = object.getInt("rows");
+                    //long time = object.getLong("time");
+                    int cols = object.getInt("x");
+                    int rows = object.getInt("y");
                     int block = object.getInt("blocknumber");
                     boolean conus = object.getBoolean("conus");
+                    if(conus) {
+                        /*
+                         * XXX: issues with CONUS.
+                         */
+                        return;
+                    }
                     JSONArray emptyArray = object.getJSONArray("empty");
                     JSONArray dataArray = object.getJSONArray("data");
                     

@@ -16,6 +16,7 @@ package com.ds.avare;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
@@ -61,6 +62,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -203,6 +205,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private int                         mMacro;
     private float                       mFactor;
+
+    private float                       mPx;
+    private float                       mPy;
     
     /*
      * Shadow length 
@@ -269,6 +274,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(mFace);
         mTextPaint.setTextSize(R.dimen.TextSize);
+        
+        mPx = 1;
+        mPy = 1;
         
         /*
          * Set up the paint for the distance rings as much as possible here
@@ -695,6 +703,43 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawNexrad(Canvas canvas) {
+        if(mService == null) {
+            return;
+        }
+        
+        
+        SparseArray<NexradBitmap> bitmaps = mService.getNexrad().getImages();
+        if(null == bitmaps || null != mPointProjection) {
+            return;
+        }
+
+        for(int i = 0; i < bitmaps.size(); i++) {
+            int key = bitmaps.keyAt(i);
+            NexradBitmap b = bitmaps.get(key);
+            BitmapHolder bitmap = b.getBitmap();
+            if(null != bitmap) {                 
+                /*
+                 * 
+                 */
+                float scalex = (float)(b.getScaleX() / mPx);
+                float scaley = (float)(b.getScaleY() / mPy);
+                float x = (float)mOrigin.getOffsetX(b.getLonTopLeft());
+                float y = (float)mOrigin.getOffsetY(b.getLatTopLeft());
+                bitmap.getTransform().setScale(scalex * mScale.getScaleFactor(), 
+                        scaley * mScale.getScaleCorrected());
+                bitmap.getTransform().postTranslate(x, y);
+                
+                canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
+            }
+        }
+    }
+
+    
     /**
      * 
      * @param canvas
@@ -1205,6 +1250,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.rotate(-(int)mGpsParams.getBearing(), x, y);
         }
         drawTiles(canvas);
+        drawNexrad(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
         drawTFR(canvas);
@@ -1807,6 +1853,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mMacro = mScale.getMacroFactor();
             mScale.updateMacro();
             mFactor = 1;
+            mPx = (float)t.centerTile.getPx();
+            mPy = (float)t.centerTile.getPy();
             updateCoordinates();
 
             invalidate();
