@@ -726,6 +726,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(b.isOld(now)) {
                 b.discard();
                 bitmaps.remove(key);
+                continue;
             }
             if(null != bitmap) {                 
                 /*
@@ -738,8 +739,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 bitmap.getTransform().setScale(scalex * mScale.getScaleFactor(), 
                         scaley * mScale.getScaleCorrected());
                 bitmap.getTransform().postTranslate(x, y);
-                
-                canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
+                if(bitmap.getBitmap() != null) {
+                    canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
+                }
             }
         }
     }

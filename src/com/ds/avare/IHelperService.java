@@ -146,7 +146,7 @@ public class IHelperService extends Service {
                 if(type == null) {
                     return;
                 }
-                if(type.equals("ownship")) {
+                else if(type.equals("ownship")) {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
                     l.setLongitude(object.getDouble("longitude"));
                     l.setLatitude(object.getDouble("latitude"));
@@ -187,6 +187,18 @@ public class IHelperService extends Service {
                      * Put in nexrad.
                      */
                     mService.getNexrad().putImg(time, block, empty, conus, data, cols, rows);
+                }
+                else if(type.equals("METAR") || type.equals("SPECI")) {
+                }
+                else if(type.equals("TAF") || type.equals("TAF.AMD")) {
+                }
+                else if(type.equals("WINDS")) {
+                }
+                else if(type.equals("WINDS")) {
+                }
+                else if(type.equals("PIREP")) {
+                }
+                else {
                 }
 
             } catch (JSONException e) {
