@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adsb;
 
+
 import android.util.SparseArray;
 
 /**
@@ -19,10 +20,27 @@ import android.util.SparseArray;
  *
  */
 public class NexradImage {
-
-    SparseArray<NexradBitmap> mImg;
     
-    public NexradImage() {
+    /*
+     * Northern hemisphere only
+     * Cover 0 to 60 degrees latitude
+     * With each box of 4 minutes = 60 * 60 / 4 = 900 rows
+     * 
+     * Cover -180 to 180, longitude
+     * With each box 48 minutes = 360 * 60 / 48 = 450 columns
+     * 
+     * For practical purposes, only cover an area of 7.2 degree (lon) by 12 degree (lat). This 
+     * should be sufficient to have an area of about 350 miles by 350 miles at 60 latitude, more lower
+     * Given regional nexrad is 250 miles by 250 miles, apply this limit
+     * 
+     * = 12 * 60 / 4 = 180 rows
+     * = 7.2 * 60 / 48 = 9 columns
+     * = 1620 entries
+     */
+    private static final int MAX_ENTRIES = 1620;
+    private SparseArray<NexradBitmap> mImg;
+    
+    public NexradImage() { 
         mImg = new SparseArray<NexradBitmap>();
     }
     
@@ -42,6 +60,7 @@ public class NexradImage {
                      * Clears the bitmap and discards it, since nothing draws here.
                      */
                     mImg.get(i).discard();
+                    mImg.delete(i);
                 }
             }
         }
@@ -51,6 +70,13 @@ public class NexradImage {
                  * Replace same block
                  */
                 mImg.get(block).discard();
+                mImg.delete(block);
+            }
+            if(mImg.size() > MAX_ENTRIES) {
+                /*
+                 * Sorry no more space.
+                 */
+                return;
             }
             mImg.put(block, new NexradBitmap(time, data, block, isConus, cols, rows));
         }
