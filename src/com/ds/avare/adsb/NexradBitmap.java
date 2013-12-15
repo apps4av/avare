@@ -170,8 +170,8 @@ public class NexradBitmap {
      * @return
      */
     public boolean isOld(long now) {
-        long diff = now - mTime;
-        if(diff > 1000 * 3600) {
+        long diff = now - mTime - 1000L * 3600L;
+        if(diff > 0) {
             return true;
         }
         return false;
