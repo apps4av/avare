@@ -41,6 +41,11 @@ authors: zkhan, jlmcgraw
             android:title="@string/GpsOffWarnLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ADSBWeather"
+            android:summary="@string/ADSBWeatherSummary"
+            android:title="@string/ADSBWeatherLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="ALL"
             android:entries="@array/AirSig"

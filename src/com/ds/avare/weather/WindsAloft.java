@@ -37,6 +37,33 @@ public class WindsAloft {
     
     /**
      * 
+     */
+    public WindsAloft() {
+        w3k = w6k = w9k = w12k = w18k = w24k = w30k = w34k = w39k = station = time = "";
+    }
+ 
+    /**
+     * 
+     * @param copy
+     */
+    public WindsAloft(WindsAloft copy) {
+        w3k = copy.w3k;
+        w6k = copy.w6k;
+        w9k = copy.w9k;
+        w12k = copy.w12k;
+        w18k = copy.w18k;
+        w24k = copy.w24k;
+        w30k = copy.w30k;
+        w34k = copy.w34k;
+        w39k = copy.w39k;
+        station = copy.station;
+        time = copy.time;
+        lon = copy.lon;
+        lat = copy.lat;
+    }
+    
+    /**
+     * 
      * @param lon0
      * @param lat0
      * @param variation

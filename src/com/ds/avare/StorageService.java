@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.ds.avare.adsb.NexradImage;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.hobbsMeter.FlightTimer;
@@ -33,6 +32,7 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Mutex;
+import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
 
 import android.app.Service;
@@ -78,6 +78,8 @@ public class StorageService extends Service {
     private Draw mDraw;
     
     private InternetWeatherCache mInternetWeatherCache;
+    
+    private AdsbWeatherCache mAdsbWeatherCache;
     
     /*
      * Last location and its sem for sending NMEA to the world
@@ -151,8 +153,6 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
-    private NexradImage mNexrad;
-
     
     /*
      * Hobbs time
@@ -224,7 +224,7 @@ public class StorageService extends Service {
         mPlateIndex = 0;
         mAfdIndex = 0;
         mLocationSem = new Mutex();
-        mNexrad = new NexradImage();
+        mAdsbWeatherCache = new AdsbWeatherCache();
         
         mDraw = new Draw();
         
@@ -720,7 +720,8 @@ public class StorageService extends Service {
      * 
      * @return
      */
-    public NexradImage getNexrad() {
-       return mNexrad; 
+    public AdsbWeatherCache getAdsbWeather() {
+       return mAdsbWeatherCache; 
     }
+       
 }

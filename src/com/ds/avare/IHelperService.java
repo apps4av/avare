@@ -104,8 +104,10 @@ public class IHelperService extends Service {
         }
 
         @Override
+        /**
+         * 
+         */
         public String recvDataText() {
-            // TODO Auto-generated method stub
             Location l = mService.getLocationBlocking();
             JSONObject object = new JSONObject();
             try {
@@ -186,19 +188,28 @@ public class IHelperService extends Service {
                     /*
                      * Put in nexrad.
                      */
-                    mService.getNexrad().putImg(time, block, empty, conus, data, cols, rows);
+                    mService.getAdsbWeather().getNexrad().putImg(
+                            time, block, empty, conus, data, cols, rows);
                 }
                 else if(type.equals("METAR") || type.equals("SPECI")) {
+                    /*
+                     * Put METAR
+                     */
+                    mService.getAdsbWeather().putMetar(object.getLong("time"), 
+                            object.getString("location"), object.getString("data"));
                 }
                 else if(type.equals("TAF") || type.equals("TAF.AMD")) {
+                    mService.getAdsbWeather().putTaf(object.getLong("time"), 
+                            object.getString("location"), object.getString("data"));
                 }
                 else if(type.equals("WINDS")) {
-                }
-                else if(type.equals("WINDS")) {
+                    mService.getAdsbWeather().putWinds(object.getLong("time"), 
+                            object.getString("location"), object.getString("data"),
+                            mService.getDBResource());
                 }
                 else if(type.equals("PIREP")) {
-                }
-                else {
+                    mService.getAdsbWeather().putAirep(object.getLong("time"), 
+                            object.getString("location"), object.getString("data"));
                 }
 
             } catch (JSONException e) {

@@ -622,6 +622,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean useAdsbWeather() {
+        return(mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean shouldShowVerticalRate() {
         return(mPref.getBoolean(mContext.getString(R.string.VerticalRate), true));
     }

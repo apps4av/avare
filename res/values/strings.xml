@@ -107,7 +107,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ObstaclesSummary">&quot;Show obstacles near the aircraft&quot;</string>
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
-    <string name="BackgroundSummary">&quot;Show a color background to improve readability on smaller screens&quot;</string>
+    <string name="BackgroundSummary">&quot;Select to use a color background on text, to improve readability on smaller screens&quot;</string>
     <string name="SelectPlate">&quot;Select A Plate&quot;</string>
     <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
     <string name="Agree">&quot;I Agree&quot;</string>
@@ -187,7 +187,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TimerRingSizeSummary">&quot;Select the timer ring size in minutes&quot;</string>
     <string name="prefUseFlightTimer">UseFlightTimer</string>
     <string name="UseFlightTimerLabel">&quot;Flight Timer&quot;</string>
-    <string name="UseFlightTimerSummary">&quot;Display the current flight timer value&quot;</string>
+    <string name="UseFlightTimerSummary">&quot;Select to display the current flight timer value&quot;</string>
     <string name="Up">Up</string>
     <string name="PrivateFolder">Use the default folder</string>
     <string name="FileStore">Files will be stored in:</string>
@@ -197,10 +197,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TracksOff">Tracks Off</string>
     <string name="TrkUpdAllow">TrkUpdAllow</string>
     <string name="TrkUpdAllowLabel">&quot;Enable Tracking&quot;</string>
-    <string name="TrkUpdAllowSummary">&quot;Enable to allow position tracking to be recorded.&quot;</string>
+    <string name="TrkUpdAllowSummary">&quot;Select to allow position tracking to be recorded.&quot;</string>
     <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
     <string name="TrkUpdShowHistoryLabel">&quot;Track History&quot;</string>
-    <string name="TrkUpdShowHistorySummary">&quot;Display the flight path track on the active chart&quot;</string>
+    <string name="TrkUpdShowHistorySummary">&quot;Select to display the flight path track on the active chart&quot;</string>
     <string name="AutoPostTracksTitle">&quot;Send tracks file to &quot;</string>
     <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
     <string name="prefAutoPostTracks">AutoPostTracks</string>
@@ -211,8 +211,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
     <string name="VerticalRate">Vertical Rate</string>
     <string name="VerticalRateLabel">&quot;Show Vertical Rate&quot;</string>
-    <string name="VerticalRateSummary">&quot;Enable to show climb/descent rate to the destination&quot;</string>
+    <string name="VerticalRateSummary">&quot;Select to show climb/descent rate to the destination&quot;</string>
     <string name="AGLMSL">AGLMSL</string>
     <string name="AGLMSLLabel">&quot;Show MSL/AGL&quot;</string>
-    <string name="AGLMSLSummary">&quot;Enable to show height in MSL, and in AGL calculated from the Elevation Charts&quot;</string>
+    <string name="AGLMSLSummary">&quot;Select to show height in MSL, and in AGL calculated from the Elevation Charts&quot;</string>
+    <string name="ADSBWeather">ADSBWeather</string>
+    <string name="ADSBWeatherLabel">&quot;Use ADSB Weather&quot;</string>
+    <string name="ADSBWeatherSummary">&quot;Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather&quot;</string>
 </resources>
