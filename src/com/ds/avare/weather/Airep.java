@@ -25,13 +25,29 @@ public class Airep {
     public static final int RADIUS = 5; // degrees;
     
     public String time;
-    public String latitude;
-    public String longitude;
     public String reportType;
     public String rawText;
     public float lon;
     public float lat;
     
+    /**
+     * 
+     */
+    public Airep() {
+        
+    }
+    
+    /**
+     * 
+     * @param copy
+     */
+    public Airep(Airep copy) {
+        time = copy.time;
+        reportType = copy.reportType;
+        lon = copy.lon;
+        lat = copy.lat;
+        rawText = copy.rawText;
+    }
     
     /**
      * 

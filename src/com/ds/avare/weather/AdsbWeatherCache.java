@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import com.ds.avare.adsb.NexradImage;
+import com.ds.avare.place.Destination;
 import com.ds.avare.storage.DataSource;
 
 /**
@@ -31,7 +33,7 @@ public class AdsbWeatherCache {
     private HashMap<String, Taf> mTaf;
     private HashMap<String, Metar> mMetar;
     private HashMap<String, Airep> mAirep;
-    private LinkedList<WindsAloft> mWinds;
+    private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
 
     /**
@@ -41,7 +43,7 @@ public class AdsbWeatherCache {
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();
-        mWinds = new LinkedList<WindsAloft>();
+        mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
     }
 
@@ -95,8 +97,27 @@ public class AdsbWeatherCache {
      * @param location
      * @param data
      */
-    public void putAirep(long time, String location, String data) {
+    public void putAirep(long time, String location, String data, DataSource db) {
+        String lonlat = db.findLonLat(location, Destination.BASE);
+        if(null == lonlat) {
+            return;
+        }
+        String tokens[] = lonlat.split(",");
+        if(tokens.length != 2) {
+            return;
+        }
         
+        Airep a = new Airep();
+        a.lon = Float.parseFloat(tokens[0]);
+        a.lat = Float.parseFloat(tokens[1]);
+        a.rawText = data;
+        a.reportType = "PIREP";
+        Date dt = new Date(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
+        a.time = sdf.format(dt) + "Z";
+        
+        mAirep.put(location, a);
     }
     
     /**
@@ -105,7 +126,7 @@ public class AdsbWeatherCache {
      * @param location
      * @param data
      */
-    public void putWinds(long time, String location, String data, DataSource db) {
+    public void putWinds(long time, String location, String data) {
         WindsAloft w = new WindsAloft();
         w.station = location;
         
@@ -140,7 +161,7 @@ public class AdsbWeatherCache {
         
         w.lon = coords[0];
         w.lat = coords[1];
-        mWinds.add(w);
+        mWinds.put(location, w);
     }
 
     /**
@@ -169,7 +190,28 @@ public class AdsbWeatherCache {
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
-        return null;
+        
+        LinkedList<Airep> ret = new LinkedList<Airep>();
+        
+        /*
+         * Find closest aireps
+         */
+        for(Airep a : mAirep.values()) {
+            
+            /*
+             * Same formula as in database helper
+             */
+            if(
+                    (a.lat > (lat - Airep.RADIUS)) && (a.lat < (lat + Airep.RADIUS)) &&
+                    (a.lon > (lon - Airep.RADIUS)) && (a.lon < (lon + Airep.RADIUS))) {
+                Airep n = new Airep(a);
+                ret.add(n);
+            }
+            
+        }
+
+        
+        return ret;
     }
 
     /**
@@ -186,7 +228,7 @@ public class AdsbWeatherCache {
         /*
          * Find closest wind
          */
-        for(WindsAloft w : mWinds) {
+        for(WindsAloft w : mWinds.values()) {
             float mlon = w.lon;
             float mlat = w.lat;
             /*
@@ -196,16 +238,18 @@ public class AdsbWeatherCache {
             if(oldDistance > dis) {
                 oldDistance = dis;
                 toret = w;
-            }
-            
-            /*
-             * Copy it because we change the title
-             */
-            WindsAloft w1 = new WindsAloft(toret);
-            return w1;
+            } 
         }
-        
-        return null;
+
+        /*
+         * Copy it because we change the title
+         */
+        if(null == toret) {
+            return null;
+        }
+        WindsAloft w1 = new WindsAloft(toret);
+        return w1;
+
     }
 
 }

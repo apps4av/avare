@@ -204,12 +204,12 @@ public class IHelperService extends Service {
                 }
                 else if(type.equals("WINDS")) {
                     mService.getAdsbWeather().putWinds(object.getLong("time"), 
-                            object.getString("location"), object.getString("data"),
-                            mService.getDBResource());
+                            object.getString("location"), object.getString("data"));
                 }
                 else if(type.equals("PIREP")) {
                     mService.getAdsbWeather().putAirep(object.getLong("time"), 
-                            object.getString("location"), object.getString("data"));
+                            object.getString("location"), object.getString("data"),
+                            mService.getDBResource());
                 }
 
             } catch (JSONException e) {
