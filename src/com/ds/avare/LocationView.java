@@ -720,20 +720,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
 
-        long now = System.currentTimeMillis();
         for(int i = 0; i < bitmaps.size(); i++) {
             int key = bitmaps.keyAt(i);
             NexradBitmap b = bitmaps.get(key);
             BitmapHolder bitmap = b.getBitmap();
-            /*
-             * Discard all old ones
-             */
-            if(b.isOld(now)) {
-                b.discard();
-                bitmaps.remove(key);
-                continue;
-            }
-            if(null != bitmap) {                 
+            if(null != bitmap) {          
                 /*
                  * draw them scaled.
                  */
@@ -1525,33 +1516,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
-            }
-            else {
-                taf = mPref.useAdsbWeather() ? 
-                        mService.getAdsbWeather().getTaf(airport) : 
-                        mService.getDBResource().getTAF(airport);
-                        
-                metar = mPref.useAdsbWeather() ?
-                        mService.getAdsbWeather().getMETAR(airport) : 
-                        mService.getDBResource().getMETAR(airport);
-                            
-                freq = mService.getDBResource().findFrequencies(airport);
-            }
-            aireps = mPref.useAdsbWeather() ? 
-                    mService.getAdsbWeather().getAireps(lon, lat) :
-                    mService.getDBResource().getAireps(lon, lat);
-            if(null != aireps) {
-                for(Airep a : aireps) {
-                    a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
+
+                if(!mPref.useAdsbWeather()) {
+                    aireps = mService.getDBResource().getAireps(lon, lat);
+                    
+                    wa = mService.getDBResource().getWindsAloft(lon, lat);
                 }
             }
-            
-            wa = mPref.useAdsbWeather() ? 
-                    mService.getAdsbWeather().getWindsAloft(lon, lat) :
-                    mService.getDBResource().getWindsAloft(lon, lat);
-            if(null != wa) {
-                wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
+            else {
+                freq = mService.getDBResource().findFrequencies(airport);
+                
+                if(!mPref.useAdsbWeather()) {
+                    taf = mService.getDBResource().getTAF(airport);
+                    
+                    metar = mService.getDBResource().getMETAR(airport);            
+                    aireps = mService.getDBResource().getAireps(lon, lat);
+                    
+                    wa = mService.getDBResource().getWindsAloft(lon, lat);
+                }                
             }
+            
             return airport;
         }
         
@@ -1567,6 +1551,31 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
                 data.chart = mOnChart;
+
+                /*
+                 * Clear old weather
+                 */
+                mService.getAdsbWeather().sweep();
+
+                /*
+                 * Do not background ADSB weather as its a RAM opertation and quick,
+                 * also avoids concurrent mod exception.
+                 */
+
+                if(mPref.useAdsbWeather()) {
+                    taf = mService.getAdsbWeather().getTaf(airport);
+                    metar = mService.getAdsbWeather().getMETAR(airport);                    
+                    aireps = mService.getAdsbWeather().getAireps(lon, lat);
+                    wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
+                }
+                if(null != aireps) {
+                    for(Airep a : aireps) {
+                        a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
+                    }
+                }
+                if(null != wa) {
+                    wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
+                }
                 data.tfr = text;
                 data.taf = taf;
                 data.metar = metar;

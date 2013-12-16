@@ -30,6 +30,8 @@ public class Airep {
     public float lon;
     public float lat;
     
+    public long timestamp;
+    
     /**
      * 
      */
@@ -47,6 +49,7 @@ public class Airep {
         lon = copy.lon;
         lat = copy.lat;
         rawText = copy.rawText;
+        timestamp = copy.timestamp;
     }
     
     /**

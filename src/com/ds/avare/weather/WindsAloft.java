@@ -35,6 +35,8 @@ public class WindsAloft {
     public float lon;
     public float lat;
     
+    public long timestamp;
+    
     /**
      * 
      */
@@ -60,6 +62,7 @@ public class WindsAloft {
         time = copy.time;
         lon = copy.lon;
         lat = copy.lat;
+        timestamp = copy.timestamp;
     }
     
     /**

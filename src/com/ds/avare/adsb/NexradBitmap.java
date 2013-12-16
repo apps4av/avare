@@ -24,8 +24,8 @@ public class NexradBitmap {
     private double mScaleY;
     private int mBlock;
     private BitmapHolder mBitmap;
-    private long mTime;
     
+    public long timestamp;
     /**
      * 
      * @param blockNumber
@@ -72,6 +72,7 @@ public class NexradBitmap {
      */
     public NexradBitmap(long time, int data[], int block, boolean conus, int cols, int rows) {
        
+        timestamp = System.currentTimeMillis();
         mBlock = block;
         mCoords = new double[2];
         
@@ -103,7 +104,6 @@ public class NexradBitmap {
                 mBitmap.getBitmap().setPixel(col, row, data[col + row * cols]);
             }
         }
-        mTime = time;
     }
     
     /**
@@ -164,16 +164,4 @@ public class NexradBitmap {
         return mBitmap;
     }
     
-    /**
-     * If the Nexrad is older than an hour
-     * @param now
-     * @return
-     */
-    public boolean isOld(long now) {
-        long diff = now - mTime - 1000L * 3600L;
-        if(diff > 0) {
-            return true;
-        }
-        return false;
-    }
 }

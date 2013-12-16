@@ -18,6 +18,9 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.util.SparseArray;
+
+import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.NexradImage;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.DataSource;
@@ -30,6 +33,8 @@ import com.ds.avare.storage.DataSource;
  */
 public class AdsbWeatherCache {
 
+    private static final long EXPIRY_PERIOD = 1000L * 60L * 60L;
+    
     private HashMap<String, Taf> mTaf;
     private HashMap<String, Metar> mMetar;
     private HashMap<String, Airep> mAirep;
@@ -71,6 +76,7 @@ public class AdsbWeatherCache {
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
         m.time = sdf.format(dt) + "Z";
         m.flightCategory = "Unknown";
+        m.timestamp = System.currentTimeMillis();
         mMetar.put(location, m);
     }
 
@@ -88,6 +94,7 @@ public class AdsbWeatherCache {
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
         f.time = sdf.format(dt) + "Z";
+        f.timestamp = System.currentTimeMillis();
         mTaf.put(location, f);        
     }
     
@@ -116,6 +123,7 @@ public class AdsbWeatherCache {
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
         a.time = sdf.format(dt) + "Z";
+        a.timestamp = System.currentTimeMillis();
         
         mAirep.put(location, a);
     }
@@ -161,6 +169,7 @@ public class AdsbWeatherCache {
         
         w.lon = coords[0];
         w.lat = coords[1];
+        w.timestamp = System.currentTimeMillis();
         mWinds.put(location, w);
     }
 
@@ -252,4 +261,92 @@ public class AdsbWeatherCache {
 
     }
 
+    /*
+     * ALL ADSB weather should be kaput after 1 hour / timeout of timestamp 
+     */
+    public void sweep() {
+        long now = System.currentTimeMillis();
+
+        /*
+         * Go at them one by one
+         * LinkedList saves against concurrent modification exception
+         */
+        LinkedList<String> keys;
+        
+        /*
+         * Winds
+         */
+        keys = new LinkedList<String>();
+        for (String key : mWinds.keySet()) {
+            WindsAloft w = mWinds.get(key);
+            long diff = (now - w.timestamp) - (EXPIRY_PERIOD);
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mWinds.remove(key);
+        }
+        
+        /*
+         * Taf
+         */
+        keys = new LinkedList<String>();
+        for (String key : mTaf.keySet()) {
+            Taf f = mTaf.get(key);
+            long diff = (now - f.timestamp) - (EXPIRY_PERIOD);
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mTaf.remove(key);
+        }
+        
+        /*
+         * Metar
+         */
+        keys = new LinkedList<String>();
+        for (String key : mMetar.keySet()) {
+            Metar m = mMetar.get(key);
+            long diff = (now - m.timestamp) - (EXPIRY_PERIOD);
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mMetar.remove(key);
+        }
+
+        /*
+         * Airep
+         */
+        keys = new LinkedList<String>();
+        for (String key : mAirep.keySet()) {
+            Airep a = mAirep.get(key);
+            long diff = (now - a.timestamp) - (EXPIRY_PERIOD);
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mAirep.remove(key);
+        }
+        
+        /*
+         * Nexrad
+         */
+        LinkedList<Integer>keyi = new LinkedList<Integer>();
+        SparseArray<NexradBitmap> img = mNexrad.getImages();
+        for(int i = 0; i < img.size(); i++) {
+            NexradBitmap n = img.valueAt(i);
+            long diff = (now - n.timestamp) - (EXPIRY_PERIOD);
+            if(diff > 0) {
+                keyi.add(img.keyAt(i));
+            }
+        }
+        for(Integer key : keyi) {
+            img.remove(key);
+        }
+    }
 }

@@ -22,4 +22,6 @@ public class Metar {
     public String stationId;
     public String time;
     public String flightCategory;
+    
+    public long timestamp;
 }

@@ -19,4 +19,6 @@ public class Taf {
     public String rawText;
     public String stationId;
     public String time;
+    
+    public long timestamp;
 }
