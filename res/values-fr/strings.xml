@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--  
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
-
-Translated by Francois Dinel
-
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)  Translated by Francois Dinel
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
     * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
     * * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
@@ -21,7 +17,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Le plus près&quot;</string>
     <string name="Success">&quot;Réussi&quot;</string>
-    <string name="WarningMsg">&quot;Avertissement&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;Avertissement: à vos propres risques&quot;</string>
     <string name="DestinationPrompt">&quot;Entrez code de destination&quot;</string>
     <string name="DestinationNF">&quot;Destination non trouvée&quot;</string>
     <string name="AirDia">&quot;Diagramme de l'aéroport&quot;</string>
@@ -157,4 +154,68 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrackUp">&quot;Tracé haut&quot;</string>
     <string name="TrackUpLabel">&quot;Track vers le haut&quot;</string>
     <string name="TrackUpSummary">&quot;Selectionner pour activer le tracé vers le haut (Expérimental), autrement le nord est vers le haut&quot;</string>
-</resources>
+    <string name="XlateWeather">&quot;XlateWeather&quot;</string>
+    <string name="XlateWeatherLabel">&quot;Convertir la météo&quot;</string>
+    <string name="XlateWeatherSummary">&quot;Selectionner pour convertir la météo METAR/TAF/PIREP au format WX abrévié&quot;</string>
+    <string name="noZoomIn">&quot;Échelle trop petite&quot;</string>
+    <string name="noZoomOut">&quot;Échelle trop grande&quot;</string>
+    <string name="Navigate">&quot;Naviger&quot;</string>
+    <string name="NotAvailable">&quot;Non disponible&quot;</string>
+    <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
+    <string name="AirSigTypeLabel">&quot;Type d'AIRMET/SIGMET&quot;</string>
+    <string name="AirSigTypeSummary">&quot;Selectionner le type de météo à dessiner&quot;</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">Storage et Téléchargements</string>
+    <string name="prefGpsCategoryTitle">GPS</string>
+    <string name="prefWeatherCategoryTitle">Météo</string>
+    <string name="prefDisplayCategoryTitle">Afficher</string>
+    <string name="prefAppStateCategoryTitle">l'État de l'application</string>
+    <string name="prefDistanceRingType">DistanceRingType</string>
+    <string name="DistanceRingTypeLabel">&quot;Style d'anneau des distances&quot;</string>
+    <string name="DistanceRingTypeSummary">&quot;Selectionner le style d'anneau des distances à afficher&quot;</string>
+    <string name="UnitKnot">kt</string>
+    <string name="UnitMile">mi</string>
+    <string name="VsFpm">ppm</string>
+    <string name="UnitKilometer">km</string>
+    <string name="DistKnot">nm</string>
+    <string name="DistMile">mi</string>
+    <string name="DistKilometer">km</string>
+    <string name="SpeedKnot">kt</string>
+    <string name="SpeedMile">mh</string>
+    <string name="SpeedKilometer">kh</string>
+    <string name="prefTimerRingSize">TimerRingSize</string>
+    <string name="TimerRingSizeLabel">&quot;Durée de la minuterie&quot;</string>
+    <string name="TimerRingSizeSummary">&quot;Selectionner la durée de la minuterie en minutes&quot;</string>
+    <string name="prefUseFlightTimer">UseFlightTimer</string>
+    <string name="UseFlightTimerLabel">&quot;Temps de vol&quot;</string>
+    <string name="UseFlightTimerSummary">&quot;Selectionner pour afficher la minuterie du temps de vol&quot;</string>
+    <string name="Up">Haut</string>
+    <string name="PrivateFolder">Utiliser le répertoire par défaut</string>
+    <string name="FileStore">Les fichiers seront sauvegardés:</string>
+    <string name="FileStoreInvalid">Incapable dÉcrire les fichiers au répertoire sélectionné:</string>
+    <string name="prefTracksCategoryTitle">Enregistrer le tracé</string>
+    <string name="TracksOn">Enregistrement du tracé activée</string>
+    <string name="TracksOff">Enregistrement du tracé désactivée</string>
+    <string name="TrkUpdAllow">TrkUpdAllow</string>
+    <string name="TrkUpdAllowLabel">&quot;Activer l'enregistrement du tracé&quot;</string>
+    <string name="TrkUpdAllowSummary">&quot;Selectionner pour activer l'enregistrement du tracé.&quot;</string>
+    <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
+    <string name="TrkUpdShowHistoryLabel">&quot;Historique des tracés&quot;</string>
+    <string name="TrkUpdShowHistorySummary">&quot;Selectionner pour afficher le travé du vol sur la carte active&quot;</string>
+    <string name="AutoPostTracksTitle">&quot;Envoyer le fichier du tracé sur&quot;</string>
+    <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
+    <string name="prefAutoPostTracks">AutoPostTracks</string>
+    <string name="AutoPostTracksLabel">&quot;Afficher les tracés automatiquement&quot;</string>
+    <string name="AutoPostTracksSummary">&quot;Selectionner quoi faire avec les fichiers de tracé KML for de la fermeture&quot;</string>
+    <string name="AutoPostTracksDialogText">&quot;La filière du tracé a été sauvegardée&quot;</string>
+    <string name="Zero">&quot;0&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+    <string name="VerticalRate">Taux de descente</string>
+    <string name="VerticalRateLabel">&quot;Afficher le taux de descente&quot;</string>
+    <string name="VerticalRateSummary">&quot;Selectionner pour afficher les taux de descente ou monté vers la destination&quot;</string>
+    <string name="AGLMSL">AGLMSL</string>
+    <string name="AGLMSLLabel">&quot;Afficher MSL/AGL&quot;</string>
+    <string name="AGLMSLSummary">&quot;Selectionner pour afficher l'élévation en MSL, et en AGL d'après les cartes d'élevation&quot;</string>
+    <string name="ADSBWeather">ADSBWeather</string>
+    <string name="ADSBWeatherLabel">&quot;Utiliser la météo ADSB&quot;</string>
+    <string name="ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (require "L'Avare External IO module app".), ou utiliser la météo Internet&quot;</string>
+e&quot;</string></resources>
