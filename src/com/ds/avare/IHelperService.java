@@ -188,7 +188,7 @@ public class IHelperService extends Service {
                     /*
                      * Put in nexrad.
                      */
-                    mService.getAdsbWeather().getNexrad().putImg(
+                    mService.getAdsbWeather().putImg(
                             time, block, empty, conus, data, cols, rows);
                 }
                 else if(type.equals("METAR") || type.equals("SPECI")) {

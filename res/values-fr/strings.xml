@@ -164,12 +164,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;Type d'AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeSummary">&quot;Selectionner le type de météo à dessiner&quot;</string>
-    <string name="prefStorageAndDownloadsCategoryTitle">Storage et Téléchargements</string>
-    <string name="prefGpsCategoryTitle">GPS</string>
-    <string name="prefWeatherCategoryTitle">Météo</string>
-    <string name="prefDisplayCategoryTitle">Afficher</string>
-    <string name="prefAppStateCategoryTitle">l'État de l'application</string>
-    <string name="prefDistanceRingType">DistanceRingType</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">&quot;Storage et Téléchargements&quot;</string>
+    <string name="prefGpsCategoryTitle">&quot;GPS&quot;</string>
+    <string name="prefWeatherCategoryTitle">&quot;Météo&quot;</string>
+    <string name="prefDisplayCategoryTitle">&quot;Afficher&quot;</string>
+    <string name="prefAppStateCategoryTitle">&quot;l'État de l'application&quot;</string>
+    <string name="prefDistanceRingType">&quot;DistanceRingType&quot;</string>
     <string name="DistanceRingTypeLabel">&quot;Style d'anneau des distances&quot;</string>
     <string name="DistanceRingTypeSummary">&quot;Selectionner le style d'anneau des distances à afficher&quot;</string>
     <string name="UnitKnot">kt</string>
@@ -217,5 +217,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AGLMSLSummary">&quot;Selectionner pour afficher l'élévation en MSL, et en AGL d'après les cartes d'élevation&quot;</string>
     <string name="ADSBWeather">ADSBWeather</string>
     <string name="ADSBWeatherLabel">&quot;Utiliser la météo ADSB&quot;</string>
-    <string name="ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (require "L'Avare External IO module app".), ou utiliser la météo Internet&quot;</string>
-e&quot;</string></resources>
+    <string name="ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (require L'Avare External IO module app.), ou utiliser la météo Internet&quot;</string>
+</resources>

@@ -18,12 +18,14 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.content.Context;
 import android.util.SparseArray;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.NexradImage;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.storage.Preferences;
 
 /**
  * 
@@ -40,11 +42,13 @@ public class AdsbWeatherCache {
     private HashMap<String, Airep> mAirep;
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
+    private Preferences mPref;
 
     /**
      * 
      */
-    public AdsbWeatherCache() {
+    public AdsbWeatherCache(Context context) {
+        mPref = new Preferences(context);
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();
@@ -68,6 +72,9 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putMetar(long time, String location, String data) {
+        if(!mPref.useAdsbWeather()) {
+            return;
+        }    
         Metar m = new Metar();
         m.rawText = location + " " + data;
         m.stationId = location;
@@ -87,6 +94,9 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putTaf(long time, String location, String data) {
+        if(!mPref.useAdsbWeather()) {
+            return;
+        }    
         Taf f = new Taf();
         f.rawText = location + " " + data;
         f.stationId = location;
@@ -105,6 +115,9 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putAirep(long time, String location, String data, DataSource db) {
+        if(!mPref.useAdsbWeather()) {
+            return;
+        }    
         String lonlat = db.findLonLat(location, Destination.BASE);
         if(null == lonlat) {
             return;
@@ -135,6 +148,9 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putWinds(long time, String location, String data) {
+        if(!mPref.useAdsbWeather()) {
+            return;
+        }    
         WindsAloft w = new WindsAloft();
         w.station = location;
         
@@ -171,6 +187,23 @@ public class AdsbWeatherCache {
         w.lat = coords[1];
         w.timestamp = System.currentTimeMillis();
         mWinds.put(location, w);
+    }
+    
+    /**
+     * 
+     * @param time
+     * @param block
+     * @param empty
+     * @param isConus
+     * @param data
+     * @param cols
+     * @param rows
+     */
+    public void putImg(long time, int block, int empty[], boolean isConus, int data[], int cols, int rows) {
+        if(!mPref.useAdsbWeather()) {
+            return;
+        }    
+        mNexrad.putImg(time, block, empty, isConus, data, cols, rows);
     }
 
     /**

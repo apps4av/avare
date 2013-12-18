@@ -224,7 +224,7 @@ public class StorageService extends Service {
         mPlateIndex = 0;
         mAfdIndex = 0;
         mLocationSem = new Mutex();
-        mAdsbWeatherCache = new AdsbWeatherCache();
+        mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
         
         mDraw = new Draw();
         
