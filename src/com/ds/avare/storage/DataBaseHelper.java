@@ -36,18 +36,12 @@ import com.ds.avare.weather.WindsAloft;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * @author zkhan, jlmcgraw
  * The class that does the grunt wortk of dealing with the databse
  */
-public class DataBaseHelper extends SQLiteOpenHelper {
-
-    /**
-     * 
-     */
-    private static final int DATABASE_VERSION = 1;
+public class DataBaseHelper  {
 
     /**
      * Cache this class to sqlite
@@ -142,7 +136,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @param context
      */
     public DataBaseHelper(Context context) {
-        super(context, null, null, DATABASE_VERSION);
         mPref = new Preferences(context);
         mCenterTile = null;
         mUsers = mUsersFiles = mUsersWeather = mUsersElev = 0;
@@ -159,19 +152,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return(f.exists());
     }
    
-    /* (non-Javadoc)
-     * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
-     */
-    @Override
-    public void onCreate(SQLiteDatabase database) {        
-    }
-
-    /* (non-Javadoc)
-     * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
-     */
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
 
     /**
      * Close database
@@ -186,7 +166,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if((mDataBase != null) && (mUsers <= 0)) {
                 try {
                     mDataBase.close();
-                    super.close();
                 }
                 catch (Exception e) {
                 }
@@ -1324,7 +1303,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if((mDataBaseFiles != null) && (mUsersFiles <= 0)) {
                 try {
                     mDataBaseFiles.close();
-                    super.close();
                 }
                 catch (Exception e) {
                 }
@@ -1527,7 +1505,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if((mDataBaseWeather != null) && (mUsersWeather <= 0)) {
                 try {
                     mDataBaseWeather.close();
-                    super.close();
                 }
                 catch (Exception e) {
                 }
@@ -1803,7 +1780,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if((mDataBaseElev != null) && (mUsersElev <= 0)) {
                 try {
                     mDataBaseElev.close();
-                    super.close();
                 }
                 catch (Exception e) {
                 }
