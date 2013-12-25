@@ -16,6 +16,7 @@ package com.ds.avare.place;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class Destination extends Observable {
      * For GPS taxi
      */
     private float[] mMatrix;
+    private HashMap<String, float[]> mMatrixPlates;
         
     /*
      * Its lon/lat
@@ -511,6 +513,7 @@ public class Destination extends Observable {
              * GPS taxi for this airport?
              */
             mMatrix = mDataSource.findDiagramMatrix(mName);
+            mMatrixPlates = mDataSource.findPlatesMatrix(mName);
 
             return(!mParams.isEmpty());
         }
@@ -595,8 +598,27 @@ public class Destination extends Observable {
     /**
      * @return
      */
-    public float[] getMatrix() {
-        return(mMatrix);
+    public float[] getMatrix(String name) {
+        if(name.equals(AD)) {
+            return(mMatrix);            
+        }
+        if(null != mMatrixPlates) {
+            
+            /*
+             * Convert from points on plate to draw matrix
+             * 
+             */
+            float matrix[] = mMatrixPlates.get(name);            
+            if(null != matrix) {
+                
+                /*
+                 * Plates are in magnetic north orientation
+                 */
+                matrix[4] = (float)mDeclination;
+                return matrix;
+            }
+        }
+        return null;
     }
 
     /**
@@ -691,10 +713,10 @@ public class Destination extends Observable {
             /*
              * Airport diagram must be  first
              */
-            if(o1.startsWith("AIRPORT-DIAGRAM")) {
+            if(o1.startsWith(AD)) {
                 return -1;
             }
-            if(o2.startsWith("AIRPORT-DIAGRAM")) {
+            if(o2.startsWith(AD)) {
                 return 1;
             }
             
@@ -745,24 +767,17 @@ public class Destination extends Observable {
 	    }
 	    
 	    
-	    long vs = Math.round(height / time);
-	    if(vs < 0) {
+	    long vs = Math.abs(Math.round(height / time));
+	    if(height < 0) {
 	        /*
 	         * Must go up, show up symbol
 	         */
-	        vs = -vs;
-	        if(vs > 9999) {
-	            vs = 9999;
-	        }
 	        return "+" + vs + Preferences.vsConversionUnit;
 	    }
 	    
 	    /*
 	     * Down symbol
 	     */
-        if(vs > 9999) {
-            vs = 9999;
-        }
 	    return "-" + vs + Preferences.vsConversionUnit;
 	}
 

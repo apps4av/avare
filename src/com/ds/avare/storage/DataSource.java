@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -128,6 +129,15 @@ public class DataSource {
      */
     public float[] findDiagramMatrix(String name) {
         return dbHelper.findDiagramMatrix(name);
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public HashMap<String, float[]> findPlatesMatrix(String name) {
+        return dbHelper.findPlatesMatrix(name);        
     }
 
     /**

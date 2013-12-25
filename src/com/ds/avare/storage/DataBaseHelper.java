@@ -15,6 +15,7 @@ package com.ds.avare.storage;
 
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -49,6 +50,7 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBase; 
     private SQLiteDatabase mDataBaseFiles; 
     private SQLiteDatabase mDataBaseElev; 
+    private SQLiteDatabase mDataBasePlates; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -73,6 +75,7 @@ public class DataBaseHelper  {
     private Integer mUsers;
     private Integer mUsersFiles;
     private Integer mUsersElev;
+    private Integer mUsersPlates;
     private Integer mUsersWeather;
     
     
@@ -138,7 +141,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = 0;
         mContext = context;
     }
 
@@ -268,7 +271,7 @@ public class DataBaseHelper  {
         closes(cursor);
         return ret;
     }
-
+    
     /**
      * 
      * @param name
@@ -1850,5 +1853,150 @@ public class DataBaseHelper  {
     }
 
 
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryPlates(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersPlates) {
+            if(mDataBasePlates == null) {
+                mUsersPlates = 0;
+                try {
+                    
+                    mDataBasePlates = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBasePlates = null;
+                }
+            }
+            if(mDataBasePlates == null) {
+                return c;
+            }
+            mUsersPlates++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBasePlates == null) {
+            return c;
+        }
+        
+        if(!mDataBasePlates.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBasePlates.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    /**
+     * Close database
+     */
+    private void closesPlates(Cursor c) {
+        if(null != c) {
+            c.close();
+        }
+
+        synchronized(mUsersPlates) {
+            mUsersPlates--;
+            if((mDataBasePlates != null) && (mUsersPlates <= 0)) {
+                try {
+                    mDataBasePlates.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBasePlates = null;
+                mUsersPlates = 0;
+            }
+        }
+    }
+
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public HashMap<String, float[]> findPlatesMatrix(String name) {
+        
+        HashMap<String, float[]> ret = new HashMap<String, float[]>();
+        
+        String qry =
+                "select * from VisionFix" + " where AirportID='" + name + "';";
+        
+        Cursor cursor = doQueryPlates(qry, "geoplates.db");
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        
+                        /*
+                         * Add to hash table, make transpose matrix from points
+                         */
+                        String plate = cursor.getString(0);
+                        plate = plate.substring(0, plate.lastIndexOf('.'));
+
+                        float x1 = cursor.getFloat(2);
+                        float y1 = cursor.getFloat(3);
+                        float lat1 = cursor.getFloat(4);
+                        float lon1 = cursor.getFloat(5);
+                        float x2 = cursor.getFloat(6);
+                        float y2 = cursor.getFloat(7);
+                        float lat2 = cursor.getFloat(8);
+                        float lon2 = cursor.getFloat(9);
+                        
+                        /*
+                         * Math to find px/py from two points on the plate
+                         */
+                        float px = (x1 - x2) / (lon1 - lon2);
+                        float py = (y1 - y2) / (lat1 - lat2); 
+                        
+                        float array[] = new float[12];
+                        array[0] = lon1 - x1 / px;
+                        array[1] = px;
+                        array[2] = lat1 - y1 / py;
+                        array[3] = py;
+                        
+                        ret.put(plate, array);
+         
+                    } while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesPlates(cursor);
+        
+        if(ret.size() > 0) {
+            return ret;      
+        }
+        
+        return null;
+    }
 
 }

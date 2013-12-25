@@ -15,7 +15,6 @@ package com.ds.avare;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
@@ -55,7 +54,6 @@ public class PlatesActivity extends Activity {
     private Toast mToast;
     private Spinner mSpinner;
     private List<String> mList;
-    private float[] mMatrix;
     private boolean mIgnoreFocus;
 
     /*
@@ -178,12 +176,7 @@ public class PlatesActivity extends Activity {
                         mService.loadDiagram(plates[pos] + Preferences.IMAGE_EXTENSION);
                         mPlatesView.setBitmap(mService.getDiagram());
                         String name = mList.get(pos);
-                        if(name.equals(Destination.AD)) {
-                            mPlatesView.setParams(mMatrix);
-                        }
-                        else {
-                            mPlatesView.setParams(null);
-                        }
+                        mPlatesView.setParams(mDestination.getMatrix(name), name.equals(Destination.AD));
                         mService.setPlateIndex(pos);
                     }
                 }
@@ -271,11 +264,6 @@ public class PlatesActivity extends Activity {
                     android.R.layout.simple_spinner_item, mList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mSpinner.setAdapter(adapter);            
-
-            /*
-             * Find lon/lat px from database
-             */
-            mMatrix = mDestination.getMatrix();
         }
 
         /* (non-Javadoc)

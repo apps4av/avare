@@ -57,6 +57,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private BitmapHolder                 mAirplaneBitmap;
     private float[]                     mMatrix;
     private float			             mDipToPix;
+    private boolean                    mShowingAD;
     
     /**
      * 
@@ -68,6 +69,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setAntiAlias(true);
         mPan = new Pan();
         mMatrix = null;
+        mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mPref = new Preferences(context);
         mTextDiv = mPref.getOrientation().contains("Portrait") ? 24.f : 12.f;
@@ -199,12 +201,12 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     /**
      * Set params to show lon/lat 
      */
-    public void setParams(float[] params) {
+    public void setParams(float[] params, boolean ad) {
     	mMatrix = params;
+    	mShowingAD = ad;
     	postInvalidate();
     }
     
-
     /**
      * @param touchPoint
      */
@@ -267,26 +269,43 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             
             float lon = (float)mGpsParams.getLongitude();
             float lat = (float)mGpsParams.getLatitude();
-            float wftA = mMatrix[6];
-            float wftB = mMatrix[7];
-            float wftC = mMatrix[8];
-            float wftD = mMatrix[9];
-            float wftE = mMatrix[10];
-            float wftF = mMatrix[11];
+            float pixx = 0;
+            float pixy = 0;
+            float angle = 0;
             
-            float pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
-            float pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
-            
-            /*
-             * Now find angle.
-             * Add 0.1 to lat that gives us north
-             * Y increase down so give -180
-             */
-            float pixxn = (wftA * lon + wftC * (lat + 0.1f) + wftE) / 2.f;
-            float pixyn = (wftB * lon + wftD * (lat + 0.1f) + wftF) / 2.f;
-            float diffx = pixxn - pixx;
-            float diffy = pixyn - pixy;
-            float angle = (float)Math.toDegrees(Math.atan2(diffx, -diffy));
+            if(mShowingAD) {
+                /*
+                 * Mike's matrix
+                 */
+                float wftA = mMatrix[6];
+                float wftB = mMatrix[7];
+                float wftC = mMatrix[8];
+                float wftD = mMatrix[9];
+                float wftE = mMatrix[10];
+                float wftF = mMatrix[11];
+                
+                pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
+                pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
+                
+                /*
+                 * Now find angle.
+                 * Add 0.1 to lat that gives us north
+                 * Y increase down so give -180
+                 */
+                float pixxn = (wftA * lon + wftC * (lat + 0.1f) + wftE) / 2.f;
+                float pixyn = (wftB * lon + wftD * (lat + 0.1f) + wftF) / 2.f;
+                float diffx = pixxn - pixx;
+                float diffy = pixyn - pixy;
+                angle = (float)Math.toDegrees(Math.atan2(diffx, -diffy));
+            }
+            else {
+                /*
+                 * Faisal's database
+                 */
+                pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
+                pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
+                angle = mMatrix[4];
+            }
             
             /*
              * Draw airplane at that location
