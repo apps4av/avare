@@ -304,7 +304,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                  */
                 pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
                 pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
-                angle = mMatrix[4];
+                angle = -mMatrix[4];
             }
             
             /*
