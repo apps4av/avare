@@ -176,7 +176,15 @@ public class PlatesActivity extends Activity {
                         mService.loadDiagram(plates[pos] + Preferences.IMAGE_EXTENSION);
                         mPlatesView.setBitmap(mService.getDiagram());
                         String name = mList.get(pos);
-                        mPlatesView.setParams(mDestination.getMatrix(name), name.equals(Destination.AD));
+                        if(name.startsWith(Destination.AD)) {
+                            mPlatesView.setParams(mDestination.getMatrix(name), true);
+                        }
+                        else if(name.startsWith("RNAV-GPS")) {
+                            mPlatesView.setParams(mDestination.getMatrix(name), false);                            
+                        }
+                        else {
+                            mPlatesView.setParams(null, true);
+                        }
                         mService.setPlateIndex(pos);
                     }
                 }
