@@ -148,6 +148,17 @@ public class IHelperService extends Service {
                 if(type == null) {
                     return;
                 }
+                else if(type.equals("traffic")) {
+                    mService.getTrafficCache().putTarric(
+                            object.getString("callsign"),
+                            object.getInt("address"),
+                            (float)object.getDouble("latitude"),
+                            (float)object.getDouble("longitude"),
+                            object.getInt("altitude"),
+                            (float)object.getDouble("bearing"),
+                            (int)object.getInt("speed"),
+                            object.getLong("time"));
+                }
                 else if(type.equals("ownship")) {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
                     l.setLongitude(object.getDouble("longitude"));

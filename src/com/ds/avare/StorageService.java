@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.hobbsMeter.FlightTimer;
@@ -80,6 +81,8 @@ public class StorageService extends Service {
     private InternetWeatherCache mInternetWeatherCache;
     
     private AdsbWeatherCache mAdsbWeatherCache;
+    
+    private TrafficCache mTrafficCache;
     
     /*
      * Last location and its sem for sending NMEA to the world
@@ -223,6 +226,7 @@ public class StorageService extends Service {
         mDiagramBitmap = null;
         mPlateIndex = 0;
         mAfdIndex = 0;
+        mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
         
@@ -722,6 +726,14 @@ public class StorageService extends Service {
      */
     public AdsbWeatherCache getAdsbWeather() {
        return mAdsbWeatherCache; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public TrafficCache getTrafficCache() {
+       return mTrafficCache; 
     }
        
 }

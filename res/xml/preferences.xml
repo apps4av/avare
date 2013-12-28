@@ -97,6 +97,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ObstaclesSummary"
             android:title="@string/ObstaclesLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ADSBTraffic"
+            android:summary="@string/ADSBTrafficSummary"
+            android:title="@string/ADSBTrafficLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/Runways"
             android:summary="@string/RunwaysSummary"

@@ -617,6 +617,14 @@ public class Preferences {
     public boolean useAdsbWeather() {
         return(mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean showAdsbTraffic() {
+        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), false));
+    }
 
     /**
      * 

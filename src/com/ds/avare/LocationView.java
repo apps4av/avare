@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
+import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
@@ -750,7 +751,48 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
-    
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawTraffic(Canvas canvas) {
+        if(mService == null) {
+            return;
+        }
+        
+        /*
+         * Get nexrad bitmaps to draw.
+         */
+        SparseArray<Traffic> traffic = mService.getTrafficCache().getTraffic();
+
+        if((!mPref.showAdsbTraffic()) || (null == traffic) || (null != mPointProjection)) {
+            return;
+        }
+
+        for(int i = 0; i < traffic.size(); i++) {
+            int key = traffic.keyAt(i);
+            Traffic t = traffic.get(key);
+            if(t.isStale()) {
+                traffic.delete(key);
+                continue;
+            }
+            
+            float x = (float)mOrigin.getOffsetX(t.mLon);
+            float y = (float)mOrigin.getOffsetY(t.mLat);
+            String callsign = t.mCallSign;
+            String heading = ((int)t.mHeading) + "\u00b0";
+            String altitude = t.mAltitude + "ft";
+            String speed = t.mHorizVelocity + "kt";
+            mDistanceRingPaint.setColor(Color.WHITE);
+            drawShadowedText(canvas, mDistanceRingPaint,
+                    callsign + "@" + altitude + "," + heading + 
+                    "," + speed,
+                    Color.BLACK, x, y);
+
+        }
+    }
+
     /**
      * 
      * @param canvas
@@ -1264,6 +1306,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawNexrad(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
+        drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
         drawTracks(canvas);
