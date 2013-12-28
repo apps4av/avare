@@ -92,6 +92,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private BitmapHolder               mLineBitmap;
     private BitmapHolder               mObstacleBitmap;
     private BitmapHolder               mLineHeadingBitmap;
+    private BitmapHolder               mAirplaneOtherBitmap;
     
     /**
      * The magic of multi touch
@@ -317,6 +318,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         setOnTouchListener(this);
         mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
+        mAirplaneOtherBitmap = new BitmapHolder(context, R.drawable.planeother);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
@@ -778,18 +780,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 continue;
             }
             
-            float x = (float)mOrigin.getOffsetX(t.mLon);
-            float y = (float)mOrigin.getOffsetY(t.mLat);
-            String callsign = t.mCallSign;
-            String heading = ((int)t.mHeading) + "\u00b0";
-            String altitude = t.mAltitude + "ft";
-            String speed = t.mHorizVelocity + "kt";
-            mDistanceRingPaint.setColor(Color.WHITE);
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    callsign + "@" + altitude + "," + heading + 
-                    "," + speed,
-                    Color.BLACK, x, y);
-
+            if(null != mAirplaneOtherBitmap) {
+                rotateBitmapIntoPlace(mAirplaneOtherBitmap, t.mHeading,
+                        t.mLon, t.mLat, true);
+                canvas.drawBitmap(mAirplaneOtherBitmap.getBitmap(), mAirplaneOtherBitmap.getTransform(), mPaint);
+            }
         }
     }
 
