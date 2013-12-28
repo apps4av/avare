@@ -715,7 +715,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Get nexrad bitmaps to draw.
          */
-        SparseArray<NexradBitmap> bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+        SparseArray<NexradBitmap> bitmaps;
+        if(mScale.getMacroFactor() > 4) {
+            bitmaps = mService.getAdsbWeather().getNexradConus().getImages();            
+        }
+        else {
+            bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+        }
+
         if(null == bitmaps || null != mPointProjection || (!mPref.useAdsbWeather())) {
             return;
         }

@@ -164,12 +164,6 @@ public class IHelperService extends Service {
                     int rows = object.getInt("y");
                     int block = object.getInt("blocknumber");
                     boolean conus = object.getBoolean("conus");
-                    if(conus) {
-                        /*
-                         * XXX: issues with CONUS.
-                         */
-                        return;
-                    }
                     JSONArray emptyArray = object.getJSONArray("empty");
                     JSONArray dataArray = object.getJSONArray("data");
                     

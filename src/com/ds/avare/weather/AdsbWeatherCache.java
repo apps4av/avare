@@ -23,6 +23,7 @@ import android.util.SparseArray;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.NexradImage;
+import com.ds.avare.adsb.NexradImageConus;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -42,6 +43,7 @@ public class AdsbWeatherCache {
     private HashMap<String, Airep> mAirep;
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
+    private NexradImageConus mNexradConus;
     private Preferences mPref;
 
     /**
@@ -54,6 +56,7 @@ public class AdsbWeatherCache {
         mAirep = new HashMap<String, Airep>();
         mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
+        mNexradConus = new NexradImageConus();
     }
 
     
@@ -63,6 +66,14 @@ public class AdsbWeatherCache {
      */
     public NexradImage getNexrad() {
         return mNexrad;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public NexradImageConus getNexradConus() {
+        return mNexradConus;
     }
     
     /**
@@ -202,8 +213,13 @@ public class AdsbWeatherCache {
     public void putImg(long time, int block, int empty[], boolean isConus, int data[], int cols, int rows) {
         if(!mPref.useAdsbWeather()) {
             return;
-        }    
-        mNexrad.putImg(time, block, empty, isConus, data, cols, rows);
+        }
+        if(isConus) {
+            mNexradConus.putImg(time, block, empty, isConus, data, cols, rows);            
+        }
+        else {
+            mNexrad.putImg(time, block, empty, isConus, data, cols, rows);            
+        }
     }
 
     /**
