@@ -659,9 +659,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Draw TFRs, TFR
          */            
         List<AirSigMet> mets = null;
-        if(null != mService) {
+        if((null != mService) && (!mPref.useAdsbWeather())) {
             mets = mService.getInternetWeatherCache().getAirSigMet();
         }
+        
         if(null != mets && null == mPointProjection) {
             mPaint.setStrokeWidth(2 * mDipToPix); 
             mPaint.setShadowLayer(0, 0, 0, 0);
@@ -1759,7 +1760,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             List<AirSigMet> mets = null;
             if(null != mService) {
                 shapes = mService.getTFRShapes();
-                mets = mService.getInternetWeatherCache().getAirSigMet();
+                if(!mPref.useAdsbWeather()) {
+                    mets = mService.getInternetWeatherCache().getAirSigMet();
+                }
             }
             if(null != shapes) {
                 for(int shape = 0; shape < shapes.size(); shape++) {

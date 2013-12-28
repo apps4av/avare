@@ -328,14 +328,6 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean useAdsb() {
-        return(false);
-    }
-
-    /**
-     * 
-     * @return
-     */
     public boolean shouldLeaveRunning() {
         return(mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
     }
