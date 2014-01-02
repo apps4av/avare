@@ -584,4 +584,18 @@ public class Helper {
                 ctx.getResources().getDisplayMetrics());
     }
 
+    /** Calculate the absolute angular difference between the two headings
+     * 
+     * @param hdg angle 1 in degrees (typically the heading)
+     * @param brg angle 2 in degrees (typically the bearing)
+     * @return difference between hdg and brg in degrees
+     */
+    public static double angularDifference(double hdg, double brg) {
+    	double absDiff = Math.abs(hdg - brg);
+    	if(absDiff > 180) {
+    		return 360 - absDiff;
+    	}
+    	return absDiff;
+    }
+
 }

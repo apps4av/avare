@@ -149,4 +149,10 @@ public class Scale {
         return 4;
     }
 
+    /**
+     * 
+     */
+    public void zoomOut() {
+       mScaleFactor = MIN_SCALE; 
+    }
 }

@@ -160,14 +160,11 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
+            else if(!(new File(mPref.mapsFolder() + "/databases")).exists()) {
+                mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));              
+            }
             else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
-                if(null != mLocationView.getChart()) {
-                    Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
-                    i.putExtra(getString(R.string.download), mLocationView.getChart());
-                    i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    startActivity(i);
-                }
             }
             else if(mPref.isSimulationMode()) {
                 mLocationView.updateErrorStatus(getString(R.string.SimulationMode));                
@@ -326,8 +323,7 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-        
-        
+        mLocationView.zoomOut();                
 
         /*
          * To be notified of some action in the view
@@ -791,6 +787,9 @@ public class LocationActivity extends Activity implements Observer {
             }
             if(null != l) {
                 mService.setGpsParams(new GpsParams(l));
+            }
+            else {
+                mService.setGpsParams(new GpsParams());
             }
             
             if(null != mService.getGpsParams()) {

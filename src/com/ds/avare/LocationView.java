@@ -1168,6 +1168,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         float x = (float) (mOrigin.getOffsetX(mGpsParams.getLongitude()));
         float y = (float) (mOrigin.getOffsetY(mGpsParams.getLatitude()));
+        double bearing = mGpsParams.getBearing();	/* What direction are we headed */
+
         /*
          * If the user wants the distance rings display, now is the time
          */
@@ -1202,15 +1204,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             String text[] = DistanceRings.getRingsText();
          
+            float adjX = (float) Math.sin((bearing - 10) * Math.PI / 180);	// Distance ring numbers, offset from
+            float adjY = (float) Math.cos((bearing - 10) * Math.PI / 180);	// the course line for readability
+
             drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_INNER], Color.DKGRAY, x
-                    + ringR[DistanceRings.RING_INNER], y);
+                    text[DistanceRings.RING_INNER], Color.DKGRAY,
+                    x + ringR[DistanceRings.RING_INNER] * adjX, 
+                    y - ringR[DistanceRings.RING_INNER] * adjY);
             drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_MIDDLE], Color.DKGRAY, x
-                    + ringR[DistanceRings.RING_MIDDLE], y);
+                    text[DistanceRings.RING_MIDDLE], Color.DKGRAY,
+                    x + ringR[DistanceRings.RING_MIDDLE] * adjX, 
+                    y - ringR[DistanceRings.RING_MIDDLE] * adjY);
             drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_OUTER], Color.DKGRAY, x
-                    + ringR[DistanceRings.RING_OUTER], y);
+                    text[DistanceRings.RING_OUTER], Color.DKGRAY,
+                    x + ringR[DistanceRings.RING_OUTER] * adjX, 
+                    y - ringR[DistanceRings.RING_OUTER] * adjY);
     
         }
         /*
@@ -1218,10 +1226,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         if ((ringR[DistanceRings.RING_SPEED] != 0)
                 && (null == mPointProjection)) {
+
+        	float adjX = (float) Math.sin((bearing + 10) * Math.PI / 180);	// So the speed ring number does
+            float adjY = (float) Math.cos((bearing + 10) * Math.PI / 180);	// not overlap the distance ring
+
             mDistanceRingPaint.setStyle(Style.STROKE);
             mDistanceRingPaint.setColor(DistanceRings.COLOR_SPEED_RING);
             canvas.drawCircle(x, y, ringR[DistanceRings.RING_SPEED],
                     mDistanceRingPaint);
+
+            
+            mDistanceRingPaint.setAlpha(0xFF);
+            mDistanceRingPaint.setStyle(Style.FILL);
+            mDistanceRingPaint.setColor(Color.GREEN);
+
+            drawShadowedText(canvas, mDistanceRingPaint, 
+            		String.format("%d", mPref.getTimerRingSize()), Color.DKGRAY, 
+            		x + ringR[DistanceRings.RING_SPEED] * adjX, 
+            		y - ringR[DistanceRings.RING_SPEED] * adjY);
         }
     }
 
@@ -1942,5 +1964,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             invalidate();
         }
     };
+    
+    /**
+     * 
+     */
+    public void zoomOut() {
+        mScale.zoomOut();
+    }
 
 }

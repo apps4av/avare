@@ -519,6 +519,14 @@ public class ChartsDownloadActivity extends Activity {
                     Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " " 
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
+                    if(mName.equals(getString(R.string.TFRs))) {
+                        mService.deleteTFRFetcher();
+                    }
+    
+                    if(mName.equals("weather")) {
+                        mService.deleteInternetWeatherCache();
+                    }
+
                     mChartAdapter.unsetChecked(mName);
                     mChartAdapter.refresh();
                     delete();
