@@ -46,10 +46,18 @@ Redistribution and use in source and binary forms, with or without modification,
 			            xmlns:tlv="http://schemas.android.com/apk/res/com.ds.avare"
 			            tlv:grabber="@+id/icon"
                         tlv:remove_mode="slideLeft"
-			            android:layout_above="@+id/plan_button_save"
+			            android:layout_above="@+id/plan_text_save"
 			            android:layout_width="wrap_content"
 			            android:cacheColorHint="#00000000"			            
 			            android:layout_height="match_parent"/>
+	           	
+	           	    <EditText
+                        android:id="@+id/plan_text_save"
+                        android:layout_width="match_parent"
+                        android:layout_above="@+id/plan_button_save"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:hint=""/>
 	           	    
 	                <Button 
 	                    android:id="@+id/plan_button_save"
@@ -58,7 +66,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	                    android:layout_height="wrap_content"
 	                    android:textSize="20sp"
 	                    android:text="@string/Save"/>
-	             </RelativeLayout>               
+	                
+	            </RelativeLayout>               
          </LinearLayout>    
          <View
             android:layout_width="2dp"

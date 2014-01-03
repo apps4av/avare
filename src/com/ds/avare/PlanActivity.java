@@ -40,6 +40,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,8 +60,11 @@ public class PlanActivity extends Activity {
     private Toast mToast;
     private Button mDestButton;
     private Button mSaveButton;
+    private EditText mSaveText;
     private int mIndex;
     private Preferences mPref;
+    private String[] mPlans;
+    
     /**
      * Shows Chooseing message about Avare
      */
@@ -163,7 +167,9 @@ public class PlanActivity extends Activity {
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
         mPref = new Preferences(getApplicationContext());
-                
+              
+        mPlans = mPref.getPlans();
+        
         /*
          * Get views from XML
          */
@@ -219,6 +225,7 @@ public class PlanActivity extends Activity {
         /*
          * Save button
          */
+        mSaveText = (EditText)view.findViewById(R.id.plan_text_save);
         mSaveButton = (Button)view.findViewById(R.id.plan_button_save);
         mSaveButton.setOnClickListener(new OnClickListener() {
 
@@ -240,10 +247,17 @@ public class PlanActivity extends Activity {
                 if(num < 2) {
                     return;
                 }
-                String planStr = "";
+                /*
+                 * Put plan name with :: and since comma separates, remove it. 
+                 */
+                String planName =  mSaveText.getText().toString().replace(",", " ");
+                if(planName.equals("")) {
+                    planName = getString(R.string.Plan);
+                }
+                String planStr = planName + "::";
                 for(int i = 0; i < (num - 1); i++) {
                     /*
-                     * Separate by >
+                     * Separate by >, add type in ()
                      */
                     planStr += p.getDestination(i).getID() + "(" + p.getDestination(i).getType() + ")" +  ">";
                 }
@@ -312,12 +326,16 @@ public class PlanActivity extends Activity {
     private boolean prepareAdapterSave() {
         
         ArrayList<String> list = new ArrayList<String>();
-        String [] name = mPref.getPlans();
-        for (int i = 0; i < name.length; i++) {
-            if(name[i].equals("")) {
+        mPlans = mPref.getPlans();
+        for (int i = 0; i < mPlans.length; i++) {
+            if(mPlans[i].equals("")) {
                 continue;
             }
-            list.add(name[i]);
+            String[] split = mPlans[i].split("::");
+            if(split.length < 2) {
+                continue;
+            }
+            list.add(split[0]);
         }
         
         mPlanSaveAdapter = new ArrayAdapter<String>(this,
@@ -431,8 +449,17 @@ public class PlanActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
                             inactivatePlan();
-                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
-                            String tokens[] = item.split("\\)>");
+                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                                return;
+                            }
+                            String item = mPlans[mxindex];
+                            String items[] = item.split("::");
+                            if(items.length < 2) { 
+                                return;
+                            }
+                  
+                            mSaveText.setText(items[0]);
+                            String tokens[] = items[1].split("\\)>");
                             for(int i = 0; i < tokens.length; i++) {
                                 tokens[i] = tokens[i].replaceAll("\\)", "");
                                 String pair[] = tokens[i].split("\\(");
@@ -452,8 +479,17 @@ public class PlanActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
                             inactivatePlan();
-                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
-                            String tokens[] = item.split("\\)>");
+                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                                return;
+                            }
+                            String item = mPlans[mxindex];
+                            String items[] = item.split("::");
+                            if(items.length < 2) { 
+                                return;
+                            }
+                  
+                            mSaveText.setText(items[0]);
+                            String tokens[] = items[1].split("\\)>");
                             for(int i = tokens.length - 1; i >= 0; i--) {
                                 tokens[i] = tokens[i].replaceAll("\\)", "");
                                 String pair[] = tokens[i].split("\\(");
@@ -471,8 +507,10 @@ public class PlanActivity extends Activity {
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
                         public void onClick(DialogInterface dialog, int which) {
-                            String item = mPlanSaveAdapter.getItem(mxindex).toString();
-                            mPref.deleteAPlan(item);
+                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                                return;
+                            }
+                            mPref.deleteAPlan(mPlans[mxindex]);
                             prepareAdapterSave();
                         }
                     });
