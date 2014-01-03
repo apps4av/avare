@@ -17,6 +17,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <ImageView android:id="@+id/icon"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +27,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <TextView
          android:id="@+id/plan_list_aid_name"
          android:layout_width="match_parent"
-         android:layout_toRightOf="@+id/icon"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentTop="true"
          android:layout_height="wrap_content"
          android:layout_marginTop="2dp"
          android:clickable="false"
