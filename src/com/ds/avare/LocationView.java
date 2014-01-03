@@ -888,7 +888,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev);
             if(!agl.equals("")) {
                 altitude += "/" + agl;
+            }            
+            /*
+             * Vertical speed to dest.
+             */
+            if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowVerticalRate()) {
+                if(mService.getDestination() != null) {
+                    altitude += "/" + mService.getDestination().getVerticalSpeedTo(mGpsParams);
+                }
             }
+
             drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
                     /*
                      * Draw MSL/AGL close to airplane, but do not obstruct the view.
@@ -983,19 +992,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawAircraft(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
-
-        /*
-         * Vertical speed to dest.
-         */
-        if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowVerticalRate()) {
-            if(mService.getDestination() != null && mPointProjection == null) {
-                float x = (float)mOrigin.getOffsetX(mService.getDestination().getLocation().getLongitude());
-                float y = (float)mOrigin.getOffsetY(mService.getDestination().getLocation().getLatitude()) + mRunwayPaint.getTextSize() * 2;                        
-                drawShadowedText(canvas, mRunwayPaint, 
-                        mService.getDestination().getVerticalSpeedTo(mGpsParams), Color.BLACK, x, y);
-            }
-            
-        }
 
 
         if(null != mAirplaneBitmap && null == mPointProjection) {
