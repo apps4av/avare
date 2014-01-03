@@ -442,15 +442,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
 
             /*
-             * TODO: track up pan is problematic, so freeze it to current location.
+             * TODO: track up pan is problematic
              * 
              */
             if(mPan.setMove(
-                    mTrackUp ? 
-                            mPan.getMoveX() : 
                             newObjPosAndScale.getXOff(),
-                    mTrackUp ? 
-                            mPan.getMoveY() : 
                             newObjPosAndScale.getYOff())) {
                 /*
                  * Query when we have moved one tile. This will happen in background.

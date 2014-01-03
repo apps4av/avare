@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--  
 Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
 All rights reserved.
@@ -11,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="148"
-    android:versionName="5.2.8" >
+    android:versionCode="149"
+    android:versionName="5.2.9" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
