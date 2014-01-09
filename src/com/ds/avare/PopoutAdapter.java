@@ -46,6 +46,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private LinkedList<Airep> mAirep;
     private LinkedList<String> mFreq;
     private String mTfr;
+    private String mSua;
     private String mMets;
     private WindsAloft mWa;
     private Typeface mFace;
@@ -57,7 +58,8 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_PIREP = 4;
     private static final int GROUP_METS = 5;
     private static final int GROUP_TFR = 6;
-    private static final int GROUP_NUM = 7;
+    private static final int GROUP_SUA = 7;
+    private static final int GROUP_NUM = 8;
     
     /**
      * @param context
@@ -84,6 +86,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_PIREP] = new String[1];
         mChildren[GROUP_METS] = new String[1];
         mChildren[GROUP_TFR] = new String[1];
+        mChildren[GROUP_SUA] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -97,10 +100,12 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mAirep = data.airep;
         mWa = data.wa;
         mFreq = data.freq;
+        mSua = data.sua;
 
         
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
+        mChildrenText[GROUP_SUA] = mSua == null ? "" : mSua;
 
         if(mMetar == null) {
             mChildrenText[GROUP_METAR] = "";
@@ -224,6 +229,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 tv.setText(mGroups[group]);
                 break;
             case GROUP_WA:
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
+                break;
+            case GROUP_SUA:
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;

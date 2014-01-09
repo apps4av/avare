@@ -1551,6 +1551,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Double lat;
         private String text;
         private String textMets;
+        private String sua;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private Taf taf;
@@ -1581,6 +1582,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     aireps = mService.getDBResource().getAireps(lon, lat);
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
+                    
+                    sua = mService.getDBResource().getSua(lon, lat);
                 }
             }
             else {
@@ -1593,6 +1596,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     aireps = mService.getDBResource().getAireps(lon, lat);
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
+                    sua = mService.getDBResource().getSua(lon, lat);
                 }                
             }
             
@@ -1643,6 +1647,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.mets = textMets;
                 data.wa = wa;
                 data.freq = freq;
+                data.sua = sua;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();

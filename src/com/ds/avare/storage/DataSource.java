@@ -244,6 +244,14 @@ public class DataSource {
 
     /**
      * 
+     * @return
+     */
+    public String getSua(double lon, double lat) {
+        return dbHelper.getSua(lon, lat);
+    }
+
+    /**
+     * 
      * @param name
      * @return
      */

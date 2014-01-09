@@ -123,6 +123,7 @@ public class DataBaseHelper  {
     private static final String TABLE_ALT = "alternate";
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_OBSTACLES = "obs";
+    private static final String TABLE_SUA = "saa";
 
 
     private static final String TILE_NAME = "name";
@@ -1053,6 +1054,46 @@ public class DataBaseHelper  {
         catch (Exception e) {
         }
         closes(cursor);
+        return ret;
+    }
+
+    
+    /**
+     * Find the closets tiles to current position
+     * @param lon
+     * @param lat
+     * @return
+     */
+    public String getSua(double lon, double lat) {
+
+        /*
+         * Find with sqlite query
+         */
+        String qry = "select * from " + TABLE_SUA + " where ((";
+        qry += "(" + "lon" + " - " + lon + ") * (" + "lon"  + " - " + lon + ") + "
+                + "(" + "lat" + " - " + lat + ") * (" + "lat" + " - " + lat + ")"
+                + ") < 1);";
+        
+        Cursor cursor = doQuery(qry, getMainDb());
+        String ret = "";
+
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    String sua = cursor.getString(0) + "(" + cursor.getString(1) + ")\n" + 
+                            cursor.getString(3) + "-" + cursor.getString(2) + "\n" +
+                            cursor.getString(4) + "-" + cursor.getString(5) + "\n" +
+                            cursor.getString(8) + "\n\n";
+                    ret += sua;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        if(ret.equals("")) {
+            ret = null;
+        }
         return ret;
     }
 

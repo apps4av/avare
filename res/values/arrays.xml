@@ -36,6 +36,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AIREP/PIREP</item>
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
+        <item>SUA</item>
     </string-array>
     
     <string-array name="resNameDatabase">
