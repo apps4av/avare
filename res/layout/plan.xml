@@ -35,7 +35,7 @@ Redistribution and use in source and binary forms, with or without modification,
 			    <TextView 
 			        android:id="@+id/plan_total_text"
 			        android:layout_width="match_parent"
-			        android:background="@drawable/border_green_small"
+			        android:background="@drawable/border_transparent"
 			        android:layout_height="wrap_content"
 			        android:textSize="30sp"/>
 			    
@@ -86,7 +86,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:textSize="20sp"
 		        android:gravity="center"
 		        android:padding="10dp"
-                android:background="@drawable/border_red_small"
+                android:background="@drawable/border_transparent"
 		        android:text="@string/SavedPlan"
 	            />
 	        <ListView
