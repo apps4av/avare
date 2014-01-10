@@ -22,6 +22,7 @@ import com.sromku.polygon.Polygon;
 import com.sromku.polygon.Polygon.Builder;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
@@ -89,7 +90,7 @@ public abstract class Shape {
      * @param movement
      * @param paint
      */
-    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, Typeface face) {
+    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, Typeface face, boolean night) {
         
         float x = (float)origin.getOffsetX(mLonMin);
         float y = (float)origin.getOffsetY(mLatMax);
@@ -99,33 +100,55 @@ public abstract class Shape {
         float facy = sy / (float)movement.getLatitudePerPixel();
         
         /*
-         * Draw the shape segment by segment
-         */
-        for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
-            float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
-            float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
-            float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
-            float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
-            c.drawLine(x1, y1, x2, y2, paint);
-        }
-        
-
-        /*
          * Do a tab on top of shape
          */
         /*
          * Draw pivots at end of track
          */
+        float width = paint.getStrokeWidth();
+        int color = paint.getColor();
         if (this instanceof TrackShape) {
+            
+            /*
+             * Draw background on track shapes, so draw twice
+             */
+            for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
+                float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
+                float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
+                float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
+                float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
+                paint.setStrokeWidth(width + 4);
+                paint.setColor(night? Color.WHITE : Color.BLACK);
+                c.drawLine(x1, y1, x2, y2, paint);
+                paint.setStrokeWidth(width);
+                paint.setColor(color);
+                c.drawLine(x1, y1, x2, y2, paint);
+            }
             if(getNumCoords() < 2) {
                 return;
             }
             float x1 = (float)origin.getOffsetX(mCoords.get(0).getLongitude());
             float y1 = (float)origin.getOffsetY(mCoords.get(0).getLatitude());
-            c.drawCircle(x1, y1, 8, paint);
             float x2 = (float)origin.getOffsetX(mCoords.get(getNumCoords() - 1).getLongitude());
             float y2 = (float)origin.getOffsetY(mCoords.get(getNumCoords() - 1).getLatitude());
+            paint.setColor(night? Color.WHITE : Color.BLACK);
+            c.drawCircle(x1, y1, 10, paint);
+            c.drawCircle(x2, y2, 10, paint);
+            paint.setColor(color);
+            c.drawCircle(x1, y1, 8, paint);
             c.drawCircle(x2, y2, 8, paint);
+        }
+        else {
+            /*
+             * Draw the shape segment by segment
+             */
+            for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
+                float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
+                float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
+                float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
+                float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
+                c.drawLine(x1, y1, x2, y2, paint);
+            }
         }
     }
     

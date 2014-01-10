@@ -642,7 +642,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(3 * mDipToPix);
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
-                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
             }
         }
     }
@@ -697,7 +697,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 if(met.shape != null && color != 0) {
                     mPaint.setColor(color);
-                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
                 }
             }
         }
@@ -919,10 +919,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mPaint.setStrokeWidth(5 * mDipToPix);
                 mPaint.setAlpha(162);
                 if(mService.getDestination().isFound() && !mService.getPlan().isActive()) {
-                    mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+                    mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
                 }
                 else if (mService.getPlan().isActive()) {
-                    mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);                    
+                    mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());                    
                 }
             }
             if(!mPref.isSimulationMode()) {
@@ -1262,7 +1262,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
-            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace);
+            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
         }
     }
 
