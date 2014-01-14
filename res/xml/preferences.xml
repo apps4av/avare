@@ -108,16 +108,6 @@ authors: zkhan, jlmcgraw
             android:title="@string/RunwaysLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/VerticalRate"
-            android:summary="@string/VerticalRateSummary"
-            android:title="@string/VerticalRateLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/AGLMSL"
-            android:summary="@string/AGLMSLSummary"
-            android:title="@string/AGLMSLLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="@string/ShowTrack"
             android:summary="@string/ShowTrackSummary"
             android:title="@string/ShowTrackLabel" />
@@ -136,7 +126,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DistanceRingTypePrompts"
@@ -151,11 +140,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/prefUseFlightTimer"
-            android:summary="@string/UseFlightTimerSummary"
-            android:title="@string/UseFlightTimerLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefUseDynamicFields"

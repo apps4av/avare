@@ -438,14 +438,6 @@ public class Preferences {
 
     /**
      * 
-     * @return
-     */
-    public boolean useFlightTimer() {
-        return(mPref.getBoolean(mContext.getString(R.string.prefUseFlightTimer), false));
-    }
-
-    /**
-     * 
      * @param activity
      * @return
      */
@@ -630,22 +622,6 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean shouldShowVerticalRate() {
-        return(mPref.getBoolean(mContext.getString(R.string.VerticalRate), true));
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public boolean shouldShowAGLMSL() {
-        return(mPref.getBoolean(mContext.getString(R.string.AGLMSL), false));
-    }
-
-    /**
-     * 
-     * @return
-     */
     public int getTimerRingSize() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
@@ -677,18 +653,34 @@ public class Preferences {
 		}
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean useDynamicFields() {
         return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), false);
     }
     
+    /**
+     * 
+     * @return
+     */
     public String getRowFormats() {
     	return mPref.getString(mContext.getString(R.string.prefGetRowFormats), "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4");
     }
 
+    /**
+     * 
+     * @param rowFormats
+     */
     public void setRowFormats(String rowFormats) {
     	mPref.edit().putString(mContext.getString(R.string.prefGetRowFormats), rowFormats).commit();
     }
 
+    /**
+     * 
+     * @return
+     */
     public double getOdometer() {
     	try {
     		return(Double.parseDouble(mPref.getString(mContext.getString(R.string.prefOdometer), "0")));
@@ -697,6 +689,10 @@ public class Preferences {
 		}
     }
 
+    /**
+     * 
+     * @param value
+     */
     public void setOdometer(double value) {
     	mPref.edit().putString(mContext.getString(R.string.prefOdometer), String.format("%f", value)).commit();
     }

@@ -800,117 +800,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
-    private void drawCornerTexts(Canvas canvas) {
-
-        /*
-         * Misc text in the information text location on the view like GPS status,
-         * Maps status, and point destination/destination bearing, altitude, ...
-         * Add shadows for better viewing
-         */
-        if(mPref.shouldShowBackground()) {
-            mPaint.setShadowLayer(0, 0, 0, 0);
-            mPaint.setColor(TEXT_COLOR_OPPOSITE);
-            mPaint.setAlpha(0x7f);
-            canvas.drawRect(0, 0, getWidth(), mPaint.getTextSize() * 2 + SHADOW, mPaint);
-            mPaint.setAlpha(0xff);
-        }
-        mPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-        
-
-        /*
-         * Status
-         */
-        if(mErrorStatus != null) {
-            mPaint.setTextAlign(Align.RIGHT);
-            mPaint.setColor(Color.RED);
-            canvas.drawText(mErrorStatus,
-                    getWidth(), mPaint.getTextSize() * 2, mPaint);
-        }
-        else {
-            
-            mPaint.setColor(TEXT_COLOR);
-
-            mPaint.setTextAlign(Align.RIGHT);
-            /*
-             * Heading, Speed, timer
-             */
-            canvas.drawText(
-                    Helper.makeLine(mGpsParams.getSpeed(),
-                    Preferences.speedConversionUnit,
-                    (mPref.useFlightTimer() && mService != null) ? mService.getFlightTimer().getValue() : null,
-                    mGpsParams.getBearing(), mGpsParams.getDeclinition()),
-                    getWidth(),mPaint.getTextSize() * 2, mPaint);
-            
-        }
-
-        /*
-         * Point top right
-         */
-        mPaint.setColor(TEXT_COLOR);
-        if(mPointProjection != null) {
-            mPaint.setTextAlign(Align.RIGHT);
-            /*
-             * Draw distance from point
-             */
-            canvas.drawText(Helper.makeLine(mPointProjection.getDistance(),
-                    Preferences.distanceConversionUnit, "     ",
-                    mPointProjection.getBearing(),
-                    mGpsParams.getDeclinition()),
-                    getWidth(), mPaint.getTextSize(), mPaint);
-            mPaint.setTextAlign(Align.LEFT);
-            canvas.drawText(mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
-                    0, mPaint.getTextSize(), mPaint);
-        }
-        else if(mService != null && mService.getDestination() != null) {
-            mPaint.setTextAlign(Align.RIGHT);
-            /*
-             * Else dest
-             */
-            canvas.drawText(mService.getDestination().toString(),
-                    getWidth(), mPaint.getTextSize(), mPaint);
-            mPaint.setTextAlign(Align.LEFT);
-            String name = mService.getDestination().getID();
-            if(name.contains("&")) {
-                /*
-                 * If this string is too long, cut it.
-                 */
-                name = Destination.GPS;
-            }
-            else if (name.length() > 8) {
-                name = name.substring(0, 7);
-            }
-            canvas.drawText(name, 0, mPaint.getTextSize(), mPaint);
-        }
-        
-        
-        /*
-         * MSL/AGL
-         */
-        if(mPointProjection == null && !mPref.isSimulationMode() && mPref.shouldShowAGLMSL()) {
-            mRunwayPaint.setColor(Color.WHITE);
-            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold) + "ft";
-
-            /*
-             * Add AGL
-             */
-            String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev) + "ft";
-            if(!agl.equals("")) {
-                altitude += "/" + agl;
-            }
-            drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
-                    /*
-                     * Draw MSL/AGL close to airplane, but do not obstruct the view.
-                     */
-                    (int)mOrigin.getOffsetX(mGpsParams.getLongitude()),
-                    (int)mOrigin.getOffsetY(mGpsParams.getLatitude()) + mLineBitmap.getBitmap().getHeight());
-        }
-
-    }
-
-    /**
-     * 
-     * @param canvas
-     */
     private void drawTrack(Canvas canvas) {
         if(null == mService) {
             return;
@@ -1331,11 +1220,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.restore();
         }
         
-        if(mPref.useDynamicFields() == true) {
-        	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
-        } else {
-        	drawCornerTexts(canvas);
-        }
+      	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
     }    
 
     /**

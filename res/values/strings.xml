@@ -185,9 +185,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTimerRingSize">TimerRingSize</string>
     <string name="TimerRingSizeLabel">&quot;Timer Ring Size&quot;</string>
     <string name="TimerRingSizeSummary">&quot;Select the timer ring size in minutes&quot;</string>
-    <string name="prefUseFlightTimer">UseFlightTimer</string>
-    <string name="UseFlightTimerLabel">&quot;Flight Timer&quot;</string>
-    <string name="UseFlightTimerSummary">&quot;Select to display the current flight timer value&quot;</string>
     <string name="Up">Up</string>
     <string name="PrivateFolder">Use the default folder</string>
     <string name="FileStore">Files will be stored in:</string>
@@ -209,12 +206,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoPostTracksDialogText">&quot;The tracks file %s has been saved&quot;</string>
     <string name="Zero">&quot;0&quot;</string>
     <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
-    <string name="VerticalRate">Vertical Rate</string>
-    <string name="VerticalRateLabel">&quot;Show Vertical Rate&quot;</string>
-    <string name="VerticalRateSummary">&quot;Select to show climb/descent rate to the destination&quot;</string>
-    <string name="AGLMSL">AGLMSL</string>
-    <string name="AGLMSLLabel">&quot;Show MSL/AGL&quot;</string>
-    <string name="AGLMSLSummary">&quot;Select to show height in MSL, and in AGL calculated from the Elevation Charts&quot;</string>
     <string name="ADSBWeather">ADSBWeather</string>
     <string name="ADSBWeatherLabel">&quot;Use ADSB Weather&quot;</string>
     <string name="ADSBWeatherSummary">&quot;Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather&quot;</string>
