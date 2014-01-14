@@ -41,6 +41,8 @@ import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.InfoLines;
+import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -83,7 +85,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Current GPS location
      */
     private GpsParams                  mGpsParams;
-
+    private GpsParams				   mVSIParams;
+    
     /**
      * The plane on screen
      */
@@ -237,6 +240,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private float                      mDipToPix;
 
+    // Instantaneous vertical speed in feet per minute
+    double mVSI;
+
+    // Handler for the top two lines of status information
+    InfoLines mInfoLines;
+    
     /**
      * @param context
      */
@@ -259,6 +268,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mFactor = 1.f;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
+        mVSIParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPointProjection = null;
@@ -329,6 +339,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGestureDetector = new GestureDetector(context, new GestureListener());
      
         mDipToPix = Helper.getDpiToPix(context);
+        
+        mInfoLines = new InfoLines(this);
     }
     
     /**
@@ -876,24 +888,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         if(mPointProjection == null && !mPref.isSimulationMode() && mPref.shouldShowAGLMSL()) {
             mRunwayPaint.setColor(Color.WHITE);
-            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold);
+            String altitude = Helper.calculateAltitudeFromThreshold(mThreshold) + "ft";
 
             /*
              * Add AGL
              */
-            String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev);
+            String agl = Helper.calculateAGLFromThreshold(mThreshold, (float)mElev) + "ft";
             if(!agl.equals("")) {
                 altitude += "/" + agl;
-            }            
-            /*
-             * Vertical speed to dest.
-             */
-            if(mService != null && !mPref.isSimulationMode() && mPref.shouldShowVerticalRate()) {
-                if(mService.getDestination() != null) {
-                    altitude += "/" + mService.getDestination().getVerticalSpeedTo(mGpsParams);
-                }
             }
-
             drawShadowedText(canvas, mRunwayPaint, altitude, Color.BLACK,
                     /*
                      * Draw MSL/AGL close to airplane, but do not obstruct the view.
@@ -988,7 +991,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawAircraft(Canvas canvas) {
         mPaint.setShadowLayer(0, 0, 0, 0);
         mPaint.setColor(Color.WHITE);
-
 
         if(null != mAirplaneBitmap && null == mPointProjection) {
             
@@ -1161,7 +1163,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         float x = (float) (mOrigin.getOffsetX(mGpsParams.getLongitude()));
         float y = (float) (mOrigin.getOffsetY(mGpsParams.getLatitude()));
         double bearing = mGpsParams.getBearing();	/* What direction are we headed */
-
+        
         /*
          * If the user wants the distance rings display, now is the time
          */
@@ -1328,7 +1330,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mTrackUp) {
             canvas.restore();
         }
-        drawCornerTexts(canvas);
+        
+        if(mPref.useDynamicFields() == true) {
+        	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
+        } else {
+        	drawCornerTexts(canvas);
+        }
     }    
 
     /**
@@ -1373,14 +1380,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param params
      */
     public void updateParams(GpsParams params) {
+    	
+    	// Calculate the instantaneous vertical speed in ft/min
+    	if(params.getTime() - mVSIParams.getTime() > 1000) {
+    		mVSI = ((params.getAltitude() - mVSIParams.getAltitude())) * (60 / ((params.getTime() - mVSIParams.getTime()) / 1000));
+    		mVSIParams = params;
+    	}
+    	
         /*
          * Comes from location manager
          */
         mGpsParams = params;
 
         if(mService != null) {
-            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());    /* Tell the timer how fast we are going */
-            mService.getKMLRecorder().setGpsParams(mGpsParams);            /* Tell the KML recorder where we are     */
+            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
+            mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are     */
+            mService.getOdometer().updateValue(mPref, mGpsParams);		/* Adjust the odometer	*/
         }
 
         updateCoordinates();
@@ -1700,7 +1715,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Find elevation tile in background, and load 
                      */
-                    if(mPref.shouldShowAGLMSL() && mService != null) {
+                    if(mService != null) {
                         Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
                         mService.getTiles().setElevationTile(t);
                         BitmapHolder elevBitmap = mService.getTiles().getElevationBitmap();
@@ -1762,6 +1777,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return true;
         }
         
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+        	
+        	// Ignore this gesture if we are not configured to use dynamic fields
+        	if((mPref.useDynamicFields() == false) || (mService == null)) {
+        		return false;
+        	}
+        	
+        	float posX = mCurrTouchPoint.getX();
+        	float posY = mCurrTouchPoint.getY();
+        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, posX, posY);
+        	if(infoLineFieldLoc != null) {
+            	// We have the row and field. Tell the selection dialog to display
+            	mGestureCallBack.gestureCallBack(GestureInterface.DOUBLE_TAP, infoLineFieldLoc);
+        	}
+        	return true;
+        }
+        
         /* (non-Javadoc)
          * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
          */
@@ -1774,20 +1807,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double x = mCurrTouchPoint.getX();
             double y = mCurrTouchPoint.getY();
 
-            /*
+        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, (float)x, (float)y);
+        	if(infoLineFieldLoc != null) {
+            	// We have the row and field. Send the gesture off for processing
+            	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
+            	return;
+        	}
+
+        	/*
              * In draw, long press has no meaning other than to clear the output from the activity
              */
             if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, null);
-                return;
-            }
-
-            /* If the long press is in the top 2 lines, then clear the HOBBS meter
-             * XXX - perhaps pop up a menu to change the units as well ? Could be a gesture
-             * to bring up a dialog dealing with all things in the top 2 text lines.
-             */
-            if(y < (mPaint.getTextSize() * 2) && mService != null) {
-                mService.getFlightTimer().reset();
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, (LongTouchDestination)null);
                 return;
             }
 
@@ -1903,7 +1934,53 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTrackUp = tu;
         invalidate();
     }
+
+    public double getElev() {
+    	return mElev;
+    	
+    }
     
+    public double getVSI() {
+    	return mVSI;
+    }
+    
+    public GpsParams getGpsParams() {
+    	return mGpsParams;
+    }
+    
+    public StorageService getStorageService() {
+    	return mService;
+    }
+    public int getDisplayWidth() {
+    	return getWidth();
+    }
+    
+    public Preferences getPref() {
+    	return mPref;
+    }
+    
+    public Context getAppContext() { 
+    	return mContext;
+    }
+
+    public String getErrorStatus() {
+    	return mErrorStatus;
+    }
+
+    public String getPriorityMessage() {
+        if(mPointProjection != null) {
+        	String priorityMessage = 
+        			Helper.makeLine2(mPointProjection.getDistance(),
+                    Preferences.distanceConversionUnit, mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
+                    mPointProjection.getBearing(), mGpsParams.getDeclinition());
+        	return priorityMessage;
+        }
+        return null;
+    }
+
+    public float getThreshold() {
+    	return mThreshold;
+    }
     /**
      * 
      */

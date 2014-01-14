@@ -27,6 +27,7 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
 
 import android.location.GpsStatus;
@@ -329,8 +330,62 @@ public class LocationActivity extends Activity implements Observer {
          * To be notified of some action in the view
          */
         mLocationView.setGestureCallback(new GestureInterface() {
+    		InfoLineFieldLoc _InfoLineFieldLoc;
+        	int _nNewSelection = 0;
+        	
+        	// This is the doubletap gesture that is called when the user desires
+        	// to change the "instrument" text display. We are passed the row and field index
+        	// of what is requested to change.
+        	@Override
+            public void gestureCallBack(int nEvent, InfoLineFieldLoc infoLineFieldLoc) {
+        		if(infoLineFieldLoc == null) {
+        			return;
+        		}
+        		
+        		_InfoLineFieldLoc = infoLineFieldLoc;
+        		
+        		if(GestureInterface.LONG_PRESS == nEvent) {
+        			mLocationView.mInfoLines.longPress(_InfoLineFieldLoc);
+        		}
+        		
+        		if(GestureInterface.DOUBLE_TAP == nEvent) {
 
-            /*
+                	// Create the alert dialog and add the title.
+                	AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
+                	builder.setTitle(R.string.SelectTextFieldTitle);
+
+                	// The list of items to chose from. When a selection is made, save it off locally
+                	builder.setSingleChoiceItems(_InfoLineFieldLoc.getOptions(), 
+                			_InfoLineFieldLoc.getSelected(), 
+                    		new DialogInterface.OnClickListener() {
+	                    		@Override
+		                        public void onClick(DialogInterface dialog, int which) {
+		                        	_nNewSelection = which;	
+	                        }
+                    });
+                    
+                    // OK button, copy the new selection to the true array so it will be displayed
+                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                    		mLocationView.mInfoLines.setFieldType(_InfoLineFieldLoc, _nNewSelection);
+                        }
+                    });
+
+                    // Cancel, nothing to do here, let the dialog self-destruct
+                    builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+                    
+                	// Create and show the dialog now
+                	AlertDialog dialog = builder.create();
+                	dialog.show();
+                }
+        	}
+
+        	/*
              * (non-Javadoc)
              * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
              */

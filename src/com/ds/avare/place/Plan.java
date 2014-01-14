@@ -40,7 +40,7 @@ public class Plan {
 
     private TrackShape mTrackShape;
     
-    private String mEta;
+    private String mEte;
     private double mDistance;
     private double mBearing;
     private GpsParams mLastLocation;
@@ -60,7 +60,7 @@ public class Plan {
         mBearing = 0;
         mDeclination = 0;
         mDestChanged = false;
-        mEta = "--:--";
+        mEte = "--:--";
         mPassage = new Passage();
     }
 
@@ -286,7 +286,7 @@ public class Plan {
                 }
             }   
         }
-        mEta = Helper.calculateEta(mDistance, params.getSpeed());
+        mEte = Helper.calculateEte(mDistance, params.getSpeed(), mBearing, params.getBearing());
         mLastLocation = params;
     }
 
@@ -298,7 +298,7 @@ public class Plan {
         /*
          * For display purpose
          */
-        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, mDeclination); 
+        return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEte, mBearing, mDeclination); 
     }
 
     /**

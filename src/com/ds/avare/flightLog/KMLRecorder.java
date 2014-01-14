@@ -26,7 +26,6 @@ import android.annotation.SuppressLint;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
 import com.ds.avare.shapes.Shape;
-import com.ds.avare.utils.Helper;
 
 /**
  * Class to record GPS Position information to a file formatted in KML suitable
@@ -79,7 +78,7 @@ public class KMLRecorder {
     private LinkedList<GpsParams> mPositionHistory; // Stored GPS points 
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
 	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
-	private GpsParams		mLastFix;				// the last time we wrote a position			
+	private long			mTimeOfLastFix;			// Time the last fix we used occurred
 	private CrumbsShape    mShape;
 	
 	/**
@@ -134,7 +133,7 @@ public class KMLRecorder {
 
     public static final String KMLTRACKPOINT =
 		    "		<Placemark>\n" +
-		    "           <name>%d</name>" +
+		    "           <name>Track %d</name>" +
 		    "			<description><![CDATA[\n" +
 		    "				Time: %s\n" + 
 		    "				Altitude: %f\n" +
@@ -161,7 +160,6 @@ public class KMLRecorder {
     public KMLRecorder(){
     	mPositionHistory = new LinkedList<GpsParams>();
     	mShape = new CrumbsShape();
-    	mLastFix = new GpsParams(null);
     }
     
     /** 
@@ -265,8 +263,8 @@ public class KMLRecorder {
             // to save off the individual points of our trip at close
             mFlightStartIndex = mPositionHistory.size();
             
-    	} catch (Exception e) { // Catch all exceptions here
-
+    	} catch (IOException ioe) { 
+    	    
     	}
     }
     
@@ -295,59 +293,29 @@ public class KMLRecorder {
      * @param gpsParams Current location information
      */
     public void setGpsParams(GpsParams gpsParams) {
-    	if(mTracksFile == null) {
-    		// File closed means nothing to do
-    		return;
+    	if(mTracksFile != null) {
+    		// File open means we are actively tracking the position
+	    	if(((gpsParams.getTime() - mTimeOfLastFix) > mConfig.mUpdateTime)) {
+	    		// A proper amount of time has lapsed since we last reported
+				if((gpsParams.getSpeed() >= mConfig.mStartSpeed)) {
+					// We are traveling greater than "flight" speed
+					
+					mTimeOfLastFix = gpsParams.getTime();	// Mark this time as last 'fix' time
+
+	        		// Write out the position. Convert the altitude from feet to meters for the KML file
+	    			try {
+	    				mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
+	    												  gpsParams.getLatitude() + "," + 
+	    												 (gpsParams.getAltitude() * .3048) + "\n");
+	
+	    				// Add this position to our linked list for possible display
+	    				// on the charts
+	    				mPositionHistory.add(GpsParams.copy(gpsParams));
+	    				mShape.updateShape(gpsParams);
+	    			} catch (IOException ioe) { }
+	    		}
+    		}
     	}
-		
-		if((gpsParams.getSpeed() < mConfig.mStartSpeed)) {
-			// Not going fast enough yet to record
-			return;
-		}
-		
-		// Set if we are to record this position
-		//
-		boolean bRecordPoint = false;
-		
-		// If the speed has changed more than 5 knots
-		if (Math.abs(gpsParams.getSpeed() - mLastFix.getSpeed()) > 5) {
-			bRecordPoint = true;
-		}
-		
-		// If the altitude is 100' or greater different - ensure meters are converted to feet
-		if((Math.abs(gpsParams.getAltitude() - mLastFix.getAltitude()) * .3048) > 100) {
-			bRecordPoint = true;
-		}
-		
-		// If the bearing is 3 degrees or more different - standard rate turn is 3deg per second
-    	if(Helper.angularDifference(gpsParams.getBearing(), mLastFix.getBearing()) > 3) {
-    		bRecordPoint = true;
-    	}
-
-    	// If the time of the last point and now is greater than our configured time 
-		if(((gpsParams.getTime() - mLastFix.getTime()) > mConfig.mUpdateTime)) {
-			bRecordPoint = true;
-		}
-
-		// After all those tests, if nothing says to record, then get out of here
-		if (bRecordPoint == false) {
-			return;
-		}
-
-		// We are going to write out position. Make a note of these gpsParams
-		mLastFix = gpsParams;
-		
-		// Write out the position. Convert the altitude from feet to meters for the KML file
-		try {
-			mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
-											  gpsParams.getLatitude() + "," + 
-											 (gpsParams.getAltitude() * .3048) + "\n");
-
-			// Add this position to our linked list for possible display
-			// on the charts
-			mPositionHistory.add(GpsParams.copy(gpsParams));
-			mShape.updateShape(gpsParams);
-		} catch (Exception e) { }
 	}
     
     /**

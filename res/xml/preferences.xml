@@ -156,6 +156,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefUseFlightTimer"
             android:summary="@string/UseFlightTimerSummary"
             android:title="@string/UseFlightTimerLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefUseDynamicFields"
+            android:summary="@string/UseDynamicFieldsSummary"
+            android:title="@string/UseDynamicFieldsLabel" />
         </PreferenceCategory>
         	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
     	<CheckBoxPreference

@@ -734,4 +734,42 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Send to all applications</item>
     </string-array>
 
+	<string-array name="TextFieldOptions">
+	    <item>None</item>
+		<item>Greenwich Mean Time</item>
+	    <item>Local Time</item>
+		<item>Ground Speed</item>
+	    <item>Heading</item>
+	    <item>Bearing</item>
+	    <item>Destination Identifier</item>
+	    <item>Distance to Destination</item>
+	    <item>Estimated Time Enroute</item>
+	    <item>Estimated Time of Arrival</item>
+	    <item>MSL Altitude</item>
+	    <item>AGL Height</item>
+	    <item>Hobbs Flight Timer</item>
+	    <item>Vertical Speed Indicator</item>
+	    <item>Descent Rate to Destination</item>
+	    <item>Odometer</item>
+	</string-array>
+	    
+	<string-array name="TextFieldOptionTitles">
+	    <item></item>
+		<item>Zulu</item>
+	    <item></item>
+		<item>Ground Speed</item>
+	    <item>Heading</item>
+	    <item>Brg Next</item>
+	    <item>Next</item>
+	    <item>Dist Next</item>
+	    <item>ETE Next</item>
+	    <item>ETA Next</item>
+	    <item>MSL ft</item>
+	    <item>AGL ft</item>
+	    <item>Flight Time</item>
+	    <item>VSI fpm</item>
+	    <item>Dsc Rt fpm</item>
+	    <item>Odometer</item>
+   	</string-array>
+
 </resources>

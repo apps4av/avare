@@ -20,6 +20,7 @@ import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.hobbsMeter.FlightTimer;
+import com.ds.avare.hobbsMeter.Odometer;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -168,6 +169,8 @@ public class StorageService extends Service {
      */
     private KMLRecorder mKMLRecorder;
 
+    private Odometer mOdometer;
+    
     /**
      * @author zkhan
      *
@@ -242,6 +245,11 @@ public class StorageService extends Service {
          */
         mKMLRecorder = new KMLRecorder();
 
+        /*
+         * Start the odometer now
+         */
+        mOdometer = new Odometer();
+        
         /*
          * Monitor TFR every hour.
          */
@@ -368,10 +376,6 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
-        
-        // Ensure that the KML file is closed off properly.
-        mKMLRecorder.stop();
-        
         super.onDestroy();
         
         System.runFinalizersOnExit(true);
@@ -677,7 +681,7 @@ public class StorageService extends Service {
         if(shouldTrack) {
             KMLRecorder.Config config = mKMLRecorder.new Config(
                 true,	/* always remove tracks from display on start */
-                30,		/* 30 seconds between position updates */
+                10,		/* 10 seconds between position updates */
                 true,	/* use verbose details */
                 Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
                 20);	/* How fast we are going before starting to track, 20 knots */
@@ -704,7 +708,10 @@ public class StorageService extends Service {
     public KMLRecorder getKMLRecorder() {
         return mKMLRecorder;
     }
-    
+
+    public Odometer getOdometer() {
+    	return mOdometer;
+    }
     /**
      * 
      * @return

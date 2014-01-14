@@ -649,7 +649,7 @@ public class Preferences {
     public int getTimerRingSize() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
-		} catch (NumberFormatException x) {
+		} catch (Exception x) {
 			return 5;
 		}
     }
@@ -661,7 +661,7 @@ public class Preferences {
     public int getDistanceRingType() {
     	try {
     		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefDistanceRingType), "0")));
-		} catch (NumberFormatException x) {
+		} catch (Exception x) {
 			return 0;
 		}
     }
@@ -675,5 +675,29 @@ public class Preferences {
 		} catch (Exception x) {
 			return 1;
 		}
+    }
+
+    public boolean useDynamicFields() {
+        return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), false);
+    }
+    
+    public String getRowFormats() {
+    	return mPref.getString(mContext.getString(R.string.prefGetRowFormats), "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4");
+    }
+
+    public void setRowFormats(String rowFormats) {
+    	mPref.edit().putString(mContext.getString(R.string.prefGetRowFormats), rowFormats).commit();
+    }
+
+    public double getOdometer() {
+    	try {
+    		return(Double.parseDouble(mPref.getString(mContext.getString(R.string.prefOdometer), "0")));
+		} catch (Exception x) {
+			return 0;
+		}
+    }
+
+    public void setOdometer(double value) {
+    	mPref.edit().putString(mContext.getString(R.string.prefOdometer), String.format("%f", value)).commit();
     }
 }

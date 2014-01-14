@@ -15,6 +15,7 @@ package com.ds.avare.place;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -68,10 +69,12 @@ public class Destination extends Observable {
      */
     private boolean mFound;
     /**
-     * ETA to destination
+     * ETE to destination
+     * ETA at destination
      */
+    private String mEte;
     private String mEta;
-    
+
     /*
      * Track to dest.
      */
@@ -147,6 +150,7 @@ public class Destination extends Observable {
         mDataSource = mService.getDBResource(); 
         mTrackShape = new TrackShape();
         mPref = pref;
+        mEte = new String("--:--");
         mEta = new String("--:--");
         mParams = new LinkedHashMap<String, String>();
         mFreq = new LinkedHashMap<String, String>();
@@ -248,7 +252,19 @@ public class Destination extends Observable {
     	/*
     	 * ETA when speed != 0
     	 */
-    	mEta = Helper.calculateEta(mDistance, speed);
+    	mEte = Helper.calculateEte(mDistance, speed, mBearing, params.getBearing());
+
+    	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
+    	// the timezone at that location
+    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
+	}
+
+	public String getEte() {
+		return mEte;
+	}
+
+	public String getEta() {
+		return mEta;
 	}
 
 	/**
@@ -273,7 +289,7 @@ public class Destination extends Observable {
 			return(mName + "? ");
 		}
 		else {
-			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEta, mBearing, mDeclination); 
+			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEte, mBearing, mDeclination); 
 		}
 	}
 	
@@ -781,4 +797,30 @@ public class Destination extends Observable {
 	    return "-" + vs + Preferences.vsConversionUnit;
 	}
 
+	public double getVerticalSpeedToNoFmt(GpsParams gpsParams)
+	{
+	    double time = (mDistance / gpsParams.getSpeed()) * 60;
+	    double height = gpsParams.getAltitude();
+	    if(mDestType.equals(BASE)) {
+	        try {
+	            /*
+	             * For bases, go to pattern altitude
+	             */
+	            String pa = mParams.get("Pattern Altitude");
+	            height -= Double.parseDouble(pa);
+	        }
+	        catch(Exception e) {
+	            
+	        }
+	    }
+	    else {
+	        /*
+	         * Only for airport
+	         */
+	        return 0;
+	    }
+	    
+	    
+	    return Math.round(height / time);
+	}
 }

@@ -222,5 +222,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ADSBTraffic">ADSBTraffic</string>
     <string name="ADSBTrafficLabel">&quot;Show ADSB Traffic&quot;</string>
     <string name="ADSBTrafficSummary">&quot;Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)&quot;</string>
+    <string name="prefUseDynamicFields">UseDynamicFields</string>
+    <string name="UseDynamicFieldsLabel">&quot;Use Dynamic Fields&quot;</string>
+    <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines can be configured dynamically&quot;</string>
+    <string name="prefGetRowFormats">RowFormats</string>
+    <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
+    <string name="prefOdometer">Odometer</string>
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
 </resources>

@@ -97,12 +97,11 @@ public class DistanceRings {
          */
         if(pref.getDistanceRingType() == 1) {
             int macro = scale.getMacroFactor();
-            float scaleFactor = scale.getScaleFactorRaw();
             /* the larger totalZoom is, the more zoomed in we are  */
-            if(macro <= 1 && scaleFactor > 1) {  
+            if(macro <= 1 && scale.getScaleFactorRaw() > 1) {  
                 ringScale = RINGS_1_2_5;        
             } 
-            else if(macro <= 1 && scaleFactor <= 1) {  
+            else if(macro <= 1 && scale.getScaleFactorRaw() <= 1) {  
                 ringScale = RINGS_2_5_10;
             } 
             else if (macro <= 2) {
@@ -123,7 +122,7 @@ public class DistanceRings {
          *  Draw our "speed ring" if we are going faster than stall speed 
          */
         if(speed >= STALLSPEED && pref.getTimerRingSize() != 0) {
-        	/*
+            /*
              * its / 60 as units is in minutes
              */
             mRings[RING_SPEED] = (float) ((float)(speed / 60) * pixPerNm * pref.getTimerRingSize() / fac); 
