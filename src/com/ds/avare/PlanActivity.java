@@ -60,6 +60,7 @@ public class PlanActivity extends Activity {
     private Toast mToast;
     private Button mDestButton;
     private Button mSaveButton;
+    private Button mDeleteButton;
     private EditText mSaveText;
     private int mIndex;
     private Preferences mPref;
@@ -132,23 +133,33 @@ public class PlanActivity extends Activity {
         }
     };
     
+    
+    /**
+     * 
+     * @param which
+     */
+    private void removePlan(int which) {
+        if(mService == null) {
+            return;
+        }
+        String item = mPlanAdapter.getItem(which);
+        mService.getPlan().remove(which);
+        mPlanAdapter.remove(item);
+        PlanActivity.this.updateAdapter();
+        if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
+            mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
+        }
+        inactivatePlan();        
+    }
+    
+    
     /**
      * 
      */
     private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
         @Override
         public void remove(int which) {
-            if(mService == null) {
-                return;
-            }
-            String item = mPlanAdapter.getItem(which);
-            mService.getPlan().remove(which);
-            mPlanAdapter.remove(item);
-            PlanActivity.this.updateAdapter();
-            if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
-                mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
-            }
-            inactivatePlan();
+            removePlan(which);
         }
     };
     
@@ -190,6 +201,19 @@ public class PlanActivity extends Activity {
         /*
          * Dest button
          */
+        mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
+        mDeleteButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if(mIndex >= 0) {
+                    removePlan(mIndex);
+                }
+                mIndex = -1;
+            }   
+        });
+
         mDestButton = (Button)view.findViewById(R.id.plan_button_dest);
         mDestButton.setOnClickListener(new OnClickListener() {
 
@@ -418,7 +442,9 @@ public class PlanActivity extends Activity {
                     mDestination = mService.getPlan().getDestination(index);
                     mDestButton.setText(mDestination.getID());
                     AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+                    AnimateButton d = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
                     g.animate(true);
+                    d.animate(true);
 
                     return true;
                 }

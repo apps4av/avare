@@ -19,6 +19,34 @@ Redistribution and use in source and binary forms, with or without modification,
         android:baselineAligned="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        
+        <LinearLayout 
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView 
+                android:id="@+id/plan_button_load"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:padding="10dp"
+                android:background="@drawable/border_transparent"
+                android:text="@string/SavedPlan"
+                />
+            <ListView
+                android:id="@+id/plan_list_save"
+                android:cacheColorHint="#00000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="fill_parent"
+            android:background="@android:color/darker_gray"/>
+                
         <LinearLayout 
             android:layout_weight="1"
             android:orientation="vertical"
@@ -46,7 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
 			            android:id="@+id/plan_list"
 			            xmlns:tlv="http://schemas.android.com/apk/res/com.ds.avare"
 			            tlv:grabber="@+id/icon"
-                        tlv:remove_mode="slideLeft"
+                        tlv:remove_mode="slideRight"
 			            android:layout_above="@+id/plan_text_save"
 			            android:layout_width="wrap_content"
 			            android:cacheColorHint="#00000000"			            
@@ -70,31 +98,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	                
 	            </RelativeLayout>               
          </LinearLayout>    
-         <View
-            android:layout_width="2dp"
-            android:layout_height="fill_parent"
-            android:background="@android:color/darker_gray"/>
-        <LinearLayout 
-            android:layout_weight="2"
-            android:orientation="vertical"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent">
-	        <TextView 
-		        android:id="@+id/plan_button_load"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:gravity="center"
-		        android:padding="10dp"
-                android:background="@drawable/border_transparent"
-		        android:text="@string/SavedPlan"
-	            />
-	        <ListView
-	            android:id="@+id/plan_list_save"
-	            android:cacheColorHint="#00000000"
-	            android:layout_width="match_parent"
-	            android:layout_height="match_parent"/>
-        </LinearLayout>
         	    
     </LinearLayout>
     
@@ -114,14 +117,19 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/plan_button_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/plan_button_3"
+        android:layout_above="@+id/plan_button_delete"
         android:visibility="invisible" />
     
     <Button
-        android:id="@+id/plan_button_3"
+        android:id="@+id/plan_button_delete"
+        android:textStyle="bold"
+        android:minWidth="140dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/plan_button_2"
+        android:gravity="left|center"
+        android:text="@string/Delete"
+        android:drawableLeft="@drawable/remove"
         android:visibility="invisible" />
     
 	<Button
