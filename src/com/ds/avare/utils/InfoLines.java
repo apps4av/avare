@@ -158,8 +158,8 @@ public class InfoLines {
     		} else if(idx == nSelected) {
     			optionAvail.add(optionList[idx]);	// always add what it currently IS
     			nSelected = optionAvail.size() - 1;	// reflect the selected position in the new list
-    		} else if(isShowing(idx) == false) {
-    			optionAvail.add(optionList[idx]);	// add only if we are not showing
+    		} else {
+    			optionAvail.add(optionList[idx]);	// add others
     		}
     	}
 
@@ -199,27 +199,6 @@ public class InfoLines {
     	}
     }
 
-    /***
-     * Is this type of field already on the display ? 
-     * @param nFieldType Type of field to search for
-     * @return true/false to indicate it is already shown at another location
-     */
-    private boolean isShowing(int nFieldType)
-    {
-		int nRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
-
-    	// Loop through the 2 entire status lines that are configured for
-    	// this display mode. Return true if we find it in either
-    	for(int idx = 0; idx < MAX_INFO_ROWS; idx++) {
-    		for(int fldIdx = 0, maxIdx = mFieldLines[idx].length; fldIdx < maxIdx; fldIdx++) {
-    			if(mFieldLines[idx + nRowIdx][fldIdx] == nFieldType) {
-    				return true;
-    			}
-    		}
-    	}
-    	return false;
-    }
-    
     /***
      * Construct this object passing in the LocationView that
      * did the creation. The fields are defaulted to what is read
