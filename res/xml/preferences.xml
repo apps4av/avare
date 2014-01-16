@@ -42,6 +42,11 @@ authors: zkhan, jlmcgraw
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Radar"
+            android:summary="@string/RadarSummary"
+            android:title="@string/RadarLabel" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ADSBWeather"
             android:summary="@string/ADSBWeatherSummary"

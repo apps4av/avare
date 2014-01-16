@@ -37,6 +37,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
         <item>SUA</item>
+        <item>NEXRAD</item>
     </string-array>
     
     <string-array name="resNameDatabase">
@@ -46,7 +47,8 @@ Redistribution and use in source and binary forms, with or without modification,
      
     <string-array name="resNameWeather">
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
-     </string-array>
+        <item>NEXRAD</item>
+    </string-array>
         
     <string-array name="resNameAFD">
         <item>A/FD NE</item>
@@ -330,6 +332,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFilesWeather">
         <item>weather</item>
+        <item>conus</item>
     </string-array>
         
     <string-array name="resFilesIFRLE">

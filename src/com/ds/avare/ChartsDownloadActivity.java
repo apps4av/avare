@@ -463,6 +463,10 @@ public class ChartsDownloadActivity extends Activity {
                         mService.getInternetWeatherCache().parse(mService);
                     }
                     
+                    if(mName.equals("conus")) {
+                        mService.getRadar().parse();
+                    }
+                    
                     mChartAdapter.updateVersion(mName, mDownload.getVersion());
                     mChartAdapter.unsetChecked(mName);
                     mChartAdapter.refresh();
@@ -525,6 +529,10 @@ public class ChartsDownloadActivity extends Activity {
     
                     if(mName.equals("weather")) {
                         mService.deleteInternetWeatherCache();
+                    }
+                    
+                    if(mName.equals("conus")) {
+                        mService.deleteRadar();
                     }
 
                     mChartAdapter.unsetChecked(mName);

@@ -48,6 +48,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private String mTfr;
     private String mSua;
     private String mMets;
+    private String mNexrad;
     private WindsAloft mWa;
     private Typeface mFace;
 
@@ -59,7 +60,8 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_METS = 5;
     private static final int GROUP_TFR = 6;
     private static final int GROUP_SUA = 7;
-    private static final int GROUP_NUM = 8;
+    private static final int GROUP_NEXRAD = 8;
+    private static final int GROUP_NUM = 9;
     
     /**
      * @param context
@@ -87,6 +89,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_METS] = new String[1];
         mChildren[GROUP_TFR] = new String[1];
         mChildren[GROUP_SUA] = new String[1];
+        mChildren[GROUP_NEXRAD] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -101,11 +104,13 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mWa = data.wa;
         mFreq = data.freq;
         mSua = data.sua;
+        mNexrad = data.nexrad;
 
         
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
         mChildrenText[GROUP_SUA] = mSua == null ? "" : mSua;
+        mChildrenText[GROUP_NEXRAD] = mNexrad == null ? "" : mNexrad;
 
         if(mMetar == null) {
             mChildrenText[GROUP_METAR] = "";
@@ -137,7 +142,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                     "@390 " + WeatherHelper.decodeWind(mWa.w39k);
         }
 
-        
+
         if(mAirep == null) {
             mChildrenText[GROUP_PIREP] = "";
         }
@@ -233,6 +238,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 tv.setText(mGroups[group]);
                 break;
             case GROUP_SUA:
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
+                break;
+            case GROUP_NEXRAD:
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;

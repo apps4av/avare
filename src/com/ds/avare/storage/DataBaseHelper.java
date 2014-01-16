@@ -303,6 +303,11 @@ public class DataBaseHelper  {
             list.add("tfr.txt");
             return list;
         }
+        
+        if(name.equals("conus")) {
+            list.add("conus.txt");
+            return list;
+        }
 
         /*
          * Delete databases

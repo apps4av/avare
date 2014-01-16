@@ -717,6 +717,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
+    private void drawRadar(Canvas canvas) {
+        if(mService == null || (!mPref.showRadar()) || null != mPointProjection) {
+            return;
+        }
+        
+        /*
+         * If using ADSB, then dont show
+         */
+        if(mPref.useAdsbWeather()) {
+            return;
+        }
+    
+        mService.getRadar().draw(canvas, mPaint, mOrigin, mScale, mPx, mPy);
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
     private void drawNexrad(Canvas canvas) {
         if(mService == null) {
             return;
@@ -1202,6 +1221,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         drawTiles(canvas);
         drawNexrad(canvas);
+        drawRadar(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
         drawTraffic(canvas);
@@ -1450,6 +1470,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String text;
         private String textMets;
         private String sua;
+        private String nexrad;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private Taf taf;
@@ -1476,12 +1497,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
 
+                /*
+                 * ADSB gets this info from weather cache
+                 */
                 if(!mPref.useAdsbWeather()) {
                     aireps = mService.getDBResource().getAireps(lon, lat);
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     
                     sua = mService.getDBResource().getSua(lon, lat);
+                    
+                    nexrad = mService.getRadar().getDate();
                 }
             }
             else {
@@ -1495,6 +1521,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     sua = mService.getDBResource().getSua(lon, lat);
+
+                    nexrad = mService.getRadar().getDate();
                 }                
             }
             
@@ -1529,6 +1557,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     metar = mService.getAdsbWeather().getMETAR(airport);                    
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
+                    nexrad = mService.getAdsbWeather().getNexrad().getTime();
                 }
                 if(null != aireps) {
                     for(Airep a : aireps) {
@@ -1546,6 +1575,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.wa = wa;
                 data.freq = freq;
                 data.sua = sua;
+                data.nexrad = nexrad;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();

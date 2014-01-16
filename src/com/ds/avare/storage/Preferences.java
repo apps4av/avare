@@ -614,6 +614,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean showRadar() {
+        return(mPref.getBoolean(mContext.getString(R.string.Radar), false));
+    }
+    
+    /**
+     * 
+     * @return
+     */
     public boolean showAdsbTraffic() {
         return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), false));
     }

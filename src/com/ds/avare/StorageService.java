@@ -28,6 +28,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
+import com.ds.avare.shapes.Radar;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
@@ -84,6 +85,8 @@ public class StorageService extends Service {
     private AdsbWeatherCache mAdsbWeatherCache;
     
     private TrafficCache mTrafficCache;
+    
+    private Radar mRadar;
     
     /*
      * Last location and its sem for sending NMEA to the world
@@ -244,6 +247,13 @@ public class StorageService extends Service {
          * Start up the KML recorder feature
          */
         mKMLRecorder = new KMLRecorder();
+        
+        /*
+         * Internet radar
+         */
+        mRadar = new Radar(getApplicationContext());
+
+        mRadar.parse();
 
         /*
          * Start the odometer now
@@ -746,7 +756,16 @@ public class StorageService extends Service {
     public TrafficCache getTrafficCache() {
        return mTrafficCache; 
     }
-       
+
+    
+    /**
+     * 
+     * @return
+     */
+    public Radar getRadar() {
+       return mRadar; 
+    }
+    
     /**
      * 
      */
@@ -761,4 +780,12 @@ public class StorageService extends Service {
     public void deleteInternetWeatherCache() {
         mInternetWeatherCache = new InternetWeatherCache();        
     }
+    
+    /**
+     * 
+     */
+    public void deleteRadar() {
+        mRadar.flush();        
+    }
+
 }

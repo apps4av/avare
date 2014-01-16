@@ -220,4 +220,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
     <string name="prefOdometer">Odometer</string>
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
+    <string name="Radar">Radar</string>
+    <string name="RadarLabel">&quot;Show NEXRAD&quot;</string>
+    <string name="RadarSummary">&quot;Select to show NEXRAD from the Internet (User Downloads)&quot;</string>
 </resources>
