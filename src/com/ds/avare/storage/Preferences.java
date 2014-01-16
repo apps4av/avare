@@ -666,7 +666,7 @@ public class Preferences {
      * @return
      */
     public boolean useDynamicFields() {
-        return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), false);
+        return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), true);
     }
     
     /**
