@@ -11,7 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare.touch;
-import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 
 

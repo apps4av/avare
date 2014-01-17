@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adsb;
 
 
+
+import com.ds.avare.utils.Helper;
+
 import android.util.SparseArray;
 
 /**
@@ -38,9 +41,11 @@ public class NexradImageConus {
      */
     private static final int MAX_ENTRIES = 1350;
     private SparseArray<NexradBitmap> mImg;
+    private String mUpdated;
     
     public NexradImageConus() { 
         mImg = new SparseArray<NexradBitmap>();
+        mUpdated = "";
     }
     
     /**
@@ -62,6 +67,7 @@ public class NexradImageConus {
                     mImg.delete(i);
                 }
             }
+            mUpdated = Helper.millisToGMT(time);
         }
         if(null != data) {
             if(mImg.get(block) != null) {
@@ -78,6 +84,7 @@ public class NexradImageConus {
                 return;
             }
             mImg.put(block, new NexradBitmap(time, data, block, isConus, cols, rows));
+            mUpdated = Helper.millisToGMT(time);
         }
     }
     
@@ -88,4 +95,13 @@ public class NexradImageConus {
     public SparseArray<NexradBitmap> getImages() {
         return mImg;
     }    
+    
+    /**
+     * 
+     * @return
+     */
+    public String getTime() {
+        return mUpdated;
+    }
+
 }

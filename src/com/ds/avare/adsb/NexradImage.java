@@ -11,10 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adsb;
 
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.TimeZone;
+import com.ds.avare.utils.Helper;
 
 import android.util.SparseArray;
 
@@ -69,9 +66,7 @@ public class NexradImage {
                     mImg.delete(i);
                 }
             }
-            SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm_UTC", Locale.getDefault());
-            df.setTimeZone(TimeZone.getTimeZone("GMT"));
-            mUpdated = df.format(time);
+            mUpdated = Helper.millisToGMT(time);
         }
         if(null != data) {
             if(mImg.get(block) != null) {
@@ -88,9 +83,7 @@ public class NexradImage {
                 return;
             }
             mImg.put(block, new NexradBitmap(time, data, block, isConus, cols, rows));
-            SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm_UTC", Locale.getDefault());
-            df.setTimeZone(TimeZone.getTimeZone("GMT"));
-            mUpdated = df.format(time);
+            mUpdated = Helper.millisToGMT(time);
         }
     }
     

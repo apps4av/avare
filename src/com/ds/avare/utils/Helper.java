@@ -16,6 +16,7 @@ package com.ds.avare.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -727,4 +728,12 @@ public class Helper {
     	return absDiff;
     }
 
+    /*
+     * 
+     */
+    public static String millisToGMT(long millis) {
+        SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm", Locale.getDefault());
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return df.format(millis) + "_UTC";
+    }
 }
