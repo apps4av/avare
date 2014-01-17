@@ -53,8 +53,8 @@ public class Radar {
     public Radar(Context ctx) {
         mContext = ctx;
         mPref = new Preferences(mContext);
-        mImage = mPref.mapsFolder() + "/" + "conus.png";
-        mText = mPref.mapsFolder() + "/" + "conus.txt";
+        mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
+        mText = mPref.mapsFolder() + "/" + "latest.txt";
         mLon = mLat = mPx = mPy = 0;
         mDate = "";
         mBitmap = null;
@@ -70,17 +70,23 @@ public class Radar {
             try {
                 BufferedReader br;
                 br = new BufferedReader(new FileReader(mText));
-                String line = br.readLine(); // read lon/lat
-                line.replaceAll("\\s", "");
-                String coords[] = line.split(",");
-                String line2 = br.readLine(); // read lon/lat
-                line2.replaceAll("\\s", "");
-                String px[] = line2.split(",");
-                mDate = br.readLine(); // read date
-                mLon = Float.parseFloat(coords[0]);
-                mLat = Float.parseFloat(coords[1]);
-                mPx = Float.parseFloat(px[0]);
-                mPy = Float.parseFloat(px[1]);
+                
+                /*
+                 * Read lon/lat/px/py/date
+                 */
+                String line = br.readLine();
+                mPx = Float.parseFloat(line);
+
+                line = br.readLine();
+                mPy = Float.parseFloat(line);
+                
+                line = br.readLine();
+                mLon = Float.parseFloat(line);
+
+                line = br.readLine();
+                mLat = Float.parseFloat(line);
+
+                mDate = br.readLine();
                 br.close();
                 if(mBitmap != null) {
                     mBitmap.recycle();                
@@ -91,10 +97,7 @@ public class Radar {
             catch (Exception e) {
                 return;
             }
-
-            
         }
-        
     }
     
     /**
@@ -125,10 +128,10 @@ public class Radar {
         float y = (float)origin.getOffsetY(mLat);                        
    
         /*
-         * The main image is 15% of the coordinates, hence 6.66667
+         * The main image is 40% of the coordinates, hence 0.4
          */
-        float scalex = (float)(mPx * 6.66666 / px);
-        float scaley = (float)(mPy * 6.66666 / py);
+        float scalex = (float)(mPx * (1 / 0.4) / px);
+        float scaley = (float)(mPy * (1 / 0.4) / py);
         mBitmap.getTransform().setScale(scalex * scale.getScaleFactor(), 
                 scaley * scale.getScaleCorrected());
         mBitmap.getTransform().postTranslate(x, y);

@@ -262,7 +262,7 @@ public class NetworkHelper {
             return(root + "/" + file);
         }
         else if(file.equals("conus.zip")) {
-            return("http://avare.kitepilot.org/new" + "/" + file);
+            return(root + "/" + file);
         }
         return(root + vers + "/" + file);
     }

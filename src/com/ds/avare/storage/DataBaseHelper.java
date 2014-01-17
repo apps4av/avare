@@ -305,7 +305,8 @@ public class DataBaseHelper  {
         }
         
         if(name.equals("conus")) {
-            list.add("conus.txt");
+            list.add("latest.txt");
+            list.add("latest_radaronly.png");
             return list;
         }
 
