@@ -305,11 +305,14 @@ public class PlanActivity extends Activity  implements Observer {
                                 else if(type.equals("G")) {
                                     planToWithVerify(dst, Destination.GPS, wp);
                                 }
+                                else if(type.equals("B")) {
+                                    planToWithVerify(dst, Destination.BASE, wp);
+                                }
                                 else {
                                     /*
-                                     * Everything else is an airport 
+                                     * Everything else is discarded 
                                      */
-                                    planToWithVerify(waypoint, Destination.BASE, wp);
+                                    mSearchNum--;                                    
                                 }
                             }
                         }
