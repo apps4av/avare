@@ -14,6 +14,9 @@ package com.ds.avare;
 
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
@@ -42,6 +45,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -50,7 +54,7 @@ import android.widget.ToggleButton;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlanActivity extends Activity {
+public class PlanActivity extends Activity  implements Observer {
     
     private StorageService mService;
     private TouchListView mPlan;
@@ -61,15 +65,21 @@ public class PlanActivity extends Activity {
     private Button mDestButton;
     private Button mSaveButton;
     private Button mDeleteButton;
+    private Button mPlanButton;
     private EditText mSaveText;
+    private EditText mPlanText;
     private int mIndex;
     private Preferences mPref;
-    private String[] mPlans;
+    private String mPlans[];
+    private Destination mSearchDests[];
+    private int mSearchNum;
+    private ProgressBar mProgressBar;
     
     /**
      * Shows Chooseing message about Avare
      */
     private AlertDialog mAlertDialogChoose;
+    private AlertDialog mAlertDialogPlan;
 
     private ToggleButton mActivateButton;
     private TextView mTotalText;
@@ -175,11 +185,17 @@ public class PlanActivity extends Activity {
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         
         mPref = new Preferences(getApplicationContext());
               
         mPlans = mPref.getPlans();
+        
+        /*
+         * This keeps a copy of destinations under search when composite plan is entered.
+         */
+        mSearchDests = null;
+        mSearchNum = 0;
         
         /*
          * Get views from XML
@@ -198,6 +214,8 @@ public class PlanActivity extends Activity {
         mIndex = -1;
         mTotalText = (TextView)view.findViewById(R.id.plan_total_text);    
 
+        mProgressBar = (ProgressBar)view.findViewById(R.id.plan_progress_bar);
+
         /*
          * Dest button
          */
@@ -211,6 +229,101 @@ public class PlanActivity extends Activity {
                     removePlan(mIndex);
                 }
                 mIndex = -1;
+            }   
+        });
+
+        /*
+         * Plan button
+         */
+        mPlanText = (EditText)view.findViewById(R.id.plan_edit_text);
+        mPlanButton = (Button)view.findViewById(R.id.plan_button_find);
+        mPlanButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                /*
+                 * Confirm what needs to be done
+                 * Load a new plan or not
+                 */
+                final String plan = mPlanText.getText().toString().toUpperCase(Locale.getDefault());
+                mAlertDialogPlan = new AlertDialog.Builder(PlanActivity.this).create();
+                mAlertDialogPlan.setCanceledOnTouchOutside(false);
+                mAlertDialogPlan.setCancelable(true);
+                mAlertDialogPlan.setTitle(getString(R.string.Plan));
+                mAlertDialogPlan.setMessage(getString(R.string.PlanWarning) + " \"" + plan + "\" ?");
+                mAlertDialogPlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        /*
+                         * Now start the search.
+                         * Clear everything before that
+                         * If still searching, dont do another search;
+                         */
+                        if(mSearchNum > 0) {
+                            return;
+                        }
+                        /*
+                         * Show that we are searching by showing progress bar
+                         */
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mService.getPlan().clear();
+                        prepareAdapter();
+                        prepareAdapterSave();
+                        mPlan.setAdapter(mPlanAdapter);
+
+                        String waypoints[] = plan.split(" ");
+                        if(waypoints.length > 0) {
+                            /*
+                             * Make a list of waypoints to find. Then find one by one.
+                             * No guarantee that they will be found in order. So order them.
+                             */
+                            mSearchDests = new Destination[waypoints.length];
+                            mSearchNum = waypoints.length;
+                            for(int wp = 0; wp < waypoints.length; wp++) {
+                                String waypoint = waypoints[wp];
+                                if(waypoint.length() < 2) {
+                                    mSearchNum--;
+                                    continue;
+                                }
+                                /*
+                                 * User entered types
+                                 */
+                                String type = waypoint.substring(0, 1);
+                                String dst = waypoint.substring(1, waypoint.length());
+                                /*
+                                 * Various types described in the Help document.
+                                 */
+                                if(type.equals("F")) {
+                                    planToWithVerify(dst, Destination.FIX, wp);                                   
+                                }
+                                else if(type.equals("N")) {
+                                    planToWithVerify(dst, Destination.NAVAID, wp);                                   
+                                }
+                                else if(type.equals("G")) {
+                                    planToWithVerify(dst, Destination.GPS, wp);
+                                }
+                                else {
+                                    /*
+                                     * Everything else is an airport 
+                                     */
+                                    planToWithVerify(waypoint, Destination.BASE, wp);
+                                }
+                            }
+                        }
+                    }
+                });
+                mAlertDialogPlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                mAlertDialogPlan.show();              
             }   
         });
 
@@ -375,10 +488,6 @@ public class PlanActivity extends Activity {
      */
     private boolean prepareAdapter() {
         int destnum = mService.getPlan().getDestinationNumber();
-        if(0 == destnum) {
-            mToast.setText(getString(R.string.PlanNF));
-            mToast.show();
-        }
         
         ArrayList<String> name = new ArrayList<String>();
         ArrayList<String> info = new ArrayList<String>();
@@ -403,6 +512,20 @@ public class PlanActivity extends Activity {
          */
         Destination d = new Destination(dst, type, mPref, mService);
         mService.getPlan().appendDestination(d);
+        d.find();
+    }
+
+    /**
+     * 
+     * @param dst
+     */
+    private void planToWithVerify(String dst, String type, int wp) {
+        /*
+         * Add to plan
+         */
+        Destination d = new Destination(dst, type, mPref, mService);
+        mSearchDests[wp] = d;
+        d.addObserver(this);
         d.find();
     }
 
@@ -587,6 +710,14 @@ public class PlanActivity extends Activity {
             }
         }
 
+        if(null != mAlertDialogPlan) {
+            try {
+                mAlertDialogPlan.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
         /*
          * Clean up on pause that was started in on resume
          */
@@ -618,4 +749,37 @@ public class PlanActivity extends Activity {
 
     }
 
+    
+    /**
+     * 
+     */
+    @Override
+    public void update(Observable arg0, Object arg1) {
+        /*
+         * Destination found?
+         */
+        if(null == mSearchDests) {
+            return;
+        }
+        mSearchNum--;
+        if(mSearchNum <= 0) {
+            for(int wp = 0; wp < mSearchDests.length; wp++) {
+                if(null != mSearchDests[wp]) { 
+                    if(mSearchDests[wp].isFound()) {
+                        mService.getPlan().appendDestination(mSearchDests[wp]);
+                    }
+                    else {
+                        mToast.setText(getString(R.string.PlanDestinationNF));
+                        mToast.show();
+                    }
+                }
+            }
+            prepareAdapter();
+            mPlan.setAdapter(mPlanAdapter);
+            /*
+             * Show that we are looking
+             */
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
 }

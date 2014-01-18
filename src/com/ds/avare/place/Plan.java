@@ -28,8 +28,8 @@ import com.ds.avare.utils.Helper;
  */
 public class Plan {
 
-    private Destination[] mDestination = new Destination[MAX_DESTINATIONS];
-    private Boolean[] mPassed = new Boolean[MAX_DESTINATIONS];
+    private Destination[] mDestination;
+    private Boolean[] mPassed;
     
     
     private static final int MAX_DESTINATIONS = 10;
@@ -53,6 +53,13 @@ public class Plan {
      * @param dataSource
      */
     public Plan() {
+        clear();
+    }
+
+    /**
+     * 
+     */
+    public void clear() {
         mActive = false;
         mTrackShape = new TrackShape();
         mDistance = 0;
@@ -60,10 +67,12 @@ public class Plan {
         mBearing = 0;
         mDeclination = 0;
         mDestChanged = false;
+        mDestination = new Destination[MAX_DESTINATIONS];
+        mPassed = new Boolean[MAX_DESTINATIONS];
         mEte = "--:--";
         mPassage = new Passage();
     }
-
+    
     /**
      * 
      */

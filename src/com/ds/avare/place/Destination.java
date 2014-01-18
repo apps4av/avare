@@ -318,6 +318,9 @@ public class Destination extends Observable {
             mLooking = false;
             mDbType = GPS;
             mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
+            if(!isGPSValid(mName)) {
+                mFound = false;
+            }
             if(!mName.contains("&")) {
                 /*
                  * This comes from MAPS to GPS for user edited
@@ -822,5 +825,26 @@ public class Destination extends Observable {
 	    
 	    
 	    return Math.round(height / time);
+	}
+	
+	/**
+	 * Find if a GPS dst is valid
+	 * @return
+	 */
+	public static boolean isGPSValid(String dst) {
+        if(dst.contains("&")) {
+            String tokens[] = dst.split("&");
+            
+            try {
+                double lon = Double.parseDouble(tokens[1]);
+                double lat = Double.parseDouble(tokens[0]);
+                if((Helper.isLatitudeSane(lat)) && (Helper.isLongitudeSane(lon))) {
+                    return true;
+                }
+            }
+            catch (Exception e) {
+            }
+        }
+	    return false;
 	}
 }
