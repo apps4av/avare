@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -26,6 +27,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.Radial;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
@@ -37,6 +39,7 @@ import com.ds.avare.weather.WindsAloft;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.hardware.GeomagneticField;
 
 /**
  * @author zkhan, jlmcgraw
@@ -427,6 +430,95 @@ public class DataBaseHelper  {
      */
     public void search(String name, LinkedHashMap<String, String> params) {
         
+        Cursor cursor;
+
+        /*
+         * This is a radial search?
+         */
+        int len = name.length();
+        if(len > 6) {
+            /*
+             * Of the form XXXNNNNNN like BOS010166
+             */
+            String chop = name.substring(len - 6);
+            String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
+            if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
+
+                String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+                cursor = doQuery(qry, getMainDb());
+                
+                try {
+                    if(cursor != null) {
+                        if(cursor.moveToFirst()) {
+                            
+                            /*
+                             * Put ID and name as if GPS
+                             */                
+                                                                
+                                    
+                            double lon = cursor.getDouble(LONGITUDE_COL);                            
+                            double lat = cursor.getDouble(LATITUDE_COL);
+                            double distance = Double.parseDouble(chop.substring(3, 6));
+
+                            /*
+                             * Radials are magnetic
+                             */
+                            GeomagneticField gmf = new GeomagneticField((float)lat, 
+                                    (float)lon, 0, System.currentTimeMillis());
+                            double bearing = Double.parseDouble(chop.substring(0, 3)) + gmf.getDeclination();
+                            Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
+                            StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
+                                    Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
+                            s.putInHash(params);               
+                        }
+                        else {
+                            
+                            /*
+                             * Did not find in NAV? Find in Fix
+                             */
+                            closes(cursor);
+
+                            String qry2 = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+                            cursor = doQuery(qry2, getMainDb());
+
+                            if(cursor != null) {
+                                if(cursor.moveToFirst()) {
+                                    
+                                    /*
+                                     * Put ID and name as if GPS
+                                     */                
+                                                                        
+                                            
+                                    double lon = cursor.getDouble(LONGITUDE_COL);                            
+                                    double lat = cursor.getDouble(LATITUDE_COL);
+                                    double distance = Double.parseDouble(chop.substring(0, 3));
+
+                                    /*
+                                     * Radials are magnetic
+                                     */
+                                    GeomagneticField gmf = new GeomagneticField((float)lat, 
+                                            (float)lon, 0, System.currentTimeMillis());
+                                    double bearing = Double.parseDouble(chop.substring(3, 6)) + gmf.getDeclination();
+                                    Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
+                                    StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
+                                            Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
+                                    s.putInHash(params);               
+                                }
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception e) {
+                }
+                
+                closes(cursor);
+
+                
+                return;
+            }
+        }
+        
         String qry;
         String qbasic = "select " + LOCATION_ID_DB + "," + FACILITY_NAME_DB + "," + TYPE_DB + " from ";
         String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
@@ -436,7 +528,7 @@ public class DataBaseHelper  {
          */
 
         qry = qbasic + TABLE_NAV + " where " + qend;
-        Cursor cursor = doQuery(qry, getMainDb());
+        cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {

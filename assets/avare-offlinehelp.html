@@ -23,6 +23,8 @@
 
 
 
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
 <div> <h3 style="text-align: center;">Avare Donate</h3>
 <p style="text-align: center;">To support chart updates and ongoing Avare development, please
@@ -59,6 +61,7 @@ then just <b>press the Map, Options, Download and Update buttons</b> in Avare.<b
 
 <h3 style="text-align: center;">Avare Releases</h3>
 
+<span style="font-weight: bold; outline-color: navy ! important;">5.3.4</span><span style="outline-color: navy ! important;"> Can fly to distance/radials like BOS010270. Change in Fly There Feature (see help below).</span><br>
 <span style="font-weight: bold; outline-color: navy ! important;">5.3.4</span><span style="outline-color: navy ! important;"> Better looking NEXRAD.<br>
 </span><span style="font-weight: bold; outline-color: navy ! important;"></span><span style="font-weight: bold; outline-color: navy ! important;">5.3.3</span><span style="outline-color: navy ! important;"> Bug fix release.<br>
 </span><span style="font-weight: bold; outline-color: navy ! important;">5.3.2</span><span style="outline-color: navy ! important;"> Added Internet based NEXRAD. See "New Features" below on how to use it.</span><br>
@@ -94,6 +97,7 @@ online FAA chart reference maps to help you select Downloads in Avare.
 <p>•<a title="Airport Diagrams" href="#0.1_Diags">GPS Taxi on AD</a></p>
 
 <p>•<a title="Fly To" href="#0.1_Landmarks">Fly There</a> - Address &amp; Landmark</p>
+
 
 <p>•<a title="Flight Plan" href="#0.1_Plan">Plan</a> - Basic Flight Planning</p>
 
@@ -231,8 +235,10 @@ enter part of its facility name to search for it. Avare offers some capability
 for offline facility search (try using just the first letter and
 scrolling down through the list) and when online, Avare automatically taps into 
 Google Maps if needed to search for airports and even cities or complete street 
-addresses (see "<b><a title="Fly To" href="#0.1_Landmarks">Fly There</a></b>" 
-in the Help menu above).</p>
+addresses (see "<b><a title="Fly To" href="#0.1_Landmarks">Fly There</a></b>"
+in the Help menu above). You can also specify radial/DME pairs in
+destination like BOS275010 for BOS VOR, 275 degree radial, 10 miles.<br>
+</p>
 
 <p style="padding-left: 30px;"><b>To input a Destination
 airport</b>, just tap the Find button in the Menu and then input the
@@ -516,8 +522,8 @@ GPS On, to find the airplane icon tracking your current location.</p>
 
 <hr size="1"> <h3 style="text-align: center;"><a name="0.1_Landmarks">"Fly There"</a></h3>
 
-<p><a name="0.1_Landmarks">You can select addresses and landmarks like "Statue Of Liberty" or "800 Boylston St  
-Boston, MA 02199" <b>(without the quotes)</b> as your Destination in Avare. If you select
+<p><a name="0.1_Landmarks">You can select addresses and landmarks like "address,Statue Of Liberty" or "address,800 Boylston St  
+Boston, MA 02199" <b>(without the quotes, and with "address," as prefix)</b> as your Destination in Avare. If you select
 a Destination in this way it's added to those listed in the Find screen just like airports,
 coordinates or other Destinations you've set in Avare. To use the Fly There feature you 
 must be connected to the Internet before entering a new address. Once Avare
@@ -526,14 +532,14 @@ connection is required for navigation to it. Multiple addresses can be stored in
 Use the <b>Fly There</b> feature:</a></p>
 
 <p style="padding-left: 30px;"><a name="0.1_Landmarks"><b>•With Avare's Find screen</b>. With an Internet 
-connection, tap the Find button and in the Search box enter an address (or a location like "1 wtc"),
+connection, tap the Find button and in the Search box enter an address (or a location like "address,1 wtc"),
 and a pin icon appears in the list of Destinations. Tap the pin icon to select that as your Destination.
 
 </a></p><p style="padding-left: 30px;"><a name="0.1_Landmarks"><b>•With Google Maps</b>, allowing you to
 see street and terrain maps and even satellite views when selecting a Destination. With an Internet 
 connection:
 </a></p><ol><li><a name="0.1_Landmarks">Launch the Google maps application on your device.</a></li>
-<li><a name="0.1_Landmarks">Enter an address or landmark like "1 wtc" (no quotes).</a></li>
+<li><a name="0.1_Landmarks">Enter an address or landmark like "address,1 wtc" (no quotes).</a></li>
 <li><a name="0.1_Landmarks">Google Maps will locate the landmark (or address), and put a red marker icon on it.</a></li><a name="0.1_Landmarks"> 
 </a><li><a name="0.1_Landmarks">Activate the "Share" option in your version
 of Google Maps and select the Avare icon from the list of apps. Avare

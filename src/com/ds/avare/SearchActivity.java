@@ -355,14 +355,18 @@ public class SearchActivity extends Activity implements Observer {
                     return;
                 }
                 
-                if(s.toString().contains(" ")) {
+                if(s.toString().startsWith("address,")) {
                     String [] vals = new String[1];
-                    StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, s.toString());
-                    vals[0] = sp.getHashedName();
-                    mAdapter = new SearchAdapter(SearchActivity.this, vals);
-                    mSearchListView.setAdapter(mAdapter);
+                    String addr[] = s.toString().split(",");
+                    if(addr.length > 1) {
+                        StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr[1]);
+                        vals[0] = sp.getHashedName();
+                        mAdapter = new SearchAdapter(SearchActivity.this, vals);
+                        mSearchListView.setAdapter(mAdapter);
+                    }
                     return;
                 }
+                
                 /*
                  * This is a geo coordinate with &?
                  */
