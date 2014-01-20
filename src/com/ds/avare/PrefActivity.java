@@ -117,20 +117,8 @@ public class PrefActivity extends PreferenceActivity {
     public void onPause() {
         super.onPause();
 
-        /*
-         * This should update preferences in static memory
-         */
-        new Preferences(this);
 
         getApplicationContext().unbindService(mConnection);
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            
-            /*
-             * This will will sure we update tiles when someone changes storage folder
-             */
-            mService.getTiles().forceReload();
-        }
+
     }
 }
