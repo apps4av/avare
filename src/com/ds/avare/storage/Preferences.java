@@ -554,7 +554,7 @@ public class Preferences {
          * If no path, use internal folder.
          * If cannot get internal folder, return / at least
          */
-        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
+        String loc = mPref.getString(mContext.getString(R.string.pref_Maps), path.getAbsolutePath());
         
         /*
          * XXX: Legacy for 5.1.0 and 5.1.1.
@@ -575,7 +575,7 @@ public class Preferences {
      */
     public void setMapsFolder(String folder) {
         SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Maps), folder);
+        editor.putString(mContext.getString(R.string.pref_Maps), folder);
         editor.commit();
     }
 
