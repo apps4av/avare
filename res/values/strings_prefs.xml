@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<resources>
+
+    <!-- Preference Categories -->
+    <string name="pref_StorageAndDownloadsCategoryTitle">Storage and Downloads</string>
+    <string name="pref_GpsCategoryTitle">GPS</string>
+    <string name="pref_WeatherCategoryTitle">Weather</string>
+    <string name="pref_DisplayCategoryTitle">Display</string>
+    <string name="pref_AppStateCategoryTitle">Application State</string>
+
+    <!-- Individual Preferences -->
+
+    <string name="pref_Root">Root</string>
+    <string name="pref_RootLabel">Charts Download Server</string>
+    <string name="pref_RootSummary">Select a server from which to download charts/data</string>
+
+    <string name="pref_GpsTime">GpsTime</string>
+    <string name="pref_GpsTimeLabel">Short GPS Update Period</string>
+    <string name="pref_GpsTimeSummary">Select for shorter GPS update period</string>
+
+    <string name="pref_GpsOffWarn">GpsOffWarn</string>
+    <string name="pref_GpsOffWarnLabel">Warn GPS Disabled</string>
+    <string name="pref_GpsOffWarnSummary">Select to warn frequently when GPS is disabled</string>
+
+    <string name="pref_Radar">Radar</string>
+    <string name="pref_RadarLabel">Show NEXRAD</string>
+    <string name="pref_RadarSummary">Select to show NEXRAD from the Internet (User Downloads)</string>
+
+    <string name="pref_ADSBWeather">ADSBWeather</string>
+    <string name="pref_ADSBWeatherLabel">Use ADSB Weather</string>
+    <string name="pref_ADSBWeatherSummary">Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather</string>
+
+    <string name="pref_AirSigType">AIRMET/SIGMET</string>
+    <string name="pref_AirSigTypeLabel">AIRMET/SIGMET Type</string>
+    <string name="pref_AirSigTypeSummary">Select the type of weather to draw</string>
+
+    <string name="pref_XlateWeather">XlateWeather</string>
+    <string name="pref_XlateWeatherLabel">Translate Weather</string>
+    <string name="pref_XlateWeatherSummary">Select to translate weather METAR/TAF/PIREP in the WX brief</string>
+
+    <string name="pref_ScreenOn">ScreenTimeout</string>
+    <string name="pref_ScreenOnLabel">Keep Screen On</string>
+    <string name="pref_ScreenOnSummary">Select to keep screen on while application is running</string>
+
+    <string name="pref_LeaveRunning">LeaveRunning</string>
+    <string name="pref_LeaveRunningLabel">Leave Running</string>
+    <string name="pref_LeaveRunningSummary">Select to pause the application on Exit (instead of a complete exit)</string>
+
+    <string name="pref_OrientationP">OrientationP</string>
+    <string name="pref_OrientationPLabel">Screen Orientation</string>
+    <string name="pref_OrientationPSummary">Select a screen orientation</string>
+
+    <string name="pref_Units">DistanceUnit</string>
+    <string name="pref_UnitsLabel">Distance Unit</string>
+    <string name="pref_UnitsSummary">Select distance unit</string>
+
+    <string name="pref_NightMode">NightMode</string>
+    <string name="pref_NightModeLabel">Night Mode</string>
+    <string name="pref_NightModeSummary">Select to reduce white light during night operation (requires restart)</string>
+
+    <string name="pref_Obstacles">Obstacles</string>
+    <string name="pref_ObstaclesLabel">Show Obstacles</string>
+    <string name="pref_ObstaclesSummary">Show obstacles near the aircraft</string>
+
+    <string name="pref_ADSBTraffic">ADSBTraffic</string>
+    <string name="pref_ADSBTrafficLabel">Show ADSB Traffic</string>
+    <string name="pref_ADSBTrafficSummary">Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)</string>
+
+    <string name="pref_Runways">Runway Extensions</string>
+    <string name="pref_RunwaysLabel">Runway Extensions</string>
+    <string name="pref_RunwaysSummary">Select to show runway extensions</string>
+
+    <string name="pref_ShowTrack">ShowTrack</string>
+    <string name="pref_ShowTrackLabel">Destination Course Line</string>
+    <string name="pref_ShowTrackSummary">Select to show course to destination</string>
+
+    <string name="pref_AllFacilities">AllFacilities</string>
+    <string name="pref_AllFacilitiesLabel">Show All Bases</string>
+    <string name="pref_AllFacilitiesSummary">Select to show heliport, ultralight, and sea plane bases in Nearest and Search</string>
+
+    <string name="pref_Background">Background</string>
+    <string name="pref_BackgroundLabel">Show Background</string>
+    <string name="pref_BackgroundSummary">Select to use a color background on text, to improve readability on smaller screens</string>
+
+    <string name="pref_IconHelicopter">HelicopterIcon</string>
+    <string name="pref_IconHelicopterLabel">Helicopter Icon</string>
+    <string name="pref_IconHelicopterSummary">Select to make the location icon a helicopter</string>
+
+    <string name="pref_DistanceRingType">DistanceRingType</string>
+    <string name="pref_DistanceRingTypeLabel">Distance Ring Style</string>
+    <string name="pref_DistanceRingTypeSummary">Select the style of distance rings to display</string>
+
+    <string name="pref_TimerRingSize">TimerRingSize</string>
+    <string name="pref_TimerRingSizeLabel">Timer Ring Size</string>
+    <string name="pref_TimerRingSizeSummary">Select the timer ring size in minutes</string>
+
+    <string name="pref_UseDynamicFields">UseDynamicFields</string>
+    <string name="pref_UseDynamicFieldsLabel">Use Dynamic Fields</string>
+    <string name="pref_UseDynamicFieldsSummary">Allow the top two text lines can be configured dynamically</string>
+
+    <string name="pref_TrkUpdAllow">TrkUpdAllow</string>
+    <string name="pref_TrkUpdAllowLabel">Enable Tracking</string>
+    <string name="pref_TrkUpdAllowSummary">Select to allow position tracking to be recorded.</string>
+
+    <string name="pref_TrkUpdShowHistory">TrkUpdShowHistory</string>
+    <string name="pref_TrkUpdShowHistoryLabel">Track History</string>
+    <string name="pref_TrkUpdShowHistorySummary">Select to display the flight path track on the active chart</string>
+
+    <string name="pref_AutoPostTracks">AutoPostTracks</string>
+    <string name="pref_AutoPostTracksLabel">Automatic Track Post</string>
+    <string name="pref_AutoPostTracksSummary">Select what to do with the KML tracks file when closed</string>
+
+    <string name="pref_Maps">&quot;Maps&quot;</string>
+    <string name="pref_MapsLabel">&quot;Charts Storage Folder&quot;</string>
+    <string name="pref_MapsSummary">&quot;Location where charts are stored&quot;</string>
+</resources>

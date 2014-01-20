@@ -19,6 +19,7 @@ import com.ds.avare.utils.Helper;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ import android.widget.TextView;
  * @author zkhan
  *
  */
-public class MainActivity extends TabActivity {
+public class MainActivity extends TabActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     TabHost mTabHost;
     float    mTabHeight;
@@ -166,4 +167,8 @@ public class MainActivity extends TabActivity {
     }
 
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+
+    }
 }
