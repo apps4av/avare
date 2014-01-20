@@ -18,8 +18,8 @@ authors: zkhan, jlmcgraw
 
     <PreferenceCategory android:title="@string/prefStorageAndDownloadsCategoryTitle" >
         <com.ds.avare.utils.FolderPreference
-            android:summary="@string/pref_MapsSummary"
-            android:title="@string/pref_MapsLabel" />
+            android:summary="@string/MapsSummary"
+            android:title="@string/MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/Server"

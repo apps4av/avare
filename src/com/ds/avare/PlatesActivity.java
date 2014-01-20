@@ -124,7 +124,7 @@ public class PlatesActivity extends Activity {
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences();
+        mPref = new Preferences(getApplicationContext());
         
         /*
          * Get views from XML

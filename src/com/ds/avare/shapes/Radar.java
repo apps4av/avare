@@ -52,7 +52,7 @@ public class Radar {
      */
     public Radar(Context ctx) {
         mContext = ctx;
-        mPref = new Preferences();
+        mPref = new Preferences(mContext);
         mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
         mText = mPref.mapsFolder() + "/" + "latest.txt";
         mLon = mLat = mPx = mPy = 0;

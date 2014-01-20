@@ -97,7 +97,7 @@ public class ChartsDownloadActivity extends Activity {
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences();
+        mPref = new Preferences(this);
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 
         /*
@@ -257,7 +257,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDownload = new Download(mPref.getRoot(), mHandler);
-        mDownload.start((new Preferences()).mapsFolder(), mName);
+        mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -307,7 +307,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDelete = new Delete(mHandler);
-        mDelete.start((new Preferences()).mapsFolder(), mName,
+        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName,
                 mService.getDBResource());
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);

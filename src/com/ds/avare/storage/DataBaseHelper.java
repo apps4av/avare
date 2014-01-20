@@ -143,7 +143,7 @@ public class DataBaseHelper  {
      * @param context
      */
     public DataBaseHelper(Context context) {
-        mPref = new Preferences();
+        mPref = new Preferences(context);
         mCenterTile = null;
         mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = 0;
         mContext = context;
