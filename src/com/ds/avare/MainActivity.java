@@ -24,6 +24,8 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -96,6 +98,9 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
         setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
+
+        //Register to hear preference change events.
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
     
     /**
@@ -144,12 +149,16 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
+
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         getApplicationContext().unbindService(mConnection);
+
+
     }
 
     @Override
@@ -157,7 +166,7 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
-        Preferences mPref = new Preferences();
+        Preferences mPref = new Preferences(this);
         if(!mPref.shouldLeaveRunning()) {
             if (isFinishing()) {
                 /*
@@ -167,6 +176,11 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
                 stopService(intent);
             }
         }
+
+        //Unregister from preference change events
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
+
         super.onDestroy();
     }
     
@@ -187,12 +201,12 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
+        Log.d("MAINACTIVITY:", "PrefKey is: " + key);
         if(key.equals(this.getString(R.string.pref_Units))) {
                      /* Set default prefs.*/
 
-            int val = sharedPreferences.getInt(this.getString(R.string.pref_Units),0);
-            if(val == 0) {
+            Preferences pref = new Preferences(this);
+            if(pref.getDistanceUnit().equals(getString(R.string.UnitKnot))) {
                 //Nautical Miles
                 Preferences.distanceConversion = 1.944; // m/s to kt/hr
                 Preferences.heightConversion = 3.28;
@@ -201,7 +215,7 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
                 Preferences.speedConversionUnit = this.getString(R.string.SpeedKnot);
                 Preferences.vsConversionUnit = this.getString(R.string.VsFpm);
             }
-            else if(val == 1) {
+            else if(pref.getDistanceUnit().equals(getString(R.string.UnitMile))) {
                 //Statute Miles
                 Preferences.distanceConversion = 2.2396; // m/s to mi/hr
                 Preferences.heightConversion = 3.28;
