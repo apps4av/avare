@@ -6,40 +6,40 @@
         android:title="@string/pref_header_ui"
         android:summary=""  >
         <intent
-            android:targetPackage="com.ds.avare.PrefActivity"
-            android:targetClass="com.ds.avare.PrefActivity.PrefActivity"
+            android:targetPackage="com.ds.avare"
+            android:targetClass="com.ds.avare.PrefActivity"
             android:action="pref_ui" />
     </Preference>
     <Preference
         android:title="@string/pref_header_gps"
         android:summary=""  >
         <intent
-            android:targetPackage="com.ds.avare.PrefActivity"
-            android:targetClass="com.ds.avare.PrefActivity.PrefActivity"
+            android:targetPackage="com.ds.avare"
+            android:targetClass="com.ds.avare.PrefActivity"
             android:action="pref_gps" />
     </Preference>
     <Preference
         android:title="@string/pref_header_weather"
         android:summary=""  >
         <intent
-            android:targetPackage="com.ds.avare.PrefActivity"
-            android:targetClass="com.ds.avare.PrefActivity.PrefActivity"
+            android:targetPackage="com.ds.avare"
+            android:targetClass="com.ds.avare.PrefActivity"
             android:action="pref_weather" />
     </Preference>
     <Preference
         android:title="@string/pref_header_display"
         android:summary=""  >
         <intent
-            android:targetPackage="com.ds.avare.PrefActivity"
-            android:targetClass="com.ds.avare.PrefActivity.PrefActivity"
+            android:targetPackage="com.ds.avare"
+            android:targetClass="com.ds.avare.PrefActivity"
             android:action="pref_display" />
     </Preference>
     <Preference
         android:title="@string/pref_header_general"
         android:summary=""  >
         <intent
-            android:targetPackage="com.ds.avare.PrefActivity"
-            android:targetClass="com.ds.avare.PrefActivity.PrefActivity"
+            android:targetPackage="com.ds.avare"
+            android:targetClass="com.ds.avare.PrefActivity"
             android:action="pref_storage" />
     </Preference>
 </PreferenceScreen>
