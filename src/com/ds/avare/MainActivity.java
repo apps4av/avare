@@ -201,7 +201,7 @@ public class MainActivity extends TabActivity implements SharedPreferences.OnSha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d("MAINACTIVITY:", "PrefKey is: " + key);
+        
         if(key.equals(this.getString(R.string.pref_Units))) {
                      /* Set default prefs.*/
 
