@@ -12,12 +12,19 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
 
+    <!-- Preference Headers -->
+    <string name="pref_header_display">Map Display</string>
+    <string name="pref_header_gps">GPS</string>
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_ui">User Interface</string>
+    <string name="pref_header_weather">Weather</string>
+
     <!-- Preference Categories -->
-    <string name="pref_StorageAndDownloadsCategoryTitle">Storage and Downloads</string>
-    <string name="pref_GpsCategoryTitle">GPS</string>
-    <string name="pref_WeatherCategoryTitle">Weather</string>
-    <string name="pref_DisplayCategoryTitle">Display</string>
-    <string name="pref_AppStateCategoryTitle">Application State</string>
+    <string name="pref_category_storage_and_downloads">Storage and Downloads</string>
+    <string name="pref_category_gps">GPS</string>
+    <string name="pref_category_weather">Weather</string>
+    <string name="pref_category_display">Display</string>
+    <string name="pref_category_ui">User Interface</string>
 
     <!-- Individual Preferences -->
 
