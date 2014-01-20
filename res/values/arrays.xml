@@ -654,11 +654,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Kilometers</item>
         </string-array>
 
-    <string-array name="UnitsDValues">
+    <integer-array name="UnitsDValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        </string-array>       
+        </integer-array>
     
     <string-array name="Server">
         <item>Apps4av.com</item>

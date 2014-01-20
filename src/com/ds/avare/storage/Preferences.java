@@ -81,14 +81,14 @@ public class Preferences {
      * 
      * @param ctx
      */
-    public Preferences(Context ctx) {
-        /*
+/*    public Preferences(Context ctx) {
+        *//*
          * Load preferences.
-         */
+         *//*
         mContext = ctx;
-        /*
+        *//*
          * Set default prefs.
-         */
+         *//*
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         if(getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             distanceConversion = 1.944; // m/s to kt/hr
@@ -113,7 +113,7 @@ public class Preferences {
             speedConversionUnit = mContext.getString(R.string.SpeedKilometer);
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         }
-    }
+    }*/
 
     /**
      * 
@@ -514,11 +514,12 @@ public class Preferences {
      * @return
      */
     public String getDistanceUnit() {
-        String val = mPref.getString(mContext.getString(R.string.pref_Units), "0");
-        if(val.equals("0")) {
+        //TODO:Find a way to remove this method, or simplify it to returning something that isn't a string. Enum maybe.
+        int val = mPref.getInt(mContext.getString(R.string.pref_Units), 0);
+        if(val == 0) {
             return (mContext.getString(R.string.UnitKnot));
         }
-        else if(val.equals("1")){
+        else if(val == 1){
             return (mContext.getString(R.string.UnitMile));
         } else {
             return (mContext.getString(R.string.UnitKilometer));
