@@ -426,7 +426,7 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
-        Preferences p = new Preferences(act.getApplicationContext()); 
+        Preferences p = new Preferences();
         if(p.isNightMode()) {
             act.setTheme(android.R.style.Theme_Black);
         }
@@ -441,7 +441,7 @@ public class Helper {
      */
     public static void setOrientationAndOn(Activity act) {
         
-        Preferences pref = new Preferences(act.getApplicationContext());
+        Preferences pref = new Preferences();
         if(pref.shouldScreenStayOn()) {
             act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
         }
@@ -644,7 +644,7 @@ public class Helper {
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
 
-        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
+        String filename = new Preferences().mapsFolder() + "/tfr.txt";
         String data = readFromFile(filename);
         if(null != data) {
             /*

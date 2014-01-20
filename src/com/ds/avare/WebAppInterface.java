@@ -44,7 +44,7 @@ public class WebAppInterface {
     WebAppInterface(Context c, WebView v) {
         mWebView = v;
         mContext = c;
-        mPref = new Preferences(c);
+        mPref = new Preferences();
         mWeatherTask = null;
         mWeatherTask = new WeatherTask();
         mWeatherThread = new Thread(mWeatherTask);

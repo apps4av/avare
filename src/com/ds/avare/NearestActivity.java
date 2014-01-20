@@ -132,7 +132,7 @@ public class NearestActivity extends Activity  implements Observer {
 
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
-        mPref = new Preferences(getApplicationContext());
+        mPref = new Preferences();
         mService = null;
     }
 

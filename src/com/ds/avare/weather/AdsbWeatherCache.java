@@ -50,7 +50,7 @@ public class AdsbWeatherCache {
      * 
      */
     public AdsbWeatherCache(Context context) {
-        mPref = new Preferences(context);
+        mPref = new Preferences();
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();

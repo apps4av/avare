@@ -71,7 +71,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
-        mPref = new Preferences(context);
+        mPref = new Preferences();
         mTextDiv = mPref.getOrientation().contains("Portrait") ? 24.f : 12.f;
         mScale = new Scale();
         setOnTouchListener(this);

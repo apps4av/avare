@@ -312,7 +312,7 @@ public class LocationActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
+        mPref = new Preferences();
         mSpinner = false;
 
         /*

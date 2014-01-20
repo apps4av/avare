@@ -272,7 +272,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPointProjection = null;
         mDraw = false;
         
-        mPref = new Preferences(context);
+        mPref = new Preferences();
         
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
         mPaint.setTypeface(mFace);

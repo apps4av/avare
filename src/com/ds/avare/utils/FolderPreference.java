@@ -83,7 +83,7 @@ public class FolderPreference extends DialogPreference {
     public FolderPreference(Context context, AttributeSet attrs) {        
         super(context, attrs);
         mContext = context;
-        mPref = new Preferences(context);
+        mPref = new Preferences();
         init(mPref.mapsFolder());
     }
 

@@ -75,7 +75,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @param textViewResourceId
      */
     public ChartAdapter(Context context) {
-        mPref = new Preferences(context);
+        mPref = new Preferences();
         mContext = context;
         
         /*

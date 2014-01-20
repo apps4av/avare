@@ -166,7 +166,7 @@ public class SearchActivity extends Activity implements Observer {
                 
         mService = null;
         mIsWaypoint = false;
-        mPref = new Preferences(getApplicationContext());
+        mPref = new Preferences();
         
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.search, null);        

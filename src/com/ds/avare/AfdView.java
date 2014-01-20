@@ -63,7 +63,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mPref = new Preferences(context);
+        mPref = new Preferences();
     }
     
     /**

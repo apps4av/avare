@@ -56,7 +56,7 @@ public class TileMap {
          * Keep tiles for the life of activity
          */
         mContext = context;
-        mPref = new Preferences(context);
+        mPref = new Preferences();
 
         int[] tilesdim = mPref.getTilesNumber();
         mXtiles = tilesdim[0];
@@ -240,7 +240,7 @@ public class TileMap {
      * Set the correct tile orientation
      */
     public void setOrientation() {
-        if((new Preferences(mContext)).getOrientation().contains("Portrait")) {
+        if((new Preferences()).getOrientation().contains("Portrait")) {
             /*
              * Have more tiles in Y on portrait
              */

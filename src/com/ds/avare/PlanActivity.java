@@ -187,7 +187,7 @@ public class PlanActivity extends Activity  implements Observer {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         
-        mPref = new Preferences(getApplicationContext());
+        mPref = new Preferences();
               
         mPlans = mPref.getPlans();
         
