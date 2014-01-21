@@ -1,0 +1,144 @@
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<resources>
+    <string name="app_name">&quot;Avare&quot;</string>
+    <string name="title_activity_main">&quot;Avare&quot;</string>
+    <string name="MissingMaps">&quot;Download Charts&quot;</string>
+    <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
+    <string name="OK">&quot;OK&quot;</string>
+    <string name="Nearest">&quot;Nearest&quot;</string>
+    <string name="Success">&quot;Success&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;USE AT YOUR OWN RISK!&quot;</string>
+    <string name="DestinationPrompt">&quot;Enter Destination Code&quot;</string>
+    <string name="DestinationNF">&quot;Destination Not Found&quot;</string>
+    <string name="AirDia">&quot;Airport Diagram&quot;</string>
+    <string name="ADS">&quot;Airport Diagrams&quot;</string>
+    <string name="InstallPDF">&quot;To see the diagram, go to Google Play Store, and install a PDF viewer&quot;</string>
+    <string name="Cancel">&quot;Cancel&quot;</string>
+    <string name="To">&quot;To&quot;</string>
+    <string name="Help">&quot;Help&quot;</string>
+    <string name="desc">&quot;Image/Chart&quot;</string>
+    <string name="Destination">&quot;Destination&quot;</string>
+    <string name="Settings">&quot;Preferences&quot;</string>
+    <string name="Downloading">&quot;Downloading&quot;</string>
+    <string name="download">&quot;Download&quot;</string>
+    <string name="Failed">&quot;Failed&quot;</string>
+    <string name="Extracting">&quot;Extracting&quot;</string>
+    <string name="Yes">&quot;Yes&quot;</string>
+    <string name="No">&quot;No&quot;</string>
+    <string name="GPSLost">&quot;No GPS Signal&quot;</string>
+    <string name="GPSEnable">&quot;Turn On GPS&quot;</string>
+    <string name="Init">&quot;Initializing&quot;</string>
+    <string name="Warning">&quot;This is not an FAA certified GPS.\n\nYou must assume this software will fail when life and/or property are at risk.\n\nThe authors of this software are not liable for any injuries or damages caused by its use.\n&quot;</string>
+    <string name="Recent">&quot;Recent&quot;</string>
+    <string name="ChartType">&quot;Chart Type&quot;</string>
+    <string name="ChartTypeLabel">&quot;Select Chart Type&quot;</string>
+    <string name="ChartTypeSummary">&quot;Select a chart type for navigation&quot;</string>
+    <string name="weather">&quot;Weather&quot;</string>
+    <string name="TFRReceived">&quot;TFR Received&quot;</string>
+    <string name="databases">&quot;Databases (Required)&quot;</string>
+    <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>
+    <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
+    <string name="update">&quot;Update&quot;</string>
+    <string name="gps">&quot;GPS&quot;</string>
+    <string name="longitude">&quot;'W&quot;</string>
+    <string name="latitude">&quot;'N&quot;</string>
+    <string name="accuracy">&quot;Accuracy ft.&quot;</string>
+    <string name="degree">&quot;\u00B0&quot;</string>
+    <string name="calibratethis">&quot;Geo Tag this point&quot;</string>
+    <string name="Done">&quot;Done&quot;</string>
+    <string name="Calibrate">&quot;GeoTag&quot;</string>
+    <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
+    <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N&quot;</string>
+    <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
+    <string name="main">&quot;Map&quot;</string>
+    <string name="plates">&quot;Plate&quot;</string>
+    <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="Lon">&quot;Lon&quot;</string>
+    <string name="Lat">&quot;Lat&quot;</string>
+    <string name="DestinationSet">&quot;Destination set to &quot;</string>
+    <string name="DownloadInst">&quot;Touch to select an item, then press Get to download it&quot;</string>
+    <string name="Searching">&quot;Searching for&quot;</string>
+    <string name="Search">&quot;Search&quot;</string>
+    <string name="Get">&quot;Get&quot;</string>
+    <string name="Set">&quot;Set&quot;</string>
+    <string name="Altitude">&quot;Altitude ft.&quot;</string>
+    <string name="Exit">&quot;Exit&quot;</string>
+    <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
+    <string name="SelectPlate">&quot;Select A Plate&quot;</string>
+    <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
+    <string name="Agree">&quot;I Agree&quot;</string>
+    <string name="TFRs">&quot;TFRs&quot;</string>
+    <string name="Delete">&quot;Delete&quot;</string>
+    <string name="Label">&quot;Label&quot;</string>
+    <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlanSet">&quot; added to the plan&quot;</string>
+    <string name="PlanNoset">&quot; not added to the plan&quot;</string>
+    <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
+    <string name="Inactive">&quot;Inactive&quot;</string>
+    <string name="Active">&quot;Active&quot;</string>
+    <string name="Total">&quot;Total&quot;</string>
+    <string name="Near">&quot;Near&quot;</string>
+    <string name="Find">&quot;Find&quot;</string>
+    <string name="Draw">&quot;Draw&quot;</string>
+    <string name="Pan">&quot;Pan&quot;</string>
+    <string name="Clear">&quot;Clear&quot;</string>
+    <string name="WX">&quot;WX&quot;</string>
+    <string name="Left">&quot;Left&quot;</string>
+    <string name="Right">&quot;Right&quot;</string>
+    <string name="Next">&quot;Next&quot;</string>
+    <string name="Last">&quot;Last&quot;</string>
+    <string name="Save">&quot;Save&quot;</string>
+    <string name="SavedPlan">&quot;Saved Plans&quot;</string>
+    <string name="Load">&quot;Load&quot;</string>
+    <string name="LoadReverse">&quot;Reverse Load&quot;</string>
+    <string name="WeatherError">&quot;Could not download weather data&quot;</string>
+    <string name="WeatherPlan">&quot;Load a plan and press Update to get the latest route weather&quot;</string>
+    <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="TrackUp">&quot;Track Up&quot;</string>
+    <string name="Understand">&quot;I Understand&quot;</string>
+    <string name="NorthUp">&quot;North Up&quot;</string>
+    <string name="noZoomIn">&quot;Cannot zoom in further&quot;</string>
+    <string name="noZoomOut">&quot;Cannot zoom out further&quot;</string>
+    <string name="Navigate">&quot;Navigate&quot;</string>
+    <string name="NotAvailable">&quot;Not available&quot;</string>
+    <string name="UnitKnot">kt</string>
+    <string name="UnitMile">mi</string>
+    <string name="VsFpm">fpm</string>
+    <string name="UnitKilometer">km</string>
+    <string name="DistKnot">nm</string>
+    <string name="DistMile">mi</string>
+    <string name="DistKilometer">km</string>
+    <string name="SpeedKnot">kt</string>
+    <string name="SpeedMile">mh</string>
+    <string name="SpeedKilometer">kh</string>
+    <string name="Up">Up</string>
+    <string name="PrivateFolder">Use the default folder</string>
+    <string name="FileStore">Files will be stored in:</string>
+    <string name="FileStoreInvalid">Unable to write to folder:</string>
+    <string name="prefTracksCategoryTitle">Flight Tracking</string>
+    <string name="TracksOn">Tracks On</string>
+    <string name="TracksOff">Tracks Off</string>
+    <string name="AutoPostTracksTitle">&quot;Send tracks file to &quot;</string>
+    <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
+    <string name="AutoPostTracksDialogText">&quot;The tracks file %s has been saved&quot;</string>
+    <string name="Zero">&quot;0&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+    <string name="GeoRefPlates">&quot;Geo. Referenced Plates Database&quot;</string>
+    <string name="prefGetRowFormats">RowFormats</string>
+    <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
+    <string name="prefOdometer">Odometer</string>
+    <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
+    <string name="PlanWarning">&quot;Clear the current plan and load&quot;</string>
+    <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
+</resources>

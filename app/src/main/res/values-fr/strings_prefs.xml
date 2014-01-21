@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_Root">&quot;Racine&quot;</string>
+    <string name="pref_RootLabel">&quot;Serveur pour le téléchargement des cartes&quot;</string>
+    <string name="pref_RootSummary">&quot;Selectioner un serveur pour les téléchargements des cartes et données&quot;</string>
+
+    <string name="pref_GpsTime">&quot;Heure du GPS&quot;</string>
+    <string name="pref_GpsTimeLabel">&quot;Position GPS plus fréquente&quot;</string>
+    <string name="pref_GpsTimeSummary">&quot;Affichage plus fréquent de votre position GPS&quot;</string>
+
+    <string name="pref_GpsOffWarn">&quot;GPS désactivé&quot;</string>
+    <string name="pref_GpsOffWarnLabel">&quot;Avertissement lorsque le GPS est désactivé&quot;</string>
+    <string name="pref_GpsOffWarnSummary">&quot;Sélectionner pour afficher plus souvent l'avis du GPS désactivé&quot;</string>
+
+    <string name="pref_ADSBWeather">ADSBWeather</string>
+    <string name="pref_ADSBWeatherLabel">&quot;Utiliser la météo ADSB&quot;</string>
+    <string name="pref_ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (require L'Avare External IO module app.), ou utiliser la météo Internet&quot;</string>
+
+    <string name="pref_AirSigType">&quot;AIRMET/SIGMET&quot;</string>
+    <string name="pref_AirSigTypeLabel">&quot;Type d'AIRMET/SIGMET&quot;</string>
+    <string name="pref_AirSigTypeSummary">&quot;Selectionner le type de météo à dessiner&quot;</string>
+
+    <string name="pref_XlateWeather">&quot;XlateWeather&quot;</string>
+    <string name="pref_XlateWeatherLabel">&quot;Convertir la météo&quot;</string>
+    <string name="pref_XlateWeatherSummary">&quot;Selectionner pour convertir la météo METAR/TAF/PIREP au format WX abrévié&quot;</string>
+
+    <string name="pref_ScreenOn">&quot;Temps écoulé&quot;</string>
+    <string name="pref_ScreenOnLabel">&quot;Garder l'écran allumé&quot;</string>
+    <string name="pref_ScreenOnSummary">&quot;Selectioner pour garder l'écran allumé lorsque l'application roule&quot;</string>
+
+    <string name="pref_LeaveRunning">&quot;Laisser ouvert&quot;</string>
+    <string name="pref_LeaveRunningLabel">&quot;Laisser ouvert&quot;</string>
+    <string name="pref_LeaveRunningSummary">&quot;Selectionner pour laisser en veille lorsque l'on quitte l'application (au lieu de terminer l'application)&quot;</string>
+
+    <string name="pref_OrientationP">&quot;OrientationP&quot;</string>
+    <string name="pref_OrientationPLabel">&quot;Mode portrait&quot;</string>
+    <string name="pref_OrientationPSummary">&quot;Activation du visionnement en mode portrait&quot;</string>
+
+    <string name="pref_Units">&quot;Unité de distance&quot;</string>
+    <string name="pref_UnitsLabel">&quot;Unité de distance&quot;</string>
+    <string name="pref_UnitsSummary">&quot;Choisir l'unité de distance&quot;</string>
+
+    <string name="pref_NightMode">&quot;Mode de nuit&quot;</string>
+    <string name="pref_NightModeLabel">&quot;Mode de nuit&quot;</string>
+    <string name="pref_NightModeSummary">&quot;Selectioner pour réduire l'intensité lumineuse durant les vols de nuit (redémarrage requis)&quot;</string>
+
+    <string name="pref_Obstacles">&quot;Obstacles&quot;</string>
+    <string name="pref_ObstaclesLabel">&quot;Afficher les obstacles&quot;</string>
+    <string name="pref_ObstaclesSummary">&quot;Affiche les obstacles près de l'avion&quot;</string>
+
+    <string name="pref_Runways">&quot;Numéros de la piste&quot;</string>
+    <string name="pref_RunwaysLabel">&quot;Numéros de la piste&quot;</string>
+    <string name="pref_RunwaysSummary">&quot;Selectioner pour afficher les numéros de piste&quot;</string>
+
+    <string name="pref_ShowTrack">&quot;Afficher le tracé&quot;</string>
+    <string name="pref_ShowTrackLabel">&quot;Afficher le tracé vers la destination&quot;</string>
+    <string name="pref_ShowTrackSummary">&quot;Sélectionner pour afficher le tracé vers la destination&quot;</string>
+
+    <string name="pref_AllFacilities">&quot;Tous les aéroports&quot;</string>
+    <string name="pref_AllFacilitiesLabel">&quot;Afficher tous les aéroports&quot;</string>
+    <string name="pref_AllFacilitiesSummary">&quot;Sélectionner pour afficher les aéroports pour héliports, ultra-légers et hydravions sur les cartes et recherches&quot;</string>
+
+    <string name="pref_Background">&quot;Arrière-plan&quot;</string>
+    <string name="pref_BackgroundLabel">&quot;Afficher l'arrière-plan&quot;</string>
+    <string name="pref_BackgroundSummary">&quot;Afficher un arrière-plan coloré pour améliorer la lecture sur les petits écrans&quot;</string>
+
+    <string name="pref_IconHelicopter">&quot;Icône d'hélicoptère&quot;</string>
+    <string name="pref_IconHelicopterLabel">&quot;icône d'hélicoptère&quot;</string>
+    <string name="pref_IconHelicopterSummary">&quot;Selectionner pour changer l'icône de position à un hélicoptère (redémarrage requis)&quot;</string>
+
+    <string name="pref_DistanceRingType">&quot;DistanceRingType&quot;</string>
+    <string name="pref_DistanceRingTypeLabel">&quot;Style d'anneau des distances&quot;</string>
+    <string name="pref_DistanceRingTypeSummary">&quot;Selectionner le style d'anneau des distances à afficher&quot;</string>
+
+    <string name="pref_TimerRingSize">TimerRingSize</string>
+    <string name="pref_TimerRingSizeLabel">&quot;Durée de la minuterie&quot;</string>
+    <string name="pref_TimerRingSizeSummary">&quot;Selectionner la durée de la minuterie en minutes&quot;</string>
+
+    <string name="pref_TrkUpdAllow">TrkUpdAllow</string>
+    <string name="pref_TrkUpdAllowLabel">&quot;Activer l'enregistrement du tracé&quot;</string>
+    <string name="pref_TrkUpdAllowSummary">&quot;Selectionner pour activer l'enregistrement du tracé.&quot;</string>
+
+    <string name="pref_TrkUpdShowHistory">TrkUpdShowHistory</string>
+    <string name="pref_TrkUpdShowHistoryLabel">&quot;Historique des tracés&quot;</string>
+    <string name="pref_TrkUpdShowHistorySummary">&quot;Selectionner pour afficher le travé du vol sur la carte active&quot;</string>
+
+    <string name="pref_AutoPostTracksLabel">&quot;Afficher les tracés automatiquement&quot;</string>
+    <string name="pref_AutoPostTracksSummary">&quot;Selectionner quoi faire avec les fichiers de tracé KML for de la fermeture&quot;</string>
+    <string name="pref_AutoPostTracksDialogText">&quot;La filière du tracé a été sauvegardée&quot;</string>
+
+    <string name="pref_Maps">&quot;Cartes&quot;</string>
+    <string name="pref_MapsLabel">&quot;Répertoire des cartes&quot;</string>
+    <string name="pref_MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
+</resources>
