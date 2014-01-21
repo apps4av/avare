@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_category_gps">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_GpsTime"
+            android:summary="@string/pref_GpsTimeSummary"
+            android:title="@string/pref_GpsTimeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_GpsOffWarn"
+            android:summary="@string/pref_GpsOffWarnSummary"
+            android:title="@string/pref_GpsOffWarnLabel" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefTracksCategoryTitle">
+        <CheckBoxPreference
+            android:key="@string/pref_TrkUpdAllow"
+            android:title="@string/pref_TrkUpdAllowLabel"
+            android:summary="@string/pref_TrkUpdAllowSummary"/>
+        <CheckBoxPreference
+            android:key="@string/pref_TrkUpdShowHistory"
+            android:title="@string/pref_TrkUpdShowHistoryLabel"
+            android:summary="@string/pref_TrkUpdShowHistorySummary"/>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="@string/Zero"
+            android:entries="@array/AutoPostTracksPrompts"
+            android:entryValues="@array/AutoPostTracksValues"
+            android:key="@string/pref_AutoPostTracks"
+            android:summary="@string/pref_AutoPostTracksSummary"
+            android:title="@string/pref_AutoPostTracksLabel" />
+    </PreferenceCategory>
+</PreferenceScreen>
