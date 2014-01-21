@@ -157,56 +157,63 @@ public class Destination extends Observable {
         mAwos = new LinkedList<Awos> ();
         mPlateFound = null;
         mAfdFound = null;
-        
-        /*
-         * GPS
-         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
-         * get the x&y part, then parse them to lon=y lat=x
-         */
-	    if(name.contains("&")) {
-	        String token[] = new String[2];
-	        token[1] = token[0] = name;
-	        if(name.contains("@")) {
-	            /*
-	             * This could be the geo point from maps
-	             */
-	            token = name.split("@");
-	        }
-	        /*
-	         * This is lon/lat destination
-	         */
-	        String tokens[] = token[1].split("&");
-	        
-	        try {
-    	        mLond = Double.parseDouble(tokens[1]);
-    	        mLatd = Double.parseDouble(tokens[0]);
-	        }
-	        catch (Exception e) {
-	            /*
-	             * Bad input from user on GPS
-	             */
-	            mName = "";
-	            mDestType = "";
-	            return;
-	        }
-	        
-	        /*
-	         * Sane input
-	         */
-            if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
-                mName = "";
-                mDestType = "";
-                return;	            
-	        }
-	        mName = token[0];
-	        mDestType = type;
-	        return;
-	    }
 	    mName = name.toUpperCase(Locale.getDefault());
 	    mDestType = type;
     	mLond = mLatd = 0;
 	}
 
+
+	/**
+	 * 
+	 * @param name
+	 * @param type
+	 */
+	private void parseGps(String name, String type) {
+        /*
+         * GPS
+         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
+         * get the x&y part, then parse them to lon=y lat=x
+         */
+        if(name.contains("&")) {
+            String token[] = new String[2];
+            token[1] = token[0] = name;
+            if(name.contains("@")) {
+                /*
+                 * This could be the geo point from maps
+                 */
+                token = name.split("@");
+            }
+            /*
+             * This is lon/lat destination
+             */
+            String tokens[] = token[1].split("&");
+            
+            try {
+                mLond = Double.parseDouble(tokens[1]);
+                mLatd = Double.parseDouble(tokens[0]);
+            }
+            catch (Exception e) {
+                /*
+                 * Bad input from user on GPS
+                 */
+                mName = "";
+                mDestType = "";
+                return;
+            }
+            
+            /*
+             * Sane input
+             */
+            if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
+                mName = "";
+                mDestType = "";
+                return;             
+            }
+            mName = token[0];
+            mDestType = type;
+        }
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -259,10 +266,18 @@ public class Destination extends Observable {
     	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getEte() {
 		return mEte;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getEta() {
 		return mEta;
 	}
@@ -292,7 +307,19 @@ public class Destination extends Observable {
 			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEte, mBearing, mDeclination); 
 		}
 	}
-	
+
+	   /**
+     * Database  query to find destination
+     */
+    public void findGuessType() {
+        /*
+         * Do in background as database queries are disruptive
+         */
+        mLooking = true;
+        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
+        locmDataBaseTask.execute(true);
+    }
+
 	/**
 	 * Database  query to find destination
 	 */
@@ -300,41 +327,9 @@ public class Destination extends Observable {
 	    /*
 	     * Do in background as database queries are disruptive
 	     */
-	    if(mDestType.equals(GPS)) {
-	        /*
-	         * For GPS coordinates, simply put parsed lon/lat in params
-	         * No need to query database
-	         */
-            mParams = new LinkedHashMap<String, String>();
-            mFreq = new LinkedHashMap<String, String>();
-            mAwos = new LinkedList<Awos> ();
-            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
-            addTime();
-            mPlateFound = null;
-            mAfdFound = null;
-            mFound = true;
-            mLooking = false;
-            mDbType = GPS;
-            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-            if(!isGPSValid(mName)) {
-                mFound = false;
-            }
-            if(!mName.contains("&")) {
-                /*
-                 * This comes from MAPS to GPS for user edited
-                 */
-                mName += "@" + mLatd + "&" + mLond;
-            }
-            setChanged();
-            notifyObservers(true);
-	    }
-	    else { 
-            mLooking = true;
-            DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-            locmDataBaseTask.execute();
-	    }
+        mLooking = true;
+        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
+        locmDataBaseTask.execute(false);
 	}
 	
     /**
@@ -358,10 +353,61 @@ public class Destination extends Observable {
 
             Thread.currentThread().setName("Destination");
 
+            Boolean guess = (Boolean)vals[0];
+            
+            /*
+             * If we dont know type, find with a guess.
+             */
+            if(guess) {
+                StringPreference s = mService.getDBResource().searchOne(mName);
+                if(null == s) {
+                    return false;
+                }
+                mDestType = s.getType();
+                mName = s.getId();
+            }
+
+            /*
+             * If GPS/Maps, parse
+             */
+            if(mName.contains("&")) {
+                parseGps(mName, mDestType);
+            }
+
 	        if(null == mDataSource) {
 	        	return false;
         	}
         	
+	        if(mDestType.equals(GPS)) {
+	            /*
+	             * For GPS coordinates, simply put parsed lon/lat in params
+	             * No need to query database
+	             */
+	            mParams = new LinkedHashMap<String, String>();
+	            mFreq = new LinkedHashMap<String, String>();
+	            mAwos = new LinkedList<Awos> ();
+	            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
+	            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
+	            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
+	            addTime();
+	            mPlateFound = null;
+	            mAfdFound = null;
+	            mFound = true;
+	            mLooking = false;
+	            mDbType = GPS;
+	            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
+	            if(!isGPSValid(mName)) {
+	                mFound = false;
+	            }
+	            if(!mName.contains("&")) {
+	                /*
+	                 * This comes from MAPS to GPS for user edited
+	                 */
+	                mName += "@" + mLatd + "&" + mLond;
+	            }
+	            return true;
+	        }
+
 	        /*
 	         * For Google maps address, if we have already geo decoded it using internet,
 	         * then no need to do again because internet may not be available on flight.
@@ -430,6 +476,9 @@ public class Destination extends Observable {
                 return true;                    
 	        }
 	        
+	        /*
+	         * For all others, find in DB
+	         */
 	        mDataSource.findDestination(mName, mDestType, mParams, mRunways, mFreq, mAwos);
 
 	        if(mDestType.equals(BASE)) {

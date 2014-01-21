@@ -52,7 +52,23 @@ public class StringPreference {
          */
         params.put(joinName(), mId);
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public String getId() {
+        return mId;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getType() {
+        return mDestType;
+    }
+
     /**
      * 
      * @return

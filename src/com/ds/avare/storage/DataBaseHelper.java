@@ -424,6 +424,240 @@ public class DataBaseHelper  {
     }
     
     /**
+     * 
+     */
+    private StringPreference stringQuery(String name, String type, String table) {
+        
+        Cursor cursor;
+
+        String qry = "select * from " + table + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+        /*
+         * NAV
+         */
+        cursor = doQuery(qry, getMainDb());
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    StringPreference s = new StringPreference(type, "", name, cursor.getString(0));
+                    closes(cursor);
+                    return s;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closes(cursor);
+
+        return null;
+        
+    }
+    
+    /**
+     * Search with I am feeling lucky. Best guess
+     * @param name
+     * @param params
+     */
+    public  StringPreference searchOne(String name) {
+        
+        if(null == name) {
+            return null;
+        }
+        if(name.contains(" ")) {
+            return null;            
+        }
+        
+        int len = name.length();
+        
+        if(name.contains("&")) {
+            /*
+             * GPS
+             */
+            String c[] = name.split("&");
+            if(c.length == 2) {
+                try {
+                    double lat = Double.parseDouble(c[0]);
+                    double lon = Double.parseDouble(c[1]);
+                    StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
+                            Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon));
+                    return s;
+                }
+                catch (Exception e) {                    
+                }
+            }
+            return null;
+        }
+        
+        /*
+         * Length base preference of search
+         */
+        StringPreference s;
+        switch(len) {
+        
+            case 0:
+                return null;
+            case 1:
+            case 2:
+            case 3:
+                return stringQuery(name, Destination.NAVAID, TABLE_NAV);
+                
+            case 4:
+                /*
+                 * Search airport, if not then
+                 * Search Nav, if not then
+                 * Search Fix
+                 */
+                String name1 = name;
+                if(name1.startsWith("K")) {
+                    name1 = name.substring(1);
+                }
+                s = stringQuery(name1, Destination.BASE, TABLE_AIRPORTS);
+                if(s != null) {
+                    return s;
+                }
+                s = stringQuery(name, Destination.NAVAID, TABLE_NAV);
+                if(s != null) {
+                    return s;
+                }
+                s = stringQuery(name, Destination.FIX, TABLE_FIX);
+                if(s != null) {
+                    return s;
+                }
+
+                break;
+                
+            case 5:
+                /*
+                 * Search airport, if not then
+                 * Search Fix
+                 */
+                name1 = name;
+                if(name1.startsWith("K")) {
+                    name1 = name.substring(1);
+                }
+                s = stringQuery(name1, Destination.BASE, TABLE_AIRPORTS);
+                if(s != null) {
+                    return s;
+                }
+                s = stringQuery(name, Destination.FIX, TABLE_FIX);
+                if(s != null) {
+                    return s;
+                }
+
+                break;
+                
+            case 6:
+                s = stringQuery(name, Destination.FIX, TABLE_FIX);
+                if(s != null) {
+                    return s;
+                }
+
+                break;
+                
+            default:
+                /*
+                 * Radials
+                 */
+                return searchRadial(name);
+        }
+        
+        return null;
+    }
+
+    /**
+     * 
+     * @param name
+     * @param params
+     */
+    private StringPreference searchRadial(String name) {
+        int len = name.length();
+        Cursor cursor;
+        /*
+         * Of the form XXXNNNNNN like BOS010166
+         */
+        String chop = name.substring(len - 6);
+        String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
+        if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
+
+            String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+            cursor = doQuery(qry, getMainDb());
+            
+            try {
+                if(cursor != null) {
+                    if(cursor.moveToFirst()) {
+                        
+                        /*
+                         * Put ID and name as if GPS
+                         */                
+                                                            
+                                
+                        double lon = cursor.getDouble(LONGITUDE_COL);                            
+                        double lat = cursor.getDouble(LATITUDE_COL);
+                        double distance = Double.parseDouble(chop.substring(3, 6));
+
+                        /*
+                         * Radials are magnetic
+                         */
+                        GeomagneticField gmf = new GeomagneticField((float)lat, 
+                                (float)lon, 0, System.currentTimeMillis());
+                        double bearing = Double.parseDouble(chop.substring(0, 3)) + gmf.getDeclination();
+                        Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
+                        StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
+                                Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
+                        closes(cursor);
+                        return s;
+                    }
+                    else {
+                        
+                        /*
+                         * Did not find in NAV? Find in Fix
+                         */
+                        closes(cursor);
+
+                        String qry2 = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+                        cursor = doQuery(qry2, getMainDb());
+
+                        if(cursor != null) {
+                            if(cursor.moveToFirst()) {
+                                
+                                /*
+                                 * Put ID and name as if GPS
+                                 */                
+                                                                    
+                                        
+                                double lon = cursor.getDouble(LONGITUDE_COL);                            
+                                double lat = cursor.getDouble(LATITUDE_COL);
+                                double distance = Double.parseDouble(chop.substring(0, 3));
+
+                                /*
+                                 * Radials are magnetic
+                                 */
+                                GeomagneticField gmf = new GeomagneticField((float)lat, 
+                                        (float)lon, 0, System.currentTimeMillis());
+                                double bearing = Double.parseDouble(chop.substring(3, 6)) + gmf.getDeclination();
+                                Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
+                                StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
+                                        Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
+                                closes(cursor);
+                                return s;
+                            }
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e) {
+            }
+            
+            closes(cursor);
+            
+        }
+        
+        return null;
+    }
+
+    /**
      * Search something in database
      * @param name
      * @param params
@@ -437,86 +671,11 @@ public class DataBaseHelper  {
          */
         int len = name.length();
         if(len > 6) {
-            /*
-             * Of the form XXXNNNNNN like BOS010166
-             */
-            String chop = name.substring(len - 6);
-            String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
-            if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
-
-                String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
-                cursor = doQuery(qry, getMainDb());
-                
-                try {
-                    if(cursor != null) {
-                        if(cursor.moveToFirst()) {
-                            
-                            /*
-                             * Put ID and name as if GPS
-                             */                
-                                                                
-                                    
-                            double lon = cursor.getDouble(LONGITUDE_COL);                            
-                            double lat = cursor.getDouble(LATITUDE_COL);
-                            double distance = Double.parseDouble(chop.substring(3, 6));
-
-                            /*
-                             * Radials are magnetic
-                             */
-                            GeomagneticField gmf = new GeomagneticField((float)lat, 
-                                    (float)lon, 0, System.currentTimeMillis());
-                            double bearing = Double.parseDouble(chop.substring(0, 3)) + gmf.getDeclination();
-                            Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
-                            StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
-                                    Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
-                            s.putInHash(params);               
-                        }
-                        else {
-                            
-                            /*
-                             * Did not find in NAV? Find in Fix
-                             */
-                            closes(cursor);
-
-                            String qry2 = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
-                            cursor = doQuery(qry2, getMainDb());
-
-                            if(cursor != null) {
-                                if(cursor.moveToFirst()) {
-                                    
-                                    /*
-                                     * Put ID and name as if GPS
-                                     */                
-                                                                        
-                                            
-                                    double lon = cursor.getDouble(LONGITUDE_COL);                            
-                                    double lat = cursor.getDouble(LATITUDE_COL);
-                                    double distance = Double.parseDouble(chop.substring(0, 3));
-
-                                    /*
-                                     * Radials are magnetic
-                                     */
-                                    GeomagneticField gmf = new GeomagneticField((float)lat, 
-                                            (float)lon, 0, System.currentTimeMillis());
-                                    double bearing = Double.parseDouble(chop.substring(3, 6)) + gmf.getDeclination();
-                                    Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
-                                    StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
-                                            Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
-                                    s.putInHash(params);               
-                                }
-                            }
-
-                        }
-                    }
-                }
-                catch (Exception e) {
-                }
-                
-                closes(cursor);
-
-                
-                return;
+            StringPreference s = searchRadial(name);
+            if(null != s) {
+                s.putInHash(params);
             }
+            return;
         }
         
         String qry;

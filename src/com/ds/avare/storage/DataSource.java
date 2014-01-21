@@ -152,6 +152,16 @@ public class DataSource {
 
     /**
      * 
+     * @param name
+     * @param params
+     * @return
+     */
+    public StringPreference searchOne(String name) {
+        return dbHelper.searchOne(name);    
+    }
+
+    /**
+     * 
      * @param airportId
      * @return Name of Minimums file
      */
