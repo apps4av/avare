@@ -1,20 +1,12 @@
-# built application files
-*.apk
-*.ap_
+#Android Studio
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
 
-# files for the dex VM
-*.dex
+#Ignore generated files.
+/app/build/
 
-# Java class files
-*.class
-
-# generated files
-bin/
-gen/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Eclipse project files
-.classpath
-.project
+#Ignore IntelliJ files. A little less convenient on first setup, but keeps
+# the source code cleaner.
+/.idea/
