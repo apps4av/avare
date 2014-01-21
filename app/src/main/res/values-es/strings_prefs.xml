@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preference Categories -->
+
+
+    <!-- Individual Preferences -->
+
+    <string name="pref_GpsTime">&quot;Tiempo de GPS&quot;</string>
+    <string name="pref_GpsTimeLabel">&quot;Período corto de actualización de GPS&quot;</string>
+    <string name="pref_GpsTimeSummary">&quot;Seleccione para período corto de actualización de GPS &quot;</string>
+
+    <string name="pref_GpsOffWarn">&quot;AdvertGPSdesactiv&quot;</string>
+    <string name="pref_GpsOffWarnLabel">&quot;AdvertenciaGPSdesactivado&quot;</string>
+    <string name="pref_GpsOffWarnSummary">&quot;Seleccione para advertir frecuentemente cuando el GPS esté desactivado&quot;</string>
+
+    <string name="pref_ScreenOn">&quot;Tiempo límite de pantalla&quot;</string>
+    <string name="pref_ScreenOnLabel">&quot;Mantener pantalla abierta &quot;</string>
+    <string name="pref_ScreenOnSummary">&quot;Seleccione para mantener pantalla abierta mientras el programa corra&quot;</string>
+
+    <string name="pref_LeaveRunning">&quot;Dejar Corriendo&quot;</string>
+    <string name="pref_LeaveRunningLabel">&quot;Dejar Corriendo&quot;</string>
+    <string name="pref_LeaveRunningSummary">&quot;Seleccione para pausar el programa al Salir (en lugar de una salida total)&quot;</string>
+
+    <string name="pref_OrientationP">&quot;OrientaciónP&quot;</string>
+    <string name="pref_OrientationPLabel">&quot;Modo Vertical &quot;</string>
+    <string name="pref_OrientationPSummary">&quot;Active para operación en Modo Vertical&quot;</string>
+
+    <string name="pref_Units">&quot;Unidad de Distancia&quot;</string>
+    <string name="pref_UnitsLabel">&quot;Unidad de Distancia&quot;</string>
+    <string name="pref_UnitsSummary">&quot;Seleccione unidad de distancia&quot;</string>
+
+    <string name="pref_Obstacles">&quot;Obstáculos&quot;</string>
+    <string name="pref_ObstaclesLabel">&quot;Mostrar obstáculos&quot;</string>
+    <string name="pref_ObstaclesSummary">&quot;Mostrar obstáculos cerca de la aeronave&quot;</string>
+
+    <string name="pref_Runways">&quot;Extensiones de pista&quot;</string>
+    <string name="pref_RunwaysLabel">&quot;Extensiones de pista&quot;</string>
+    <string name="pref_RunwaysSummary">&quot;Seleccione para mostrar extensiones de pista&quot;</string>
+
+    <string name="pref_ShowTrack">&quot;Mostrar Ruta&quot;</string>
+    <string name="pref_ShowTrackLabel">&quot;Línea de Ruta a Destino&quot;</string>
+    <string name="pref_ShowTrackSummary">&quot;Seleccione para mostrar curso a destino&quot;</string>
+
+    <string name="pref_AllFacilities">&quot;Toda Instalación&quot;</string>
+    <string name="pref_AllFacilitiesLabel">&quot;Mostrar todas las Bases&quot;</string>
+    <string name="pref_AllFacilitiesSummary">&quot;Seleccione para mostrar en Cercanos y Búsqueda bases para helipuertos, ultraligeros, e hidroaviones&quot;</string>
+
+    <string name="pref_Background">&quot;Fondo&quot;</string>
+    <string name="pref_BackgroundLabel">&quot;Mostrar Fondo&quot;</string>
+    <string name="pref_BackgroundSummary">&quot;Mostrar fondo a color para mejorar legibilidad en pantallas más pequeñas&quot;</string>
+
+    <string name="pref_Maps">&quot;Mapas&quot;</string>
+    <string name="pref_MapsLabel">&quot;Archivo de Cartas&quot;</string>
+    <string name="pref_MapsSummary">&quot;Lugar donde se guardan Cartas &quot;</string>
+</resources>

@@ -20,6 +20,7 @@ import java.util.List;
 import com.ds.avare.R;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -82,14 +83,14 @@ public class Preferences {
      * @param ctx
      */
     public Preferences(Context ctx) {
-        /*
-         * Load preferences.
-         */
+
+        //Load preferences.
+
         mContext = ctx;
-        /*
-         * Set default prefs.
-         */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        /*//Set default prefs.
+
+
         if(getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             distanceConversion = 1.944; // m/s to kt/hr
             heightConversion = 3.28;
@@ -112,7 +113,7 @@ public class Preferences {
             distanceConversionUnit = mContext.getString(R.string.DistKilometer);
             speedConversionUnit = mContext.getString(R.string.SpeedKilometer);
             vsConversionUnit = mContext.getString(R.string.VsFpm);
-        }
+        }*/
     }
 
     /**
@@ -121,10 +122,10 @@ public class Preferences {
      */
     public String getRoot() {
         
-        String val = mPref.getString(mContext.getString(R.string.Root), null);
+        String val = mPref.getString(mContext.getString(R.string.pref_Root), null);
         if(null == val) {
             SharedPreferences.Editor editor = mPref.edit();
-            editor.putString(mContext.getString(R.string.Root), "0");
+            editor.putString(mContext.getString(R.string.pref_Root), "0");
             editor.commit();
             val = "0";
         }
@@ -329,7 +330,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldLeaveRunning() {
-        return(mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_LeaveRunning), true));
     }
 
     /**
@@ -337,7 +338,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldShowBackground() {
-        return(mPref.getBoolean(mContext.getString(R.string.Background), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_Background), true));
     }
 
     /**
@@ -345,7 +346,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldShowAllFacilities() {
-        return(mPref.getBoolean(mContext.getString(R.string.AllFacilities), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_AllFacilities), false));
     }
 
     /**
@@ -353,7 +354,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldShowObstacles() {
-        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_Obstacles), false));
     }
 
     /**
@@ -361,7 +362,7 @@ public class Preferences {
      * @return
      */
     public boolean isTrackEnabled() {
-        return(mPref.getBoolean(mContext.getString(R.string.ShowTrack), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_ShowTrack), true));
     }
 
     /**
@@ -369,7 +370,7 @@ public class Preferences {
      * @return
      */
     public boolean isWeatherTranslated() {
-        return(mPref.getBoolean(mContext.getString(R.string.XlateWeather), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_XlateWeather), false));
     }
 
     /**
@@ -377,7 +378,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldExtendRunways() {
-        return(mPref.getBoolean(mContext.getString(R.string.Runways), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_Runways), true));
     }
 
     /**
@@ -393,7 +394,7 @@ public class Preferences {
      * @return
      */
     public boolean isHelicopter() {
-        return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_IconHelicopter), false));
     }
 
     /**
@@ -401,7 +402,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldGpsWarn() {
-        return(mPref.getBoolean(mContext.getString(R.string.GpsOffWarn), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_GpsOffWarn), true));
     }
 
     /**
@@ -409,7 +410,7 @@ public class Preferences {
      * @return
      */
     public String getOrientation() {
-        return(mPref.getString(mContext.getString(R.string.OrientationP), "Portrait"));
+        return(mPref.getString(mContext.getString(R.string.pref_OrientationP), "Portrait"));
     }
 
     /**
@@ -417,7 +418,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldScreenStayOn() {
-        return(mPref.getBoolean(mContext.getString(R.string.ScreenOn), true));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_ScreenOn), true));
     }
 
     /**
@@ -425,7 +426,7 @@ public class Preferences {
      * @return
      */
     public boolean isGpsUpdatePeriodShort() {
-        return(mPref.getBoolean(mContext.getString(R.string.GpsTime), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_GpsTime), false));
     }
 
     /**
@@ -433,7 +434,9 @@ public class Preferences {
      * @return
      */
     public boolean isNightMode() {
-        return(mPref.getBoolean(mContext.getString(R.string.NightMode), false));
+        String key = mContext.getString(R.string.pref_NightMode);
+        Boolean test = mPref.getBoolean(key, false);
+        return test;
     }
 
     /**
@@ -486,7 +489,7 @@ public class Preferences {
      * @return
      */
     public String getAirSigMetType() {
-        return(mPref.getString(mContext.getString(R.string.AirSigType), "ALL"));
+        return(mPref.getString(mContext.getString(R.string.pref_AirSigType), "ALL"));
     }
 
     /**
@@ -514,7 +517,8 @@ public class Preferences {
      * @return
      */
     public String getDistanceUnit() {
-        String val = mPref.getString(mContext.getString(R.string.Units), "0");
+        //TODO:Find a way to remove this method, or simplify it to returning something that isn't a string. Enum maybe.
+        String val = mPref.getString(mContext.getString(R.string.pref_Units), "0");
         if(val.equals("0")) {
             return (mContext.getString(R.string.UnitKnot));
         }
@@ -553,7 +557,7 @@ public class Preferences {
          * If no path, use internal folder.
          * If cannot get internal folder, return / at least
          */
-        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
+        String loc = mPref.getString(mContext.getString(R.string.pref_Maps), path.getAbsolutePath());
         
         /*
          * XXX: Legacy for 5.1.0 and 5.1.1.
@@ -574,7 +578,7 @@ public class Preferences {
      */
     public void setMapsFolder(String folder) {
         SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Maps), folder);
+        editor.putString(mContext.getString(R.string.pref_Maps), folder);
         editor.commit();
     }
 
@@ -591,7 +595,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldDrawTracks() {
-        return(mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_TrkUpdShowHistory), false));
     }
 
     /**
@@ -599,7 +603,7 @@ public class Preferences {
      * @return
      */
     public boolean shouldSaveTracks() {
-        return(mPref.getBoolean(mContext.getString(R.string.TrkUpdAllow), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_TrkUpdAllow), false));
     }
 
     /**
@@ -607,7 +611,7 @@ public class Preferences {
      * @return
      */
     public boolean useAdsbWeather() {
-        return(mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_ADSBWeather), false));
     }
     
     /**
@@ -615,7 +619,7 @@ public class Preferences {
      * @return
      */
     public boolean showRadar() {
-        return(mPref.getBoolean(mContext.getString(R.string.Radar), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_Radar), false));
     }
     
     /**
@@ -623,7 +627,7 @@ public class Preferences {
      * @return
      */
     public boolean showAdsbTraffic() {
-        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), false));
+        return(mPref.getBoolean(mContext.getString(R.string.pref_ADSBTraffic), false));
     }
 
     /**
@@ -632,7 +636,7 @@ public class Preferences {
      */
     public int getTimerRingSize() {
     	try {
-    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.pref_TimerRingSize), "5")));
 		} catch (Exception x) {
 			return 5;
 		}
@@ -644,7 +648,7 @@ public class Preferences {
      */
     public int getDistanceRingType() {
     	try {
-    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefDistanceRingType), "0")));
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.pref_DistanceRingType), "0")));
 		} catch (Exception x) {
 			return 0;
 		}
@@ -655,7 +659,7 @@ public class Preferences {
      */
     public int autoPostTracks() {
     	try {
-    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.prefAutoPostTracks), "1")));
+    		return(Integer.parseInt(mPref.getString(mContext.getString(R.string.pref_AutoPostTracks), "1")));
 		} catch (Exception x) {
 			return 1;
 		}
@@ -666,7 +670,7 @@ public class Preferences {
      * @return
      */
     public boolean useDynamicFields() {
-        return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), true);
+        return mPref.getBoolean(mContext.getString(R.string.pref_UseDynamicFields), true);
     }
     
     /**
