@@ -71,12 +71,11 @@ public class PlanActivity extends Activity  implements Observer {
     private int mIndex;
     private Preferences mPref;
     private String mPlans[];
-    private Destination mSearchDests[];
-    private int mSearchNum;
+    private String mSearchDests[];
     private ProgressBar mProgressBar;
     
     /**
-     * Shows Chooseing message about Avare
+     * Shows Choose message about Avare
      */
     private AlertDialog mAlertDialogChoose;
     private AlertDialog mAlertDialogPlan;
@@ -195,7 +194,6 @@ public class PlanActivity extends Activity  implements Observer {
          * This keeps a copy of destinations under search when composite plan is entered.
          */
         mSearchDests = null;
-        mSearchNum = 0;
         
         /*
          * Get views from XML
@@ -246,6 +244,14 @@ public class PlanActivity extends Activity  implements Observer {
                  * Confirm what needs to be done
                  * Load a new plan or not
                  */
+                /*
+                 * Now start the search.
+                 * Clear everything before that
+                 * If still searching, dont do another search;
+                 */
+                if(mSearchDests != null) {
+                    return;
+                }
                 final String plan = mPlanText.getText().toString().toUpperCase(Locale.getDefault());
                 mAlertDialogPlan = new AlertDialog.Builder(PlanActivity.this).create();
                 mAlertDialogPlan.setCanceledOnTouchOutside(false);
@@ -258,14 +264,6 @@ public class PlanActivity extends Activity  implements Observer {
                      */
                     public void onClick(DialogInterface dialog, int which) {
                         /*
-                         * Now start the search.
-                         * Clear everything before that
-                         * If still searching, dont do another search;
-                         */
-                        if(mSearchNum > 0) {
-                            return;
-                        }
-                        /*
                          * Show that we are searching by showing progress bar
                          */
                         mProgressBar.setVisibility(View.VISIBLE);
@@ -274,48 +272,8 @@ public class PlanActivity extends Activity  implements Observer {
                         prepareAdapterSave();
                         mPlan.setAdapter(mPlanAdapter);
 
-                        String waypoints[] = plan.split(" ");
-                        if(waypoints.length > 0) {
-                            /*
-                             * Make a list of waypoints to find. Then find one by one.
-                             * No guarantee that they will be found in order. So order them.
-                             */
-                            mSearchDests = new Destination[waypoints.length];
-                            mSearchNum = waypoints.length;
-                            for(int wp = 0; wp < waypoints.length; wp++) {
-                                String waypoint = waypoints[wp];
-                                if(waypoint.length() < 2) {
-                                    mSearchNum--;
-                                    continue;
-                                }
-                                /*
-                                 * User entered types
-                                 */
-                                String type = waypoint.substring(0, 1);
-                                String dst = waypoint.substring(1, waypoint.length());
-                                /*
-                                 * Various types described in the Help document.
-                                 */
-                                if(type.equals("F")) {
-                                    planToWithVerify(dst, Destination.FIX, wp);                                   
-                                }
-                                else if(type.equals("N")) {
-                                    planToWithVerify(dst, Destination.NAVAID, wp);                                   
-                                }
-                                else if(type.equals("G")) {
-                                    planToWithVerify(dst, Destination.GPS, wp);
-                                }
-                                else if(type.equals("B")) {
-                                    planToWithVerify(dst, Destination.BASE, wp);
-                                }
-                                else {
-                                    /*
-                                     * Everything else is discarded 
-                                     */
-                                    mSearchNum--;                                    
-                                }
-                            }
-                        }
+                        mSearchDests = plan.split(" ");
+                        searchDest();
                     }
                 });
                 mAlertDialogPlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
@@ -438,6 +396,45 @@ public class PlanActivity extends Activity  implements Observer {
     }
 
     /**
+     * Search in list format
+     */
+    private void searchDest() {
+        if(null != mSearchDests) {
+            if(mSearchDests.length > 0) {
+                /*
+                 * Make a list of waypoints to find. Then find one by one.
+                 * No guarantee that they will be found in order. So order them.
+                 */
+                int wp = 0;
+                for(wp = 0; wp < mSearchDests.length; wp++) {
+                    if(mSearchDests[wp] == null) {
+                        continue;
+                    }
+                    if(mSearchDests[wp].length() == 0) {
+                        mSearchDests[wp] = null;
+                        continue;
+                    }
+                    
+                    planToWithVerify(mSearchDests[wp]);
+                    break;
+                }
+                /*
+                 * All done.
+                 */
+                if(mSearchDests.length == wp) {
+                    prepareAdapter();
+                    mPlan.setAdapter(mPlanAdapter);
+                    /*
+                     * Show that we are looking
+                     */
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                    mSearchDests = null;
+                }
+            }
+        }
+    }
+    
+    /**
      * 
      */
     private boolean updateAdapter() {
@@ -522,14 +519,13 @@ public class PlanActivity extends Activity  implements Observer {
      * 
      * @param dst
      */
-    private void planToWithVerify(String dst, String type, int wp) {
+    private void planToWithVerify(String dst) {
         /*
          * Add to plan
          */
-        Destination d = new Destination(dst, type, mPref, mService);
-        mSearchDests[wp] = d;
+        Destination d = new Destination(dst, "", mPref, mService);
         d.addObserver(this);
-        d.find();
+        d.findGuessType();
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -761,28 +757,33 @@ public class PlanActivity extends Activity  implements Observer {
         /*
          * Destination found?
          */
+        Destination dest = (Destination)arg0;
         if(null == mSearchDests) {
             return;
         }
-        mSearchNum--;
-        if(mSearchNum <= 0) {
-            for(int wp = 0; wp < mSearchDests.length; wp++) {
-                if(null != mSearchDests[wp]) { 
-                    if(mSearchDests[wp].isFound()) {
-                        mService.getPlan().appendDestination(mSearchDests[wp]);
-                    }
-                    else {
-                        mToast.setText(getString(R.string.PlanDestinationNF));
-                        mToast.show();
-                    }
-                }
-            }
-            prepareAdapter();
-            mPlan.setAdapter(mPlanAdapter);
-            /*
-             * Show that we are looking
-             */
-            mProgressBar.setVisibility(View.INVISIBLE);
+        if(null == dest) {
+            return;
         }
+        
+        /*
+         * Find next
+         */
+        for(int wp = 0; wp < mSearchDests.length; wp++) {
+            if(null != mSearchDests[wp]) {
+                if(dest.isFound()) {
+                    /*
+                     * Add to plan
+                     */
+                    mService.getPlan().appendDestination(dest);
+                }
+                else {
+                    mToast.setText(getString(R.string.PlanDestinationNF));
+                    mToast.show();
+                }
+                mSearchDests[wp] = null;
+                break;
+            }
+        }
+        searchDest();        
     }
 }
