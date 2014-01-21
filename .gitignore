@@ -3,4 +3,10 @@
 /local.properties
 /.idea/workspace.xml
 .DS_Store
+
+#Ignore generated files.
 /app/build/
+
+#Ignore IntelliJ files. A little less convenient on first setup, but keeps
+# the source code cleaner.
+/.idea/
