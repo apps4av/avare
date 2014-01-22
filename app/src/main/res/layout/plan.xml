@@ -89,9 +89,12 @@ Redistribution and use in source and binary forms, with or without modification,
 			    <RelativeLayout
 		            android:layout_width="match_parent"
 		            android:layout_height="match_parent">
+                    <!-- This control has a xmlns ending in res-auto so gradle can
+                     automatically insert the appropriate package name based on the
+                     build type. -->
 	           	    <com.ds.avare.touch.TouchListView
 			            android:id="@+id/plan_list"
-			            xmlns:tlv="http://schemas.android.com/apk/res/com.ds.avare"
+			            xmlns:tlv="http://schemas.android.com/apk/res-auto"
 			            tlv:grabber="@+id/icon"
                         tlv:remove_mode="slideRight"
 			            android:layout_above="@+id/plan_text_save"
