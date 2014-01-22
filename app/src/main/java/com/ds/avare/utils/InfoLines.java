@@ -158,7 +158,7 @@ public class InfoLines {
     		} else if(idx == nSelected) {
     			optionAvail.add(optionList[idx]);	// always add what it currently IS
     			nSelected = optionAvail.size() - 1;	// reflect the selected position in the new list
-    		} else {
+    		} else if (!isShowing(idx)) {
     			optionAvail.add(optionList[idx]);	// add others
     		}
     	}
@@ -168,6 +168,27 @@ public class InfoLines {
     	return new InfoLineFieldLoc(nRowIdx, nFieldIdx, 
     			optionAvail.toArray(new String[optionAvail.size()]), nSelected);
    }
+
+    /***
+     * Is this type of field already on the display ?
+     * @param nFieldType Type of field to search for
+     * @return true/false to indicate it is already shown at another location
+     */
+    private boolean isShowing(int nFieldType)
+    {
+        int nRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
+
+        // Loop through the 2 entire status lines that are configured for
+        // this display mode. Return true if we find it in either
+        for(int idx = 0; idx < MAX_INFO_ROWS; idx++) {
+            for(int fldIdx = 0, maxIdx = mFieldLines[idx].length; fldIdx < maxIdx; fldIdx++) {
+                if(mFieldLines[idx + nRowIdx][fldIdx] == nFieldType) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /***
      * Set the desired field to the type specified. It's a few hoops to get it from
@@ -405,6 +426,18 @@ public class InfoLines {
         // Now we can determine the max fields per line we can display
         int maxFieldsPerLine = mDisplayWidth / mFieldWidth;
 
+        // This bit of code ensures there is nothing configured to display
+        // in fields that might appear off the right side of the screen. This
+        // only is a problem at startup, if the default settings contain more fields
+        // that we can show. We do this calc now since we need to know the paint specifics
+        // to figure out how many fields can fit.
+        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
+        for(int rowIdx = 0; rowIdx < MAX_INFO_ROWS; rowIdx++) {
+            for(int idx = maxFieldsPerLine; idx < mFieldLines[nStartLine + rowIdx].length; idx++) {
+                mFieldLines[nStartLine + rowIdx][idx] = ID_FLD_NUL;
+            }
+        }
+
         // There might be leftover space. Divide it so that it pads between
         // the fields
         int nLeftoverSpace = mDisplayWidth - maxFieldsPerLine * mFieldWidth;
@@ -431,7 +464,6 @@ public class InfoLines {
         		nLeftoverSpace = 0;
         	}
         }
-
     }
     
     /***
