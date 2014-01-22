@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="main" >
+        <source path="/home/zkhan/workspace/Avare/app/src/main/assets" >
+            <file
+                name="avare-offlinehelp.html"
+                path="/home/zkhan/workspace/Avare/app/src/main/assets/avare-offlinehelp.html" />
+            <file
+                name="LiberationMono-Bold.ttf"
+                path="/home/zkhan/workspace/Avare/app/src/main/assets/LiberationMono-Bold.ttf" />
+        </source>
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/home/zkhan/workspace/Avare/app/src/debug/assets" />
+    </dataSet>
+
+</merger>

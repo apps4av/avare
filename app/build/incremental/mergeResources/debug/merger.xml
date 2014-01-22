@@ -1,0 +1,3727 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="main" >
+        <source path="/home/zkhan/workspace/Avare/app/src/main/res" >
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-es/strings.xml"
+                qualifiers="es" >
+                <string name="BackgroundSummary" >"Mostrar fondo a color para mejorar legibilidad en pantallas más pequeñas"
+                </string>
+                <string name="ScreenOnSummary" >"Seleccione para mantener pantalla abierta mientras el programa corra"
+                </string>
+                <string name="GpsTime" >"Tiempo de GPS"
+                </string>
+                <string name="DownloadInst" >"Pulse para seleccionar de lista, luego pulse Obtener para descargar"
+                </string>
+                <string name="ReturnOriginal" >"Pulse dos veces para volver a posición actual"
+                </string>
+                <string name="Failed" >"Sin éxito"
+                </string>
+                <string name="Nearest" >"Cercanos "
+                </string>
+                <string name="LeaveRunningLabel" >"Dejar Corriendo"
+                </string>
+                <string name="Lat" >"Lat"
+                </string>
+                <string name="accuracy" >"Precisión en pies"
+                </string>
+                <string name="degree" >"\u00B0"
+                </string>
+                <string name="TFRs" >"TFRs"
+                </string>
+                <string name="ChartTypeLabel" >"Seleccione tipo de Carta"
+                </string>
+                <string name="No" >"No"
+                </string>
+                <string name="OK" >"OK"
+                </string>
+                <string name="Runways" >"Extensiones de pista"
+                </string>
+                <string name="Help" >"Ayuda"
+                </string>
+                <string name="GpsTimeLabel" >"Período corto de actualización de GPS"
+                </string>
+                <string name="OrientationP" >"OrientaciónP"
+                </string>
+                <string name="Success" >"Éxito"
+                </string>
+                <string name="GPSEnable" >"Active GPS"
+                </string>
+                <string name="ShowTrack" >"Mostrar Ruta"
+                </string>
+                <string name="BadCoords" >"Datos inaceptables de Longitud/Latitud\n Rango de Longitud: 0 a 180 O\n Rango de Latitud 0 a 90 N"
+                </string>
+                <string name="DestinationPrompt" >"Escriba código de destino"
+                </string>
+                <string name="SimulationModeSummary" >"Active modo de Simulación para planear"
+                </string>
+                <string name="weather" >"Tiempo"
+                </string>
+                <string name="DestinationSet" >"Destino fijado a"
+                </string>
+                <string name="InstallPDF" >"Para ver el diagrama,vaya a Google Play Store, e instale un lector de PDF"
+                </string>
+                <string name="SimulationModeLabel" >"Active Simulación Mode"
+                </string>
+                <string name="ShowTrackLabel" >"Línea de Ruta a Destino"
+                </string>
+                <string name="LeaveRunningSummary" >"Seleccione para pausar el programa al Salir (en lugar de una salida total)"
+                </string>
+                <string name="Extracting" >"Extrayendo"
+                </string>
+                <string name="DestinationNF" >"Destino inexistente "
+                </string>
+                <string name="Done" >"Hecho"
+                </string>
+                <string name="ShowTrackSummary" >"Seleccione para mostrar curso a destino"
+                </string>
+                <string name="ScreenOnLabel" >"Mantener pantalla abierta "
+                </string>
+                <string name="AFD" >"A/FD"
+                </string>
+                <string name="UnitsSummary" >"Seleccione unidad de distancia"
+                </string>
+                <string name="Downloading" >"Descargando"
+                </string>
+                <string name="GPSLost" >"No hay señal de GPS"
+                </string>
+                <string name="AllFacilitiesLabel" >"Mostrar todas las Bases"
+                </string>
+                <string name="Lon" >"Lon"
+                </string>
+                <string name="Get" >"Obtener"
+                </string>
+                <string name="calibratethis" >"Geo Marcar este punto"
+                </string>
+                <string name="Destination" >"Destino"
+                </string>
+                <string name="MapsSummary" >"Lugar donde se guardan Cartas "
+                </string>
+                <string name="SelectPlate" >"Seleccione una carta"
+                </string>
+                <string name="Yes" >"Sí"
+                </string>
+                <string name="Calibrate" >"GeoMarca"
+                </string>
+                <string name="LoadingMaps" >"Cargando Cartas"
+                </string>
+                <string name="RunwaysLabel" >"Extensiones de pista"
+                </string>
+                <string name="main" >"Mapa"
+                </string>
+                <string name="Maps" >"Mapas"
+                </string>
+                <string name="ADS" >"Diagramas de aeropuertos"
+                </string>
+                <string name="UnitsLabel" >"Unidad de Distancia"
+                </string>
+                <string name="gps" >"GPS"
+                </string>
+                <string name="Warning" >"Éste no es un GPS certificado por la FAA.\n Use bajo su propio riesgo.\n Considere que este programa no funcionará cuando su vida o propiedad estén en riesgo.\n El autor de este programa no es responsable por ningún tipo de daño causado por su uso.\n"
+                </string>
+                <string name="ChartTypeSummary" >"Seleccione tipo de carta para navegar"
+                </string>
+                <string name="AllFacilities" >"Toda Instalación"
+                </string>
+                <string name="GpsTimeSummary" >"Seleccione para período corto de actualización de GPS "
+                </string>
+                <string name="RunwaysSummary" >"Seleccione para mostrar extensiones de pista"
+                </string>
+                <string name="WarningMsg" >"Advertencia"
+                </string>
+                <string name="NorthUp" >"NF"
+                </string>
+                <string name="Settings" >"Preferencias"
+                </string>
+                <string name="PointsTooClose" >"Puntos demasiado cercanos a sí mismos"
+                </string>
+                <string name="ObstaclesLabel" >"Mostrar obstáculos"
+                </string>
+                <string name="app_name" >"Avare"
+                </string>
+                <string name="ScreenOn" >"Tiempo límite de pantalla"
+                </string>
+                <string name="AllFacilitiesSummary" >"Seleccione para mostrar en Cercanos y Búsqueda bases para helipuertos, ultraligeros, e hidroaviones"
+                </string>
+                <string name="databases" >"Bases de datos (Requeridas)"
+                </string>
+                <string name="download" >"Descarga"
+                </string>
+                <string name="AirDia" >"Diagrama de aeropuerto"
+                </string>
+                <string name="Altitude" >"Altura en pies"
+                </string>
+                <string name="title_activity_main" >"Avare"
+                </string>
+                <string name="ObstaclesSummary" >"Mostrar obstáculos cerca de la aeronave"
+                </string>
+                <string name="latitude" >"'N"
+                </string>
+                <string name="Background" >"Fondo"
+                </string>
+                <string name="Exit" >"Salir"
+                </string>
+                <string name="OrientationPSummary" >"Active para operación en Modo Vertical"
+                </string>
+                <string name="update" >"Actualización"
+                </string>
+                <string name="BackgroundLabel" >"Mostrar Fondo"
+                </string>
+                <string name="Obstacles" >"Obstáculos"
+                </string>
+                <string name="Units" >"Unidad de Distancia"
+                </string>
+                <string name="Recent" >"Reciente"
+                </string>
+                <string name="Cancel" >"Cancele"
+                </string>
+                <string name="MapsLabel" >"Archivo de Cartas"
+                </string>
+                <string name="Search" >"Búsqueda"
+                </string>
+                <string name="GpsOffWarnSummary" >"Seleccione para advertir frecuentemente cuando el GPS esté desactivado"
+                </string>
+                <string name="PlatesNF" >"No hay cartas disponibles para este destino"
+                </string>
+                <string name="TFRReceived" >"TFR recibida"
+                </string>
+                <string name="SimulationMode" >"Simulación"
+                </string>
+                <string name="ChartType" >"Tipo de Carta"
+                </string>
+                <string name="Searching" >"Buscando"
+                </string>
+                <string name="GpsOffWarnLabel" >"AdvertenciaGPSdesactivado"
+                </string>
+                <string name="longitude" >"'O"
+                </string>
+                <string name="plates" >"Cartas"
+                </string>
+                <string name="TrackUp" >"RF"
+                </string>
+                <string name="Set" >"Fijar"
+                </string>
+                <string name="AreaNF" >"Aeropuertos cercanos mostrados cuando el GPS está cerrado, y no en simulación"
+                </string>
+                <string name="GpsOffWarn" >"AdvertGPSdesactiv"
+                </string>
+                <string name="To" >"A"
+                </string>
+                <string name="LeaveRunning" >"Dejar Corriendo"
+                </string>
+                <string name="DownloadDB" >"Falta el archivo requerido y debe ser descargado."
+                </string>
+                <string name="OrientationPLabel" >"Modo Vertical "
+                </string>
+                <string name="Init" >"Inicializando"
+                </string>
+                <string name="Agree" >"Estoy de acuerdo"
+                </string>
+                <string name="desc" >"Imagen/Carta"
+                </string>
+                <string name="MissingMaps" >"Descargue Cartas"
+                </string>
+                <string name="ValidDest" >"Primero escriba un destino válido"
+                </string>
+                <string name="GoodCoords" >"Carta marcada y guardada"
+                </string>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-large/dimen.xml"
+                qualifiers="large" >
+                <dimen name="runwayNumberTextSize" >25sp
+                </dimen>
+                <dimen name="TextSize" >35sp
+                </dimen>
+                <dimen name="distanceRingNumberTextSize" >16sp
+                </dimen>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-fr/strings.xml"
+                qualifiers="fr" >
+                <string name="ChartTypeSummary" >"Sélectionner un type de carte pour la navigation"
+                </string>
+                <string name="Downloading" >"En téléchargement"
+                </string>
+                <string name="Clear" >"Effacer"
+                </string>
+                <string name="TracksOn" >Enregistrement du tracé activée
+                </string>
+                <string name="ValidDest" >"Entrer une destination valide"
+                </string>
+                <string name="ChartType" >"Type de cartes"
+                </string>
+                <string name="DistMile" >mi
+                </string>
+                <string name="InstallPDF" >"Pour visionner, installer un visionneur de PDF sur Google Play"
+                </string>
+                <string name="WarningMsg" >"Avertissement: à vos propres risques"
+                </string>
+                <string name="VerticalRateSummary" >"Selectionner pour afficher les taux de descente ou monté vers la destination"
+                </string>
+                <string name="GpsOnly" >"Seulement les destinations GPS peuvent être étiquettées"
+                </string>
+                <string name="AirSigType" >"AIRMET/SIGMET"
+                </string>
+                <string name="Warning" >"Ce logiciel n'est pas certifié pour utilisation en vol par les autorités légales.\nUtilisez à vos propres risques. \nLe créateur de ce logiciel ne peut être tenu responsable de toutes blessures ou dommages causés par son utilisation. \n"
+                </string>
+                <string name="TrkUpdAllow" >TrkUpdAllow
+                </string>
+                <string name="CurrentlySetTo" >"\nCurrently: "
+                </string>
+                <string name="Left" >"Gauche"
+                </string>
+                <string name="BackgroundLabel" >"Afficher l'arrière-plan"
+                </string>
+                <string name="Label" >"Étiquette"
+                </string>
+                <string name="FileStoreInvalid" >Incapable dÉcrire les fichiers au répertoire sélectionné:
+                </string>
+                <string name="Agree" >"J'accepte"
+                </string>
+                <string name="LeaveRunningSummary" >"Selectionner pour laisser en veille lorsque l'on quitte l'application (au lieu de terminer l'application)"
+                </string>
+                <string name="TracksOff" >Enregistrement du tracé désactivée
+                </string>
+                <string name="Cancel" >"Annulé"
+                </string>
+                <string name="Inactive" >"Inactif"
+                </string>
+                <string name="AirSigTypeSummary" >"Selectionner le type de météo à dessiner"
+                </string>
+                <string name="Delete" >"Effacer"
+                </string>
+                <string name="DestinationSet" >"Destination vers "
+                </string>
+                <string name="Units" >"Unité de distance"
+                </string>
+                <string name="Draw" >"Dessiner"
+                </string>
+                <string name="Total" >"Total"
+                </string>
+                <string name="MissingMaps" >"Télécharger les cartes"
+                </string>
+                <string name="Searching" >"Recherche"
+                </string>
+                <string name="Search" >"Cherche"
+                </string>
+                <string name="gps" >"GPS"
+                </string>
+                <string name="Extracting" >"Extraction"
+                </string>
+                <string name="NotAvailable" >"Non disponible"
+                </string>
+                <string name="AGLMSL" >AGLMSL
+                </string>
+                <string name="plates" >"Diagrammes"
+                </string>
+                <string name="ObstaclesLabel" >"Afficher les obstacles"
+                </string>
+                <string name="MapsLabel" >"Répertoire des cartes"
+                </string>
+                <string name="prefDisplayCategoryTitle" >"Afficher"
+                </string>
+                <string name="PlatesNF" >"Pas de diagramme disponible por cette destination"
+                </string>
+                <string name="PointsTooClose" >"Les positions sont trop rapprochées"
+                </string>
+                <string name="UnitKnot" >kt
+                </string>
+                <string name="LeaveRunning" >"Laisser ouvert"
+                </string>
+                <string name="AutoPostTracksDialogText" >"La filière du tracé a été sauvegardée"
+                </string>
+                <string name="AllFacilitiesSummary" >"Sélectionner pour afficher les aéroports pour héliports, ultra-légers et hydravions sur les cartes et recherches"
+                </string>
+                <string name="BadCoords" >"Longitude/Latitude invalide\nLongitude varie: 0 à 180 W\nLatitude varie 0 à 90 N"
+                </string>
+                <string name="ShowTrackLabel" >"Afficher le tracé vers la destination"
+                </string>
+                <string name="calibratethis" >"Marquer ce point"
+                </string>
+                <string name="OrientationPSummary" >"Activation du visionnement en mode portrait"
+                </string>
+                <string name="Destination" >"Destination"
+                </string>
+                <string name="databases" >"Bases de données (requises)"
+                </string>
+                <string name="Navigate" >"Naviger"
+                </string>
+                <string name="DistKilometer" >km
+                </string>
+                <string name="TFRReceived" >"TFR reçus"
+                </string>
+                <string name="Calibrate" >"Géo tag"
+                </string>
+                <string name="SavedPlan" >"Sauvegarder les diagrammes"
+                </string>
+                <string name="ADSBWeather" >ADSBWeather
+                </string>
+                <string name="XlateWeatherSummary" >"Selectionner pour convertir la météo METAR/TAF/PIREP au format WX abrévié"
+                </string>
+                <string name="RunwaysSummary" >"Selectioner pour afficher les numéros de piste"
+                </string>
+                <string name="LoadingMaps" >"Charger les cartes"
+                </string>
+                <string name="DistanceRingTypeSummary" >"Selectionner le style d'anneau des distances à afficher"
+                </string>
+                <string name="FileStore" >Les fichiers seront sauvegardés:
+                </string>
+                <string name="VerticalRate" >Taux de descente
+                </string>
+                <string name="desc" >"Image/Carte"
+                </string>
+                <string name="Settings" >"Préférences"
+                </string>
+                <string name="ADS" >"Diagrammes d'aéroports"
+                </string>
+                <string name="Get" >"Recherche"
+                </string>
+                <string name="LoadReverse" >"Inverser la charge"
+                </string>
+                <string name="DestinationPrompt" >"Entrez code de destination"
+                </string>
+                <string name="AllFacilitiesLabel" >"Afficher tous les aéroports"
+                </string>
+                <string name="PrivateFolder" >Utiliser le répertoire par défaut
+                </string>
+                <string name="TrkUpdAllowLabel" >"Activer l'enregistrement du tracé"
+                </string>
+                <string name="Root" >"Racine"
+                </string>
+                <string name="Right" >"Droit"
+                </string>
+                <string name="AFD" >"A/FD"
+                </string>
+                <string name="GPSEnable" >"Activer le GPS"
+                </string>
+                <string name="prefDistanceRingType" >"DistanceRingType"
+                </string>
+                <string name="NightMode" >"Mode de nuit"
+                </string>
+                <string name="Init" >"Initialisation"
+                </string>
+                <string name="prefTimerRingSize" >TimerRingSize
+                </string>
+                <string name="GpsTime" >"Heure du GPS"
+                </string>
+                <string name="Recent" >"recent"
+                </string>
+                <string name="PlanSet" >" ajouté au plan"
+                </string>
+                <string name="Next" >"Suivant"
+                </string>
+                <string name="Altitude" >"Altitude ft."
+                </string>
+                <string name="WX" >"WX"
+                </string>
+                <string name="Obstacles" >"Obstacles"
+                </string>
+                <string name="Runways" >"Numéros de la piste"
+                </string>
+                <string name="Failed" >"Échec"
+                </string>
+                <string name="DistKnot" >nm
+                </string>
+                <string name="Last" >"Dernier"
+                </string>
+                <string name="main" >"Carte"
+                </string>
+                <string name="ShowTrack" >"Afficher le tracé"
+                </string>
+                <string name="TrkUpdShowHistoryLabel" >"Historique des tracés"
+                </string>
+                <string name="TrkUpdShowHistorySummary" >"Selectionner pour afficher le travé du vol sur la carte active"
+                </string>
+                <string name="Plan" >"Plan"
+                </string>
+                <string name="GpsTimeLabel" >"Position GPS plus fréquente"
+                </string>
+                <string name="SelectPlate" >"Sélectionner un diagramme"
+                </string>
+                <string name="LeaveRunningLabel" >"Laisser ouvert"
+                </string>
+                <string name="Up" >Haut
+                </string>
+                <string name="UnitsLabel" >"Unité de distance"
+                </string>
+                <string name="UseFlightTimerSummary" >"Selectionner pour afficher la minuterie du temps de vol"
+                </string>
+                <string name="GPSLost" >"Aucun signal GPS"
+                </string>
+                <string name="PlanNoset" >" pas ajouté au plan"
+                </string>
+                <string name="ScreenOnLabel" >"Garder l'écran allumé"
+                </string>
+                <string name="AirSigTypeLabel" >"Type d'AIRMET/SIGMET"
+                </string>
+                <string name="prefUseFlightTimer" >UseFlightTimer
+                </string>
+                <string name="longitude" >"'W"
+                </string>
+                <string name="noZoomIn" >"Échelle trop petite"
+                </string>
+                <string name="OrientationP" >"OrientationP"
+                </string>
+                <string name="AirDia" >"Diagramme de l'aéroport"
+                </string>
+                <string name="Save" >"Sauvegarder"
+                </string>
+                <string name="TrackUpLabel" >"Track vers le haut"
+                </string>
+                <string name="VsFpm" >ppm
+                </string>
+                <string name="AutoPostTracksSubject" >"Avare flight tracking data - "
+                </string>
+                <string name="latitude" >"'N"
+                </string>
+                <string name="To" >"Vers"
+                </string>
+                <string name="ScreenOnSummary" >"Selectioner pour garder l'écran allumé lorsque l'application roule"
+                </string>
+                <string name="DownloadDB" >"Le ficher requis est manquant et doit être téléchargé."
+                </string>
+                <string name="GoodCoords" >"Données affichées et sauvegardées"
+                </string>
+                <string name="Set" >"Ajuster"
+                </string>
+                <string name="prefGpsCategoryTitle" >"GPS"
+                </string>
+                <string name="IconHelicopter" >"Icône d'hélicoptère"
+                </string>
+                <string name="VerticalRateLabel" >"Afficher le taux de descente"
+                </string>
+                <string name="Maps" >"Cartes"
+                </string>
+                <string name="update" >"Mise à jour"
+                </string>
+                <string name="OrientationPLabel" >"Mode portrait"
+                </string>
+                <string name="TimerRingSizeLabel" >"Durée de la minuterie"
+                </string>
+                <string name="AreaNF" >"Les Aéroports proches sont affichés quand le GPS a une position"
+                </string>
+                <string name="ShowTrackSummary" >"Sélectionner pour afficher le tracé vers la destination"
+                </string>
+                <string name="GpsTimeSummary" >"Affichage plus fréquent de votre position GPS"
+                </string>
+                <string name="Help" >"Aide"
+                </string>
+                <string name="ADSBWeatherSummary" >"Selectionner pour utiliser météo provenant d'un receveur ADSB (require L'Avare External IO module app.), ou utiliser la météo Internet"
+                </string>
+                <string name="title_activity_main" >"Avare"
+                </string>
+                <string name="degree" >"\u00B0"
+                </string>
+                <string name="RootLabel" >"Serveur pour le téléchargement des cartes"
+                </string>
+                <string name="DistanceRingTypeLabel" >"Style d'anneau des distances"
+                </string>
+                <string name="WeatherError" >"Incapable de télécharger les données météo"
+                </string>
+                <string name="IconHelicopterSummary" >"Selectionner pour changer l'icône de position à un hélicoptère (redémarrage requis)"
+                </string>
+                <string name="XlateWeatherLabel" >"Convertir la météo"
+                </string>
+                <string name="UnitKilometer" >km
+                </string>
+                <string name="GpsOffWarnSummary" >"Sélectionner pour afficher plus souvent l'avis du GPS désactivé"
+                </string>
+                <string name="SimulationMode" >"Simulation"
+                </string>
+                <string name="NightModeSummary" >"Selectioner pour réduire l'intensité lumineuse durant les vols de nuit (redémarrage requis)"
+                </string>
+                <string name="Background" >"Arrière-plan"
+                </string>
+                <string name="ChartTypeLabel" >"Sélectionner type de cartes"
+                </string>
+                <string name="prefTracksCategoryTitle" >Enregistrer le tracé
+                </string>
+                <string name="accuracy" >"Précision ft."
+                </string>
+                <string name="TFRs" >"TFRs"
+                </string>
+                <string name="IconHelicopterLabel" >"icône d'hélicoptère"
+                </string>
+                <string name="UnitMile" >mi
+                </string>
+                <string name="RootSummary" >"Selectioner un serveur pour les téléchargements des cartes et données"
+                </string>
+                <string name="TrackUp" >"Tracé haut"
+                </string>
+                <string name="Load" >"Charger"
+                </string>
+                <string name="UseFlightTimerLabel" >"Temps de vol"
+                </string>
+                <string name="prefWeatherCategoryTitle" >"Météo"
+                </string>
+                <string name="OK" >"OK"
+                </string>
+                <string name="SpeedKnot" >kt
+                </string>
+                <string name="MapsSummary" >"Endroit où vos cartes sont emmagasinées"
+                </string>
+                <string name="No" >"Non"
+                </string>
+                <string name="prefStorageAndDownloadsCategoryTitle" >"Storage et Téléchargements"
+                </string>
+                <string name="DatabaseName" >"maps.db"
+                </string>
+                <string name="PlanNF" >"Le plan est affiché lorsqu'au moins un point de repère est entré dans la recherche"
+                </string>
+                <string name="Success" >"Réussi"
+                </string>
+                <string name="XlateWeather" >"XlateWeather"
+                </string>
+                <string name="Pan" >"Dérouler"
+                </string>
+                <string name="GpsOffWarnLabel" >"Avertissement lorsque le GPS est désactivé"
+                </string>
+                <string name="BackgroundSummary" >"Afficher un arrière-plan coloré pour améliorer la lecture sur les petits écrans"
+                </string>
+                <string name="noZoomOut" >"Échelle trop grande"
+                </string>
+                <string name="Active" >"Actif"
+                </string>
+                <string name="TrkUpdShowHistory" >TrkUpdShowHistory
+                </string>
+                <string name="Nearest" >"Le plus près"
+                </string>
+                <string name="Near" >"près de"
+                </string>
+                <string name="TrkUpdAllowSummary" >"Selectionner pour activer l'enregistrement du tracé."
+                </string>
+                <string name="Done" >"Terminé"
+                </string>
+                <string name="UnitsSummary" >"Choisir l'unité de distance"
+                </string>
+                <string name="ADSBWeatherLabel" >"Utiliser la météo ADSB"
+                </string>
+                <string name="Yes" >"Oui"
+                </string>
+                <string name="Find" >"trouvé"
+                </string>
+                <string name="ObstaclesSummary" >"Affiche les obstacles près de l'avion"
+                </string>
+                <string name="Zero" >"0"
+                </string>
+                <string name="RunwaysLabel" >"Numéros de la piste"
+                </string>
+                <string name="WeatherPlan" >"Charger un diagramme et cliquer sur mise à jour pour rafraichir les données météo"
+                </string>
+                <string name="prefAutoPostTracks" >AutoPostTracks
+                </string>
+                <string name="Exit" >"Sortir"
+                </string>
+                <string name="AutoPostTracksSummary" >"Selectionner quoi faire avec les fichiers de tracé KML for de la fermeture"
+                </string>
+                <string name="Lat" >"Lat"
+                </string>
+                <string name="prefAppStateCategoryTitle" >"l'État de l'application"
+                </string>
+                <string name="ScreenOn" >"Temps écoulé"
+                </string>
+                <string name="SpeedMile" >mh
+                </string>
+                <string name="download" >"Télécharger"
+                </string>
+                <string name="DownloadInst" >"Sélectionner un item puis presser sur menu pour le télécharger"
+                </string>
+                <string name="DestinationNF" >"Destination non trouvée"
+                </string>
+                <string name="AutoPostTracksLabel" >"Afficher les tracés automatiquement"
+                </string>
+                <string name="NightModeLabel" >"Mode de nuit"
+                </string>
+                <string name="TrackUpSummary" >"Selectionner pour activer le tracé vers le haut (Expérimental), autrement le nord est vers le haut"
+                </string>
+                <string name="weather" >"Météo"
+                </string>
+                <string name="TimerRingSizeSummary" >"Selectionner la durée de la minuterie en minutes"
+                </string>
+                <string name="AutoPostTracksTitle" >"Envoyer le fichier du tracé sur"
+                </string>
+                <string name="AllFacilities" >"Tous les aéroports"
+                </string>
+                <string name="AGLMSLLabel" >"Afficher MSL/AGL"
+                </string>
+                <string name="SpeedKilometer" >kh
+                </string>
+                <string name="Lon" >"Long"
+                </string>
+                <string name="app_name" >"Avare"
+                </string>
+                <string name="AGLMSLSummary" >"Selectionner pour afficher l'élévation en MSL, et en AGL d'après les cartes d'élevation"
+                </string>
+                <string name="GpsOffWarn" >"GPS désactivé"
+                </string>
+            </file>
+            <file
+                name="heli"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-xhdpi/heli.png"
+                qualifiers="xhdpi"
+                type="drawable" />
+            <file
+                name="planeother"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-xhdpi/planeother.png"
+                qualifiers="xhdpi"
+                type="drawable" />
+            <file
+                name="plane"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-xhdpi/plane.png"
+                qualifiers="xhdpi"
+                type="drawable" />
+            <file
+                name="obstacle"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-xhdpi/obstacle.png"
+                qualifiers="xhdpi"
+                type="drawable" />
+            <file
+                name="menu"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-xhdpi/menu.png"
+                qualifiers="xhdpi"
+                type="drawable" />
+            <file
+                name="nochart"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-nodpi/nochart.png"
+                qualifiers="nodpi"
+                type="drawable" />
+            <file
+                name="preferences"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/xml/preferences.xml"
+                qualifiers=""
+                type="xml" />
+            <file
+                name="web"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/web.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="weather"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/weather.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="plates"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/plates.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="chart_download"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/chart_download.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="plan"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/plan.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="nearest_list"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/nearest_list.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="lonlat"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/lonlat.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="tabs_bg"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/tabs_bg.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="chart_download_list"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/chart_download_list.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="plan_list"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/plan_list.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="input"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/input.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="preferences"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/preferences.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="textview_wrap"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/textview_wrap.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="search_list"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/search_list.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="nearest"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/nearest.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="search"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/search.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="typevalue"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/typevalue.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="location"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/location.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="airport"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/airport.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="main"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/main.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="folder"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/folder.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="satellite"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/satellite.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="textview"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/layout/textview.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-xlarge/dimen.xml"
+                qualifiers="xlarge" >
+                <dimen name="runwayNumberTextSize" >25sp
+                </dimen>
+                <dimen name="distanceRingNumberTextSize" >16sp
+                </dimen>
+                <dimen name="TextSize" >30sp
+                </dimen>
+            </file>
+            <file
+                name="heli"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-ldpi/heli.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="planeother"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-ldpi/planeother.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="plane"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-ldpi/plane.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="obstacle"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-ldpi/obstacle.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="menu"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-ldpi/menu.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="xlate_up"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_up.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="xlate_left"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_left.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="xlate_right_end"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_right_end.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="xlate_left_end"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_left_end.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="xlate_up_end"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_up_end.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                name="xlate_right"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/anim/xlate_right.xml"
+                qualifiers=""
+                type="anim" />
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-normal/dimen.xml"
+                qualifiers="normal" >
+                <dimen name="TextSize" >25sp
+                </dimen>
+                <dimen name="distanceRingNumberTextSize" >16sp
+                </dimen>
+                <dimen name="runwayNumberTextSize" >25sp
+                </dimen>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values-small/dimen.xml"
+                qualifiers="small" >
+                <dimen name="runwayNumberTextSize" >25sp
+                </dimen>
+                <dimen name="TextSize" >25sp
+                </dimen>
+                <dimen name="distanceRingNumberTextSize" >16sp
+                </dimen>
+            </file>
+            <file
+                name="heli"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-hdpi/heli.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="planeother"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-hdpi/planeother.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="plane"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-hdpi/plane.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="obstacle"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-hdpi/obstacle.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="menu"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-hdpi/menu.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values/arrays.xml"
+                qualifiers="" >
+                <string-array name="ChartTypeValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                    <item>
+2
+                    </item>
+                    <item>
+3
+                    </item>
+                    <item>
+4
+                    </item>
+                    <item>
+5
+                    </item>
+                    <item>
+6
+                    </item>
+                    <item>
+7
+                    </item>
+                    <item>
+8
+                    </item>
+                </string-array>
+                <string-array name="resFilesDatabase" >
+                    <item>
+databases
+                    </item>
+                    <item>
+TFRs
+                    </item>
+                </string-array>
+                <string-array name="resFilesTopo" >
+                    <item>
+CAN_001
+                    </item>
+                    <item>
+CAN_002
+                    </item>
+                    <item>
+CAN_003
+                    </item>
+                    <item>
+CAN_010
+                    </item>
+                    <item>
+CAN_011
+                    </item>
+                    <item>
+CAN_012
+                    </item>
+                    <item>
+CAN_013
+                    </item>
+                    <item>
+CAN_014
+                    </item>
+                    <item>
+CAN_020
+                    </item>
+                    <item>
+CAN_021
+                    </item>
+                    <item>
+CAN_022
+                    </item>
+                    <item>
+CAN_023
+                    </item>
+                    <item>
+CAN_024
+                    </item>
+                    <item>
+CAN_030
+                    </item>
+                    <item>
+CAN_031
+                    </item>
+                    <item>
+CAN_032
+                    </item>
+                    <item>
+CAN_033
+                    </item>
+                    <item>
+CAN_034
+                    </item>
+                    <item>
+CAN_040
+                    </item>
+                    <item>
+CAN_041
+                    </item>
+                    <item>
+CAN_042
+                    </item>
+                    <item>
+CAN_043
+                    </item>
+                    <item>
+CAN_044
+                    </item>
+                    <item>
+CAN_052
+                    </item>
+                    <item>
+CAN_053
+                    </item>
+                    <item>
+CAN_054
+                    </item>
+                    <item>
+CAN_062
+                    </item>
+                    <item>
+CAN_063
+                    </item>
+                    <item>
+CAN_064
+                    </item>
+                    <item>
+CAN_072
+                    </item>
+                    <item>
+CAN_073
+                    </item>
+                    <item>
+CAN_074
+                    </item>
+                    <item>
+CAN_082
+                    </item>
+                    <item>
+CAN_083
+                    </item>
+                    <item>
+CAN_084
+                    </item>
+                    <item>
+CAN_092
+                    </item>
+                    <item>
+CAN_093
+                    </item>
+                    <item>
+CAN_094
+                    </item>
+                    <item>
+CAN_102
+                    </item>
+                    <item>
+CAN_103
+                    </item>
+                    <item>
+CAN_104
+                    </item>
+                    <item>
+CAN_114
+                    </item>
+                </string-array>
+                <string-array name="resFilesAFD" >
+                    <item>
+AFD_NE
+                    </item>
+                    <item>
+AFD_NC
+                    </item>
+                    <item>
+AFD_NW
+                    </item>
+                    <item>
+AFD_SE
+                    </item>
+                    <item>
+AFD_SC
+                    </item>
+                    <item>
+AFD_SW
+                    </item>
+                    <item>
+AFD_EC
+                    </item>
+                    <item>
+AFD_AK
+                    </item>
+                    <item>
+AFD_PAC
+                    </item>
+                </string-array>
+                <string-array name="resFilesTerrain" >
+                    <item>
+ELEV_NE
+                    </item>
+                    <item>
+ELEV_NC
+                    </item>
+                    <item>
+ELEV_NW
+                    </item>
+                    <item>
+ELEV_SE
+                    </item>
+                    <item>
+ELEV_SC
+                    </item>
+                    <item>
+ELEV_SW
+                    </item>
+                    <item>
+ELEV_AK
+                    </item>
+                    <item>
+ELEV_HI
+                    </item>
+                    <item>
+ELEV_PR
+                    </item>
+                    <item>
+REL_NE
+                    </item>
+                    <item>
+REL_NC
+                    </item>
+                    <item>
+REL_NW
+                    </item>
+                    <item>
+REL_SE
+                    </item>
+                    <item>
+REL_SC
+                    </item>
+                    <item>
+REL_SW
+                    </item>
+                    <item>
+REL_AK
+                    </item>
+                    <item>
+REL_HI
+                    </item>
+                    <item>
+REL_PR
+                    </item>
+                </string-array>
+                <string-array name="TimerRingSizeValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                    <item>
+5
+                    </item>
+                    <item>
+10
+                    </item>
+                </string-array>
+                <string-array name="UnitsD" >
+                    <item>
+Nautical Miles
+                    </item>
+                    <item>
+Statute Miles
+                    </item>
+                    <item>
+Kilometers
+                    </item>
+                </string-array>
+                <string-array name="AirSig" >
+                    <item>
+ALL
+                    </item>
+                    <item>
+NONE
+                    </item>
+                    <item>
+IFR AIRMET
+                    </item>
+                    <item>
+ICE AIRMET
+                    </item>
+                    <item>
+TURB AIRMET
+                    </item>
+                    <item>
+MTN OBSCN AIRMET
+                    </item>
+                    <item>
+CONVECTIVE SIGMET
+                    </item>
+                    <item>
+CONVECTIVE OUTLOOK
+                    </item>
+                </string-array>
+                <string-array name="resFilesSectional" >
+                    <item>
+Albuquerque
+                    </item>
+                    <item>
+Anchorage
+                    </item>
+                    <item>
+Atlanta
+                    </item>
+                    <item>
+Bethel
+                    </item>
+                    <item>
+Billings
+                    </item>
+                    <item>
+Brownsville
+                    </item>
+                    <item>
+CapeLisburne
+                    </item>
+                    <item>
+Charlotte
+                    </item>
+                    <item>
+Cheyenne
+                    </item>
+                    <item>
+Chicago
+                    </item>
+                    <item>
+Cincinnati
+                    </item>
+                    <item>
+ColdBay
+                    </item>
+                    <item>
+Dallas-FtWorth
+                    </item>
+                    <item>
+Dawson
+                    </item>
+                    <item>
+Denver
+                    </item>
+                    <item>
+Detroit
+                    </item>
+                    <item>
+DutchHarbor
+                    </item>
+                    <item>
+ElPaso
+                    </item>
+                    <item>
+Fairbanks
+                    </item>
+                    <item>
+GreatFalls
+                    </item>
+                    <item>
+GreenBay
+                    </item>
+                    <item>
+Halifax
+                    </item>
+                    <item>
+HawaiianIslands
+                    </item>
+                    <item>
+Houston
+                    </item>
+                    <item>
+Jacksonville
+                    </item>
+                    <item>
+Juneau
+                    </item>
+                    <item>
+KansasCity
+                    </item>
+                    <item>
+Ketchikan
+                    </item>
+                    <item>
+KlamathFalls
+                    </item>
+                    <item>
+Kodiak
+                    </item>
+                    <item>
+LakeHuron
+                    </item>
+                    <item>
+LasVegas
+                    </item>
+                    <item>
+LosAngeles
+                    </item>
+                    <item>
+McGrath
+                    </item>
+                    <item>
+Memphis
+                    </item>
+                    <item>
+Miami
+                    </item>
+                    <item>
+Montreal
+                    </item>
+                    <item>
+NewOrleans
+                    </item>
+                    <item>
+NewYork
+                    </item>
+                    <item>
+Nome
+                    </item>
+                    <item>
+Omaha
+                    </item>
+                    <item>
+Phoenix
+                    </item>
+                    <item>
+PointBarrow
+                    </item>
+                    <item>
+SaltLakeCity
+                    </item>
+                    <item>
+SanAntonio
+                    </item>
+                    <item>
+SanFrancisco
+                    </item>
+                    <item>
+Seattle
+                    </item>
+                    <item>
+Seward
+                    </item>
+                    <item>
+StLouis
+                    </item>
+                    <item>
+TwinCities
+                    </item>
+                    <item>
+Washington
+                    </item>
+                    <item>
+Whitehorse
+                    </item>
+                    <item>
+Wichita
+                    </item>
+                </string-array>
+                <string-array name="resNameAFD" >
+                    <item>
+A/FD NE
+                    </item>
+                    <item>
+A/FD NC
+                    </item>
+                    <item>
+A/FD NW
+                    </item>
+                    <item>
+A/FD SE
+                    </item>
+                    <item>
+A/FD SC
+                    </item>
+                    <item>
+A/FD SW
+                    </item>
+                    <item>
+A/FD EC
+                    </item>
+                    <item>
+A/FD AK
+                    </item>
+                    <item>
+A/FD Pacific
+                    </item>
+                </string-array>
+                <string-array name="resNameTopo" >
+                    <item>
+Canada Grid 001
+                    </item>
+                    <item>
+Canada Grid 002
+                    </item>
+                    <item>
+Canada Grid 003
+                    </item>
+                    <item>
+Canada Grid 010
+                    </item>
+                    <item>
+Canada Grid 011
+                    </item>
+                    <item>
+Canada Grid 012
+                    </item>
+                    <item>
+Canada Grid 013
+                    </item>
+                    <item>
+Canada Grid 014
+                    </item>
+                    <item>
+Canada Grid 020
+                    </item>
+                    <item>
+Canada Grid 021
+                    </item>
+                    <item>
+Canada Grid 022
+                    </item>
+                    <item>
+Canada Grid 023
+                    </item>
+                    <item>
+Canada Grid 024
+                    </item>
+                    <item>
+Canada Grid 030
+                    </item>
+                    <item>
+Canada Grid 031
+                    </item>
+                    <item>
+Canada Grid 032
+                    </item>
+                    <item>
+Canada Grid 033
+                    </item>
+                    <item>
+Canada Grid 034
+                    </item>
+                    <item>
+Canada Grid 040
+                    </item>
+                    <item>
+Canada Grid 041
+                    </item>
+                    <item>
+Canada Grid 042
+                    </item>
+                    <item>
+Canada Grid 043
+                    </item>
+                    <item>
+Canada Grid 044
+                    </item>
+                    <item>
+Canada Grid 052
+                    </item>
+                    <item>
+Canada Grid 053
+                    </item>
+                    <item>
+Canada Grid 054
+                    </item>
+                    <item>
+Canada Grid 062
+                    </item>
+                    <item>
+Canada Grid 063
+                    </item>
+                    <item>
+Canada Grid 064
+                    </item>
+                    <item>
+Canada Grid 072
+                    </item>
+                    <item>
+Canada Grid 073
+                    </item>
+                    <item>
+Canada Grid 074
+                    </item>
+                    <item>
+Canada Grid 082
+                    </item>
+                    <item>
+Canada Grid 083
+                    </item>
+                    <item>
+Canada Grid 084
+                    </item>
+                    <item>
+Canada Grid 092
+                    </item>
+                    <item>
+Canada Grid 093
+                    </item>
+                    <item>
+Canada Grid 094
+                    </item>
+                    <item>
+Canada Grid 102
+                    </item>
+                    <item>
+Canada Grid 103
+                    </item>
+                    <item>
+Canada Grid 104
+                    </item>
+                    <item>
+Canada Grid 114
+                    </item>
+                </string-array>
+                <string-array name="ChartType" >
+                    <item>
+Sectional
+                    </item>
+                    <item>
+TAC
+                    </item>
+                    <item>
+WAC
+                    </item>
+                    <item>
+IFR Low
+                    </item>
+                    <item>
+IFR High
+                    </item>
+                    <item>
+Terrain
+                    </item>
+                    <item>
+Shaded Relief
+                    </item>
+                    <item>
+Topographic
+                    </item>
+                    <item>
+Heli/Other
+                    </item>
+                </string-array>
+                <string-array name="ServerValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                </string-array>
+                <string-array name="resNameSectional" >
+                    <item>
+Albuquerque
+                    </item>
+                    <item>
+Anchorage
+                    </item>
+                    <item>
+Atlanta
+                    </item>
+                    <item>
+Bethel
+                    </item>
+                    <item>
+Billings
+                    </item>
+                    <item>
+Brownsville
+                    </item>
+                    <item>
+Cape Lisburne
+                    </item>
+                    <item>
+Charlotte
+                    </item>
+                    <item>
+Cheyenne
+                    </item>
+                    <item>
+Chicago
+                    </item>
+                    <item>
+Cincinnati
+                    </item>
+                    <item>
+Cold Bay
+                    </item>
+                    <item>
+Dallas-FtWorth
+                    </item>
+                    <item>
+Dawson
+                    </item>
+                    <item>
+Denver
+                    </item>
+                    <item>
+Detroit
+                    </item>
+                    <item>
+Dutch Harbor
+                    </item>
+                    <item>
+El Paso
+                    </item>
+                    <item>
+Fairbanks
+                    </item>
+                    <item>
+Great Falls
+                    </item>
+                    <item>
+Green Bay
+                    </item>
+                    <item>
+Halifax
+                    </item>
+                    <item>
+Hawaiian Islands
+                    </item>
+                    <item>
+Houston
+                    </item>
+                    <item>
+Jacksonville
+                    </item>
+                    <item>
+Juneau
+                    </item>
+                    <item>
+Kansas City
+                    </item>
+                    <item>
+Ketchikan
+                    </item>
+                    <item>
+Klamath Falls
+                    </item>
+                    <item>
+Kodiak
+                    </item>
+                    <item>
+Lake Huron
+                    </item>
+                    <item>
+Las Vegas
+                    </item>
+                    <item>
+Los Angeles
+                    </item>
+                    <item>
+McGrath
+                    </item>
+                    <item>
+Memphis
+                    </item>
+                    <item>
+Miami
+                    </item>
+                    <item>
+Montreal
+                    </item>
+                    <item>
+New Orleans
+                    </item>
+                    <item>
+New York
+                    </item>
+                    <item>
+Nome
+                    </item>
+                    <item>
+Omaha
+                    </item>
+                    <item>
+Phoenix
+                    </item>
+                    <item>
+Point Barrow
+                    </item>
+                    <item>
+Salt Lake City
+                    </item>
+                    <item>
+San Antonio
+                    </item>
+                    <item>
+San Francisco
+                    </item>
+                    <item>
+Seattle
+                    </item>
+                    <item>
+Seward
+                    </item>
+                    <item>
+St Louis
+                    </item>
+                    <item>
+Twin Cities
+                    </item>
+                    <item>
+Washington
+                    </item>
+                    <item>
+Whitehorse
+                    </item>
+                    <item>
+Wichita
+                    </item>
+                </string-array>
+                <string-array name="resNameIFRLE" >
+                    <item>
+IFR Low Enroute NE
+                    </item>
+                    <item>
+IFR Low Enroute NC
+                    </item>
+                    <item>
+IFR Low Enroute NW
+                    </item>
+                    <item>
+IFR Low Enroute SE
+                    </item>
+                    <item>
+IFR Low Enroute SC
+                    </item>
+                    <item>
+IFR Low Enroute SW
+                    </item>
+                    <item>
+IFR Low Enroute AK
+                    </item>
+                </string-array>
+                <string-array name="resNameDatabase" >
+                    <item>
+@string/databases
+                    </item>
+                    <item>
+@string/TFRs
+                    </item>
+                </string-array>
+                <string-array name="resFilesWeather" >
+                    <item>
+weather
+                    </item>
+                    <item>
+conus
+                    </item>
+                </string-array>
+                <string-array name="resFilesHeli" >
+                    <item>
+GrandCanyon
+                    </item>
+                    <item>
+BaltimoreWashingtonHeli9Front
+                    </item>
+                    <item>
+BostonHeli6Front
+                    </item>
+                    <item>
+ChicagoHeli6Front
+                    </item>
+                    <item>
+Dallas-FtWorthHeli5Front
+                    </item>
+                    <item>
+DetroitHeli1
+                    </item>
+                    <item>
+GulfCoastHel-WAC27
+                    </item>
+                    <item>
+HoustonHeli7
+                    </item>
+                    <item>
+LosAngelesHeli9
+                    </item>
+                    <item>
+NewYorkHeli10Front
+                    </item>
+                </string-array>
+                <string-array name="resNameIFRHE" >
+                    <item>
+IFR High Enroute NE
+                    </item>
+                    <item>
+IFR High Enroute NC
+                    </item>
+                    <item>
+IFR High Enroute NW
+                    </item>
+                    <item>
+IFR High Enroute SE
+                    </item>
+                    <item>
+IFR High Enroute SC
+                    </item>
+                    <item>
+IFR High Enroute SW
+                    </item>
+                    <item>
+IFR High Enroute AK
+                    </item>
+                </string-array>
+                <string-array name="resFilesWAC" >
+                    <item>
+CC-9
+                    </item>
+                    <item>
+CD-11
+                    </item>
+                    <item>
+CD-12
+                    </item>
+                    <item>
+CE-13
+                    </item>
+                    <item>
+CE-15
+                    </item>
+                    <item>
+CF-16
+                    </item>
+                    <item>
+CF-17
+                    </item>
+                    <item>
+CF-18
+                    </item>
+                    <item>
+CF-19
+                    </item>
+                    <item>
+CG-18
+                    </item>
+                    <item>
+CG-19
+                    </item>
+                    <item>
+CG-20
+                    </item>
+                    <item>
+CG-21
+                    </item>
+                    <item>
+CH-22
+                    </item>
+                    <item>
+CH-23
+                    </item>
+                    <item>
+CH-24
+                    </item>
+                    <item>
+CH-25
+                    </item>
+                    <item>
+CJ-26
+                    </item>
+                    <item>
+CJ-27
+                    </item>
+                </string-array>
+                <string-array name="resFilesPlate" >
+                    <item>
+alternates
+                    </item>
+                    <item>
+AL
+                    </item>
+                    <item>
+AK
+                    </item>
+                    <item>
+AZ
+                    </item>
+                    <item>
+AR
+                    </item>
+                    <item>
+CA
+                    </item>
+                    <item>
+CO
+                    </item>
+                    <item>
+CT
+                    </item>
+                    <item>
+DC
+                    </item>
+                    <item>
+DE
+                    </item>
+                    <item>
+FL
+                    </item>
+                    <item>
+GA
+                    </item>
+                    <item>
+HI
+                    </item>
+                    <item>
+ID
+                    </item>
+                    <item>
+IL
+                    </item>
+                    <item>
+IN
+                    </item>
+                    <item>
+IA
+                    </item>
+                    <item>
+KS
+                    </item>
+                    <item>
+KY
+                    </item>
+                    <item>
+LA
+                    </item>
+                    <item>
+ME
+                    </item>
+                    <item>
+MD
+                    </item>
+                    <item>
+MA
+                    </item>
+                    <item>
+MI
+                    </item>
+                    <item>
+MN
+                    </item>
+                    <item>
+MS
+                    </item>
+                    <item>
+MO
+                    </item>
+                    <item>
+MT
+                    </item>
+                    <item>
+NE
+                    </item>
+                    <item>
+NV
+                    </item>
+                    <item>
+NH
+                    </item>
+                    <item>
+NJ
+                    </item>
+                    <item>
+NM
+                    </item>
+                    <item>
+NY
+                    </item>
+                    <item>
+NC
+                    </item>
+                    <item>
+ND
+                    </item>
+                    <item>
+OH
+                    </item>
+                    <item>
+OK
+                    </item>
+                    <item>
+OR
+                    </item>
+                    <item>
+PA
+                    </item>
+                    <item>
+PR
+                    </item>
+                    <item>
+RI
+                    </item>
+                    <item>
+SC
+                    </item>
+                    <item>
+SD
+                    </item>
+                    <item>
+TN
+                    </item>
+                    <item>
+TX
+                    </item>
+                    <item>
+UT
+                    </item>
+                    <item>
+VT
+                    </item>
+                    <item>
+VA
+                    </item>
+                    <item>
+WA
+                    </item>
+                    <item>
+WV
+                    </item>
+                    <item>
+WI
+                    </item>
+                    <item>
+WY
+                    </item>
+                </string-array>
+                <string-array name="UnitsDValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                    <item>
+2
+                    </item>
+                </string-array>
+                <string-array name="resGroups" >
+                    <item>
+Databases
+                    </item>
+                    <item>
+Weather
+                    </item>
+                    <item>
+Plates/d-TPP/ADs
+                    </item>
+                    <item>
+VFR Sectional Charts
+                    </item>
+                    <item>
+TAC Charts
+                    </item>
+                    <item>
+WAC Charts
+                    </item>
+                    <item>
+IFR Low Enroute Charts
+                    </item>
+                    <item>
+A/FD Images
+                    </item>
+                    <item>
+Terrain
+                    </item>
+                    <item>
+IFR High Enroute Charts
+                    </item>
+                    <item>
+Topographic Maps
+                    </item>
+                    <item>
+Heli/Other Charts
+                    </item>
+                </string-array>
+                <string-array name="TextFieldOptionTitles" >
+                    <item/>
+                    <item>
+Zulu
+                    </item>
+                    <item/>
+                    <item>
+Ground Speed
+                    </item>
+                    <item>
+Heading
+                    </item>
+                    <item>
+Brg Next
+                    </item>
+                    <item>
+Next
+                    </item>
+                    <item>
+Dist Next
+                    </item>
+                    <item>
+ETE Next
+                    </item>
+                    <item>
+ETA Next
+                    </item>
+                    <item>
+MSL ft
+                    </item>
+                    <item>
+AGL ft
+                    </item>
+                    <item>
+Flight Time
+                    </item>
+                    <item>
+VSI fpm
+                    </item>
+                    <item>
+Dsc Rt fpm
+                    </item>
+                    <item>
+Odometer
+                    </item>
+                </string-array>
+                <string-array name="resNameHeli" >
+                    <item>
+Grand Canyon
+                    </item>
+                    <item>
+Balt-Washington Heli
+                    </item>
+                    <item>
+Boston Heli
+                    </item>
+                    <item>
+Chicago Heli
+                    </item>
+                    <item>
+Dallas-Ft-Worth Heli
+                    </item>
+                    <item>
+Detroit Heli
+                    </item>
+                    <item>
+Gulf Coast Heli
+                    </item>
+                    <item>
+Houston Heli
+                    </item>
+                    <item>
+Los Angeles Heli
+                    </item>
+                    <item>
+New York Heli
+                    </item>
+                </string-array>
+                <string-array name="Server" >
+                    <item>
+Apps4av.com
+                    </item>
+                    <item>
+Kitepilot.org
+                    </item>
+                </string-array>
+                <string-array name="resFilesTAC" >
+                    <item>
+AnchorageTAC
+                    </item>
+                    <item>
+AtlantaTAC
+                    </item>
+                    <item>
+Baltimore-WashingtonTAC
+                    </item>
+                    <item>
+BostonTAC
+                    </item>
+                    <item>
+CharlotteTAC
+                    </item>
+                    <item>
+ChicagoTAC
+                    </item>
+                    <item>
+CincinnatiTAC
+                    </item>
+                    <item>
+ClevelandTAC
+                    </item>
+                    <item>
+ColoradoSpringsTAC
+                    </item>
+                    <item>
+Dallas-FtWorthTAC
+                    </item>
+                    <item>
+DenverTAC
+                    </item>
+                    <item>
+DetroitTAC
+                    </item>
+                    <item>
+FairbanksTAC
+                    </item>
+                    <item>
+HoustonTAC
+                    </item>
+                    <item>
+KansasCityTAC
+                    </item>
+                    <item>
+LasVegasTAC
+                    </item>
+                    <item>
+LosAngelesTAC
+                    </item>
+                    <item>
+MemphisTAC
+                    </item>
+                    <item>
+MiamiTAC
+                    </item>
+                    <item>
+Minneapolis-StPaulTAC
+                    </item>
+                    <item>
+NewOrleansTAC
+                    </item>
+                    <item>
+NewYorkTAC
+                    </item>
+                    <item>
+OrlandoTAC
+                    </item>
+                    <item>
+PhiladelphiaTAC
+                    </item>
+                    <item>
+PhoenixTAC
+                    </item>
+                    <item>
+PittsburghTAC
+                    </item>
+                    <item>
+PuertoRico-VITAC
+                    </item>
+                    <item>
+SaltLakeCityTAC
+                    </item>
+                    <item>
+SanDiegoTAC
+                    </item>
+                    <item>
+SanFranciscoTAC
+                    </item>
+                    <item>
+SeattleTAC
+                    </item>
+                    <item>
+StLouisTAC
+                    </item>
+                    <item>
+TampaTAC
+                    </item>
+                </string-array>
+
+                <integer-array name="AirSigColor" >
+                    <item>
+0xFFFFFFFF
+                    </item>
+                    <item>
+0x00000000
+                    </item>
+                    <item>
+0xFF800080
+                    </item>
+                    <item>
+0xFF0000FF
+                    </item>
+                    <item>
+0xFF00FF00
+                    </item>
+                    <item>
+0xFF66FFFF
+                    </item>
+                    <item>
+0xFF7F0000
+                    </item>
+                    <item>
+0xFFFFA500
+                    </item>
+                </integer-array>
+
+                <string-array name="resNameTAC" >
+                    <item>
+Anchorage TAC
+                    </item>
+                    <item>
+Atlanta TAC
+                    </item>
+                    <item>
+Baltimore-Washington TAC
+                    </item>
+                    <item>
+Boston TAC
+                    </item>
+                    <item>
+Charlotte TAC
+                    </item>
+                    <item>
+Chicago TAC
+                    </item>
+                    <item>
+Cincinnati TAC
+                    </item>
+                    <item>
+Cleveland TAC
+                    </item>
+                    <item>
+Colorado Springs TAC
+                    </item>
+                    <item>
+Dallas-FtWorth TAC
+                    </item>
+                    <item>
+Denver TAC
+                    </item>
+                    <item>
+Detroit TAC
+                    </item>
+                    <item>
+Fairbanks TAC
+                    </item>
+                    <item>
+Houston TAC
+                    </item>
+                    <item>
+Kansas City TAC
+                    </item>
+                    <item>
+Las Vegas TAC
+                    </item>
+                    <item>
+Los Angeles TAC
+                    </item>
+                    <item>
+Memphis TAC
+                    </item>
+                    <item>
+Miami TAC
+                    </item>
+                    <item>
+Minneapolis-StPaul TAC
+                    </item>
+                    <item>
+New Orleans TAC
+                    </item>
+                    <item>
+New York TAC
+                    </item>
+                    <item>
+Orlando TAC
+                    </item>
+                    <item>
+Philadelphia TAC
+                    </item>
+                    <item>
+Phoenix TAC
+                    </item>
+                    <item>
+Pittsburgh TAC
+                    </item>
+                    <item>
+PuertoRico-VI TAC
+                    </item>
+                    <item>
+Salt Lake City TAC
+                    </item>
+                    <item>
+San Diego TAC
+                    </item>
+                    <item>
+San Francisco TAC
+                    </item>
+                    <item>
+Seattle TAC
+                    </item>
+                    <item>
+St Louis TAC
+                    </item>
+                    <item>
+Tampa TAC
+                    </item>
+                </string-array>
+                <string-array name="resFilesIFRHE" >
+                    <item>
+EHUS_NE
+                    </item>
+                    <item>
+EHUS_NC
+                    </item>
+                    <item>
+EHUS_NW
+                    </item>
+                    <item>
+EHUS_SE
+                    </item>
+                    <item>
+EHUS_SC
+                    </item>
+                    <item>
+EHUS_SW
+                    </item>
+                    <item>
+EHUS_AK
+                    </item>
+                </string-array>
+                <string-array name="AutoPostTracksValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                    <item>
+2
+                    </item>
+                </string-array>
+                <string-array name="resGroupsPopout" >
+                    <item>
+COMM
+                    </item>
+                    <item>
+METAR
+                    </item>
+                    <item>
+TAF
+                    </item>
+                    <item>
+Winds/Temp.
+                    </item>
+                    <item>
+AIREP/PIREP
+                    </item>
+                    <item>
+AIRMET/SIGMET
+                    </item>
+                    <item>
+TFR
+                    </item>
+                    <item>
+SUA
+                    </item>
+                    <item>
+NEXRAD
+                    </item>
+                </string-array>
+                <string-array name="resFilesIFRLE" >
+                    <item>
+ELUS_NE
+                    </item>
+                    <item>
+ELUS_NC
+                    </item>
+                    <item>
+ELUS_NW
+                    </item>
+                    <item>
+ELUS_SE
+                    </item>
+                    <item>
+ELUS_SC
+                    </item>
+                    <item>
+ELUS_SW
+                    </item>
+                    <item>
+ELUS_AK
+                    </item>
+                </string-array>
+                <string-array name="TextFieldOptions" >
+                    <item>
+None
+                    </item>
+                    <item>
+Greenwich Mean Time
+                    </item>
+                    <item>
+Local Time
+                    </item>
+                    <item>
+Ground Speed
+                    </item>
+                    <item>
+Heading
+                    </item>
+                    <item>
+Bearing
+                    </item>
+                    <item>
+Destination Identifier
+                    </item>
+                    <item>
+Distance to Destination
+                    </item>
+                    <item>
+Estimated Time Enroute
+                    </item>
+                    <item>
+Estimated Time of Arrival
+                    </item>
+                    <item>
+MSL Altitude
+                    </item>
+                    <item>
+AGL Height
+                    </item>
+                    <item>
+Hobbs Flight Timer
+                    </item>
+                    <item>
+Vertical Speed Indicator
+                    </item>
+                    <item>
+Descent Rate to Destination
+                    </item>
+                    <item>
+Odometer
+                    </item>
+                </string-array>
+                <string-array name="DistanceRingTypeValues" >
+                    <item>
+0
+                    </item>
+                    <item>
+1
+                    </item>
+                    <item>
+2
+                    </item>
+                </string-array>
+                <string-array name="resNameTerrain" >
+                    <item>
+Elevation NE
+                    </item>
+                    <item>
+Elevation NC
+                    </item>
+                    <item>
+Elevation NW
+                    </item>
+                    <item>
+Elevation SE
+                    </item>
+                    <item>
+Elevation SC
+                    </item>
+                    <item>
+Elevation SW
+                    </item>
+                    <item>
+Elevation AK
+                    </item>
+                    <item>
+Elevation HI
+                    </item>
+                    <item>
+Elevation PR
+                    </item>
+                    <item>
+Shaded Relief NE
+                    </item>
+                    <item>
+Shaded Relief NC
+                    </item>
+                    <item>
+Shaded Relief NW
+                    </item>
+                    <item>
+Shaded Relief SE
+                    </item>
+                    <item>
+Shaded Relief SC
+                    </item>
+                    <item>
+Shaded Relief SW
+                    </item>
+                    <item>
+Shaded Relief AK
+                    </item>
+                    <item>
+Shaded Relief HI
+                    </item>
+                    <item>
+Shaded Relief PR
+                    </item>
+                </string-array>
+                <string-array name="TimerRingSizePrompt" >
+                    <item>
+None
+                    </item>
+                    <item>
+2 Minutes
+                    </item>
+                    <item>
+5 Minutes
+                    </item>
+                    <item>
+10 Minutes
+                    </item>
+                </string-array>
+                <string-array name="resNameWAC" >
+                    <item>
+CC-9  (Fairbanks AK)
+                    </item>
+                    <item>
+CD-11 (Anchorage AK)
+                    </item>
+                    <item>
+CD-12 (Juneau AK)
+                    </item>
+                    <item>
+CE-13 (Dutch Harbor AK)
+                    </item>
+                    <item>
+CE-15 (Ketchikan AK)
+                    </item>
+                    <item>
+CF-16 (WA,OR,ID,MT)
+                    </item>
+                    <item>
+CF-17 (WY,ND,SD,NE,MN,IA)
+                    </item>
+                    <item>
+CF-18 (WI,IL,MI,IN,OH,PA)
+                    </item>
+                    <item>
+CF-19 (NY,NJ,VT,NH,RI,MA,CT,ME)
+                    </item>
+                    <item>
+CG-18 (CA,NV)
+                    </item>
+                    <item>
+CG-19 (UT,AZ,CO,NM)
+                    </item>
+                    <item>
+CG-20 (KS,OK,MO,AR,TN,MS,AL)
+                    </item>
+                    <item>
+CG-21 (KY,GA,WV,DC,VA,DE,MD,NC,SC)
+                    </item>
+                    <item>
+CH-22 (Baja)
+                    </item>
+                    <item>
+CH-23 (TX,Mexico)
+                    </item>
+                    <item>
+CH-24 (LA)
+                    </item>
+                    <item>
+CH-25 (FL,Bahamas)
+                    </item>
+                    <item>
+CJ-26 (Cuba,Jamaica)
+                    </item>
+                    <item>
+CJ-27 (Caribbean,PR,VI,DR)
+                    </item>
+                </string-array>
+                <string-array name="resNameWeather" >
+                    <item>
+METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft
+                    </item>
+                    <item>
+NEXRAD
+                    </item>
+                </string-array>
+                <string-array name="resNamePlate" >
+                    <item>
+Minimums T/A
+                    </item>
+                    <item>
+Alabama
+                    </item>
+                    <item>
+Alaska
+                    </item>
+                    <item>
+Arizona
+                    </item>
+                    <item>
+Arkansas
+                    </item>
+                    <item>
+California
+                    </item>
+                    <item>
+Colorado
+                    </item>
+                    <item>
+Connecticut
+                    </item>
+                    <item>
+D.C.
+                    </item>
+                    <item>
+Delaware
+                    </item>
+                    <item>
+Florida
+                    </item>
+                    <item>
+Georgia
+                    </item>
+                    <item>
+Hawaii
+                    </item>
+                    <item>
+Idaho
+                    </item>
+                    <item>
+Illinois
+                    </item>
+                    <item>
+Indiana
+                    </item>
+                    <item>
+Iowa
+                    </item>
+                    <item>
+Kansas
+                    </item>
+                    <item>
+Kentucky
+                    </item>
+                    <item>
+Louisiana
+                    </item>
+                    <item>
+Maine
+                    </item>
+                    <item>
+Maryland
+                    </item>
+                    <item>
+Massachusetts
+                    </item>
+                    <item>
+Michigan
+                    </item>
+                    <item>
+Minnesota
+                    </item>
+                    <item>
+Mississippi
+                    </item>
+                    <item>
+Missouri
+                    </item>
+                    <item>
+Montana
+                    </item>
+                    <item>
+Nebraska
+                    </item>
+                    <item>
+Nevada
+                    </item>
+                    <item>
+New Hampshire
+                    </item>
+                    <item>
+New Jersey
+                    </item>
+                    <item>
+New Mexico
+                    </item>
+                    <item>
+New York
+                    </item>
+                    <item>
+North Carolina
+                    </item>
+                    <item>
+North Dakota
+                    </item>
+                    <item>
+Ohio
+                    </item>
+                    <item>
+Oklahoma
+                    </item>
+                    <item>
+Oregon
+                    </item>
+                    <item>
+Pennsylvania
+                    </item>
+                    <item>
+Puerto Rico
+                    </item>
+                    <item>
+Rhode Island
+                    </item>
+                    <item>
+South Carolina
+                    </item>
+                    <item>
+South Dakota
+                    </item>
+                    <item>
+Tennessee
+                    </item>
+                    <item>
+Texas
+                    </item>
+                    <item>
+Utah
+                    </item>
+                    <item>
+Vermont
+                    </item>
+                    <item>
+Virginia
+                    </item>
+                    <item>
+Washington
+                    </item>
+                    <item>
+West Virginia
+                    </item>
+                    <item>
+Wisconsin
+                    </item>
+                    <item>
+Wyoming
+                    </item>
+                </string-array>
+                <string-array name="AutoPostTracksPrompts" >
+                    <item>
+None
+                    </item>
+                    <item>
+Send email
+                    </item>
+                    <item>
+Send to all applications
+                    </item>
+                </string-array>
+                <string-array name="Orientation" >
+                    <item>
+Portrait
+                    </item>
+                    <item>
+Landscape
+                    </item>
+                    <item>
+Reverse Portrait
+                    </item>
+                    <item>
+Reverse Landscape
+                    </item>
+                </string-array>
+                <string-array name="ChartDbNames" >
+                    <item>
+maps.sec.db
+                    </item>
+                    <item>
+maps.tac.db
+                    </item>
+                    <item>
+maps.wac.db
+                    </item>
+                    <item>
+maps.el.db
+                    </item>
+                    <item>
+maps.eh.db
+                    </item>
+                    <item>
+maps.elv.db
+                    </item>
+                    <item>
+maps.rel.db
+                    </item>
+                    <item>
+maps.topo.db
+                    </item>
+                    <item>
+maps.oth.db
+                    </item>
+                </string-array>
+                <string-array name="DistanceRingTypePrompts" >
+                    <item>
+None
+                    </item>
+                    <item>
+Dynamic
+                    </item>
+                    <item>
+Fixed at 2/5/10
+                    </item>
+                </string-array>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values/strings.xml"
+                qualifiers="" >
+                <string name="TrkUpdAllowLabel" >"Enable Tracking"
+                </string>
+                <string name="GpsTimeSummary" >"Select for shorter GPS update period"
+                </string>
+                <string name="Load" >"Load"
+                </string>
+                <string name="ADSBTrafficLabel" >"Show ADSB Traffic"
+                </string>
+                <string name="OrientationPSummary" >"Select a screen orientation"
+                </string>
+                <string name="Near" >"Near"
+                </string>
+                <string name="InstallPDF" >"To see the diagram, go to Google Play Store, and install a PDF viewer"
+                </string>
+                <string name="ScreenOnLabel" >"Keep Screen On"
+                </string>
+                <string name="prefGpsCategoryTitle" >GPS
+                </string>
+                <string name="AutoPostTracksLabel" >"Automatic Track Post"
+                </string>
+                <string name="MapsSummary" >"Location where charts are stored"
+                </string>
+                <string name="prefStorageAndDownloadsCategoryTitle" >Storage and Downloads
+                </string>
+                <string name="NightModeLabel" >"Night Mode"
+                </string>
+                <string name="Navigate" >"Navigate"
+                </string>
+                <string name="FileStoreInvalid" >Unable to write to folder:
+                </string>
+                <string name="Find" >"Find"
+                </string>
+                <string name="WX" >"WX"
+                </string>
+                <string name="Draw" >"Draw"
+                </string>
+                <string name="PrivateFolder" >Use the default folder
+                </string>
+                <string name="GPSLost" >"No GPS Signal"
+                </string>
+                <string name="databases" >"Databases (Required)"
+                </string>
+                <string name="UnitKilometer" >km
+                </string>
+                <string name="SpeedMile" >mh
+                </string>
+                <string name="AllFacilities" >"All Facilities"
+                </string>
+                <string name="LeaveRunningLabel" >"Leave Running"
+                </string>
+                <string name="Next" >"Next"
+                </string>
+                <string name="ADSBTraffic" >ADSBTraffic
+                </string>
+                <string name="AllFacilitiesSummary" >"Select to show heliport, ultralight, and sea plane bases in Nearest and Search"
+                </string>
+                <string name="XlateWeather" >"XlateWeather"
+                </string>
+                <string name="TrkUpdAllowSummary" >"Select to allow position tracking to be recorded."
+                </string>
+                <string name="PlatesNF" >"No plates available for this destination"
+                </string>
+                <string name="title_activity_main" >"Avare"
+                </string>
+                <string name="Left" >"Left"
+                </string>
+                <string name="NotAvailable" >"Not available"
+                </string>
+                <string name="FileStore" >Files will be stored in:
+                </string>
+                <string name="Searching" >"Searching for"
+                </string>
+                <string name="ADSBWeatherLabel" >"Use ADSB Weather"
+                </string>
+                <string name="Warning" >"This is not an FAA certified GPS.\n\nYou must assume this software will fail when life and/or property are at risk.\n\nThe authors of this software are not liable for any injuries or damages caused by its use.\n"
+                </string>
+                <string name="TFRs" >"TFRs"
+                </string>
+                <string name="IconHelicopterSummary" >"Select to make the location icon a helicopter"
+                </string>
+                <string name="DistMile" >mi
+                </string>
+                <string name="ShowTrackLabel" >"Destination Course Line"
+                </string>
+                <string name="prefTracksCategoryTitle" >Flight Tracking
+                </string>
+                <string name="SpeedKnot" >kt
+                </string>
+                <string name="Extracting" >"Extracting"
+                </string>
+                <string name="CurrentlySetTo" >"\nCurrently: "
+                </string>
+                <string name="NorthUp" >"North Up"
+                </string>
+                <string name="GpsOnly" >"Only GPS destinations can be labeled"
+                </string>
+                <string name="Pan" >"Pan"
+                </string>
+                <string name="GpsTimeLabel" >"Short GPS Update Period"
+                </string>
+                <string name="LeaveRunning" >"Leave Running"
+                </string>
+                <string name="prefAppStateCategoryTitle" >Application State
+                </string>
+                <string name="RootSummary" >"Select a server from which to download charts/data"
+                </string>
+                <string name="prefOdometer" >Odometer
+                </string>
+                <string name="PointsTooClose" >"Points too close to each other"
+                </string>
+                <string name="Save" >"Save"
+                </string>
+                <string name="TracksOff" >Tracks Off
+                </string>
+                <string name="ADSBWeatherSummary" >"Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather"
+                </string>
+                <string name="AllFacilitiesLabel" >"Show All Bases"
+                </string>
+                <string name="Understand" >"I Understand"
+                </string>
+                <string name="Altitude" >"Altitude ft."
+                </string>
+                <string name="IconHelicopter" >"Helicopter Icon"
+                </string>
+                <string name="ChartTypeSummary" >"Select a chart type for navigation"
+                </string>
+                <string name="RadarSummary" >"Select to show NEXRAD from the Internet (User Downloads)"
+                </string>
+                <string name="prefTimerRingSize" >TimerRingSize
+                </string>
+                <string name="MapsLabel" >"Charts Storage Folder"
+                </string>
+                <string name="RadarLabel" >"Show NEXRAD"
+                </string>
+                <string name="prefGetRowFormats" >RowFormats
+                </string>
+                <string name="NightModeSummary" >"Select to reduce white light during night operation (requires restart)"
+                </string>
+                <string name="AreaNF" >"Nearest airports shown when GPS locked, and not in simulation"
+                </string>
+                <string name="Nearest" >"Nearest"
+                </string>
+                <string name="NightMode" >"Night Mode"
+                </string>
+                <string name="noZoomOut" >"Cannot zoom out further"
+                </string>
+                <string name="WarningMsg" >"USE AT YOUR OWN RISK!"
+                </string>
+                <string name="Downloading" >"Downloading"
+                </string>
+                <string name="AirSigTypeLabel" >"AIRMET/SIGMET Type"
+                </string>
+                <string name="PlanNoset" >" not added to the plan"
+                </string>
+                <string name="GpsOffWarnSummary" >"Select to warn frequently when GPS is disabled"
+                </string>
+                <string name="PlanWarning" >"Clear the current plan and load"
+                </string>
+                <string name="BadCoords" >"Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N"
+                </string>
+                <string name="UnitsSummary" >"Select distance unit"
+                </string>
+                <string name="Yes" >"Yes"
+                </string>
+                <string name="SpeedKilometer" >kh
+                </string>
+                <string name="TrkUpdShowHistory" >TrkUpdShowHistory
+                </string>
+                <string name="AutoPostTracksSummary" >"Select what to do with the KML tracks file when closed"
+                </string>
+                <string name="Clear" >"Clear"
+                </string>
+                <string name="Cancel" >"Cancel"
+                </string>
+                <string name="ValidDest" >"Enter a valid destination first"
+                </string>
+                <string name="prefUseDynamicFields" >UseDynamicFields
+                </string>
+                <string name="Zero" >"0"
+                </string>
+                <string name="To" >"To"
+                </string>
+                <string name="Exit" >"Exit"
+                </string>
+                <string name="Settings" >"Preferences"
+                </string>
+                <string name="GpsOffWarnLabel" >"Warn GPS Disabled"
+                </string>
+                <string name="TFRReceived" >"TFR Received"
+                </string>
+                <string name="SimulationMode" >"Simulation"
+                </string>
+                <string name="Radar" >Radar
+                </string>
+                <string name="latitude" >"'N"
+                </string>
+                <string name="OrientationP" >"OrientationP"
+                </string>
+                <string name="prefAutoPostTracks" >AutoPostTracks
+                </string>
+                <string name="DestinationSet" >"Destination set to "
+                </string>
+                <string name="DownloadInst" >"Touch to select an item, then press Get to download it"
+                </string>
+                <string name="Plan" >"Plan"
+                </string>
+                <string name="prefDistanceRingType" >DistanceRingType
+                </string>
+                <string name="Success" >"Success"
+                </string>
+                <string name="DestinationPrompt" >"Enter Destination Code"
+                </string>
+                <string name="Recent" >"Recent"
+                </string>
+                <string name="Up" >Up
+                </string>
+                <string name="VsFpm" >fpm
+                </string>
+                <string name="Get" >"Get"
+                </string>
+                <string name="Obstacles" >"Obstacles"
+                </string>
+                <string name="LoadReverse" >"Reverse Load"
+                </string>
+                <string name="OK" >"OK"
+                </string>
+                <string name="calibratethis" >"Geo Tag this point"
+                </string>
+                <string name="WeatherError" >"Could not download weather data"
+                </string>
+                <string name="WeatherPlan" >"Load a plan and press Update to get the latest route weather"
+                </string>
+                <string name="ObstaclesSummary" >"Show obstacles near the aircraft"
+                </string>
+                <string name="No" >"No"
+                </string>
+                <string name="GPSEnable" >"Turn On GPS"
+                </string>
+                <string name="Lon" >"Lon"
+                </string>
+                <string name="noZoomIn" >"Cannot zoom in further"
+                </string>
+                <string name="ScreenOnSummary" >"Select to keep screen on while application is running"
+                </string>
+                <string name="DestinationNF" >"Destination Not Found"
+                </string>
+                <string name="AutoPostTracksTitle" >"Send tracks file to "
+                </string>
+                <string name="BackgroundLabel" >"Show Background"
+                </string>
+                <string name="GpsOffWarn" >"GpsOffWarn"
+                </string>
+                <string name="Agree" >"I Agree"
+                </string>
+                <string name="Maps" >"Maps"
+                </string>
+                <string name="ShowTrack" >"ShowTrack"
+                </string>
+                <string name="RunwaysSummary" >"Select to show runway extensions"
+                </string>
+                <string name="TrackUp" >"Track Up"
+                </string>
+                <string name="UseDynamicFieldsSummary" >"Allow the top two text lines can be configured dynamically"
+                </string>
+                <string name="degree" >"\u00B0"
+                </string>
+                <string name="plates" >"Plate"
+                </string>
+                <string name="Set" >"Set"
+                </string>
+                <string name="desc" >"Image/Chart"
+                </string>
+                <string name="AirSigTypeSummary" >"Select the type of weather to draw"
+                </string>
+                <string name="prefWeatherCategoryTitle" >Weather
+                </string>
+                <string name="Inactive" >"Inactive"
+                </string>
+                <string name="DownloadDBShort" >"Download Databases"
+                </string>
+                <string name="TracksOn" >Tracks On
+                </string>
+                <string name="AirSigType" >"AIRMET/SIGMET"
+                </string>
+                <string name="GoodCoords" >"Plate marked and saved"
+                </string>
+                <string name="ShowTrackSummary" >"Select to show course to destination"
+                </string>
+                <string name="OrientationPLabel" >"Screen Orientation"
+                </string>
+                <string name="Last" >"Last"
+                </string>
+                <string name="Lat" >"Lat"
+                </string>
+                <string name="SelectTextFieldTitle" >"Select field to display"
+                </string>
+                <string name="TrkUpdShowHistoryLabel" >"Track History"
+                </string>
+                <string name="Label" >"Label"
+                </string>
+                <string name="main" >"Map"
+                </string>
+                <string name="PlanSet" >" added to the plan"
+                </string>
+                <string name="BackgroundSummary" >"Select to use a color background on text, to improve readability on smaller screens"
+                </string>
+                <string name="LeaveRunningSummary" >"Select to pause the application on Exit (instead of a complete exit)"
+                </string>
+                <string name="MissingMaps" >"Download Charts"
+                </string>
+                <string name="Delete" >"Delete"
+                </string>
+                <string name="UnitMile" >mi
+                </string>
+                <string name="Search" >"Search"
+                </string>
+                <string name="Help" >"Help"
+                </string>
+                <string name="download" >"Download"
+                </string>
+                <string name="ChartType" >"Chart Type"
+                </string>
+                <string name="ChartTypeLabel" >"Select Chart Type"
+                </string>
+                <string name="Active" >"Active"
+                </string>
+                <string name="Right" >"Right"
+                </string>
+                <string name="DistKilometer" >km
+                </string>
+                <string name="prefDisplayCategoryTitle" >Display
+                </string>
+                <string name="app_name" >"Avare"
+                </string>
+                <string name="Init" >"Initializing"
+                </string>
+                <string name="PlanDestinationNF" >"Some way points not found."
+                </string>
+                <string name="DistKnot" >nm
+                </string>
+                <string name="AFD" >"A/FD"
+                </string>
+                <string name="ADSBTrafficSummary" >"Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)"
+                </string>
+                <string name="XlateWeatherSummary" >"Select to translate weather METAR/TAF/PIREP in the WX brief"
+                </string>
+                <string name="LoadingMaps" >"Loading Charts"
+                </string>
+                <string name="gps" >"GPS"
+                </string>
+                <string name="TrkUpdAllow" >TrkUpdAllow
+                </string>
+                <string name="AutoPostTracksSubject" >"Avare flight tracking data - "
+                </string>
+                <string name="AirDia" >"Airport Diagram"
+                </string>
+                <string name="Root" >"Root"
+                </string>
+                <string name="AutoPostTracksDialogText" >"The tracks file %s has been saved"
+                </string>
+                <string name="RootLabel" >"Charts Download Server"
+                </string>
+                <string name="TimerRingSizeSummary" >"Select the timer ring size in minutes"
+                </string>
+                <string name="Calibrate" >"GeoTag"
+                </string>
+                <string name="ObstaclesLabel" >"Show Obstacles"
+                </string>
+                <string name="GeoRefPlates" >"Geo. Referenced Plates Database"
+                </string>
+                <string name="Done" >"Done"
+                </string>
+                <string name="IconHelicopterLabel" >"Helicopter Icon"
+                </string>
+                <string name="Failed" >"Failed"
+                </string>
+                <string name="accuracy" >"Accuracy ft."
+                </string>
+                <string name="Units" >"Distance Unit"
+                </string>
+                <string name="XlateWeatherLabel" >"Translate Weather"
+                </string>
+                <string name="longitude" >"'W"
+                </string>
+                <string name="RunwaysLabel" >"Runway Extensions"
+                </string>
+                <string name="UnitsLabel" >"Distance Unit"
+                </string>
+                <string name="update" >"Update"
+                </string>
+                <string name="DistanceRingTypeSummary" >"Select the style of distance rings to display"
+                </string>
+                <string name="ADS" >"Airport Diagrams"
+                </string>
+                <string name="TrkUpdShowHistorySummary" >"Select to display the flight path track on the active chart"
+                </string>
+                <string name="ADSBWeather" >ADSBWeather
+                </string>
+                <string name="SelectPlate" >"Select A Plate"
+                </string>
+                <string name="DownloadDB" >"The required data file is missing and must be downloaded."
+                </string>
+                <string name="ScreenOn" >"Screen Timeout"
+                </string>
+                <string name="Total" >"Total"
+                </string>
+                <string name="TimerRingSizeLabel" >"Timer Ring Size"
+                </string>
+                <string name="Destination" >"Destination"
+                </string>
+                <string name="UnitKnot" >kt
+                </string>
+                <string name="GpsTime" >"GpsTime"
+                </string>
+                <string name="Background" >"Background"
+                </string>
+                <string name="DatabaseName" >"maps.db"
+                </string>
+                <string name="Runways" >"Runway Extensions"
+                </string>
+                <string name="SavedPlan" >"Saved Plans"
+                </string>
+                <string name="weather" >"Weather"
+                </string>
+                <string name="DistanceRingTypeLabel" >"Distance Ring Style"
+                </string>
+                <string name="UseDynamicFieldsLabel" >"Use Dynamic Fields"
+                </string>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values/cwac_touchlist_attrs.xml"
+                qualifiers="" >
+                <declare-styleable name="TouchListView" >
+                    <attr
+                        name="normal_height"
+                        format="dimension" />
+                    <attr
+                        name="expanded_height"
+                        format="dimension" />
+                    <attr
+                        name="grabber"
+                        format="reference" />
+                    <attr
+                        name="dragndrop_background"
+                        format="color" />
+                    <attr name="remove_mode" >
+                        <enum
+                            name="none"
+                            value="-1" />
+                        <enum
+                            name="fling"
+                            value="0" />
+                        <enum
+                            name="slide"
+                            value="1" />
+                        <enum
+                            name="slideRight"
+                            value="1" />
+                        <enum
+                            name="slideLeft"
+                            value="2" />
+                    </attr>
+                </declare-styleable>
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values/styles.xml"
+                qualifiers="" >
+
+                <style
+                    name="AppTheme"
+                    parent="android:Theme.Light" />
+            </file>
+            <file
+                path="/home/zkhan/workspace/Avare/app/src/main/res/values/dimen.xml"
+                qualifiers="" >
+                <dimen name="runwayNumberTextSize" >25sp
+                </dimen>
+                <dimen name="distanceRingNumberTextSize" >16sp
+                </dimen>
+                <dimen name="TextSize" >30sp
+                </dimen>
+            </file>
+            <file
+                name="bg_selector"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/bg_selector.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="border"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/border.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="aircraft"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/aircraft.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="bg_unselected"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/bg_unselected.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="grabber"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/grabber.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="bg_selected"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/bg_selected.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="airport"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/airport.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="settings"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/settings.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="edit"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/edit.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="check_red"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/check_red.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="pink_square"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/pink_square.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="directory_icon"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/directory_icon.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="erase"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/erase.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ndbdme"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/ndbdme.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="plan"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/plan.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="green_square"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/green_square.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="white_square"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/white_square.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="text_selector"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/text_selector.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="vor"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/vor.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="fix"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/fix.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="red_square"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/red_square.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="left"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/left.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="line_heading"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/line_heading.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="download_arrow"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/download_arrow.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="tacan"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/tacan.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="gps"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/gps.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="check"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/check.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="vordme"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/vordme.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="download"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/download.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="maps"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/maps.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="directory_up"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/directory_up.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="blue_square"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/blue_square.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="border_transparent"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/border_transparent.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="remove"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/remove.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="add"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/add.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="flag"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/flag.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="file_icon"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/file_icon.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="direct"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/direct.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="help"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/help.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="delete"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/delete.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="important_red"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/important_red.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="border_green_small"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/border_green_small.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="right"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/right.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ndb"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/ndb.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="no"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/no.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="geo"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/geo.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="center"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/center.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="weather"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/weather.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="marker"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/marker.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="vortac"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/vortac.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="vot"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/vot.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="runway_extension"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/runway_extension.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="line"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/line.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="back"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/back.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="border_red_small"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/border_red_small.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="lock_pink"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable/lock_pink.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="heli"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-mdpi/heli.png"
+                qualifiers="mdpi"
+                type="drawable" />
+            <file
+                name="planeother"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-mdpi/planeother.png"
+                qualifiers="mdpi"
+                type="drawable" />
+            <file
+                name="plane"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-mdpi/plane.png"
+                qualifiers="mdpi"
+                type="drawable" />
+            <file
+                name="obstacle"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-mdpi/obstacle.png"
+                qualifiers="mdpi"
+                type="drawable" />
+            <file
+                name="menu"
+                path="/home/zkhan/workspace/Avare/app/src/main/res/drawable-mdpi/menu.png"
+                qualifiers="mdpi"
+                type="drawable" />
+        </source>
+        <source path="/home/zkhan/workspace/Avare/app/build/res/rs/debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/home/zkhan/workspace/Avare/app/src/debug/res" />
+    </dataSet>
+
+</merger>

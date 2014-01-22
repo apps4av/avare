@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan, jlmcgraw    
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/prefStorageAndDownloadsCategoryTitle" >
+        <com.ds.avare.utils.FolderPreference
+            android:summary="@string/MapsSummary"
+            android:title="@string/MapsLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="@string/Zero"
+            android:entries="@array/Server"
+            android:entryValues="@array/ServerValues"
+            android:key="@string/Root"
+            android:summary="@string/RootSummary"
+            android:title="@string/RootLabel" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefGpsCategoryTitle" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/GpsTime"
+            android:summary="@string/GpsTimeSummary"
+            android:title="@string/GpsTimeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/GpsOffWarn"
+            android:summary="@string/GpsOffWarnSummary"
+            android:title="@string/GpsOffWarnLabel" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Radar"
+            android:summary="@string/RadarSummary"
+            android:title="@string/RadarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ADSBWeather"
+            android:summary="@string/ADSBWeatherSummary"
+            android:title="@string/ADSBWeatherLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="ALL"
+            android:entries="@array/AirSig"
+            android:entryValues="@array/AirSig"
+            android:key="@string/AirSigType"
+            android:summary="@string/AirSigTypeSummary"
+            android:title="@string/AirSigTypeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/XlateWeather"
+            android:summary="@string/XlateWeatherSummary"
+            android:title="@string/XlateWeatherLabel" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefAppStateCategoryTitle" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ScreenOn"
+            android:summary="@string/ScreenOnSummary"
+            android:title="@string/ScreenOnLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/LeaveRunning"
+            android:summary="@string/LeaveRunningSummary"
+            android:title="@string/LeaveRunningLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="Portrait"
+            android:entries="@array/Orientation"
+            android:entryValues="@array/Orientation"
+            android:key="@string/OrientationP"
+            android:summary="@string/OrientationPSummary"
+            android:title="@string/OrientationPLabel" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/UnitsD"
+            android:entryValues="@array/UnitsDValues"
+            android:key="@string/Units"
+            android:summary="@string/UnitsSummary"
+            android:title="@string/UnitsLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/NightMode"
+            android:summary="@string/NightModeSummary"
+            android:title="@string/NightModeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/Obstacles"
+            android:summary="@string/ObstaclesSummary"
+            android:title="@string/ObstaclesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ADSBTraffic"
+            android:summary="@string/ADSBTrafficSummary"
+            android:title="@string/ADSBTrafficLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Runways"
+            android:summary="@string/RunwaysSummary"
+            android:title="@string/RunwaysLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ShowTrack"
+            android:summary="@string/ShowTrackSummary"
+            android:title="@string/ShowTrackLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/AllFacilities"
+            android:summary="@string/AllFacilitiesSummary"
+            android:title="@string/AllFacilitiesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Background"
+            android:summary="@string/BackgroundSummary"
+            android:title="@string/BackgroundLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/IconHelicopter"
+            android:summary="@string/IconHelicopterSummary"
+            android:title="@string/IconHelicopterLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/DistanceRingTypePrompts"
+            android:entryValues="@array/DistanceRingTypeValues"
+            android:key="@string/prefDistanceRingType"
+            android:summary="@string/DistanceRingTypeSummary"
+            android:title="@string/DistanceRingTypeLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/TimerRingSizePrompt"
+            android:entryValues="@array/TimerRingSizeValues"
+            android:key="@string/prefTimerRingSize"
+            android:summary="@string/TimerRingSizeSummary"
+            android:title="@string/TimerRingSizeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefUseDynamicFields"
+            android:summary="@string/UseDynamicFieldsSummary"
+            android:title="@string/UseDynamicFieldsLabel" />
+        </PreferenceCategory>
+        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
+    	<CheckBoxPreference
+    	    android:key="@string/TrkUpdAllow"
+    	    android:title="@string/TrkUpdAllowLabel"
+    	    android:summary="@string/TrkUpdAllowSummary"/>
+        <CheckBoxPreference
+            android:key="@string/TrkUpdShowHistory"
+            android:title="@string/TrkUpdShowHistoryLabel"
+            android:summary="@string/TrkUpdShowHistorySummary"/>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="@string/Zero"
+            android:entries="@array/AutoPostTracksPrompts"
+            android:entryValues="@array/AutoPostTracksValues"
+            android:key="@string/prefAutoPostTracks"
+            android:summary="@string/AutoPostTracksSummary"
+            android:title="@string/AutoPostTracksLabel" />
+        </PreferenceCategory>
+    
+</PreferenceScreen>
+<!-- From: file:/home/zkhan/workspace/Avare/app/src/main/res/xml/preferences.xml -->
