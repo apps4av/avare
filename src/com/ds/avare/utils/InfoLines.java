@@ -361,7 +361,7 @@ public class InfoLines {
 		if(errorMessage != null) {
         	aPaint.setTextAlign(Align.RIGHT);
         	aPaint.setColor(Color.RED);
-            canvas.drawText(mLocationView.getErrorStatus(), mDisplayWidth, lineY * 2 - 1, aPaint);
+            canvas.drawText(errorMessage, mDisplayWidth, lineY * 2 - 1, aPaint);
 		} else {
 	        for(int idx = 0, max = mFieldPosX.length; idx < max; idx++) {
 	        	canvas.drawText(getDisplayFieldValue(mFieldLines[nStartLine + 1][idx], false), 
