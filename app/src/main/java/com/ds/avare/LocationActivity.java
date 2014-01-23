@@ -282,6 +282,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Go to background
                  */
+                setTrackState(false);   // ensure tracks are turned off
                 LocationActivity.super.onBackPressed();
                 dialog.dismiss();
             }
@@ -709,49 +710,9 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                if(null != mService && mPref.shouldSaveTracks()) {
-                	URI fileURI = mService.setTracks(mPref, !mService.getTracks());
-                	/* The fileURI is returned when the tracks are closed off.
-                	 */
-                	if(fileURI != null) {
-	                	String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
-	        			switch(mPref.autoPostTracks()) {
-		    				case 0:
-		    	    			/* Just display a toast message to the user that the file was saved
-		    	    			 */
-		    	    			Toast.makeText(getApplicationContext(), 
-		    	    							String.format(getString(R.string.AutoPostTracksDialogText), fileName), 
-		    	    							Toast.LENGTH_LONG).show();
-		    	    			break;
-		
-		    				case 1:
-		    	    			/* Send this file out as an email attachment
-		    	    			 */
-		    	        	    try {
-		    	            	    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-		    	            	    emailIntent.setType("application/kml");
-		    	                    emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.AutoPostTracksSubject) + " " + fileName); 
-		    	            	    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(fileURI.getPath())));
-		    	            	    startActivity(emailIntent);
-		    	        	    } catch (Exception e) { 
-		    	        	        
-		    	        	    }
-		    	        	    break;
-		
-		    				case 2:
-		    	    			/* Send it somewhere as KML. Let the user choose where.
-		    	    			 */
-		    	        	    try {
-		    	            	    Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
-		    	            	    viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())), "application/vnd.google-earth.kml+xml");
-		    	            	    startActivity(Intent.createChooser(viewIntent, getString(R.string.AutoPostTracksTitle)));
-		    	        	    } catch (Exception e) { 
-		    	        	        
-		    	        	    }
-		    	        	    break;
-		    			}
-                	}
-                }
+            if(null != mService && mPref.shouldSaveTracks()) {
+                setTrackState(!mService.getTracks());
+            }
             }        
         });
 
@@ -792,6 +753,54 @@ public class LocationActivity extends Activity implements Observer {
         mService = null;
     }    
 
+    private void setTrackState(boolean bState)
+    {
+        URI fileURI = mService.setTracks(mPref, bState);
+                	/* The fileURI is returned when the tracks are closed off.
+                	 */
+        if(fileURI != null) {
+            String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
+            switch(mPref.autoPostTracks()) {
+                case 0:
+		    	    			/* Just display a toast message to the user that the file was saved
+		    	    			 */
+                    Toast.makeText(getApplicationContext(),
+                            String.format(getString(R.string.AutoPostTracksDialogText), fileName),
+                            Toast.LENGTH_LONG).show();
+                    break;
+
+                case 1:
+		    	    			/* Send this file out as an email attachment
+		    	    			 */
+                    try {
+                        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        emailIntent.setType("application/kml");
+                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                                getString(R.string.AutoPostTracksSubject) + " " + fileName);
+                        emailIntent.putExtra(Intent.EXTRA_STREAM,
+                                Uri.fromFile(new File(fileURI.getPath())));
+                        startActivity(emailIntent);
+                    } catch (Exception e) {
+
+                    }
+                    break;
+
+                case 2:
+		    	    			/* Send it somewhere as KML. Let the user choose where.
+		    	    			 */
+                    try {
+                        Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                        viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())),
+                                "application/vnd.google-earth.kml+xml");
+                        startActivity(Intent.createChooser(viewIntent,
+                                getString(R.string.AutoPostTracksTitle)));
+                    } catch (Exception e) {
+
+                    }
+                    break;
+            }
+        }
+    }
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
