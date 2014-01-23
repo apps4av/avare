@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <resources>
-    <string name="app_name">&quot;Avare&quot;</string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Descargue Cartas&quot;</string>
     <string name="LoadingMaps">&quot;Cargando Cartas&quot;</string>

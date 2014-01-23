@@ -14,6 +14,11 @@ android {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+        debug {
+            //This adds a ".debug" to the package name so we can install it side-by-side with
+            //release package
+            packageNameSuffix '.debug'
+        }
     }
 }
 
