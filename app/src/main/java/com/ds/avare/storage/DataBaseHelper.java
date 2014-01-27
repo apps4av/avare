@@ -574,7 +574,7 @@ public class DataBaseHelper  {
         int len = name.length();
         Cursor cursor;
         /*
-         * Of the form XXXNNNNNN like BOS010166
+         * Of the form XXXRRRDDD like BOS270010
          */
         String chop = name.substring(len - 6);
         String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
@@ -599,7 +599,7 @@ public class DataBaseHelper  {
                         /*
                          * Radials are magnetic
                          */
-                        GeomagneticField gmf = new GeomagneticField((float)lat, 
+                        GeomagneticField gmf = new GeomagneticField((float)lat,
                                 (float)lon, 0, System.currentTimeMillis());
                         double bearing = Double.parseDouble(chop.substring(0, 3)) + gmf.getDeclination();
                         Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
@@ -623,19 +623,19 @@ public class DataBaseHelper  {
                                 
                                 /*
                                  * Put ID and name as if GPS
-                                 */                
-                                                                    
-                                        
+                                 */
+
+
                                 double lon = cursor.getDouble(LONGITUDE_COL);                            
                                 double lat = cursor.getDouble(LATITUDE_COL);
-                                double distance = Double.parseDouble(chop.substring(0, 3));
+                                double distance = Double.parseDouble(chop.substring(3, 6));
 
                                 /*
                                  * Radials are magnetic
                                  */
-                                GeomagneticField gmf = new GeomagneticField((float)lat, 
+                                GeomagneticField gmf = new GeomagneticField((float)lat,
                                         (float)lon, 0, System.currentTimeMillis());
-                                double bearing = Double.parseDouble(chop.substring(3, 6)) + gmf.getDeclination();
+                                double bearing = Double.parseDouble(chop.substring(0, 3)) + gmf.getDeclination();
                                 Coordinate c = Radial.findCoordinate(lon, lat, distance, bearing);
                                 StringPreference s = new StringPreference(Destination.GPS, "GPS", name, 
                                         Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()));
