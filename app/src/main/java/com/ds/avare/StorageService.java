@@ -684,14 +684,14 @@ public class StorageService extends Service {
     /**
      * Called when the user presses the "tracks" button on the locationview screen to
      * toggle the state of the saving of GPS positions.
-     * @param b enable/disable tracking
+     * @param shouldTrack enable/disable tracking
      * @return URI of the file that was just closed, or null if it was just opened
      */
-    public URI setTracks(Preferences pref, boolean shouldTrack) {
+    public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
             KMLRecorder.Config config = mKMLRecorder.new Config(
                 true,	/* always remove tracks from display on start */
-                10,		/* 10 seconds between position updates */
+                30,		/* Max of 30 seconds between position updates */
                 true,	/* use verbose details */
                 Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
                 20);	/* How fast we are going before starting to track, 20 knots */
