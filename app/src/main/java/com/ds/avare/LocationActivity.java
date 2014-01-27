@@ -832,11 +832,11 @@ public class LocationActivity extends Activity implements Observer {
             if(!mService.getDBResource().isPresent()) {
 
                 mAlertDialogDatabase = new AlertDialog.Builder(LocationActivity.this).create();
-                mAlertDialogDatabase.setTitle(getString(R.string.Get));
+                mAlertDialogDatabase.setTitle(getString(R.string.download));
                 mAlertDialogDatabase.setCancelable(false);
                 mAlertDialogDatabase.setCanceledOnTouchOutside(false);
                 mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
-                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Get), new DialogInterface.OnClickListener() {
+                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
                     /* (non-Javadoc)
                      * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                      */
