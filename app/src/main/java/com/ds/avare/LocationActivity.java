@@ -90,6 +90,11 @@ public class LocationActivity extends Activity implements Observer {
     private AlertDialog mAlertDialogWarn;
 
     /**
+     * Shows warning message about Avare
+     */
+    private AlertDialog mAlertDialogDatabase;
+
+    /**
      * Shows exit dialog
      */
     private AlertDialog mAlertDialogExit;
@@ -162,7 +167,7 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
             else if(!(new File(mPref.mapsFolder() + "/databases")).exists()) {
-                mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));              
+                mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
             else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
@@ -325,7 +330,6 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-        mLocationView.zoomOut();                
 
         /*
          * To be notified of some action in the view
@@ -825,15 +829,33 @@ public class LocationActivity extends Activity implements Observer {
             /*
              * Check if database needs upgrade
              */
-            if(mPref.isNewerVersion(LocationActivity.this)) {
-                Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-                return;
-            }
             if(!mService.getDBResource().isPresent()) {
-                mToast.setText(R.string.DownloadDB);
-                mToast.show();
+
+                mAlertDialogDatabase = new AlertDialog.Builder(LocationActivity.this).create();
+                mAlertDialogDatabase.setTitle(getString(R.string.Get));
+                mAlertDialogDatabase.setCancelable(false);
+                mAlertDialogDatabase.setCanceledOnTouchOutside(false);
+                mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
+                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Get), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        mLocationView.zoomOut();
+                        startActivity(i);
+                    }
+                });
+                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialogDatabase.show();
                 return;
             }
 
@@ -979,6 +1001,14 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mAlertDialogWarn) {
             try {
                 mAlertDialogWarn.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        if(null != mAlertDialogDatabase) {
+            try {
+                mAlertDialogDatabase.dismiss();
             }
             catch (Exception e) {
             }
