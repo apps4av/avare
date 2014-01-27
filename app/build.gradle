@@ -7,6 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
+        versionCode 156
+        versionName "5.3.6"
     }
 
     buildTypes {
@@ -18,6 +20,7 @@ android {
             //This adds a ".debug" to the package name so we can install it side-by-side with
             //release package
             packageNameSuffix '.debug'
+            versionNameSuffis '-DEBUG'
         }
     }
 }
