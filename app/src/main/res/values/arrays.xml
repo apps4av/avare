@@ -699,7 +699,19 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>10</item>
     </string-array>
 
-	<string-array name="TimerRingSizePrompt">
+    <string-array name="Opacity">
+        <item>Transparent</item>
+        <item>50 Percent</item>
+        <item>Opaque</item>
+    </string-array>
+
+    <string-array name="OpacityValues">
+        <item>0</item>
+        <item>127</item>
+        <item>255</item>
+    </string-array>
+
+    <string-array name="TimerRingSizePrompt">
         <item>None</item>
         <item>2 Minutes</item>
         <item>5 Minutes</item>

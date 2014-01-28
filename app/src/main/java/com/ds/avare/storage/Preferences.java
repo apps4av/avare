@@ -614,8 +614,14 @@ public class Preferences {
      * 
      * @return
      */
-    public boolean showRadar() {
-        return(mPref.getBoolean(mContext.getString(R.string.Radar), false));
+    public int showRadar() {
+        String val = mPref.getString(mContext.getString(R.string.Radar), "255");
+        try {
+            return(Integer.parseInt(val));
+        }
+        catch(Exception e) {
+        }
+        return 255;
     }
     
     /**

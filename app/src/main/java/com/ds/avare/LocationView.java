@@ -718,7 +718,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawRadar(Canvas canvas) {
-        if(mService == null || (!mPref.showRadar()) || null != mPointProjection) {
+        if(mService == null || (0 == mPref.showRadar()) || null != mPointProjection) {
             return;
         }
         
@@ -728,8 +728,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mPref.useAdsbWeather()) {
             return;
         }
-    
+
+        mPaint.setAlpha(mPref.showRadar());
         mService.getRadar().draw(canvas, mPaint, mOrigin, mScale, mPx, mPy);
+        mPaint.setAlpha(255);
+
     }
 
     /**
@@ -737,7 +740,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawNexrad(Canvas canvas) {
-        if(mService == null) {
+        if(mService == null || 0 == mPref.showRadar()) {
             return;
         }
         
@@ -746,6 +749,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         SparseArray<NexradBitmap> bitmaps;
         if(mScale.getMacroFactor() > 4) {
+            /*
+             * CONUS for larger scales.
+             */
             bitmaps = mService.getAdsbWeather().getNexradConus().getImages();            
         }
         else {
@@ -772,7 +778,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         scaley * mScale.getScaleCorrected());
                 bitmap.getTransform().postTranslate(x, y);
                 if(bitmap.getBitmap() != null) {
+                    mPaint.setAlpha(mPref.showRadar());
                     canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
+                    mPaint.setAlpha(255);
                 }
             }
         }
@@ -1179,7 +1187,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas where to draw
      * @param text what to display
-     * @param height is the vertical size of the text
      * @param shadowColor is the color of the shadow of course
      * @param x center position of the text on the canvas
      * @param y top edge of text on the canvas
@@ -1243,7 +1250,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     /**
      * 
-     * @param factor
+     * @param threshold
      */
     public void updateThreshold(float threshold) {
         mThreshold = threshold;
@@ -1251,7 +1258,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * @param destination
+     *
      */
     public void updateDestination() {
         /*
@@ -1825,8 +1832,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * 
-     * @param b
+     *
      */
     public boolean getDraw() {
         return mDraw;

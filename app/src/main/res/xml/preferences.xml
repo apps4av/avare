@@ -41,8 +41,10 @@ authors: zkhan, jlmcgraw
             android:title="@string/GpsOffWarnLabel" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
-        <CheckBoxPreference
-            android:defaultValue="true"
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="255"
+            android:entries="@array/Opacity"
+            android:entryValues="@array/OpacityValues"
             android:key="@string/Radar"
             android:summary="@string/RadarSummary"
             android:title="@string/RadarLabel" />
