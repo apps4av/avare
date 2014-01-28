@@ -759,7 +759,7 @@ public class LocationActivity extends Activity implements Observer {
 
     private void setTrackState(boolean bState)
     {
-        URI fileURI = mService.setTracks(mPref, bState);
+        URI fileURI = mService.setTracks(bState);
                 	/* The fileURI is returned when the tracks are closed off.
                 	 */
         if(fileURI != null) {
