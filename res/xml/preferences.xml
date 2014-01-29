@@ -14,88 +14,30 @@ Redistribution and use in source and binary forms, with or without modification,
 authors: zkhan, jlmcgraw    
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Important Options. These are placed on menu root. -->
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_Background"
+        android:summary="@string/pref_BackgroundSummary"
+        android:title="@string/pref_BackgroundLabel" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_NightMode"
+        android:summary="@string/pref_NightModeSummary"
+        android:title="@string/pref_NightModeLabel" />
+    <com.ds.avare.utils.ListPreferenceWithSummary
+        android:defaultValue="Portrait"
+        android:entries="@array/Orientation"
+        android:entryValues="@array/Orientation"
+        android:key="@string/pref_OrientationP"
+        android:summary="@string/pref_OrientationPSummary"
+        android:title="@string/pref_OrientationPLabel" />
 
-    <PreferenceCategory android:title="@string/prefStorageAndDownloadsCategoryTitle" >
-        <com.ds.avare.utils.FolderPreference
-            android:summary="@string/pref_MapsSummary"
-            android:title="@string/pref_MapsLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="@string/Zero"
-            android:entries="@array/Server"
-            android:entryValues="@array/ServerValues"
-            android:key="@string/pref_Root"
-            android:summary="@string/pref_RootSummary"
-            android:title="@string/pref_RootLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefGpsCategoryTitle" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_GpsTime"
-            android:summary="@string/pref_GpsTimeSummary"
-            android:title="@string/pref_GpsTimeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/pref_GpsOffWarn"
-            android:summary="@string/pref_GpsOffWarnSummary"
-            android:title="@string/pref_GpsOffWarnLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="255"
-            android:entries="@array/Opacity"
-            android:entryValues="@array/OpacityValues"
-            android:title="@string/pref_RadarLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_ADSBWeather"
-            android:summary="@string/pref_ADSBWeatherSummary"
-            android:title="@string/pref_ADSBWeatherLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="ALL"
-            android:entries="@array/AirSig"
-            android:entryValues="@array/AirSig"
-            android:key="@string/pref_AirSigType"
-            android:summary="@string/pref_AirSigTypeSummary"
-            android:title="@string/pref_AirSigTypeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_XlateWeather"
-            android:summary="@string/pref_XlateWeatherSummary"
-            android:title="@string/pref_XlateWeatherLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefAppStateCategoryTitle" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/pref_ScreenOn"
-            android:summary="@string/pref_ScreenOnSummary"
-            android:title="@string/pref_ScreenOnLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/pref_LeaveRunning"
-            android:summary="@string/pref_LeaveRunningSummary"
-            android:title="@string/pref_LeaveRunningLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="Portrait"
-            android:entries="@array/Orientation"
-            android:entryValues="@array/Orientation"
-            android:key="@string/pref_OrientationP"
-            android:summary="@string/pref_OrientationPSummary"
-            android:title="@string/pref_OrientationPLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="0"
-            android:entries="@array/UnitsD"
-            android:entryValues="@array/UnitsDValues"
-            android:key="@string/pref_Units"
-            android:summary="@string/pref_UnitsSummary"
-            android:title="@string/pref_UnitsLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_NightMode"
-            android:summary="@string/pref_NightModeSummary"
-            android:title="@string/pref_NightModeLabel" />
+    <!-- Map Display Preferences -->
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/pref_header_display">
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_Obstacles"
@@ -121,16 +63,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/pref_AllFacilities"
             android:summary="@string/pref_AllFacilitiesSummary"
             android:title="@string/pref_AllFacilitiesLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/pref_Background"
-            android:summary="@string/pref_BackgroundSummary"
-            android:title="@string/pref_BackgroundLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_IconHelicopter"
-            android:summary="@string/pref_IconHelicopterSummary"
-            android:title="@string/pref_IconHelicopterLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DistanceRingTypePrompts"
@@ -150,23 +82,110 @@ authors: zkhan, jlmcgraw
             android:key="@string/pref_UseDynamicFields"
             android:summary="@string/pref_UseDynamicFieldsSummary"
             android:title="@string/pref_UseDynamicFieldsLabel" />
+    </PreferenceScreen>
+
+    <!-- GPS Preferences -->
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/pref_header_gps">
+        <PreferenceCategory android:title="@string/pref_category_gps">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="@string/pref_GpsTime"
+                android:summary="@string/pref_GpsTimeSummary"
+                android:title="@string/pref_GpsTimeLabel" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/pref_GpsOffWarn"
+                android:summary="@string/pref_GpsOffWarnSummary"
+                android:title="@string/pref_GpsOffWarnLabel" />
         </PreferenceCategory>
-        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
-    	<CheckBoxPreference
-    	    android:key="@string/pref_TrkUpdAllow"
-    	    android:title="@string/pref_TrkUpdAllowLabel"
-    	    android:summary="@string/pref_TrkUpdAllowSummary"/>
+        <PreferenceCategory android:title="@string/prefTracksCategoryTitle">
+            <CheckBoxPreference
+                android:key="@string/pref_TrkUpdAllow"
+                android:title="@string/pref_TrkUpdAllowLabel"
+                android:summary="@string/pref_TrkUpdAllowSummary" />
+            <CheckBoxPreference
+                android:key="@string/pref_TrkUpdShowHistory"
+                android:title="@string/pref_TrkUpdShowHistoryLabel"
+                android:summary="@string/pref_TrkUpdShowHistorySummary" />
+            <com.ds.avare.utils.ListPreferenceWithSummary
+                android:defaultValue="@string/Zero"
+                android:entries="@array/AutoPostTracksPrompts"
+                android:entryValues="@array/AutoPostTracksValues"
+                android:key="@string/pref_AutoPostTracks"
+                android:summary="@string/pref_AutoPostTracksSummary"
+                android:title="@string/pref_AutoPostTracksLabel" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <!-- UI Preferences -->
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/pref_header_ui">
         <CheckBoxPreference
-            android:key="@string/pref_TrkUpdShowHistory"
-            android:title="@string/pref_TrkUpdShowHistoryLabel"
-            android:summary="@string/pref_TrkUpdShowHistorySummary"/>
+            android:defaultValue="true"
+            android:key="@string/pref_ScreenOn"
+            android:summary="@string/pref_ScreenOnSummary"
+            android:title="@string/pref_ScreenOnLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/UnitsD"
+            android:entryValues="@array/UnitsDValues"
+            android:key="@string/pref_Units"
+            android:summary="@string/pref_UnitsSummary"
+            android:title="@string/pref_UnitsLabel" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_IconHelicopter"
+            android:summary="@string/pref_IconHelicopterSummary"
+            android:title="@string/pref_IconHelicopterLabel" />
+    </PreferenceScreen>
+
+    <!-- Weather Preferences -->
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/pref_header_weather">
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="255"
+            android:entries="@array/Opacity"
+            android:entryValues="@array/OpacityValues"
+            android:summary="@string/pref_RadarSummary"
+            android:title="@string/pref_RadarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_ADSBWeather"
+            android:summary="@string/pref_ADSBWeatherSummary"
+            android:title="@string/pref_ADSBWeatherLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="ALL"
+            android:entries="@array/AirSig"
+            android:entryValues="@array/AirSig"
+            android:key="@string/pref_AirSigType"
+            android:summary="@string/pref_AirSigTypeSummary"
+            android:title="@string/pref_AirSigTypeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_XlateWeather"
+            android:summary="@string/pref_XlateWeatherSummary"
+            android:title="@string/pref_XlateWeatherLabel" />
+    </PreferenceScreen>
+
+    <!-- General Preferences -->
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/pref_header_general">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_LeaveRunning"
+            android:summary="@string/pref_LeaveRunningSummary"
+            android:title="@string/pref_LeaveRunningLabel" />
+        <com.ds.avare.utils.FolderPreference
+            android:summary="@string/pref_MapsSummary"
+            android:title="@string/pref_MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
-            android:entries="@array/AutoPostTracksPrompts"
-            android:entryValues="@array/AutoPostTracksValues"
-            android:key="@string/pref_AutoPostTracks"
-            android:summary="@string/pref_AutoPostTracksSummary"
-            android:title="@string/pref_AutoPostTracksLabel" />
-        </PreferenceCategory>
-    
+            android:entries="@array/Server"
+            android:entryValues="@array/ServerValues"
+            android:key="@string/pref_Root"
+            android:summary="@string/pref_RootSummary"
+            android:title="@string/pref_RootLabel" />
+    </PreferenceScreen>
 </PreferenceScreen>

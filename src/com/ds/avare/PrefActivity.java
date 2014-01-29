@@ -51,31 +51,8 @@ public class PrefActivity extends PreferenceActivity {
         Helper.setTheme(this);
         super.onCreate(savedInstanceState); 
 
-//        addPreferencesFromResource(R.xml.preferences);
-        //setContentView(R.layout.preferences);
         mService = null;
-
-
-        //Legacy Headers support
-        String action = getIntent().getAction();
-        if (action != null) {
-            //If we have an intent with action, check which preferences
-            //screen to add to this activity
-            if (action.equals(PREF_UI)) {
-                addPreferencesFromResource(R.xml.pref_ui);
-            } else if (action.equals(PREF_GPS)) {
-                addPreferencesFromResource(R.xml.pref_gps);
-            } else if (action.equals(PREF_DISPLAY)) {
-                addPreferencesFromResource(R.xml.pref_display);
-            } else if (action.equals(PREF_WEATHER)) {
-                addPreferencesFromResource(R.xml.pref_weather);
-            } else if (action.equals(PREF_STORAGE)) {
-                addPreferencesFromResource(R.xml.pref_general);
-            }
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            //No intent, and we're not Honeycomb+ so add the legacy headers instead
-            addPreferencesFromResource(R.xml.pref_headers_legacy);
-        }
+        addPreferencesFromResource(R.xml.preferences);
     }
 
     /**
@@ -95,9 +72,6 @@ public class PrefActivity extends PreferenceActivity {
     }
 
 
-    /**
-     *
-     */
     @Override
     public void onPause() {
         super.onPause();
@@ -107,77 +81,11 @@ public class PrefActivity extends PreferenceActivity {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
-     * Returns true if the fragment is valid or if on a version of android prior to kitkat.
-     *
-     * @param fragmentName Fragment.class.getName()
-     * @return True or False
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    protected boolean isValidFragment(String fragmentName) {
-        if (fragmentName.equals(SettingsFragment.class.getName())) {
-            return true;
-        }
-        return super.isValidFragment(fragmentName);
-    }
-
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     * <p/>
-     * A fragment that can be used for all settings screens. Pass an extra with the
-     * name "settings" and a value to be matched in this method.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class SettingsFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            String settings = getArguments().getString("settings");
-
-            if (settings.equals(PrefActivity.PREF_UI)) {
-                addPreferencesFromResource(R.xml.pref_ui);
-            } else if (settings.equals(PrefActivity.PREF_GPS)) {
-                addPreferencesFromResource(R.xml.pref_gps);
-            } else if (settings.equals(PrefActivity.PREF_WEATHER)) {
-                addPreferencesFromResource(R.xml.pref_weather);
-            } else if (settings.equals(PrefActivity.PREF_DISPLAY)) {
-                addPreferencesFromResource(R.xml.pref_display);
-            } else if (settings.equals(PrefActivity.PREF_STORAGE)) {
-                addPreferencesFromResource(R.xml.pref_general);
-            }
-
         }
     }
+
     
     
     /*
