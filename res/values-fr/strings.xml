@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)  Translated by Francois Dinel
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<resources>
+    <string name="title_activity_main">&quot;Avare&quot;</string>
+    <string name="MissingMaps">&quot;Télécharger les cartes&quot;</string>
+    <string name="LoadingMaps">&quot;Charger les cartes&quot;</string>
+    <string name="OK">&quot;OK&quot;</string>
+    <string name="Nearest">&quot;Le plus près&quot;</string>
+    <string name="Success">&quot;Réussi&quot;</string>
+    <string name="DatabaseName">&quot;maps.db&quot;</string>
+    <string name="WarningMsg">&quot;Avertissement: à vos propres risques&quot;</string>
+    <string name="DestinationPrompt">&quot;Entrez code de destination&quot;</string>
+    <string name="DestinationNF">&quot;Destination non trouvée&quot;</string>
+    <string name="AirDia">&quot;Diagramme de l'aéroport&quot;</string>
+    <string name="ADS">&quot;Diagrammes d'aéroports&quot;</string>
+    <string name="InstallPDF">&quot;Pour visionner, installer un visionneur de PDF sur Google Play&quot;</string>
+    <string name="Cancel">&quot;Annulé&quot;</string>
+    <string name="To">&quot;Vers&quot;</string>
+    <string name="Help">&quot;Aide&quot;</string>
+    <string name="desc">&quot;Image/Carte&quot;</string>	
+    <string name="Destination">&quot;Destination&quot;</string>
+    <string name="Settings">&quot;Préférences&quot;</string>
+    <string name="Downloading">&quot;En téléchargement&quot;</string>
+    <string name="download">&quot;Télécharger&quot;</string>
+    <string name="Failed">&quot;Échec&quot;</string>
+    <string name="Extracting">&quot;Extraction&quot;</string>
+    <string name="Yes">&quot;Oui&quot;</string>
+    <string name="No">&quot;Non&quot;</string>
+    <string name="GPSLost">&quot;Aucun signal GPS&quot;</string>
+    <string name="GPSEnable">&quot;Activer le GPS&quot;</string>
+    <string name="Init">&quot;Initialisation&quot;</string>
+    <string name="Warning">&quot;Ce logiciel n'est pas certifié pour utilisation en vol par les autorités légales.\nUtilisez à vos propres risques. \nLe créateur de ce logiciel ne peut être tenu responsable de toutes blessures ou dommages causés par son utilisation. \n&quot;</string>
+    <string name="Recent">&quot;recent&quot;</string>
+    <string name="ChartType">&quot;Type de cartes&quot;</string>
+    <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
+    <string name="ChartTypeSummary">&quot;Sélectionner un type de carte pour la navigation&quot;</string>
+    <string name="weather">&quot;Météo&quot;</string>
+    <string name="TFRReceived">&quot;TFR reçus&quot;</string>
+    <string name="databases">&quot;Bases de données (requises)&quot;</string>
+    <string name="ValidDest">&quot;Entrer une destination valide&quot;</string>
+    <string name="AreaNF">&quot;Les Aéroports proches sont affichés quand le GPS a une position&quot;</string>
+    <string name="update">&quot;Mise à jour&quot;</string>
+    <string name="gps">&quot;GPS&quot;</string>
+    <string name="longitude">&quot;'W&quot;</string>
+    <string name="latitude">&quot;'N&quot;</string>
+    <string name="accuracy">&quot;Précision ft.&quot;</string>
+    <string name="degree">&quot;\u00B0&quot;</string>
+    <string name="calibratethis">&quot;Marquer ce point&quot;</string>
+    <string name="Done">&quot;Terminé&quot;</string>
+    <string name="Calibrate">&quot;Géo tag&quot;</string>
+    <string name="PointsTooClose">&quot;Les positions sont trop rapprochées&quot;</string>
+    <string name="BadCoords">&quot;Longitude/Latitude invalide\nLongitude varie: 0 à 180 W\nLatitude varie 0 à 90 N&quot;</string>
+    <string name="GoodCoords">&quot;Données affichées et sauvegardées&quot;</string>
+    <string name="main">&quot;Carte&quot;</string>
+    <string name="plates">&quot;Diagrammes&quot;</string>
+    <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="Lon">&quot;Long&quot;</string>
+    <string name="Lat">&quot;Lat&quot;</string>
+    <string name="DestinationSet">&quot;Destination vers &quot;</string>
+    <string name="DownloadInst">&quot;Sélectionner un item puis presser sur menu pour le télécharger&quot;</string>
+    <string name="Searching">&quot;Recherche&quot;</string>
+    <string name="Search">&quot;Cherche&quot;</string>
+    <string name="Get">&quot;Recherche&quot;</string>
+    <string name="Set">&quot;Ajuster&quot;</string>
+    <string name="Altitude">&quot;Altitude ft.&quot;</string>
+    <string name="Exit">&quot;Sortir&quot;</string>
+    <string name="PlatesNF">&quot;Pas de diagramme disponible por cette destination&quot;</string>
+    <string name="SelectPlate">&quot;Sélectionner un diagramme&quot;</string>
+    <string name="DownloadDB">&quot;Le ficher requis est manquant et doit être téléchargé.&quot;</string>
+    <string name="Agree">&quot;J'accepte&quot;</string>
+    <string name="TFRs">&quot;TFRs&quot;</string>
+    <string name="Delete">&quot;Effacer&quot;</string>
+    <string name="Label">&quot;Étiquette&quot;</string>
+    <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlanSet">&quot; ajouté au plan&quot;</string>
+    <string name="PlanNoset">&quot; pas ajouté au plan&quot;</string>
+    <string name="PlanNF">&quot;Le plan est affiché lorsqu'au moins un point de repère est entré dans la recherche&quot;</string>
+    <string name="GpsOnly">&quot;Seulement les destinations GPS peuvent être étiquettées&quot;</string>
+    <string name="Inactive">&quot;Inactif&quot;</string>
+    <string name="Active">&quot;Actif&quot;</string>
+    <string name="Total">&quot;Total&quot;</string>
+    <string name="Near">&quot;près de&quot;</string>
+    <string name="Find">&quot;trouvé&quot;</string>
+    <string name="Draw">&quot;Dessiner&quot;</string>
+    <string name="Pan">&quot;Dérouler&quot;</string>
+    <string name="Clear">&quot;Effacer&quot;</string>
+    <string name="WX">&quot;WX&quot;</string>
+    <string name="Left">&quot;Gauche&quot;</string>
+    <string name="Right">&quot;Droit&quot;</string>
+    <string name="Next">&quot;Suivant&quot;</string>
+    <string name="Last">&quot;Dernier&quot;</string>
+    <string name="Save">&quot;Sauvegarder&quot;</string>
+    <string name="SavedPlan">&quot;Sauvegarder les diagrammes&quot;</string>
+    <string name="Load">&quot;Charger&quot;</string>
+    <string name="LoadReverse">&quot;Inverser la charge&quot;</string>
+    <string name="WeatherError">&quot;Incapable de télécharger les données météo&quot;</string>
+    <string name="WeatherPlan">&quot;Charger un diagramme et cliquer sur mise à jour pour rafraichir les données météo&quot;</string>
+    <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="TrackUp">&quot;Tracé haut&quot;</string>
+    <string name="TrackUpLabel">&quot;Track vers le haut&quot;</string>
+    <string name="TrackUpSummary">&quot;Selectionner pour activer le tracé vers le haut (Expérimental), autrement le nord est vers le haut&quot;</string>
+    <string name="noZoomIn">&quot;Échelle trop petite&quot;</string>
+    <string name="noZoomOut">&quot;Échelle trop grande&quot;</string>
+    <string name="Navigate">&quot;Naviger&quot;</string>
+    <string name="NotAvailable">&quot;Non disponible&quot;</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">&quot;Storage et Téléchargements&quot;</string>
+    <string name="prefGpsCategoryTitle">&quot;GPS&quot;</string>
+    <string name="prefWeatherCategoryTitle">&quot;Météo&quot;</string>
+    <string name="prefDisplayCategoryTitle">&quot;Afficher&quot;</string>
+    <string name="prefAppStateCategoryTitle">&quot;l'État de l'application&quot;</string>
+    <string name="UnitKnot">kt</string>
+    <string name="UnitMile">mi</string>
+    <string name="VsFpm">ppm</string>
+    <string name="UnitKilometer">km</string>
+    <string name="DistKnot">nm</string>
+    <string name="DistMile">mi</string>
+    <string name="DistKilometer">km</string>
+    <string name="SpeedKnot">kt</string>
+    <string name="SpeedMile">mh</string>
+    <string name="SpeedKilometer">kh</string>
+    <string name="prefUseFlightTimer">UseFlightTimer</string>
+    <string name="UseFlightTimerLabel">&quot;Temps de vol&quot;</string>
+    <string name="UseFlightTimerSummary">&quot;Selectionner pour afficher la minuterie du temps de vol&quot;</string>
+    <string name="Up">Haut</string>
+    <string name="PrivateFolder">Utiliser le répertoire par défaut</string>
+    <string name="FileStore">Les fichiers seront sauvegardés:</string>
+    <string name="FileStoreInvalid">Incapable dÉcrire les fichiers au répertoire sélectionné:</string>
+    <string name="prefTracksCategoryTitle">Enregistrer le tracé</string>
+    <string name="TracksOn">Enregistrement du tracé activée</string>
+    <string name="TracksOff">Enregistrement du tracé désactivée</string>
+    <string name="AutoPostTracksTitle">&quot;Envoyer le fichier du tracé sur&quot;</string>
+    <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
+    <string name="Zero">&quot;0&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
+    <string name="VerticalRate">Taux de descente</string>
+    <string name="VerticalRateLabel">&quot;Afficher le taux de descente&quot;</string>
+    <string name="VerticalRateSummary">&quot;Selectionner pour afficher les taux de descente ou monté vers la destination&quot;</string>
+    <string name="AGLMSL">AGLMSL</string>
+    <string name="AGLMSLLabel">&quot;Afficher MSL/AGL&quot;</string>
+    <string name="AGLMSLSummary">&quot;Selectionner pour afficher l'élévation en MSL, et en AGL d'après les cartes d'élevation&quot;</string>
+
+</resources>

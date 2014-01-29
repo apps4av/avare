@@ -19,10 +19,7 @@ local.properties
 .classpath
 .project
 
-#Android Studio files
-.idea/
-avare.iml
-/app/app.iml
-out/
-/app/build/
-/.gradle/
+# Android Studio Files
+*.iml
+/.idea/
+/out
