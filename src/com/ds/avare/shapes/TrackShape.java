@@ -63,8 +63,10 @@ public class TrackShape extends Shape {
         /*
          * Now make shape from coordinates with segments
          */
+        coord[0].makeSeparate();
+        coord[segments - 1].makeSeparate();
         for(int i = 0; i < segments; i++) {
-            super.add(coord[i].getLongitude(), coord[i].getLatitude());
+            super.add(coord[i].getLongitude(), coord[i].getLatitude(), coord[i].isSeparate());
         }
     }
     
@@ -82,7 +84,7 @@ public class TrackShape extends Shape {
          * Now make shape from coordinates with segments
          */
         for(int i = 0; i < c.length; i++) {
-            super.add(c[i].getLongitude(), c[i].getLatitude());
+            super.add(c[i].getLongitude(), c[i].getLatitude(), c[i].isSeparate());
         }
     }
     

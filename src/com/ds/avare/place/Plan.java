@@ -370,6 +370,7 @@ public class Plan {
             int segments = (int)p.getDistance() / MILES_PER_SEGMENT + 3; // Min 3 points
             Coordinate coord[] = p.findPoints(segments);
 
+            coord[0].makeSeparate();
             if(null == c) {
                 c = coord;
             }
@@ -378,6 +379,12 @@ public class Plan {
             }
             lon0 = getDestination(id).getLocation().getLongitude();
             lat0 = getDestination(id).getLocation().getLatitude();            
+        }
+        /*
+         * Last circle
+         */
+        if(c != null) {
+            c[c.length - 1].makeSeparate();
         }
         return c;
     }

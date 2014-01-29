@@ -39,7 +39,7 @@ public class CrumbsShape extends Shape {
         /*
          * Add a coordinate
          */
-        super.add(loc.getLongitude(), loc.getLatitude());
+        super.add(loc.getLongitude(), loc.getLatitude(), false);
     }
     
     /**

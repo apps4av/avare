@@ -490,68 +490,71 @@ public class Helper {
      * @param date
      * @return
      */
-    public static boolean isExpired(String date) {
-        
-        int year;
-        int month;
-        int day;
-        int hour;
-        int min;
+    public static boolean isExpired(String date) {        
         
         if(null == date) {
             return true;
         }
+        
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         GregorianCalendar expires = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        /*
-         * Parse the normal charts date designation
-         * like 08_22_2013
-         */
-        String dates[] = date.split("_");
-        if(dates.length < 3) {
-            return true;            
-        }
-        try {
+
+        if(date.contains("_")) {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int min;
+            /*
+             * TFR date
+             */
+            String dates[] = date.split("_");
+            if(dates.length < 4) {
+                return true;            
+            }
+
             month = Integer.parseInt(dates[0]) - 1;
             day = Integer.parseInt(dates[1]);
             year = Integer.parseInt(dates[2]);
-            if(dates.length > 3) {
-                /*
-                 * TFR date
-                 */
-                String time[] = dates[3].split(":");
-                hour = Integer.parseInt(time[0]);
-                min = Integer.parseInt(time[1]);
-                if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
-                    return true;
-                }
-                /*
-                 * so many min expiry
-                 */
-                expires.set(year, month, day, hour, min);
-                expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
+
+            String time[] = dates[3].split(":");
+            hour = Integer.parseInt(time[0]);
+            min = Integer.parseInt(time[1]);
+            if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
+                return true;
             }
-            else {
-                /*
-                 * Chart date
-                 */
-                hour = 9;
-                min = 0;
-                if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
-                    return true;
-                }
-                expires.set(year, month, day, hour, min);
-                expires.add(Calendar.DAY_OF_MONTH, 28);
+            /*
+             * so many min expiry
+             */
+            expires.set(year, month, day, hour, min);
+            expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
+            if(now.after(expires)) {
+                return true;
             }
-        }
-        catch (Exception e) {
-            return true;
+            
+            return false;
         }
 
         /*
-         * expired?
+         * Parse the normal charts date designation
+         * like 1400
          */
-        if(now.after(expires)) {
+        int cycle = 1400;
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        epoch.set(2013, 11, 12, 9, 0, 0);
+
+        while(epoch.before(now)) {
+            epoch.add(Calendar.DAY_OF_MONTH, 28);
+            cycle++;
+        }
+        epoch.add(Calendar.DAY_OF_MONTH, -28);
+        cycle--;
+        try {
+            if(cycle < Integer.parseInt(date)) {
+                return true;
+            }
+        }
+        catch (Exception e) {
             return true;
         }
 
@@ -590,15 +593,15 @@ public class Helper {
              */
             String [] tokens = name.split("[/_.]");
     
-            int row = (Integer.parseInt(tokens[6]) + rowm);
-            int col = (Integer.parseInt(tokens[7]) + colm);
-            int lenr = tokens[6].length();
-            int lenc = tokens[7].length();
+            int row = (Integer.parseInt(tokens[7]) + rowm);
+            int col = (Integer.parseInt(tokens[8]) + colm);
+            int lenr = tokens[7].length();
+            int lenc = tokens[8].length();
             
             String rformatted = String.format("%0" + lenr + "d", row);
             String cformatted = String.format("%0" + lenc + "d", col);
-            String pre = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + row + "/";
-            String post = tokens[5] + "_" + rformatted + "_" + cformatted + "." + tokens[8];
+            String pre = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + tokens[4] + "/" + row + "/";
+            String post = tokens[6] + "_" + rformatted + "_" + cformatted + "." + tokens[9];
             return(pre + post);
         }
         catch(Exception e) {
@@ -680,7 +683,7 @@ public class Helper {
                      * If we get bad input from Govt. site. 
                      */
                     shape.add(Double.parseDouble(tokens[id + 1]),
-                            Double.parseDouble(tokens[id]));
+                            Double.parseDouble(tokens[id]), false);
                 }
                 catch (Exception e) {
                     
