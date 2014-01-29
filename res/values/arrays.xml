@@ -754,7 +754,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Greenwich Mean Time</item>
 	    <item>Local Time</item>
 		<item>Ground Speed</item>
-	    <item>Heading</item>
+	    <item>Track</item>
 	    <item>Bearing</item>
 	    <item>Destination Identifier</item>
 	    <item>Distance to Destination</item>
@@ -773,7 +773,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Zulu</item>
 	    <item></item>
 		<item>Ground Speed</item>
-	    <item>Heading</item>
+	    <item>Track</item>
 	    <item>Brg Next</item>
 	    <item>Next</item>
 	    <item>Dist Next</item>
