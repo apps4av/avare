@@ -138,9 +138,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
     <string name="prefOdometer">Odometer</string>
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
-    <string name="Radar">NEXRADTransparency</string>
-    <string name="RadarLabel">&quot;NEXRAD Transparency&quot;</string>
-    <string name="RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
+    <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
 </resources>

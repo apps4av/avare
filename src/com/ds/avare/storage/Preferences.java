@@ -517,7 +517,6 @@ public class Preferences {
      * @return
      */
     public String getDistanceUnit() {
-        //TODO:Find a way to remove this method, or simplify it to returning something that isn't a string. Enum maybe.
         String val = mPref.getString(mContext.getString(R.string.pref_Units), "0");
         if(val.equals("0")) {
             return (mContext.getString(R.string.UnitKnot));
@@ -619,7 +618,7 @@ public class Preferences {
      * @return
      */
     public int showRadar() {
-        String val = mPref.getString(mContext.getString(R.string.Radar), "255");
+        String val = mPref.getString(mContext.getString(R.string.pref_Radar), "255");
         try {
             return(Integer.parseInt(val));
         }

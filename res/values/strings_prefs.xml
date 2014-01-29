@@ -40,9 +40,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="pref_GpsOffWarnLabel">Warn GPS Disabled</string>
     <string name="pref_GpsOffWarnSummary">Select to warn frequently when GPS is disabled</string>
 
-    <string name="pref_Radar">Radar</string>
-    <string name="pref_RadarLabel">Show NEXRAD</string>
-    <string name="pref_RadarSummary">Select to show NEXRAD from the Internet (User Downloads)</string>
+    <string name="pref_Radar">NEXRADTransparency</string>
+    <string name="pref_RadarLabel">&quot;NEXRAD Transparency&quot;</string>
+    <string name="pref_RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
 
     <string name="pref_ADSBWeather">ADSBWeather</string>
     <string name="pref_ADSBWeatherLabel">Use ADSB Weather</string>
