@@ -25,8 +25,10 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 
 import java.util.List;
 
@@ -82,8 +84,24 @@ public class PrefActivity extends PreferenceActivity {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
+    {
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+
+        //There is a bug in older android versions that causes problems with coloring PreferenceScreen
+        //when children of another PreferenceScreen. This will fix it. Basically it just grabs the
+        //parent settings background and applies it to the child manually.
+        //See: https://code.google.com/p/android/issues/detail?id=4611
+        //   Comment #35 is this solution.
+        if (Build.VERSION.SDK_INT <= 10) {
+            if (preference!=null)
+                if (preference instanceof PreferenceScreen)
+                    if (((PreferenceScreen)preference).getDialog()!=null)
+                        ((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
         }
+        return false;
     }
 
     
