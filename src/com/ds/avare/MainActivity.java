@@ -17,9 +17,15 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.TabActivity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -36,7 +42,8 @@ import android.widget.TextView;
  * @author zkhan
  *
  */
-public class MainActivity extends TabActivity {
+public class MainActivity extends TabActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private StorageService mService;
 
     TabHost mTabHost;
     float    mTabHeight;
@@ -49,10 +56,11 @@ public class MainActivity extends TabActivity {
      * 
      */
     public void onCreate(Bundle savedInstanceState) {
-        
+        mService = null;
+
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-         
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
                 
         setContentView(R.layout.main);
@@ -90,6 +98,9 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
+
+        //Register to hear preference change events.
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
     
     /**
@@ -131,9 +142,26 @@ public class MainActivity extends TabActivity {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+
+
     }
 
-    @Override 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getApplicationContext().unbindService(mConnection);
+
+
+    }
+
+    @Override
     public void onDestroy() {
         /*
          * Start service now, bind later. This will be no-op if service is already running
@@ -148,6 +176,11 @@ public class MainActivity extends TabActivity {
                 stopService(intent);
             }
         }
+
+        //Unregister from preference change events
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
+
         super.onDestroy();
     }
     
@@ -166,4 +199,73 @@ public class MainActivity extends TabActivity {
     }
 
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        
+        if(key.equals(this.getString(R.string.pref_Units))) {
+                     /* Set default prefs.*/
+
+            Preferences pref = new Preferences(this);
+            if(pref.getDistanceUnit().equals(getString(R.string.UnitKnot))) {
+                //Nautical Miles
+                Preferences.distanceConversion = 1.944; // m/s to kt/hr
+                Preferences.heightConversion = 3.28;
+                Preferences.earthRadiusConversion = 3440.069;
+                Preferences.distanceConversionUnit = this.getString(R.string.DistKnot);
+                Preferences.speedConversionUnit = this.getString(R.string.SpeedKnot);
+                Preferences.vsConversionUnit = this.getString(R.string.VsFpm);
+            }
+            else if(pref.getDistanceUnit().equals(getString(R.string.UnitMile))) {
+                //Statute Miles
+                Preferences.distanceConversion = 2.2396; // m/s to mi/hr
+                Preferences.heightConversion = 3.28;
+                Preferences.earthRadiusConversion = 3963.1676;
+                Preferences.distanceConversionUnit = this.getString(R.string.DistMile);
+                Preferences.speedConversionUnit = this.getString(R.string.SpeedMile);
+                Preferences.vsConversionUnit = this.getString(R.string.VsFpm);
+            } else {
+                //Kilometers
+                Preferences.distanceConversion = 3.6; // m/s to kph
+                Preferences.heightConversion = 3.28;
+                Preferences.earthRadiusConversion = 6378.09999805;
+                Preferences.distanceConversionUnit = this.getString(R.string.DistKilometer);
+                Preferences.speedConversionUnit = this.getString(R.string.SpeedKilometer);
+                Preferences.vsConversionUnit = this.getString(R.string.VsFpm);
+            }
+        } else if(key.equals(this.getString(R.string.pref_Maps))){
+            if(null != mService) {
+            /*
+             * This will will sure we update tiles when someone changes storage folder
+             */
+                mService.getTiles().forceReload();
+            }
+        }
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     *
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            /*
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mService = binder.getService();
+        }
+
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        }
+    };
 }

@@ -12,30 +12,103 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
+
+import java.util.List;
 
 /**
  * 
  * @author zkhan
- *
+ * Modified by damccull
  */
 public class PrefActivity extends PreferenceActivity {
+    //Constants for xml file specification
+    public static final String PREF_UI = "pref_ui";
+    public static final String PREF_DISPLAY = "pref_display";
+    public static final String PREF_GPS = "pref_gps";
+    public static final String PREF_WEATHER = "pref_weather";
+    public static final String PREF_STORAGE = "pref_storage";
+
     private StorageService mService;
 
-    /*
-     * Start GPS
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onCreate(Bundle savedInstanceState) {
+        Helper.setTheme(this);
+        super.onCreate(savedInstanceState); 
+
+        mService = null;
+        addPreferencesFromResource(R.xml.preferences);
+    }
+
+    /**
+     *
      */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Helper.setOrientationAndOn(this);
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+
+        getApplicationContext().unbindService(mConnection);
+
+    }
+
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
+    {
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+
+        //There is a bug in older android versions that causes problems with coloring PreferenceScreen
+        //when children of another PreferenceScreen. This will fix it. Basically it just grabs the
+        //parent settings background and applies it to the child manually.
+        //See: https://code.google.com/p/android/issues/detail?id=4611
+        //   Comment #35 is this solution.
+        if (Build.VERSION.SDK_INT <= 10) {
+            if (preference!=null)
+                if (preference instanceof PreferenceScreen)
+                    if (((PreferenceScreen)preference).getDialog()!=null)
+                        ((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+        }
+        return false;
+    }
+
+    
+    
+    /*
+ * Start GPS
+ */
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -54,17 +127,6 @@ public class PrefActivity extends PreferenceActivity {
         public void enabledCallback(boolean enabled) {
         }
     };
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
-        super.onCreate(savedInstanceState); 
-
-        addPreferencesFromResource(R.xml.preferences);
-        setContentView(R.layout.preferences);
-        mService = null;        
-    }
-
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
@@ -93,44 +155,5 @@ public class PrefActivity extends PreferenceActivity {
         }
     };
 
-    /**
-     * 
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        
-        Helper.setOrientationAndOn(this);
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
 
-
-    /**
-     * 
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        /*
-         * This should update preferences in static memory
-         */
-        new Preferences(this);
-
-        getApplicationContext().unbindService(mConnection);
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            
-            /*
-             * This will will sure we update tiles when someone changes storage folder
-             */
-            mService.getTiles().forceReload();
-        }
-    }
 }
