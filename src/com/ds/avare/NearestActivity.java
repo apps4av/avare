@@ -52,6 +52,7 @@ public class NearestActivity extends Activity  implements Observer {
     private Toast mToast;
     private Preferences mPref;
     private Destination mDestination;
+    private AnimateButton mAnimateDest;
     
     private Button mDestButton;
 
@@ -133,6 +134,7 @@ public class NearestActivity extends Activity  implements Observer {
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
+        mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mService = null;
     }
 
@@ -222,8 +224,7 @@ public class NearestActivity extends Activity  implements Observer {
                     }              
                     
                     mDestButton.setText(mService.getArea().getAirport(position).getId());
-                    AnimateButton a = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    a.animate(true);
+                    mAnimateDest.animate(true);
                 }
             });
             

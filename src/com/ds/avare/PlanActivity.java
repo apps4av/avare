@@ -83,6 +83,8 @@ public class PlanActivity extends Activity  implements Observer {
     private ToggleButton mActivateButton;
     private TextView mTotalText;
     private Destination mDestination;
+    private AnimateButton mAnimateDest;
+    private AnimateButton mAnimateDelete;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -392,7 +394,10 @@ public class PlanActivity extends Activity  implements Observer {
             }
             
         });
-        
+
+        mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
     }
 
     /**
@@ -563,10 +568,8 @@ public class PlanActivity extends Activity  implements Observer {
                             
                     mDestination = mService.getPlan().getDestination(index);
                     mDestButton.setText(mDestination.getID());
-                    AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    AnimateButton d = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    g.animate(true);
-                    d.animate(true);
+                    mAnimateDest.animate(true);
+                    mAnimateDelete.animate(true);
 
                     return true;
                 }

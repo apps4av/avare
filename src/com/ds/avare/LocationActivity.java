@@ -125,6 +125,14 @@ public class LocationActivity extends Activity implements Observer {
     private boolean mSpinner;
     private TextView mInfoText;
     private TextView mChartText;
+    private AnimateButton mAnimateTracks;
+    private AnimateButton mAnimateSim;
+    private AnimateButton mAnimateTrack;
+    private AnimateButton mAnimateChart;
+    private AnimateButton mAnimateHelp;
+    private AnimateButton mAnimateDownload;
+    private AnimateButton mAnimatePref;
+    private AnimateButton mAnimateDraw;
 
     private ExpandableListView mListPopout;
 
@@ -401,8 +409,7 @@ public class LocationActivity extends Activity implements Observer {
                         /*
                          * Show animation button for draw clear
                          */
-                        AnimateButton e = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                        e.animate(true);
+                        mAnimateDraw.animate(true);
                     }
                     else {
                         /*
@@ -514,20 +521,13 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton k = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                b.animate(true);
-                d.animate(true);
-                c.animate(true);
-                s.animate(true);
-                t.animate(true);
-                f.animate(true);
-                k.animate(true);
+                mAnimateTracks.animate(true);
+                mAnimateSim.animate(true);
+                mAnimateTrack.animate(true);
+                mAnimateChart.animate(true);
+                mAnimateHelp.animate(true);
+                mAnimateDownload.animate(true);
+                mAnimatePref.animate(true);
             }
             
         });
@@ -755,6 +755,15 @@ public class LocationActivity extends Activity implements Observer {
         mExtras = getIntent().getExtras();
  
         mService = null;
+        mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
+        mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
+        mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
+        mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
+        mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateDraw = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
     }    
 
     private void setTrackState(boolean bState)

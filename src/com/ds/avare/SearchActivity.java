@@ -73,6 +73,11 @@ public class SearchActivity extends Activity implements Observer {
     private Button mEditButton;
     private Button mPlanButton;
     private boolean mIsWaypoint;
+    
+    private AnimateButton mAnimatePlan;
+    private AnimateButton mAnimateSelect;
+    private AnimateButton mAnimateEdit;
+
     /**
      * Shows edit dialog
      */
@@ -309,12 +314,9 @@ public class SearchActivity extends Activity implements Observer {
                     return false;
                 }
                                 
-                AnimateButton d = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                e.animate(true);
-                f.animate(true);
-                d.animate(true);
+                mAnimateSelect.animate(true);
+                mAnimatePlan.animate(true);
+                mAnimateEdit.animate(true);
 
                 return true;
             }
@@ -385,6 +387,11 @@ public class SearchActivity extends Activity implements Observer {
 
             }
         });
+        
+        mAnimatePlan = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateSelect = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateEdit = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
     }
         
         
