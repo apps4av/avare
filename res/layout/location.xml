@@ -68,7 +68,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/location_button_menu"
             android:layout_alignParentLeft="true"
             android:text="@string/Help"
             android:drawableLeft="@drawable/help"

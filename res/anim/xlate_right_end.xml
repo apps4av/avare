@@ -15,5 +15,5 @@ Redistribution and use in source and binary forms, with or without modification,
     android:fromXDelta="0%"
     android:toXDelta="100%"
     android:duration="300"
-    android:startOffset="4000"
+    android:startOffset="0"
     android:zAdjustment="top" />
