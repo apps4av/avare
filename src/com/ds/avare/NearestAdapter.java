@@ -13,6 +13,7 @@ package com.ds.avare;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +33,14 @@ public class NearestAdapter extends ArrayAdapter<String> {
     private String[] mFuel;
     private String[] mElevation;
     private String[] mLongestRunway;
+    private boolean[] mGlide;
         
     /**
      * @param context
      * @param textViewResourceId
      */
     public NearestAdapter(Context context, String[] distance, String name[], 
-            String bearing[], String[] fuel, String[] elev, String[] runway) {
+            String bearing[], String[] fuel, String[] elev, String[] runway, boolean[] glide) {
         super(context, R.layout.nearest, distance);
         mContext = context;
         mBearing = bearing;
@@ -47,6 +49,7 @@ public class NearestAdapter extends ArrayAdapter<String> {
         mFuel = fuel;
         mElevation = elev;
         mLongestRunway = runway;
+        mGlide = glide;
     }
 
     /**
@@ -58,13 +61,15 @@ public class NearestAdapter extends ArrayAdapter<String> {
      * @param elevation
      */
     public void updateList(String[] distance, String name[], 
-            String bearing[], String[] fuel, String[] elevation, String[] runway) {
+            String bearing[], String[] fuel, String[] elevation, String[] runway,
+            boolean[] glide) {
         mBearing = bearing;
         mDistance = distance;
         mName = name;
         mFuel = fuel;
         mElevation = elevation;
         mLongestRunway = runway;
+        mGlide = glide;
         notifyDataSetChanged();
     }
     
@@ -130,6 +135,15 @@ public class NearestAdapter extends ArrayAdapter<String> {
         textView.setText(mBearing[position]);
         textView = (TextView)rowView.findViewById(R.id.nearest_list_aid_name);
         textView.setText(mName[position]);
+        /*
+         * If cannot glide, mark it red
+         */
+        if(mGlide[position] == false) {
+            textView.setTextColor(Color.RED);
+        }
+        else {
+            textView.setTextColor(Color.GREEN);            
+        }
         textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
         textView.setText(mFuel[position]);
         textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);

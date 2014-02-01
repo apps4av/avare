@@ -227,4 +227,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
+    <string name="GlideRatio">&quot;Glide Ratio&quot;</string>
 </resources>

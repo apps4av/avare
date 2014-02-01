@@ -283,6 +283,7 @@ public class NearestActivity extends Activity  implements Observer {
         final String [] fuel = new String[airportnum];
         final String [] runlen = new String[airportnum];
         final String[] elevation = new String[airportnum];
+        final boolean[] glide = new boolean[airportnum];
 
         for(int id = 0; id < airportnum; id++) {
             Airport a = mService.getArea().getAirport(id);
@@ -294,12 +295,13 @@ public class NearestActivity extends Activity  implements Observer {
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
             elevation[id] = a.getElevation();
             runlen[id] = a.getLongestRunway();
+            glide[id] = a.canGlide(mPref);
         }
         if(null == mNearestAdapter) {
-            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation, runlen);
+            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation, runlen, glide);
         }
         else {
-            mNearestAdapter.updateList(dist, airportname, bearing, fuel, elevation, runlen);
+            mNearestAdapter.updateList(dist, airportname, bearing, fuel, elevation, runlen, glide);
         }
         return true;
     }
