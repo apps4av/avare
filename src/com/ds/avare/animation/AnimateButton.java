@@ -70,7 +70,6 @@ public class AnimateButton {
          * If not showing then dont take back in
          */
         if(!mShowing) {
-            animate();
             return;
         }
         
@@ -234,7 +233,6 @@ public class AnimateButton {
          * If out then dont animate
          */
         if(mShowing) {
-            animateBack();
             return;
         }
 

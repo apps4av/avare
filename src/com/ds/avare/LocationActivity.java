@@ -404,6 +404,18 @@ public class LocationActivity extends Activity implements Observer {
              */
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
+                
+                if(GestureInterface.TOUCH == event) {
+                    mAnimateTracks.animateBack();
+                    mAnimateSim.animateBack();
+                    mAnimateTrack.animateBack();
+                    mAnimateChart.animateBack();
+                    mAnimateHelp.animateBack();
+                    mAnimateDownload.animateBack();
+                    mAnimatePref.animateBack();
+                }
+                
+
                 if(GestureInterface.LONG_PRESS == event) {
                     if(mLocationView.getDraw()) {
                         /*
@@ -759,7 +771,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
         mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
         mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateDraw = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);

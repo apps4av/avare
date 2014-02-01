@@ -405,6 +405,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
 
         }
+        else if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
+        }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
     }
