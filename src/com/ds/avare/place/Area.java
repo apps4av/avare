@@ -37,7 +37,7 @@ public class Area {
     private boolean mFound;
     private long mLastTime;
     
-    private static final int MAX_AIRPORTS = 20;
+    private static final int MAX_AIRPORTS = 15;
     
     private static final int UPDATE_TIME = 10000;
     

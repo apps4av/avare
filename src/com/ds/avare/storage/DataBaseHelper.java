@@ -389,6 +389,39 @@ public class DataBaseHelper  {
         catch (Exception e) {
         }
         closes(cursor);
+
+        /*
+         * Find longest runway for each airport
+         */
+        for (int i = 0; i < airports.length; i++) {
+            if(airports[i] == null) {
+                continue;
+            }
+             String name = airports[i].getId();
+             if(name == null) {
+                 continue;
+             }
+             qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
+                     + "' or " + LOCATION_ID_DB + "=='K" + name + "' order by CAST(Length AS INTEGER) desc limit 1;";
+             cursor = doQuery(qry, getMainDb());
+             
+             try {
+                 /*
+                  * Add all of them
+                  */
+                 if(cursor != null) {
+                     while(cursor.moveToNext()) {
+                         String runway = cursor.getString(1) + "X" + cursor.getString(2);
+                         airports[i].setLongestRunway(runway);
+                     }
+                 }
+             }
+             catch (Exception e) {
+             }
+
+             closes(cursor);        
+        }
+
     }
 
     /**

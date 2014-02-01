@@ -18,6 +18,7 @@ import java.util.Observer;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -53,6 +54,10 @@ public class NearestActivity extends Activity  implements Observer {
     private Preferences mPref;
     private Destination mDestination;
     private AnimateButton mAnimateDest;
+    private Button mButton2000;
+    private Button mButton4000;
+    private Button mButton6000;
+    private Button mButtonFuel;
     
     private Button mDestButton;
 
@@ -131,6 +136,129 @@ public class NearestActivity extends Activity  implements Observer {
             
         });
 
+        
+        /*
+         * Dest button
+         */
+        mButtonFuel = (Button)view.findViewById(R.id.nearest_button_fuel);
+        mButtonFuel.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                if(mNearestAdapter == null) {
+                    return;
+                }
+                
+                int id = mNearestAdapter.getClosestWith100LL();
+                if(id < 0) {
+                    return;
+                }
+                Airport a = mService.getArea().getAirport(id);
+
+                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination.addObserver(NearestActivity.this);
+                mToast.setText(getString(R.string.Searching));
+                mToast.show();
+                mDestination.find();
+            }
+            
+        });
+
+        /*
+         * Dest button
+         */
+        mButton2000 = (Button)view.findViewById(R.id.nearest_button_2000);
+        mButton2000.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                if(mNearestAdapter == null) {
+                    return;
+                }
+                
+                int id = mNearestAdapter.getClosestRunwayWithMinLength(2000);
+                if(id < 0) {
+                    return;
+                }
+                Airport a = mService.getArea().getAirport(id);
+
+                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination.addObserver(NearestActivity.this);
+                mToast.setText(getString(R.string.Searching));
+                mToast.show();
+                mDestination.find();
+            }
+            
+        });
+        /*
+         * Dest button
+         */
+        mButton4000 = (Button)view.findViewById(R.id.nearest_button_4000);
+        mButton4000.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                if(mNearestAdapter == null) {
+                    return;
+                }
+                
+                int id = mNearestAdapter.getClosestRunwayWithMinLength(4000);
+                if(id < 0) {
+                    return;
+                }
+                Airport a = mService.getArea().getAirport(id);
+
+                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination.addObserver(NearestActivity.this);
+                mToast.setText(getString(R.string.Searching));
+                mToast.show();
+                mDestination.find();
+            }
+            
+        });
+        /*
+         * Dest button
+         */
+        mButton6000 = (Button)view.findViewById(R.id.nearest_button_6000);
+        mButton6000.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                if(mNearestAdapter == null) {
+                    return;
+                }
+                
+                int id = mNearestAdapter.getClosestRunwayWithMinLength(6000);
+                if(id < 0) {
+                    return;
+                }
+                Airport a = mService.getArea().getAirport(id);
+
+                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination.addObserver(NearestActivity.this);
+                mToast.setText(getString(R.string.Searching));
+                mToast.show();
+                mDestination.find();
+            }
+            
+        });
+
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
@@ -153,23 +281,25 @@ public class NearestActivity extends Activity  implements Observer {
         final String [] dist = new String[airportnum];
         final String [] bearing = new String[airportnum];
         final String [] fuel = new String[airportnum];
+        final String [] runlen = new String[airportnum];
         final String[] elevation = new String[airportnum];
 
         for(int id = 0; id < airportnum; id++) {
-            airport[id] = mService.getArea().getAirport(id).getId();
-            airportname[id] = mService.getArea().getAirport(id).getName() + "(" + 
-                    mService.getArea().getAirport(id).getId() + ")";
-            fuel[id] = mService.getArea().getAirport(id).getFuel();
-            dist[id] = "" + ((float)(Math.round(mService.getArea().getAirport(id).getDistance() * 10.f)) / 10.f) + " " + Preferences.distanceConversionUnit;
-            double heading = Helper.getMagneticHeading(mService.getArea().getAirport(id).getBearing(), params.getDeclinition());
+            Airport a = mService.getArea().getAirport(id);
+            airport[id] = a.getId();
+            airportname[id] = a.getName() + "(" + a.getId() + ")";
+            fuel[id] = a.getFuel();
+            dist[id] = "" + ((float)(Math.round(a.getDistance() * 10.f)) / 10.f) + " " + Preferences.distanceConversionUnit;
+            double heading = Helper.getMagneticHeading(a.getBearing(), params.getDeclinition());
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
-            elevation[id] = mService.getArea().getAirport(id).getElevation();
+            elevation[id] = a.getElevation();
+            runlen[id] = a.getLongestRunway();
         }
         if(null == mNearestAdapter) {
-            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation);
+            mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation, runlen);
         }
         else {
-            mNearestAdapter.updateList(dist, airportname, bearing, fuel, elevation);
+            mNearestAdapter.updateList(dist, airportname, bearing, fuel, elevation, runlen);
         }
         return true;
     }

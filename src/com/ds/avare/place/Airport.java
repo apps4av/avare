@@ -34,6 +34,7 @@ public class Airport implements Comparable<Airport> {
     private String mName;
     private String mFuel;
     private String mElevation;
+    private String mLongestRunway;
    
     /**
      * 
@@ -51,6 +52,7 @@ public class Airport implements Comparable<Airport> {
         mFuel = params.get(DataBaseHelper.FUEL_TYPES);
         mElevation = params.get("Elevation");
         mVariation = Helper.parseVariation(params.get(DataBaseHelper.MAGNETIC_VARIATION));
+        mLongestRunway = "";
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
     }
@@ -118,6 +120,22 @@ public class Airport implements Comparable<Airport> {
      */
     public String getElevation() {
         return mElevation;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getLongestRunway() {
+        return mLongestRunway;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLongestRunway(String runway) {
+        mLongestRunway = runway;
     }
 
     /**

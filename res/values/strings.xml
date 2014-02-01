@@ -223,4 +223,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
+    <string name="Nearest2000">&quot;Nearest\n2000'&quot;</string>
+    <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
+    <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
+    <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
 </resources>
