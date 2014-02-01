@@ -819,7 +819,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null != mAirplaneOtherBitmap) {
                 rotateBitmapIntoPlace(mAirplaneOtherBitmap, t.mHeading,
                         t.mLon, t.mLat, true);
+                mDistanceRingPaint.setColor(Color.WHITE);
                 canvas.drawBitmap(mAirplaneOtherBitmap.getBitmap(), mAirplaneOtherBitmap.getTransform(), mPaint);
+                /*
+                 * Make traffic line and info
+                 */
+                float x = (float)mOrigin.getOffsetX(t.mLon);
+                float y = (float)mOrigin.getOffsetY(t.mLat);
+                drawShadowedText(canvas, mDistanceRingPaint,
+                        t.mAltitude + "'", Color.DKGRAY, x, y);
+
             }
         }
     }
