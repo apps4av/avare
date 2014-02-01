@@ -590,4 +590,79 @@ public class WeatherHelper {
 
         return "";
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public static String getNamMosLegend() {
+        /*
+         * Legend 
+         */
+        return
+                "HR = Hour, N/X = Night/Day Low/High Temp., TMP = Temperature (F), DPT = Dew Point, WDR = Wind Direction, WSP = Wind Speed, T = Thunderstorm Probability (Last 06 HR / 12 HR)<br>" + 
+                "<table bgcolor=lightgrey width='90%' border=2>" +
+                "<tr>" +
+                "<td align=left valign=top>" +
+                "<table bgcolor=white border=1 align=center>" +
+                "<tr><b><u>Q,P,F(Last 06 HR / 12 HR)</u></b></tr>" +
+                "<tr><td> 0 </td><td width=150>      no precipitation</td></tr>" +              
+                "<tr><td> 1 </td><td>      0.01 to 0.09 inches</td></tr>" +    
+                "<tr><td> 2 </td><td>      0.10 to 0.24 inches</td></tr>" +
+                "<tr><td> 3 </td><td>      0.25 to 0.49 inches</td></tr>" +
+                "<tr><td> 4 </td><td>      0.50 to 0.99 inches</td></tr>" +
+                "<tr><td> 5 </td><td>      1.00 to 1.99 inches</td></tr>" +
+                "<tr><td> 6 </td><td>      2.00 inches or greater</td></tr>" +
+                "</table>" +
+                "<table bgcolor=white border=1 align=center>" +
+                "<tr><b><u><br><br>(Last 06 HR) Snow Fall (SNW) Amount</u></b></tr>" +
+                "<tr><td> 0 </td><td>      no snow or a trace expected</td></tr>" +
+                "<tr><td> 1 </td><td>      > a trace to < 2 inches </td></tr>" +
+                "<tr><td> 2 </td><td>      2 to < 4 inches </td></tr>" +
+                "<tr><td> 4 </td><td>      4 to < 6 inches </td></tr>" +
+                "<tr><td> 6 </td><td>      6 to < 8 inches </td></tr>" +
+                "<tr><td> 8 </td><td>      >= 8 inches </td></tr>" +
+                "</table>" +
+                "<table bgcolor=white border=1 width='%80'>" +
+                "<tr><b><u><br><br>Visibility (VIS)</u></b></tr>" +
+                "<tr><td> 1 </td><td width=150> &lt 1/2 miles</td></tr>" +
+                "<tr><td> 2 </td><td> 1/2 - &lt 1 miles</td></tr>" +
+                "<tr><td> 3 </td><td> 1 - &lt 2 miles</td></tr>" +
+                "<tr><td> 4 </td><td> 2 - &lt 3 miles</td></tr>" +
+                "<tr><td> 5 </td><td> 3 - 5 miles</td></tr>" +
+                "<tr><td> 6 </td><td> 6 miles</td></tr>" +
+                "<tr><td> 7 </td><td> &gt 6 miles</td></tr>" +
+                "</table>" +
+                "</td><td valign=top>" +
+                "<table bgcolor=white border=1 align=center>" +
+                "<tr><b><u>Ceiling Height (CIG)</u></b></tr>" +
+                "<tr><td> 1 </td><td>     < 200 feet </td></tr>" +           
+                "<tr><td> 2 </td><td>     200 - 400 feet </td></tr>" +
+                "<tr><td> 3 </td><td>     500 - 900 feet </td></tr>" +
+                "<tr><td> 4 </td><td>     1000 - 1900 feet</td></tr>" +
+                "<tr><td> 5 </td><td>     2000 - 3000 feet</td></tr>" +
+                "<tr><td> 6 </td><td>     3100 - 6500 feet</td></tr>" +
+                "<tr><td> 7 </td><td>     6600 - 12,000 feet</td></tr>" +
+                "<tr><td> 8 </td><td>     > 12,000 feet</td></tr>" +
+                "</table>" +
+                "<br>" +
+                "<table bgcolor=white border=1 align=center>" +
+                "<tr><b><u>Cloud (CLD) Categories</u></b></tr>" +
+                "<tr><td> CL </td><td>     clear </td></tr>" +              
+                "<tr><td> FW </td><td>     > 0 to 2 octas of total sky cover</td></tr>" +              
+                "<tr><td> SC </td><td>     > 2 to 4 octas of total sky cover" +
+                "<tr><td> BK </td><td>     > 4 to < 8 octas of total sky cover</td></tr>" +              
+                "<tr><td> OV </td><td>     8 octas of total sky cover or totally obscured</td></tr>" +
+                "</table>" +
+                "<br>" +
+                "<table bgcolor=white border=1 width='%80'>" +
+                "<tr><b><u><br><br>MAV Obstruction to Vision (OBV) Categories</u></b></tr>" +
+                "<tr><td> N </td><td> none of the following</td></tr>" +
+                "<tr><td> HZ </td><td>      haze, smoke, dust</td></tr>" +
+                "<tr><td> BR </td><td>      mist (fog with visibility >= 5/8 mile)</td></tr>" +
+                "<tr><td> FG </td><td>      fog or ground fog (visibility < 5/8 mile)</td></tr>" +
+                "<tr><td> BL </td><td>      blowing dust, sand, snow</td></tr>" +
+                "</table>";
+
+    }
 }

@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -51,7 +52,51 @@ public class NetworkHelper {
         return root + "donate.html";
     }
 
- 
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+    public static String getNAMMET(String airport) {
+        
+        //http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=KALX
+        
+        try {
+            URL url = new URL("http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=K" + airport);
+            Scanner s = new Scanner(url.openStream());
+            int state = 0;
+            String sb = "";
+            while(s.hasNextLine()) {
+
+                /*
+                 * Parse pre formatted text from the NOAA website
+                 * Strip out all other HTML.
+                 */
+                String line = s.nextLine();
+                if(line.contains("<PRE>")) {
+                    state = 1;
+                }
+                else if(line.contains("</PRE>")) {
+                    state = 0;
+                    break;
+                }
+                else if(state == 1) {
+                    /*
+                     * Only text that describes forecast
+                     */
+                    sb = sb + line + "</br>";
+                }
+            }
+            s.close();
+            return sb;
+        }
+        catch (Exception e) {
+            
+        }
+
+        return "";
+    }   
+         
     /**
      * 
      * @param airport
