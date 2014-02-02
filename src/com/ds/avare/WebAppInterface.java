@@ -202,7 +202,8 @@ public class WebAppInterface {
                 Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
                 Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
                 Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-                nam = "<font size='6' color='black'>Forecast</font><br></br><PRE>" + nam + "</PRE>" + WeatherHelper.getNamMosLegend();
+                nam = "<font size='6' color='black'>Forecast</font><br></br>" +  
+                        WeatherHelper.getNamMosLegend() + nam;
                 nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
 
                 String weather = plan + Metar + Taf + Pirep + nam;

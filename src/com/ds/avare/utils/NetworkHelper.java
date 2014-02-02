@@ -84,7 +84,7 @@ public class NetworkHelper {
                     /*
                      * Only text that describes forecast
                      */
-                    sb = sb + line + "</br>";
+                    sb = sb + "<pre>" + line + "</pre>";
                 }
             }
             s.close();

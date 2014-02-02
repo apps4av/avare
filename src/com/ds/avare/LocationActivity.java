@@ -316,6 +316,33 @@ public class LocationActivity extends Activity implements Observer {
 
     }
 
+    /**
+     * 
+     */
+    private void hideMenu() {
+        mAnimateTracks.animateBack();
+        mAnimateSim.animateBack();
+        mAnimateTrack.animateBack();
+        mAnimateChart.animateBack();
+        mAnimateHelp.animateBack();
+        mAnimateDownload.animateBack();
+        mAnimatePref.animateBack();
+    }
+    
+    /**
+     * 
+     */
+    private void showMenu() {
+        mAnimateTracks.animate();
+        mAnimateSim.animate();
+        mAnimateTrack.animate();
+        mAnimateChart.animate();
+        mAnimateHelp.animate();
+        mAnimateDownload.animate();
+        mAnimatePref.animate();
+    }
+
+
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
@@ -406,13 +433,7 @@ public class LocationActivity extends Activity implements Observer {
             public void gestureCallBack(int event, LongTouchDestination data) {
                 
                 if(GestureInterface.TOUCH == event) {
-                    mAnimateTracks.animateBack();
-                    mAnimateSim.animateBack();
-                    mAnimateTrack.animateBack();
-                    mAnimateChart.animateBack();
-                    mAnimateHelp.animateBack();
-                    mAnimateDownload.animateBack();
-                    mAnimatePref.animateBack();
+                    hideMenu();
                 }
                 
 
@@ -533,13 +554,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                mAnimateTracks.animate();
-                mAnimateSim.animate();
-                mAnimateTrack.animate();
-                mAnimateChart.animate();
-                mAnimateHelp.animate();
-                mAnimateDownload.animate();
-                mAnimatePref.animate();
+                showMenu();
             }
             
         });
@@ -1050,6 +1065,11 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
+
+        /*
+         * Do this as switching from screen needs to hide its menu
+         */
+        hideMenu();
     }
     
     /* (non-Javadoc)
