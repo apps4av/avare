@@ -919,8 +919,6 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateParams(mService.getGpsParams());
             }
 
-            mLocationView.updateDestination();
-
             /*
              * Show avare warning when service says so 
              */
