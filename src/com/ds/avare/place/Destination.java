@@ -595,17 +595,24 @@ public class Destination extends Observable {
         	/*
         	 * This runs on UI
         	 */
-			mFound = result;
-			if(mFound) {
-                mDbType = mParams.get(DataBaseHelper.TYPE);
-                try {
-        		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
-        		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
-                }
-                catch(Exception e) {
-                    mFound = false;
-                }
-			}
+            mFound = result;
+            if(mDbType.equals(GPS) || mDbType.equals(MAPS)) {
+                /*
+                 * These dont come from db so dont assign from params.
+                 */
+            }
+            else {
+    			if(mFound) {
+                    mDbType = mParams.get(DataBaseHelper.TYPE);
+                    try {
+            		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
+            		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                    }
+                    catch(Exception e) {
+                        mFound = false;
+                    }
+    			}
+            }
             /**
              * 
              */
