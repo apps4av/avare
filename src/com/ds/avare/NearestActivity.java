@@ -24,19 +24,23 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -54,10 +58,14 @@ public class NearestActivity extends Activity  implements Observer {
     private Preferences mPref;
     private Destination mDestination;
     private AnimateButton mAnimateDest;
+    private AnimateButton mAnimateGr;
     private Button mButton2000;
+    private Button mGrButton;
     private Button mButton4000;
     private Button mButton6000;
     private Button mButtonFuel;
+    private AlertDialog mGlideRatioDialog;
+
     
     private Button mDestButton;
 
@@ -136,7 +144,70 @@ public class NearestActivity extends Activity  implements Observer {
             
         });
 
-        
+
+        /*
+         * Dest button
+         */
+        mGrButton = (Button)view.findViewById(R.id.nearest_button_gr);
+        mGrButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Ask for glide ratio
+                 */
+                final EditText input = new EditText(NearestActivity.this);
+                input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                input.setHint("" + mPref.getGlideRatio());
+                
+                /*
+                 * Let people set the glide ratio
+                 */
+                mGlideRatioDialog = new AlertDialog.Builder(NearestActivity.this).create();
+                mGlideRatioDialog.setTitle(getString(R.string.GlideRatio));
+                mGlideRatioDialog.setCancelable(true);
+                mGlideRatioDialog.setMessage(getString(R.string.SetGlideRatio));
+                mGlideRatioDialog.setCanceledOnTouchOutside(true);
+                mGlideRatioDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Save), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            /*
+                             * Format to float the glide ration cannot be negative or 0
+                             */
+                            float r = Float.parseFloat(input.getText().toString());
+                            if(r > 0) {
+                                mPref.setGlideRatio(r);
+                                mToast.setText(R.string.Success);
+                                mToast.show();
+                                return;
+                            }
+                        }
+                        catch (Exception e) {
+                            
+                        }
+                        mToast.setText(R.string.Failed);                                
+                        mToast.show();
+                    }
+                });
+                mGlideRatioDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mGlideRatioDialog.setView(input);
+                mGlideRatioDialog.show();        
+
+            }
+            
+        });
+
         /*
          * Dest button
          */
@@ -263,6 +334,7 @@ public class NearestActivity extends Activity  implements Observer {
 
         mPref = new Preferences(getApplicationContext());
         mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateGr = new AnimateButton(getApplicationContext(), mGrButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mService = null;
     }
 
@@ -355,8 +427,14 @@ public class NearestActivity extends Activity  implements Observer {
                         }
                     }              
                     
-                    mDestButton.setText(mService.getArea().getAirport(position).getId());
+                    Airport a = mService.getArea().getAirport(position);
+                    mDestButton.setText(a.getId());
                     mAnimateDest.animate(true);
+                    mAnimateGr.animate(true);
+                    if(!a.canGlide(mPref)) {
+                        mToast.setText(R.string.NotGlideRange);
+                        mToast.show();
+                    }
                 }
             });
             
@@ -409,6 +487,14 @@ public class NearestActivity extends Activity  implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if(null != mGlideRatioDialog) {
+            try {
+                mGlideRatioDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
 
     }
 

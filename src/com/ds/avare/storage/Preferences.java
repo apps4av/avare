@@ -719,12 +719,16 @@ public class Preferences {
      * 8 is the  glide ratio of most common aircraft like C172 and C182
      * @return
      */
-    public int getGlideRatio() {
-        try {
-            return(Integer.parseInt(mPref.getString(mContext.getString(R.string.GlideRatio), "8")));
-        } catch (Exception x) {
-            return 8;
-        }
+    public float getGlideRatio() {
+        return(mPref.getFloat(mContext.getString(R.string.GlideRatio), 8));
+    }
+
+    /**
+     * 
+     * @param value
+     */
+    public void setGlideRatio(float value) {
+        mPref.edit().putFloat(mContext.getString(R.string.GlideRatio), value).commit();
     }
 
 }

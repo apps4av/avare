@@ -63,7 +63,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_4"
+            android:layout_above="@+id/nearest_button_gr"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
@@ -71,9 +71,14 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/nearest_button_4"
+            android:id="@+id/nearest_button_gr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="left|center"
+            android:drawableLeft="@drawable/glide"
+            android:text="@string/GlideRatio"
+            android:minWidth="140dp"
             android:layout_above="@+id/nearest_button_3"
             android:visibility="invisible" />
         

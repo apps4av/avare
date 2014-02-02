@@ -228,4 +228,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
     <string name="GlideRatio">&quot;Glide Ratio&quot;</string>
+    <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
+    <string name="SetGlideRatio">&quot;"Set the glide ratio of your aircraft (altitude divided by glide distance)&quot;</string>
 </resources>
