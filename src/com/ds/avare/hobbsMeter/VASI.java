@@ -111,7 +111,7 @@ public class VASI {
         mInstTop = (screenY - mInstHeight) / 2;
 
         // Now the left side
-        mInstLeft  = (screenX * 3 / 4) - mInstWidth / 2;
+        mInstLeft  = screenX - mInstWidth; // Right side of display
 	    
         // Draw the background
 	    mVASIPaint.setColor(mBackColor);// Color

@@ -131,7 +131,7 @@ public class CDI {
 	    }
 	    
 	    // Now draw the needle indicator at the horizontal center
-	    drawIndicator(canvas, screenX / 2 + mDspOffset);
+	    drawIndicator(canvas, screenX / 2 - mDspOffset);
 	    
 	    // If we are not ON the course line, then display how far
 	    // off course we are

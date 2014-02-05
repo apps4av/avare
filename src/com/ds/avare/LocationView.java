@@ -1230,7 +1230,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawCDI(Canvas canvas)
     {
-        if(mService != null && mPointProjection == null) {
+        if(mService != null && mPointProjection == null && mErrorStatus == null) {
         	if(mPref.getShowCDI()) {
 	        	Destination dest = mService.getDestination();
 	        	if(dest != null) {
@@ -1247,7 +1247,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawVASI(Canvas canvas)
     {
-        if(mService != null && mPointProjection == null) {
+        if(mService != null && mPointProjection == null && mErrorStatus == null) {
         	if(mPref.getShowCDI()) {
 	        	Destination dest = mService.getDestination();
 	        	if(dest != null) {
