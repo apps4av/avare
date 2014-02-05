@@ -19,7 +19,7 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.hobbsMeter.CDI;
+import com.ds.avare.instruments.CDI;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;

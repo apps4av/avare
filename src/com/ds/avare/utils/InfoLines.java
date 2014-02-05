@@ -26,8 +26,8 @@ import android.graphics.Paint.Align;
 import com.ds.avare.LocationView;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
-import com.ds.avare.hobbsMeter.CDI;
-import com.ds.avare.hobbsMeter.Odometer;
+import com.ds.avare.instruments.CDI;
+import com.ds.avare.instruments.Odometer;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 
