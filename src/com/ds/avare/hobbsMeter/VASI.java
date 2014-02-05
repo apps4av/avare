@@ -34,6 +34,7 @@ public class VASI {
 	float mInstTop;		// The top line of the CDI
 	float mInstLeft;	// Left position of the CDI
 	double mConvertToFt; // Factor to convert units to feet
+	boolean mShow;
 	
 	// Calc'd instrument values
 	int		mDspOffset;		// Display offset of pointer
@@ -96,7 +97,8 @@ public class VASI {
 	public void drawVASI(Canvas canvas, float screenX, float screenY, Destination dest)
 	{
 		// If we have no destination set, then do not draw anything
-		if(dest == null) {
+		if(dest == null || (!mShow)) {
+		    mShow = false;
 			return;
 		}
 		
@@ -104,6 +106,7 @@ public class VASI {
 		// draw anything
 		double destDist = dest.getDistance(); 
 		if(destDist > 20) {
+		    mShow = false;
 			return;
 		}
 
@@ -181,6 +184,7 @@ public class VASI {
 		// If either of these objects are null, there is nothing
 		// we can do
 		if(dest == null || gpsParams == null) {
+		    mShow = false;
 			return;
 		}
 		
@@ -188,6 +192,7 @@ public class VASI {
 		// then we don't want to display any vertical information
 		double destElev = dest.getElevation();
 		if(destElev == -200) {
+		    mShow = false;
 			return;
 		}
 		
@@ -195,6 +200,7 @@ public class VASI {
 		// lower then no display info
 		double relativeAGL = gpsParams.getAltitude() - destElev;
 		if(relativeAGL < 0) {
+            mShow = false;
 			return;
 		}
 		
@@ -225,5 +231,6 @@ public class VASI {
 		} else {
 			mDspOffset = -(int)((mGlideSlope - 3) * (fullDeflection));
 		}
+		mShow = true;
 	}
 }
