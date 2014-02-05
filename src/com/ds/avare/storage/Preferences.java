@@ -715,6 +715,10 @@ public class Preferences {
     	mPref.edit().putString(mContext.getString(R.string.prefOdometer), String.format("%f", value)).commit();
     }
     
+    public boolean getShowCDI() {
+        return mPref.getBoolean(mContext.getString(R.string.prefShowCDI), true);
+    }
+
     /**
      * 8 is the  glide ratio of most common aircraft like C172 and C182
      * @return

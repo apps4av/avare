@@ -76,6 +76,34 @@ public class Projection {
     }
 
     /**
+     * 
+     * @param lon1
+     * @param lat1
+     * @param lon2
+     * @param lat2
+     * @return
+     */
+    public static double getStaticBearing(double lon1, double lat1, double lon2, double lat2) {
+        
+        /*
+         * Save these for track
+         */
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);       
+        
+        //http://www.movable-type.co.uk/scripts/latlong.html
+        double dLon = lon2 - lon1;
+                   
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) -
+                Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+               
+        return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    /**
      * Given distance and lon/lat pair, find points on great circle.
      * @return
      */

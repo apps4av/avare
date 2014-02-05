@@ -19,6 +19,8 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.hobbsMeter.CDI;
+import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -243,7 +245,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     // Handler for the top two lines of status information
     InfoLines mInfoLines;
-    
+
     /**
      * @param context
      */
@@ -1222,6 +1224,40 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         canvas.drawText(text,  x - (mTextSize.right / 2), y, paint);
     }
 
+    /***
+     * Draw the course deviation indicator if we have a destination set
+     * @param canvas what to draw the data upon
+     */
+    private void drawCDI(Canvas canvas)
+    {
+        if(mService != null) {
+        	if(mPref.getShowCDI()) {
+	        	Destination dest = mService.getDestination();
+	        	if(dest != null) {
+	        		mService.getCDI().drawCDI(canvas, getWidth(), getHeight());
+	        	}
+        	}
+        }
+    	
+    }
+    
+    /***
+     * Draw the vertical approach slope indicator if we have a destination set
+     * @param canvas what to draw the data upon
+     */
+    private void drawVASI(Canvas canvas)
+    {
+        if(mService != null) {
+        	if(mPref.getShowCDI()) {
+	        	Destination dest = mService.getDestination();
+	        	if(dest != null) {
+	        		mService.getVASI().drawVASI(canvas, getWidth(), getHeight(), dest);
+	        	}
+        	}
+        }
+    	
+    }
+
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1252,6 +1288,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDistanceRings(canvas);
         drawRunways(canvas);
         drawAircraft(canvas);
+        drawCDI(canvas);
+        drawVASI(canvas);
         
         if(mTrackUp) {
             canvas.restore();
@@ -1318,6 +1356,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
             mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are     */
             mService.getOdometer().updateValue(mPref, mGpsParams);		/* Adjust the odometer	*/
+            mService.getCDI().calcDeviation(mGpsParams, mService.getDestination());		// Calculate deviation 
+            mService.getVASI().calcGlideSlope(mGpsParams, mService.getDestination());	// Calculate GS
         }
 
         updateCoordinates();
@@ -1368,6 +1408,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mScale.setScaleAt(mGpsParams.getLatitude());
         dbquery(true);
         postInvalidate();
+
+        // Tell the CDI the paint that we use for display text
+        mService.getCDI().setSize(mPaint);
+        mService.getVASI().setSize(mPaint);
     }
 
     /**

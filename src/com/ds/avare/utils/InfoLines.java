@@ -26,6 +26,7 @@ import android.graphics.Paint.Align;
 import com.ds.avare.LocationView;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.hobbsMeter.CDI;
 import com.ds.avare.hobbsMeter.Odometer;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
@@ -98,7 +99,8 @@ public class InfoLines {
     static final int ID_FLD_VSI = 13;
     static final int ID_FLD_DRT = 14;
     static final int ID_FLD_ODO = 15;
-    static final int ID_FLD_MAX = 16;
+    static final int ID_FLD_CDI = 16;
+    static final int ID_FLD_MAX = 17;
     static final String NOVALUE = "     ";
     
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -474,112 +476,100 @@ public class InfoLines {
      */
     private String getDisplayFieldValue(int aField, boolean aTitle)
     {
+    	if(aTitle == true) {
+    		if(aField == ID_FLD_LT) {
+    			return Calendar.getInstance().getTimeZone().getID();
+    		}
+
+    		String[] fieldTitles = mLocationView.getAppContext().getResources().getStringArray(R.array.TextFieldOptionTitles);
+    		if(fieldTitles.length > aField) {
+    			return fieldTitles[aField];
+    		}
+    		return NOVALUE;
+    	}
+
     	switch(aField) {
 	    	case ID_FLD_VSI: {
-	    		if(aTitle == false) {
-	    			return String.format(Locale.getDefault(), "%+05.0f", mLocationView.getVSI());
-	    		}
-	    		break;
+    			return String.format(Locale.getDefault(), "%+05.0f", mLocationView.getVSI());
 	    	}
 	    	
 	    	case ID_FLD_SPD: {
-	    		if(aTitle == false) {
-	    			return Helper.centerString(
-	    						String.format(Locale.getDefault(), "%.0f%s", mLocationView.getGpsParams().getSpeed(), 
-	    								Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
-	    		}
-	    		break;
+    			return Helper.centerString(
+    						String.format(Locale.getDefault(), "%.0f%s", mLocationView.getGpsParams().getSpeed(), 
+    								Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
 	    	}
 	
 	    	case ID_FLD_HOB: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-		    			return "" + mLocationView.getStorageService().getFlightTimer().getValue();
-		    		}
+	    		if(mLocationView.getStorageService() != null) {
+	    			return "" + mLocationView.getStorageService().getFlightTimer().getValue();
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_HDG: {
-	    		if(aTitle == false) {
-		    		return " " + Helper.correctConvertHeading(Math.round((
-		    				Helper.getMagneticHeading(mLocationView.getGpsParams().getBearing(), 
-		    						mLocationView.getGpsParams().getDeclinition())))) + '\u00B0';
-	    		}
-	    		break;
+	    		return " " + Helper.correctConvertHeading(Math.round((
+	    				Helper.getMagneticHeading(mLocationView.getGpsParams().getBearing(), 
+	    						mLocationView.getGpsParams().getDeclinition())))) + '\u00B0';
 	    	}
 	    	
 	    	case ID_FLD_BRG: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-			    		if(mLocationView.getStorageService().getDestination() != null) {
-			    			return " " + Helper.correctConvertHeading(Math.round((
-			    					Helper.getMagneticHeading(
-			    					mLocationView.getStorageService().getDestination().getBearing(), 
-			    					mLocationView.getGpsParams().getDeclinition())))) + '\u00B0';
-			    		}
+	    		if(mLocationView.getStorageService() != null) {
+		    		if(mLocationView.getStorageService().getDestination() != null) {
+		    			return " " + Helper.correctConvertHeading(Math.round((
+		    					Helper.getMagneticHeading(
+		    					mLocationView.getStorageService().getDestination().getBearing(), 
+		    					mLocationView.getGpsParams().getDeclinition())))) + '\u00B0';
 		    		}
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_DST: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-			    		if(mLocationView.getStorageService().getDestination() != null) {
-			    			String name = mLocationView.getStorageService().getDestination().getID();
-			                if(name.contains("&")) {		// Change a direct coordinate to GPS
-			                    name = Destination.GPS;
-			                } else if (name.length() > 5) {	// Truncate name if larger than 5 chars
-			                    name = name.substring(0, 4);
-			                }
-			                return Helper.centerString(name,  MAX_FIELD_SIZE_IN_CHARS);
-			    		}
+	    		if(mLocationView.getStorageService() != null) {
+		    		if(mLocationView.getStorageService().getDestination() != null) {
+		    			String name = mLocationView.getStorageService().getDestination().getID();
+		                if(name.contains("&")) {		// Change a direct coordinate to GPS
+		                    name = Destination.GPS;
+		                } else if (name.length() > 5) {	// Truncate name if larger than 5 chars
+		                    name = name.substring(0, 4);
+		                }
+		                return Helper.centerString(name,  MAX_FIELD_SIZE_IN_CHARS);
 		    		}
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_DIS: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-			    		if(mLocationView.getStorageService().getDestination() != null) {
-			        		return Helper.centerString(
-			        				String.format(Locale.getDefault(), "%.0f%s", 
-			        				mLocationView.getStorageService().getDestination().getDistance(), 
-			        				Preferences.distanceConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
-			    		}
+	    		if(mLocationView.getStorageService() != null) {
+		    		if(mLocationView.getStorageService().getDestination() != null) {
+		        		return Helper.centerString(
+		        				String.format(Locale.getDefault(), "%.0f%s", 
+		        				mLocationView.getStorageService().getDestination().getDistance(), 
+		        				Preferences.distanceConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
 		    		}
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_ETE: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-			    		if(mLocationView.getStorageService().getDestination() != null) {
-			    			return "" + mLocationView.getStorageService().getDestination().getEte();
-			    		}
+	    		if(mLocationView.getStorageService() != null) {
+		    		if(mLocationView.getStorageService().getDestination() != null) {
+		    			return "" + mLocationView.getStorageService().getDestination().getEte();
 		    		}
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_ETA: {
-	    		if(aTitle == false) {
-		    		if(mLocationView.getStorageService() != null) {
-			    		if(mLocationView.getStorageService().getDestination() != null) {
-			    			return "" + mLocationView.getStorageService().getDestination().getEta();
-			    		}
+	    		if(mLocationView.getStorageService() != null) {
+		    		if(mLocationView.getStorageService().getDestination() != null) {
+		    			return "" + mLocationView.getStorageService().getDestination().getEta();
 		    		}
 	    		}
 	    		break;
 	    	}
 	    	
 	    	case ID_FLD_LT: {
-	    		if(aTitle == true) {
-	    			return Calendar.getInstance().getTimeZone().getID();
-	    		}
 	    		Calendar localTime = Calendar.getInstance();
 	    		return String.format(Locale.getDefault(), "%02d:%02d", 
 	    				localTime.get(Calendar.HOUR_OF_DAY), 
@@ -587,59 +577,60 @@ public class InfoLines {
 	    	}
 	    	
 	    	case ID_FLD_GMT: {
-	    		if(aTitle == false) {
-		    		Calendar localTime = Calendar.getInstance();
-		    		localTime.setTimeZone(TimeZone.getTimeZone("UTC"));
-		    		return String.format(Locale.getDefault(), "%02d:%02d", 
-		    				localTime.get(Calendar.HOUR_OF_DAY), 
-		    				localTime.get(Calendar.MINUTE));
-	    		}
-	    		break;
+	    		Calendar localTime = Calendar.getInstance();
+	    		localTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    		return String.format(Locale.getDefault(), "%02d:%02d", 
+	    				localTime.get(Calendar.HOUR_OF_DAY), 
+	    				localTime.get(Calendar.MINUTE));
 	    	}
 
 	    	case ID_FLD_MSL: {
-	    		if(aTitle == false) {
-	    			return Helper.centerString(
-	    					Helper.calculateAltitudeFromThreshold(
-	    							mLocationView.getThreshold()), MAX_FIELD_SIZE_IN_CHARS); 
-	    		}
-	    		break;
+    			return Helper.centerString(
+    					Helper.calculateAltitudeFromThreshold(
+    							mLocationView.getThreshold()), MAX_FIELD_SIZE_IN_CHARS); 
 	    	}
 	    	
 	    	case ID_FLD_AGL: {
-	    		if(aTitle == false) {
-	    			return Helper.centerString(
-	    					Helper.calculateAGLFromThreshold(mLocationView.getThreshold(), 
-	    							(float)mLocationView.getElev()), MAX_FIELD_SIZE_IN_CHARS);
-	    		}
-	    		break;
+    			return Helper.centerString(
+    					Helper.calculateAGLFromThreshold(mLocationView.getThreshold(), 
+    							(float)mLocationView.getElev()), MAX_FIELD_SIZE_IN_CHARS);
 	    	}
 
 	    	// If we have a destination set, and we are less than 30 miles out, then 
 	    	// calculate and return a descent rate
 	    	case ID_FLD_DRT: {
-	    		if(aTitle == false) {
-		    		StorageService storageService = mLocationView.getStorageService(); 
-		    		if(storageService != null) {
-		    			Destination destination = storageService.getDestination();
-			    		if(destination != null) {
-			    			if(destination.getDistance() <= 30) {
-			    	    		return String.format(Locale.getDefault(), "%+05.0f",
-			    	    				destination.getVerticalSpeedToNoFmt(mLocationView.getGpsParams()));
-			    			}
-			    		}
+	    		StorageService storageService = mLocationView.getStorageService(); 
+	    		if(storageService != null) {
+	    			Destination destination = storageService.getDestination();
+		    		if(destination != null) {
+		    			if(destination.getDistance() <= 30) {
+		    	    		return String.format(Locale.getDefault(), "%+05.0f",
+		    	    				destination.getVerticalSpeedToNoFmt(mLocationView.getGpsParams()));
+		    			}
 		    		}
 	    		}
 	    		break;
 	    	}
 
 	    	case ID_FLD_ODO: {
-	    		if(aTitle == false) {
-		    		StorageService storageService = mLocationView.getStorageService(); 
-		    		if(storageService != null) {
-			    		Odometer odometer = storageService.getOdometer();
-			    		if(odometer != null) {
-			    			double value = odometer.getValue();
+	    		StorageService storageService = mLocationView.getStorageService(); 
+	    		if(storageService != null) {
+		    		Odometer odometer = storageService.getOdometer();
+		    		if(odometer != null) {
+		    			double value = odometer.getValue();
+			    		return String.format(Locale.getDefault(), getFmtString(value), value);
+		    		}
+	    		}
+	    		break;
+	    	}
+
+	    	case ID_FLD_CDI: {
+	    		StorageService storageService = mLocationView.getStorageService(); 
+	    		if(storageService != null) {
+		    		if(storageService.getDestination() != null) {
+			    		CDI cdi = storageService.getCDI();
+			    		if(cdi != null) {
+			    			double value = cdi.getDeviation();
 				    		return String.format(Locale.getDefault(), getFmtString(value), value);
 			    		}
 		    		}
@@ -647,12 +638,6 @@ public class InfoLines {
 	    		break;
 	    	}
     	}
-
-    	if(aTitle == true) {
-    		String[] fieldTitles = mLocationView.getAppContext().getResources().getStringArray(R.array.TextFieldOptionTitles);
-    		return fieldTitles[aField];
-    	}
-
     	return NOVALUE;
     }
     
@@ -670,8 +655,10 @@ public class InfoLines {
 			fmtString = " %04.0f";
 		else if(value >= 100)
 			fmtString = " %03.0f ";
-		else 
+		else if(value >= 10)
 			fmtString = " %04.1f";
+		else 
+			fmtString = " %03.2f";
 		return fmtString;
     }
 

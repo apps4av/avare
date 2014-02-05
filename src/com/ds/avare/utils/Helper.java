@@ -731,6 +731,25 @@ public class Helper {
     	return absDiff;
     }
 
+    /***
+     * Is the brgTrue to the left of the brgCourse line (extended).
+     * @param brgTrue true bearing to destination from current location
+     * @param brgCourse bearing to dest on COURSE line
+     * @return true if it is LEFT, false if RIGHT
+     */
+    public static boolean leftOfCourseLine(double brgTrue, double brgCourse) {
+    	if(brgCourse <= 180) {
+    		if(brgTrue >= brgCourse && brgTrue <= brgCourse + 180)
+    			return true;
+    		return false;
+    	}
+
+    	// brgCourse will be > 180 at this point
+    	if(brgTrue > brgCourse || brgTrue < brgCourse - 180)
+    		return true;
+    	return false;
+    }
+    
     /*
      * 
      */

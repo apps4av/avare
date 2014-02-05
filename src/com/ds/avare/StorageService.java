@@ -19,8 +19,10 @@ import java.util.TimerTask;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
+import com.ds.avare.hobbsMeter.CDI;
 import com.ds.avare.hobbsMeter.FlightTimer;
 import com.ds.avare.hobbsMeter.Odometer;
+import com.ds.avare.hobbsMeter.VASI;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -174,6 +176,12 @@ public class StorageService extends Service {
 
     private Odometer mOdometer;
     
+    // The Course Deviation Indicator
+    private CDI mCDI;
+    
+    // The vertical approach slope indicator
+    private VASI mVASI;
+    
     /**
      * @author zkhan
      *
@@ -259,6 +267,12 @@ public class StorageService extends Service {
          * Start the odometer now
          */
         mOdometer = new Odometer();
+
+        // Allocate the Course Deviation Indicator
+        mCDI = new CDI();
+
+        // Allocate the VASI
+        mVASI = new VASI();
         
         /*
          * Monitor TFR every hour.
@@ -694,7 +708,7 @@ public class StorageService extends Service {
                 30,		/* Max of 30 seconds between position updates */
                 true,	/* use verbose details */
                 Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
-                20);	/* How fast we are going before starting to track, 20 knots */
+                3);		// Adjust down to 3 knots to capture taxi
             mKMLRecorder.start(config);
             return null;
         }
@@ -722,6 +736,15 @@ public class StorageService extends Service {
     public Odometer getOdometer() {
     	return mOdometer;
     }
+    
+    public CDI getCDI() {
+    	return mCDI;
+    }
+
+    public VASI getVASI() {
+    	return mVASI;
+    }
+    
     /**
      * 
      * @return

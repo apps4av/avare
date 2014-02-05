@@ -766,6 +766,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Vertical Speed Indicator</item>
 	    <item>Descent Rate to Destination</item>
 	    <item>Odometer</item>
+	    <item>Course Deviation Indicator</item>
 	</string-array>
 	    
 	<string-array name="TextFieldOptionTitles">
@@ -785,6 +786,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>VSI fpm</item>
 	    <item>Dsc Rt fpm</item>
 	    <item>Odometer</item>
+	    <item>CDI</item>
    	</string-array>
 
 </resources>

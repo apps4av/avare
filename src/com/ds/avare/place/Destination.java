@@ -813,6 +813,19 @@ public class Destination extends Observable {
 		return(mAwos);
 		
 	} 
+
+	/***
+	 * Fetch the destination elevation 
+	 * @return Elevation in feet. <-200 is an error
+	 */
+	public double getElevation(){
+        try {
+            double elev = (Double.parseDouble(mParams.get(DataBaseHelper.ELEVATION)));
+            return elev;
+        }
+        catch (Exception e) { }
+		return -200;
+	}
 	
 	/**
 	 * Find vertical speed to this dest in feet/m per minute

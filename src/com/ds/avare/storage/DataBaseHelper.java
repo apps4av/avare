@@ -114,6 +114,8 @@ public class DataBaseHelper  {
     private static final String SEGCIRCLE = "Segmented Circle";
     public static final String MANAGER_PHONE = "Manager Phone";
 
+    public static final String ELEVATION = "Elevation";
+    
     private static final String TABLE_AIRPORTS = "airports";
     private static final String TABLE_AIRPORT_DIAGS = "airportdiags";
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
@@ -378,7 +380,7 @@ public class DataBaseHelper  {
                         params.put(LONGITUDE, Double.toString(Helper.truncGeo(cursor.getDouble(LONGITUDE_COL))));
                         params.put(MAGNETIC_VARIATION, cursor.getString(MAGNETIC_VARIATION_COL).trim());
                         String parts[] = cursor.getString(9).trim().split("[.]");
-                        params.put("Elevation", parts[0] + "ft");
+                        params.put(ELEVATION, parts[0] + "ft");
                         airports[id] = new Airport(params, lon, lat);
                         id++;
                     }
@@ -819,7 +821,7 @@ public class DataBaseHelper  {
                         params.put("Use", use);
                         params.put("Manager", cursor.getString(7).trim());
                         params.put(MANAGER_PHONE, cursor.getString(8).trim());
-                        params.put("Elevation", cursor.getString(9).trim());
+                        params.put(ELEVATION, cursor.getString(9).trim());
                         String customs = cursor.getString(CUSTOMS_COL);
                         if(customs.equals("YN")) {
                             params.put(CUSTOMS, "Intl. Entry");
@@ -849,7 +851,7 @@ public class DataBaseHelper  {
                         String paout = "";
                         if(pa.equals("")) {
                             try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 1000);
+                                paout = "" + (Double.parseDouble(params.get(ELEVATION)) + 1000);
                             }
                             catch (Exception e) {
                                 
@@ -857,7 +859,7 @@ public class DataBaseHelper  {
                         }
                         else {
                             try {
-                                paout = "" + (Double.parseDouble(params.get("Elevation")) + 
+                                paout = "" + (Double.parseDouble(params.get(ELEVATION)) + 
                                         (Double.parseDouble(pa)));
                             }
                             catch (Exception e) {
@@ -1028,7 +1030,7 @@ public class DataBaseHelper  {
                     
                     String Elevation = cursor.getString(10);
                     if(Elevation.equals("")) {
-                        Elevation = params.get("Elevation");
+                        Elevation = params.get(ELEVATION);
                     }
                     String Heading = cursor.getString(12);
                     String DT = cursor.getString(14);
@@ -1082,7 +1084,7 @@ public class DataBaseHelper  {
 
 						Elevation = cursor.getString(11);
 						if(Elevation.equals("")) {
-							Elevation = params.get("Elevation");
+							Elevation = params.get(ELEVATION);
 						}
 						Heading = cursor.getString(13);
 						DT = cursor.getString(15);
