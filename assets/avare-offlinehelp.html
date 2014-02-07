@@ -467,6 +467,29 @@ airport symbols on charts though Avare's accuracy has been tested.</p>
 <h3 style="text-align: center;"><a name="0.1_NewStuff">New Features</a></h3>
 Recently introduced features include:<br>
 <br>
+• <span style="font-weight: bold;">CDI/VDI</span><br>
+The Course Deviation Indicator and Vertical Deviation Indicator displays
+are new as of 5.3.8. They display position deviation from your planned path when
+a valid GPS lock is attained.
+They are enabled in the Preferences menu under the Display section. The CDI is 
+operational when you have a destination set. The needle indicator at the bottom
+will move left/right of center based upon how off course your location you are. If
+you deviate more than 0.2 miles left or right then the indicator changes color - RED if
+you are left of course, GREEN if you are right. The scale bars are not linear in nature - 
+the further off course you are, the greater the scale. Specifcally, they are calibrated 
+at 2/5/10/20 miles. To correct, steer the aircraft in the direction of the arrow to bring 
+it back to center and the color will return to neutral GRAY.<br>
+<br>
+The VDI (Vertical Deviation Indicator) will display when you have a destination with 
+a known elevation set and you are within 20nm of it. The indicator needle on the right of
+the bars is centered when you are on a 3 degree glideslope of your destination. Being "on the
+glideslope" is a range of 2.5 to 3.1 degrees. Anything greater than 3.1 is considered "above" 
+and will show the indicator in YELLOW. Anything below 2.5 is low, and the color is changed to
+RED. When you return to the programmed slope, the display will return to it's neutral GRAY.<br>
+<br>
+<b>!!! CAUTION !!!</b> The VDI uses GPS altitude and general airport elevation. It is not an 
+accurate VASI or PAPI indicator to any specific runway at your destination.<br>
+<br>
 • <span style="font-weight: bold;">Internet NEXRAD</span><br>
 To show Internet downloaded NEXRAD radar, go to Download, and download
 the NEXRAD images from Weather drop down list. In Preferences, select how
