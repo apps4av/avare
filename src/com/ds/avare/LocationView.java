@@ -1091,7 +1091,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         float x = (float) (mOrigin.getOffsetX(mGpsParams.getLongitude()));
         float y = (float) (mOrigin.getOffsetY(mGpsParams.getLatitude()));
         double bearing = mGpsParams.getBearing();	/* What direction are we headed */
-        
+        if(mTrackUp) {		// If our direction is always to the top, then set
+        	bearing = 0;	// our bearing to due up as well
+        }
+
         /*
          * If the user wants the distance rings display, now is the time
          */
@@ -1285,16 +1288,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
-        drawDistanceRings(canvas);
         drawRunways(canvas);
         drawAircraft(canvas);
-        drawCDI(canvas);
-        drawVASI(canvas);
         
         if(mTrackUp) {
             canvas.restore();
         }
         
+        drawDistanceRings(canvas);
+        drawCDI(canvas);
+        drawVASI(canvas);
       	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
     }    
 
