@@ -535,8 +535,16 @@ public class DataBaseHelper  {
             case 1:
             case 2:
             case 3:
-                return stringQuery(name, Destination.NAVAID, TABLE_NAV);
-                
+                /*
+                 * Search Nav, if not then
+                 * Search airports
+                 */
+                 s = stringQuery(name, Destination.NAVAID, TABLE_NAV);
+                 if(s != null) {
+                     return s;
+                 }
+                 
+                 return stringQuery(name, Destination.BASE, TABLE_AIRPORTS);                
             case 4:
                 /*
                  * Search airport, if not then
@@ -715,12 +723,36 @@ public class DataBaseHelper  {
         
         String qry;
         String qbasic = "select " + LOCATION_ID_DB + "," + FACILITY_NAME_DB + "," + TYPE_DB + " from ";
-        String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
+        
+        /*
+         * We don't want to throw in too many results, but we also want to allow K as a prefix for airport names
+         * If the user has typed enough, let's start looking for K prefixed airports as well
+         */
+        if(len > 2 && name.charAt(0) == 'K' || name.charAt(0) == 'k') {
+            String qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+            qry = qbasic + TABLE_AIRPORTS + " where ";
+            if(!mPref.shouldShowAllFacilities()) {
+                qry += TYPE_DB + "=='AIRPORT' and ";
+            }
+            qry += qendK;
+            cursor = doQuery(qry, getMainDb());
+            try {
+                if(cursor != null) {
+                    while(cursor.moveToNext()) {
+                        StringPreference s = new StringPreference(Destination.BASE, cursor.getString(2), cursor.getString(1), cursor.getString(0));
+                        s.putInHash(params);
+                    }
+                }
+            }
+            catch (Exception e) {
+            }
+            closes(cursor);  
+        }
         
         /*
          * All queries for airports, navaids, fixes
          */
-
+        String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
         qry = qbasic + TABLE_NAV + " where " + qend;
         cursor = doQuery(qry, getMainDb());
 
