@@ -136,7 +136,7 @@ public class VASI {
 	    }
 	    
 	    // Now draw the needle indicator at the vertical center adjusted by the offset
-	    drawIndicator(canvas, screenY / 2 + mDspOffset);
+	    drawIndicator(canvas, screenY / 2 - mDspOffset);
 	}
 
 	/***
