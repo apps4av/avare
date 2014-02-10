@@ -19,7 +19,6 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.instruments.CDI;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -728,6 +727,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         
         /*
+         * Radar is way too old.
+         */
+        if(mService.getRadar().isOld()) {
+            return;
+        }
+        
+        /*
          * If using ADSB, then dont show
          */
         if(mPref.useAdsbWeather()) {
@@ -752,15 +758,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Get nexrad bitmaps to draw.
          */
-        SparseArray<NexradBitmap> bitmaps;
+        SparseArray<NexradBitmap> bitmaps = null;
         if(mScale.getMacroFactor() > 4) {
-            /*
-             * CONUS for larger scales.
-             */
-            bitmaps = mService.getAdsbWeather().getNexradConus().getImages();            
+            if(!mService.getAdsbWeather().getNexradConus().isOld()) {
+                /*
+                 * CONUS for larger scales.
+                 */
+                bitmaps = mService.getAdsbWeather().getNexradConus().getImages();                
+            }
         }
         else {
-            bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+            if(!mService.getAdsbWeather().getNexrad().isOld()) {
+                bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+            }
         }
 
         if(null == bitmaps || null != mPointProjection || (!mPref.useAdsbWeather())) {
@@ -813,7 +823,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         for(int i = 0; i < traffic.size(); i++) {
             int key = traffic.keyAt(i);
             Traffic t = traffic.get(key);
-            if(t.isStale()) {
+            if(t.isOld()) {
                 traffic.delete(key);
                 continue;
             }
@@ -1536,7 +1546,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String text;
         private String textMets;
         private String sua;
-        private String nexrad;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private Taf taf;
@@ -1572,8 +1581,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     
                     sua = mService.getDBResource().getSua(lon, lat);
-                    
-                    nexrad = mService.getRadar().getDate();
                 }
             }
             else {
@@ -1587,8 +1594,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     sua = mService.getDBResource().getSua(lon, lat);
-
-                    nexrad = mService.getRadar().getDate();
                 }                
             }
             
@@ -1623,7 +1628,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     metar = mService.getAdsbWeather().getMETAR(airport);                    
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
-                    nexrad = mService.getAdsbWeather().getNexrad().getTime();
                 }
                 if(null != aireps) {
                     for(Airep a : aireps) {
@@ -1641,7 +1645,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.wa = wa;
                 data.freq = freq;
                 data.sua = sua;
-                data.nexrad = nexrad;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();

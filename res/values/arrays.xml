@@ -37,7 +37,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
         <item>SUA</item>
-        <item>NEXRAD</item>
     </string-array>
     
     <string-array name="resNameDatabase">

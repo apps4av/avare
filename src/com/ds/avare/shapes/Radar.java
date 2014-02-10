@@ -14,6 +14,9 @@ package com.ds.avare.shapes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -23,6 +26,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -33,12 +37,14 @@ import com.ds.avare.utils.BitmapHolder;
  */
 public class Radar {
 
+    private static final long EXPIRES = 1000 * 60 * 60 * 2; // 2 hours
+    
     private BitmapHolder mBitmap;
     private float mLon;
     private float mLat;
     private float mPx;
     private float mPy;
-    private String mDate;
+    private long mDate;
 
     private Preferences mPref;
     private Context mContext;
@@ -56,7 +62,7 @@ public class Radar {
         mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
         mText = mPref.mapsFolder() + "/" + "latest.txt";
         mLon = mLat = mPx = mPy = 0;
-        mDate = "";
+        mDate = 0;
         mBitmap = null;
     }
     
@@ -86,13 +92,19 @@ public class Radar {
                 line = br.readLine();
                 mLat = Float.parseFloat(line);
 
-                mDate = br.readLine();
+                String dateText = br.readLine();
                 br.close();
                 if(mBitmap != null) {
                     mBitmap.recycle();                
                 }
                 
                 mBitmap = new BitmapHolder(mImage);
+                
+                /*
+                 * Date format YYYYMMDD_HHmm
+                 */
+                Date date = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.ENGLISH).parse(dateText);
+                mDate = date.getTime();
             }
             catch (Exception e) {
                 return;
@@ -109,7 +121,7 @@ public class Radar {
             mBitmap = null;
         }        
         mLon = mLat = mPx = mPy = 0;
-        mDate = "";
+        mDate = 0;
     }
     
     /**
@@ -143,7 +155,12 @@ public class Radar {
      * 
      * @return
      */
-    public String getDate() {
-        return mDate;
+    public boolean isOld() {
+        long diff = Helper.getMillisGMT();
+        diff -= mDate; 
+        if(diff > EXPIRES) {
+            return true;
+        }
+        return false;
     }
 }

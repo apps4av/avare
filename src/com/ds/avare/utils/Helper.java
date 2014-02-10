@@ -750,7 +750,7 @@ public class Helper {
     	return false;
     }
     
-    /*
+    /**
      * 
      */
     public static String millisToGMT(long millis) {
@@ -758,4 +758,16 @@ public class Helper {
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(millis) + "_UTC";
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public static long getMillisGMT() {
+        Calendar calendar = new GregorianCalendar();  
+        TimeZone mTimeZone = calendar.getTimeZone();  
+        int offset = mTimeZone.getRawOffset();  
+        return System.currentTimeMillis() - offset;
+    }
+
 }
