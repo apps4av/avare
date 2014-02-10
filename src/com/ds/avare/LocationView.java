@@ -1064,6 +1064,158 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
     }
+    
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawRunways2(Canvas canvas) {
+        if (!mPref.shouldExtendRunways()) {
+            return;
+        }
+        if (null == mService) {
+            return;
+        }
+        if (null != mRunwayBitmap && null != mService.getDestination()
+                && null == mPointProjection) {
+            LinkedList<Runway> runways = mService.getDestination().getRunways();
+            if (runways != null) {
+                /*
+                 * For all runways
+                 */
+                for (Runway r : runways) {
+                    float heading = r.getTrue();
+                    if (Runway.INVALID == heading) {
+                        continue;
+                    }
+                    /*
+                     * Get lat/lon of the runway. If either one is invalid, use
+                     * airport lon/lat
+                     */
+                    double lon = r.getLongitude();
+                    double lat = r.getLatitude();
+                    boolean runwayLatLon = true;
+                    if (Runway.INVALID == lon || Runway.INVALID == lat) {
+                        lon = mService.getDestination().getLocation()
+                            .getLongitude();
+                        lat = mService.getDestination().getLocation()
+                            .getLatitude();
+                        runwayLatLon = false;
+                    }
+                    /*
+                     * Get the canvas x/y coordinates of the runway itself
+                     */
+                    float x = (float)mOrigin.getOffsetX(lon);
+                    float y = (float)mOrigin.getOffsetY(lat);
+                    /*
+                     * The runway number, i.e. What's painted on the runway
+                     */
+                    String num = r.getNumber();
+                    /* TODO
+                     * If there are parallel runways, offset their text so it
+                     * does not overlap
+                     */
+                    
+                    mRunwayPaint.setStyle(Style.FILL);
+                    mRunwayPaint.setAlpha(162);
+                    mRunwayPaint.setShadowLayer(0, 0, 0, 0);
+                    mRunwayPaint.setStrokeWidth(8 * mDipToPix);
+                    
+                    /*
+                     * Find pixels per nautical mile, length of runway extension
+                     * which will be 4nm and length of the runway
+                     */
+                    float pixPerNm = mMovement.getNMPerLatitude(mScale);
+                    float extensionLength = (float)(pixPerNm * 4.0);  
+                    float runwayHalfLen = pixPerNm * Float.parseFloat(r.getLength())/6076.12f;
+                    /*
+                     * Draw actual runway, just draw the entire runway once
+                     */
+                    if(runwayLatLon && r.getTrue() <= 180) {
+                        float runwayCoordinatesX = x - runwayHalfLen
+                                * (float) Math.sin(Math.toRadians(heading - 180));
+                        float runwayCoordinatesY = y + runwayHalfLen
+                                * (float) Math.cos(Math.toRadians(heading - 180));
+
+                        mRunwayPaint.setColor(Color.GRAY);
+                        canvas.drawLine(x, y,
+                        		runwayCoordinatesX, runwayCoordinatesY,
+                                mRunwayPaint);
+                    }
+                    /*
+                     * Determine canvas coordinates of where to draw the runway
+                     * extension and numbers with simple rotation math.
+                     */
+                    float runwayNumberCoordinatesX = x + extensionLength
+                            * (float) Math.sin(Math.toRadians(heading - 180));
+                    float runwayNumberCoordinatesY = y - extensionLength
+                            * (float) Math.cos(Math.toRadians(heading - 180));
+
+                    mRunwayPaint.setColor(Color.BLACK);
+                    canvas.drawLine(x, y,
+                    		runwayNumberCoordinatesX, runwayNumberCoordinatesY,
+                            mRunwayPaint);
+                    /*
+                     * Get a vector perpendicular to the vector of the runway
+                     * heading bitmap 1nm out (for a typical base leg)
+                     */
+                    float baseTurnLength = (float)(pixPerNm * 1.0);
+
+                    float runwayBaseCoordinatesX = x + baseTurnLength
+                            * (float) Math.sin(Math.toRadians(heading - 180));
+                    float runwayBaseCoordinatesY = y - baseTurnLength
+                            * (float) Math.cos(Math.toRadians(heading - 180));
+                    
+                    float vXP = -(runwayBaseCoordinatesY - y);
+                    float vYP = (runwayBaseCoordinatesX - x);
+                    /*
+                     * Reverse the vector of the pattern line if right traffic
+                     * is indicated for this runway
+                     */
+                    if (r.getPattern().equalsIgnoreCase("Right")) {
+                        vXP = -(vXP);
+                        vYP = -(vYP);
+                    }
+                    /*
+                     * Draw the base leg of the pattern
+                     */
+                    mRunwayPaint.setColor(Color.BLUE);
+                    mRunwayPaint.setStrokeWidth(4 * mDipToPix);
+                    canvas.drawLine(runwayBaseCoordinatesX,
+                    		runwayBaseCoordinatesY, 
+                    		runwayBaseCoordinatesX + vXP, 
+                    		runwayBaseCoordinatesY + vYP,
+                            mRunwayPaint);
+                    /*
+                     * If in track-up mode, rotate canvas around screen x/y of
+                     * where we want to draw runway numbers in opposite
+                     * direction to bearing so they appear upright
+                     */
+                    if (mTrackUp && (mGpsParams != null)) {
+                        canvas.save();
+                        canvas.rotate((int) mGpsParams.getBearing(),
+                            runwayNumberCoordinatesX,
+                            runwayNumberCoordinatesY);
+                    }
+                    
+                    /*
+                     * Draw the text so it's centered within the shadow
+                     * rectangle, which is itself centered at the end of the
+                     * extended runway centerline
+                     */
+                    mRunwayPaint.setStyle(Style.FILL);
+                    mRunwayPaint.setColor(Color.WHITE);
+                    mRunwayPaint.setAlpha(255);
+                    mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
+                    drawShadowedText(canvas, mRunwayPaint, num, Color.DKGRAY,
+                            runwayNumberCoordinatesX, runwayNumberCoordinatesY);
+                    if (mTrackUp) {
+                        canvas.restore();
+                    }
+                }
+            }
+        }
+    }    
 
     /**
      * Draws concentric circles around the current aircraft position showing distance.
@@ -1278,7 +1430,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawNexrad(canvas);
         drawRadar(canvas);
         drawDrawing(canvas);
-        drawRunways(canvas);
         drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
@@ -1286,7 +1437,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas);
         drawObstacles(canvas);
         drawDistanceRings(canvas);
-        drawRunways(canvas);
+        if(mPref.isWeatherTranslated()) {
+        	drawRunways(canvas);
+        }
+        else {
+        	drawRunways2(canvas);
+        }
         drawAircraft(canvas);
         drawCDI(canvas);
         drawVASI(canvas);

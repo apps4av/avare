@@ -735,4 +735,33 @@ public class Preferences {
         mPref.edit().putFloat(mContext.getString(R.string.GlideRatio), value).commit();
     }
 
+    /**
+     * 
+     * @param value
+     */
+    public void setLastPlateIndex(int value) {
+        mPref.edit().putInt(mContext.getString(R.string.prefLastPlateIndex), value).commit();
+    }
+    
+    /**
+     * 
+     */
+    public int getLastPlateIndex() {
+        return(mPref.getInt(mContext.getString(R.string.prefLastPlateIndex), 0));
+    }
+    
+    /**
+     * 
+     * @param value
+     */
+    public void setLastPlateAirport(String value) {
+    	mPref.edit().putString(mContext.getString(R.string.prefLastPlateAirport), value).commit();
+    }
+    
+    /**
+     * 
+     */
+    public String getLastPlateAirport() {
+        return mPref.getString(mContext.getString(R.string.prefLastPlateAirport), null);
+    }
 }

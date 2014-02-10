@@ -110,6 +110,7 @@ public class StorageService extends Service {
      * Plate showing
      */
     private int mPlateIndex;
+    private String mPlateAirport;
     
     /*
      * A/FD showing
@@ -459,7 +460,6 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeInactive();
     }
@@ -469,7 +469,6 @@ public class StorageService extends Service {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
     }
 
@@ -478,25 +477,8 @@ public class StorageService extends Service {
      */
     public void setDestinationPlan(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeActive(mGpsParams);
-    }
-
-    /**
-     * 
-     * @param index
-     */
-    public void setPlateIndex(int index) {
-        mPlateIndex = index;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public int getPlateIndex() {
-        return mPlateIndex;
     }
 
     /**

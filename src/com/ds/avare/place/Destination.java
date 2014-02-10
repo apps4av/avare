@@ -79,20 +79,13 @@ public class Destination extends Observable {
      * Track to dest.
      */
     TrackShape mTrackShape;
-
-    /*
-     * For GPS taxi
-     */
-    private float[] mMatrix;
-    private HashMap<String, float[]> mMatrixPlates;
-        
+       
     /*
      * Its lon/lat
      */
     private double mLond;
     private double mLatd;
 
-    private String mPlateFound[];
     private String mAfdFound[];
     
     private Preferences mPref;
@@ -155,7 +148,6 @@ public class Destination extends Observable {
         mParams = new LinkedHashMap<String, String>();
         mFreq = new LinkedHashMap<String, String>();
         mAwos = new LinkedList<Awos> ();
-        mPlateFound = null;
         mAfdFound = null;
 	    mName = name.toUpperCase(Locale.getDefault());
 	    mDestType = type;
@@ -390,7 +382,6 @@ public class Destination extends Observable {
 	            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
 	            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
 	            addTime();
-	            mPlateFound = null;
 	            mAfdFound = null;
 	            mFound = true;
 	            mLooking = false;
@@ -464,7 +455,6 @@ public class Destination extends Observable {
                 mParams = new LinkedHashMap<String, String>();
                 mFreq = new LinkedHashMap<String, String>();
                 mAwos = new LinkedList<Awos> ();
-                mPlateFound = null;
                 mAfdFound = null;
                 mDbType = mDestType;
                 mParams.put(DataBaseHelper.TYPE, mDestType);
@@ -483,69 +473,9 @@ public class Destination extends Observable {
 
 	        if(mDestType.equals(BASE)) {
 	            
-                mPlateFound = null;
                 mAfdFound = null;
                 mAfdName = mDataSource.findAFD(mName);
-                
-	            /*
-	             * Found destination extract its airport plates
-	             */
-                String tmp0[] = null;
-                int len0 = 0;
-	            if(null != mName) {
-    	            FilenameFilter filter = new FilenameFilter() {
-    	                public boolean accept(File directory, String fileName) {
-    	                    return fileName.endsWith(Preferences.IMAGE_EXTENSION);
-    	                }
-    	            };
-                    String plates[] = null;
-    	            plates = new File(mPref.mapsFolder() + "/plates/" + mName).list(filter);
-                    if(null != plates) {
-                        java.util.Arrays.sort(plates, new PlatesComparable());
-                        len0 = plates.length;
-                        tmp0 = new String[len0];
-                        for(int plate = 0; plate < len0; plate++) {
-                            /*
-                             * Add plates/AD
-                             */
-                            String tokens[] = plates[plate].split(Preferences.IMAGE_EXTENSION);
-                            tmp0[plate] = mPref.mapsFolder() + "/plates/" + mName + "/" +
-                                    tokens[0];
-                        }
-                    }
-	            }
-	            
-                /*
-                 * Take off and alternate minimums
-                 */
-                String tmp2[] = mDataSource.findMinimums(mName);
-                int len2 = 0;
-                if(null != tmp2) {
-                    len2 = tmp2.length;
-                    for(int min = 0; min < len2; min++) {
-                        /*
-                         * Add minimums with path
-                         */
-                        String folder = tmp2[min].substring(0, 1) + "/";
-                        tmp2[min] = mPref.mapsFolder() + "/minimums/" + folder + tmp2[min];
-                    }
-                }
-                
-                /*
-                 * Now combine to/alt with plates
-                 */
-                if(0 == len0 && 0 != len2) {
-                    mPlateFound = tmp2;
-                }
-                else if(0 != len0 && 0 == len2) {
-                    mPlateFound = tmp0;
-                }
-                else if(0 != len0 && 0 != len2) {
-                    mPlateFound = new String[len0 + len2];
-                    System.arraycopy(tmp0, 0, mPlateFound, 0, len0);
-                    System.arraycopy(tmp2, 0, mPlateFound, len0, len2);
-                }
-                
+                               
                 /*
                  * Find A/FD
                  */
@@ -576,12 +506,6 @@ public class Destination extends Observable {
                     }
                 }
 	        }
-
-            /*
-             * GPS taxi for this airport?
-             */
-            mMatrix = mDataSource.findDiagramMatrix(mName);
-            mMatrixPlates = mDataSource.findPlatesMatrix(mName);
 
             return(!mParams.isEmpty());
         }
@@ -645,13 +569,6 @@ public class Destination extends Observable {
     /**
      * @return
      */
-    public String[] getPlates() {
-        return(mPlateFound);
-    }
-
-    /**
-     * @return
-     */
     public String[] getAfd() {
         return(mAfdFound);
     }
@@ -668,32 +585,6 @@ public class Destination extends Observable {
      */
     public String getID() {
         return(mName);
-    }
-
-    /**
-     * @return
-     */
-    public float[] getMatrix(String name) {
-        if(name.equals(AD)) {
-            return(mMatrix);            
-        }
-        if(null != mMatrixPlates) {
-            
-            /*
-             * Convert from points on plate to draw matrix
-             * 
-             */
-            float matrix[] = mMatrixPlates.get(name);            
-            if(null != matrix) {
-                
-                /*
-                 * Plates are in magnetic north orientation
-                 */
-                matrix[4] = (float)mDeclination;
-                return matrix;
-            }
-        }
-        return null;
     }
 
     /**
@@ -774,39 +665,6 @@ public class Destination extends Observable {
      */
     public TrackShape getTrackShape() {
         return mTrackShape;
-    }
-    
-    /**
-     * 
-     * @author zkhan
-     *
-     */
-    private class PlatesComparable implements Comparator<String>{
-        
-        @Override
-        public int compare(String o1, String o2) {
-            /*
-             * Airport diagram must be  first
-             */
-            if(o1.startsWith(AD)) {
-                return -1;
-            }
-            if(o2.startsWith(AD)) {
-                return 1;
-            }
-            
-            /*
-             * Continued must follow main
-             */
-            if(o1.contains(",-CONT.") && o1.startsWith(o2.replace(Preferences.IMAGE_EXTENSION, ""))) {
-                return 1;
-            }
-            if(o2.contains(",-CONT.") && o2.startsWith(o1.replace(Preferences.IMAGE_EXTENSION, ""))) {
-                return -1;
-            }
-            
-            return o1.compareTo(o2);
-        }
     }
 
 	public LinkedList<Awos> getAwos() {
