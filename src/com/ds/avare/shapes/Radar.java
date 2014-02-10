@@ -163,4 +163,13 @@ public class Radar {
         }
         return false;
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()); 
+        return formatter.format(new Date(mDate)) + "Z";
+    }
 }

@@ -1546,6 +1546,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String text;
         private String textMets;
         private String sua;
+        private String radar;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private Taf taf;
@@ -1581,6 +1582,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     
                     sua = mService.getDBResource().getSua(lon, lat);
+                    
+                    radar = mService.getRadar().getDate();
                 }
             }
             else {
@@ -1594,6 +1597,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     sua = mService.getDBResource().getSua(lon, lat);
+                    
+                    radar = mService.getRadar().getDate();
                 }                
             }
             
@@ -1628,6 +1633,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     metar = mService.getAdsbWeather().getMETAR(airport);                    
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
+                    radar = mService.getAdsbWeather().getNexrad().getDate();
                 }
                 if(null != aireps) {
                     for(Airep a : aireps) {
@@ -1645,6 +1651,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.wa = wa;
                 data.freq = freq;
                 data.sua = sua;
+                data.radar = radar;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();

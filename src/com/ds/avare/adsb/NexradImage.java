@@ -11,6 +11,10 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adsb;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import com.ds.avare.utils.Helper;
 
 import android.util.SparseArray;
@@ -109,4 +113,14 @@ public class NexradImage {
         }
         return false;
     }
+
+    /**
+     * 
+     * @return
+     */
+    public String getDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()); 
+        return formatter.format(new Date(mUpdated)) + "Z";
+    }
+
 }
