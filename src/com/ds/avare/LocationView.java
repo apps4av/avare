@@ -855,11 +855,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         if(mService.getDestination() != null && null == mPointProjection) {
-            if(mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
+            if(mPref.isTrackEnabled()) {
                 mPaint.setColor(Color.MAGENTA);
                 mPaint.setStrokeWidth(5 * mDipToPix);
                 mPaint.setAlpha(162);
-                if(mService.getDestination().isFound() && !mService.getPlan().isActive()) {
+                if(mService.getDestination().isFound() && !mService.getPlan().isActive()  && (!mPref.isSimulationMode())) {
                     mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
                 }
                 else if (mService.getPlan().isActive()) {
