@@ -129,14 +129,16 @@ public abstract class Shape {
                 if(mCoords.get(coord + 1).isSeparate()) {
                     paint.setColor(night? Color.WHITE : Color.BLACK);
                     c.drawCircle(x2, y2, 10, paint);
-                    paint.setColor(color);
+                    paint.setColor(Color.GREEN);
                     c.drawCircle(x2, y2, 8, paint);
+                    paint.setColor(color);
                 }
                 if(mCoords.get(coord).isSeparate()) {
                     paint.setColor(night? Color.WHITE : Color.BLACK);
                     c.drawCircle(x1, y1, 10, paint);
-                    paint.setColor(color);
+                    paint.setColor(Color.GREEN);
                     c.drawCircle(x1, y1, 8, paint);
+                    paint.setColor(color);
                 }
             }
         }

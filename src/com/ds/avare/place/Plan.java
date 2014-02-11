@@ -123,8 +123,7 @@ public class Plan {
         }
         if(getDestinationNumber() > 0) {
             if(mLastLocation != null) {
-                mTrackShape.updateShapeFromPlan(getCoordinates(
-                        mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+                mTrackShape.updateShapeFromPlan(getCoordinates());
             }
         }
         else {
@@ -164,8 +163,7 @@ public class Plan {
         
         if(num > 0) {
             if(mLastLocation != null) {
-                mTrackShape.updateShapeFromPlan(getCoordinates(
-                        mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+                mTrackShape.updateShapeFromPlan(getCoordinates());
             }
         }
         else {
@@ -210,8 +208,7 @@ public class Plan {
         if(null == mLastLocation) {
             mLastLocation = new GpsParams(mDestination[n].getLocationInit());
         }
-        mTrackShape.updateShapeFromPlan(getCoordinates(
-                mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+        mTrackShape.updateShapeFromPlan(getCoordinates());
 
         return(true);
     }
@@ -267,6 +264,9 @@ public class Plan {
             mPassage = new Passage();
             return;
         }
+        if(mPassed[0] == false) {
+            mPassed[0] = true;
+        }
         
         /*
          * For all passed way points set distance to current
@@ -316,8 +316,7 @@ public class Plan {
     public void makeActive(GpsParams params) {
         mLastLocation = params;
         if(null != params) {
-            mTrackShape.updateShapeFromPlan(getCoordinates(
-                    mLastLocation.getLongitude(), mLastLocation.getLatitude()));
+            mTrackShape.updateShapeFromPlan(getCoordinates());
         }
         mActive = true;
     }
@@ -352,17 +351,17 @@ public class Plan {
     /*
      * Get a list of coordinates forming this route on great circle
      */
-    public Coordinate[] getCoordinates(double initLon, double initLat) {
+    public Coordinate[] getCoordinates() {
         int num = getDestinationNumber();
         
-        double lon0 = initLon;
-        double lat0 = initLat;
         Coordinate[] c = null;
 
         /*
          * Form a general path on the great circle of this plan
          */
-        for(int id = 0; id < num; id++) {
+        for(int id = 1; id < num; id++) {
+            double lon0 = getDestination(id - 1).getLocation().getLongitude();
+            double lat0 = getDestination(id - 1).getLocation().getLatitude();
             Projection p = new Projection(
                     getDestination(id).getLocation().getLongitude(), 
                     getDestination(id).getLocation().getLatitude(),
@@ -377,8 +376,6 @@ public class Plan {
             else {
                 c = concat(c, coord);
             }
-            lon0 = getDestination(id).getLocation().getLongitude();
-            lat0 = getDestination(id).getLocation().getLatitude();            
         }
         /*
          * Last circle
