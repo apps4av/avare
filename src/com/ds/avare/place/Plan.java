@@ -32,7 +32,7 @@ public class Plan {
     private Boolean[] mPassed;
     
     
-    private static final int MAX_DESTINATIONS = 10;
+    private static final int MAX_DESTINATIONS = 15;
     
     private static final int MILES_PER_SEGMENT = 50;
     
@@ -461,6 +461,16 @@ public class Plan {
             return ret;
         }
         
+    }
+    
+    /**
+     * 
+     */
+    public void simulate() {
+        int num = getDestinationNumber(); 
+        if(num > 0) {
+            updateLocation(new GpsParams(mDestination[num - 1].getLocation()));
+        }
     }
     
 }

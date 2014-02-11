@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
@@ -36,7 +38,9 @@ import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -85,6 +89,8 @@ public class PlanActivity extends Activity  implements Observer {
     private Destination mDestination;
     private AnimateButton mAnimateDest;
     private AnimateButton mAnimateDelete;
+    private Timer mTimer;
+
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -724,6 +730,10 @@ public class PlanActivity extends Activity  implements Observer {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
+        
+        if(mTimer != null) {
+            mTimer.cancel();
+        }
     }
 
     /**
@@ -740,6 +750,13 @@ public class PlanActivity extends Activity  implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        /*
+         * Create sim timer
+         */
+        mTimer = new Timer();
+        TimerTask sim = new UpdateTask();
+        mTimer.scheduleAtFixedRate(sim, 0, 1000);
     }
 
     /**
@@ -789,4 +806,38 @@ public class PlanActivity extends Activity  implements Observer {
         }
         searchDest();        
     }
+    
+    /**
+     * @author zkhan
+     *
+     */
+    private class UpdateTask extends TimerTask {
+        
+        /* (non-Javadoc)
+         * @see java.util.TimerTask#run()
+         */
+        public void run() {
+
+            /*
+             * In sim mode, keep feeding location
+             */
+            if(mPref.isSimulationMode()) {
+                mHandler.sendEmptyMessage(0);
+            }
+
+        }
+    }
+    
+    /**
+     * This leak warning is not an issue if we do not post delayed messages, which is true here.
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(mService != null) {
+                mService.getPlan().simulate();
+                updateAdapter();
+            }
+        }
+    };
 }
