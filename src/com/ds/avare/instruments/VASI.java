@@ -44,6 +44,8 @@ public class VASI {
 	final int mColorLow = Color.RED;
 	final int mColorHigh = Color.rgb(0xEE, 0xEE, 0x00); // YELLOW
 	final int mColorOn   = Color.BLACK;
+	
+	private static final double BAR_DEGREES = 0.14f;
 
 	/***
 	 * Course Deviation Indicator
@@ -60,14 +62,14 @@ public class VASI {
 	 */
 	public void setSize(Paint textPaint)
 	{
-		// A total of 9 bars
-		mBarCount = 9;
+		// A total of 11 bars
+		mBarCount = 11;
 		
 		// The width of each bar is the basis for the entire instrument size
-		mBarWidth = textPaint.getTextSize() * (float) 0.6;
+		mBarWidth = textPaint.getTextSize() * (float) 0.5;
 		
-		// Height is 1/3 of the width
-		mBarHeight = mBarWidth / 3;
+		// Height is 1/4 of the width
+		mBarHeight = mBarWidth / 4;
 		
 		// Space between bars is 3x the height of the bar
 		mBarSpace = 3 * mBarHeight;
@@ -129,10 +131,11 @@ public class VASI {
 	    mVASIPaint.setColor(Color.WHITE);		// white
 	    mVASIPaint.setStrokeWidth(mBarHeight);	// height of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
+	        float extend = (idx == (int)(mBarCount / 2)) ? mInstWidth / 3 : 0;
 	    	float barTop = mInstTop + mBarHeight * (float) 1.5 + 
 	    			idx * (mBarHeight + mBarSpace);
 	        canvas.drawLine(mInstLeft + mBarHeight - mInstWidth / 2, barTop, 
-	        		mInstLeft + mBarHeight + mBarWidth - mInstWidth / 2, barTop, mVASIPaint);
+	        		mInstLeft + mBarHeight + mBarWidth - mInstWidth / 2 + extend, barTop, mVASIPaint);
 	    }
 	    
 	    // Now draw the needle indicator at the vertical center adjusted by the offset
@@ -199,10 +202,6 @@ public class VASI {
 		// Calculate our relative AGL compared to destination. If we are 
 		// lower then no display info
 		double relativeAGL = gpsParams.getAltitude() - destElev;
-		if(relativeAGL < 0) {
-            mShow = false;
-			return;
-		}
 		
 		// Convert the destination distance to feet.
 		double destDist = dest.getDistance(); 
@@ -212,24 +211,24 @@ public class VASI {
 		mGlideSlope = Math.toDegrees(Math.atan(relativeAGL / destInFeet));
 
 		// Set the color of the glide slope background. According to the AIM,
-		// ON the glide slope is 2.5 to 3.1 degrees
-		if(mGlideSlope < 2.5) {
+		// 
+		if(mGlideSlope < (3 - BAR_DEGREES)) {
 			mBackColor = mColorLow;
-		} else if(mGlideSlope > 3.1) {
+		} else if(mGlideSlope > (3 + BAR_DEGREES)) {
 			mBackColor = mColorHigh;
 		}
 			
 		// Calculate the vertical display offset of the indicator
-		// Anything greater/equal to 4 pegs at the top
-		// Anything less/equal to 2 pegs at the bottom
+		// Anything greater/equal to 3.7 pegs at the top
+		// Anything less/equal to 2.3 pegs at the bottom
 		// all others scale in between based upon instrument height
 		double fullDeflection = mInstHeight / 2 - mBarHeight * 1.5;
-		if(mGlideSlope >= 4) {
+		if(mGlideSlope >= 3.7) {
 			mDspOffset = -(int)fullDeflection;
-		} else if(mGlideSlope <= 2) {
+		} else if(mGlideSlope <= 2.3) {
 			mDspOffset = (int)fullDeflection;
 		} else {
-			mDspOffset = -(int)((mGlideSlope - 3) * (fullDeflection));
+			mDspOffset = -(int)((((mGlideSlope - 3) / BAR_DEGREES)) * (fullDeflection / ((mBarCount - 1) / 2)));
 		}
 		mShow = true;
 	}
