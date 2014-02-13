@@ -1264,7 +1264,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	if(mPref.getShowCDI()) {
 	        	Destination dest = mService.getDestination();
 	        	if(dest != null) {
-	        		mService.getVASI().drawVASI(canvas, getWidth(), getHeight(), dest);
+	        		mService.getVNAV().drawVNAV(canvas, getWidth(), getHeight(), dest);
 	        	}
         	}
         }
@@ -1370,7 +1370,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are     */
             mService.getOdometer().updateValue(mPref, mGpsParams);		/* Adjust the odometer	*/
             mService.getCDI().calcDeviation(mGpsParams, mService.getDestination());		// Calculate deviation 
-            mService.getVASI().calcGlideSlope(mGpsParams, mService.getDestination());	// Calculate GS
+            mService.getVNAV().calcGlideSlope(mGpsParams, mService.getDestination());	// Calculate GS
         }
 
         updateCoordinates();
@@ -1424,7 +1424,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         // Tell the CDI the paint that we use for display text
         mService.getCDI().setSize(mPaint);
-        mService.getVASI().setSize(mPaint);
+        mService.getVNAV().setSize(mPaint);
     }
 
     /**

@@ -24,8 +24,8 @@ import android.graphics.Paint;
  * Implementation of a Vertical Approach Slope Indicator
  * rwalker
  */
-public class VASI {
-	Paint mVASIPaint;	// Our very own paint object
+public class VNAV {
+	Paint mVNAVPaint;	// Our very own paint object
 	int   mBarCount;	// How many bars to display
 	float mBarWidth;	// Display width of 1 bar
 	float mBarHeight;	// How tall is each bar
@@ -52,7 +52,7 @@ public class VASI {
 	/***
 	 * Course Deviation Indicator
 	 */
-	public VASI() {
+	public VNAV() {
 	    mConvertToFt = Preferences.feetConversion;
 	}
 	
@@ -87,7 +87,7 @@ public class VASI {
 				mBarHeight * 3;					// Border padding at left/right/middle
 		
 		// Allocate the paint object to save time during draw cycle
-		mVASIPaint = new Paint(textPaint);
+		mVNAVPaint = new Paint(textPaint);
 	}
 
 	/***
@@ -98,7 +98,7 @@ public class VASI {
 	 * @param screenY Total height of the display canvas
 	 * @param dest The target destination
 	 */
-	public void drawVASI(Canvas canvas, float screenX, float screenY, Destination dest)
+	public void drawVNAV(Canvas canvas, float screenX, float screenY, Destination dest)
 	{
 		// If we have no destination set, then do not draw anything
 		if(dest == null || (!mShow)) {
@@ -121,23 +121,23 @@ public class VASI {
         mInstLeft  = screenX - mInstWidth; // Right side of display
 	    
         // Draw the background
-	    mVASIPaint.setColor(mBackColor);// Color
-	    mVASIPaint.setAlpha(0x5F);		// Make it see-thru
-	    mVASIPaint.setStrokeWidth(mInstWidth);	// How tall the inst is
-	    mVASIPaint.setStyle(Paint.Style.STROKE);	// Type of brush
+	    mVNAVPaint.setColor(mBackColor);// Color
+	    mVNAVPaint.setAlpha(0x5F);		// Make it see-thru
+	    mVNAVPaint.setStrokeWidth(mInstWidth);	// How tall the inst is
+	    mVNAVPaint.setStyle(Paint.Style.STROKE);	// Type of brush
 	    
 	    // Draw the background of the instrument. This is a vertical swipe top to bottom.
-        canvas.drawLine(mInstLeft, mInstTop, mInstLeft, mInstTop + mInstHeight, mVASIPaint);
+        canvas.drawLine(mInstLeft, mInstTop, mInstLeft, mInstTop + mInstHeight, mVNAVPaint);
 
         // Draw all of the horizontal bars
-	    mVASIPaint.setColor(Color.WHITE);		// white
-	    mVASIPaint.setStrokeWidth(mBarHeight);	// height of each bar
+	    mVNAVPaint.setColor(Color.WHITE);		// white
+	    mVNAVPaint.setStrokeWidth(mBarHeight);	// height of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
 	        float extend = (idx == (int)(mBarCount / 2)) ? mInstWidth / 3 : 0;
 	    	float barTop = mInstTop + mBarHeight * (float) 1.5 + 
 	    			idx * (mBarHeight + mBarSpace);
 	        canvas.drawLine(mInstLeft + mBarHeight - mInstWidth / 2, barTop, 
-	        		mInstLeft + mBarHeight + mBarWidth - mInstWidth / 2 + extend, barTop, mVASIPaint);
+	        		mInstLeft + mBarHeight + mBarWidth - mInstWidth / 2 + extend, barTop, mVNAVPaint);
 	    }
 	    
 	    // Now draw the needle indicator at the vertical center adjusted by the offset
@@ -163,13 +163,13 @@ public class VASI {
 	    float X3 = X1 + mBarWidth / 2;
 	    float Y3 = Y1 + mBarWidth / 4;
 
-	    mVASIPaint.setColor(Color.WHITE);	// white
-	    mVASIPaint.setStrokeWidth(5);		// Line width
+	    mVNAVPaint.setColor(Color.WHITE);	// white
+	    mVNAVPaint.setStrokeWidth(5);		// Line width
 	    
 	    // Draw
-	    canvas.drawLine(X1, Y1, X2, Y2, mVASIPaint); // Top leg
-	    canvas.drawLine(X2, Y2, X3, Y3, mVASIPaint); // Right Leg
-	    canvas.drawLine(X3, Y3, X1, Y1, mVASIPaint); // Bottom leg
+	    canvas.drawLine(X1, Y1, X2, Y2, mVNAVPaint); // Top leg
+	    canvas.drawLine(X2, Y2, X3, Y3, mVNAVPaint); // Right Leg
+	    canvas.drawLine(X3, Y3, X1, Y1, mVNAVPaint); // Bottom leg
 		
 	}
 

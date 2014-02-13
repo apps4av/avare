@@ -22,7 +22,7 @@ import com.ds.avare.gps.*;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.Odometer;
-import com.ds.avare.instruments.VASI;
+import com.ds.avare.instruments.VNAV;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -34,7 +34,6 @@ import com.ds.avare.shapes.Radar;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Mutex;
 import com.ds.avare.weather.AdsbWeatherCache;
@@ -180,7 +179,7 @@ public class StorageService extends Service {
     private CDI mCDI;
     
     // The vertical approach slope indicator
-    private VASI mVASI;
+    private VNAV mVNAV;
     
     /**
      * @author zkhan
@@ -271,8 +270,8 @@ public class StorageService extends Service {
         // Allocate the Course Deviation Indicator
         mCDI = new CDI();
 
-        // Allocate the VASI
-        mVASI = new VASI();
+        // Allocate the VNAV
+        mVNAV = new VNAV();
         
         /*
          * Monitor TFR every hour.
@@ -741,8 +740,8 @@ public class StorageService extends Service {
     	return mCDI;
     }
 
-    public VASI getVASI() {
-    	return mVASI;
+    public VNAV getVNAV() {
+    	return mVNAV;
     }
     
     /**

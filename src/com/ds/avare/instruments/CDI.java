@@ -215,7 +215,7 @@ public class CDI {
 		 * Within 20 miles convert to Localizer
 		 * This must match the distance for Glide slope.
 		 */
-		if(dstCur > VASI.APPROACH_DISTANCE) {
+		if(dstCur > VNAV.APPROACH_DISTANCE) {
 		    mBarDegrees = BAR_DEGREES_VOR;
 		}
 		else {
