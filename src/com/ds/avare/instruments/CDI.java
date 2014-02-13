@@ -39,11 +39,15 @@ public class CDI {
 	final int mColorLeft   = Color.RED;
 	final int mColorRight  = Color.rgb(0x00,0xa0,0x00);
 	final int mColorCenter = Color.BLACK;
+	private float mBarDegrees = BAR_DEGREES_VOR;
 
 	// Calc'd instrument values
 	float	mDspOffset;	// Display offset value for deviation
 	double 	mDeviation;	// How far off course are we
 	int		mBackColor;	// Background color of inst
+	
+    private static final float BAR_DEGREES_VOR = 2f;
+    private static final float BAR_DEGREES_LOC = 0.5f;
 
 	/***
 	 * Return the actual course deviation value. It's an absolute
@@ -68,13 +72,13 @@ public class CDI {
 	public void setSize(Paint textPaint)
 	{
 		// A total of 9 bars
-		mBarCount = 9;
+		mBarCount = 11;
 		
 		// The height of each bar is the basis for the entire instrument size
-		mBarHeight = textPaint.getTextSize() * (float) 0.6;
+		mBarHeight = textPaint.getTextSize() * (float) 0.5;
 		
-		// Width is 1/3 of the height
-		mBarWidth = mBarHeight / 3;
+		// Width is 1/4 of the height
+		mBarWidth = mBarHeight / 4;
 		
 		// Space between bars is 3x the width of the bar
 		mBarSpace = 3 * mBarWidth;
@@ -124,36 +128,16 @@ public class CDI {
 	    mCDIPaint.setColor(Color.WHITE);		// white
 	    mCDIPaint.setStrokeWidth(mBarWidth);	// Width of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
+	        float extend = (idx == (int)(mBarCount / 2)) ? mInstHeight / 3 : 0;
 	    	float barLeft = mInstLeft + mBarWidth * (float) 1.5 + 
 	    			idx * (mBarWidth + mBarSpace);
 	        canvas.drawLine(barLeft, mInstTop + mBarWidth, barLeft, 
-	        		mInstTop + mBarHeight + mBarWidth, mCDIPaint);
+	        		mInstTop + mBarHeight + mBarWidth + extend, mCDIPaint);
 	    }
 	    
 	    // Now draw the needle indicator at the horizontal center
 	    drawIndicator(canvas, screenX / 2 - mDspOffset);
 	    
-	    // If we are not ON the course line, then display how far
-	    // off course we are
-	    drawDeviation(canvas, screenX / 2);
-	}
-
-	// If the deviation is beyond the first lateral tick mark, then
-	// display the text of how far off course we are
-	private void drawDeviation(Canvas canvas, float posX)
-	{
-		// Display the text only if we are further than 2.5 miles off
-		// course - this prevents the text from drawing over the pointer
-		if(mDeviation >= 2.5) {
-			float oldTextSize = mCDIPaint.getTextSize();
-			mCDIPaint.setTextSize(mBarHeight);
-		    mCDIPaint.setStyle(Paint.Style.FILL);	// Type of brush
-		    String strDev = String.format("%04.2f", mDeviation);
-		    mCDIPaint.getTextBounds(strDev, 0, strDev.length(), mTextSize);
-			canvas.drawText(strDev, posX - mTextSize.width() / 2, 
-					mInstTop + mBarHeight * 2 + mBarWidth, mCDIPaint);
-			mCDIPaint.setTextSize(oldTextSize);
-		}
 	}
 	
 	/***
@@ -216,43 +200,40 @@ public class CDI {
 				dest.getLocation().getLongitude(),
 				dest.getLocation().getLatitude());
 
+		
 		// The bearing from our CURRENT location to the target
 		double brgCur = dest.getBearing();
-		
+
 		// Relative bearing we are FROM destination is the difference
 		// of these two
 		double brgDif = Helper.angularDifference(brgOrg, brgCur);
 
 		// Distance from our CURRENT position to the destination
 		double dstCur = dest.getDistance();
+		
+		/*
+		 * Within 20 miles convert to Localizer
+		 * This must match the distance for Glide slope.
+		 */
+		if(dstCur > VASI.APPROACH_DISTANCE) {
+		    mBarDegrees = BAR_DEGREES_VOR;
+		}
+		else {
+            mBarDegrees = BAR_DEGREES_LOC;		    
+		}
 
 		// Distance we are from the direct course line
 		mDeviation = dstCur * Math.sin(Math.toRadians(brgDif));
 
-		// The amount of display offset varies depending upon how large the
-		// distance off the course line we are
-		if(mDeviation <= 0.20) {
-			return; // +- 1/5 mile will show the pointer as centered, 
-					// no adjustment to the X offset or color
-		} else if(mDeviation <= 2) {
-			mDspOffset = (mBarWidth + mBarSpace) * (float) (mDeviation / 2);
-		} else if(mDeviation <= 5) {
-			mDspOffset = mBarWidth + mBarSpace + 
-					(mBarWidth + mBarSpace) * (float) ((mDeviation - 2) / 3);
-		}else if(mDeviation <= 10) {
-			mDspOffset = 2 * (mBarWidth + mBarSpace) + 
-					(mBarWidth + mBarSpace) * (float) ((mDeviation - 5) / 5);
-		} else if(mDeviation <= 20) {
-			mDspOffset = 3 * (mBarWidth + mBarSpace) + 
-					(mBarWidth + mBarSpace) * (float) ((mDeviation - 10) / 10);
-		}else {
-			// 20 miles or greater will peg the indicator left or right
-			mDspOffset = 5 * mBarWidth + 4 * mBarSpace;
+		// The amount of display offset varies depending upon how large the deviation is
+		if(brgDif > mBarDegrees * ((float)mBarCount - 1) / 2f) {
+		    brgDif = mBarDegrees * ((float)mBarCount - 1) / 2f;
 		}
+        mDspOffset = (mBarWidth + mBarSpace) * (float) (brgDif / mBarDegrees);
 
 		// Assume we are to the RIGHT of the courseline
 		mBackColor = mColorRight;
-
+		
 		// Now determine whether we are LEFT. That will
 		// dictate the color of the shadow and the sign of the mDeviation.
 		// Account for REVERSE SENSING if we are already BEYOND the target (>90deg)
@@ -261,5 +242,12 @@ public class CDI {
 			mBackColor = mColorLeft;
 			mDspOffset = -mDspOffset;
 		}
+
+		/*
+		 * One bar width is OK, show no color
+		 */
+        if(brgDif <= mBarWidth) {
+            mBackColor = mColorCenter;
+        }
 	}
 }

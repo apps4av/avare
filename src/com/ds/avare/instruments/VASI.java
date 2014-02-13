@@ -22,6 +22,7 @@ import android.graphics.Paint;
 
 /***
  * Implementation of a Vertical Approach Slope Indicator
+ * rwalker
  */
 public class VASI {
 	Paint mVASIPaint;	// Our very own paint object
@@ -46,6 +47,7 @@ public class VASI {
 	final int mColorOn   = Color.BLACK;
 	
 	private static final double BAR_DEGREES = 0.14f;
+	public static final double APPROACH_DISTANCE = 15;
 
 	/***
 	 * Course Deviation Indicator
@@ -107,7 +109,7 @@ public class VASI {
 		// If we are more than 30 miles from our target, then do not
 		// draw anything
 		double destDist = dest.getDistance(); 
-		if(destDist > 20) {
+		if(destDist > APPROACH_DISTANCE) {
 		    mShow = false;
 			return;
 		}
