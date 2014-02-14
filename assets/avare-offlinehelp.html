@@ -33,6 +33,7 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
 <div> <h3 style="text-align: center;">Avare Donate</h3>
 <p style="text-align: center;">To support chart updates and ongoing Avare development, please
@@ -69,7 +70,8 @@ then just <b>press the Map, Options, Download and Update buttons</b> in Avare.<b
 
 <h3 style="text-align: center;">Avare Releases</h3>
 
-<span style="font-weight: bold; outline-color: navy ! important;"></span><span style="font-weight: bold; outline-color: navy ! important;">5.3.8</span><span style="outline-color: navy ! important;"> </span> New hi-res FAA charts handling. <span style="outline-color: navy ! important;">Nearest screen now shows runway lengths, and glide range airports.</span>
+<span style="font-weight: bold; outline-color: navy ! important;"></span><span style="font-weight: bold; outline-color: navy ! important;">5.3.9</span><span style="outline-color: navy ! important;"> Fixes for CDI / VNAV, and ability to plan when no GPS locked</span>. <br>
+<span style="font-weight: bold; outline-color: navy ! important;">5.3.8</span><span style="outline-color: navy ! important;"> </span> New hi-res FAA charts handling. <span style="outline-color: navy ! important;">Nearest screen now shows runway lengths, and glide range airports.</span>
 ADSB traffic shows altitude. WX shows 3 day forecasts. Plan route track
 highlights all waypoints. Map screen UI now hides with touch. Added
 horizontal and vertical course deviation indicators (enabled from
@@ -474,21 +476,27 @@ a valid GPS lock is attained.
 They are enabled in the Preferences menu under the Display section. The CDI is 
 operational when you have a destination set. The needle indicator at the bottom
 will move left/right of center based upon how off course your location you are. If
-you deviate more than 0.2 miles left or right then the indicator changes color - RED if
-you are left of course, GREEN if you are right. The scale bars are not linear in nature - 
-the further off course you are, the greater the scale. Specifcally, they are calibrated 
-at 2/5/10/20 miles. To correct, steer the aircraft in the direction of the arrow to bring 
+you deviate more than one tick left or right then the indicator changes color - RED if
+you are left of course, GREEN if you are right. To correct, steer the aircraft in the direction of the arrow to bring 
 it back to center and the color will return to neutral GRAY.<br>
+The CDI will have VOR scale beyond 15nm from the destination (2 degrees
+/ div), otherwise it will have the localizer scale (0.5 degree / div).<br>
 <br>
-The VDI (Vertical Deviation Indicator) will display when you have a destination with 
-a known elevation set and you are within 20nm of it. The indicator needle on the right of
-the bars is centered when you are on a 3 degree glideslope of your destination. Being "on the
-glideslope" is a range of 2.5 to 3.1 degrees. Anything greater than 3.1 is considered "above" 
-and will show the indicator in YELLOW. Anything below 2.5 is low, and the color is changed to
-RED. When you return to the programmed slope, the display will return to it's neutral GRAY.<br>
+The VDI (Vertical Deviation Indicator) will display when you have a
+destination with a known elevation set and you are within 15nm of it.
+The indicator needle on the right of
+the bars is centered when you are on a 3 degree glideslope of your
+destination. Being "on the
+glideslope" is a range of 2.86 to 3.14 degrees. Anything greater than
+3.14 is considered "above" and will show the indicator in YELLOW.
+Anything below 2.86 is low, and the color is changed to
+RED. When you return to the programmed slope, the display will return
+to it's neutral GRAY. The VDI scale is 0.14 degree / division.<br>
 <br>
-<b>!!! CAUTION !!!</b> The VDI uses GPS altitude and general airport elevation. It is not an 
-accurate VASI or PAPI indicator to any specific runway at your destination.<br>
+<b>!!! CAUTION !!!</b> The VDI uses GPS altitude and general airport
+elevation. It is not an accurate VNAV / glide slope indicator to any
+specific runway at your destination. The CDI uses track heading and is
+not an accurate representaiton of your magnetic heading.<br>
 <br>
 • <span style="font-weight: bold;">Internet NEXRAD</span><br>
 To show Internet downloaded NEXRAD radar, go to Download, and download

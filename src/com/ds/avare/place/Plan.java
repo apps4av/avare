@@ -259,7 +259,6 @@ public class Plan {
         mBearing = 0;
         mDeclination = params.getDeclinition();
         int num = getDestinationNumber();
-        int np = findNextNotPassed();
         if(0 == num) {
             mPassage = new Passage();
             return;
@@ -271,18 +270,19 @@ public class Plan {
         /*
          * For all passed way points set distance to current
          */
-        for(int id = 0; id <= np; id++) {
-            mDestination[id].updateTo(params);
+        mDestination[0].updateTo(params);
+        for(int id = 1; id < num; id++) {
+            mDestination[id].updateTo(new GpsParams(mDestination[id - 1].getLocation()));
         }
-        mDistance = mDestination[np].getDistance();
+        for(int id = 0; id < num; id++) {
+            /*
+             * For all upcoming, add distance. Distance is from way point to way point
+             */
+            if(!mPassed[id]) {
+                mDistance += mDestination[id].getDistance();                
+            }
+        }
         
-        /*
-         * For all upcoming, add distance. Distance is from way point to way point
-         */
-        for(int id = np; id < (num - 1); id++) {
-            mDestination[id + 1].updateTo(new GpsParams(mDestination[id].getLocation()));
-            mDistance += mDestination[id + 1].getDistance();
-        }
         if(num > 0) {
             mBearing = mDestination[findNextNotPassed()].getBearing();
             if(mPassage.updateLocation(params, mDestination[findNextNotPassed()])) {
