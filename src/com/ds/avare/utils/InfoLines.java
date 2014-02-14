@@ -262,13 +262,10 @@ public class InfoLines {
 
     		// Odometer - reset the value to zero
     		case ID_FLD_ODO: {
-    			Preferences pref = mLocationView.getPref(); 
-	    		if(pref != null) {
-		    		if(storageService != null) {
-			    		Odometer odometer = storageService.getOdometer();
-			    		if(odometer != null) {
-			    			odometer.reset(pref);
-			    		}
+	    		if(storageService != null) {
+		    		Odometer odometer = storageService.getOdometer();
+		    		if(odometer != null) {
+		    			odometer.reset();
 		    		}
 	    		}
     			break;

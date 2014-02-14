@@ -329,6 +329,22 @@ public class StorageService extends Service {
                         mLocationSem.unlock();
                         getArea().updateLocation(getGpsParams());
                         getPlan().updateLocation(getGpsParams());
+
+                        // Adjust the flight timer
+                        getFlightTimer().setSpeed(mGpsParams.getSpeed());
+                        
+                        // Tell the KML recorder a new point to potentially plot
+                        getKMLRecorder().setGpsParams(mGpsParams);
+                        
+                        // Let the odometer know how far we traveled
+                        getOdometer().updateValue(mGpsParams);
+                        
+                        // Calculate course line deviation
+                        getCDI().calcDeviation(mGpsParams, getDestination());
+                        
+                        // Vertical descent rate calculation
+                        getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                        
                         if(getPlan().hasDestinationChanged()) {
                             /*
                              * If plan active then set destination to next not passed way point

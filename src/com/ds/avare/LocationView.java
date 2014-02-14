@@ -1365,14 +1365,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mGpsParams = params;
 
-        if(mService != null) {
-            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
-            mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are     */
-            mService.getOdometer().updateValue(mPref, mGpsParams);		/* Adjust the odometer	*/
-            mService.getCDI().calcDeviation(mGpsParams, mService.getDestination());		// Calculate deviation 
-            mService.getVNAV().calcGlideSlope(mGpsParams, mService.getDestination());	// Calculate GS
-        }
-
         updateCoordinates();
         /*
          * Database query for new location / pan location.
@@ -1425,6 +1417,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         // Tell the CDI the paint that we use for display text
         mService.getCDI().setSize(mPaint);
         mService.getVNAV().setSize(mPaint);
+        
+        // Tell the odometer how to access preferences
+        mService.getOdometer().setPref(mPref);
     }
 
     /**

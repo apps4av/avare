@@ -20,8 +20,13 @@ public class Odometer {
 	private double		mValue;		// current value
 	private double 		mValueSave;	// value last time we did a save
 	private GpsParams	mGpsParams;	// last used gps parameters
+	private Preferences mPref;		// How we access permanent storage
 	
 	public Odometer(){
+	}
+	
+	public void setPref(Preferences pref) {
+		mPref = pref;
 	}
 	
 	/***
@@ -34,14 +39,14 @@ public class Odometer {
 	
 	/***
 	 * Reset the value of the odometer to zero.
-	 * @param pref The preferece object so as to clear the saved value
+	 * @param pref The preference object so as to clear the saved value
 	 */
-	public void reset(Preferences pref) {
-		if(pref != null) {
+	public void reset() {
+		if(mPref != null) {
 			mValue = 0;
 			mValueSave = 0;
 			mGpsParams = null;
-			pref.setOdometer(mValue);
+			mPref.setOdometer(mValue);
 		}
 	}
 
@@ -50,15 +55,19 @@ public class Odometer {
 	 * @param pref preferences object soas to save the current odometer value
 	 * @param gpsParams current gps locations
 	 */
-	public void updateValue(Preferences pref, GpsParams gpsParams) {
-		if(pref == null || gpsParams == null || pref.isSimulationMode()) {
+	public void updateValue(GpsParams gpsParams) {
+		if(mPref == null) {
+			return;
+		}
+		
+		if(gpsParams == null || mPref.isSimulationMode()) {
 			return;
 		}
 		
 		// Our first time in means we need to read the current setting from
 		// the preferences
 		if(mGpsParams == null) {
-			mValue = pref.getOdometer();
+			mValue = mPref.getOdometer();
 			mGpsParams = gpsParams;
 			mValueSave = mValue;
 		} else {
@@ -80,7 +89,7 @@ public class Odometer {
     		
 			// If we traveled more than a half mile, then write it to the preferences for safe keeping
 	    	if((mValue - mValueSave) > .5) {
-	    		pref.setOdometer(mValue);
+	    		mPref.setOdometer(mValue);
 	    		mValueSave = mValue;
 	    	}
 	    	
