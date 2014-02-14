@@ -75,7 +75,6 @@ import android.view.View.OnTouchListener;
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
 public class LocationView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
-
     /**
      * paint for onDraw
      */
@@ -1138,7 +1137,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Draw the corresponding text
              */
             String text[] = DistanceRings.getRingsText();
-         
+
             float adjX = (float) Math.sin((bearing - 10) * Math.PI / 180);	// Distance ring numbers, offset from
             float adjY = (float) Math.cos((bearing - 10) * Math.PI / 180);	// the course line for readability
 
@@ -1225,8 +1224,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         final int SHADOWRECTRADIUS = (int) (5 * mDipToPix);
         paint.getTextBounds(text, 0, text.length(), mTextSize);
         
-        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y;
-        mShadowBox.top    = mTextSize.top - YMARGIN + y;
+        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
+        mShadowBox.top    = mTextSize.top - YMARGIN + y - (mTextSize.top / 2);
         mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
         mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
 
@@ -1234,7 +1233,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mShadowPaint.setColor(shadowColor);
         mShadowPaint.setAlpha(0x80);
         canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
-        canvas.drawText(text,  x - (mTextSize.right / 2), y, paint);
+        canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
     }
 
     /***
