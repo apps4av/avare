@@ -716,7 +716,7 @@ public class Preferences {
     }
     
     public boolean getShowCDI() {
-        return mPref.getBoolean(mContext.getString(R.string.prefShowCDI), true);
+        return mPref.getBoolean(mContext.getString(R.string.prefShowCDI), false);
     }
 
     /**
