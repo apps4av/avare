@@ -259,6 +259,7 @@ public class Plan {
         mBearing = 0;
         mDeclination = params.getDeclinition();
         int num = getDestinationNumber();
+        int np = findNextNotPassed();
         if(0 == num) {
             mPassage = new Passage();
             return;
@@ -268,18 +269,41 @@ public class Plan {
         }
         
         /*
-         * For all passed way points set distance to current
+         * Depends if it is active or plan
          */
-        mDestination[0].updateTo(params);
-        for(int id = 1; id < num; id++) {
-            mDestination[id].updateTo(new GpsParams(mDestination[id - 1].getLocation()));
-        }
-        for(int id = 0; id < num; id++) {
+        if(mActive) {
+        
+            /*
+             * For all passed way points set distance to current
+             */
+            for(int id = 0; id <= np; id++) {
+                mDestination[id].updateTo(params);
+            }
+            mDistance = mDestination[np].getDistance();
+    
             /*
              * For all upcoming, add distance. Distance is from way point to way point
              */
-            if(!mPassed[id]) {
-                mDistance += mDestination[id].getDistance();                
+            for(int id = (np + 1); id < num; id++) {
+                mDestination[id].updateTo(new GpsParams(mDestination[id - 1].getLocation()));
+                mDistance += mDestination[id].getDistance();
+            }
+
+        }
+        else {
+            mDestination[0].updateTo(params);
+            for(int id = 1; id < num; id++) {
+                mDestination[id].updateTo(new GpsParams(mDestination[id - 1].getLocation()));
+            }
+            
+            mDistance = 0;
+            for(int id = 0; id < num; id++) {
+                /*
+                 * For all upcoming, add distance. Distance is from way point to way point
+                 */
+                if(!mPassed[id]) {
+                    mDistance += mDestination[id].getDistance();
+                }
             }
         }
         
