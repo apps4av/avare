@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="159"
-    android:versionName="5.3.9" >
+    android:versionCode="160"
+    android:versionName="5.4.0" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />

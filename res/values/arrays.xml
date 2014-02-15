@@ -767,7 +767,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Descent Rate to Destination</item>
 	    <item>Odometer</item>
 	    <item>Course Deviation Indicator</item>
-	    <item>Destination Radio Freq TWR/CTAF</item>
 	</string-array>
 	    
 	<string-array name="TextFieldOptionTitles">
@@ -788,7 +787,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Dsc Rt fpm</item>
 	    <item>Odometer</item>
 	    <item>CDI</item>
-	    <item>Freq Next</item>
    	</string-array>
 
 </resources>

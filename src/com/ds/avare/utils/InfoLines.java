@@ -14,10 +14,8 @@ package com.ds.avare.utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TimeZone;
 
 import android.graphics.Canvas;
@@ -102,8 +100,7 @@ public class InfoLines {
     static final int ID_FLD_DRT = 14;
     static final int ID_FLD_ODO = 15;
     static final int ID_FLD_CDI = 16;
-    static final int ID_FLD_RAD = 17;
-    static final int ID_FLD_MAX = 18;
+    static final int ID_FLD_MAX = 17;
     static final String NOVALUE = "     ";
     
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -636,24 +633,7 @@ public class InfoLines {
 		    		}
 	    		}
 	    		break;
-	    	}
-	    	
-	    	case ID_FLD_RAD: {
-	    		StorageService storageService = mLocationView.getStorageService(); 
-	    		if(storageService != null) {
-		    		if(storageService.getDestination() != null) {
-		    			Destination dest = storageService.getDestination();
-		    			LinkedHashMap<String, String> radio = dest.getFrequencies();
-		    			Set<String> keys = radio.keySet();
-		    			for(String k:keys) {
-		    				if(k.contains("TWR")) return radio.get(k).substring(0, 6);
-		    			}
-		    			for(String k:keys) {
-		    				if(k.contains("CTAF")) return radio.get(k).substring(0, 6);
-		    			}
-		    		}
-	    		}
-	    	}
+	    	}	    	
     	}
     	return NOVALUE;
     }
