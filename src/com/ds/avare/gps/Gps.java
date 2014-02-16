@@ -19,6 +19,7 @@ import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
 import android.location.GpsStatus;
+import android.location.GpsStatus.NmeaListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,7 +31,7 @@ import android.os.SystemClock;
  * @author zkhan
  *
  */
-public class Gps implements LocationListener, android.location.GpsStatus.Listener {
+public class Gps implements LocationListener, android.location.GpsStatus.Listener, NmeaListener {
 
     private Context mContext;
     
@@ -48,6 +49,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     private long mGpsLastUpdate;
     
+    /**
+     * Altitude from NMEA as it can be wrong from Android's API
+     */
+    private double mAltitude;
 
     /**
      * A timer that clicks to check GPS status
@@ -69,6 +74,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         mContext = ctx;
         mLocationManager = null;
         mTimer = null;
+        mAltitude = Double.MIN_VALUE;
         mGpsCallback = callback;
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
@@ -145,6 +151,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
+                mLocationManager.addNmeaListener(this);
                 
                 /*
                  * Also obtain GSM based locations
@@ -184,6 +191,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         if(null != mLocationManager) {
             mLocationManager.removeUpdates(this);
             mLocationManager.removeGpsStatusListener(this);
+            mLocationManager.removeNmeaListener(this);
             mLocationManager = null;
             return;
         }
@@ -230,6 +238,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             
             updateTimeout();
 
+            if(mAltitude != Double.MIN_VALUE) {
+                location.setAltitude(mAltitude);
+            }
+            
             /*
              * Called by GPS. Update everything driven by GPS.
              */
@@ -298,6 +310,24 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     public void updateTimeout() {
         synchronized(this) {
             mGpsLastUpdate = SystemClock.elapsedRealtime();
+        }
+    }
+
+    @Override
+    public void onNmeaReceived(long timestamp, String nmea) {
+        /*
+         * Use this for altitude.
+         */
+        if(nmea.startsWith("$GPGGA")) {
+            String val[] = nmea.split(",");
+            if(val.length > 9) {
+                try {
+                    mAltitude = Double.parseDouble(val[9]);
+                }
+                catch (Exception e) {
+                    mAltitude = Double.MIN_VALUE;
+                }
+            }
         }
     }
 }
