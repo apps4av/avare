@@ -315,7 +315,15 @@ public class SearchActivity extends Activity implements Observer {
                                 
                 mAnimateSelect.animate(true);
                 mAnimatePlan.animate(true);
-                mAnimateEdit.animate(true);
+                
+                // Don't display the edit button if we can't edit
+                String type = StringPreference.parseHashedNameDbType(mSelected);
+                if(type == null || !type.equals(Destination.GPS)) {
+                	mAnimateEdit.stopAndHide();
+                }
+                else {
+                	mAnimateEdit.animate(true);
+                }
 
                 return true;
             }

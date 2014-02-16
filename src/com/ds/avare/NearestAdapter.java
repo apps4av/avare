@@ -145,7 +145,10 @@ public class NearestAdapter extends ArrayAdapter<String> {
             textView.setTextColor(Color.GREEN);            
         }
         textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
-        textView.setText(mFuel[position]);
+        /*
+         * Fuel shows as Fuel or none
+         */
+        textView.setText(mFuel[position].equals("") ? "" : mContext.getString(R.string.Fuel));
         textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);
         textView.setText(mLongestRunway[position] + "ft @" + mElevation[position]);
         

@@ -120,6 +120,17 @@ public class AnimateButton {
 
     }
 
+    /**
+     * 
+     */
+    public void stopAndHide() {
+		mView.clearAnimation();
+		
+        mView.setVisibility(Button.INVISIBLE);
+        for(int v = 0; v < mReplaces.length; v++) {
+            mReplaces[v].setVisibility(Button.VISIBLE);
+        }
+    }
 
     
     /**

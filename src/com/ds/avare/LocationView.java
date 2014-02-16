@@ -83,7 +83,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Current GPS location
      */
     private GpsParams                  mGpsParams;
-    private GpsParams				   mVSIParams;
+    private GpsParams				    mVSIParams;
     
     /**
      * The plane on screen
@@ -1353,9 +1353,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void updateParams(GpsParams params) {
     	
+        double tdiff = ((double)(params.getTime() - mVSIParams.getTime()) / 1000.0);
     	// Calculate the instantaneous vertical speed in ft/min
-    	if(params.getTime() - mVSIParams.getTime() > 1000) {
-    		mVSI = ((params.getAltitude() - mVSIParams.getAltitude())) * (60 / ((params.getTime() - mVSIParams.getTime()) / 1000));
+    	if(tdiff > 1) {
+    		mVSI = ((double)(params.getAltitude() - mVSIParams.getAltitude())) * (60 / tdiff);
     		mVSIParams = params;
     	}
     	

@@ -961,11 +961,6 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mExtras = null;
             }
-
-            /*
-             * Force reload
-             */
-            mLocationView.forceReload();
         }
 
         /* (non-Javadoc)
