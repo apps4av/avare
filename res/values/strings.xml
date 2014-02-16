@@ -11,7 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Download Charts&quot;</string>
+    <string name="MissingMaps">&quot;Download charts for this area&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>

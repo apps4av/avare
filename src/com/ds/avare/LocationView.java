@@ -574,11 +574,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
   
         if(null != mService) {
+            int empty = 0;
+            int tn = mService.getTiles().getTilesNum();
             
-            for(int tilen = 0; tilen < mService.getTiles().getTilesNum(); tilen++) {
+            for(int tilen = 0; tilen < tn; tilen++) {
                 
                 BitmapHolder tile = mService.getTiles().getTile(tilen);
-                
                 /*
                  * Scale, then move under the plane which is at center
                  */
@@ -589,8 +590,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 else if(null == tile.getBitmap()) {
                     nochart = true;
                 }
+                
                 if(nochart) {
                     continue;
+                }
+
+                /*
+                 * Find how many empty tiles
+                 */
+                if(!tile.getFound()) {
+                    empty++;
                 }
 
                 if(mPref.isNightMode() && (mPref.getChartType().equals("3") || mPref.getChartType().equals("4"))) {
@@ -631,6 +640,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 
                 Helper.restoreCanvasColors(mPaint);
+            }
+            
+            /*
+             * If nothing on screen, write a not found message
+             */
+            if(empty >= tn) {
+                mDistanceRingPaint.setColor(Color.WHITE);
+                drawShadowedText(canvas, mDistanceRingPaint,
+                        mContext.getString(R.string.MissingMaps), 
+                        Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
     }

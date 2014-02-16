@@ -175,6 +175,12 @@ public class TileMap {
                  * At max scale, down sample by down sampling 
                  */
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
+                if(b.getBitmap() == null) {
+                    h.setFound(false);
+                }
+                else {
+                    h.setFound(true);
+                }
                 h.getBitmap().eraseColor(Color.GRAY);
                 h.drawInBitmap(b, tileNames[tilen], 0, 0);
                 b.recycle();
