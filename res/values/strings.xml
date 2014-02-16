@@ -230,8 +230,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
-    <string name="GlideRatio">&quot;Glide Ratio&quot;</string>
+    <string name="GlideRatio">&quot;GlideRatioAircraft&quot;</string>
+    <string name="GlideRatioLabel">&quot;Glide Ratio&quot;</string>
+    <string name="GlideRatioSummary">&quot;Set the glide ratio of your aircraft&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
-    <string name="SetGlideRatio">&quot;"Set the glide ratio of your aircraft (altitude divided by glide distance)&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
 </resources>

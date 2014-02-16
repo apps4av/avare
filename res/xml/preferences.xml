@@ -93,6 +93,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/Units"
             android:summary="@string/UnitsSummary"
             android:title="@string/UnitsLabel" />
+        <EditTextPreference
+                android:title="@string/GlideRatioLabel"
+                android:summary="@string/GlideRatioSummary"
+                android:key="@string/GlideRatio"/>
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/NightMode"

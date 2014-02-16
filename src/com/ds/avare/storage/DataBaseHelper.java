@@ -286,7 +286,11 @@ public class DataBaseHelper  {
     public LinkedList<String> findFilesToDelete(String name) {
         String dbs[] = mContext.getResources().getStringArray(R.array.ChartDbNames);
 
-        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'";
+        /*
+         * Dont delete level 4
+         */
+        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'"
+                + "and level != '4'";
 
         LinkedList<String> list = new LinkedList<String>();
         

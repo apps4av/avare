@@ -157,14 +157,13 @@ public class Airport implements Comparable<Airport> {
      * @param altitude
      */
     public boolean canGlide(Preferences mPref) {
-        
         /*
          * Height * glide ratio (distance feet / height feet) = distance
          */
         double radius = mHeight * mPref.getGlideRatio() / Preferences.feetConversion;
         if(radius > getDistance()) {
             /*
-             * This is in glide distnace
+             * This is in glide distance
              */
             return true;
         }
