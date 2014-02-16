@@ -246,7 +246,7 @@ public class CDI {
 		/*
 		 * One bar width is OK, show no color
 		 */
-        if(brgDif <= mBarWidth) {
+        if(brgDif <= mBarDegrees) {
             mBackColor = mColorCenter;
         }
 	}
