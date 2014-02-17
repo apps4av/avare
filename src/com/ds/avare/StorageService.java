@@ -45,9 +45,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
-import java.io.File;
 import java.net.URI;
 
 /**
@@ -718,13 +716,7 @@ public class StorageService extends Service {
      */
     public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
-            KMLRecorder.Config config = mKMLRecorder.new Config(
-                true,	/* always remove tracks from display on start */
-                30,		/* Max of 30 seconds between position updates */
-                true,	/* use verbose details */
-                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
-                3);		// Adjust down to 3 knots to capture taxi
-            mKMLRecorder.start(config);
+            mKMLRecorder.start();
             return null;
         }
         else {

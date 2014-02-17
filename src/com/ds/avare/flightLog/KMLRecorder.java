@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import android.annotation.SuppressLint;
+import android.os.Environment;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
@@ -215,6 +216,20 @@ public class KMLRecorder {
     	return null;
     }
     
+
+	/**
+	 * Start with default config
+	 */
+	public void start() {
+        KMLRecorder.Config config = this.new Config(
+                true,   /* always remove tracks from display on start */
+                30,     /* Max of 30 seconds between position updates */
+                true,   /* use verbose details */
+                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
+                3);     // Adjust down to 3 knots to capture taxi
+        start(config);
+	}
+	
     /**
      * Begin recording position points to a file and our memory linked list
      * @param config Details on how/when to write the data
