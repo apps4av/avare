@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--  
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com)  Translated by Francois Dinel
+<!--
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) Translated by Francois Dinel
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    *
-    * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Télécharger les cartes&quot;</string>
+    <string name="MissingMaps">&quot;Télécharger les cartes pour cette région&quot;</string>
     <string name="LoadingMaps">&quot;Charger les cartes&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Le plus près&quot;</string>
     <string name="Success">&quot;Réussi&quot;</string>
     <string name="DatabaseName">&quot;maps.db&quot;</string>
-    <string name="WarningMsg">&quot;Avertissement: à vos propres risques&quot;</string>
+    <string name="WarningMsg">&quot;Avertissement: À VOS PROPRES RISQUESs&quot;</string>
     <string name="DestinationPrompt">&quot;Entrez code de destination&quot;</string>
     <string name="DestinationNF">&quot;Destination non trouvée&quot;</string>
     <string name="AirDia">&quot;Diagramme de l'aéroport&quot;</string>
     <string name="ADS">&quot;Diagrammes d'aéroports&quot;</string>
-    <string name="InstallPDF">&quot;Pour visionner, installer un visionneur de PDF sur Google Play&quot;</string>
+    <string name="InstallPDF">&quot;Pour visionner, installer un visionneur de PDF sur Google Play Store&quot;</string>
     <string name="Cancel">&quot;Annulé&quot;</string>
     <string name="To">&quot;Vers&quot;</string>
     <string name="Maps">&quot;Cartes&quot;</string>
     <string name="MapsLabel">&quot;Répertoire des cartes&quot;</string>
     <string name="MapsSummary">&quot;Endroit où vos cartes sont emmagasinées&quot;</string>
     <string name="OrientationP">&quot;OrientationP&quot;</string>
-    <string name="OrientationPLabel">&quot;Mode portrait&quot;</string>
-    <string name="OrientationPSummary">&quot;Activation du visionnement en mode portrait&quot;</string>
+    <string name="OrientationPLabel">&quot;Orientation de l'écran&quot;</string>
+    <string name="OrientationPSummary">&quot;Choisissez l'orientation de l'écran&quot;</string>
     <string name="GpsTime">&quot;Heure du GPS&quot;</string>
     <string name="GpsTimeLabel">&quot;Position GPS plus fréquente&quot;</string>
-    <string name="GpsTimeSummary">&quot;Affichage plus fréquent de votre position GPS&quot;</string>
+    <string name="GpsTimeSummary">&quot;Sélectionner pour un affichage plus fréquent de votre position GPS&quot;</string>
     <string name="GpsOffWarn">&quot;GPS désactivé&quot;</string>
     <string name="GpsOffWarnLabel">&quot;Avertissement lorsque le GPS est désactivé&quot;</string>
     <string name="GpsOffWarnSummary">&quot;Sélectionner pour afficher plus souvent l'avis du GPS désactivé&quot;</string>
@@ -53,7 +53,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GPSLost">&quot;Aucun signal GPS&quot;</string>
     <string name="GPSEnable">&quot;Activer le GPS&quot;</string>
     <string name="Init">&quot;Initialisation&quot;</string>
-    <string name="Warning">&quot;Ce logiciel n'est pas certifié pour utilisation en vol par les autorités légales.\nUtilisez à vos propres risques. \nLe créateur de ce logiciel ne peut être tenu responsable de toutes blessures ou dommages causés par son utilisation. \n&quot;</string>
+    <string name="Warning">&quot;Ce logiciel n'est pas certifié pour utilisation en vol par les autorités légales.\n\nVous devez assumer que ce logiciel peut mettre votre vie ou vos biens à risque.\n\nLe créateur de ce logiciel ne peut être tenu responsable de toutes blessures ou dommages causés par son utilisation. \n&quot;</string>
     <string name="Recent">&quot;recent&quot;</string>
     <string name="ChartType">&quot;Type de cartes&quot;</string>
     <string name="ChartTypeLabel">&quot;Sélectionner type de cartes&quot;</string>
@@ -62,10 +62,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TFRReceived">&quot;TFR reçus&quot;</string>
     <string name="databases">&quot;Bases de données (requises)&quot;</string>
     <string name="ValidDest">&quot;Entrer une destination valide&quot;</string>
-    <string name="AreaNF">&quot;Les Aéroports proches sont affichés quand le GPS a une position&quot;</string>
-    <string name="ScreenOn">&quot;Temps écoulé&quot;</string>
+    <string name="AreaNF">&quot;Les Aéroports proches sont affichés quand le GPS a une position ou n'est pas en  mode simulation&quot;</string>
+    <string name="ScreenOn">&quot;Temps écran allumé&quot;</string>
     <string name="ScreenOnLabel">&quot;Garder l'écran allumé&quot;</string>
-    <string name="ScreenOnSummary">&quot;Selectioner pour garder l'écran allumé lorsque l'application roule&quot;</string>
+    <string name="ScreenOnSummary">&quot;Selectionner pour garder l'écran allumé lorsque l'application roule&quot;</string>
     <string name="update">&quot;Mise à jour&quot;</string>
     <string name="gps">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
@@ -84,26 +84,26 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Lon">&quot;Long&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination vers &quot;</string>
-    <string name="DownloadInst">&quot;Sélectionner un item puis presser sur menu pour le télécharger&quot;</string>
+    <string name="DownloadInst">&quot;Sélectionner un item puis pressez sur obtenir pour le télécharger&quot;</string>
     <string name="Searching">&quot;Recherche&quot;</string>
     <string name="Search">&quot;Cherche&quot;</string>
-    <string name="Get">&quot;Recherche&quot;</string>
+    <string name="Get">&quot;Obtenir&quot;</string>
     <string name="Units">&quot;Unité de distance&quot;</string>
     <string name="UnitsLabel">&quot;Unité de distance&quot;</string>
-    <string name="UnitsSummary">&quot;Choisir l'unité de distance&quot;</string>
+    <string name="UnitsSummary">&quot;Choisisser l'unité de distance&quot;</string>
     <string name="AllFacilities">&quot;Tous les aéroports&quot;</string>
     <string name="AllFacilitiesLabel">&quot;Afficher tous les aéroports&quot;</string>
     <string name="AllFacilitiesSummary">&quot;Sélectionner pour afficher les aéroports pour héliports, ultra-légers et hydravions sur les cartes et recherches&quot;</string>
-    <string name="Set">&quot;Ajuster&quot;</string>
+    <string name="Set">&quot;Choisisser&quot;</string>
     <string name="Runways">&quot;Numéros de la piste&quot;</string>
     <string name="RunwaysLabel">&quot;Numéros de la piste&quot;</string>
     <string name="RunwaysSummary">&quot;Selectioner pour afficher les numéros de piste&quot;</string>
-    <string name="Altitude">&quot;Altitude ft.&quot;</string>
+    <string name="Altitude">&quot;Altitude en pieds&quot;</string>
     <string name="Exit">&quot;Sortir&quot;</string>
     <string name="PlatesNF">&quot;Pas de diagramme disponible por cette destination&quot;</string>
     <string name="Obstacles">&quot;Obstacles&quot;</string>
     <string name="ObstaclesLabel">&quot;Afficher les obstacles&quot;</string>
-    <string name="ObstaclesSummary">&quot;Affiche les obstacles près de l'avion&quot;</string>
+    <string name="ObstaclesSummary">&quot;Afficher les obstacles près de l'avion&quot;</string>
     <string name="Background">&quot;Arrière-plan&quot;</string>
     <string name="BackgroundLabel">&quot;Afficher l'arrière-plan&quot;</string>
     <string name="BackgroundSummary">&quot;Afficher un arrière-plan coloré pour améliorer la lecture sur les petits écrans&quot;</string>
@@ -117,16 +117,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightMode">&quot;Mode de nuit&quot;</string>
     <string name="NightModeLabel">&quot;Mode de nuit&quot;</string>
     <string name="NightModeSummary">&quot;Selectioner pour réduire l'intensité lumineuse durant les vols de nuit (redémarrage requis)&quot;</string>
-    <string name="Delete">&quot;Effacer&quot;</string>
+    <string name="Delete">&quot;Effacez&quot;</string>
     <string name="Label">&quot;Étiquette&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; ajouté au plan&quot;</string>
     <string name="PlanNoset">&quot; pas ajouté au plan&quot;</string>
-    <string name="PlanNF">&quot;Le plan est affiché lorsqu'au moins un point de repère est entré dans la recherche&quot;</string>
     <string name="GpsOnly">&quot;Seulement les destinations GPS peuvent être étiquettées&quot;</string>
     <string name="Root">&quot;Racine&quot;</string>
     <string name="RootLabel">&quot;Serveur pour le téléchargement des cartes&quot;</string>
-    <string name="RootSummary">&quot;Selectioner un serveur pour les téléchargements des cartes et données&quot;</string>
+    <string name="RootSummary">&quot;Selectionner un serveur pour les téléchargements des cartes et données&quot;</string>
     <string name="Inactive">&quot;Inactif&quot;</string>
     <string name="Active">&quot;Actif&quot;</string>
     <string name="Total">&quot;Total&quot;</string>
@@ -151,8 +150,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherPlan">&quot;Charger un diagramme et cliquer sur mise à jour pour rafraichir les données météo&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="TrackUp">&quot;Tracé haut&quot;</string>
-    <string name="TrackUpLabel">&quot;Track vers le haut&quot;</string>
-    <string name="TrackUpSummary">&quot;Selectionner pour activer le tracé vers le haut (Expérimental), autrement le nord est vers le haut&quot;</string>
+    <string name="Understand">&quot;Je comprend&quot;</string>
+    <string name="NorthUp">&quot;Nord en haut de l'écran&quot;</string>
     <string name="XlateWeather">&quot;XlateWeather&quot;</string>
     <string name="XlateWeatherLabel">&quot;Convertir la météo&quot;</string>
     <string name="XlateWeatherSummary">&quot;Selectionner pour convertir la météo METAR/TAF/PIREP au format WX abrévié&quot;</string>
@@ -184,13 +183,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTimerRingSize">TimerRingSize</string>
     <string name="TimerRingSizeLabel">&quot;Durée de la minuterie&quot;</string>
     <string name="TimerRingSizeSummary">&quot;Selectionner la durée de la minuterie en minutes&quot;</string>
-    <string name="prefUseFlightTimer">UseFlightTimer</string>
-    <string name="UseFlightTimerLabel">&quot;Temps de vol&quot;</string>
-    <string name="UseFlightTimerSummary">&quot;Selectionner pour afficher la minuterie du temps de vol&quot;</string>
     <string name="Up">Haut</string>
     <string name="PrivateFolder">Utiliser le répertoire par défaut</string>
     <string name="FileStore">Les fichiers seront sauvegardés:</string>
-    <string name="FileStoreInvalid">Incapable dÉcrire les fichiers au répertoire sélectionné:</string>
+    <string name="FileStoreInvalid">Incapable d'écrire les fichiers au répertoire sélectionné:</string>
     <string name="prefTracksCategoryTitle">Enregistrer le tracé</string>
     <string name="TracksOn">Enregistrement du tracé activée</string>
     <string name="TracksOff">Enregistrement du tracé désactivée</string>
@@ -201,20 +197,42 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrkUpdShowHistoryLabel">&quot;Historique des tracés&quot;</string>
     <string name="TrkUpdShowHistorySummary">&quot;Selectionner pour afficher le travé du vol sur la carte active&quot;</string>
     <string name="AutoPostTracksTitle">&quot;Envoyer le fichier du tracé sur&quot;</string>
-    <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
+    <string name="AutoPostTracksSubject">&quot;Fichier du tracé généré par Avare - &quot;</string>
     <string name="prefAutoPostTracks">AutoPostTracks</string>
     <string name="AutoPostTracksLabel">&quot;Afficher les tracés automatiquement&quot;</string>
-    <string name="AutoPostTracksSummary">&quot;Selectionner quoi faire avec les fichiers de tracé KML for de la fermeture&quot;</string>
+    <string name="AutoPostTracksSummary">&quot;Selectionner quoi faire avec les fichiers de tracé KML lors de la fermeture&quot;</string>
     <string name="AutoPostTracksDialogText">&quot;La filière du tracé a été sauvegardée&quot;</string>
     <string name="Zero">&quot;0&quot;</string>
-    <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
-    <string name="VerticalRate">Taux de descente</string>
-    <string name="VerticalRateLabel">&quot;Afficher le taux de descente&quot;</string>
-    <string name="VerticalRateSummary">&quot;Selectionner pour afficher les taux de descente ou monté vers la destination&quot;</string>
-    <string name="AGLMSL">AGLMSL</string>
-    <string name="AGLMSLLabel">&quot;Afficher MSL/AGL&quot;</string>
-    <string name="AGLMSLSummary">&quot;Selectionner pour afficher l'élévation en MSL, et en AGL d'après les cartes d'élevation&quot;</string>
+    <string name="CurrentlySetTo">&quot;\nPrésentement: &quot;</string>
     <string name="ADSBWeather">ADSBWeather</string>
     <string name="ADSBWeatherLabel">&quot;Utiliser la météo ADSB&quot;</string>
-    <string name="ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (require L'Avare External IO module app.), ou utiliser la météo Internet&quot;</string>
+    <string name="ADSBWeatherSummary">&quot;Selectionner pour utiliser météo provenant d'un receveur ADSB (requière Le module externe IO pour Avare), ou utiliser la météo Internet&quot;</string>
+    <string name="GeoRefPlates">&quot;Bases de données des diagrammes géo-référencés&quot;</string>
+    <string name="ADSBTraffic">ADSBTraffic</string>
+    <string name="ADSBTrafficLabel">&quot;Afficher le trafic ADSB&quot;</string>
+    <string name="ADSBTrafficSummary">&quot;Selectionner pour afficher le trafic détecté par un receveur ADSB (requière Le module externe IO pour Avare)&quot;</string>
+    <string name="prefUseDynamicFields">UseDynamicFields</string>
+    <string name="UseDynamicFieldsLabel">&quot;Utiliser des champs dynamiques&quot;</string>
+    <string name="UseDynamicFieldsSummary">&quot;Permettre la configuration dynamique des 2 premières lignes du haut&quot;</string>
+    <string name="prefGetRowFormats">RowFormats</string>
+    <string name="SelectTextFieldTitle">&quot;Selectionner les champs à afficher&quot;</string>
+    <string name="prefOdometer">Odomètre</string>
+    <string name="DownloadDBShort">&quot;Télécharger les bases de données&quot;</string>
+    <string name="Radar">NEXRADTransparence</string>
+    <string name="RadarLabel">&quot;Transparence NEXRAD&quot;</string>
+    <string name="RadarSummary">&quot;Selectionner le niveau de transparencé pour la couche NEXRAD&quot;</string>
+    <string name="PlanWarning">&quot;Effacer le okan présent et charger&quot;</string>
+    <string name="PlanDestinationNF">&quot;Certains waypoints ne sont pas trouvés.&quot;</string>
+    <string name="prefShowCDI">ShowCDI</string>
+    <string name="ShowCDILabel">&quot;Afficher les données CDI/VDI&quot;</string>
+    <string name="ShowCDISummary">&quot;Afficher à l'écran les déviations de cap et d'altitude&quot;</string>
+    <string name="Nearest2000">&quot;Plus près de\n2000'&quot;</string>
+    <string name="Nearest4000">&quot;Plus près de\n4000'&quot;</string>
+    <string name="Nearest6000">&quot;Plus près de\n6000'&quot;</string>
+    <string name="Nearest100LL">&quot;Plus près de\n100LL&quot;</string>
+    <string name="GlideRatio">&quot;GlideRatioAircraft&quot;</string>
+    <string name="GlideRatioLabel">&quot;Ratio de planage&quot;</string>
+    <string name="GlideRatioSummary">&quot;Entrer le ratio de planage de votre avion&quot;</string>
+    <string name="NotGlideRange">&quot;Valeur non valide pour votre ratio de planage&quot;</string>
+    <string name="Fuel">&quot;Essence&quot;</string>
 </resources>
