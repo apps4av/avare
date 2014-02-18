@@ -1720,8 +1720,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      */
                     if(mService != null) {
                         Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                        mService.getTiles().setElevationTile(t);
-                        BitmapHolder elevBitmap = mService.getTiles().getElevationBitmap();
+                        mService.setElevationTile(t);
+                        BitmapHolder elevBitmap = mService.getElevationBitmap();
                         /*
                          * Load only if needed.
                          */

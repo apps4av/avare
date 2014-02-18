@@ -31,8 +31,10 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
+import com.ds.avare.shapes.ElevationTile;
 import com.ds.avare.shapes.Radar;
 import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.BitmapHolder;
@@ -158,6 +160,7 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
+    private ElevationTile mElevTile;
     
     /*
      * Hobbs time
@@ -245,6 +248,7 @@ public class StorageService extends Service {
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
+        mElevTile = new ElevationTile(getApplicationContext());
         
         mDraw = new Draw();
         
@@ -407,6 +411,7 @@ public class StorageService extends Service {
          * If we ever exit, reclaim memory
          */
         mTiles.recycleBitmaps();
+        mElevTile.recycleBitmaps();
         
         if(null != mDiagramBitmap) {
             mDiagramBitmap.recycle();
@@ -842,5 +847,20 @@ public class StorageService extends Service {
         return mLastPlateIndex;
     }
  
+    /**
+     * 
+     * @param t
+     */
+    public void setElevationTile(Tile t) {
+        mElevTile.setElevationTile(t);
+    }
 
+    /**
+     * 
+     * @return
+     */
+    public BitmapHolder getElevationBitmap() {
+        return mElevTile.getElevationBitmap();
+    }
+    
 }

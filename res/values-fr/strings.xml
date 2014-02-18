@@ -186,7 +186,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Up">Haut</string>
     <string name="PrivateFolder">Utiliser le répertoire par défaut</string>
     <string name="FileStore">Les fichiers seront sauvegardés:</string>
-    <string name="FileStoreInvalid">Incapable d'écrire les fichiers au répertoire sélectionné:</string>
+    <string name="FileStoreInvalid">&quot;Incapable d'écrire les fichiers au répertoire sélectionné:&quot;</string>
     <string name="prefTracksCategoryTitle">Enregistrer le tracé</string>
     <string name="TracksOn">Enregistrement du tracé activée</string>
     <string name="TracksOff">Enregistrement du tracé désactivée</string>
