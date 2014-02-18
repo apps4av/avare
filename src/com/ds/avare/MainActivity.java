@@ -43,6 +43,14 @@ public class MainActivity extends TabActivity {
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
     
+    public static final int tabMain = 0; 
+    public static final int tabPlates = 1;
+    public static final int tabAFD = 2;
+    public static final int tabFind = 3;
+    public static final int tabPlan = 4;
+    public static final int tabWX = 5;
+    public static final int tabNear = 6;
+    public static final int tabGPS = 7;  
     
     @Override
     /**
@@ -80,7 +88,7 @@ public class MainActivity extends TabActivity {
         mTabHost = getTabHost();
  
         /*
-         * Add tabs
+         * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
          */
         setupTab(new TextView(this), getString(R.string.main), new Intent(this, LocationActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class), getIntent());
@@ -154,15 +162,27 @@ public class MainActivity extends TabActivity {
     /**
      * For switching tab from any tab activity
      */
-    public void switchTab(int tab){
+    private void switchTab(int tab){
         mTabHost.setCurrentTab(tab);
         /*
          * Hide soft keyboard that may be open
          */
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+    }
+    
+    /**
+     * Display the main/maps tab
+     */
+    public void showMapTab() {
+        switchTab(tabMain);
+    }
 
-
+    /**
+     * Show the Plates view 
+     */
+    public void showPlatesTab() {
+        switchTab(tabPlates);
     }
 
 

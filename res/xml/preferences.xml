@@ -118,6 +118,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/RunwaysSummary"
             android:title="@string/RunwaysLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/AutoShowAirportDiagram"
+            android:summary="@string/AutoShowAirportDiagramSummary"
+            android:title="@string/AutoShowAirportDiagramLabel" />        
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ShowTrack"
             android:summary="@string/ShowTrackSummary"

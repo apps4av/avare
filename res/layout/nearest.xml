@@ -69,7 +69,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:text="@string/Destination"
             android:minWidth="140dp"
             android:visibility="invisible" />
-        
+
         <Button
             android:id="@+id/nearest_button_gr"
             android:layout_width="wrap_content"
@@ -81,6 +81,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:minWidth="140dp"
             android:layout_above="@+id/nearest_button_3"
             android:visibility="invisible" />
+
         
         <Button
             android:id="@+id/nearest_button_3"
@@ -93,16 +94,22 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/nearest_button_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_1"
+            android:gravity="left"
+            android:layout_above="@+id/nearest_button_plates"
+            android:layout_alignParentLeft="true"
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/nearest_button_1"
+            android:id="@+id/nearest_button_plates"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="left|center"
+            android:drawableLeft="@drawable/plates"
+            android:text="@string/plates"
+            android:minWidth="140dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:visibility="invisible" />
+            android:visibility="invisible" />            
     
 </RelativeLayout>

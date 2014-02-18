@@ -42,7 +42,7 @@ import android.view.WindowManager;
  *
  */
 public class Helper {
-
+	
 	/***
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
@@ -311,7 +311,6 @@ public class Helper {
     public static boolean isLatitudeSane(double lat) {
         return (lat > -90) && (lat < 90); 
     }
-    
     
     /**
      * 
@@ -770,4 +769,13 @@ public class Helper {
         return System.currentTimeMillis() - offset;
     }
 
+    /**
+     * Take the speed returned from gpsParams.getSpeed() which has been converted to 
+     * a value to be displayed and change it to knots.
+     * Sometimes we just want knots.
+     * @return
+     */
+    public static double getSpeedInKnots(double displayedSpeed) {
+        return displayedSpeed * Preferences.MS_TO_KT / Preferences.speedConversion; // m/s to knots
+    }
 }

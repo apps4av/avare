@@ -12,13 +12,20 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -31,6 +38,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -52,10 +60,57 @@ public class PlatesActivity extends Activity {
     private Destination mDestination;
     private Button mCenterButton;
     private Toast mToast;
-    private Spinner mSpinner;
-    private List<String> mList;
-    private boolean mIgnoreFocus;
+    private Spinner mSpinnerPlates;
+    private Spinner mSpinnerAirports;
+    private List<String> mListPlates;
+    private List<String> mListAirports;
+    private String mPlateFound[];
+    private double mDeclination;
 
+    public static final String AD = "AIRPORT-DIAGRAM";
+
+	
+    /*
+     * For GPS taxi
+     */
+    private float[] mMatrix;
+    private HashMap<String, float[]> mMatrixPlates;
+       
+    /**
+     * @return
+     */
+    public float[] getMatrix(String name) {
+        if(name.equals(AD)) {
+            return(mMatrix);            
+        }
+        if(null != mMatrixPlates) {
+            
+            /*
+             * Convert from points on plate to draw matrix
+             * 
+             */
+            float matrix[] = mMatrixPlates.get(name);            
+            if(null != matrix) {
+                
+                /*
+                 * Plates are in magnetic north orientation
+                 */
+                matrix[4] = (float)mDeclination;
+                return matrix;
+            }
+        }
+        return null;
+    }    
+       
+    /*
+     * Add an airport to the airports list if it doesn't already exist
+     */
+    private void addAirport(String mName) {
+    	if(!mListAirports.contains(mName) && doesAirportHavePlates(mPref.mapsFolder(), mName)) {
+    		mListAirports.add(mName);
+    	}
+    }
+    
     /*
      * Start GPS
      */
@@ -72,7 +127,9 @@ public class PlatesActivity extends Activity {
                 /*
                  * Called by GPS. Update everything driven by GPS.
                  */
-                GpsParams params = new GpsParams(location); 
+                GpsParams params = new GpsParams(location);
+                
+                mDeclination = params.getDeclinition();
                 
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
@@ -113,7 +170,7 @@ public class PlatesActivity extends Activity {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     /**
@@ -133,7 +190,6 @@ public class PlatesActivity extends Activity {
         View view = layoutInflater.inflate(R.layout.plates, null);
         setContentView(view);
         mPlatesView = (PlatesView)view.findViewById(R.id.plates);
-        mIgnoreFocus = true;
         
         mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -144,48 +200,171 @@ public class PlatesActivity extends Activity {
                 mPlatesView.center();
             }
             
-        });
+        });      
 
         /*
          * Spinner to select a plate
          */
-        mSpinner = (Spinner)view.findViewById(R.id.plates_spinner);
-        mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-        
+        mSpinnerPlates = (Spinner)view.findViewById(R.id.plates_spinner_plates);
+        mSpinnerPlates.setOnItemSelectedListener(new OnItemSelectedListener() {
+              	
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
-                if(mDestination != null && mService != null && mList != null) {
-                    /*
-                     * If moving to invalid position (this happens with spinner automatically,
-                     * then if last plate was not 0, then use it.
-                     * Persistence of plates.
-                     */
-                    /*
-                     * mIgnoreFocus will get rid of spinner position 0 call on onResume()
-                     */
-                    if(mIgnoreFocus) {
-                        pos = mService.getPlateIndex();
-                        mIgnoreFocus = false;
+            	
+                if(mService != null && mPlateFound != null) {
+                    if(pos >= mPlateFound.length) {
+                        pos = 0;
                     }
-                    String[] plates = mDestination.getPlates();
-                    if(plates != null) {
-                        if(pos >= plates.length) {
-                            pos = 0;
+                    mSpinnerPlates.setSelection(pos);
+                    mService.loadDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
+                    mPlatesView.setBitmap(mService.getDiagram());
+                    String name = mListPlates.get(pos);
+
+                    mPlatesView.setParams(null, true);
+                    if(name.startsWith(Destination.AD)) {
+                        mPlatesView.setParams(getMatrix(name), true);
+                    }
+                    else if(name.startsWith("RNAV-GPS")) {
+                        mPlatesView.setParams(getMatrix(name), false);                            
+                    }
+                    else {
+                        mPlatesView.setParams(null, true);
+                    }  
+                    mService.setLastPlateIndex(pos);
+                }
+                else {
+                    mToast.setText(getString(R.string.PlatesNF));
+                    mToast.show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+        
+        /*
+         * Spinner to select an airport
+         */
+        mSpinnerAirports = (Spinner)view.findViewById(R.id.plates_spinner_airports);
+        mSpinnerAirports.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(null != mService) {
+                    mService.setLastPlateIndex(0);
+                }
+                return false;
+            }
+        });
+        mSpinnerAirports.setOnItemSelectedListener(new OnItemSelectedListener() {
+        	
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
+
+                if(mService != null && mListAirports != null) {
+                    String airport = mListAirports.get(pos);
+                    String mapFolder = mPref.mapsFolder();
+                    mPlateFound = null;
+
+                    /*
+                     * Start with the plates in the /plates/ directory
+                     */
+                    String tmp0[] = null;
+                    int len0 = 0;
+                    if(null != airport) {
+                        FilenameFilter filter = new FilenameFilter() {
+                            public boolean accept(File directory, String fileName) {
+                                return fileName.endsWith(Preferences.IMAGE_EXTENSION);
+                            }
+                        };
+                        String plates[] = null;
+                        
+                        plates = new File(mapFolder + "/plates/" + airport).list(filter);
+                        if(null != plates) {
+                            java.util.Arrays.sort(plates, new PlatesComparable());
+                            len0 = plates.length;
+                            tmp0 = new String[len0];
+                            for(int plate = 0; plate < len0; plate++) {
+                                /*
+                                 * Add plates/AD
+                                 */
+                                String tokens[] = plates[plate].split(Preferences.IMAGE_EXTENSION);
+                                tmp0[plate] = mapFolder + "/plates/" + airport + "/" +
+                                        tokens[0];
+                            }
                         }
-                        mSpinner.setSelection(pos);
-                        mService.loadDiagram(plates[pos] + Preferences.IMAGE_EXTENSION);
-                        mPlatesView.setBitmap(mService.getDiagram());
-                        String name = mList.get(pos);
-                        if(name.startsWith(Destination.AD)) {
-                            mPlatesView.setParams(mDestination.getMatrix(name), true);
+                    }
+                    
+                    /*
+                     * Take off and alternate minimums
+                     */
+                    /*
+                     * TODO: RAS make this an async request (maybe just move all 
+                     * the loading to the background - especially if we get the last used 
+                     * chart loaded immediately)
+                     */
+                    String tmp2[] = mService.getDBResource().findMinimums(airport);
+                    int len2 = 0;
+                    if(null != tmp2) {
+                        len2 = tmp2.length;
+                        for(int min = 0; min < len2; min++) {
+                            /*
+                             * Add minimums with path
+                             */
+                            String folder = tmp2[min].substring(0, 1) + "/";
+                            tmp2[min] = mapFolder + "/minimums/" + folder + tmp2[min];
                         }
-                        else if(name.startsWith("RNAV-GPS")) {
-                            mPlatesView.setParams(mDestination.getMatrix(name), false);                            
-                        }
-                        else {
-                            mPlatesView.setParams(null, true);
-                        }
-                        mService.setPlateIndex(pos);
+                    }
+                    
+                    /*
+                     * Now combine takeoff and alternate minimums with plates
+                     */
+                    if(0 == len0 && 0 != len2) {
+                        mPlateFound = tmp2;
+                    }
+                    else if(0 != len0 && 0 == len2) {
+                        mPlateFound = tmp0;
+                    }
+                    else if(0 != len0 && 0 != len2) {
+                        mPlateFound = new String[len0 + len2];
+                        System.arraycopy(tmp0, 0, mPlateFound, 0, len0);
+                        System.arraycopy(tmp2, 0, mPlateFound, len0, len2);
+                    }    	
+                    
+                    mListPlates = new ArrayList<String>();
+                    
+                    if(null != mPlateFound) {
+                    	
+                        /*
+                         * GPS taxi for this airport?
+                         */
+                        mMatrix = mService.getDBResource().findDiagramMatrix(airport);
+                        mMatrixPlates = mService.getDBResource().findPlatesMatrix(airport);
+                        
+                        for(int plate = 0; plate < mPlateFound.length; plate++) {
+                            String tokens[] = mPlateFound[plate].split("/");
+                            mListPlates.add(tokens[tokens.length - 1]);
+                        }   
+                        
+                        /*
+                         * A list of plates available for this airport
+                         */
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlatesActivity.this,
+                                android.R.layout.simple_spinner_item, mListPlates);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        mSpinnerPlates.setAdapter(adapter);
+
+                        mService.setLastPlateAirport(airport);
+                        mSpinnerPlates.setSelection(mService.getLastPlateIndex());
+                    }
+                    else {
+                        /*
+                         * Reset to the last one that worked
+                         */
+                        ArrayAdapter<String> myAdap = (ArrayAdapter<String>)mSpinnerAirports.getAdapter();  
+                        mSpinnerAirports.setSelection(myAdap.getPosition(mService.getLastPlateAirport()));
+                        mToast.setText(getString(R.string.PlatesNF));
+                        mToast.show();
                     }
                 }
             }
@@ -220,58 +399,76 @@ public class PlatesActivity extends Activity {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            mList = new ArrayList<String>();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlatesActivity.this,
-                    android.R.layout.simple_spinner_item, mList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mSpinner.setAdapter(adapter);            
+            mService.registerGpsListener(mGpsInfc);         
+            
+            mListAirports = new ArrayList<String>();
+            int nearestNum = mService.getArea().getAirportsNumber();
+            
+            /*
+             * Are we being told to load an airport?
+             */
+            if(null != mService.getLastPlateAirport()) {
+                addAirport(mService.getLastPlateAirport());
+            }
+            
+            /*
+             *  Load the nearest airport
+             */
+            if(nearestNum > 0) {
+                Airport nearest = mService.getArea().getAirport(0);
+                addAirport(nearest.getId());
+            }
 
             /*
-             * Now get all stored data
+             * See if we have a destination, if we do - add it to the airports list
              */
             mDestination = mService.getDestination();
-            if(null == mDestination) {
-                mPlatesView.setBitmap(null);
-                mToast.setText(getString(R.string.ValidDest));
-                mToast.show();
-                return;
+            String dest = null;
+            if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
+                dest = mDestination.getID();
+                addAirport(dest);
             }
             
             /*
-             * Start adding plates
+             * Add airports in the plan
              */
-            /*
-             * Not found
-             */
-            if((!mDestination.isFound()) || (mDestination.getPlates() == null)) {
-                mPlatesView.setBitmap(null);
-                mToast.setText(getString(R.string.PlatesNF));
-                mToast.show();
-                return;                
+            Plan plan = mService.getPlan();
+            if(null != plan) {
+                int nDest = plan.getDestinationNumber();
+                for(int i=0; i < nDest; i++) {
+                    Destination planDest = plan.getDestination(i);
+                    if(planDest.getType().equals(Destination.BASE)) {
+                        addAirport(planDest.getID());
+                    }
+                }
             }
             
             /*
-             * Airport diagram found
+             * Now add all the airports that are in the recently found list
              */
+            String [] vals = mPref.getRecent(); 
+            for(int pos=0; pos < vals.length; pos++) {
+                String destType = StringPreference.parseHashedNameDestType(vals[pos]);
+                if(destType != null && destType.equals("Base")) {
+                    String id = StringPreference.parseHashedNameId(vals[pos]);
 
-            /*
-             * Now add all plates to the list
-             */
-            String[] plates = mDestination.getPlates();
-            for(int plate = 0; plate < plates.length; plate++) {
-                String tokens[] = plates[plate].split("/");
-                mList.add(tokens[tokens.length - 1]);
+                    addAirport(id);
+                }
             }
 
-            /*
-             * A list of plates available for this airport
-             */
-            adapter = new ArrayAdapter<String>(PlatesActivity.this,
-                    android.R.layout.simple_spinner_item, mList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlatesActivity.this,
+                    android.R.layout.simple_spinner_item, mListAirports);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mSpinner.setAdapter(adapter);            
+            mSpinnerAirports.setAdapter(adapter);  
+
+            if(mListAirports.size() > 0) {
+                mSpinnerAirports.setSelection(0);
+            }
+            else {
+                mToast.setText(getString(R.string.PlatesNF));
+                mToast.show();  
+            }
+            
         }
 
         /* (non-Javadoc)
@@ -305,7 +502,6 @@ public class PlatesActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        mIgnoreFocus = true;
         Helper.setOrientationAndOn(this);
         
         /*
@@ -315,12 +511,57 @@ public class PlatesActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
+   
+    /**
+     * 
+     * @author zkhan
+     *
+     */
+    private class PlatesComparable implements Comparator<String>{
+        
+        @Override
+        public int compare(String o1, String o2) {
+            /*
+             * Airport diagram must be  first
+             */
+            if(o1.startsWith(AD)) {
+                return -1;
+            }
+            if(o2.startsWith(AD)) {
+                return 1;
+            }
+            
+            /*
+             * Continued must follow main
+             */
+            if(o1.contains(",-CONT.") && o1.startsWith(o2.replace(Preferences.IMAGE_EXTENSION, ""))) {
+                return 1;
+            }
+            if(o2.contains(",-CONT.") && o2.startsWith(o1.replace(Preferences.IMAGE_EXTENSION, ""))) {
+                return -1;
+            }
+            
+            return o1.compareTo(o2);
+        }
+    }    
 
     /**
      * 
+     * @param mapFolder
+     * @param id
+     * @return
      */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public static boolean doesAirportHavePlates(String mapFolder, String id) {
+        return new File(mapFolder + "/plates/" + id).exists();
+    }
+    
+    /**
+     * 
+     * @param mapFolder
+     * @param id
+     * @return
+     */
+    public static boolean doesAirportHaveAirportDiagram(String mapFolder, String id) {
+        return new File(mapFolder + "/plates/" + id + "/" + AD + Preferences.IMAGE_EXTENSION).exists();
     }
 }

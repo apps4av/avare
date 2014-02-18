@@ -17,7 +17,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <com.ds.avare.PlatesView
         android:background="#FF000000"
         android:id="@+id/plates"
-        android:layout_below="@+id/plates_spinner"
+        android:layout_below="@+id/plates_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -29,12 +29,24 @@ Redistribution and use in source and binary forms, with or without modification,
 		android:layout_centerInParent="true"
 		android:layout_alignParentBottom="true"/>
     
-    <Spinner
-        android:id="@+id/plates_spinner"
+    <LinearLayout
+        android:baselineAligned="true"
+        android:id="@+id/plates_header"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
-
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+        
+		<Spinner
+			android:id="@+id/plates_spinner_plates"
+			android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+		
+		<Spinner
+			android:id="@+id/plates_spinner_airports"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/> 
+	</LinearLayout>
+			
 </RelativeLayout>
 

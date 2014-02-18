@@ -18,9 +18,11 @@ import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -112,6 +114,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mCrossButton;
     private Button mPrefButton;
     private Button mPlanButton;
+    private Button mPlateButton;
     private Button mDownloadButton;
     private Button mMenuButton;
     private RelativeLayout mDestLayout;
@@ -133,8 +136,31 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private AnimateButton mAnimateDraw;
-
+    
     private ExpandableListView mListPopout;
+    
+    private FlightStatusInterface mFSInfc = new FlightStatusInterface() {
+        @Override
+        public void rollout() {
+            if(mPref != null && mService != null) {
+                if(mPref.shouldAutoDisplayAirportDiagram()) {
+                    int nearestNum = mService.getArea().getAirportsNumber();
+                    if(nearestNum > 0) {
+                        /*
+                         * Find the nearest airport and load its plate on rollout
+                         */
+                        Airport nearest = mService.getArea().getAirport(0);
+                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
+                                nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD) {
+                            mService.setLastPlateAirport(nearest.getId());
+                            mService.setLastPlateIndex(0);
+                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -458,6 +484,13 @@ public class LocationActivity extends Activity implements Observer {
                             mDestButton.setText(getString(R.string.Destination));
                         }
                         mCrossButton.setText(data.airport);
+                        
+                        /*
+                         * If this is not an airport, disable the plates button
+                         */
+                        boolean platesAvail = !data.airport.contains("&") && 
+                                PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), data.airport);
+                        mPlateButton.setVisibility(platesAvail ? View.VISIBLE : View.INVISIBLE);
                         mDestLayout.setVisibility(View.VISIBLE);
                         
                         /*
@@ -584,6 +617,19 @@ public class LocationActivity extends Activity implements Observer {
                 planTo(b.getText().toString(), type);
             }            
         });
+        
+        mPlateButton = (Button)view.findViewById(R.id.location_button_plates);
+        mPlateButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mService != null) {   
+                    mService.setLastPlateAirport(mCrossButton.getText().toString());
+                    mService.setLastPlateIndex(0);
+                }
+                ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+            }            
+        });        
 
         mDrawClearButton = (Button)view.findViewById(R.id.location_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
@@ -858,6 +904,7 @@ public class LocationActivity extends Activity implements Observer {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mService.getFlightStatus().registerListener(mFSInfc);
 
             mService.getTiles().setOrientation();
             
@@ -1016,6 +1063,7 @@ public class LocationActivity extends Activity implements Observer {
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
+            mService.getFlightStatus().unregisterListener(mFSInfc);
         }
 
         /*
@@ -1123,7 +1171,7 @@ public class LocationActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).switchTab(0);
+                    ((MainActivity)this.getParent()).showMapTab();
                 }
                 else {
                     if(mService != null) {

@@ -42,6 +42,11 @@ public class Preferences {
     public static String speedConversionUnit = "kt";
     public static String vsConversionUnit = "fpm";
 
+    /*
+     * plate auto load distance
+     */
+    public static final double DISTANCE_TO_AUTO_LOAD = 3.0;
+    
     public static final String IMAGE_EXTENSION = ".png";
     
     /*
@@ -77,6 +82,7 @@ public class Preferences {
     public static double NM_TO_MI = 1.15078;
     public static double NM_TO_KM = 1.852;
     public static double NM_TO_LATITUDE = 1.0 / 60.0;
+    public static double MS_TO_KT = 1.944;
 
     /**
      * 
@@ -382,6 +388,14 @@ public class Preferences {
      */
     public boolean shouldExtendRunways() {
         return(mPref.getBoolean(mContext.getString(R.string.Runways), true));
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldAutoDisplayAirportDiagram() {
+    	return(mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
 
     /**

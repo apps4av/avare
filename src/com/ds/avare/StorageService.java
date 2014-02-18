@@ -17,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.instruments.CDI;
@@ -87,7 +88,10 @@ public class StorageService extends Service {
     
     private Radar mRadar;
     
-    /*
+    private String mLastPlateAirport;
+    private int mLastPlateIndex;
+    
+	/*
      * Last location and its sem for sending NMEA to the world
      */
     private Mutex mLocationSem;
@@ -102,11 +106,6 @@ public class StorageService extends Service {
      * Store this
      */
     private Pan mPan;
-    
-    /*
-     * Plate showing
-     */
-    private int mPlateIndex;
     
     /*
      * A/FD showing
@@ -179,6 +178,11 @@ public class StorageService extends Service {
     // The vertical approach slope indicator
     private VNAV mVNAV;
     
+    /*
+     * Watches GPS to notify of phases of flight
+     */
+    private FlightStatus mFlightStatus;
+    
     /**
      * @author zkhan
      *
@@ -235,11 +239,12 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
+        mLastPlateAirport = null;
+        mLastPlateIndex = 0;
         
         mDraw = new Draw();
         
@@ -270,6 +275,8 @@ public class StorageService extends Service {
 
         // Allocate the VNAV
         mVNAV = new VNAV();
+        
+        mFlightStatus = new FlightStatus(mGpsParams);
         
         /*
          * Monitor TFR every hour.
@@ -342,6 +349,8 @@ public class StorageService extends Service {
                         
                         // Vertical descent rate calculation
                         getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                        
+                        getFlightStatus().updateLocation(mGpsParams);
                         
                         if(getPlan().hasDestinationChanged()) {
                             /*
@@ -472,7 +481,6 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeInactive();
     }
@@ -482,7 +490,6 @@ public class StorageService extends Service {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
     }
 
@@ -491,25 +498,8 @@ public class StorageService extends Service {
      */
     public void setDestinationPlan(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeActive(mGpsParams);
-    }
-
-    /**
-     * 
-     * @param index
-     */
-    public void setPlateIndex(int index) {
-        mPlateIndex = index;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public int getPlateIndex() {
-        return mPlateIndex;
     }
 
     /**
@@ -752,6 +742,10 @@ public class StorageService extends Service {
     	return mVNAV;
     }
     
+    public FlightStatus getFlightStatus() {
+        return mFlightStatus;
+    }
+    
     /**
      * 
      * @return
@@ -817,5 +811,36 @@ public class StorageService extends Service {
     public void deleteRadar() {
         mRadar.flush();        
     }
+    
+    /**
+     * 
+     */
+    public String getLastPlateAirport() {
+        return mLastPlateAirport;
+    }
+    
+    /*
+     * 
+     */
+    public void setLastPlateAirport(String airport) {
+        mLastPlateAirport = airport;
+    }
+    
+    /**
+     * 
+     * @param index
+     */
+    public void setLastPlateIndex(int index) {
+        mLastPlateIndex = index;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getLastPlateIndex() {
+        return mLastPlateIndex;
+    }
+ 
 
 }

@@ -70,6 +70,7 @@ public class PlanActivity extends Activity  implements Observer {
     private Button mSaveButton;
     private Button mDeleteButton;
     private Button mPlanButton;
+    private Button mPlatesButton;
     private EditText mSaveText;
     private EditText mPlanText;
     private int mIndex;
@@ -89,6 +90,7 @@ public class PlanActivity extends Activity  implements Observer {
     private Destination mDestination;
     private AnimateButton mAnimateDest;
     private AnimateButton mAnimateDelete;
+    private AnimateButton mAnimatePlates;
     private Timer mTimer;
 
 
@@ -121,7 +123,7 @@ public class PlanActivity extends Activity  implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     /**
@@ -237,6 +239,22 @@ public class PlanActivity extends Activity  implements Observer {
                 mIndex = -1;
             }   
         });
+        
+        /*
+         * 
+         */
+        mPlatesButton = (Button)view.findViewById(R.id.plan_button_plates);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mService != null) {
+                    mService.setLastPlateAirport(mDestination.getID());
+                    mService.setLastPlateIndex(0);
+                }
+                ((MainActivity) PlanActivity.this.getParent()).showPlatesTab();
+            }   
+        });        
 
         /*
          * Plan button
@@ -324,7 +342,7 @@ public class PlanActivity extends Activity  implements Observer {
                     }
                 }
                 mIndex = -1;
-                ((MainActivity) PlanActivity.this.getParent()).switchTab(0);
+                ((MainActivity) PlanActivity.this.getParent()).showMapTab();
             }   
         });
 
@@ -403,7 +421,7 @@ public class PlanActivity extends Activity  implements Observer {
 
         mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
-
+        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
     /**
@@ -576,6 +594,12 @@ public class PlanActivity extends Activity  implements Observer {
                     mDestButton.setText(mDestination.getID());
                     mAnimateDest.animate(true);
                     mAnimateDelete.animate(true);
+                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), mDestination.getID())) {
+                    	mAnimatePlates.animate(true);
+                    }
+                    else {
+                    	mAnimatePlates.stopAndHide();
+                    }
 
                     return true;
                 }

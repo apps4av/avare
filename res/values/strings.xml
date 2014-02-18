@@ -98,6 +98,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Runways">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysLabel">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysSummary">&quot;Select to show runway extensions&quot;</string>
+    <string name="AutoShowAirportDiagram">&quot;Auto Show Airport Diagram&quot;</string>
+    <string name="AutoShowAirportDiagramLabel">&quot;Auto Show Airport Diagram&quot;</string>
+    <string name="AutoShowAirportDiagramSummary">&quot;Select to automatically show airport diagrams on rollout&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">&quot;Exit&quot;</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
@@ -235,4 +238,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GlideRatioSummary">&quot;Set the glide ratio of your aircraft&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
+    <string name="prefLastPlateIndex">LastPlateIndex</string>
+    <string name="prefLastPlateAirport">LastPlateAirport</string>
 </resources>

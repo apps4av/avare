@@ -54,6 +54,8 @@ public class NearestActivity extends Activity  implements Observer {
     private Preferences mPref;
     private Destination mDestination;
     private AnimateButton mAnimateDest;
+    private AnimateButton mAnimatePlates;
+    private Button mPlatesButton;
     private Button mButton2000;
     private Button mButton4000;
     private Button mButton6000;
@@ -61,7 +63,8 @@ public class NearestActivity extends Activity  implements Observer {
 
     
     private Button mDestButton;
-
+    private String mSelectedAirportId;
+       
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -91,7 +94,7 @@ public class NearestActivity extends Activity  implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     /**
@@ -136,6 +139,28 @@ public class NearestActivity extends Activity  implements Observer {
             }
             
         });
+
+        
+        /*
+         * Plates button
+         */
+        mPlatesButton = (Button)view.findViewById(R.id.nearest_button_plates);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * On click, find destination that was pressed on in view
+                 */
+                if(mService != null) {
+                    mService.setLastPlateAirport(mSelectedAirportId);
+                    mService.setLastPlateIndex(0);
+                }
+                ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
+            }           
+        });
+
 
 
         /*
@@ -263,6 +288,7 @@ public class NearestActivity extends Activity  implements Observer {
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
+        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mService = null;
     }
@@ -357,7 +383,16 @@ public class NearestActivity extends Activity  implements Observer {
                     }              
                     
                     Airport a = mService.getArea().getAirport(position);
+                    mSelectedAirportId = a.getId();
                     mDestButton.setText(a.getId());
+                    
+                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), a.getId())) {
+                    	mAnimatePlates.animate(true);
+                    }
+                    else {
+                    	mAnimatePlates.stopAndHide();
+                    }                    
+                    
                     mAnimateDest.animate(true);
                     if(!a.canGlide(mPref)) {
                         mToast.setText(R.string.NotGlideRange);
@@ -431,7 +466,7 @@ public class NearestActivity extends Activity  implements Observer {
                 mPref.addToRecent(((Destination)arg0).getStorageName());
                 mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                 mToast.show();
-                ((MainActivity)this.getParent()).switchTab(0);
+                ((MainActivity)this.getParent()).showMapTab();
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));

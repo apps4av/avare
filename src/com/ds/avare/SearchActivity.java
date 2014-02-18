@@ -72,8 +72,10 @@ public class SearchActivity extends Activity implements Observer {
     private Button mSelectedButton;
     private Button mEditButton;
     private Button mPlanButton;
+    private Button mPlatesButton;
     private boolean mIsWaypoint;
     
+    private AnimateButton mAnimatePlates;
     private AnimateButton mAnimatePlan;
     private AnimateButton mAnimateSelect;
     private AnimateButton mAnimateEdit;
@@ -116,7 +118,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     
@@ -281,6 +283,27 @@ public class SearchActivity extends Activity implements Observer {
                 }
             }
         });
+        
+        mPlatesButton = (Button)view.findViewById(R.id.search_button_plates);
+        mPlatesButton.getBackground().setAlpha(255);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    String id = StringPreference.parseHashedNameId(mSelected);  
+                    if(id == null) {
+                        return;
+                    }
+                    
+                    if(mService != null) {
+                        mService.setLastPlateAirport(id);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
+                    }
+                }
+            }
+        });        
 
 
         /*
@@ -312,7 +335,17 @@ public class SearchActivity extends Activity implements Observer {
                 if(mSelected == null) {
                     return false;
                 }
-                                
+                
+                // Don't display the plates button if there are no plates
+                String id = StringPreference.parseHashedNameId(mSelected);
+                
+                if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), id)) {
+                	mAnimatePlates.animate(true);
+                }
+                else {
+                	mAnimatePlates.stopAndHide();
+                }
+
                 mAnimateSelect.animate(true);
                 mAnimatePlan.animate(true);
                 
@@ -395,6 +428,7 @@ public class SearchActivity extends Activity implements Observer {
             }
         });
         
+        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlan = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateSelect = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateEdit = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
@@ -549,7 +583,7 @@ public class SearchActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).switchTab(0);
+                    ((MainActivity)this.getParent()).showMapTab();
                 }
                 else {
                     if(mService != null) {
