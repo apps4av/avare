@@ -59,8 +59,6 @@ public class Radar {
     public Radar(Context ctx) {
         mContext = ctx;
         mPref = new Preferences(mContext);
-        mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
-        mText = mPref.mapsFolder() + "/" + "latest.txt";
         mLon = mLat = mPx = mPy = 0;
         mDate = 0;
         mBitmap = null;
@@ -70,6 +68,8 @@ public class Radar {
      * 
      */
     public void parse() {
+        mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
+        mText = mPref.mapsFolder() + "/" + "latest.txt";
 
         if(new File(mText).exists() && new File(mImage).exists()) {
 
