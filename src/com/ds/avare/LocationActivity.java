@@ -483,6 +483,7 @@ public class LocationActivity extends Activity implements Observer {
                             mDestButton.setText(getString(R.string.Destination));
                         }
                         mCrossButton.setText(data.airport);
+                        mDestLayout.setVisibility(View.VISIBLE);
                         
                         /*
                          * Now populate the pop out weather etc.
