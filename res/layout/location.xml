@@ -226,19 +226,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:drawableLeft="@drawable/plan"
 	            />
 
-             <Button
-                android:id="@+id/location_button_plates"
-                android:textStyle="bold"
-                android:layout_below="@+id/location_text_info"
-                android:layout_toRightOf="@+id/location_button_plan"
-                android:layout_margin="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center"
-                android:minWidth="150dp"
-                android:text="@string/plates"
-                android:drawableLeft="@drawable/plates"
-                />	         
 	        
             <ExpandableListView
 	            android:id="@+id/location_list_popout"

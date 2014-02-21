@@ -114,7 +114,6 @@ public class LocationActivity extends Activity implements Observer {
     private Button mCrossButton;
     private Button mPrefButton;
     private Button mPlanButton;
-    private Button mPlateButton;
     private Button mDownloadButton;
     private Button mMenuButton;
     private RelativeLayout mDestLayout;
@@ -484,13 +483,6 @@ public class LocationActivity extends Activity implements Observer {
                             mDestButton.setText(getString(R.string.Destination));
                         }
                         mCrossButton.setText(data.airport);
-                        
-                        /*
-                         * If this is not an airport, disable the plates button
-                         */
-                        boolean platesAvail = !data.airport.contains("&") && 
-                                PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), data.airport);
-                        mPlateButton.setVisibility(platesAvail ? View.VISIBLE : View.INVISIBLE);
                         mDestLayout.setVisibility(View.VISIBLE);
                         
                         /*
@@ -617,19 +609,6 @@ public class LocationActivity extends Activity implements Observer {
                 planTo(b.getText().toString(), type);
             }            
         });
-        
-        mPlateButton = (Button)view.findViewById(R.id.location_button_plates);
-        mPlateButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(mService != null) {   
-                    mService.setLastPlateAirport(mCrossButton.getText().toString());
-                    mService.setLastPlateIndex(0);
-                }
-                ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
-            }            
-        });        
 
         mDrawClearButton = (Button)view.findViewById(R.id.location_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
