@@ -1356,17 +1356,19 @@ public class DataBaseHelper  {
         /*
          * Find with sqlite query
          */
-        String qry = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS;
+        double corrFactor = Math.pow(Math.cos(Math.toRadians(lat)),2);
+        String asDist = ", ((" + LONGITUDE_DB + " - " + lon + ") * (" + LONGITUDE_DB  + " - " + lon + ") * " + corrFactor + " + "
+                + " (" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
+                + ") as dist";
+        String qry = "select " + LOCATION_ID_DB + asDist + " from " + TABLE_AIRPORTS;
         if(!mPref.shouldShowAllFacilities()) {
-            qry +=  " where " + TYPE_DB + "=='AIRPORT' and ((";
+            qry +=  " where " + TYPE_DB + "=='AIRPORT' and ";
         }
         else {
-            qry += " where ((";
+            qry += " where ";
         }
 
-        qry += "(" + LONGITUDE_DB + " - " + lon + ") * (" + LONGITUDE_DB  + " - " + lon + ") + "
-                + "(" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
-                + ") < 0.001) limit 1;";
+        qry += "dist < 0.001 order by dist limit 1;";
         
         Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;
