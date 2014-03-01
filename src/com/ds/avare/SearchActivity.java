@@ -399,9 +399,9 @@ public class SearchActivity extends Activity implements Observer {
                 
                 if(s.toString().startsWith("address,")) {
                     String [] vals = new String[1];
-                    String addr[] = s.toString().split(",");
-                    if(addr.length > 1) {
-                        StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr[1]);
+                    String addr = s.toString().substring(8); // 8 = length of "address,"
+                    if(addr.length() > 1) {
+                        StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr);
                         vals[0] = sp.getHashedName();
                         mAdapter = new SearchAdapter(SearchActivity.this, vals);
                         mSearchListView.setAdapter(mAdapter);

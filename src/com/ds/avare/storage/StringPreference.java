@@ -94,7 +94,9 @@ public class StringPreference {
      * @return
      */
     static public String formatAddressName(String name) {
-        return name.replaceAll("http:.*", "").replaceAll(",", " ").replaceAll("\n", "");
+    	// Change \n to space.  Google might pass the address like the following:
+    	// 123 Main St\n\nGotham City, New Jersey
+        return name.replaceAll("http:.*", "").replaceAll(",", " ").replaceAll("\n", " ");
     }
 
     /**
