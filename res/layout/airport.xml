@@ -48,17 +48,26 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true">
-        </ListView>
-
+        </ListView>      
     </RelativeLayout>
     
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-	    <Spinner
-	        android:id="@+id/airport_spinner"
-	        android:layout_width="fill_parent"
-	        android:layout_height="50dp"/>
-    </RelativeLayout>
+        <Button
+            android:id="@+id/airport_button_views"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"
+            android:layout_weight="1"/>   
+        
+        <Button
+            android:id="@+id/airport_button_airports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"/>   
+    </LinearLayout>
     
 </FrameLayout>

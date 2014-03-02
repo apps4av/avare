@@ -46,6 +46,7 @@ import android.widget.Toast;
 
 /**
  * @author zkhan
+ * @author rasii
  * An activity that deals with plates
  */
 public class PlatesActivity extends Activity {

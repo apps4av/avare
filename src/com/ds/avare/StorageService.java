@@ -112,6 +112,8 @@ public class StorageService extends Service {
     /*
      * A/FD showing
      */
+    private String mLastAfdAirport;
+    private Destination mLastAfdDestination;
     private int mAfdIndex;
 
     /**
@@ -506,6 +508,13 @@ public class StorageService extends Service {
         mAfdIndex = 0;
         getPlan().makeActive(mGpsParams);
     }
+    
+    public Destination getLastAfdDestination() {
+        return mLastAfdDestination;
+    }
+    public void setLastAfdDestination(Destination destination) {
+        mLastAfdDestination = destination;
+    }    
 
     /**
      * 
@@ -521,6 +530,14 @@ public class StorageService extends Service {
      */
     public int getAfdIndex() {
         return mAfdIndex;
+    }
+
+
+    public String getLastAfdAirport() {
+        return mLastAfdAirport;
+    }
+    public void setLastAfdAirport(String airport) {
+        mLastAfdAirport = airport;
     }
 
     /**
