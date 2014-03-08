@@ -22,12 +22,12 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"/>
 
     <Button
-		android:id="@+id/plates_button_center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:drawableLeft="@drawable/center"
-		android:layout_centerInParent="true"
-		android:layout_alignParentBottom="true"/>
+        android:id="@+id/plates_button_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/center"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"/>
     
     <LinearLayout
         android:baselineAligned="true"
@@ -36,17 +36,20 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true">
         
-		<Spinner
-			android:id="@+id/plates_spinner_plates"
-			android:layout_width="0dip"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"/>
-		
-		<Spinner
-			android:id="@+id/plates_spinner_airports"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/> 
-	</LinearLayout>
-			
+        <Button
+            android:id="@+id/plates_button_plates"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"
+            android:layout_weight="1"/>   
+        
+        <Button
+            android:id="@+id/plates_button_airports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"/>       
+    </LinearLayout>
 </RelativeLayout>
 
