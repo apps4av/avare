@@ -296,6 +296,18 @@ public class PlatesActivity extends Activity {
         }
     } 
     
+    private String getLastIfAirport() {
+        String airport = null;
+        if(null != mService) {
+            airport = mService.getLastPlateAirport();
+            if(null != airport && (airport.equals(mDestString) || airport.equals(nearString))) {
+                airport = null;
+            }
+        }
+        
+        return airport;
+    }
+    
     private void setAirportFromPos(int pos) {
         if(mService != null && mListAirports != null && mListAirports.getCount() > pos) {
             String airport = mListAirports.getItem(pos);
@@ -309,7 +321,7 @@ public class PlatesActivity extends Activity {
                     airport = curDest.getID();
                 }
                 else {
-                    airport = null;
+                    airport = getLastIfAirport();
                 }
                 mService.setLastPlateAirport(mDestString);
             }
@@ -321,9 +333,12 @@ public class PlatesActivity extends Activity {
                     if(doesAirportHavePlates(mPref.mapsFolder(), nearest.getId())) {
                         airport = nearest.getId();
                     }
+                    else {
+                        airport = getLastIfAirport();
+                    }
                 }
                 else {
-                    airport = null;
+                    airport = getLastIfAirport();
                 }
                 mService.setLastPlateAirport(nearString);
             }
