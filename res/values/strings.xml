@@ -240,4 +240,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Fuel">&quot;Fuel&quot;</string>
     <string name="prefLastPlateIndex">LastPlateIndex</string>
     <string name="prefLastPlateAirport">LastPlateAirport</string>
+    <string name="EdgeTape">&quot;EdgeTape&quot;</string>
+    <string name="EdgeTapeLabel">&quot;Edge Tape&quot;</string>
+    <string name="EdgeTapeSummary">&quot;Select to show a distance tape on the edges&quot;</string>
 </resources>

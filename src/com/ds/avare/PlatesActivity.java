@@ -538,6 +538,19 @@ public class PlatesActivity extends Activity {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
+        try {
+            mPlatesPopup.dismiss();
+        }
+        catch(Exception e) {
+            
+        }
+        try {
+            mAirportPopup.dismiss();
+        }
+        catch(Exception e) {
+            
+        }
+        
         /*
          * Clean up on pause that was started in on resume
          */

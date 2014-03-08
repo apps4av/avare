@@ -19,6 +19,7 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -1289,6 +1290,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	
     }
 
+    /***
+     * Draw the edge distance markers if configured to do so
+     * @param canvas what to draw them on
+     */
+    private void drawEdgeMarkers(Canvas canvas) {
+        if(mService != null && mPointProjection == null && mPref.shouldShowEdgeTape()) {
+	        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
+	        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
+	        float pixPerNm = mMovement.getNMPerLatitude(mScale);
+	      	EdgeDistanceTape.draw(canvas, mPaint, mScale, pixPerNm, x, y, 
+	      			(int) mInfoLines.getHeight(), getWidth(), getHeight());
+        }
+    }
+    
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1327,6 +1342,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawCDI(canvas);
         drawVASI(canvas);
       	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
+      	drawEdgeMarkers(canvas);
     }    
 
     /**

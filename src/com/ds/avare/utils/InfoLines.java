@@ -65,6 +65,7 @@ public class InfoLines {
 	}
 	
 	// Dynamic data fields related items
+	float mShadowY;				// How high the status display lines are
     int mDisplayWidth;			// Horizontal display size
     int mFieldWidth;			// width of each field
     int mCharWidth;				// width of one character
@@ -108,6 +109,10 @@ public class InfoLines {
     static final int MAX_INFO_ROWS = 2;
     static final int MAX_FIELD_SIZE_IN_CHARS = 5;
 
+    public float getHeight() {
+    	return mShadowY;
+    }
+    
     /***
      * Is there a field to display at the indicated location. To figure this out we
      * need the X/Y of the location along with the paint object (which determines text size)
@@ -335,14 +340,14 @@ public class InfoLines {
         float dataY   = aPaint.getTextSize();
 		float titleY  = dataY / (float) TITLE_TO_TEXT_RATIO;
 		float lineY   = dataY + titleY;
-		float shadowY = lineY * mRowCount;
+		mShadowY = lineY * mRowCount + aShadow;
 
     	// Draw the shadowed background on the top 2 lines if we are configured to do so
         if(mLocationView.getPref().shouldShowBackground()) {
         	aPaint.setShadowLayer(0, 0, 0, 0);
         	aPaint.setColor(aTextColorOpposite);
         	aPaint.setAlpha(0x7f);
-            canvas.drawRect(0, 0, mDisplayWidth, shadowY + aShadow, aPaint);
+            canvas.drawRect(0, 0, mDisplayWidth, mShadowY, aPaint);
             aPaint.setAlpha(0xff);
         }
         aPaint.setShadowLayer(aShadow, aShadow, aShadow, Color.BLACK);

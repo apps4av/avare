@@ -734,6 +734,14 @@ public class Preferences {
     }
 
     /**
+     * 
+     * @return
+     */
+    public boolean shouldShowEdgeTape() {
+        return mPref.getBoolean(mContext.getString(R.string.EdgeTape), false);
+    }
+
+    /**
      * 7 is the  glide ratio of most common aircraft like C172 and C182
      * @return
      */

@@ -99,6 +99,11 @@ authors: zkhan, jlmcgraw
                 android:key="@string/GlideRatio"/>
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="@string/EdgeTape"
+            android:summary="@string/EdgeTapeSummary"
+            android:title="@string/EdgeTapeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="@string/NightMode"
             android:summary="@string/NightModeSummary"
             android:title="@string/NightModeLabel" />

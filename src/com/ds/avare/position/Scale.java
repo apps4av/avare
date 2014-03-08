@@ -35,7 +35,34 @@ public class Scale {
         mScaleCorrectY = 1;
         mMacroMultiply = 1;
     }
-
+    
+    // Determine a stepping factor based upon the macro and scale
+    // Used by dynamic distance rings and edge markers
+    public double getStep() {
+    	double step;
+        int macro = getMacroFactor();
+        float scaleRaw = getScaleFactorRaw();
+        if(macro <= 1 && scaleRaw > 1) {  
+            step = 2.5;        
+        } 
+        else if(macro <= 1 && scaleRaw <= 1) {  
+            step = 5;
+        } 
+        else if (macro <= 2) {
+            step = 10;
+        } 
+        else if (macro <= 4) {
+            step = 20;
+        } 
+        else if (macro <= 8) {
+            step = 40;
+        }  
+        else {
+            step = 80;
+        } 
+        return step;
+    }
+    
     /**
      * 
      * @param factor
