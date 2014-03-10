@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Paint.Align;
 
 /***
  * A static class that handles the drawing of the distance tape 
@@ -76,6 +77,7 @@ public class EdgeDistanceTape {
 
 	    // Figure out how large our display values can be
 	    Rect textBounds = new Rect();
+	    paint.setTextAlign(Align.LEFT);
 	    paint.getTextBounds("000", 0, 3, textBounds);
 	    
 	    // Determine the margin pixel values
