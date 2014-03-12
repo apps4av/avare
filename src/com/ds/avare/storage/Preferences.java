@@ -35,7 +35,7 @@ public class Preferences {
      * These are set when inited
      */
     public static double speedConversion = 1.944;
-    public static double heightConversion = 3.28;
+    public static double heightConversion = 3.28084;
     public static double feetConversion = 6076.12;
     public static double earthRadiusConversion = 3440.069;
     public static String distanceConversionUnit = "nm";
@@ -82,7 +82,7 @@ public class Preferences {
     public static double NM_TO_MI = 1.15078;
     public static double NM_TO_KM = 1.852;
     public static double NM_TO_LATITUDE = 1.0 / 60.0;
-    public static double MS_TO_KT = 1.944;
+    public static double MS_TO_KT = 1.94384;
 
     /**
      * 
