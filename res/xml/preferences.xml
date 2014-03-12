@@ -109,7 +109,7 @@ authors: zkhan, jlmcgraw
      </PreferenceScreen>
 
     <PreferenceScreen 
-        android:title="Instrumentation" 
+        android:title="@string/Instrumentation" 
         android:icon="@android:drawable/ic_menu_preferences" >
         <EditTextPreference
                 android:title="@string/GlideRatioLabel"
