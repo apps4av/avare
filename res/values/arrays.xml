@@ -764,7 +764,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>AGL Height</item>
 	    <item>Hobbs Flight Timer</item>
 	    <item>Vertical Speed Indicator</item>
-	    <item>Descent Rate to Destination</item>
+	    <item>Vertical Speed Required</item>
 	    <item>Odometer</item>
 	    <item>Course Deviation Indicator</item>
 	</string-array>
@@ -784,7 +784,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>AGL ft</item>
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
-	    <item>Dsc Rt fpm</item>
+	    <item>VSR fpm</item>
 	    <item>Odometer</item>
 	    <item>CDI</item>
    	</string-array>

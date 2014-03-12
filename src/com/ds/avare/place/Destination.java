@@ -686,47 +686,17 @@ public class Destination extends Observable {
 	
 	/**
 	 * Find vertical speed to this dest in feet/m per minute
-	 * 
+	 * Limit to +/- 9999
 	 */
 	public String getVerticalSpeedTo(GpsParams params) {
-	    
-	    double time = (mDistance / params.getSpeed()) * 60;
-	    double height = params.getAltitude();
-	    if(mDestType.equals(BASE)) {
-	        try {
-	            /*
-	             * For bases, go to pattern altitude
-	             */
-	            String pa = mParams.get("Pattern Altitude");
-	            height -= Double.parseDouble(pa);
-	        }
-	        catch(Exception e) {
-	            
-	        }
-	    }
-	    else {
-	        /*
-	         * Only for airport
-	         */
-	        return "";
-	    }
-	    
-	    
-	    long vs = Math.abs(Math.round(height / time));
-	    if(height < 0) {
-	        /*
-	         * Must go up, show up symbol
-	         */
-	        return "+" + vs + Preferences.vsConversionUnit;
-	    }
-	    
-	    /*
-	     * Down symbol
-	     */
-	    return "-" + vs + Preferences.vsConversionUnit;
+	    long vs = Math.min(getVerticalSpeedToNoFmt(params), 9999);
+	    vs = Math.max(vs, -9999);
+	    String retVS = String.format(Locale.getDefault(), "%+05d", vs);
+
+	    return retVS;
 	}
 
-	public double getVerticalSpeedToNoFmt(GpsParams gpsParams)
+	public long getVerticalSpeedToNoFmt(GpsParams gpsParams)
 	{
 	    double time = (mDistance / gpsParams.getSpeed()) * 60;
 	    double height = gpsParams.getAltitude();
@@ -750,7 +720,7 @@ public class Destination extends Observable {
 	    }
 	    
 	    
-	    return Math.round(height / time);
+	    return -Math.round(height / time);
 	}
 	
 	/**
