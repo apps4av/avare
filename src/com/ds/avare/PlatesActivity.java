@@ -14,6 +14,7 @@ package com.ds.avare;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -40,16 +41,14 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
 /**
- * @author zkhan
+ * @author zkhan,rasii
  * An activity that deals with plates
  */
 public class PlatesActivity extends Activity {
-    
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -60,8 +59,8 @@ public class PlatesActivity extends Activity {
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Toast mToast;
-    private ArrayAdapter<String> mListPlates;
-    private ArrayAdapter<String> mListAirports;
+    private ArrayList<String> mListPlates;
+    private ArrayList<String> mListAirports;
     private String mPlateFound[];
     private double mDeclination;
     private String mDestString;
@@ -105,7 +104,7 @@ public class PlatesActivity extends Activity {
      * Add an airport to the airports list if it doesn't already exist
      */
     private void addAirport(String name) {
-        if(mListAirports.getPosition(name) < 0 && doesAirportHavePlates(mPref.mapsFolder(), name)) {
+        if(!mListAirports.contains(name) && doesAirportHavePlates(mPref.mapsFolder(), name)) {
             mListAirports.add(name);
         }
     }
@@ -203,7 +202,7 @@ public class PlatesActivity extends Activity {
         mPlatesButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListPlates.getCount() == 0 || arePopupsShowing()) {
+                if(mListPlates.size() == 0 || arePopupsShowing()) {
                     return;
                 }
                 
@@ -217,10 +216,10 @@ public class PlatesActivity extends Activity {
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
                 int index = mService.getLastPlateIndex();
-                if(index >= mListPlates.getCount()) {
+                if(index >= mListPlates.size()) {
                     index = 0;
                 }
-                mPlatesPopup = builder.setSingleChoiceItems(mListPlates, index, onClickListener).create();
+                mPlatesPopup = builder.setSingleChoiceItems(mListPlates.toArray(new String[mListPlates.size()]), index, onClickListener).create();
                 mPlatesPopup.show();
             }
         });         
@@ -230,7 +229,7 @@ public class PlatesActivity extends Activity {
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListAirports.getCount() == 0 || arePopupsShowing()) {
+                if(mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
                 
@@ -243,10 +242,9 @@ public class PlatesActivity extends Activity {
                 };
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
-                int index = mListAirports.getPosition(mService.getLastPlateAirport());
-                mAirportPopup = builder.setSingleChoiceItems(mListAirports, index, onClickListener).create();
+                int index = mListAirports.indexOf(mService.getLastPlateAirport());
+                mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
-
             }
         });      
                
@@ -274,7 +272,7 @@ public class PlatesActivity extends Activity {
             }
             mService.loadDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
             mPlatesView.setBitmap(mService.getDiagram());
-            String name = mListPlates.getItem(pos);
+            String name = mListPlates.get(pos);
 
             mPlatesView.setParams(null, true);
             if(name.startsWith(Destination.AD)) {
@@ -309,8 +307,8 @@ public class PlatesActivity extends Activity {
     }
     
     private void setAirportFromPos(int pos) {
-        if(mService != null && mListAirports != null && mListAirports.getCount() > pos) {
-            String airport = mListAirports.getItem(pos);
+        if(mService != null && mListAirports != null && mListAirports.size() > pos) {
+            String airport = mListAirports.get(pos);
             
             Destination curDest = mService.getDestination();
             if(curDest != null && !curDest.getType().equals(Destination.BASE)) {
@@ -346,8 +344,8 @@ public class PlatesActivity extends Activity {
                 mService.setLastPlateAirport(airport);
             }
             
-            if(null == airport && mListAirports.getCount() > 2) {
-                airport = mListAirports.getItem(2);
+            if(null == airport && mListAirports.size() > 2) {
+                airport = mListAirports.get(2);
             }
             
             mPlateFound = null;
@@ -471,9 +469,9 @@ public class PlatesActivity extends Activity {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);         
             
-            mListPlates = new ArrayAdapter<String>(PlatesActivity.this, android.R.layout.simple_list_item_single_choice);
+            mListPlates = new ArrayList<String>();
             
-            mListAirports = new ArrayAdapter<String>(PlatesActivity.this, android.R.layout.simple_list_item_single_choice);
+            mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
             mListAirports.add(nearString);
 
@@ -530,7 +528,7 @@ public class PlatesActivity extends Activity {
                 }
             }
 
-            int lastIndex = Math.max(mListAirports.getPosition(mService.getLastPlateAirport()), 0);
+            int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
             setAirportFromPos(lastIndex);
         }
 
