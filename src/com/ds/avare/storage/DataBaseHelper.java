@@ -348,6 +348,26 @@ public class DataBaseHelper  {
             
             closes(cursor);
         }
+        
+        /*
+         * Now plates.
+         */
+        query = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS + " where State=\"" + name + "\";";
+        Cursor cursor = doQuery(query, getMainDb());
+
+        try {
+            if(cursor != null) {
+                for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                    list.add("plates/" + cursor.getString(0));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closes(cursor);
+
+        
         return list;            
     }
 
