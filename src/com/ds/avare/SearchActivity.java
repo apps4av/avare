@@ -126,13 +126,13 @@ public class SearchActivity extends Activity implements Observer {
      * 
      * @param dst
      */
-    private void goTo(String dst, String type) {
+    private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
-        mDestination.find();
+        mDestination.find(dbType);
         mSearchText.setText("");
     }
 
@@ -140,13 +140,13 @@ public class SearchActivity extends Activity implements Observer {
      * 
      * @param dst
      */
-    private void planTo(String dst, String type) {
+    private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
-        mDestination.find();
+        mDestination.find(dbType);
         mSearchText.setText("");
     }
 
@@ -276,10 +276,12 @@ public class SearchActivity extends Activity implements Observer {
                 if(null != mSelected) {
                     String id = StringPreference.parseHashedNameId(mSelected); 
                     String destType = StringPreference.parseHashedNameDestType(mSelected); 
+                    String dbType = StringPreference.parseHashedNameDbType(mSelected);
                     if(id == null || destType == null) {
                         return;
                     }
-                    planTo(id, destType);
+                    // It's ok if dbType is null
+                    planTo(id, destType, dbType);
                 }
             }
         });
@@ -319,10 +321,12 @@ public class SearchActivity extends Activity implements Observer {
                 String txt = mAdapter.getItem(position).replace(",", " ");
                 String id = StringPreference.parseHashedNameId(txt); 
                 String destType = StringPreference.parseHashedNameDestType(txt); 
+                String dbType = StringPreference.parseHashedNameDbType(txt);
                 if(id == null || destType == null) {
                     return;
                 }
-                goTo(id, destType);
+                // It's ok if dbType is null
+                goTo(id, destType, dbType);
             }
         });
         

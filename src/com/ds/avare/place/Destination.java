@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
 import java.util.Observable;
+
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
@@ -309,19 +309,32 @@ public class Destination extends Observable {
          */
         mLooking = true;
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(true);
+        locmDataBaseTask.execute(true, "");
+    }
+    
+    /**
+     * Database  query to find destination
+     */
+    public void find() {
+        /*
+         * Do in background as database queries are disruptive
+         */
+        mLooking = true;
+        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
+        locmDataBaseTask.execute(false, "");
     }
 
 	/**
 	 * Database  query to find destination
+	 * @param dbType
 	 */
-	public void find() {
+	public void find(String dbType) {
 	    /*
 	     * Do in background as database queries are disruptive
 	     */
         mLooking = true;
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(false);
+        locmDataBaseTask.execute(false, dbType);
 	}
 	
     /**
@@ -346,6 +359,7 @@ public class Destination extends Observable {
             Thread.currentThread().setName("Destination");
 
             Boolean guess = (Boolean)vals[0];
+            String dbType = (String)vals[1];
             
             /*
              * If we dont know type, find with a guess.
@@ -469,7 +483,7 @@ public class Destination extends Observable {
 	        /*
 	         * For all others, find in DB
 	         */
-	        mDataSource.findDestination(mName, mDestType, mParams, mRunways, mFreq, mAwos);
+	        mDataSource.findDestination(mName, mDestType, dbType, mParams, mRunways, mFreq, mAwos);
 
 	        if(mDestType.equals(BASE)) {
 	            
