@@ -134,7 +134,7 @@ public class NearestAdapter extends ArrayAdapter<String> {
         textView = (TextView)rowView.findViewById(R.id.nearest_list_bearing);
         textView.setText(mBearing[position]);
         textView = (TextView)rowView.findViewById(R.id.nearest_list_aid_name);
-        textView.setText(mName[position]);
+        textView.setText(mName[position] + (mFuel[position].equals("") ? "" : "$ " + mContext.getString(R.string.Fuel)));
         /*
          * If cannot glide, mark it red
          */
@@ -144,11 +144,9 @@ public class NearestAdapter extends ArrayAdapter<String> {
         else {
             textView.setTextColor(Color.GREEN);            
         }
-        textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
         /*
          * Fuel shows as Fuel or none
          */
-        textView.setText(mFuel[position].equals("") ? "" : mContext.getString(R.string.Fuel));
         textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);
         textView.setText(mLongestRunway[position] + "ft @" + mElevation[position]);
         

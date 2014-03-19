@@ -46,18 +46,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </TextView>
 
     <TextView
-        android:id="@+id/nearest_list_fuel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:clickable="false"
-        android:textSize="20sp"
-        android:layout_below="@+id/nearest_list_aid_name"
-        android:layout_toRightOf="@+id/nearest_list_bearing">
-    </TextView>
-
-    <TextView
         android:id="@+id/nearest_list_elevation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
