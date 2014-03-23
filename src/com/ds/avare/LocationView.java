@@ -127,11 +127,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TileDrawTask                mTileDrawTask; 
     private Thread                      mTileDrawThread;
 
+    
     /**
      * Task that would draw obstacles
      */
     private ObstacleTask                mObstacleTask; 
-    private Thread                      mObstacleThread;
 
     /**
      * Task that finds closets airport.
@@ -317,10 +317,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
-
-        mObstacleTask = new ObstacleTask();
-        mObstacleThread = new Thread(mObstacleTask);
-        mObstacleThread.start();
 
         mTextSize = new Rect();
         mShadowBox = new RectF(mTextSize);
@@ -1401,20 +1397,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = params;
 
         updateCoordinates();
+        
         /*
          * Database query for new location / pan location.
          */
         dbquery(false);
         
-        
-        /*
-         * Do not overwhelm, obstacles
-         */
-        mObstacleTask.alt = mGpsParams.getAltitude();
-        mObstacleTask.lon = mGpsParams.getLongitude();
-        mObstacleTask.lat = mGpsParams.getLatitude();
-        
-        mObstacleThread.interrupt();
+        if(mObstacleTask != null) {
+            /*
+             * Do not overwhelm
+             */
+            if(mObstacleTask.getStatus() == AsyncTask.Status.RUNNING) {
+                mObstacleTask.cancel(true);
+            }
+        }
+        mObstacleTask = new ObstacleTask();
+        mObstacleTask.execute(mGpsParams);
     }
 
     
@@ -1694,74 +1692,73 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      * Find obstacles
      */
-    private class ObstacleTask implements Runnable {
-        public Double lon;
-        public Double lat;
-        public Double alt;
+    private class ObstacleTask extends AsyncTask<Object, Void, Object> {
         
-        public boolean running = true;
+        private LinkedList<Obstacle> obs = null;
+        double elev = -1;
+        
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        public void run() {
+        protected Void doInBackground(Object... vals) {
             Thread.currentThread().setName("Obstacle");
 
-            /*
-             * Elevation tile to find AGL and ground proximity warning
-             */
-            double offsets[] = new double[2];
-            double p[] = new double[2];
-
-            while(running) {
-
-                try {
-                    Thread.sleep(1000 * 3600);
-                }
-                catch (Exception e) {
-                    
+            double lon = ((GpsParams)vals[0]).getLongitude();
+            double lat = ((GpsParams)vals[0]).getLatitude();
+            double alt = ((GpsParams)vals[0]).getAltitude();
+            
+            if(null != mImageDataSource) {
+                /*
+                 * Find obstacles in background as well
+                 */
+                if(mPref.shouldShowObstacles()) {
+                    obs = mImageDataSource.findObstacles(lon, lat, (int)alt);
                 }
                 
-                if(null != mImageDataSource) {
+                /*
+                 * Find elevation tile in background, and load 
+                 */
+                if(mService != null) {
                     /*
-                     * Find obstacles in background as well
+                     * Elevation tile to find AGL and ground proximity warning
                      */
-                    if(mPref.shouldShowObstacles()) {
-                        mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
-                    }
-                    
+                    double offsets[] = new double[2];
+                    double p[] = new double[2];
+                    Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
+                    mService.setElevationTile(t);
+                    BitmapHolder elevBitmap = mService.getElevationBitmap();
                     /*
-                     * Find elevation tile in background, and load 
+                     * Load only if needed.
                      */
-                    if(mService != null) {
-                        Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                        mService.setElevationTile(t);
-                        BitmapHolder elevBitmap = mService.getElevationBitmap();
-                        /*
-                         * Load only if needed.
-                         */
-                        if(null != elevBitmap) {
-                            int x = (int)Math.round(offsets[0]);
-                            int y = (int)Math.round(offsets[1]);
-                            if(elevBitmap.getBitmap() != null) {
+                    if(null != elevBitmap) {
+                        int x = (int)Math.round(offsets[0]);
+                        int y = (int)Math.round(offsets[1]);
+                        if(elevBitmap.getBitmap() != null) {
+                        
+                            if(x < elevBitmap.getBitmap().getWidth()
+                                && y < elevBitmap.getBitmap().getHeight()
+                                && x >= 0 && y >= 0) {
                             
-                                if(x < elevBitmap.getBitmap().getWidth()
-                                    && y < elevBitmap.getBitmap().getHeight()
-                                    && x >= 0 && y >= 0) {
-                                
-                                    int px = elevBitmap.getBitmap().getPixel(x, y);
-                                    mElev = Helper.findElevationFromPixel(px);
-                                    continue;
-                                }
+                                int px = elevBitmap.getBitmap().getPixel(x, y);
+                                elev = Helper.findElevationFromPixel(px);
                             }
                         }
                     }
-                    mElev = -1;
-                }                
+                }
             }
+            return null;                
         }
+        
+        @Override
+        protected void onPostExecute(Object res) {
+            mElev = elev;
+            mObstacles = obs;
+        }
+
     }
+
 
     /**
      * Center to the location
@@ -2003,10 +2000,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      */
     public void cleanup() {
-        mObstacleTask.running = false;
         mTileDrawTask.running = false;
         mTileDrawThread.interrupt();
-        mObstacleThread.interrupt();
     }
 
     

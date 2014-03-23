@@ -99,6 +99,8 @@ public class StorageService extends Service {
     private Mutex mLocationSem;
     private Location mLocation;
     
+    private boolean mDownloading;
+    
     /**
      * GPS
      */
@@ -229,6 +231,7 @@ public class StorageService extends Service {
         
         mArea = new Area(mImageDataSource);
         mPlan = new Plan();
+        mDownloading = false;
         
         /*
          * All tiles
@@ -322,52 +325,65 @@ public class StorageService extends Service {
              */
             @Override
             public void locationCallback(Location location) {
+                
+                if(mDownloading) {
+                    /**
+                     * Download runs the tasks, so dont do it since we are
+                     * updating files. This flag is set by Download activity.
+                     */
+                    return;
+                }
+                
                 LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.locationCallback(location);
-                    if(null != location) {
-                        if(!location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-                            /*
-                             * Getting location from somewhere other than built in GPS.
-                             * Update timeout so we do not timeout on GPS timer.
-                             */
-                            mGps.updateTimeout();
-                        }
-                        setGpsParams(new GpsParams(location));
-                        mLocation = location;
-                        mLocationSem.unlock();
-                        getArea().updateLocation(getGpsParams());
-                        getPlan().updateLocation(getGpsParams());
+                }
+                
+                /*
+                 * Update the service objects with location
+                 */
+                if(null != location) {
+                    if(!location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+                        /*
+                         * Getting location from somewhere other than built in GPS.
+                         * Update timeout so we do not timeout on GPS timer.
+                         */
+                        mGps.updateTimeout();
+                    }
+                    setGpsParams(new GpsParams(location));
+                    mLocation = location;
+                    mLocationSem.unlock();
+                    getArea().updateLocation(getGpsParams());
+                    getPlan().updateLocation(getGpsParams());
 
-                        // Adjust the flight timer
-                        getFlightTimer().setSpeed(mGpsParams.getSpeed());
-                        
-                        // Tell the KML recorder a new point to potentially plot
-                        getKMLRecorder().setGpsParams(mGpsParams);
-                        
-                        // Let the odometer know how far we traveled
-                        getOdometer().updateValue(mGpsParams);
-                        
-                        // Calculate course line deviation
-                        getCDI().calcDeviation(mGpsParams, getDestination());
-                        
-                        // Vertical descent rate calculation
-                        getVNAV().calcGlideSlope(mGpsParams, getDestination());
-                        
-                        getFlightStatus().updateLocation(mGpsParams);
-                        
-                        if(getPlan().hasDestinationChanged()) {
-                            /*
-                             * If plan active then set destination to next not passed way point
-                             */
-                            setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
-                        }
+                    // Adjust the flight timer
+                    getFlightTimer().setSpeed(mGpsParams.getSpeed());
+                    
+                    // Tell the KML recorder a new point to potentially plot
+                    getKMLRecorder().setGpsParams(mGpsParams);
+                    
+                    // Let the odometer know how far we traveled
+                    getOdometer().updateValue(mGpsParams);
+                    
+                    // Calculate course line deviation
+                    getCDI().calcDeviation(mGpsParams, getDestination());
+                    
+                    // Vertical descent rate calculation
+                    getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                    
+                    getFlightStatus().updateLocation(mGpsParams);
+                    
+                    if(getPlan().hasDestinationChanged()) {
+                        /*
+                         * If plan active then set destination to next not passed way point
+                         */
+                        setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
+                    }
 
-                        if(mDestination != null) {
-                            mDestination.updateTo(getGpsParams());
-                        }
+                    if(mDestination != null) {
+                        mDestination.updateTo(getGpsParams());
                     }
                 }
             }
@@ -878,6 +894,13 @@ public class StorageService extends Service {
      */
     public BitmapHolder getElevationBitmap() {
         return mElevTile.getElevationBitmap();
+    }
+    
+    /**
+     * 
+     */
+    public void setDownloading(boolean state) {
+       mDownloading = state; 
     }
     
 }
