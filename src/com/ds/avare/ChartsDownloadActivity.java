@@ -375,14 +375,17 @@ public class ChartsDownloadActivity extends Activity {
         }
 
         /*
-         * Downloading
-         */
-        mService.setDownloading(false);
-
-        /*
          * Download does update tiles
          */
         if(mService != null){
+            /*
+             * Not downloading
+             */
+            mService.setDownloading(false);
+            
+            /*
+             *  
+             */
             mService.getTiles().forceReload();
         }
         
