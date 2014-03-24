@@ -471,12 +471,12 @@ public class Helper {
      * @param f
      */
     public static void deleteDir(File f) {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles()) {
-                deleteDir(c);
-            }
-        }
         try {
+            if (f.isDirectory()) {
+                for (File c : f.listFiles()) {
+                    deleteDir(c);
+                }
+            }
             f.delete();
         }
         catch (Exception e) {
