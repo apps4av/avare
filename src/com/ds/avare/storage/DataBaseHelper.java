@@ -833,7 +833,7 @@ public class DataBaseHelper  {
      * @param params
      * @return
      */
-    public void findDestination(String name, String type, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
+    public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
         
         Cursor cursor;
         
@@ -848,7 +848,14 @@ public class DataBaseHelper  {
             types = TABLE_FIX;
         }
 
-        String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';";
+        String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "'";
+        if(null != dbType && dbType.length() > 0) {
+            qry += " and " + TYPE_DB + "=='" + dbType + "'";
+        }
+        // Order by type desc will cause VOR to be ahead of NDB if both are available.
+        // This is a bit of a hack, but the user probably wants the VOR more than the NDB
+        qry += " order by " + TYPE_DB + " desc;";
+        
         cursor = doQuery(qry, getMainDb());
 
         try {
