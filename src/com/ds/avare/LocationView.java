@@ -70,6 +70,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 
 /**
  * @author zkhan
@@ -244,6 +245,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     // Handler for the top two lines of status information
     InfoLines mInfoLines;
+    
+    // Used to better determine if the user is intending for a long press
+    private class FocusPoint {
+        public final float x;
+        public final float y;
+        
+        public FocusPoint(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
+    FocusPoint mDownFocusPoint;
+    int mTouchSlopSquare;
+    boolean mDoCallbackWhenDone;
+    LongTouchDestination mLongTouchDestination;
 
     /**
      * @param context
@@ -332,7 +349,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mCurrTouchPoint = new PointInfo();
         
         mGestureDetector = new GestureDetector(context, new GestureListener());
-     
+        
+        // We're going to give the user twice the slop as normal
+        final ViewConfiguration configuration = ViewConfiguration.get(context);
+        int touchSlop = configuration.getScaledTouchSlop() * 2;
+        mTouchSlopSquare = touchSlop * touchSlop;
+        mDoCallbackWhenDone = false;
+             
         mDipToPix = Helper.getDpiToPix(context);
         
         mInfoLines = new InfoLines(this);
@@ -387,11 +410,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
+        boolean bPassToGestureDetector = true;
         if(e.getAction() == MotionEvent.ACTION_UP) {
             /*
              * Do not draw point. Only when long press and down.
              */
-            mPointProjection = null;
+             mPointProjection = null;
+
             /*
              * Now that we have moved passed the macro level, re-query for new tiles.
              * Do not query repeatedly hence check for mFactor = 1
@@ -400,13 +425,50 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mFactor = (float)mMacro / (float)mScale.getMacroFactor();
                 dbquery(true);
             }
-
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
             mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
+            
+            // Remember this point so we can make sure we move far enough before losing the long press
+            mDoCallbackWhenDone = false;
+            mDownFocusPoint = getFocusPoint(e);
+            startClosestAirportTask(e.getX(), e.getY());
         }
-        mGestureDetector.onTouchEvent(e);
+        else if(e.getAction() == MotionEvent.ACTION_MOVE && mDownFocusPoint != null) {
+            FocusPoint fp = getFocusPoint(e);
+            final int deltaX = (int) (fp.x - mDownFocusPoint.x);
+            final int deltaY = (int) (fp.y - mDownFocusPoint.y);
+            int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
+            bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
+        }
+        
+        if(bPassToGestureDetector) {
+            // Once we break out of the square or stop the long press, keep sending
+            if(e.getAction() == MotionEvent.ACTION_MOVE || e.getAction() == MotionEvent.ACTION_UP) {
+                mDownFocusPoint = null;
+                mPointProjection = null;
+                if(mClosestTask != null) {
+                    mClosestTask.cancel(true);
+                }
+            }
+            mGestureDetector.onTouchEvent(e);
+        }
         return mMultiTouchC.onTouchEvent(e);
+    }
+    
+    FocusPoint getFocusPoint(MotionEvent e) {
+        // Determine focal point
+        float sumX = 0, sumY = 0;
+        final int count = e.getPointerCount();
+        for (int i = 0; i < count; i++) {
+            sumX += e.getX(i);
+            sumY += e.getY(i);
+        }
+        final int div = count;
+        final float focusX = sumX / div;
+        final float focusY = sumY / div;
+        
+        return new FocusPoint(focusX, focusY);
     }
 
 
@@ -1571,8 +1633,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private class ClosestAirportTask extends AsyncTask<Object, String, String> {
         private Double lon;
         private Double lat;
-        private String text;
-        private String textMets;
+        private String text = "";
+        private String textMets = "";
         private String sua;
         private String radar;
         private LinkedList<Airep> aireps;
@@ -1585,8 +1647,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * @see android.os.AsyncTask#doInBackground(Params[])
          */     
         @Override
-        protected String doInBackground(Object... vals) {
-            
+        protected String doInBackground(Object... vals) {           
             Thread.currentThread().setName("Closest");
             if(null == mService) {
                 return null;
@@ -1595,41 +1656,102 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             String airport = null;
             lon = (Double)vals[0];
             lat = (Double)vals[1];
-            text = (String)vals[2];
-            textMets = (String)vals[3];
+            
+            // if the user is moving instead of doing a long press, give them a chance
+            // to cancel us before we start doing anything
+            try {
+                Thread.sleep(200);
+            }
+            catch(Exception e) {
+            }
+            
+            if(isCancelled())
+                return "";
+                       
+            /*
+             * Get TFR text if touched on its top
+             */
+            LinkedList<TFRShape> shapes = null;
+            List<AirSigMet> mets = null;
+            if(null != mService) {
+                shapes = mService.getTFRShapes();
+                if(!mPref.useAdsbWeather()) {
+                    mets = mService.getInternetWeatherCache().getAirSigMet();
+                }
+            }
+            if(null != shapes) {
+                for(int shape = 0; shape < shapes.size(); shape++) {
+                    TFRShape cshape = shapes.get(shape);
+                    /*
+                     * Set TFR text
+                     */
+                    String txt = cshape.getTextIfTouched(lon, lat);
+                    if(null != txt) {
+                        text += txt + "\n--\n";
+                    }
+                }
+            }
+            /*
+             * Air/sigmets
+             */
+            if(null != mets) {
+                for(int i = 0; i < mets.size(); i++) {
+                    MetShape cshape = mets.get(i).shape;
+                    if(null != cshape) {
+                        /*
+                         * Set MET text
+                         */
+                        String txt = cshape.getTextIfTouched(lon, lat);
+                        if(null != txt) {
+                            textMets += txt + "\n--\n";
+                        }
+                    }
+                }
+            }            
+
             airport = mService.getDBResource().findClosestAirportID(lon, lat);
+            if(isCancelled())
+                return "";
+            
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
-
-                /*
-                 * ADSB gets this info from weather cache
-                 */
-                if(!mPref.useAdsbWeather()) {
-                    aireps = mService.getDBResource().getAireps(lon, lat);
-                    
-                    wa = mService.getDBResource().getWindsAloft(lon, lat);
-                    
-                    sua = mService.getDBResource().getSua(lon, lat);
-                    
-                    radar = mService.getRadar().getDate();
-                }
             }
             else {
                 freq = mService.getDBResource().findFrequencies(airport);
+                if(isCancelled())
+                    return "";
+            
+                taf = mService.getDBResource().getTAF(airport);
+                if(isCancelled())
+                    return "";
                 
-                if(!mPref.useAdsbWeather()) {
-                    taf = mService.getDBResource().getTAF(airport);
-                    
-                    metar = mService.getDBResource().getMETAR(airport);            
-                    aireps = mService.getDBResource().getAireps(lon, lat);
-                    
-                    wa = mService.getDBResource().getWindsAloft(lon, lat);
-                    sua = mService.getDBResource().getSua(lon, lat);
-                    
-                    radar = mService.getRadar().getDate();
-                }                
+                metar = mService.getDBResource().getMETAR(airport);   
+                if(isCancelled())
+                    return "";
             }
             
+            /*
+             * ADSB gets this info from weather cache
+             */
+            if(!mPref.useAdsbWeather()) {              
+                aireps = mService.getDBResource().getAireps(lon, lat);
+                if(isCancelled())
+                    return "";
+                
+                wa = mService.getDBResource().getWindsAloft(lon, lat);
+                if(isCancelled())
+                    return "";
+                
+                sua = mService.getDBResource().getSua(lon, lat);
+                if(isCancelled())
+                    return "";
+                
+                radar = mService.getRadar().getDate();
+                if(isCancelled())
+                    return "";
+            }    
+            
+            mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
             return airport;
         }
         
@@ -1639,12 +1761,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         @Override
         protected void onPostExecute(String airport) {
             if(null != mGestureCallBack && null != mPointProjection && null != airport) {
-                LongTouchDestination data = new LongTouchDestination();
-                data.airport = airport;
-                data.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
+                mLongTouchDestination = new LongTouchDestination();
+                mLongTouchDestination.airport = airport;
+                mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
-                data.chart = mOnChart;
+                mLongTouchDestination.chart = mOnChart;
 
                 /*
                  * Clear old weather
@@ -1671,16 +1793,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null != wa) {
                     wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
                 }
-                data.tfr = text;
-                data.taf = taf;
-                data.metar = metar;
-                data.airep = aireps;
-                data.mets = textMets;
-                data.wa = wa;
-                data.freq = freq;
-                data.sua = sua;
-                data.radar = radar;
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
+                mLongTouchDestination.tfr = text;
+                mLongTouchDestination.taf = taf;
+                mLongTouchDestination.metar = metar;
+                mLongTouchDestination.airep = aireps;
+                mLongTouchDestination.mets = textMets;
+                mLongTouchDestination.wa = wa;
+                mLongTouchDestination.freq = freq;
+                mLongTouchDestination.sua = sua;
+                mLongTouchDestination.radar = radar;
+                
+                // If the long press event has already occurred, we need to do the gesture callback here
+                if(mDoCallbackWhenDone) {
+                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mLongTouchDestination);
+                }
             }
             invalidate();
         }
@@ -1816,7 +1942,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         public void onLongPress(MotionEvent e) {
-            
             /*
              * on long press, find a point where long press was done
              */
@@ -1850,63 +1975,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Notify activity of gesture.
              */
             
-            double lon2 = mOrigin.getLongitudeOf(x);
-            double lat2 = mOrigin.getLatitudeOf(y);
-            mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon2, lat2);
-            
-            String text = "";
-            String textMets = "";
-                       
-            /*
-             * Get TFR text if touched on its top
-             */
-            LinkedList<TFRShape> shapes = null;
-            List<AirSigMet> mets = null;
-            if(null != mService) {
-                shapes = mService.getTFRShapes();
-                if(!mPref.useAdsbWeather()) {
-                    mets = mService.getInternetWeatherCache().getAirSigMet();
-                }
+            if(mLongTouchDestination == null) {
+                // The ClosestAirportTask must be taking a long time, make sure it knows to do the gesture
+                // callback when it's done
+                mDoCallbackWhenDone = true;
             }
-            if(null != shapes) {
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    TFRShape cshape = shapes.get(shape);
-                    /*
-                     * Set TFR text
-                     */
-                    String txt = cshape.getTextIfTouched(lon2, lat2);
-                    if(null != txt) {
-                        text += txt + "\n--\n";
-                    }
-                }
+            else {
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mLongTouchDestination);
             }
-            /*
-             * Air/sigmets
-             */
-            if(null != mets) {
-                for(int i = 0; i < mets.size(); i++) {
-                    MetShape cshape = mets.get(i).shape;
-                    if(null != cshape) {
-                        /*
-                         * Set MET text
-                         */
-                        String txt = cshape.getTextIfTouched(lon2, lat2);
-                        if(null != txt) {
-                            textMets += txt + "\n--\n";
-                        }
-                    }
-                }
-            }
-
-            /*
-             * Get airport touched on
-             */
-            if(null != mClosestTask) {
-                mClosestTask.cancel(true);
-            }
-            mClosestTask = new ClosestAirportTask();
-            mClosestTask.execute(lon2, lat2, text, textMets);
         }
+    }
+    
+    private void startClosestAirportTask(double x, double y) {
+        // We won't be doing the airport long press under certain circumstances
+        if(mDraw || mTrackUp) {
+            return;
+        }
+        
+        if(null != mClosestTask) {
+            mClosestTask.cancel(true);
+        }
+        mLongTouchDestination = null;
+        mClosestTask = new ClosestAirportTask();        
+        
+        double lon2 = mOrigin.getLongitudeOf(x);
+        double lat2 = mOrigin.getLatitudeOf(y);
+        
+        mClosestTask.execute(lon2, lat2);
     }
 
 
@@ -1932,13 +2027,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public boolean getDraw() {
         return mDraw;
-    }
-
-    /*
-     * Gets chart on which this view is.
-     */
-    public String getChart() {
-        return mOnChart;
     }
     
     /**
