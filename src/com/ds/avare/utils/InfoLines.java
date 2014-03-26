@@ -179,6 +179,12 @@ public class InfoLines {
             }
         }
 
+        // If we still have a selection that is outside our available range,
+        // then default it to NONE
+        if(nSelected >= optionAvail.size()) {
+        	nSelected = 0;
+        }
+        
         // OK, the new option list is built and we have what should currently be
         // selected in there. Return this info to the caller
         return new InfoLineFieldLoc(nRowIdx, nFieldIdx,
@@ -218,7 +224,7 @@ public class InfoLines {
      *            selection index of the new field content
      */
     public void setFieldType(InfoLineFieldLoc infoLineFieldLoc, int nSelected) {
-        if (rangeCheck(infoLineFieldLoc) == true) { // Make sure field in range
+        if (rangeCheck(infoLineFieldLoc, nSelected) == true) { // Make sure field in range
 
             // Fetch the string from the index passed in
             String option = infoLineFieldLoc.mOptions[nSelected];
@@ -340,12 +346,28 @@ public class InfoLines {
         }
     }
 
-    boolean rangeCheck(InfoLineFieldLoc iLFL) {
+    /***
+     * Validate the field being selected. This does some range checks
+     * to make sure the field and selected index values are sane
+     * @param iLFL collection of field information locations
+     * @param nSelected the index of the selected item
+     * @return true/false 
+     */
+    boolean rangeCheck(InfoLineFieldLoc iLFL, int nSelected) {
+    	// Check that the row index is valid
         if ((iLFL.mRowIdx < 0) || (iLFL.mRowIdx >= mFieldLines.length))
             return false;
+        
+        // And now the column (field) index
         if ((iLFL.mFieldIdx < 0)
                 || (iLFL.mFieldIdx >= mFieldLines[iLFL.mRowIdx].length))
             return false;
+        
+        // If the selected index is larger than our collection of
+        // possibles, then fail
+        if (nSelected >= iLFL.mOptions.length) {
+        	return false;
+        }
         return true;
     }
 
