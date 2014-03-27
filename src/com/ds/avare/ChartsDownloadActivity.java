@@ -177,6 +177,10 @@ public class ChartsDownloadActivity extends Activity {
             
             mService.registerGpsListener(mGpsInfc);
 
+            /*
+             * Downloading
+             */
+            mService.setDownloading(true);
             
             /*
              * Since we are downloading new charts, clear everything old on screen.
@@ -369,13 +373,22 @@ public class ChartsDownloadActivity extends Activity {
             catch (Exception e) {
             }
         }
-        
+
         /*
          * Download does update tiles
          */
         if(mService != null){
+            /*
+             * Not downloading
+             */
+            mService.setDownloading(false);
+            
+            /*
+             *  
+             */
             mService.getTiles().forceReload();
         }
+        
     }
      
     /**

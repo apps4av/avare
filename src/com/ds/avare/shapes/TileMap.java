@@ -31,8 +31,6 @@ public class TileMap {
     private BitmapHolder[] mapA;
     private BitmapHolder[] mapB;
     
-    private BitmapHolder mElevBitmap;
-    
     private Context mContext;
     
     private Preferences mPref;
@@ -70,7 +68,6 @@ public class TileMap {
         for(int tile = 0; tile < numTilesMax; tile++) {
             mBitmapCache[tile] = new BitmapHolder();
         }
-        mElevBitmap = new BitmapHolder();
     }
 
     /**
@@ -175,6 +172,12 @@ public class TileMap {
                  * At max scale, down sample by down sampling 
                  */
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
+                if(b.getBitmap() == null) {
+                    h.setFound(false);
+                }
+                else {
+                    h.setFound(true);
+                }
                 h.getBitmap().eraseColor(Color.GRAY);
                 h.drawInBitmap(b, tileNames[tilen], 0, 0);
                 b.recycle();
@@ -199,8 +202,6 @@ public class TileMap {
             mBitmapCache[tile].recycle();
             mBitmapCache[tile] = null;
         }
-        mElevBitmap.recycle();
-        mElevBitmap = null;
     }
     
     /**
@@ -262,48 +263,4 @@ public class TileMap {
         }
     }
 
-    /**
-     * 
-     */
-    public BitmapHolder getElevationBitmap() {
-        if(mElevBitmap.getName() == null) {
-            return null;
-        }
-        return mElevBitmap;
-    }
-
-    /**
-     * 
-     */
-    public void setElevationTile(Tile t) {
-        if(t == null) {
-            return;
-        }
-        if(t.getName() == null) {
-            return;
-        }
-        
-        /*
-         * Same tile, do not reload.
-         */
-        if(mElevBitmap.getName() != null) {
-            if(t.getName().equals(mElevBitmap.getName())) {
-                return;
-            }
-        }
-        
-        /*
-         * New tile
-         */
-        BitmapHolder b = new BitmapHolder(mContext, mPref, t.getName(), 1);
-        if(b.getName() == null) {
-            return;
-        }
-        else {
-            mElevBitmap.drawInBitmap(b, t.getName(), 0, 0);
-            b.recycle();
-            b = null;
-        }
-
-    }
 }

@@ -13,6 +13,10 @@ package com.ds.avare.adsb;
 
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import com.ds.avare.utils.Helper;
 
 import android.util.SparseArray;
@@ -24,6 +28,8 @@ import android.util.SparseArray;
  */
 public class NexradImageConus {
     
+    private static final long EXPIRES = 1000 * 60 * 60 * 2; // 2 hours
+
     /*
      * Northern hemisphere only
      * Cover 0 to 60 degrees latitude
@@ -41,11 +47,11 @@ public class NexradImageConus {
      */
     private static final int MAX_ENTRIES = 1350;
     private SparseArray<NexradBitmap> mImg;
-    private String mUpdated;
+    private long mUpdated;
     
     public NexradImageConus() { 
         mImg = new SparseArray<NexradBitmap>();
-        mUpdated = "";
+        mUpdated = 0;
     }
     
     /**
@@ -67,7 +73,7 @@ public class NexradImageConus {
                     mImg.delete(i);
                 }
             }
-            mUpdated = Helper.millisToGMT(time);
+            mUpdated = time;
         }
         if(null != data) {
             if(mImg.get(block) != null) {
@@ -84,7 +90,7 @@ public class NexradImageConus {
                 return;
             }
             mImg.put(block, new NexradBitmap(time, data, block, isConus, cols, rows));
-            mUpdated = Helper.millisToGMT(time);
+            mUpdated = time;
         }
     }
     
@@ -100,8 +106,26 @@ public class NexradImageConus {
      * 
      * @return
      */
-    public String getTime() {
-        return mUpdated;
+    public boolean isOld() {
+        long diff = Helper.getMillisGMT();
+        diff -= mUpdated; 
+        if(diff > EXPIRES) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    /**
+     * 
+     * @return
+     */
+    public String getDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()); 
+        return formatter.format(new Date(mUpdated)) + "Z";
     }
 
 }

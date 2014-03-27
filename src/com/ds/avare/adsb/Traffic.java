@@ -1,5 +1,7 @@
 package com.ds.avare.adsb;
 
+import com.ds.avare.utils.Helper;
+
 public class Traffic {
 
     public int mIcaoAddress;
@@ -39,8 +41,10 @@ public class Traffic {
      * 
      * @return
      */
-    public boolean isStale() {
-        long diff = System.currentTimeMillis() - mLastUpdate;
+    public boolean isOld() {
+
+        long diff = Helper.getMillisGMT();
+        diff -= mLastUpdate; 
         if(diff > EXPIRES) {
             return true;
         }

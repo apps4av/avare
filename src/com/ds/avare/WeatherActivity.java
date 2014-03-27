@@ -101,7 +101,7 @@ public class WeatherActivity extends Activity {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity) this.getParent()).switchTab(0);
+        ((MainActivity) this.getParent()).showMapTab();
     }
 
     /*

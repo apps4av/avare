@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
@@ -179,7 +180,20 @@ public class WebAppInterface {
                 catch(Exception e) {
                     Metar = mContext.getString(R.string.WeatherError);
                 }
-    
+      
+                String nam = "";
+                /*
+                 * NAM MOS exists for airports only
+                 */
+                for(int ap = 0; ap < num; ap++) {
+                    Destination d = mService.getPlan().getDestination(ap);
+                    if(d != null) {
+                        if(d.getType().equals(Destination.BASE)) {
+                            nam += NetworkHelper.getNAMMET(d.getID()); 
+                        }
+                    }
+                }
+                
                 plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
                 plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
                 Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
@@ -188,9 +202,12 @@ public class WebAppInterface {
                 Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
                 Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
                 Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
+                nam = "<font size='6' color='black'>Forecast</font><br></br>" +  
+                        WeatherHelper.getNamMosLegend() + nam;
+                nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
+
+                String weather = plan + Metar + Taf + Pirep + nam;
                 
-                String weather = plan + Metar + Taf + Pirep;
-    
                 Message m = new Message();
                 m.obj = weather;
                 mHandler.sendMessage(m);

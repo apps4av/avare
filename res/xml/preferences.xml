@@ -15,8 +15,9 @@ authors: zkhan, jlmcgraw
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <PreferenceCategory android:title="@string/prefStorageAndDownloadsCategoryTitle" >
+    <PreferenceScreen 
+        android:title="@string/prefStorageAndDownloadsCategoryTitle" 
+        android:icon="@android:drawable/ic_menu_save" >
         <com.ds.avare.utils.FolderPreference
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
@@ -27,8 +28,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/Root"
             android:summary="@string/RootSummary"
             android:title="@string/RootLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefGpsCategoryTitle" >
+    </PreferenceScreen>
+
+    <PreferenceScreen 
+        android:title="@string/prefGpsCategoryTitle" 
+        android:icon="@android:drawable/ic_menu_mylocation" >
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/GpsTime"
@@ -39,8 +43,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefWeatherCategoryTitle" >
+    </PreferenceScreen>
+    
+    <PreferenceScreen 
+        android:title="@string/prefWeatherCategoryTitle" 
+        android:icon="@android:drawable/ic_menu_call" >
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="255"
             android:entries="@array/Opacity"
@@ -65,8 +72,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/XlateWeather"
             android:summary="@string/XlateWeatherSummary"
             android:title="@string/XlateWeatherLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefAppStateCategoryTitle" >
+    </PreferenceScreen>
+
+    <PreferenceScreen 
+        android:title="@string/prefAppStateCategoryTitle" 
+        android:icon="@android:drawable/ic_menu_mapmode" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ScreenOn"
@@ -84,8 +94,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/OrientationP"
             android:summary="@string/OrientationPSummary"
             android:title="@string/OrientationPLabel" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/prefDisplayCategoryTitle" >
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"
@@ -93,6 +101,49 @@ authors: zkhan, jlmcgraw
             android:key="@string/Units"
             android:summary="@string/UnitsSummary"
             android:title="@string/UnitsLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefUseDynamicFields"
+            android:summary="@string/UseDynamicFieldsSummary"
+            android:title="@string/UseDynamicFieldsLabel" />
+     </PreferenceScreen>
+
+    <PreferenceScreen 
+        android:title="@string/Instrumentation" 
+        android:icon="@android:drawable/ic_menu_preferences" >
+        <EditTextPreference
+                android:title="@string/GlideRatioLabel"
+                android:summary="@string/GlideRatioSummary"
+                android:key="@string/GlideRatio"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/EdgeTape"
+            android:summary="@string/EdgeTapeSummary"
+            android:title="@string/EdgeTapeLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/DistanceRingTypePrompts"
+            android:entryValues="@array/DistanceRingTypeValues"
+            android:key="@string/prefDistanceRingType"
+            android:summary="@string/DistanceRingTypeSummary"
+            android:title="@string/DistanceRingTypeLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/TimerRingSizePrompt"
+            android:entryValues="@array/TimerRingSizeValues"
+            android:key="@string/prefTimerRingSize"
+            android:summary="@string/TimerRingSizeSummary"
+            android:title="@string/TimerRingSizeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefShowCDI"
+            android:summary="@string/ShowCDISummary"
+            android:title="@string/ShowCDILabel" />
+	</PreferenceScreen>
+        
+    <PreferenceScreen 
+        android:title="@string/prefDisplayCategoryTitle" 
+        android:icon="@android:drawable/ic_menu_gallery" >
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/NightMode"
@@ -114,6 +165,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/RunwaysSummary"
             android:title="@string/RunwaysLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/AutoShowAirportDiagram"
+            android:summary="@string/AutoShowAirportDiagramSummary"
+            android:title="@string/AutoShowAirportDiagramLabel" />        
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ShowTrack"
             android:summary="@string/ShowTrackSummary"
@@ -133,28 +189,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/IconHelicopter"
             android:summary="@string/IconHelicopterSummary"
             android:title="@string/IconHelicopterLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="0"
-            android:entries="@array/DistanceRingTypePrompts"
-            android:entryValues="@array/DistanceRingTypeValues"
-            android:key="@string/prefDistanceRingType"
-            android:summary="@string/DistanceRingTypeSummary"
-            android:title="@string/DistanceRingTypeLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="0"
-            android:entries="@array/TimerRingSizePrompt"
-            android:entryValues="@array/TimerRingSizeValues"
-            android:key="@string/prefTimerRingSize"
-            android:summary="@string/TimerRingSizeSummary"
-            android:title="@string/TimerRingSizeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/prefUseDynamicFields"
-            android:summary="@string/UseDynamicFieldsSummary"
-            android:title="@string/UseDynamicFieldsLabel" />
-        </PreferenceCategory>
-        	<PreferenceCategory android:title="@string/prefTracksCategoryTitle" >
-    	<CheckBoxPreference
+        </PreferenceScreen>
+
+	<PreferenceScreen 
+    	    android:title="@string/prefTracksCategoryTitle" 
+        	android:icon="@android:drawable/ic_menu_myplaces" >
+		<CheckBoxPreference
     	    android:key="@string/TrkUpdAllow"
     	    android:title="@string/TrkUpdAllowLabel"
     	    android:summary="@string/TrkUpdAllowSummary"/>
@@ -169,6 +209,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefAutoPostTracks"
             android:summary="@string/AutoPostTracksSummary"
             android:title="@string/AutoPostTracksLabel" />
-        </PreferenceCategory>
+        </PreferenceScreen>
     
 </PreferenceScreen>

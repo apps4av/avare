@@ -590,4 +590,17 @@ public class WeatherHelper {
 
         return "";
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public static String getNamMosLegend() {
+        /*
+         * Legend 
+         */
+        return
+                "<a href='http://www.nws.noaa.gov/mdl/synop/namcard.php'>NAM Forecast Legend</a><br>";
+
+    }
 }

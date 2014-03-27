@@ -56,6 +56,11 @@ public class BitmapHolder {
      */    
 	private boolean mFree = true;
     
+	/**
+	 * 
+	 */
+	private boolean mFound = false;
+	
     /**
      * Transform for scale/translate
      */
@@ -235,6 +240,8 @@ public class BitmapHolder {
             mWidth = mBitmap.getWidth();
             mHeight = mBitmap.getHeight();
         }
+        else {
+        }
     }
 
     /**
@@ -292,7 +299,23 @@ public class BitmapHolder {
      * @param free
      */
     public void setFree(boolean free) {
-    	mFree = free;
+        mFree = free;
+    }
+    
+    /**
+     * 
+     * @param nothing in it?
+     */
+    public void setFound(boolean found) {
+        mFound = found;
+    }
+    
+    /**
+     * 
+     * @param nothing in it?
+     */
+    public boolean getFound() {
+        return mFound;
     }
         
     /**

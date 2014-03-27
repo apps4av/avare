@@ -13,6 +13,7 @@ package com.ds.avare;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,20 +32,24 @@ public class NearestAdapter extends ArrayAdapter<String> {
     private String[] mBearing;
     private String[] mFuel;
     private String[] mElevation;
+    private String[] mLongestRunway;
+    private boolean[] mGlide;
         
     /**
      * @param context
      * @param textViewResourceId
      */
     public NearestAdapter(Context context, String[] distance, String name[], 
-            String bearing[], String[] fuel, String[] runway) {
+            String bearing[], String[] fuel, String[] elev, String[] runway, boolean[] glide) {
         super(context, R.layout.nearest, distance);
         mContext = context;
         mBearing = bearing;
         mDistance = distance;
         mName = name;
         mFuel = fuel;
-        mElevation = runway;
+        mElevation = elev;
+        mLongestRunway = runway;
+        mGlide = glide;
     }
 
     /**
@@ -56,15 +61,65 @@ public class NearestAdapter extends ArrayAdapter<String> {
      * @param elevation
      */
     public void updateList(String[] distance, String name[], 
-            String bearing[], String[] fuel, String[] elevation) {
+            String bearing[], String[] fuel, String[] elevation, String[] runway,
+            boolean[] glide) {
         mBearing = bearing;
         mDistance = distance;
         mName = name;
         mFuel = fuel;
         mElevation = elevation;
+        mLongestRunway = runway;
+        mGlide = glide;
         notifyDataSetChanged();
     }
     
+    /**
+     * 
+     * @return
+     */
+    public int getClosestWith100LL() {
+        if(mFuel == null) {
+            return -1;
+        }
+        
+        for(int i = 0; i < mFuel.length; i++) {
+            if(mFuel[i] != null) {
+                if(mFuel[i].contains("100LL")) {
+                    return i;
+                }
+            }
+        }
+            
+        return -1;
+    }
+
+    /**
+     * Get the closest airport with runway of length of least length
+     * @return
+     */
+    public int getClosestRunwayWithMinLength(int length) {
+        if(mLongestRunway == null) {
+            return -1;
+        }
+
+        for(int i = 0; i < mLongestRunway.length; i++) {
+            if(mLongestRunway[i] != null) {
+                int len = -1;
+                try {
+                    len = Integer.parseInt(mLongestRunway[i].split("X")[0]);
+                }
+                catch (Exception e) {
+                    continue;
+                }
+                if(len >= length) {
+                    return i;
+                }
+            }
+        }
+            
+        return -1;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -79,11 +134,21 @@ public class NearestAdapter extends ArrayAdapter<String> {
         textView = (TextView)rowView.findViewById(R.id.nearest_list_bearing);
         textView.setText(mBearing[position]);
         textView = (TextView)rowView.findViewById(R.id.nearest_list_aid_name);
-        textView.setText(mName[position]);
-        textView = (TextView)rowView.findViewById(R.id.nearest_list_fuel);
-        textView.setText(mFuel[position]);
+        textView.setText(mName[position] + (mFuel[position].equals("") ? "" : "$ " + mContext.getString(R.string.Fuel)));
+        /*
+         * If cannot glide, mark it red
+         */
+        if(mGlide[position] == false) {
+            textView.setTextColor(Color.RED);
+        }
+        else {
+            textView.setTextColor(Color.GREEN);            
+        }
+        /*
+         * Fuel shows as Fuel or none
+         */
         textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);
-        textView.setText(mElevation[position]);
+        textView.setText(mLongestRunway[position] + "ft @" + mElevation[position]);
         
         return rowView;
     }

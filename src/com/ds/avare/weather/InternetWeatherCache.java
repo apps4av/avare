@@ -100,7 +100,7 @@ public class InternetWeatherCache {
                         if(0 == lat || 0 == lon) {
                             continue;
                         }
-                        asm.shape.add(lon, lat);
+                        asm.shape.add(lon, lat, false);
                     }
                     asm.shape.makePolygon();
                 }

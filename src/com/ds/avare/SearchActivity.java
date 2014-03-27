@@ -72,7 +72,14 @@ public class SearchActivity extends Activity implements Observer {
     private Button mSelectedButton;
     private Button mEditButton;
     private Button mPlanButton;
+    private Button mPlatesButton;
     private boolean mIsWaypoint;
+    
+    private AnimateButton mAnimatePlates;
+    private AnimateButton mAnimatePlan;
+    private AnimateButton mAnimateSelect;
+    private AnimateButton mAnimateEdit;
+
     /**
      * Shows edit dialog
      */
@@ -111,7 +118,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     
@@ -119,13 +126,13 @@ public class SearchActivity extends Activity implements Observer {
      * 
      * @param dst
      */
-    private void goTo(String dst, String type) {
+    private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
-        mDestination.find();
+        mDestination.find(dbType);
         mSearchText.setText("");
     }
 
@@ -133,14 +140,13 @@ public class SearchActivity extends Activity implements Observer {
      * 
      * @param dst
      */
-    private void planTo(String dst, String type) {
+    private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
-        mDestination.find();
-        mService.getPlan().makeInactive();
+        mDestination.find(dbType);
         mSearchText.setText("");
     }
 
@@ -270,13 +276,36 @@ public class SearchActivity extends Activity implements Observer {
                 if(null != mSelected) {
                     String id = StringPreference.parseHashedNameId(mSelected); 
                     String destType = StringPreference.parseHashedNameDestType(mSelected); 
+                    String dbType = StringPreference.parseHashedNameDbType(mSelected);
                     if(id == null || destType == null) {
                         return;
                     }
-                    planTo(id, destType);
+                    // It's ok if dbType is null
+                    planTo(id, destType, dbType);
                 }
             }
         });
+        
+        mPlatesButton = (Button)view.findViewById(R.id.search_button_plates);
+        mPlatesButton.getBackground().setAlpha(255);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    String id = StringPreference.parseHashedNameId(mSelected);  
+                    if(id == null) {
+                        return;
+                    }
+                    
+                    if(mService != null) {
+                        mService.setLastPlateAirport(id);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
+                    }
+                }
+            }
+        });        
 
 
         /*
@@ -292,10 +321,12 @@ public class SearchActivity extends Activity implements Observer {
                 String txt = mAdapter.getItem(position).replace(",", " ");
                 String id = StringPreference.parseHashedNameId(txt); 
                 String destType = StringPreference.parseHashedNameDestType(txt); 
+                String dbType = StringPreference.parseHashedNameDbType(txt);
                 if(id == null || destType == null) {
                     return;
                 }
-                goTo(id, destType);
+                // It's ok if dbType is null
+                goTo(id, destType, dbType);
             }
         });
         
@@ -308,13 +339,28 @@ public class SearchActivity extends Activity implements Observer {
                 if(mSelected == null) {
                     return false;
                 }
-                                
-                AnimateButton d = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton e = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                e.animate(true);
-                f.animate(true);
-                d.animate(true);
+                
+                // Don't display the plates button if there are no plates
+                String id = StringPreference.parseHashedNameId(mSelected);
+                
+                if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), id)) {
+                	mAnimatePlates.animate(true);
+                }
+                else {
+                	mAnimatePlates.stopAndHide();
+                }
+
+                mAnimateSelect.animate(true);
+                mAnimatePlan.animate(true);
+                
+                // Don't display the edit button if we can't edit
+                String type = StringPreference.parseHashedNameDbType(mSelected);
+                if(type == null || !type.equals(Destination.GPS)) {
+                	mAnimateEdit.stopAndHide();
+                }
+                else {
+                	mAnimateEdit.animate(true);
+                }
 
                 return true;
             }
@@ -357,9 +403,9 @@ public class SearchActivity extends Activity implements Observer {
                 
                 if(s.toString().startsWith("address,")) {
                     String [] vals = new String[1];
-                    String addr[] = s.toString().split(",");
-                    if(addr.length > 1) {
-                        StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr[1]);
+                    String addr = s.toString().substring(8); // 8 = length of "address,"
+                    if(addr.length() > 1) {
+                        StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr);
                         vals[0] = sp.getHashedName();
                         mAdapter = new SearchAdapter(SearchActivity.this, vals);
                         mSearchListView.setAdapter(mAdapter);
@@ -385,6 +431,12 @@ public class SearchActivity extends Activity implements Observer {
 
             }
         });
+        
+        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlan = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateSelect = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateEdit = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
     }
         
         
@@ -535,7 +587,7 @@ public class SearchActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).switchTab(0);
+                    ((MainActivity)this.getParent()).showMapTab();
                 }
                 else {
                     if(mService != null) {

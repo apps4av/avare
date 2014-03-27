@@ -11,10 +11,16 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -46,7 +52,51 @@ public class NetworkHelper {
         return root + "donate.html";
     }
 
- 
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+    public static String getNAMMET(String airport) {
+        
+        //http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=KALX
+        
+        try {
+            URL url = new URL("http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=K" + airport);
+            Scanner s = new Scanner(url.openStream());
+            int state = 0;
+            String sb = "";
+            while(s.hasNextLine()) {
+
+                /*
+                 * Parse pre formatted text from the NOAA website
+                 * Strip out all other HTML.
+                 */
+                String line = s.nextLine();
+                if(line.contains("<PRE>")) {
+                    state = 1;
+                }
+                else if(line.contains("</PRE>")) {
+                    state = 0;
+                    break;
+                }
+                else if(state == 1) {
+                    /*
+                     * Only text that describes forecast
+                     */
+                    sb = sb + "<pre>" + line + "</pre>";
+                }
+            }
+            s.close();
+            return sb;
+        }
+        catch (Exception e) {
+            
+        }
+
+        return "";
+    }   
+         
     /**
      * 
      * @param airport
@@ -108,7 +158,8 @@ public class NetworkHelper {
 
     /**
      * 
-     * @param airport
+     * @param plan
+     * @param miles
      * @return
      */
     public static String getPIREPS(String plan, String miles) {
@@ -250,8 +301,9 @@ public class NetworkHelper {
 
     /**
      * 
-     * @param version
      * @param file
+     * @param vers
+     * @param root
      * @return
      */
     public static String getUrl(String file, String vers, String root) {
@@ -271,11 +323,12 @@ public class NetworkHelper {
      * 
      * @return
      */
-    public static String getVersion(String name) {
+    public static String getVersion(String root, String name) {
+        int cycle = 1400;
         String ret = "";
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        epoch.set(2013, 6, 25, 9, 0, 0);
+        epoch.set(2013, 11, 12, 9, 0, 0);
         /*
          * Expires every so many mins
          */
@@ -287,16 +340,36 @@ public class NetworkHelper {
                     EXPIRES * (int)(now.get(Calendar.MINUTE) / EXPIRES));
         }
         else {
+
+            /*
+             * Download version from the internet first, then if not found,
+             * calculate what it should be
+             */
+            try {
+                URL u = new URL(root + "version.php");
+                URLConnection c = u.openConnection();
+                InputStream r = c.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(r));
+                String line = reader.readLine();
+                if(null != line) {
+                    return line;
+                }
+            }
+            catch (Exception e) {
+
+            }
+
+
             while(epoch.before(now)) {
                 epoch.add(Calendar.DAY_OF_MONTH, 28);
+                cycle++;
             }
             epoch.add(Calendar.DAY_OF_MONTH, -28);
+            cycle--;
             /*
              * US locale as this is a folder name not language translation
              */
-            ret = String.format(Locale.US, "%02d_%02d_%04d", epoch.get(Calendar.MONTH) + 1,
-                    epoch.get(Calendar.DAY_OF_MONTH),
-                    epoch.get(Calendar.YEAR));
+            ret = "" + cycle;
         }
         return ret;
     }

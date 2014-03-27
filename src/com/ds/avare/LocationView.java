@@ -19,6 +19,8 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.instruments.EdgeDistanceTape;
+import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -74,7 +76,6 @@ import android.view.View.OnTouchListener;
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
 public class LocationView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
-
     /**
      * paint for onDraw
      */
@@ -83,7 +84,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Current GPS location
      */
     private GpsParams                  mGpsParams;
-    private GpsParams				   mVSIParams;
+    private GpsParams				    mVSIParams;
     
     /**
      * The plane on screen
@@ -126,11 +127,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private TileDrawTask                mTileDrawTask; 
     private Thread                      mTileDrawThread;
 
+    
     /**
      * Task that would draw obstacles
      */
     private ObstacleTask                mObstacleTask; 
-    private Thread                      mObstacleThread;
 
     /**
      * Task that finds closets airport.
@@ -243,7 +244,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     // Handler for the top two lines of status information
     InfoLines mInfoLines;
-    
+
     /**
      * @param context
      */
@@ -316,10 +317,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
-
-        mObstacleTask = new ObstacleTask();
-        mObstacleThread = new Thread(mObstacleTask);
-        mObstacleThread.start();
 
         mTextSize = new Rect();
         mShadowBox = new RectF(mTextSize);
@@ -404,6 +401,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 dbquery(true);
             }
 
+        }
+        else if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
         }
         mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
@@ -571,11 +571,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
   
         if(null != mService) {
+            int empty = 0;
+            int tn = mService.getTiles().getTilesNum();
             
-            for(int tilen = 0; tilen < mService.getTiles().getTilesNum(); tilen++) {
+            for(int tilen = 0; tilen < tn; tilen++) {
                 
                 BitmapHolder tile = mService.getTiles().getTile(tilen);
-                
                 /*
                  * Scale, then move under the plane which is at center
                  */
@@ -586,8 +587,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 else if(null == tile.getBitmap()) {
                     nochart = true;
                 }
+                
                 if(nochart) {
                     continue;
+                }
+
+                /*
+                 * Find how many empty tiles
+                 */
+                if(!tile.getFound()) {
+                    empty++;
                 }
 
                 if(mPref.isNightMode() && (mPref.getChartType().equals("3") || mPref.getChartType().equals("4"))) {
@@ -628,6 +637,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 
                 Helper.restoreCanvasColors(mPaint);
+            }
+            
+            /*
+             * If nothing on screen, write a not found message
+             */
+            if(empty >= tn) {
+                mDistanceRingPaint.setColor(Color.WHITE);
+                drawShadowedText(canvas, mDistanceRingPaint,
+                        mContext.getString(R.string.MissingMaps), 
+                        Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
     }
@@ -723,6 +742,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         
         /*
+         * Radar is way too old.
+         */
+        if(mService.getRadar().isOld()) {
+            return;
+        }
+        
+        /*
          * If using ADSB, then dont show
          */
         if(mPref.useAdsbWeather()) {
@@ -747,15 +773,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Get nexrad bitmaps to draw.
          */
-        SparseArray<NexradBitmap> bitmaps;
+        SparseArray<NexradBitmap> bitmaps = null;
         if(mScale.getMacroFactor() > 4) {
-            /*
-             * CONUS for larger scales.
-             */
-            bitmaps = mService.getAdsbWeather().getNexradConus().getImages();            
+            if(!mService.getAdsbWeather().getNexradConus().isOld()) {
+                /*
+                 * CONUS for larger scales.
+                 */
+                bitmaps = mService.getAdsbWeather().getNexradConus().getImages();                
+            }
         }
         else {
-            bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+            if(!mService.getAdsbWeather().getNexrad().isOld()) {
+                bitmaps = mService.getAdsbWeather().getNexrad().getImages();
+            }
         }
 
         if(null == bitmaps || null != mPointProjection || (!mPref.useAdsbWeather())) {
@@ -808,7 +838,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         for(int i = 0; i < traffic.size(); i++) {
             int key = traffic.keyAt(i);
             Traffic t = traffic.get(key);
-            if(t.isStale()) {
+            if(t.isOld()) {
                 traffic.delete(key);
                 continue;
             }
@@ -816,7 +846,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(null != mAirplaneOtherBitmap) {
                 rotateBitmapIntoPlace(mAirplaneOtherBitmap, t.mHeading,
                         t.mLon, t.mLat, true);
+                mDistanceRingPaint.setColor(Color.WHITE);
                 canvas.drawBitmap(mAirplaneOtherBitmap.getBitmap(), mAirplaneOtherBitmap.getTransform(), mPaint);
+                /*
+                 * Make traffic line and info
+                 */
+                float x = (float)mOrigin.getOffsetX(t.mLon);
+                float y = (float)mOrigin.getOffsetY(t.mLat);
+                drawShadowedText(canvas, mDistanceRingPaint,
+                        t.mAltitude + "'", Color.DKGRAY, x, y);
+
             }
         }
     }
@@ -831,11 +870,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         if(mService.getDestination() != null && null == mPointProjection) {
-            if(mPref.isTrackEnabled() && (!mPref.isSimulationMode())) {
+            if(mPref.isTrackEnabled()) {
                 mPaint.setColor(Color.MAGENTA);
                 mPaint.setStrokeWidth(5 * mDipToPix);
                 mPaint.setAlpha(162);
-                if(mService.getDestination().isFound() && !mService.getPlan().isActive()) {
+                if(mService.getDestination().isFound() && !mService.getPlan().isActive()  && (!mPref.isSimulationMode())) {
                     mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
                 }
                 else if (mService.getPlan().isActive()) {
@@ -1077,7 +1116,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         float x = (float) (mOrigin.getOffsetX(mGpsParams.getLongitude()));
         float y = (float) (mOrigin.getOffsetY(mGpsParams.getLatitude()));
         double bearing = mGpsParams.getBearing();	/* What direction are we headed */
-        
+        if(mTrackUp) {		// If our direction is always to the top, then set
+        	bearing = 0;	// our bearing to due up as well
+        }
+
         /*
          * If the user wants the distance rings display, now is the time
          */
@@ -1111,7 +1153,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Draw the corresponding text
              */
             String text[] = DistanceRings.getRingsText();
-         
+
             float adjX = (float) Math.sin((bearing - 10) * Math.PI / 180);	// Distance ring numbers, offset from
             float adjY = (float) Math.cos((bearing - 10) * Math.PI / 180);	// the course line for readability
 
@@ -1198,8 +1240,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         final int SHADOWRECTRADIUS = (int) (5 * mDipToPix);
         paint.getTextBounds(text, 0, text.length(), mTextSize);
         
-        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y;
-        mShadowBox.top    = mTextSize.top - YMARGIN + y;
+        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
+        mShadowBox.top    = mTextSize.top - YMARGIN + y - (mTextSize.top / 2);
         mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
         mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
 
@@ -1207,9 +1249,57 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mShadowPaint.setColor(shadowColor);
         mShadowPaint.setAlpha(0x80);
         canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
-        canvas.drawText(text,  x - (mTextSize.right / 2), y, paint);
+        canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
     }
 
+    /***
+     * Draw the course deviation indicator if we have a destination set
+     * @param canvas what to draw the data upon
+     */
+    private void drawCDI(Canvas canvas)
+    {
+        if(mService != null && mPointProjection == null && mErrorStatus == null) {
+        	if(mPref.getShowCDI()) {
+	        	Destination dest = mService.getDestination();
+	        	if(dest != null) {
+	        		mService.getCDI().drawCDI(canvas, getWidth(), getHeight());
+	        	}
+        	}
+        }
+    	
+    }
+    
+    /***
+     * Draw the vertical approach slope indicator if we have a destination set
+     * @param canvas what to draw the data upon
+     */
+    private void drawVASI(Canvas canvas)
+    {
+        if(mService != null && mPointProjection == null && mErrorStatus == null) {
+        	if(mPref.getShowCDI()) {
+	        	Destination dest = mService.getDestination();
+	        	if(dest != null) {
+	        		mService.getVNAV().drawVNAV(canvas, getWidth(), getHeight(), dest);
+	        	}
+        	}
+        }
+    	
+    }
+
+    /***
+     * Draw the edge distance markers if configured to do so
+     * @param canvas what to draw them on
+     */
+    private void drawEdgeMarkers(Canvas canvas) {
+        if(mService != null && mPointProjection == null && mPref.shouldShowEdgeTape()) {
+	        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
+	        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
+	        float pixPerNm = mMovement.getNMPerLatitude(mScale);
+	      	EdgeDistanceTape.draw(canvas, mPaint, mScale, pixPerNm, x, y, 
+	      			(int) mInfoLines.getHeight(), getWidth(), getHeight());
+        }
+    }
+    
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1237,7 +1327,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
-        drawDistanceRings(canvas);
         drawRunways(canvas);
         drawAircraft(canvas);
         
@@ -1245,7 +1334,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.restore();
         }
         
+        drawDistanceRings(canvas);
+        drawCDI(canvas);
+        drawVASI(canvas);
       	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
+      	drawEdgeMarkers(canvas);
     }    
 
     /**
@@ -1291,9 +1384,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void updateParams(GpsParams params) {
     	
+        double tdiff = ((double)(params.getTime() - mVSIParams.getTime()) / 1000.0);
     	// Calculate the instantaneous vertical speed in ft/min
-    	if(params.getTime() - mVSIParams.getTime() > 1000) {
-    		mVSI = ((params.getAltitude() - mVSIParams.getAltitude())) * (60 / ((params.getTime() - mVSIParams.getTime()) / 1000));
+    	if(tdiff > 1) {
+    		mVSI = ((double)(params.getAltitude() - mVSIParams.getAltitude())) * (60 / tdiff);
     		mVSIParams = params;
     	}
     	
@@ -1302,27 +1396,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mGpsParams = params;
 
-        if(mService != null) {
-            mService.getFlightTimer().setSpeed(mGpsParams.getSpeed());	/* Tell the timer how fast we are going */
-            mService.getKMLRecorder().setGpsParams(mGpsParams);			/* Tell the KML recorder where we are     */
-            mService.getOdometer().updateValue(mPref, mGpsParams);		/* Adjust the odometer	*/
-        }
-
         updateCoordinates();
+        
         /*
          * Database query for new location / pan location.
          */
         dbquery(false);
         
-        
-        /*
-         * Do not overwhelm, obstacles
-         */
-        mObstacleTask.alt = mGpsParams.getAltitude();
-        mObstacleTask.lon = mGpsParams.getLongitude();
-        mObstacleTask.lat = mGpsParams.getLatitude();
-        
-        mObstacleThread.interrupt();
+        if(mObstacleTask != null) {
+            /*
+             * Do not overwhelm
+             */
+            if(mObstacleTask.getStatus() == AsyncTask.Status.RUNNING) {
+                mObstacleTask.cancel(true);
+            }
+        }
+        mObstacleTask = new ObstacleTask();
+        mObstacleTask.execute(mGpsParams);
     }
 
     
@@ -1356,6 +1446,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mScale.setScaleAt(mGpsParams.getLatitude());
         dbquery(true);
         postInvalidate();
+
+        // Tell the CDI the paint that we use for display text
+        mService.getCDI().setSize(mPaint);
+        mService.getVNAV().setSize(mPaint);
+        
+        // Tell the odometer how to access preferences
+        mService.getOdometer().setPref(mPref);
     }
 
     /**
@@ -1477,7 +1574,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String text;
         private String textMets;
         private String sua;
-        private String nexrad;
+        private String radar;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private Taf taf;
@@ -1514,7 +1611,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     sua = mService.getDBResource().getSua(lon, lat);
                     
-                    nexrad = mService.getRadar().getDate();
+                    radar = mService.getRadar().getDate();
                 }
             }
             else {
@@ -1528,8 +1625,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     
                     wa = mService.getDBResource().getWindsAloft(lon, lat);
                     sua = mService.getDBResource().getSua(lon, lat);
-
-                    nexrad = mService.getRadar().getDate();
+                    
+                    radar = mService.getRadar().getDate();
                 }                
             }
             
@@ -1564,7 +1661,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     metar = mService.getAdsbWeather().getMETAR(airport);                    
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
-                    nexrad = mService.getAdsbWeather().getNexrad().getTime();
+                    radar = mService.getAdsbWeather().getNexrad().getDate();
                 }
                 if(null != aireps) {
                     for(Airep a : aireps) {
@@ -1582,7 +1679,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 data.wa = wa;
                 data.freq = freq;
                 data.sua = sua;
-                data.nexrad = nexrad;
+                data.radar = radar;
                 mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, data);
             }
             invalidate();
@@ -1595,74 +1692,73 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      * Find obstacles
      */
-    private class ObstacleTask implements Runnable {
-        public Double lon;
-        public Double lat;
-        public Double alt;
+    private class ObstacleTask extends AsyncTask<Object, Void, Object> {
         
-        public boolean running = true;
+        private LinkedList<Obstacle> obs = null;
+        double elev = -1;
+        
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        public void run() {
+        protected Void doInBackground(Object... vals) {
             Thread.currentThread().setName("Obstacle");
 
-            /*
-             * Elevation tile to find AGL and ground proximity warning
-             */
-            double offsets[] = new double[2];
-            double p[] = new double[2];
-
-            while(running) {
-
-                try {
-                    Thread.sleep(1000 * 3600);
-                }
-                catch (Exception e) {
-                    
+            double lon = ((GpsParams)vals[0]).getLongitude();
+            double lat = ((GpsParams)vals[0]).getLatitude();
+            double alt = ((GpsParams)vals[0]).getAltitude();
+            
+            if(null != mImageDataSource) {
+                /*
+                 * Find obstacles in background as well
+                 */
+                if(mPref.shouldShowObstacles()) {
+                    obs = mImageDataSource.findObstacles(lon, lat, (int)alt);
                 }
                 
-                if(null != mImageDataSource) {
+                /*
+                 * Find elevation tile in background, and load 
+                 */
+                if(mService != null) {
                     /*
-                     * Find obstacles in background as well
+                     * Elevation tile to find AGL and ground proximity warning
                      */
-                    if(mPref.shouldShowObstacles()) {
-                        mObstacles = mImageDataSource.findObstacles(lon, lat, alt.intValue());
-                    }
-                    
+                    double offsets[] = new double[2];
+                    double p[] = new double[2];
+                    Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
+                    mService.setElevationTile(t);
+                    BitmapHolder elevBitmap = mService.getElevationBitmap();
                     /*
-                     * Find elevation tile in background, and load 
+                     * Load only if needed.
                      */
-                    if(mService != null) {
-                        Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                        mService.getTiles().setElevationTile(t);
-                        BitmapHolder elevBitmap = mService.getTiles().getElevationBitmap();
-                        /*
-                         * Load only if needed.
-                         */
-                        if(null != elevBitmap) {
-                            int x = (int)Math.round(offsets[0]);
-                            int y = (int)Math.round(offsets[1]);
-                            if(elevBitmap.getBitmap() != null) {
+                    if(null != elevBitmap) {
+                        int x = (int)Math.round(offsets[0]);
+                        int y = (int)Math.round(offsets[1]);
+                        if(elevBitmap.getBitmap() != null) {
+                        
+                            if(x < elevBitmap.getBitmap().getWidth()
+                                && y < elevBitmap.getBitmap().getHeight()
+                                && x >= 0 && y >= 0) {
                             
-                                if(x < elevBitmap.getBitmap().getWidth()
-                                    && y < elevBitmap.getBitmap().getHeight()
-                                    && x >= 0 && y >= 0) {
-                                
-                                    int px = elevBitmap.getBitmap().getPixel(x, y);
-                                    mElev = Helper.findElevationFromPixel(px);
-                                    continue;
-                                }
+                                int px = elevBitmap.getBitmap().getPixel(x, y);
+                                elev = Helper.findElevationFromPixel(px);
                             }
                         }
                     }
-                    mElev = -1;
-                }                
+                }
             }
+            return null;                
         }
+        
+        @Override
+        protected void onPostExecute(Object res) {
+            mElev = elev;
+            mObstacles = obs;
+        }
+
     }
+
 
     /**
      * Center to the location
@@ -1904,10 +2000,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      */
     public void cleanup() {
-        mObstacleTask.running = false;
         mTileDrawTask.running = false;
         mTileDrawThread.interrupt();
-        mObstacleThread.interrupt();
     }
 
     

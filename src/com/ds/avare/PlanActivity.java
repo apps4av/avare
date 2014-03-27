@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
@@ -36,7 +38,9 @@ import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,6 +70,7 @@ public class PlanActivity extends Activity  implements Observer {
     private Button mSaveButton;
     private Button mDeleteButton;
     private Button mPlanButton;
+    private Button mPlatesButton;
     private EditText mSaveText;
     private EditText mPlanText;
     private int mIndex;
@@ -83,6 +88,11 @@ public class PlanActivity extends Activity  implements Observer {
     private ToggleButton mActivateButton;
     private TextView mTotalText;
     private Destination mDestination;
+    private AnimateButton mAnimateDest;
+    private AnimateButton mAnimateDelete;
+    private AnimateButton mAnimatePlates;
+    private Timer mTimer;
+
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -113,7 +123,7 @@ public class PlanActivity extends Activity  implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).switchTab(0);
+        ((MainActivity)this.getParent()).showMapTab();
     }
 
     /**
@@ -229,6 +239,22 @@ public class PlanActivity extends Activity  implements Observer {
                 mIndex = -1;
             }   
         });
+        
+        /*
+         * 
+         */
+        mPlatesButton = (Button)view.findViewById(R.id.plan_button_plates);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mService != null) {
+                    mService.setLastPlateAirport(mDestination.getID());
+                    mService.setLastPlateIndex(0);
+                }
+                ((MainActivity) PlanActivity.this.getParent()).showPlatesTab();
+            }   
+        });        
 
         /*
          * Plan button
@@ -316,7 +342,7 @@ public class PlanActivity extends Activity  implements Observer {
                     }
                 }
                 mIndex = -1;
-                ((MainActivity) PlanActivity.this.getParent()).switchTab(0);
+                ((MainActivity) PlanActivity.this.getParent()).showMapTab();
             }   
         });
 
@@ -392,7 +418,10 @@ public class PlanActivity extends Activity  implements Observer {
             }
             
         });
-        
+
+        mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
     /**
@@ -563,10 +592,14 @@ public class PlanActivity extends Activity  implements Observer {
                             
                     mDestination = mService.getPlan().getDestination(index);
                     mDestButton.setText(mDestination.getID());
-                    AnimateButton g = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    AnimateButton d = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                    g.animate(true);
-                    d.animate(true);
+                    mAnimateDest.animate(true);
+                    mAnimateDelete.animate(true);
+                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), mDestination.getID())) {
+                    	mAnimatePlates.animate(true);
+                    }
+                    else {
+                    	mAnimatePlates.stopAndHide();
+                    }
 
                     return true;
                 }
@@ -721,6 +754,10 @@ public class PlanActivity extends Activity  implements Observer {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
+        
+        if(mTimer != null) {
+            mTimer.cancel();
+        }
     }
 
     /**
@@ -737,6 +774,13 @@ public class PlanActivity extends Activity  implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        /*
+         * Create sim timer
+         */
+        mTimer = new Timer();
+        TimerTask sim = new UpdateTask();
+        mTimer.scheduleAtFixedRate(sim, 0, 1000);
     }
 
     /**
@@ -786,4 +830,38 @@ public class PlanActivity extends Activity  implements Observer {
         }
         searchDest();        
     }
+    
+    /**
+     * @author zkhan
+     *
+     */
+    private class UpdateTask extends TimerTask {
+        
+        /* (non-Javadoc)
+         * @see java.util.TimerTask#run()
+         */
+        public void run() {
+
+            /*
+             * In sim mode, keep feeding location
+             */
+            if(mPref.isSimulationMode()) {
+                mHandler.sendEmptyMessage(0);
+            }
+
+        }
+    }
+    
+    /**
+     * This leak warning is not an issue if we do not post delayed messages, which is true here.
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(mService != null) {
+                mService.getPlan().simulate();
+                updateAdapter();
+            }
+        }
+    };
 }

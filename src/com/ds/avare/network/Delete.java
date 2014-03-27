@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.utils.Helper;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -110,12 +112,7 @@ public class Delete extends Observable {
                 
                 String toDelete = path + "/" + name;
                 
-                try {
-                    (new File(toDelete)).delete();
-                }
-                catch(Exception e) {
-                    
-                }
+                Helper.deleteDir(new File(toDelete));
                 
                 if(lastp != newp) {
                     lastp = newp;

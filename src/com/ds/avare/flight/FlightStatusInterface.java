@@ -9,33 +9,22 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+package com.ds.avare.flight;
 
-package com.ds.avare.touch;
-
-import java.util.LinkedList;
-
-import com.ds.avare.weather.Airep;
-import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
 
 /**
- * Works with LongTouchGesture
- * @author zkhan
+ * @author rstigall
  *
  */
-public class LongTouchDestination {
+public interface FlightStatusInterface {
 
-    public String airport;
-    public String info;
-    public String chart;
-    public String tfr;
-    public String mets;
-    public Taf taf;
-    public WindsAloft wa;
-    public Metar metar;
-    public String sua;
-    public String radar;
-    public LinkedList<Airep> airep;
-    public LinkedList<String> freq;
+    /*
+     * Callbacks dealing with various phases of flight
+     */
+    
+    /**
+     * This will get called as the aircraft is rolling out after landing (typically at 40 knots)
+     * Initial use will be to display airport diagram on rollout
+     */
+    void rollout();
 }

@@ -36,8 +36,10 @@ public class Area {
     private double mLat;
     private boolean mFound;
     private long mLastTime;
+    private double mAltitude;
     
-    private static final int MAX_AIRPORTS = 20;
+    
+    private static final int MAX_AIRPORTS = 15;
     
     private static final int UPDATE_TIME = 10000;
     
@@ -48,6 +50,7 @@ public class Area {
     public Area(DataSource dataSource) {
         mDataSource = dataSource;
         mLon = mLat = 0;
+        mAltitude = 0;
         mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
     }
@@ -107,6 +110,7 @@ public class Area {
         
         mLon = lon;
         mLat = lat;
+        mAltitude = params.getAltitude();
         
         if(mDt != null) {
             /*
@@ -124,8 +128,9 @@ public class Area {
      * @author zkhan
      * Query for closest airports task
      */
-    private class DataBaseAreaTask extends AsyncTask<Object, Void, Void> {
+    private class DataBaseAreaTask extends AsyncTask<Object, Void, Object> {
 
+        Airport[] airports = null;
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
@@ -138,18 +143,43 @@ public class Area {
                 return null;
             }
             
-            mDataSource.findClosestAirports(mLon, mLat, mAirports);
+            airports = new Airport[MAX_AIRPORTS];
+
+            mDataSource.findClosestAirports(mLon, mLat, airports);
             /*
              * Sort on distance because distance found from sqlite is less than perfect
              */
-            if(getAirportsNumber() > 1) {
-                List<Airport> list = Arrays.asList(mAirports);
-                Collections.sort(list);
-                mAirports = (Airport[]) list.toArray();
-                mFound = true;
-            }
-            
             return null;
         }
+        
+        @Override
+        protected void onPostExecute(Object res) {
+            List<Airport> list = null;
+            if(airports == null) {
+                return;
+            }
+            /*
+             * Find all airports and assign to mAirports
+             */
+            for(int i = 0; i < airports.length; i++) {
+                if(airports[i] != null) {
+                    list = Arrays.asList(airports);
+                    Collections.sort(list);
+                    mAirports = (Airport[]) list.toArray();
+                    mFound = true;                    
+                }
+            }
+            
+            /*
+             * Now test if all airports are at glide-able distance.
+             */
+            for(int i = 0; i < airports.length; i++) {
+                if(airports[i] != null) {
+                    airports[i].setHeight(mAltitude);
+                }
+            }
+        }
+
     }
+    
 }

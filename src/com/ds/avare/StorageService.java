@@ -17,10 +17,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
-import com.ds.avare.hobbsMeter.FlightTimer;
-import com.ds.avare.hobbsMeter.Odometer;
+import com.ds.avare.instruments.CDI;
+import com.ds.avare.instruments.FlightTimer;
+import com.ds.avare.instruments.Odometer;
+import com.ds.avare.instruments.VNAV;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -28,11 +31,12 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
+import com.ds.avare.shapes.ElevationTile;
 import com.ds.avare.shapes.Radar;
 import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Mutex;
 import com.ds.avare.weather.AdsbWeatherCache;
@@ -44,9 +48,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
-import java.io.File;
 import java.net.URI;
 
 /**
@@ -88,11 +90,16 @@ public class StorageService extends Service {
     
     private Radar mRadar;
     
-    /*
+    private String mLastPlateAirport;
+    private int mLastPlateIndex;
+    
+	/*
      * Last location and its sem for sending NMEA to the world
      */
     private Mutex mLocationSem;
     private Location mLocation;
+    
+    private boolean mDownloading;
     
     /**
      * GPS
@@ -105,13 +112,10 @@ public class StorageService extends Service {
     private Pan mPan;
     
     /*
-     * Plate showing
-     */
-    private int mPlateIndex;
-    
-    /*
      * A/FD showing
      */
+    private String mLastAfdAirport;
+    private Destination mLastAfdDestination;
     private int mAfdIndex;
 
     /**
@@ -160,6 +164,7 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
+    private ElevationTile mElevTile;
     
     /*
      * Hobbs time
@@ -173,6 +178,17 @@ public class StorageService extends Service {
     private KMLRecorder mKMLRecorder;
 
     private Odometer mOdometer;
+    
+    // The Course Deviation Indicator
+    private CDI mCDI;
+    
+    // The vertical approach slope indicator
+    private VNAV mVNAV;
+    
+    /*
+     * Watches GPS to notify of phases of flight
+     */
+    private FlightStatus mFlightStatus;
     
     /**
      * @author zkhan
@@ -215,6 +231,7 @@ public class StorageService extends Service {
         
         mArea = new Area(mImageDataSource);
         mPlan = new Plan();
+        mDownloading = false;
         
         /*
          * All tiles
@@ -230,11 +247,13 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
+        mLastPlateAirport = null;
+        mLastPlateIndex = 0;
+        mElevTile = new ElevationTile(getApplicationContext());
         
         mDraw = new Draw();
         
@@ -259,6 +278,14 @@ public class StorageService extends Service {
          * Start the odometer now
          */
         mOdometer = new Odometer();
+
+        // Allocate the Course Deviation Indicator
+        mCDI = new CDI();
+
+        // Allocate the VNAV
+        mVNAV = new VNAV();
+        
+        mFlightStatus = new FlightStatus(mGpsParams);
         
         /*
          * Monitor TFR every hour.
@@ -298,34 +325,65 @@ public class StorageService extends Service {
              */
             @Override
             public void locationCallback(Location location) {
+                
+                if(mDownloading) {
+                    /**
+                     * Download runs the tasks, so dont do it since we are
+                     * updating files. This flag is set by Download activity.
+                     */
+                    return;
+                }
+                
                 LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
                     GpsInterface infc = it.next();
                     infc.locationCallback(location);
-                    if(null != location) {
-                        if(!location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-                            /*
-                             * Getting location from somewhere other than built in GPS.
-                             * Update timeout so we do not timeout on GPS timer.
-                             */
-                            mGps.updateTimeout();
-                        }
-                        setGpsParams(new GpsParams(location));
-                        mLocation = location;
-                        mLocationSem.unlock();
-                        getArea().updateLocation(getGpsParams());
-                        getPlan().updateLocation(getGpsParams());
-                        if(getPlan().hasDestinationChanged()) {
-                            /*
-                             * If plan active then set destination to next not passed way point
-                             */
-                            setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
-                        }
+                }
+                
+                /*
+                 * Update the service objects with location
+                 */
+                if(null != location) {
+                    if(!location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+                        /*
+                         * Getting location from somewhere other than built in GPS.
+                         * Update timeout so we do not timeout on GPS timer.
+                         */
+                        mGps.updateTimeout();
+                    }
+                    setGpsParams(new GpsParams(location));
+                    mLocation = location;
+                    mLocationSem.unlock();
+                    getArea().updateLocation(getGpsParams());
+                    getPlan().updateLocation(getGpsParams());
 
-                        if(mDestination != null) {
-                            mDestination.updateTo(getGpsParams());
-                        }
+                    // Adjust the flight timer
+                    getFlightTimer().setSpeed(mGpsParams.getSpeed());
+                    
+                    // Tell the KML recorder a new point to potentially plot
+                    getKMLRecorder().setGpsParams(mGpsParams);
+                    
+                    // Let the odometer know how far we traveled
+                    getOdometer().updateValue(mGpsParams);
+                    
+                    // Calculate course line deviation
+                    getCDI().calcDeviation(mGpsParams, getDestination());
+                    
+                    // Vertical descent rate calculation
+                    getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                    
+                    getFlightStatus().updateLocation(mGpsParams);
+                    
+                    if(getPlan().hasDestinationChanged()) {
+                        /*
+                         * If plan active then set destination to next not passed way point
+                         */
+                        setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
+                    }
+
+                    if(mDestination != null) {
+                        mDestination.updateTo(getGpsParams());
                     }
                 }
             }
@@ -371,6 +429,7 @@ public class StorageService extends Service {
          * If we ever exit, reclaim memory
          */
         mTiles.recycleBitmaps();
+        mElevTile.recycleBitmaps();
         
         if(null != mDiagramBitmap) {
             mDiagramBitmap.recycle();
@@ -445,7 +504,6 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeInactive();
     }
@@ -455,7 +513,6 @@ public class StorageService extends Service {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
     }
 
@@ -464,26 +521,16 @@ public class StorageService extends Service {
      */
     public void setDestinationPlan(Destination destination) {
         mDestination = destination;
-        mPlateIndex = 0;
         mAfdIndex = 0;
         getPlan().makeActive(mGpsParams);
     }
-
-    /**
-     * 
-     * @param index
-     */
-    public void setPlateIndex(int index) {
-        mPlateIndex = index;
+    
+    public Destination getLastAfdDestination() {
+        return mLastAfdDestination;
     }
-
-    /**
-     * 
-     * @return
-     */
-    public int getPlateIndex() {
-        return mPlateIndex;
-    }
+    public void setLastAfdDestination(Destination destination) {
+        mLastAfdDestination = destination;
+    }    
 
     /**
      * 
@@ -499,6 +546,14 @@ public class StorageService extends Service {
      */
     public int getAfdIndex() {
         return mAfdIndex;
+    }
+
+
+    public String getLastAfdAirport() {
+        return mLastAfdAirport;
+    }
+    public void setLastAfdAirport(String airport) {
+        mLastAfdAirport = airport;
     }
 
     /**
@@ -689,13 +744,7 @@ public class StorageService extends Service {
      */
     public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
-            KMLRecorder.Config config = mKMLRecorder.new Config(
-                true,	/* always remove tracks from display on start */
-                30,		/* Max of 30 seconds between position updates */
-                true,	/* use verbose details */
-                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
-                20);	/* How fast we are going before starting to track, 20 knots */
-            mKMLRecorder.start(config);
+            mKMLRecorder.start();
             return null;
         }
         else {
@@ -722,6 +771,19 @@ public class StorageService extends Service {
     public Odometer getOdometer() {
     	return mOdometer;
     }
+    
+    public CDI getCDI() {
+    	return mCDI;
+    }
+
+    public VNAV getVNAV() {
+    	return mVNAV;
+    }
+    
+    public FlightStatus getFlightStatus() {
+        return mFlightStatus;
+    }
+    
     /**
      * 
      * @return
@@ -787,5 +849,58 @@ public class StorageService extends Service {
     public void deleteRadar() {
         mRadar.flush();        
     }
+    
+    /**
+     * 
+     */
+    public String getLastPlateAirport() {
+        return mLastPlateAirport;
+    }
+    
+    /*
+     * 
+     */
+    public void setLastPlateAirport(String airport) {
+        mLastPlateAirport = airport;
+    }
+    
+    /**
+     * 
+     * @param index
+     */
+    public void setLastPlateIndex(int index) {
+        mLastPlateIndex = index;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getLastPlateIndex() {
+        return mLastPlateIndex;
+    }
+ 
+    /**
+     * 
+     * @param t
+     */
+    public void setElevationTile(Tile t) {
+        mElevTile.setElevationTile(t);
+    }
 
+    /**
+     * 
+     * @return
+     */
+    public BitmapHolder getElevationBitmap() {
+        return mElevTile.getElevationBitmap();
+    }
+    
+    /**
+     * 
+     */
+    public void setDownloading(boolean state) {
+       mDownloading = state; 
+    }
+    
 }

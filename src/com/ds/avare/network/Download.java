@@ -151,7 +151,7 @@ public class Download {
             BufferedOutputStream output;
             int count;
             byte data[] = new byte[blocksize];
-            mVersion = NetworkHelper.getVersion(mName);
+            mVersion = NetworkHelper.getVersion(mRoot, mName);
             int fileLength;
                         
             try {

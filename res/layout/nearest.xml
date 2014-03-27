@@ -14,9 +14,47 @@ Redistribution and use in source and binary forms, with or without modification,
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/nearest_layout_runway"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/nearest_button_2000"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Nearest2000"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/nearest_button_4000"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Nearest4000"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/nearest_button_6000"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Nearest6000"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/nearest_button_fuel"
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Nearest100LL"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    
     <ListView
         android:id="@+id/nearest_list"
+        android:layout_below="@+id/nearest_layout_runway"
         android:cacheColorHint="#00000000"
+        android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
         
@@ -25,19 +63,25 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_4"
+            android:layout_above="@+id/nearest_button_gr"
             android:gravity="left|center"
             android:drawableLeft="@drawable/direct"
             android:text="@string/Destination"
             android:minWidth="140dp"
             android:visibility="invisible" />
-        
+
         <Button
-            android:id="@+id/nearest_button_4"
+            android:id="@+id/nearest_button_gr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="left|center"
+            android:drawableLeft="@drawable/glide"
+            android:text="@string/GlideRatio"
+            android:minWidth="140dp"
             android:layout_above="@+id/nearest_button_3"
             android:visibility="invisible" />
+
         
         <Button
             android:id="@+id/nearest_button_3"
@@ -50,16 +94,22 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/nearest_button_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_1"
+            android:gravity="left"
+            android:layout_above="@+id/nearest_button_plates"
+            android:layout_alignParentLeft="true"
             android:visibility="invisible" />
         
         <Button
-            android:id="@+id/nearest_button_1"
+            android:id="@+id/nearest_button_plates"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="left|center"
+            android:drawableLeft="@drawable/plates"
+            android:text="@string/plates"
+            android:minWidth="140dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:visibility="invisible" />
+            android:visibility="invisible" />            
     
 </RelativeLayout>

@@ -18,9 +18,11 @@ import java.util.Observable;
 import java.util.Observer;
 import com.ds.avare.R;
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -125,8 +127,39 @@ public class LocationActivity extends Activity implements Observer {
     private boolean mSpinner;
     private TextView mInfoText;
     private TextView mChartText;
-
+    private AnimateButton mAnimateTracks;
+    private AnimateButton mAnimateSim;
+    private AnimateButton mAnimateTrack;
+    private AnimateButton mAnimateChart;
+    private AnimateButton mAnimateHelp;
+    private AnimateButton mAnimateDownload;
+    private AnimateButton mAnimatePref;
+    private AnimateButton mAnimateDraw;
+    
     private ExpandableListView mListPopout;
+    
+    private FlightStatusInterface mFSInfc = new FlightStatusInterface() {
+        @Override
+        public void rollout() {
+            if(mPref != null && mService != null) {
+                if(mPref.shouldAutoDisplayAirportDiagram()) {
+                    int nearestNum = mService.getArea().getAirportsNumber();
+                    if(nearestNum > 0) {
+                        /*
+                         * Find the nearest airport and load its plate on rollout
+                         */
+                        Airport nearest = mService.getArea().getAirport(0);
+                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
+                                nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD) {
+                            mService.setLastPlateAirport(nearest.getId());
+                            mService.setLastPlateIndex(0);
+                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -253,7 +286,6 @@ public class LocationActivity extends Activity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
-        mService.getPlan().makeInactive();
         mDestLayout.setVisibility(View.INVISIBLE);
     }
 
@@ -307,6 +339,33 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogExit.show();
 
     }
+
+    /**
+     * 
+     */
+    private void hideMenu() {
+        mAnimateTracks.animateBack();
+        mAnimateSim.animateBack();
+        mAnimateTrack.animateBack();
+        mAnimateChart.animateBack();
+        mAnimateHelp.animateBack();
+        mAnimateDownload.animateBack();
+        mAnimatePref.animateBack();
+    }
+    
+    /**
+     * 
+     */
+    private void showMenu() {
+        mAnimateTracks.animate();
+        mAnimateSim.animate();
+        mAnimateTrack.animate();
+        mAnimateChart.animate();
+        mAnimateHelp.animate();
+        mAnimateDownload.animate();
+        mAnimatePref.animate();
+    }
+
 
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -396,13 +455,18 @@ public class LocationActivity extends Activity implements Observer {
              */
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
+                
+                if(GestureInterface.TOUCH == event) {
+                    hideMenu();
+                }
+                
+
                 if(GestureInterface.LONG_PRESS == event) {
                     if(mLocationView.getDraw()) {
                         /*
                          * Show animation button for draw clear
                          */
-                        AnimateButton e = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                        e.animate(true);
+                        mAnimateDraw.animate(true);
                     }
                     else {
                         /*
@@ -514,20 +578,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                AnimateButton k = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton s = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton t = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
-                AnimateButton c = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-                AnimateButton b = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mMenuButton, mDrawButton);
-                AnimateButton d = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                AnimateButton f = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
-                b.animate(true);
-                d.animate(true);
-                c.animate(true);
-                s.animate(true);
-                t.animate(true);
-                f.animate(true);
-                k.animate(true);
+                showMenu();
             }
             
         });
@@ -755,6 +806,15 @@ public class LocationActivity extends Activity implements Observer {
         mExtras = getIntent().getExtras();
  
         mService = null;
+        mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
+        mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
+        mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
+        mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateDraw = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
     }    
 
     private void setTrackState(boolean bState)
@@ -823,6 +883,7 @@ public class LocationActivity extends Activity implements Observer {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mService.getFlightStatus().registerListener(mFSInfc);
 
             mService.getTiles().setOrientation();
             
@@ -883,8 +944,6 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateParams(mService.getGpsParams());
             }
 
-            mLocationView.updateDestination();
-
             /*
              * Show avare warning when service says so 
              */
@@ -928,11 +987,6 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mExtras = null;
             }
-
-            /*
-             * Force reload
-             */
-            mLocationView.forceReload();
         }
 
         /* (non-Javadoc)
@@ -988,6 +1042,7 @@ public class LocationActivity extends Activity implements Observer {
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
+            mService.getFlightStatus().unregisterListener(mFSInfc);
         }
 
         /*
@@ -1029,6 +1084,11 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
+
+        /*
+         * Do this as switching from screen needs to hide its menu
+         */
+        hideMenu();
     }
     
     /* (non-Javadoc)
@@ -1090,7 +1150,7 @@ public class LocationActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).switchTab(0);
+                    ((MainActivity)this.getParent()).showMapTab();
                 }
                 else {
                     if(mService != null) {

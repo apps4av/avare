@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 
@@ -34,6 +35,8 @@ public class Airport implements Comparable<Airport> {
     private String mName;
     private String mFuel;
     private String mElevation;
+    private String mLongestRunway;
+    private double mHeight;
    
     /**
      * 
@@ -51,6 +54,8 @@ public class Airport implements Comparable<Airport> {
         mFuel = params.get(DataBaseHelper.FUEL_TYPES);
         mElevation = params.get("Elevation");
         mVariation = Helper.parseVariation(params.get(DataBaseHelper.MAGNETIC_VARIATION));
+        mLongestRunway = "";
+        mHeight = 0;
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
     }
@@ -118,6 +123,52 @@ public class Airport implements Comparable<Airport> {
      */
     public String getElevation() {
         return mElevation;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getLongestRunway() {
+        return mLongestRunway;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setLongestRunway(String runway) {
+        mLongestRunway = runway;
+    }
+    
+    /**
+     * Set the height for required glide ratio to this airport in feet(altitude) / km,nm,mi
+     * @param altitude
+     */
+    public void setHeight(double altitude) {
+        try {
+            mHeight = altitude - Double.parseDouble(getElevation().replace("ft", ""));
+        }
+        catch(Exception e) {
+        }        
+    }
+
+    /**
+     * @param altitude
+     */
+    public boolean canGlide(Preferences mPref) {
+        /*
+         * Height * glide ratio (distance feet / height feet) = distance
+         */
+        double radius = mHeight * mPref.getGlideRatio() / Preferences.feetConversion;
+        if(radius > getDistance()) {
+            /*
+             * This is in glide distance
+             */
+            return true;
+        }
+        
+        return false;
     }
 
     /**

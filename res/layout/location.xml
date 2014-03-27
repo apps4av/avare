@@ -225,6 +225,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:text="@string/Plan"
 	            android:drawableLeft="@drawable/plan"
 	            />
+
 	        
             <ExpandableListView
 	            android:id="@+id/location_list_popout"

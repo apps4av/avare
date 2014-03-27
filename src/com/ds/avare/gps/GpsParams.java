@@ -72,7 +72,7 @@ public class GpsParams {
             return;
         }
         
-        mSpeed = location.getSpeed() * Preferences.distanceConversion; // ms / sec to knot / hr;
+        mSpeed = location.getSpeed() * Preferences.speedConversion; // ms / sec to knot / hr;
         mLongitude = location.getLongitude();
         mLatitude = location.getLatitude();
         mAltitude = location.getAltitude() * Preferences.heightConversion; // meters to feet;

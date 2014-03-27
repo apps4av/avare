@@ -57,11 +57,86 @@ public class AnimateButton {
             mReplaces[0] = new View(ctx);
         }
     }
+
     
     /**
      * 
      * @param
      */
+    public void animateBack() {
+
+        Animation a;
+        /*
+         * If not showing then dont take back in
+         */
+        if(!mShowing) {
+            return;
+        }
+        
+        int id;
+        switch(mDir) {
+            case DIRECTION_L_R:
+                id = R.anim.xlate_left;
+                break;
+            case DIRECTION_R_L:
+                id = R.anim.xlate_right_end;
+                break;
+            default:
+                id = R.anim.xlate_up_end;
+                break;
+                
+        }
+        /*
+         * Take the button in
+         */
+        a = AnimationUtils.loadAnimation(mContext, id);
+        mShowing = false;
+        
+        a.reset();
+        a.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                    /*
+                     * Set invisible when not animating
+                     */
+                    mView.setVisibility(Button.INVISIBLE);
+                    for(int v = 0; v < mReplaces.length; v++) {
+                        mReplaces[v].setVisibility(Button.VISIBLE);
+                    }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            
+        });            
+        mView.clearAnimation();
+        mView.startAnimation(a);
+
+    }
+
+    /**
+     * 
+     */
+    public void stopAndHide() {
+        mView.setAnimation(null);
+
+        mView.setVisibility(Button.INVISIBLE);
+        for(int v = 0; v < mReplaces.length; v++) {
+            mReplaces[v].setVisibility(Button.VISIBLE);
+        }
+    }
+
+    
+    /**
+*
+* @param
+*/
     public void animate(final boolean visible) {
         Animation a;
         
@@ -98,10 +173,10 @@ public class AnimateButton {
             int id;
             switch(mDir) {
                 case DIRECTION_L_R:
-                    id = R.anim.xlate_left;
+                    id = R.anim.xlate_left_delay;
                     break;
                 case DIRECTION_R_L:
-                    id = R.anim.xlate_right_end;
+                    id = R.anim.xlate_right_end_delay;
                     break;
                 default:
                     id = R.anim.xlate_up_end;
@@ -153,8 +228,72 @@ public class AnimateButton {
                 }
             }
             
+        });
+        mView.clearAnimation();
+        mView.startAnimation(a);
+    }
+    
+    /**
+     * 
+     * @param
+     */
+    public void animate() {
+        Animation a;
+
+        /*
+         * If out then dont animate
+         */
+        if(mShowing) {
+            return;
+        }
+
+        /*
+         * Animates a button from left to right.
+         */
+        int id;
+        switch(mDir) {
+            case DIRECTION_L_R:
+                id = R.anim.xlate_right;
+                break;
+            case DIRECTION_R_L:
+                id = R.anim.xlate_left_end;
+                break;
+            default:
+                id = R.anim.xlate_up;
+                break;
+                
+        }
+        /*
+         * Bring the button out
+         */
+        a = AnimationUtils.loadAnimation(mContext, id);
+        mShowing = true;
+
+        a.reset();
+        a.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                    /*
+                     * Set visible when animating
+                     */
+                    for(int v = 0; v < mReplaces.length; v++) {
+                        mReplaces[v].setVisibility(Button.INVISIBLE);
+                    }
+                    mView.setVisibility(Button.VISIBLE);
+            }
+            
         });            
         mView.clearAnimation();
         mView.startAnimation(a);
+        
     }
 }

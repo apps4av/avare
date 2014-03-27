@@ -60,8 +60,11 @@ public abstract class Shape {
      * 
      * @param coords
      */
-    public void add(double lon, double lat) {
+    public void add(double lon, double lat, boolean issep) {
         Coordinate c = new Coordinate(lon, lat);
+        if(issep) {
+            c.makeSeparate();
+        }
         mCoords.add(c);
         mPolyBuilder.addVertex(new Point((float)lon, (float)lat));
         
@@ -123,20 +126,21 @@ public abstract class Shape {
                 paint.setStrokeWidth(width);
                 paint.setColor(color);
                 c.drawLine(x1, y1, x2, y2, paint);
+                if(mCoords.get(coord + 1).isSeparate()) {
+                    paint.setColor(night? Color.WHITE : Color.BLACK);
+                    c.drawCircle(x2, y2, 10, paint);
+                    paint.setColor(Color.GREEN);
+                    c.drawCircle(x2, y2, 8, paint);
+                    paint.setColor(color);
+                }
+                if(mCoords.get(coord).isSeparate()) {
+                    paint.setColor(night? Color.WHITE : Color.BLACK);
+                    c.drawCircle(x1, y1, 10, paint);
+                    paint.setColor(Color.GREEN);
+                    c.drawCircle(x1, y1, 8, paint);
+                    paint.setColor(color);
+                }
             }
-            if(getNumCoords() < 2) {
-                return;
-            }
-            float x1 = (float)origin.getOffsetX(mCoords.get(0).getLongitude());
-            float y1 = (float)origin.getOffsetY(mCoords.get(0).getLatitude());
-            float x2 = (float)origin.getOffsetX(mCoords.get(getNumCoords() - 1).getLongitude());
-            float y2 = (float)origin.getOffsetY(mCoords.get(getNumCoords() - 1).getLatitude());
-            paint.setColor(night? Color.WHITE : Color.BLACK);
-            c.drawCircle(x1, y1, 10, paint);
-            c.drawCircle(x2, y2, 10, paint);
-            paint.setColor(color);
-            c.drawCircle(x1, y1, 8, paint);
-            c.drawCircle(x2, y2, 8, paint);
         }
         else {
             /*

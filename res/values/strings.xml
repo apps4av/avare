@@ -11,7 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Download Charts&quot;</string>
+    <string name="MissingMaps">&quot;Download charts for this area&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
@@ -98,6 +98,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Runways">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysLabel">&quot;Runway Extensions&quot;</string>
     <string name="RunwaysSummary">&quot;Select to show runway extensions&quot;</string>
+    <string name="AutoShowAirportDiagram">&quot;Auto Show Airport Diagram&quot;</string>
+    <string name="AutoShowAirportDiagramLabel">&quot;Auto Show Airport Diagram&quot;</string>
+    <string name="AutoShowAirportDiagramSummary">&quot;Select to automatically show airport diagrams on rollout&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">&quot;Exit&quot;</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
@@ -223,4 +226,22 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
+    <string name="prefShowCDI">ShowCDI</string>
+    <string name="ShowCDILabel">&quot;Show CDI/VDI&quot;</string>
+    <string name="ShowCDISummary">&quot;Display the course/vertical deviation indicators on the screen&quot;</string>
+    <string name="Nearest2000">&quot;Nearest\n2000'&quot;</string>
+    <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
+    <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
+    <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
+    <string name="GlideRatio">&quot;GlideRatioAircraft&quot;</string>
+    <string name="GlideRatioLabel">&quot;Glide Ratio&quot;</string>
+    <string name="GlideRatioSummary">&quot;Set the glide ratio of your aircraft&quot;</string>
+    <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
+    <string name="Fuel">&quot;Fuel&quot;</string>
+    <string name="prefLastPlateIndex">LastPlateIndex</string>
+    <string name="prefLastPlateAirport">LastPlateAirport</string>
+    <string name="EdgeTape">&quot;EdgeTape&quot;</string>
+    <string name="EdgeTapeLabel">&quot;Edge Tape&quot;</string>
+    <string name="EdgeTapeSummary">&quot;Select to show a distance tape on the edges&quot;</string>
+    <string name="Instrumentation">&quot;Instrumentation&quot;</string>
 </resources>
