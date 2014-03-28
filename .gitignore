@@ -20,7 +20,7 @@ local.properties
 .project
 .settings
 
-# Android Studio Files
+# Android Studio Files (Excluding gradle output files)
 *.iml
 /.idea/
 /out
