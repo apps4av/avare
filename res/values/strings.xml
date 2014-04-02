@@ -244,4 +244,20 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="EdgeTapeLabel">&quot;Edge Tape&quot;</string>
     <string name="EdgeTapeSummary">&quot;Select to show a distance tape on the edges&quot;</string>
     <string name="Instrumentation">&quot;Instrumentation&quot;</string>
+    <string name="register">Register For Online Services</string>
+    <string name="unregister">Unregister From Online Services</string>
+    <string name="error">Error</string>
+    <string name="error_google">Please install Google Services before registering</string>
+    <string name="error_internet">Please connect to a working Internet connection</string>
+    <string name="error_email">Please register a Gmail account before registering</string>
+    <string name="already_registered">You are already registered with the Apps4Av online services</string>
+    <string name="already_unregistered">You are already unregistered from the Apps4Av online services</string>
+    <string name="registering_google">Registering with the Google servers</string>
+    <string name="unregistering_google">Unregistering from the Google servers</string>
+    <string name="register_question">Do you want to register with the Apps4Av online services?</string>
+    <string name="unregister_question">Do you want to unregister from the Apps4Av online services?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="new_message">A new message from Apps4Av</string>
+    <string name="online">Online</string>
 </resources>
