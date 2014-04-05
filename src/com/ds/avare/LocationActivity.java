@@ -119,6 +119,7 @@ public class LocationActivity extends Activity implements Observer {
     private RelativeLayout mDestLayout;
     private ToggleButton mSimButton;
     private Button mDrawButton;
+    private Button mWebButton;
     private ToggleButton mTrackButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
@@ -129,6 +130,7 @@ public class LocationActivity extends Activity implements Observer {
     private TextView mChartText;
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
+    private AnimateButton mAnimateWeb;
     private AnimateButton mAnimateTrack;
     private AnimateButton mAnimateChart;
     private AnimateButton mAnimateHelp;
@@ -344,6 +346,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     private void hideMenu() {
         mAnimateTracks.animateBack();
+        mAnimateWeb.animateBack();
         mAnimateSim.animateBack();
         mAnimateTrack.animateBack();
         mAnimateChart.animateBack();
@@ -357,6 +360,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     private void showMenu() {
         mAnimateTracks.animate();
+        mAnimateWeb.animate();
         mAnimateSim.animate();
         mAnimateTrack.animate();
         mAnimateChart.animate();
@@ -638,6 +642,20 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
+        mWebButton = (Button)view.findViewById(R.id.location_button_web);
+        mWebButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                startActivity(new Intent(LocationActivity.this, RegisterActivity.class));
+            }
+            
+        });
+
         /*
          * Dest button
          */
@@ -799,10 +817,11 @@ public class LocationActivity extends Activity implements Observer {
  
         mService = null;
         mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
+        mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
         mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
         mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawClearButton, mDrawButton, mMenuButton);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
 

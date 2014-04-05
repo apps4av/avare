@@ -51,7 +51,6 @@ public class MainActivity extends TabActivity {
     public static final int tabWX = 5;
     public static final int tabNear = 6;
     public static final int tabGPS = 7;  
-    public static final int tabOnline = 8;  
     
     @Override
     /**
@@ -99,7 +98,6 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.online), new Intent(this, RegisterActivity.class), getIntent());
     }
     
     /**
