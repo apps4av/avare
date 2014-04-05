@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -55,7 +56,9 @@ public class RegisterActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        com.ds.avare.utils.Helper.setTheme(this);
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_register);
         
         // Check if Google services
