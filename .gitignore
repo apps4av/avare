@@ -20,5 +20,10 @@ local.properties
 .project
 .settings
 
+# Android Studio Files (Excluding gradle output files)
+*.iml
+/.idea/
+/out
+
 # required to GCM
 private_data.xml
