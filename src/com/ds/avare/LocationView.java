@@ -57,6 +57,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -246,18 +247,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Handler for the top two lines of status information
     InfoLines mInfoLines;
     
-    // Used to better determine if the user is intending for a long press
-    private class FocusPoint {
-        public final float x;
-        public final float y;
-        
-        public FocusPoint(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    
-    FocusPoint mDownFocusPoint;
+    Point mDownFocusPoint;
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
@@ -435,9 +425,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             startClosestAirportTask(e.getX(), e.getY());
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE && mDownFocusPoint != null) {
-            FocusPoint fp = getFocusPoint(e);
-            final int deltaX = (int) (fp.x - mDownFocusPoint.x);
-            final int deltaY = (int) (fp.y - mDownFocusPoint.y);
+            Point fp = getFocusPoint(e);
+            final int deltaX = fp.x - mDownFocusPoint.x;
+            final int deltaY = fp.y - mDownFocusPoint.y;
             int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
             bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
         }
@@ -456,7 +446,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return mMultiTouchC.onTouchEvent(e);
     }
     
-    FocusPoint getFocusPoint(MotionEvent e) {
+    /**
+     * 
+     * @param e
+     * @return
+     */
+    Point getFocusPoint(MotionEvent e) {
         // Determine focal point
         float sumX = 0, sumY = 0;
         final int count = e.getPointerCount();
@@ -468,7 +463,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         final float focusX = sumX / div;
         final float focusY = sumY / div;
         
-        return new FocusPoint(focusX, focusY);
+        Point p = new Point();
+        p.set((int)focusX, (int)focusY);
+        return p;
     }
 
 
