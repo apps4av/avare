@@ -30,18 +30,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentLeft="true"/>
 
         <Button
-            android:id="@+id/location_button_draw_clear"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_pref"
-            android:gravity="left|center"
-            android:drawableLeft="@drawable/erase"
-            android:text="@string/Clear"
-            android:minWidth="150dp"
-            android:visibility="invisible" />
-                
-        <Button
             android:id="@+id/location_button_pref"
             android:textStyle="bold"
             android:layout_width="150dp"
@@ -127,6 +115,16 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_centerHorizontal="true"
             android:drawableLeft="@drawable/center" />
 
+        <Button
+            android:id="@+id/location_button_draw_clear"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/location_button_draw"
+            android:drawableLeft="@drawable/erase"
+            android:visibility="invisible" />        
+        
         <ToggleButton
             android:id="@+id/location_button_draw"
             android:layout_height="wrap_content"

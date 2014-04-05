@@ -134,7 +134,6 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateHelp;
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
-    private AnimateButton mAnimateDraw;
     
     private ExpandableListView mListPopout;
     
@@ -459,38 +458,29 @@ public class LocationActivity extends Activity implements Observer {
                 if(GestureInterface.TOUCH == event) {
                     hideMenu();
                 }
-                
 
                 if(GestureInterface.LONG_PRESS == event) {
-                    if(mLocationView.getDraw()) {
-                        /*
-                         * Show animation button for draw clear
-                         */
-                        mAnimateDraw.animate(true);
+                    /*
+                     * Show the animation button for dest
+                     */
+                    mInfoText.setText(data.info);
+                    mChartText.setText(data.chart);
+                    if(isSameDest(data.airport)) {
+                        mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove, 0, 0, 0);
+                        mDestButton.setText(getString(R.string.Delete));
                     }
                     else {
-                        /*
-                         * Show the animation button for dest
-                         */
-                        mInfoText.setText(data.info);
-                        mChartText.setText(data.chart);
-                        if(isSameDest(data.airport)) {
-                            mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove, 0, 0, 0);
-                            mDestButton.setText(getString(R.string.Delete));
-                        }
-                        else {
-                            mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.direct, 0, 0, 0);
-                            mDestButton.setText(getString(R.string.Destination));
-                        }
-                        mCrossButton.setText(data.airport);
-                        mDestLayout.setVisibility(View.VISIBLE);
-                        
-                        /*
-                         * Now populate the pop out weather etc.
-                         */
-                        PopoutAdapter p = new PopoutAdapter(getApplicationContext(), data);
-                        mListPopout.setAdapter(p);
+                        mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.direct, 0, 0, 0);
+                        mDestButton.setText(getString(R.string.Destination));
                     }
+                    mCrossButton.setText(data.airport);
+                    mDestLayout.setVisibility(View.VISIBLE);
+                    
+                    /*
+                     * Now populate the pop out weather etc.
+                     */
+                    PopoutAdapter p = new PopoutAdapter(getApplicationContext(), data);
+                    mListPopout.setAdapter(p);
                 }
             }
             
@@ -748,9 +738,11 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(mDrawButton.getText().equals(getString(R.string.Draw))) {
                     mLocationView.setDraw(true);
+                    mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mLocationView.setDraw(false);                    
+                    mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
             
@@ -810,10 +802,9 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
         mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
         mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawClearButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateDraw = new AnimateButton(getApplicationContext(), mDrawClearButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
     }    
 

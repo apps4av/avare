@@ -1830,14 +1830,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             	return;
         	}
 
-        	/*
-             * In draw, long press has no meaning other than to clear the output from the activity
-             */
-            if(mDraw) {
-                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, (LongTouchDestination)null);
-                return;
-            }
-
             /*
              * XXX:
              * For track up, currently there is no math to find anything with long press.
