@@ -4,6 +4,9 @@ All rights reserved.
 */
 package com.ds.avare.message;
 
+import com.ds.avare.RegisterActivity;
+import com.google.android.gcm.GCMRegistrar;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,4 +58,16 @@ public class Helper {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    /**
+     * 
+     * @param context
+     * @return
+     */
+    public static boolean isRegistered(Context context) {
+        
+        boolean id = !GCMRegistrar.getRegistrationId(context).equals("");
+        boolean server = GCMRegistrar.isRegisteredOnServer(context);
+        boolean gcm = GCMRegistrar.isRegistered(context);
+        return  gcm && server && id;
+    }
 }

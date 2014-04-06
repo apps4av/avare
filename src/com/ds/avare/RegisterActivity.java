@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -116,8 +115,8 @@ public class RegisterActivity extends Activity {
                         }
                     }
                     
-                    Logger.Logit(getString(R.string.registering_google) + "...");
-                    GCMRegistrar.register(RegisterActivity.this, NetworkHelper.getSenderID(RegisterActivity.this));
+                    Logger.Logit(getString(R.string.registering_google));
+                    GCMRegistrar.register(RegisterActivity.this, NetworkHelper.getSenderID());
                     dialog.dismiss();
                 }
             });
@@ -128,7 +127,6 @@ public class RegisterActivity extends Activity {
                 RegisterActivity.this);
         alertDialogBuilder
             .setTitle(getString(R.string.unregister))
-            .setMessage(getString(R.string.unregister_question))
             .setCancelable(false)
             .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog,int id) {
@@ -146,7 +144,7 @@ public class RegisterActivity extends Activity {
                         }
                     }
                     
-                    Logger.Logit(getString(R.string.unregistering_google) + "...");
+                    Logger.Logit(getString(R.string.unregistering_google));
                     GCMRegistrar.unregister(RegisterActivity.this);
                     dialog.dismiss();
                 }
@@ -214,7 +212,7 @@ public class RegisterActivity extends Activity {
             protected Void doInBackground(Void... vals) {
                 // Register on our server
                 // On server creates a new user
-                String serverUrl = NetworkHelper.getServer(context) + "register.php";
+                String serverUrl = NetworkHelper.getServer() + "register.php";
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("name", "anonoymous");
                 params.put("email", PossibleEmail.get(context));
@@ -225,11 +223,11 @@ public class RegisterActivity extends Activity {
                 // As the server might be down, we will retry it a couple
                 // times.
                 for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    Logger.Logit("Registering with the Apps4Av servers ...");
+                    Logger.Logit(context.getString(R.string.registering_server));
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, true);
-                        Logger.Logit("You have now registered with the Apps4Av online services!");
+                        Logger.Logit(context.getString(R.string.activated));
                         return null;
                     } 
                     catch (Exception e) {
@@ -238,7 +236,7 @@ public class RegisterActivity extends Activity {
                         // application, it should retry only on unrecoverable errors
                         // (like HTTP error code 503).
                         if (i == MAX_ATTEMPTS) {
-                            Logger.Logit("Failed to register!");
+                            Logger.Logit(context.getString(R.string.failed_register));
                             break;
                         }
                         try {
@@ -247,7 +245,7 @@ public class RegisterActivity extends Activity {
                         catch (InterruptedException e1) {
                             // Activity finished before we complete - exit.
                             Thread.currentThread().interrupt();
-                            Logger.Logit("Failed to register!");
+                            Logger.Logit(context.getString(R.string.failed_register));
                             return null;
                         }
                         // increase backoff exponentially
@@ -275,7 +273,7 @@ public class RegisterActivity extends Activity {
             @Override
             protected Void doInBackground(Void... vals) {
                 
-                String serverUrl = NetworkHelper.getServer(context) + "unregister.php";
+                String serverUrl = NetworkHelper.getServer() + "unregister.php";
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("regId", regId);
                 Random random = new Random();
@@ -286,11 +284,11 @@ public class RegisterActivity extends Activity {
                 // As the server might be down, we will retry it a couple
                 // times.
                 for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    Logger.Logit("Unregistering from the Apps4Av servers ...");
+                    Logger.Logit(context.getString(R.string.unregistering_server));
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, false);
-                        Logger.Logit("You have now unregistered from the Apps4Av online services!");
+                        Logger.Logit(context.getString(R.string.deactivated));
                         return null;
                     } 
                     catch (Exception e) {
@@ -299,7 +297,7 @@ public class RegisterActivity extends Activity {
                     // application, it should retry only on unrecoverable errors
                     // (like HTTP error code 503).
                     if (i == MAX_ATTEMPTS) {
-                        Logger.Logit("Failed to unregister!");
+                        Logger.Logit(context.getString(R.string.failed_unregister));
                         break;
                     }
                     try {
@@ -308,7 +306,7 @@ public class RegisterActivity extends Activity {
                     catch (InterruptedException e1) {
                         // Activity finished before we complete - exit.
                         Thread.currentThread().interrupt();
-                        Logger.Logit("Failed to unregister!");
+                        Logger.Logit(context.getString(R.string.failed_unregister));
                         return null;
                     }
                     backoff *= 2;

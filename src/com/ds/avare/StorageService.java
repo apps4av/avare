@@ -153,11 +153,6 @@ public class StorageService extends Service {
      */
     private final IBinder binder = new LocalBinder();
 
-    /*
-     * When to show warning
-     */
-    private Boolean mShouldWarn = true;
-    
     private boolean mIsGpsOn;
     
     private int mCounter;
@@ -458,17 +453,6 @@ public class StorageService extends Service {
     /*
      * Get/Set (state), Get (resources, state) functions for activity
      */
-
-    /**
-     * @return
-     */
-    public Boolean shouldWarn() {
-        if(mShouldWarn) {
-            mShouldWarn = false;
-            return true;
-        }
-        return false;
-    }
 
     /**
      * 

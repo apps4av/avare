@@ -12,9 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.ds.avare.R;
-import android.content.Context;
-
 /**
  * 
  * @author zkhan
@@ -26,15 +23,15 @@ public class NetworkHelper {
     /*
      * This has to be provided by apps4av
      */
-    public static String getSenderID(Context context) {
-        return context.getString(R.string.gcm_sender_id, "");
+    public static String getSenderID() {
+        return "812837541666";
     }
 
     /*
      * This has to be provided by apps4av
      */
-    public static String getServer(Context context) {
-        return context.getString(R.string.apps4av_gcm_server, "");
+    public static String getServer() {
+        return "https://apps4av.net/";
     }
 
     /**

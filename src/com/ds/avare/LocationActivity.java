@@ -89,11 +89,6 @@ public class LocationActivity extends Activity implements Observer {
     /**
      * Shows warning message about Avare
      */
-    private AlertDialog mAlertDialogWarn;
-
-    /**
-     * Shows warning message about Avare
-     */
     private AlertDialog mAlertDialogDatabase;
 
     /**
@@ -887,6 +882,13 @@ public class LocationActivity extends Activity implements Observer {
         @Override
         public void onServiceConnected(ComponentName className,
                 IBinder service) {
+            
+            if(!com.ds.avare.message.Helper.isRegistered(getApplicationContext())) {
+                Intent i = new Intent(LocationActivity.this, RegisterActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i); 
+            }
+            
             /* 
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
@@ -954,29 +956,6 @@ public class LocationActivity extends Activity implements Observer {
                 mLocationView.updateParams(mService.getGpsParams());
             }
 
-            /*
-             * Show avare warning when service says so 
-             */
-            if(mService.shouldWarn()) {
-             
-                mAlertDialogWarn = new AlertDialog.Builder(LocationActivity.this).create();
-                mAlertDialogWarn.setTitle(getString(R.string.WarningMsg));
-                mAlertDialogWarn.setMessage(getString(R.string.Warning));
-                mAlertDialogWarn.setCanceledOnTouchOutside(false);
-                mAlertDialogWarn.setCancelable(false);
-                mAlertDialogWarn.setIcon(R.drawable.important_red);
-                mAlertDialogWarn.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Understand), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-    
-                mAlertDialogWarn.show();
-            }    
-            
             /*
              * See if we got an intent to search for address as dest
              */
@@ -1063,14 +1042,6 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Kill dialogs
          */
-        if(null != mAlertDialogWarn) {
-            try {
-                mAlertDialogWarn.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
         if(null != mAlertDialogDatabase) {
             try {
                 mAlertDialogDatabase.dismiss();
