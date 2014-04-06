@@ -4,7 +4,6 @@ All rights reserved.
 */
 package com.ds.avare.message;
 
-import com.ds.avare.RegisterActivity;
 import com.google.android.gcm.GCMRegistrar;
 
 import android.app.AlertDialog;
