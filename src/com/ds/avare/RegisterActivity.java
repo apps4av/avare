@@ -227,7 +227,7 @@ public class RegisterActivity extends Activity {
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, true);
-                        Logger.Logit(context.getString(R.string.activated));
+                        Logger.Logit(context.getString(R.string.registered));
                         return null;
                     } 
                     catch (Exception e) {
@@ -288,7 +288,7 @@ public class RegisterActivity extends Activity {
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, false);
-                        Logger.Logit(context.getString(R.string.deactivated));
+                        Logger.Logit(context.getString(R.string.unregistered));
                         return null;
                     } 
                     catch (Exception e) {

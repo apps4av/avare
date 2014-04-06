@@ -243,14 +243,14 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="EdgeTapeLabel">&quot;Edge Tape&quot;</string>
     <string name="EdgeTapeSummary">&quot;Select to show a distance tape on the edges&quot;</string>
     <string name="Instrumentation">&quot;Instrumentation&quot;</string>
-    <string name="register">Activate</string>
-    <string name="unregister">Deactivate</string>
+    <string name="register">Register</string>
+    <string name="unregister">Unregister</string>
     <string name="error">Error</string>
     <string name="error_google">Please install Google Services before activating</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
     <string name="error_email">Please register a Gmail account before activating</string>
-    <string name="already_registered">You have already activated your account</string>
-    <string name="already_unregistered">You have already deactivated</string>
+    <string name="already_registered">You have already registered your account</string>
+    <string name="already_unregistered">You have already unregistered</string>
     <string name="registering_google">Registering with the Google servers</string>
     <string name="unregistering_google">Unregistering from the Google servers</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
@@ -258,9 +258,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="new_message">A new message from Apps4Av</string>
-    <string name="online">Activate</string>
-    <string name="failed_register">Failed to Activate!</string>
-    <string name="failed_unregister">Failed to Deactivate!</string>
-    <string name="activated">You have now activated!</string>
-    <string name="deactivated">You have now deactivated!</string>
+    <string name="online">Account</string>
+    <string name="failed_register">Failed to register!</string>
+    <string name="failed_unregister">Failed to unregister!</string>
+    <string name="registered">You have now registered!</string>
+    <string name="unregistered">You have now unregistered!</string>
 </resources>
