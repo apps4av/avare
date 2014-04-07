@@ -255,7 +255,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregistering_google">Unregistering from the Google servers</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
     <string name="unregistering_server">Unregistering from the Apps4Av servers</string>
-    <string name="register_msg">You must register before using this application. Please press the Register button to register.</string>
+    <string name="register_msg">You must sign a liability waiver, and register before using this free application. Please press the Register button to continue.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="new_message">A new message from Apps4Av</string>

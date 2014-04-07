@@ -25,6 +25,7 @@ All rights reserved.
      
     <TextView 
         android:id="@+id/log_text"
+        android:padding="20dp"
         android:layout_width="fill_parent"
         android:layout_below="@+id/btn_unregister"
         android:layout_height="fill_parent"/>
