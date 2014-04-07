@@ -40,7 +40,7 @@ public class RegisterActivity extends Activity {
     private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     
-    static AsyncTask<Void, Void, Void> mRegisterTask = null;
+    static AsyncTask<Void, Void, Boolean> mRegisterTask = null;
 
     // Register button
     private Button mButtonRegister;
@@ -88,6 +88,9 @@ public class RegisterActivity extends Activity {
         }
  
         Logger.setTextView((TextView) findViewById(R.id.log_text));
+        if(!Helper.isRegistered(this)) {
+            Logger.Logit(getString(R.string.register_msg));            
+        }      
 
         /*
          * privacy policy load
@@ -206,10 +209,12 @@ public class RegisterActivity extends Activity {
      */
     public static void register(final Context context, final String regId) {
 
-        mRegisterTask = new AsyncTask<Void, Void, Void>() {
+        Logger.Logit(context.getString(R.string.registering_server));
+
+        mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
-            protected Void doInBackground(Void... vals) {
+            protected Boolean doInBackground(Void... vals) {
                 // Register on our server
                 // On server creates a new user
                 String serverUrl = NetworkHelper.getServer() + "register.php";
@@ -223,12 +228,10 @@ public class RegisterActivity extends Activity {
                 // As the server might be down, we will retry it a couple
                 // times.
                 for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    Logger.Logit(context.getString(R.string.registering_server));
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, true);
-                        Logger.Logit(context.getString(R.string.registered));
-                        return null;
+                        return true;
                     } 
                     catch (Exception e) {
                         e.printStackTrace();
@@ -236,7 +239,6 @@ public class RegisterActivity extends Activity {
                         // application, it should retry only on unrecoverable errors
                         // (like HTTP error code 503).
                         if (i == MAX_ATTEMPTS) {
-                            Logger.Logit(context.getString(R.string.failed_register));
                             break;
                         }
                         try {
@@ -245,19 +247,24 @@ public class RegisterActivity extends Activity {
                         catch (InterruptedException e1) {
                             // Activity finished before we complete - exit.
                             Thread.currentThread().interrupt();
-                            Logger.Logit(context.getString(R.string.failed_register));
-                            return null;
+                            break;
                         }
                         // increase backoff exponentially
                         backoff *= 2;
                     }
                 }
-                return null;
+                return false;
             }
 
             @Override
-            protected void onPostExecute(Void result) {
-            }
+            protected void onPostExecute(Boolean result) {
+                if(result) {
+                    Logger.Logit(context.getString(R.string.registered));                    
+                }
+                else {
+                    Logger.Logit(context.getString(R.string.failed_register));                    
+                }
+             }
         };
         
         mRegisterTask.execute(null, null, null);
@@ -268,28 +275,27 @@ public class RegisterActivity extends Activity {
      */
     public static void unregister(final Context context, final String regId) {
 
-        mRegisterTask = new AsyncTask<Void, Void, Void>() {
+        Logger.Logit(context.getString(R.string.unregistering_server));
+        
+        mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
-            protected Void doInBackground(Void... vals) {
+            protected Boolean doInBackground(Void... vals) {
                 
                 String serverUrl = NetworkHelper.getServer() + "unregister.php";
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("regId", regId);
                 Random random = new Random();
                 long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                
-                
+                                
                 // Once GCM returns a registration id, we need to register on our server
                 // As the server might be down, we will retry it a couple
                 // times.
                 for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    Logger.Logit(context.getString(R.string.unregistering_server));
                     try {
                         NetworkHelper.post(serverUrl, params);
                         GCMRegistrar.setRegisteredOnServer(context, false);
-                        Logger.Logit(context.getString(R.string.unregistered));
-                        return null;
+                        return true;
                     } 
                     catch (Exception e) {
                     }
@@ -297,7 +303,6 @@ public class RegisterActivity extends Activity {
                     // application, it should retry only on unrecoverable errors
                     // (like HTTP error code 503).
                     if (i == MAX_ATTEMPTS) {
-                        Logger.Logit(context.getString(R.string.failed_unregister));
                         break;
                     }
                     try {
@@ -306,16 +311,21 @@ public class RegisterActivity extends Activity {
                     catch (InterruptedException e1) {
                         // Activity finished before we complete - exit.
                         Thread.currentThread().interrupt();
-                        Logger.Logit(context.getString(R.string.failed_unregister));
-                        return null;
+                        break;
                     }
                     backoff *= 2;
                 }
-                return null;
+                return false;
             }
 
             @Override
-            protected void onPostExecute(Void result) {
+            protected void onPostExecute(Boolean result) {
+                if(result) {
+                    Logger.Logit(context.getString(R.string.unregistered));
+                }
+                else {
+                    Logger.Logit(context.getString(R.string.failed_unregister));                    
+                }
             }
 
         };
