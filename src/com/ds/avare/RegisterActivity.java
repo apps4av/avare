@@ -259,6 +259,7 @@ public class RegisterActivity extends Activity {
             @Override
             protected void onPostExecute(Boolean result) {
                 if(result) {
+                    Logger.clear();
                     Logger.Logit(context.getString(R.string.registered));                    
                 }
                 else {

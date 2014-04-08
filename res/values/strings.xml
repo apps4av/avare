@@ -262,6 +262,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="online">Account</string>
     <string name="failed_register">Failed to register!</string>
     <string name="failed_unregister">Failed to unregister!</string>
-    <string name="registered">You have now registered!</string>
+    <string name="registered">You have now registered! Please press the back button to start using the application. You must first download the Databases (Required) from the Download menu. To see the detailed maps, please download the charts for the area you are interested in.</string>
     <string name="unregistered">You have now unregistered!</string>
 </resources>
