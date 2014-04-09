@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import com.ds.avare.R;
+import com.ds.avare.message.NetworkHelper;
 
 import com.google.android.gcm.GCMBaseIntentService;
  
@@ -26,10 +27,16 @@ import com.google.android.gcm.GCMBaseIntentService;
  */
 public class GCMIntentService extends GCMBaseIntentService {
  
+    /**
+     * 
+     */
+    public GCMIntentService() {
+        super(NetworkHelper.getSenderID());
+    }
  
     /**
      * Method called on device registered
-     **/
+     */
     @Override
     protected void onRegistered(Context context, String registrationId) {
         RegisterActivity.register(context, registrationId);
@@ -37,7 +44,7 @@ public class GCMIntentService extends GCMBaseIntentService {
  
     /**
      * Method called on device un registred
-     * */
+     */
     @Override
     protected void onUnregistered(Context context, String registrationId) {
         RegisterActivity.unregister(context, registrationId);
@@ -81,6 +88,8 @@ public class GCMIntentService extends GCMBaseIntentService {
  
     /**
      * Issues a notification to inform the user that server has sent a message.
+     * @param context
+     * @param message
      */
     private static void generateNotification(Context context, String message) {
         int icon = R.drawable.notification;
