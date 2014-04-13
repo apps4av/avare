@@ -58,6 +58,14 @@ public class CDI {
 		return mDeviation;
 	}
 	
+	/**
+	 * If we are left of course
+	 * @return
+	 */
+	public boolean isLeft() {
+	    return mBackColor == mColorLeft;
+	}
+	
 	/***
 	 * Course Deviation Indicator
 	 */

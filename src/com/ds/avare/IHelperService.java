@@ -16,6 +16,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ds.avare.instruments.CDI;
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -118,6 +122,42 @@ public class IHelperService extends Service {
                 object.put("bearing", (double)l.getBearing());
                 object.put("altitude", (double)l.getAltitude());
                 object.put("time", l.getTime());
+                
+                Destination d = mService.getDestination();
+                Plan p = mService.getPlan();
+                CDI c = mService.getCDI();
+                double distance = 0;
+                double bearing = 0;
+                double lon = 0;
+                double lat = 0;
+                double idNext = 0;
+                double idOrig = 0;
+                double deviation = 0;
+                
+                // If destination set, send how to get there (for autopilots).
+                if(d != null) {
+                    distance = d.getDistance();
+                    bearing = d.getBearing();
+                    lon = d.getLocation().getLatitude();
+                    lat = d.getLocation().getLongitude();
+                    if(p != null) {
+                        idNext = p.findNextNotPassed() + 1;
+                        idOrig = idNext - 1;
+                    }
+                    if(c != null) {
+                        deviation = c.getDeviation();
+                        if(c.isLeft()) {
+                            deviation = -deviation;
+                        }
+                    }
+                }
+                object.put("destDistance", distance);
+                object.put("destBearing", bearing);
+                object.put("destLongitude", lon);
+                object.put("destLatitude", lat);
+                object.put("destId", idNext);
+                object.put("destOriginId", idOrig);
+                object.put("destDeviation", deviation);
             } catch (JSONException e1) {
                 return null;
             }

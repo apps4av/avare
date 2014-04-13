@@ -161,6 +161,9 @@ public class PlanActivity extends Activity  implements Observer {
         if(mService == null) {
             return;
         }
+        if(mPlanAdapter.getCount() >= which) {
+            return;
+        }
         String item = mPlanAdapter.getItem(which);
         mService.getPlan().remove(which);
         mPlanAdapter.remove(item);

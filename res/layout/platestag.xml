@@ -14,52 +14,19 @@ Redistribution and use in source and binary forms, with or without modification,
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.ds.avare.PlatesView
+    <com.ds.avare.PlatesTagView
         android:background="#FF000000"
-        android:id="@+id/plates"
-        android:layout_below="@+id/plates_header"
+        android:id="@+id/platestag_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/plates_button_center"
+        android:id="@+id/platestag_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/center"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"/>
     
-    <Button
-        android:id="@+id/plates_button_tag"
-        android:textStyle="bold"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/fullscreen"
-        android:visibility="visible" />        
-    
-    <LinearLayout
-        android:baselineAligned="true"
-        android:id="@+id/plates_header"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
-        
-        <Button
-            android:id="@+id/plates_button_plates"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:minWidth="75dp"
-            android:layout_weight="1"/>   
-        
-        <Button
-            android:id="@+id/plates_button_airports"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:minWidth="75dp"/>       
-    </LinearLayout>
 </RelativeLayout>
 

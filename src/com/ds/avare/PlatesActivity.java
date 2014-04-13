@@ -26,6 +26,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.NetworkHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,6 +57,7 @@ public class PlatesActivity extends Activity {
     private Button mCenterButton;
     private Button mAirportButton;
     private Button mPlatesButton;
+    private Button mPlatesTagButton;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Toast mToast;
@@ -256,7 +258,17 @@ public class PlatesActivity extends Activity {
                 mPlatesView.center();
             }
         });      
-                  
+
+        mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
+        mPlatesTagButton.getBackground().setAlpha(255);
+        mPlatesTagButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
+                startActivity(intent);
+            }
+        });      
+
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
          */
