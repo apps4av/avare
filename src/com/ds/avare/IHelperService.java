@@ -130,16 +130,16 @@ public class IHelperService extends Service {
                 double bearing = 0;
                 double lon = 0;
                 double lat = 0;
-                double idNext = 0;
-                double idOrig = 0;
+                double idNext = -1;
+                double idOrig = -1;
                 double deviation = 0;
                 
                 // If destination set, send how to get there (for autopilots).
                 if(d != null) {
                     distance = d.getDistance();
                     bearing = d.getBearing();
-                    lon = d.getLocation().getLatitude();
-                    lat = d.getLocation().getLongitude();
+                    lon = d.getLocation().getLongitude();
+                    lat = d.getLocation().getLatitude();
                     if(p != null) {
                         idNext = p.findNextNotPassed() + 1;
                         idOrig = idNext - 1;
