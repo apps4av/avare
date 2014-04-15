@@ -246,13 +246,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="register">Register</string>
     <string name="unregister">Unregister</string>
     <string name="error">Error</string>
-    <string name="error_google">Please install Google Services before activating</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
     <string name="error_email">Please register a Gmail account before activating</string>
     <string name="already_registered">You have already registered your account</string>
     <string name="already_unregistered">You have already unregistered</string>
-    <string name="registering_google">Registering with the Google servers</string>
-    <string name="unregistering_google">Unregistering from the Google servers</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
     <string name="unregistering_server">Unregistering from the Apps4Av servers</string>
     <string name="register_msg">The development team for the free Avare aviation app is dedicated to empowering pilots with helpful free, open source, ad-free, and safe tools.  To that end we have decided to require anonymous Registration of users in order to:\n1. Advise users immediately in the event we discover any errors in the app or in the FAA materials we process and provide to our users at no charge.\n2. Begin offering additional features useful to pilots, such as local airport info and attractions provided by pilots.\n3. Enable the potential for future features such as direct anonymous but verified communication between users.\n4. Ensure that you assume all liability for your use of our free tools.\nBecause the Registration process uses your anonymous Google ID, we will not have nor will we share any other personal information about you.\n\nThe next screen provides more details on our Privacy Policy, and another opportunity to decline Registration.  Please press the Register button to continue.</string>

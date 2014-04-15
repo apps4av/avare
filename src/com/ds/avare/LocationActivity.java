@@ -883,10 +883,10 @@ public class LocationActivity extends Activity implements Observer {
         public void onServiceConnected(ComponentName className,
                 IBinder service) {
             
-            if(!com.ds.avare.message.Helper.isRegistered(getApplicationContext())) {
+            if(!mPref.isRegistered()) {
                 Intent i = new Intent(LocationActivity.this, RegisterActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i); 
+                startActivity(i);
             }
             
             /* 

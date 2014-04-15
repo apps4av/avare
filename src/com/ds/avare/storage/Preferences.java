@@ -725,10 +725,30 @@ public class Preferences {
      * 
      * @param value
      */
+    public void setRegistered(boolean registered) {
+        mPref.edit().putBoolean(mContext.getString(R.string.register), registered).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isRegistered() {
+        return mPref.getBoolean(mContext.getString(R.string.register), false);
+    }
+
+    /**
+     * 
+     * @param value
+     */
     public void setOdometer(double value) {
     	mPref.edit().putString(mContext.getString(R.string.prefOdometer), String.format("%f", value)).commit();
     }
-    
+
+    /**
+     * 
+     * @return
+     */
     public boolean getShowCDI() {
         return mPref.getBoolean(mContext.getString(R.string.prefShowCDI), false);
     }

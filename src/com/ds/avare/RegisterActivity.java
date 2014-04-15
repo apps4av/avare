@@ -9,13 +9,12 @@ import com.ds.avare.R;
 import com.ds.avare.message.Helper;
 import com.ds.avare.message.Logger;
 import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.PossibleEmail;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
-import com.google.android.gcm.GCMRegistrar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -48,6 +47,7 @@ public class RegisterActivity extends Activity {
     private AlertDialog mRegisterDialog;
     private AlertDialog mUnregisterDialog;
     private WebView mPrivacy;
+    private Preferences mPref;
     
     
     /**
@@ -60,16 +60,7 @@ public class RegisterActivity extends Activity {
         
         setContentView(R.layout.activity_register);
         
-        // Check if Google services
-        try {
-            GCMRegistrar.checkDevice(this);
-        }
-        catch (Exception e) {
-            Helper.showAlert(RegisterActivity.this,
-                    getString(R.string.error),
-                    getString(R.string.error_google));
-            return;            
-        }
+        mPref = new Preferences(this);
         
         // Check if Internet present
         if (!Helper.isNetworkAvailable(this)) {
@@ -88,7 +79,7 @@ public class RegisterActivity extends Activity {
         }
  
         Logger.setTextView((TextView) findViewById(R.id.log_text));
-        if(!Helper.isRegistered(this)) {
+        if(!mPref.isRegistered()) {
             Logger.Logit(getString(R.string.register_msg));            
         }      
 
@@ -111,15 +102,73 @@ public class RegisterActivity extends Activity {
             .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog,int id) {
                     
-                    // Get GCM registration id
                     if(mRegisterTask != null) {
                         if(mRegisterTask.getStatus() != AsyncTask.Status.FINISHED) {
                             mRegisterTask.cancel(true);
                         }
                     }
                     
-                    Logger.Logit(getString(R.string.registering_google));
-                    GCMRegistrar.register(RegisterActivity.this, NetworkHelper.getSenderID());
+                    Logger.Logit(getString(R.string.registering_server));
+
+                    mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... vals) {
+                            // Register on our server
+                            // On server creates a new user
+                            String serverUrl = NetworkHelper.getServer() + "register.php";
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("name", "anonoymous");
+                            params.put("email", PossibleEmail.get(getApplicationContext()));
+                            params.put("regId", "");
+                            Random random = new Random();
+                            long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+                            // Once GCM returns a registration id, we need to register on our server
+                            // As the server might be down, we will retry it a couple
+                            // times.
+                            for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                                try {
+                                    NetworkHelper.post(serverUrl, params);
+                                    return true;
+                                } 
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                    // Here we are simplifying and retrying on any error; in a real
+                                    // application, it should retry only on unrecoverable errors
+                                    // (like HTTP error code 503).
+                                    if (i == MAX_ATTEMPTS) {
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(backoff);
+                                    }
+                                    catch (InterruptedException e1) {
+                                        // Activity finished before we complete - exit.
+                                        Thread.currentThread().interrupt();
+                                        break;
+                                    }
+                                    // increase backoff exponentially
+                                    backoff *= 2;
+                                }
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            if(result) {
+                                mPref.setRegistered(true);
+                                Logger.clear();
+                                Logger.Logit(getString(R.string.registered));                    
+                            }
+                            else {
+                                Logger.Logit(getString(R.string.failed_register));                    
+                            }
+                         }
+                    };
+                    
+                    mRegisterTask.execute(null, null, null);
+                    
                     dialog.dismiss();
                 }
             });
@@ -147,8 +196,62 @@ public class RegisterActivity extends Activity {
                         }
                     }
                     
-                    Logger.Logit(getString(R.string.unregistering_google));
-                    GCMRegistrar.unregister(RegisterActivity.this);
+                    mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... vals) {
+                            
+                            String serverUrl = NetworkHelper.getServer() + "unregister.php";
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("name", "anonoymous");
+                            params.put("email", PossibleEmail.get(getApplicationContext()));
+                            params.put("regId", "");
+                            Random random = new Random();
+                            long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+                                            
+                            // Once GCM returns a registration id, we need to register on our server
+                            // As the server might be down, we will retry it a couple
+                            // times.
+                            for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                                try {
+                                    NetworkHelper.post(serverUrl, params);
+                                    return true;
+                                } 
+                                catch (Exception e) {
+                                }
+                                // Here we are simplifying and retrying on any error; in a real
+                                // application, it should retry only on unrecoverable errors
+                                // (like HTTP error code 503).
+                                if (i == MAX_ATTEMPTS) {
+                                    break;
+                                }
+                                try {
+                                    Thread.sleep(backoff);
+                                }
+                                catch (InterruptedException e1) {
+                                    // Activity finished before we complete - exit.
+                                    Thread.currentThread().interrupt();
+                                    break;
+                                }
+                                backoff *= 2;
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            if(result) {
+                                mPref.setRegistered(false);
+                                Logger.Logit(getString(R.string.unregistered));
+                            }
+                            else {
+                                Logger.Logit(getString(R.string.failed_unregister));                    
+                            }
+                        }
+
+                    };
+                    mRegisterTask.execute(null, null, null);
+             
                     dialog.dismiss();
                 }
             });
@@ -166,8 +269,8 @@ public class RegisterActivity extends Activity {
             public void onClick(View arg0) {
 
                 Logger.clear();
-                
-                if(!GCMRegistrar.getRegistrationId(RegisterActivity.this).equals("")) {
+
+                if(mPref.isRegistered()) {
                     Logger.Logit(getString(R.string.already_registered));
                     return;
                 }
@@ -191,84 +294,16 @@ public class RegisterActivity extends Activity {
             @Override
             public void onClick(View arg0) {
                 Logger.clear();
-                
-                if(GCMRegistrar.getRegistrationId(RegisterActivity.this).equals("")) {
+
+                if(!mPref.isRegistered()) {
                     Logger.Logit(getString(R.string.already_unregistered));
                     return;
                 }
-                                
+                
                 // show it
                 mUnregisterDialog.show();
            }
         });        
-    }
- 
-    /**
-     * Register this account/device pair within the server.
-     *
-     */
-    public static void register(final Context context, final String regId) {
-
-        Logger.Logit(context.getString(R.string.registering_server));
-
-        mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
-
-            @Override
-            protected Boolean doInBackground(Void... vals) {
-                // Register on our server
-                // On server creates a new user
-                String serverUrl = NetworkHelper.getServer() + "register.php";
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", "anonoymous");
-                params.put("email", PossibleEmail.get(context));
-                params.put("regId", regId);
-                Random random = new Random();
-                long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                // Once GCM returns a registration id, we need to register on our server
-                // As the server might be down, we will retry it a couple
-                // times.
-                for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    try {
-                        NetworkHelper.post(serverUrl, params);
-                        GCMRegistrar.setRegisteredOnServer(context, true);
-                        return true;
-                    } 
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        // Here we are simplifying and retrying on any error; in a real
-                        // application, it should retry only on unrecoverable errors
-                        // (like HTTP error code 503).
-                        if (i == MAX_ATTEMPTS) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(backoff);
-                        }
-                        catch (InterruptedException e1) {
-                            // Activity finished before we complete - exit.
-                            Thread.currentThread().interrupt();
-                            break;
-                        }
-                        // increase backoff exponentially
-                        backoff *= 2;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(result) {
-                    Logger.clear();
-                    Logger.Logit(context.getString(R.string.registered));                    
-                }
-                else {
-                    Logger.Logit(context.getString(R.string.failed_register));                    
-                }
-             }
-        };
-        
-        mRegisterTask.execute(null, null, null);
     }
  
     /**
@@ -278,59 +313,6 @@ public class RegisterActivity extends Activity {
 
         Logger.Logit(context.getString(R.string.unregistering_server));
         
-        mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
-
-            @Override
-            protected Boolean doInBackground(Void... vals) {
-                
-                String serverUrl = NetworkHelper.getServer() + "unregister.php";
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("regId", regId);
-                Random random = new Random();
-                long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                                
-                // Once GCM returns a registration id, we need to register on our server
-                // As the server might be down, we will retry it a couple
-                // times.
-                for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                    try {
-                        NetworkHelper.post(serverUrl, params);
-                        GCMRegistrar.setRegisteredOnServer(context, false);
-                        return true;
-                    } 
-                    catch (Exception e) {
-                    }
-                    // Here we are simplifying and retrying on any error; in a real
-                    // application, it should retry only on unrecoverable errors
-                    // (like HTTP error code 503).
-                    if (i == MAX_ATTEMPTS) {
-                        break;
-                    }
-                    try {
-                        Thread.sleep(backoff);
-                    }
-                    catch (InterruptedException e1) {
-                        // Activity finished before we complete - exit.
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                    backoff *= 2;
-                }
-                return false;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(result) {
-                    Logger.Logit(context.getString(R.string.unregistered));
-                }
-                else {
-                    Logger.Logit(context.getString(R.string.failed_unregister));                    
-                }
-            }
-
-        };
-        mRegisterTask.execute(null, null, null);
-    }
+   }
     
 }

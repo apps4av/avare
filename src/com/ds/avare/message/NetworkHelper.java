@@ -19,19 +19,11 @@ import java.util.Map.Entry;
  */
 public class NetworkHelper {
 
-
-    /*
-     * This has to be provided by apps4av
-     */
-    public static String getSenderID() {
-        return "812837541666";
-    }
-
     /*
      * This has to be provided by apps4av
      */
     public static String getServer() {
-        return "https://apps4av.net/";
+        return "https://apps4av.net/new/";
     }
 
     /**
