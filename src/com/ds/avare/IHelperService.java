@@ -146,7 +146,7 @@ public class IHelperService extends Service {
                     }
                     if(c != null) {
                         deviation = c.getDeviation();
-                        if(c.isLeft()) {
+                        if(!c.isLeft()) {
                             deviation = -deviation;
                         }
                     }
