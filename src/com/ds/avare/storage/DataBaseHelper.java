@@ -725,6 +725,35 @@ public class DataBaseHelper  {
     }
 
     /**
+     * 
+     * @param name
+     * @param params
+     */
+    private void searchCity(String name, LinkedHashMap<String, String> params) {
+        Cursor cursor;
+        /*
+         * City in upper case in DB
+         */
+        String uname = name.toUpperCase(Locale.getDefault());
+
+        String qry = "select " + LOCATION_ID_DB + "," + FACILITY_NAME_DB + "," + TYPE_DB + " from " + TABLE_AIRPORTS + " where City=='" + uname + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    StringPreference s = new StringPreference(Destination.BASE, cursor.getString(2), cursor.getString(1), cursor.getString(0));
+                    s.putInHash(params);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+            
+        closes(cursor);
+    }
+
+    /**
      * Search something in database
      * @param name
      * @param params
@@ -741,9 +770,12 @@ public class DataBaseHelper  {
             StringPreference s = searchRadial(name);
             if(null != s) {
                 s.putInHash(params);
+                return;
             }
-            return;
         }
+        
+        // Search city first
+        searchCity(name, params);
         
         String qry;
         String qbasic = "select " + LOCATION_ID_DB + "," + FACILITY_NAME_DB + "," + TYPE_DB + " from ";
