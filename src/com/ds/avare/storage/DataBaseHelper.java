@@ -1345,6 +1345,42 @@ public class DataBaseHelper  {
         return freq;
     }
 
+    
+    /**
+     * Find elevation based on its name
+     * @param name
+     * @param params
+     * @return
+     */
+    public String findElev(String name) {
+        
+        String elev = "";
+        Cursor cursor;
+        
+        /*
+         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
+         */
+        
+        String qry = "select ARPElevation from " + TABLE_AIRPORTS + " where " + LOCATION_ID_DB + "=='" + name                            
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    elev = cursor.getString(0);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return elev;
+    }
+
     /**
      * If we are within the tile of last query, return just offsets.
      * Always call this before calling sister function findClosest() which does the 

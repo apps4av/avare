@@ -13,6 +13,8 @@ package com.ds.avare.utils;
 
 import java.util.Locale;
 
+import android.content.Context;
+
 import com.ds.avare.R;
 
 
@@ -602,5 +604,92 @@ public class WeatherHelper {
         return
                 "<a href='http://www.nws.noaa.gov/mdl/synop/namcard.php'>NAM Forecast Legend</a><br>";
 
+    }
+
+    /**
+     * Returns density altitude for a field from its METAR and elevation
+     * @param metar
+     * @param elevation
+     * @return
+     */
+    public static String getDensityAltitude(String metar, String elev, Context ctx) {
+        
+        if(null == elev || null == metar) {
+            return null;
+        }
+        
+        String time = "";
+        
+        double da = 0;
+        double temp = 0;
+        double as = 0;
+        
+        double st = 0;
+        double at = 0;
+       
+        double pa = 0;
+        double elevation = 0;
+        
+        boolean tmpset = false;
+        boolean tmset = false;
+        boolean aset = false;
+        boolean melev = false;
+        
+        // parse time, temp, altitude setting 
+        String tokens[] = metar.split(" ");
+        time = tokens[1];
+        
+        try {
+            for(int i = 0; i < tokens.length; i++) {
+                if(tokens[i].equals("RMK")) {
+                    break;
+                }
+                if(tokens[i].matches("[0-9]*Z")) {
+                    time = tokens[i];
+                    tmset = true;
+                    continue;
+                }
+                if(tokens[i].matches("M?[0-9]*/M?[0-9]*")) {
+                    String t = tokens[i].split("/")[0];
+                    if(t.startsWith("M")) {
+                        t = t.substring(1);
+                    }
+                    temp = Double.parseDouble(t);
+                    tmpset = true;
+                    continue;
+                }
+                if(tokens[i].matches("A[0-9][0-9][0-9][0-9]")) {
+                    as = Double.parseDouble(tokens[i].split("A")[1]) / 100;
+                    aset = true;
+                    continue;
+                }
+            }
+            elevation = Double.parseDouble(elev);
+            melev = true;
+        }
+        catch (Exception e) {
+        }
+        
+        if(tmpset && tmset && aset && melev) {
+            
+            // pressure altitude, correct for non standard
+            pa = elevation + (29.92 - as) * 1000.0;
+            
+            // standard temp Kelvin
+            st = 273.15 - (15 - 0.0019812 * pa);
+
+            // reported temp Kelvin
+            at = 273.15 - temp;
+
+            // density altitude, aviation formulary
+            da = pa + 118.6 * (st - at);
+            
+            // round to nearest 100
+            da = ((int)(da / 100)) * 100;
+            
+            return ctx.getString(R.string.DensityAltitude) + " " + (int)da + "ft @ " + time;
+        }
+
+        return null;
     }
 }

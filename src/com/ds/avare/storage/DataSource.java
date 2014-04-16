@@ -268,7 +268,16 @@ public class DataSource {
     public LinkedList<String> findFrequencies(String name) {
         return  dbHelper.findFrequencies(name);
     }
-    
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public String findElev(String name) {
+        return dbHelper.findElev(name);
+    }
+
     /**
      * 
      * @param lon

@@ -44,6 +44,7 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
+import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -1639,6 +1640,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Taf taf;
         private WindsAloft wa;
         private Metar metar;
+        private String elev;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1725,6 +1727,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 metar = mService.getDBResource().getMETAR(airport);   
                 if(isCancelled())
                     return "";
+                
+                elev = mService.getDBResource().findElev(airport);
             }
             
             /*
@@ -1799,6 +1803,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.freq = freq;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.radar = radar;
+                if(metar != null) {
+                    mLongTouchDestination.performance = WeatherHelper.getDensityAltitude(metar.rawText, elev, mContext);
+                }
                 
                 // If the long press event has already occurred, we need to do the gesture callback here
                 if(mDoCallbackWhenDone) {

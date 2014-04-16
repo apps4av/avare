@@ -38,4 +38,5 @@ public class LongTouchDestination {
     public String radar;
     public LinkedList<Airep> airep;
     public LinkedList<String> freq;
+    public String performance;
 }
