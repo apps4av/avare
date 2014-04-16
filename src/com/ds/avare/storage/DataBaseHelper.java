@@ -1345,6 +1345,46 @@ public class DataBaseHelper  {
         return freq;
     }
 
+    /**
+     * Find all runways based on its name
+     * @param name
+     * @param params
+     * @return
+     */
+    public LinkedList<String> findRunways(String name) {
+        
+        Cursor cursor;
+        LinkedList<String> run = new LinkedList<String>();
+        
+        /*
+         * Find frequencies (ATIS, TOWER, GROUND, etc)  Not AWOS    
+         */
+        
+        String qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name                            
+                + "' or " + LOCATION_ID_DB + "=='K" + name + "';";
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            /*
+             * Add all of them
+             */
+            if(cursor != null) {
+                while(cursor.moveToNext()) {
+                    // return ident and true heading of LE runway
+                    String trueh = cursor.getString(4) + "," + cursor.getString(12);
+                    run.add(trueh);
+                    trueh = cursor.getString(5) + "," + cursor.getString(13);
+                    run.add(trueh);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        return run;
+    }
+
     
     /**
      * Find elevation based on its name

@@ -11,9 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import java.util.LinkedList;
 import java.util.Locale;
-
-import android.content.Context;
 
 import com.ds.avare.R;
 
@@ -612,10 +611,10 @@ public class WeatherHelper {
      * @param elevation
      * @return
      */
-    public static String getDensityAltitude(String metar, String elev, Context ctx) {
+    public static String getDensityAltitude(String metar, String elev) {
         
         if(null == elev || null == metar) {
-            return null;
+            return "";
         }
         
         String time = "";
@@ -687,9 +686,81 @@ public class WeatherHelper {
             // round to nearest 100
             da = ((int)(da / 100)) * 100;
             
-            return ctx.getString(R.string.DensityAltitude) + " " + (int)da + "ft @ " + time;
+            return "" + (int)da + "ft @ " + time;
         }
 
-        return null;
+        return "";
     }
+    
+    /**
+     * Returns best wind aligned runway from METAR
+     * @param metar
+     * @param elevation
+     * @return
+     */
+    public static String getBestRunway(String metar, LinkedList<String> runways) {
+        
+        if(null == runways || null == metar) {
+            return "";
+        }
+        
+        String time = "";
+        String wind = "";
+        double dir = 0;
+        
+        boolean tmset = false;
+        boolean windset = false;
+        
+        // parse time, temp, altitude setting 
+        String tokens[] = metar.split(" ");
+        time = tokens[1];
+        
+        try {
+            for(int i = 0; i < tokens.length; i++) {
+                if(tokens[i].equals("RMK")) {
+                    break;
+                }
+                if(tokens[i].matches("[0-9]*Z")) {
+                    time = tokens[i];
+                    tmset = true;
+                    continue;
+                }
+                if(tokens[i].matches(".*KT")) {
+                    wind = tokens[i];
+                    dir = Double.parseDouble(wind.substring(0, 3));
+                    windset = true;
+                    continue;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        if(windset && tmset) {
+            /*
+             * Find best wind aligned runway
+             */
+            double minDiff = 1E10;
+            String best = "";
+            for(String s : runways) {
+                String run[] = s.split(",");
+                try {
+                    double rhead = Double.parseDouble(run[1]);
+                    double diff = Math.abs(rhead - dir);
+                    if(diff < minDiff) {
+                        minDiff = diff;
+                        best = run[0];
+                    }
+                }
+                catch (Exception e) {
+                    return "";
+                }
+                
+            }
+            return  best + " @ " + time;
+        }
+
+        return "";
+    }
+
 }

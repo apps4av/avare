@@ -1637,6 +1637,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String radar;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
+        private LinkedList<String> runways;
         private Taf taf;
         private WindsAloft wa;
         private Metar metar;
@@ -1727,8 +1728,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 metar = mService.getDBResource().getMETAR(airport);   
                 if(isCancelled())
                     return "";
+            
+                runways = mService.getDBResource().findRunways(airport);
+                if(isCancelled())
+                    return "";
                 
                 elev = mService.getDBResource().findElev(airport);
+                if(isCancelled())
+                    return "";
+
             }
             
             /*
@@ -1804,7 +1812,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.radar = radar;
                 if(metar != null) {
-                    mLongTouchDestination.performance = WeatherHelper.getDensityAltitude(metar.rawText, elev, mContext);
+                    mLongTouchDestination.performance = 
+                            mContext.getString(R.string.DensityAltitude) + " " +
+                            WeatherHelper.getDensityAltitude(metar.rawText, elev) + "\n" +
+                            mContext.getString(R.string.BestRunway) + " " +
+                            WeatherHelper.getBestRunway(metar.rawText, runways);
                 }
                 
                 // If the long press event has already occurred, we need to do the gesture callback here

@@ -265,6 +265,15 @@ public class DataSource {
      * @param name
      * @return
      */
+    public LinkedList<String> findRunways(String name) {
+        return  dbHelper.findRunways(name);
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public LinkedList<String> findFrequencies(String name) {
         return  dbHelper.findFrequencies(name);
     }
@@ -278,6 +287,7 @@ public class DataSource {
         return dbHelper.findElev(name);
     }
 
+    
     /**
      * 
      * @param lon
