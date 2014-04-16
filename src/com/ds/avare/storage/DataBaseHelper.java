@@ -1371,6 +1371,10 @@ public class DataBaseHelper  {
             if(cursor != null) {
                 while(cursor.moveToNext()) {
                     // return ident and true heading of LE runway
+                    if(cursor.getString(4).contains("H")) {
+                        // No heliport
+                        continue;
+                    }
                     String trueh = cursor.getString(4) + "," + cursor.getString(12);
                     run.add(trueh);
                     trueh = cursor.getString(5) + "," + cursor.getString(13);

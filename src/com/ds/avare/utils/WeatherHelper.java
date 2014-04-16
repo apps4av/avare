@@ -606,6 +606,22 @@ public class WeatherHelper {
     }
 
     /**
+     * Returns time from METAR
+     * @param metar
+     * @return
+     */
+    public static String getMetarTime(String metar) {
+        String time = "";
+        // parse time, temp, altitude setting 
+        String tokens[] = metar.split(" ");
+        if(tokens.length > 1) {
+            time = tokens[1];
+        }
+        
+        return time;
+    }
+
+    /**
      * Returns density altitude for a field from its METAR and elevation
      * @param metar
      * @param elevation
@@ -616,8 +632,6 @@ public class WeatherHelper {
         if(null == elev || null == metar) {
             return "";
         }
-        
-        String time = "";
         
         double da = 0;
         double temp = 0;
@@ -630,23 +644,16 @@ public class WeatherHelper {
         double elevation = 0;
         
         boolean tmpset = false;
-        boolean tmset = false;
         boolean aset = false;
         boolean melev = false;
         
         // parse time, temp, altitude setting 
         String tokens[] = metar.split(" ");
-        time = tokens[1];
         
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
                     break;
-                }
-                if(tokens[i].matches("[0-9]*Z")) {
-                    time = tokens[i];
-                    tmset = true;
-                    continue;
                 }
                 if(tokens[i].matches("M?[0-9]*/M?[0-9]*")) {
                     String t = tokens[i].split("/")[0];
@@ -669,7 +676,7 @@ public class WeatherHelper {
         catch (Exception e) {
         }
         
-        if(tmpset && tmset && aset && melev) {
+        if(tmpset && aset && melev) {
             
             // pressure altitude, correct for non standard
             pa = elevation + (29.92 - as) * 1000.0;
@@ -686,7 +693,7 @@ public class WeatherHelper {
             // round to nearest 100
             da = ((int)(da / 100)) * 100;
             
-            return "" + (int)da + "ft @ " + time;
+            return "" + (int)da + " ft";
         }
 
         return "";
@@ -704,30 +711,37 @@ public class WeatherHelper {
             return "";
         }
         
-        String time = "";
         String wind = "";
         double dir = 0;
+        double spd0 = 0;
+        double spd1 = 0;
         
-        boolean tmset = false;
         boolean windset = false;
         
         // parse time, temp, altitude setting 
         String tokens[] = metar.split(" ");
-        time = tokens[1];
         
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
                     break;
                 }
-                if(tokens[i].matches("[0-9]*Z")) {
-                    time = tokens[i];
-                    tmset = true;
-                    continue;
-                }
                 if(tokens[i].matches(".*KT")) {
                     wind = tokens[i];
-                    dir = Double.parseDouble(wind.substring(0, 3));
+                    // first 3 digits are direction true, or VRB.
+                    String tmp = wind.substring(0, 3);
+                    if(tmp.equals("VRB")) {
+                        // variable, almost calm
+                        tmp = "000";
+                    }
+                    dir = Double.parseDouble(tmp);
+                    // next 2 digits are speed
+                    spd0 = Double.parseDouble(wind.substring(3, 5));
+                    // could be gusting
+                    if(wind.contains("G")) {
+                        // gusting to
+                        spd1 = Double.parseDouble(wind.substring(6, 8));
+                    }
                     windset = true;
                     continue;
                 }
@@ -736,20 +750,45 @@ public class WeatherHelper {
         catch (Exception e) {
         }
         
-        if(windset && tmset) {
+        double head1 = 0;
+        double head0 = 0;
+        double cross1 = 0;
+        double cross0 = 0;
+        
+        if(windset) {
             /*
              * Find best wind aligned runway
              */
-            double minDiff = 1E10;
+            double maxW = -1E10;
             String best = "";
             for(String s : runways) {
                 String run[] = s.split(",");
                 try {
                     double rhead = Double.parseDouble(run[1]);
-                    double diff = Math.abs(rhead - dir);
-                    if(diff < minDiff) {
-                        minDiff = diff;
+                    // find cross and head wind components
+                    // aviation formulary
+                    head0 = spd0 * Math.cos(Math.toRadians(dir - rhead));
+                    if(head0 > maxW) {
+                        // find runway with max headwind component
+                        maxW = head0;
+                        cross0 = spd0 * Math.sin(Math.toRadians(dir - rhead));
+                        if(spd1 != 0) {
+                            head1 = spd1 * Math.cos(Math.toRadians(dir - rhead));
+                            cross1 = spd1 * Math.sin(Math.toRadians(dir - rhead));
+                        }
                         best = run[0];
+                        best += "\n " + Math.abs((int)head0);
+                        if(spd1 != 0) {
+                            best += "G" + Math.abs((int)head1);
+                        }
+                        // T = tail, H = head, L = left, R = right
+                        best += (head0 < 0 ? "T KT" : "H KT");
+                        best += "\n " + Math.abs((int)cross0);
+                        if(spd1 != 0) {
+                            best += "G" + Math.abs((int)cross1);
+                        }
+                        
+                        best += (cross0 < 0 ? "LX KT" : "RX KT");
                     }
                 }
                 catch (Exception e) {
@@ -757,7 +796,7 @@ public class WeatherHelper {
                 }
                 
             }
-            return  best + " @ " + time;
+            return best;
         }
 
         return "";

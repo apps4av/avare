@@ -1812,7 +1812,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.radar = radar;
                 if(metar != null) {
-                    mLongTouchDestination.performance = 
+                    mLongTouchDestination.performance =
+                            WeatherHelper.getMetarTime(metar.rawText) + "\n" +
                             mContext.getString(R.string.DensityAltitude) + " " +
                             WeatherHelper.getDensityAltitude(metar.rawText, elev) + "\n" +
                             mContext.getString(R.string.BestRunway) + " " +
