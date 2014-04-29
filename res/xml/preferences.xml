@@ -79,21 +79,9 @@ authors: zkhan, jlmcgraw
         android:icon="@android:drawable/ic_menu_mapmode" >
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/ScreenOn"
-            android:summary="@string/ScreenOnSummary"
-            android:title="@string/ScreenOnLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="@string/LeaveRunning"
             android:summary="@string/LeaveRunningSummary"
             android:title="@string/LeaveRunningLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="Portrait"
-            android:entries="@array/Orientation"
-            android:entryValues="@array/Orientation"
-            android:key="@string/OrientationP"
-            android:summary="@string/OrientationPSummary"
-            android:title="@string/OrientationPLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"
@@ -144,6 +132,18 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefDisplayCategoryTitle" 
         android:icon="@android:drawable/ic_menu_gallery" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ScreenOn"
+            android:summary="@string/ScreenOnSummary"
+            android:title="@string/ScreenOnLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="Portrait"
+            android:entries="@array/Orientation"
+            android:entryValues="@array/Orientation"
+            android:key="@string/OrientationP"
+            android:summary="@string/OrientationPSummary"
+            android:title="@string/OrientationPLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/NightMode"
