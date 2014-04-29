@@ -21,8 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -152,7 +152,7 @@ public class Download {
             int count;
             byte data[] = new byte[blocksize];
             mVersion = NetworkHelper.getVersion(mRoot, mName);
-            int fileLength;
+            long fileLength;
                         
             try {
                 /*
@@ -186,16 +186,38 @@ public class Download {
                  */
                 mCode = "code unable to get network file URL ";
                 URL url = new URL(netfile);
+                
+                File zfile = new File(zipfile);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                if(zfile.exists()) {
+                    // if file exists, resume download
+                    connection.setRequestProperty("Range", "bytes=" + (zfile.length()) + "-");
+                }
                 mCode = "code unable to connect to server ";
-                URLConnection connection = url.openConnection();
                 connection.connect();
+                int code = connection.getResponseCode();
+                if (code != 206 && code != 200) {
+                    zfile.delete();
+                    sendFailure();
+                    return;
+                }
+                
+                
+                String connectionField = connection.getHeaderField("content-range");
+                long downloadedSize = 0;
+                if (connectionField != null) {
+                    String[] connectionRanges = connectionField.substring("bytes=".length()).split("-");
+                    downloadedSize = Long.valueOf(connectionRanges[0]);
+                }
+                
                 mCode = "code unable to get file from server ";
-                input = new BufferedInputStream(url.openStream(), blocksize);
-                fileLength = connection.getContentLength();
+                fileLength = connection.getContentLength() + downloadedSize;
+                
+                input = new BufferedInputStream(connection.getInputStream(), blocksize);
                 mCode = "code unable to store the zip file ";
-                output = new BufferedOutputStream(new FileOutputStream(zipfile), blocksize);
+                output = new BufferedOutputStream(new FileOutputStream(zipfile, true), blocksize);
     
-                long total = 0;
+                long total = downloadedSize;
                 int lastp = FAILED;
                 int newp;
                 while(true) {
@@ -366,6 +388,7 @@ public class Download {
                     
                 } catch (Exception e) {
                     mCode += e.getCause();
+                    zfile.delete();
                 }
             } catch (Exception e) {
                 mCode += e.getCause();
