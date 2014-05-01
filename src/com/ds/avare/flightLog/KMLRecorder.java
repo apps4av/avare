@@ -338,9 +338,6 @@ public class KMLRecorder {
 			return;
 		}
 
-		// We are going to write out position. Make a note of these gpsParams
-		mLastFix = gpsParams;
-		
 		// Write out the position. Convert the altitude from feet to meters for the KML file
 		try {
 			mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
@@ -351,6 +348,10 @@ public class KMLRecorder {
 			// on the charts
 			mPositionHistory.add(GpsParams.copy(gpsParams));
 			mShape.updateShape(gpsParams);
+
+			// The data was saved correctly, update our last known position
+			mLastFix = gpsParams;
+
 		} catch (Exception e) { }
 	}
     
