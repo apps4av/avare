@@ -99,8 +99,9 @@ public class TileMap {
      * 
      * @param name
      * @return
+     * @throws InterruptedException 
      */
-    public void reload(String[] tileNames) {
+    public void reload(String[] tileNames) throws InterruptedException {
     	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
     	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
@@ -145,6 +146,13 @@ public class TileMap {
          * For all tiles that will be loaded.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
+            
+            /*
+             * Move beyond the move? interrupt.
+             */
+            if(Thread.interrupted()) {
+                throw new InterruptedException();
+            }
             
             if(null == tileNames[tilen]) {
                 /*

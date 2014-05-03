@@ -1543,6 +1543,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Tile centerTile;
         private Tile gpsTile;
         public boolean running = true;
+        private boolean runAgain = false;
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1553,12 +1554,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             Thread.currentThread().setName("Tile");
 
             while(running) {
-                try {
-                    Thread.sleep(1000 * 3600);
+                
+                if(!runAgain) {
+                    try {
+                        Thread.sleep(1000 * 3600);
+                    }
+                    catch(Exception e) {
+                        
+                    }
                 }
-                catch(Exception e) {
-                    
-                }
+                runAgain = false;
                 
                 if(null == mService) {
                     continue;
@@ -1606,7 +1611,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
-                mService.getTiles().reload(tileNames);
+                try {
+                    mService.getTiles().reload(tileNames);
+                }
+                catch(Exception e) {
+                    /*
+                     * We are interrupted for new movement. Try again to load new tiles.
+                     */
+                    runAgain = true;
+                    continue;
+                }
                 
                 /*
                  * UI thread
