@@ -211,7 +211,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Macro of zoom
      */
     private int                         mMacro;
-    private float                       mFactor;
 
     private float                       mPx;
     private float                       mPy;
@@ -272,7 +271,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTrackUp = false;
         mElev = -1;
         mMacro = 1;
-        mFactor = 1.f;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mVSIParams = new GpsParams(null);
@@ -412,8 +410,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Now that we have moved passed the macro level, re-query for new tiles.
              * Do not query repeatedly hence check for mFactor = 1
              */
-            if(mMacro != mScale.getMacroFactor() && mFactor == 1) {
-                mFactor = (float)mMacro / (float)mScale.getMacroFactor();
+            if(mMacro != mScale.getMacroFactor()) {
                 dbquery(true);
             }
         }
@@ -1580,18 +1577,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, level);
                 
                 if(gpsTile == null) {
-                    mFactor = 1;
                     continue;
                 }
                 
-                mPan.setMove((float)(mPan.getMoveX() * mFactor), (float)(mPan.getMoveY() * mFactor));
-                movex = mPan.getTileMoveXWithoutTear();
-                movey = mPan.getTileMoveYWithoutTear();
+                float factor = (float)mMacro / (float)mScale.getMacroFactor();
+
+                Pan pan = new Pan(mPan);
+                pan.setMove((float)(mPan.getMoveX() * factor), (float)(mPan.getMoveY() * factor));
+                movex = pan.getTileMoveXWithoutTear();
+                movey = pan.getTileMoveYWithoutTear();
                 
                 String newt = gpsTile.getNeighbor(movey, movex);
                 centerTile = mImageDataSource.findTile(newt);
                 if(null == centerTile) {
-                    mFactor = 1;
                     continue;
                 }
     
@@ -1607,7 +1605,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
                     }
                 }
-                
+
                 /*
                  * Load tiles, draw in UI thread
                  */
@@ -1631,6 +1629,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 t.centerTile = centerTile;
                 t.offsets = offsets;
                 t.p = p;
+                t.pan = pan;
                 Message m = mHandler.obtainMessage();
                 m.obj = t;
                 mHandler.sendMessage(m);
@@ -2127,6 +2126,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         double p[];
         int movex;
         int movey;
+        Pan pan;
         Tile centerTile;
         
     }
@@ -2148,13 +2148,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * And pan
              */
+            mPan = t.pan;
             mPan.setTileMove(t.movex, t.movey);
             mService.setPan(mPan);
             mMovement = new Movement(t.offsets, t.p);
             mService.setMovement(mMovement);
             mMacro = mScale.getMacroFactor();
             mScale.updateMacro();
-            mFactor = 1;
             mPx = (float)t.centerTile.getPx();
             mPy = (float)t.centerTile.getPy();
             updateCoordinates();

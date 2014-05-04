@@ -53,6 +53,20 @@ public class Pan {
 
     /**
      * 
+     * 
+     * @param p
+     */
+    public Pan(Pan p) {
+        mMoveX = p.mMoveX;
+        mMoveY = p.mMoveY;
+        mMoveXTile = p.mMoveXTile;
+        mMoveYTile = p.mMoveYTile;
+        mMoveXTileOld = p.mMoveXTileOld;
+        mMoveYTileOld = p.mMoveYTileOld;        
+    }
+    
+    /**
+     * 
      * @param x
      * @param y
      * @return
