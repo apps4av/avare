@@ -160,12 +160,21 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mAddBitmapHolder = new BitmapHolder(mContext, R.drawable.add);
         mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.white_square);
         
+        refreshIt();
+        
+    }
+
+    
+    /**
+     * 
+     */
+    public void refreshIt() {
         /*
          * Update versions
          */
-        new ViewTask().execute();
+        new ViewTask().execute();        
     }
-
+    
     /**
      * 
      * @author zkhan

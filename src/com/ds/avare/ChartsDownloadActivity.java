@@ -54,7 +54,7 @@ public class ChartsDownloadActivity extends Activity {
     private Delete mDelete;
     
     private Preferences mPref;
-    private ChartAdapter mChartAdapter;
+    private static ChartAdapter mChartAdapter = null;
     private Toast mToast;
     
     private StorageService mService;
@@ -112,7 +112,16 @@ public class ChartsDownloadActivity extends Activity {
         setContentView(view);
 
         
-        mChartAdapter = new ChartAdapter(this); 
+        if(null == mChartAdapter) {
+            /*
+             * Keep states in chart adapter, so static
+             */
+            mChartAdapter = new ChartAdapter(this);
+        }
+        else {
+            mChartAdapter.refreshIt();
+        }
+        
         ExpandableListView list = (ExpandableListView)view.findViewById(R.id.chart_download_list);
         list.setAdapter(mChartAdapter);
         list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
