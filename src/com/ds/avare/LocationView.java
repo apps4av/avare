@@ -1582,6 +1582,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 
                 float factor = (float)mMacro / (float)mScale.getMacroFactor();
 
+                /*
+                 * Make a copy of Pan to find next tile set in case this gets stopped, we do not 
+                 * destroy our Pan information.
+                 */
                 Pan pan = new Pan(mPan);
                 pan.setMove((float)(mPan.getMoveX() * factor), (float)(mPan.getMoveY() * factor));
                 movex = pan.getTileMoveXWithoutTear();
@@ -1629,7 +1633,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 t.centerTile = centerTile;
                 t.offsets = offsets;
                 t.p = p;
-                t.pan = pan;
+                t.factor = factor;
+                
                 Message m = mHandler.obtainMessage();
                 m.obj = t;
                 mHandler.sendMessage(m);
@@ -2122,12 +2127,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private class TileUpdate {
         
-        double offsets[];
-        double p[];
-        int movex;
-        int movey;
-        Pan pan;
-        Tile centerTile;
+        private double offsets[];
+        private double p[];
+        private int movex;
+        private int movey;
+        private float factor;
+        private Tile centerTile;
         
     }
     
@@ -2142,15 +2147,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
             mService.getTiles().flip();
             
+            /*
+             * Set move with pan after new tiles are finally loaded
+             */
+            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
+
             mScale.setScaleAt(t.centerTile.getLatitude());
             mOnChart = t.centerTile.getChart();
 
             /*
              * And pan
              */
-            mPan = t.pan;
             mPan.setTileMove(t.movex, t.movey);
-            mService.setPan(mPan);
             mMovement = new Movement(t.offsets, t.p);
             mService.setMovement(mMovement);
             mMacro = mScale.getMacroFactor();
