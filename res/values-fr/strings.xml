@@ -247,7 +247,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregister">Dé-enregistrer</string>
     <string name="error">Erreur</string>
     <string name="error_internet">SVP. démarrer votre connexion Internet</string>
-    <string name="error_email">SVP. entrer un compte Gmail avant l'activation</string>
+    <string name="error_email">SVP. entrer un compte Gmail avant l\'activation</string>
     <string name="already_registered">Vous avez déjà activé votre compte</string>
     <string name="already_unregistered">Vous avez déjà désactivé votre compte</string>
     <string name="registering_server">Enregistrement auprès des serveurs Apps4Av</string>
@@ -255,7 +255,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="register_msg">Merci pour avoir choisi Avare.\nL’équipe de développement est vouée à créer une application gratuite, sans publicité et fiable pour les pilotes.  Dans ce but, nous désirons que tout usager s’enregistre de façon anonyme dans le but de:\n\n1. Vous aviser immédiatement si nous trouvons une faille dans l’application ou dans nos sources de données que nous vous fournissons gratuitement.\n\n2. Vous offrir de nouvelles fonctionnalités utiles telles que de l’information sur les aéroports locaux ainsi que toutes autres informations pertinentes aux pilotes.\n\n3. Vous offrir de nouvelles fonctionnalités futures telles que plans de vol, repères et pistes.\n\n4. S’assurer que l’usager comprenne et s’engage à assumer toutes responsabilités découlant de l’utilisation gratuite de ce logiciel. Cet engagement sera enregistré pour que nous n’ayons pas à vous le redemander  à chaque démarrage de l’application.\n\nLe prochain écran vous fournira plus d’information au sujet de notre politique de confidentialité ainsi que la possibilité de décliner l’enregistrement.\n SVP. peser sur le bouton Enregistrement pour continuer.</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-    <string name="new_message">Vous avez un nouveau message d'Apps4Av</string>
+    <string name="new_message">Vous avez un nouveau message d\'Apps4Av</string>
     <string name="online">Compte</string>
     <string name="failed_register">Incapable de vous enregistrer!</string>
     <string name="failed_unregister">Incapable de vous dé-enregistrer!</string>
