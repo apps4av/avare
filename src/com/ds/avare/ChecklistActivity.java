@@ -194,7 +194,7 @@ public class ChecklistActivity extends Activity {
                     mAlertDialogChoose = new AlertDialog.Builder(ChecklistActivity.this).create();
                     mAlertDialogChoose.setCanceledOnTouchOutside(false);
                     mAlertDialogChoose.setCancelable(true);
-                    mAlertDialogChoose.setTitle(getString(R.string.DeleteListQuestion));
+                    mAlertDialogChoose.setTitle(lists.get(mIndexSave).getName() + ": " + getString(R.string.DeleteListQuestion));
                     mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
                         /* (non-Javadoc)
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
@@ -428,6 +428,7 @@ public class ChecklistActivity extends Activity {
                             lists.get(position).getSteps());
                     
                     mWorkingIndex = 0;
+                    mSaveText.setText(mWorkingList.getName());
                     prepareAdapter();
                                 
                 }
