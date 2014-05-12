@@ -31,6 +31,7 @@ import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,7 +107,13 @@ public class ChecklistActivity extends Activity {
         public void drop(int from, int to) {
             mWorkingIndex = 0;
             mWorkingList.moveStep(from, to);
-            prepareAdapter();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                  prepareAdapter();
+              }
+            }, 100);
         }
     };
 
@@ -119,7 +126,13 @@ public class ChecklistActivity extends Activity {
         public void remove(int which) {
             mWorkingIndex = 0;
             mWorkingList.removeStep(which);
-            prepareAdapter();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                  prepareAdapter();
+              }
+            }, 100);
         }
     };
 
@@ -215,8 +228,14 @@ public class ChecklistActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+                String txt = mListText.getText().toString();
+                if(txt.equals("")) {
+                    mToast.setText(getString(R.string.InvalidText));
+                    mToast.show();
+                    return;
+                }
                 mWorkingIndex = 0;
-                mWorkingList.addStep(mListText.getText().toString());
+                mWorkingList.addStep(txt);
                 prepareAdapter();
             }   
         });
@@ -275,7 +294,7 @@ public class ChecklistActivity extends Activity {
         mList.setAdapter(mListAdapter);
 
         mListAdapter.setChecked(mWorkingIndex);
-        
+        mListAdapter.notifyDataSetChanged();
         return true;
     }
 
@@ -308,6 +327,7 @@ public class ChecklistActivity extends Activity {
          * Make a new working list since last one stored already 
          */
         mWorkingList = new Checklist(mWorkingList.getName(), mWorkingList.getSteps());
+
         
         return true;
     }
@@ -384,6 +404,7 @@ public class ChecklistActivity extends Activity {
                     mWorkingList = new Checklist(lists.get(position).getName(), 
                             lists.get(position).getSteps());
                     
+                    mWorkingIndex = 0;
                     prepareAdapter();
                                 
                 }

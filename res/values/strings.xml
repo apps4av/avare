@@ -267,4 +267,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SavedLists">Saved Lists</string>
     <string name="listitem">List Item</string>
     <string name="Insert">Insert</string>
+    <string name="InvalidText">Invalid text entered</string>
 </resources>

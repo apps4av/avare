@@ -116,19 +116,21 @@ public class Checklist {
      */
     public void insertStep(String step, int pos) {
         String steps[] = getStepsArray();
-        if(pos < 0 || pos >= steps.length) {
-            return;
-        }
         
         /*
          * Insert a step
          */
         mSteps = "";
-        for (int i = 0; i < steps.length; i++) {
+        int i;
+        for (i = 0; i < steps.length; i++) {
             if(i == pos) {
                 mSteps += step.replaceAll(DELIM, "--") + DELIM;
             }
             mSteps += steps[i] + DELIM;
+        }
+        // In the end
+        if(i == pos) {
+            mSteps += step.replaceAll(DELIM, "--") + DELIM;
         }
     }
 
