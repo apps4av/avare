@@ -266,8 +266,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="List">List</string>
     <string name="SavedLists">Saved Lists</string>
     <string name="listitem">Check list action item</string>
-    <string name="Insert">Insert</string>
+    <string name="AddAction">Add an action item</string>
+    <string name="Add">Add</string>
     <string name="InvalidText">Invalid text entered</string>
     <string name="SavedChecklist">Saved! If you remove Avare, you will lose your saved check lists</string>
     <string name="DeleteListQuestion">Are you sure you want to delete the check list?</string>
+    <string name="ImportAction">Import a check list from a plain text file</string>
+    <string name="ImportActionFilePath">File path and name</string>
+    <string name="Import">Import</string>
 </resources>

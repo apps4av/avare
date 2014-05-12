@@ -13,6 +13,10 @@ package com.ds.avare;
 
 
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -32,8 +36,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,17 +63,20 @@ public class ChecklistActivity extends Activity {
     private ArrayAdapter<String> mListSaveAdapter;
     private Toast mToast;
     private Button mSaveButton;
+    private Button mImportButton;
     private Button mDeleteButton;
     private Button mListButton;
     private EditText mSaveText;
-    private EditText mListText;
     private int mIndex;
     private int mIndexSave;
     private Preferences mPref;
     private Checklist mWorkingList;
     private int mWorkingIndex;
     private AlertDialog mAlertDialogChoose;
+    private AlertDialog mAlertDialogEnter;
 
+    private static final int MAX_FILE_LINE_SIZE = 256;
+    private static final int MAX_FILE_LINES = 50;
     
     private AnimateButton mAnimateDelete;
 
@@ -240,25 +247,98 @@ public class ChecklistActivity extends Activity {
         /*
          * List button
          */
-        mListText = (EditText)view.findViewById(R.id.checklist_edit_text);
         mListButton = (Button)view.findViewById(R.id.checklist_button_insert);
         mListButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                String txt = mListText.getText().toString();
-                if(txt.equals("")) {
-                    mToast.setText(getString(R.string.InvalidText));
-                    mToast.show();
-                    return;
-                }
-                mWorkingIndex = 0;
-                mWorkingList.addStep(txt);
-                prepareAdapter();
+                final EditText eText = new EditText(ChecklistActivity.this);
+                
+                // Give confirm for add a step
+                mAlertDialogEnter = new AlertDialog.Builder(ChecklistActivity.this).create();
+                mAlertDialogEnter.setCanceledOnTouchOutside(false);
+                mAlertDialogEnter.setCancelable(true);
+                mAlertDialogEnter.setView(eText);
+                mAlertDialogEnter.setTitle(getString(R.string.AddAction));
+                mAlertDialogEnter.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        
+                        String txt = eText.getText().toString();
+                        if(txt.equals("")) {
+                            mToast.setText(getString(R.string.InvalidText));
+                            mToast.show();
+                            return;
+                        }
+                        mWorkingIndex = 0;
+                        mWorkingList.addStep(txt);
+                        prepareAdapter();
+
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialogEnter.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                mAlertDialogEnter.show();
             }   
         });
 
+
+        /*
+         * List button
+         */
+        mImportButton = (Button)view.findViewById(R.id.checklist_button_import);
+        mImportButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                final EditText eText = new EditText(ChecklistActivity.this);
+                eText.setHint(getString(R.string.ImportActionFilePath));
+                // Give confirm for add a step
+                mAlertDialogEnter = new AlertDialog.Builder(ChecklistActivity.this).create();
+                mAlertDialogEnter.setCanceledOnTouchOutside(false);
+                mAlertDialogEnter.setCancelable(true);
+                mAlertDialogEnter.setView(eText);
+                mAlertDialogEnter.setTitle(getString(R.string.ImportAction));
+                mAlertDialogEnter.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        
+                        /*
+                         * Get from file
+                         */
+                        mWorkingList = new Checklist("");
+                        mWorkingIndex = 0;
+                        String txt = eText.getText().toString();
+                        new FileOperationTask().execute(txt);
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialogEnter.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                mAlertDialogEnter.show();
+            }   
+        });
 
         /*
          * Save button
@@ -469,6 +549,13 @@ public class ChecklistActivity extends Activity {
             catch (Exception e) {
             }
         }
+        if(null != mAlertDialogEnter) {
+            try {
+                mAlertDialogEnter.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
 
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
@@ -507,6 +594,68 @@ public class ChecklistActivity extends Activity {
 
     }
 
-    
+    /**
+     * Read / import a file in check list
+     * @author zkhan
+     *
+     */
+    private class FileOperationTask extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... params) {
+ 
+            String txt = params[0];
+            
+            try {
+                InputStream instream = new FileInputStream(txt);
+                
+                InputStreamReader inputreader = new InputStreamReader(instream);
+                BufferedReader buffreader = new BufferedReader(inputreader);
+
+                String line;
+                int i = 0;
+                do {
+                    line = buffreader.readLine();
+                    /*
+                     * Do not crash if user screws up input
+                     */
+                    if(i > MAX_FILE_LINES || line.length() > MAX_FILE_LINE_SIZE) {
+                        break;
+                    }
+                    i++;
+                    publishProgress(line);
+                } while (line != null);
+            } 
+            catch (Exception e) {
+                return null;
+            }
+            
+            // dummy
+            return txt;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(null == result) {
+                mToast.setText(getString(R.string.InvalidText));
+                mToast.show();
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            if(values == null) {
+                return;
+            }
+            if(values[0] == null) {
+                return;
+            }
+            mWorkingList.addStep(values[0]);
+            prepareAdapter();
+        }
+    }
     
 }
