@@ -24,8 +24,10 @@ import com.ds.avare.touch.TouchListView;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -66,6 +68,8 @@ public class ChecklistActivity extends Activity {
     private Preferences mPref;
     private Checklist mWorkingList;
     private int mWorkingIndex;
+    private AlertDialog mAlertDialogChoose;
+
     
     private AnimateButton mAnimateDelete;
 
@@ -107,13 +111,7 @@ public class ChecklistActivity extends Activity {
         public void drop(int from, int to) {
             mWorkingIndex = 0;
             mWorkingList.moveStep(from, to);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-              @Override
-              public void run() {
-                  prepareAdapter();
-              }
-            }, 100);
+            prepareAdapter();
         }
     };
 
@@ -124,15 +122,9 @@ public class ChecklistActivity extends Activity {
     private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
         @Override
         public void remove(int which) {
-            mWorkingIndex = 0;
-            mWorkingList.removeStep(which);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-              @Override
-              public void run() {
-                  prepareAdapter();
-              }
-            }, 100);
+            /*
+             * Do not remove step from sliding. Its valuable hence.
+             */
         }
     };
 
@@ -181,16 +173,6 @@ public class ChecklistActivity extends Activity {
             public void onClick(View v) {
 
                 /*
-                 * Delete on step
-                 */
-                if(mIndex >= 0) {
-                    mWorkingList.removeStep(mIndex);
-                    mWorkingIndex = 0;
-                    prepareAdapter();
-                    mIndex = -1;
-                }
-                
-                /*
                  * Delete on saved lists
                  */
                 if(mIndexSave >= 0) {
@@ -198,7 +180,7 @@ public class ChecklistActivity extends Activity {
                         return;
                     }
                     
-                    LinkedList<Checklist> lists = mService.getCheckLists();
+                    final LinkedList<Checklist> lists = mService.getCheckLists();
                     if(lists == null) {
                         return;
                     }
@@ -208,12 +190,49 @@ public class ChecklistActivity extends Activity {
                         return;
                     }
                     
-                    lists.remove(mIndexSave);
-                    
-                    prepareAdapterSave();
+                    // Give confirm because lists are valuable
+                    mAlertDialogChoose = new AlertDialog.Builder(ChecklistActivity.this).create();
+                    mAlertDialogChoose.setCanceledOnTouchOutside(false);
+                    mAlertDialogChoose.setCancelable(true);
+                    mAlertDialogChoose.setTitle(getString(R.string.DeleteListQuestion));
+                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            lists.remove(mIndexSave);
+                            
+                            mIndexSave = -1;
+                            prepareAdapterSave();
+                            dialog.dismiss();
+                        }
+                    });
+                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                        /* (non-Javadoc)
+                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                         */
+                        public void onClick(DialogInterface dialog, int which) {
+                            mIndexSave = -1;
+                            dialog.dismiss();
+                        }
+                    });
 
-                    mIndexSave = -1;
+                    mAlertDialogChoose.show();
+                    
                 }
+                else if(mIndex >= 0) {
+                    /*
+                     * Delete on step, but do not delete both as delete button is used for both
+                     */
+                    mWorkingList.removeStep(mIndex);
+                    mWorkingIndex = 0;
+                    prepareAdapter();
+                }
+                
+                /*
+                 * Always clear index
+                 */
+                mIndex = -1;
             }   
         });
         
@@ -266,6 +285,10 @@ public class ChecklistActivity extends Activity {
                 mWorkingList.changeName(name);
                 
                 mService.getCheckLists().add(mWorkingList);
+                
+                // Saved. Now show message
+                mToast.setText(getString(R.string.SavedChecklist));
+                mToast.show();
                 
                 prepareAdapterSave();
             }
@@ -438,6 +461,14 @@ public class ChecklistActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
+        if(null != mAlertDialogChoose) {
+            try {
+                mAlertDialogChoose.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
