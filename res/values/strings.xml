@@ -263,4 +263,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregistered">You have now unregistered!</string>
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
+    <string name="List">List</string>
+    <string name="SavedLists">Saved Lists</string>
+    <string name="listitem">List Item</string>
+    <string name="Insert">Insert</string>
 </resources>

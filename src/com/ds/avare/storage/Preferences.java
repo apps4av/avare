@@ -55,6 +55,7 @@ public class Preferences {
     public static final int MAX_RECENT = 30; 
     
     public static final int MAX_PLANS = 20; 
+    public static final int MAX_LISTS = 20; 
        
     /*
      * Max memory and max screen size it will support
@@ -728,13 +729,13 @@ public class Preferences {
     public void setRegistered(boolean registered) {
         mPref.edit().putBoolean(mContext.getString(R.string.register), registered).commit();
     }
-
+    
     /**
      * 
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), false);
+        return true;//mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
@@ -779,5 +780,21 @@ public class Preferences {
             mPref.edit().putString(mContext.getString(R.string.GlideRatio), def).commit();
         }
         return(mratio);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getLists() {
+        return mPref.getString(mContext.getString(R.string.List), "");
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public void putLists(String name) {
+        mPref.edit().putString(mContext.getString(R.string.List), name).commit();
     }
 }

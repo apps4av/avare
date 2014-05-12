@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="175"
-    android:versionName="5.5.5" >
+    android:versionCode="176"
+    android:versionName="5.5.6" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
@@ -57,6 +57,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".WeatherActivity" />
+        <activity android:name=".ChecklistActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>
