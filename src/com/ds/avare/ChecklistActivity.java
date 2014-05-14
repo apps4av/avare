@@ -38,6 +38,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 /**
  * @author zkhan
@@ -67,6 +69,7 @@ public class ChecklistActivity extends Activity {
     private Button mDeleteButton;
     private Button mListButton;
     private EditText mSaveText;
+    private ToggleButton mLock;
     private int mIndex;
     private int mIndexSave;
     private Preferences mPref;
@@ -76,7 +79,7 @@ public class ChecklistActivity extends Activity {
     private AlertDialog mAlertDialogEnter;
 
     private static final int MAX_FILE_LINE_SIZE = 256;
-    private static final int MAX_FILE_LINES = 50;
+    private static final int MAX_FILE_LINES = 100;
     
     private AnimateButton mAnimateDelete;
 
@@ -116,9 +119,21 @@ public class ChecklistActivity extends Activity {
     private TouchListView.DropListener onDrop = new TouchListView.DropListener() {
         @Override
         public void drop(int from, int to) {
-            mWorkingIndex = 0;
-            mWorkingList.moveStep(from, to);
-            prepareAdapter();
+            if(mLock.isChecked()) {
+                /*
+                 * Do not modify list if locked
+                 */
+                mWorkingIndex = 0;
+                mWorkingList.moveStep(from, to);
+                // Delay till this function returns
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                  @Override
+                  public void run() {
+                      prepareAdapter();                
+                  }
+                }, 100);
+            }
         }
     };
 
@@ -129,9 +144,17 @@ public class ChecklistActivity extends Activity {
     private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
         @Override
         public void remove(int which) {
-            /*
-             * Do not remove step from sliding. Its valuable hence.
-             */
+            if(mLock.isChecked()) {
+                mWorkingIndex = 0;
+                mWorkingList.removeStep(which);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                  @Override
+                  public void run() {
+                      prepareAdapter();                
+                  }
+                }, 100);
+            }
         }
     };
 
@@ -171,7 +194,12 @@ public class ChecklistActivity extends Activity {
         mWorkingIndex = 0;
         
         /*
-         * Dest button
+         * Edit lock button
+         */
+        mLock = (ToggleButton)view.findViewById(R.id.checklist_button_lock);
+        
+        /*
+         * Delete button
          */
         mDeleteButton = (Button)view.findViewById(R.id.checklist_button_delete);
         mDeleteButton.setOnClickListener(new OnClickListener() {
@@ -466,9 +494,13 @@ public class ChecklistActivity extends Activity {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
-                    mIndex = index;
-                            
-                    mAnimateDelete.animate(true);
+              
+                    if(mLock.isChecked()) {
+
+                        // If list lock do not delete animate
+                        mIndex = index;
+                        mAnimateDelete.animate(true);
+                    }
                     return true;
                 }
             }); 

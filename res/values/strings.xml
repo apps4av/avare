@@ -255,7 +255,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="register_msg">Thank you for installing Avare.\nThe development team for the free Avare aviation app is dedicated to empowering pilots with helpful free, open source, ad-free, and safe tools.  To that end we have decided to require anonymous Registration of users in order to:\n\n1. Advise users immediately in the event we discover any errors in the app or in the FAA materials we process and provide to our users at no charge.\n\n2. Begin offering additional features useful to pilots, such as local airport info and attractions provided by pilots.\n\n3. Enable the potential for future features such as direct anonymous but verified communication between users or devices such as sharing Waypoints, Tracks, and Plans.\n\n4. Ensure that you assume all liability for your use of our free tools more conveniently, without the need to click an agreement at every launch of Avare.\n\nThe next screen provides more details on our Privacy Policy, and another opportunity to decline Registration.\nPlease press the Register button to continue.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="new_message">A new message from Apps4Av</string>
     <string name="online">Account</string>
     <string name="failed_register">Failed to register!</string>
     <string name="failed_unregister">Failed to unregister!</string>
@@ -274,4 +273,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ImportAction">Import a check list from a plain text file</string>
     <string name="ImportActionFilePath">File path and name</string>
     <string name="Import">Import</string>
+    <string name="Advertisements">Ads</string>
+    <string name="Lock">Lock</string>
+    <string name="Edit">Edit</string>
 </resources>

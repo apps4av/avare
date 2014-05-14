@@ -42,12 +42,7 @@ public class MessageActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.message, null);
         setContentView(view);
         mWebView = (WebView) view.findViewById(R.id.message_mainpage);
-        String message = getIntent().getStringExtra("message");
-        mWebView.loadData("<html><head><body><h1>" + 
-                getString(R.string.new_message) + 
-                "</h1>" + message +
-                "</body></head></html>",
-                "text/html", null);
+        mWebView.loadData("", "text/html", null);
     }
     
     /**
