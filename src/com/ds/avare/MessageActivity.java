@@ -42,7 +42,7 @@ public class MessageActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.message, null);
         setContentView(view);
         mWebView = (WebView) view.findViewById(R.id.message_mainpage);
-        mWebView.loadUrl("http://mamba.dreamhosters.com/ads.html");
+        mWebView.loadUrl("http://mamba.dreamhosters.com/ads/" + "1" + ".html");
     }
     
     /**
@@ -53,7 +53,7 @@ public class MessageActivity extends Activity  {
         super.onResume();
 
         Helper.setOrientationAndOn(this);
-        
+        mWebView.reload();
 
     }
 }
