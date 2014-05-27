@@ -21,6 +21,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 /**
  * @author zkhan
@@ -29,6 +32,7 @@ import android.webkit.WebView;
 public class MessageActivity extends Activity  {
     
     private WebView mWebView;
+    private Spinner mSpinner;
 
     /*
      * Show views from web
@@ -40,10 +44,28 @@ public class MessageActivity extends Activity  {
         
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.message, null);
-        setContentView(view);
+        
         mWebView = (WebView) view.findViewById(R.id.message_mainpage);
-        mWebView.loadUrl("http://mamba.dreamhosters.com/ads/" + "1" + ".html");
+        mSpinner = (Spinner)view.findViewById(R.id.message_type);
+        
+        mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                if(0 == pos) {
+                    mWebView.clearView();
+                }
+                else {
+                    mWebView.loadUrl("https://apps4av.net/ads/" + pos + ".php");
+                }
+            }
+           
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+        setContentView(view);
     }
+
     
     /**
      * 
@@ -51,9 +73,6 @@ public class MessageActivity extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-
         Helper.setOrientationAndOn(this);
-        mWebView.reload();
-
     }
 }

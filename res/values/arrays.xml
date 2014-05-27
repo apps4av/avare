@@ -769,7 +769,14 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometer</item>
 	    <item>Course Deviation Indicator</item>
 	</string-array>
-	    
+
+	<string-array name="AdsOptions">
+        <item>Select a category</item>
+        <item>Aviation apps</item>
+        <item>Aircrafts for sale</item>
+        <item>Miscellaneous</item>
+    </string-array>
+		    
 	<string-array name="TextFieldOptionTitles">
 	    <item></item>
 		<item>Zulu</item>
