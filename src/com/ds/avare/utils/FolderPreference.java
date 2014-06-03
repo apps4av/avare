@@ -20,6 +20,7 @@ import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Environment;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ public class FolderPreference extends DialogPreference {
     private Boolean mFirstLevel;
     private TextView mPathView;
     private Button mButton;
+    private Button mButtonSD;
     private Preferences mPref;
     
     /**
@@ -123,6 +125,7 @@ public class FolderPreference extends DialogPreference {
         mListView = (ListView)view.findViewById(R.id.folder_list);
         mPathView = (TextView)view.findViewById(R.id.folder_text_path);
         mButton = (Button)view.findViewById(R.id.folder_button_internal);
+        mButtonSD = (Button)view.findViewById(R.id.folder_button_external);
 
         mButton.setOnClickListener(new OnClickListener() {
 
@@ -139,7 +142,25 @@ public class FolderPreference extends DialogPreference {
             }
             
         });
-               
+
+        mButtonSD.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Adnroid/data/" + "com.ds.avare"; 
+                new File(path).mkdirs();
+                init(path);
+                loadFileList();
+                mListView.setAdapter(mAdapter);
+                
+            }
+            
+        });
+
         /*
          * Load files from the disk in a list
          */

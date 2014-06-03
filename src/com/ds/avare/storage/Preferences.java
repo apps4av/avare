@@ -143,7 +143,7 @@ public class Preferences {
             /*
              * I hope Android comes up with a better resource solution some time soon.
              */
-            return "http://www.mamba.dreamhosters.com/new/";
+            return "http://208.113.226.170/new/";
         }
         else if (val.equals("1")) {
             return "http://avare.kitepilot.org/new/";

@@ -15,9 +15,15 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-
+    <Button
+        android:id="@+id/folder_button_external"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:text="@string/ExternalFolder"/>
+    
     <Button
 	    android:id="@+id/folder_button_internal"
+	    android:layout_below="@+id/folder_button_external"
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
 	    android:text="@string/PrivateFolder"/>
