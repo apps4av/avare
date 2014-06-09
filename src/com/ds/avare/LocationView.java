@@ -1424,6 +1424,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * and we want to show it without pan.
                  */
                 mPan = new Pan();
+                mService.setPan(mPan);
                 updateCoordinates();                
             }
         }
@@ -1490,6 +1491,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPan = mService.getPan();
         if(null == mPan) {
             mPan = new Pan();
+            mService.setPan(mPan);
         }
         if(null != params) {
             mGpsParams = params;
@@ -1930,6 +1932,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mPan = new Pan();
         if(mService != null) {
+            mService.setPan(mPan);
             mService.getTiles().forceReload();
         }
         dbquery(true);
