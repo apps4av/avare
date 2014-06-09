@@ -170,6 +170,17 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
          */
         mScale = new Scale();
         mPan = new Pan();
+        
+        /*
+         * Fit plate to screen
+         */
+        if(mBitmap != null) {
+            float h = getHeight();
+            float ih = mBitmap.getHeight();
+            float fac = h / ih;
+            mScale.setScaleFactor(fac);
+        }
+
         postInvalidate();
     }
 

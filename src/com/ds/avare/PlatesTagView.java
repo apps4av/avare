@@ -205,6 +205,17 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          */
         mPan = new Pan();
         mScale = new Scale();
+        
+        /*
+         * Fit plate to screen
+         */
+        if(mBitmap != null) {
+            float h = getHeight();
+            float ih = mBitmap.getHeight();
+            float fac = h / ih;
+            mScale.setScaleFactor(fac);
+        }
+
         postInvalidate();
     }
 
