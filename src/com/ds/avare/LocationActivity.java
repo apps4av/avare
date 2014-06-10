@@ -637,7 +637,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mWebButton = (Button)view.findViewById(R.id.location_button_web);
+        mWebButton = (Button)view.findViewById(R.id.location_button_ads);
         mWebButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -646,7 +646,7 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                startActivity(new Intent(LocationActivity.this, RegisterActivity.class));
+                startActivity(new Intent(LocationActivity.this, MessageActivity.class));
             }
             
         });

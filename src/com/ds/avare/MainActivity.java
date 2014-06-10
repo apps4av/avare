@@ -52,7 +52,6 @@ public class MainActivity extends TabActivity {
     public static final int tabNear = 6;
     public static final int tabChecklist = 7;
     public static final int tabGPS = 8;  
-    public static final int tabMessage = 9;
     
     @Override
     /**
@@ -101,7 +100,6 @@ public class MainActivity extends TabActivity {
         setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
         setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
         setupTab(new TextView(this), getString(R.string.gps), new Intent(this, SatelliteActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Advertisements), new Intent(this, MessageActivity.class), getIntent());
     }
     
     /**

@@ -151,11 +151,14 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Adnroid/data/" + "com.ds.avare"; 
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + "com.ds.avare"; 
                 new File(path).mkdirs();
                 init(path);
                 loadFileList();
                 mListView.setAdapter(mAdapter);
+                // Show help for kitkat+ users
+                Toast.makeText(mContext, mContext.getString(R.string.folderHelp), 
+                        Toast.LENGTH_LONG).show();
                 
             }
             
