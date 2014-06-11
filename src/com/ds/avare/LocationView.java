@@ -76,6 +76,7 @@ import android.view.ViewConfiguration;
 
 /**
  * @author zkhan
+ * 
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
 public class LocationView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
@@ -1204,7 +1205,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             mDistanceRingPaint.setAlpha(0xFF);
             mDistanceRingPaint.setStyle(Style.FILL);
-            mDistanceRingPaint.setColor(Color.GREEN);
+            mDistanceRingPaint.setColor(Color.CYAN);
             
             /*
              * Draw the corresponding text
