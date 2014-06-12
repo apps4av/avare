@@ -146,7 +146,7 @@ public class LocationActivity extends Activity implements Observer {
                          */
                         Airport nearest = mService.getArea().getAirport(0);
                         if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
-                                nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD) {
+                                nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
                             ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();

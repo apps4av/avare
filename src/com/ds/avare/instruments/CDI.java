@@ -133,7 +133,12 @@ public class CDI {
         canvas.drawLine(mInstLeft, instCenterY, mInstLeft + mInstWidth, instCenterY, mCDIPaint);
 
         // Draw all of the vertical bars
-	    mCDIPaint.setColor(Color.WHITE);		// white
+        if(mBarDegrees == BAR_DEGREES_LOC) {
+            mCDIPaint.setColor(Color.CYAN);        // cyan for localizer            
+        }
+        else {
+            mCDIPaint.setColor(Color.WHITE);		// white for VOR
+        }
 	    mCDIPaint.setStrokeWidth(mBarWidth);	// Width of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
 	        float extend = (idx == (int)(mBarCount / 2)) ? mInstHeight / 3 : 0;
@@ -220,7 +225,7 @@ public class CDI {
 		double dstCur = dest.getDistance();
 		
 		/*
-		 * Within 20 miles convert to Localizer
+		 * Within given miles convert to Localizer
 		 * This must match the distance for Glide slope.
 		 */
 		if(dstCur > VNAV.APPROACH_DISTANCE) {

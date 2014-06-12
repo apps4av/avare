@@ -45,18 +45,21 @@ public class Preferences {
     /*
      * plate auto load distance
      */
-    public static final double DISTANCE_TO_AUTO_LOAD = 3.0;
+    public static final double DISTANCE_TO_AUTO_LOAD_PLATE = 3.0;
     
     public static final String IMAGE_EXTENSION = ".png";
     
     /*
      * MAX number of elements
      */
-    public static final int MAX_RECENT = 30; 
+    public static final int MAX_RECENT = 50; 
     
-    public static final int MAX_PLANS = 20; 
+    public static final int MAX_PLANS = 20;
     public static final int MAX_LISTS = 20; 
        
+    public static final int MAX_AREA_AIRPORTS = 20;
+    
+
     /*
      * Max memory and max screen size it will support
      */

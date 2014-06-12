@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.storage.Preferences;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
@@ -30,16 +31,13 @@ import android.os.SystemClock;
 public class Area {
 
     private DataSource mDataSource;
-    private Airport[] mAirports = new Airport[MAX_AIRPORTS];
+    private Airport[] mAirports = new Airport[Preferences.MAX_AREA_AIRPORTS];
     private DataBaseAreaTask mDt;
     private double mLon;
     private double mLat;
     private boolean mFound;
     private long mLastTime;
     private double mAltitude;
-    
-    
-    private static final int MAX_AIRPORTS = 15;
     
     private static final int UPDATE_TIME = 10000;
     
@@ -62,7 +60,7 @@ public class Area {
         /*
          * Check for null.
          */
-        if(index >= MAX_AIRPORTS) {
+        if(index >= Preferences.MAX_AREA_AIRPORTS) {
             return null;
         }
         return(mAirports[index]);
@@ -78,7 +76,7 @@ public class Area {
          * Get all airports in a string array in this area.
          */
         int id;
-        for(id = 0; id < MAX_AIRPORTS; id++) {
+        for(id = 0; id < Preferences.MAX_AREA_AIRPORTS; id++) {
             if(getAirport(id) == null) {
                 break;
             }
@@ -143,7 +141,7 @@ public class Area {
                 return null;
             }
             
-            airports = new Airport[MAX_AIRPORTS];
+            airports = new Airport[Preferences.MAX_AREA_AIRPORTS];
 
             mDataSource.findClosestAirports(mLon, mLat, airports);
             /*
