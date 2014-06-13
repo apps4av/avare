@@ -1135,7 +1135,7 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 else {
                     if(mService != null) {
-                        if(mService.getPlan().appendDestination((Destination)arg0)) {
+                        if(mService.getPlan().insertDestination((Destination)arg0)) {
                             mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
                         }
                         else {

@@ -76,6 +76,9 @@ public class Plan implements Observer {
         mDestChanged = false;
         mDestination = new Destination[MAX_DESTINATIONS];
         mPassed = new Boolean[MAX_DESTINATIONS];
+        for(int i = 0; i < MAX_DESTINATIONS; i++) {
+            mPassed[i] = Boolean.valueOf(false);
+        }
         mEte = "--:--";
         mPassage = new Passage();
     }
@@ -554,6 +557,60 @@ public class Plan implements Observer {
 
         // keep active state
         mActive = active;
+    }
+
+    /**
+     * insert destination in a plan at closests distance
+     */
+    public boolean insertDestination(Destination dest) {
+        int n = getDestinationNumber();
+        int index = -1;
+        if(n >= MAX_DESTINATIONS) {
+            return false;
+        }
+
+        if(n < 2) {
+            /*
+             * If none exist already, add it to the end, otherwise insert in between
+             */
+            mDestination[n] = dest;
+        }
+        else {
+        
+            /*
+             * Find closest point
+             */
+            double dist1 = Double.MAX_VALUE;
+            
+            for(int id = 0; id < n; id++) {
+                double lon = dest.getLocation().getLongitude();
+                double lat = dest.getLocation().getLatitude();
+                double lon1 = mDestination[id].getLocation().getLongitude();
+                double lat1 = mDestination[id].getLocation().getLatitude();
+                double dist = (lon - lon1) * (lon - lon1) + (lat - lat1) * (lat - lat1);
+                
+                // first point
+                if(dist < dist1) {
+                    dist1 = dist;
+                    index = id;
+                }
+            }
+            
+            if(index < 0 || index >= n) {
+                return false;
+            }
+            
+            // add with passed flag intact
+            boolean passed = mPassed[index]; 
+            mDestination[n] = dest;
+            mPassed[n] = passed;
+            
+            // insert
+            move(n, index);
+            
+        }
+        
+        return(true);
     }
 
     /**
