@@ -907,15 +907,4 @@ public class StorageService extends Service {
         mCheckLists = list;
     }
     
-    /**
-     * 
-     * @param id
-     * @param lon
-     * @param lat
-     */
-    public void modifyPlan(int id, double lon, double lat) {
-        Destination d = new Destination(this, lon, lat);
-        mPlan.replaceDestination(id, d);
-    }
-
 }

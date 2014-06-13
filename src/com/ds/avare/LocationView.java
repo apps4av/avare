@@ -402,6 +402,40 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawMap(canvas);
     }
        
+    /**
+     * 
+     * @param x
+     * @param y
+     * @param finish
+     */
+    private void rubberBand(float x, float y, boolean finish) {
+        
+        String airport = null;
+        
+        // Rubberbanding
+        if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
+            
+            // Threshold for movement
+            float movementx = Math.abs(x - mDragStartedX);
+            float movementy = Math.abs(y - mDragStartedY);
+            if((movementx > MOVEMENT_THRESHOLD * mDipToPix) 
+                    || (movementy > MOVEMENT_THRESHOLD * mDipToPix)) {
+                /*
+                 * Do something to plan
+                 * This is the new location
+                 */
+                double lon = mOrigin.getLongitudeOf(x);
+                double lat = mOrigin.getLatitudeOf(y);
+                
+                mService.getPlan().replaceDestination(mService, mPref, mDragPlanPoint, lon, lat, finish);
+               
+                // This will not snap again
+                mDragStartedX = -1000;
+                mDragStartedY = -1000; 
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
      */
@@ -410,6 +444,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         boolean bPassToGestureDetector = true;
         if(e.getAction() == MotionEvent.ACTION_UP) {
 
+            /**
+             * Rubberbanding
+             */
+            rubberBand(e.getX(), e.getY(), true);
+            
             /*
              * Drag stops for rubber band
              */
@@ -458,26 +497,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
                 
             }
-            // Rubberbanding
-            if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
-                
-                // Threshold for movement
-                float movementx = Math.abs(e.getX() - mDragStartedX);
-                float movementy = Math.abs(e.getY() - mDragStartedY);
-                if((movementx > MOVEMENT_THRESHOLD * mDipToPix) 
-                        || (movementy > MOVEMENT_THRESHOLD * mDipToPix)) {
-                    /*
-                     * Do something to plan
-                     * This is the new location
-                     */
-                    double lon = mOrigin.getLongitudeOf(e.getX());
-                    double lat = mOrigin.getLatitudeOf(e.getY());
-                    mService.modifyPlan(mDragPlanPoint, lon, lat);
-                    // This will not snap again
-                    mDragStartedX = -1000;
-                    mDragStartedY = -1000; 
-                }
-            }
+            // Rubberbanding, intermediate
+            rubberBand(e.getX(), e.getY(), false);
         }
         
         if(bPassToGestureDetector) {

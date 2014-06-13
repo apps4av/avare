@@ -14,8 +14,12 @@ package com.ds.avare.place;
 
 
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.location.Location;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
@@ -28,7 +32,7 @@ import com.ds.avare.utils.Helper;
  * @author zkhan
  *
  */
-public class Plan {
+public class Plan implements Observer {
 
     private Destination[] mDestination;
     private Boolean[] mPassed;
@@ -49,6 +53,7 @@ public class Plan {
     private Passage mPassage;
     private boolean mDestChanged;
     private double mDeclination;
+    private int mReplaceId;
     
     /**
      * 
@@ -524,15 +529,44 @@ public class Plan {
      * Used for rubberbanding only
      * Replace destination
      */
-    public void replaceDestination(int id, Destination d) {
+    public void replaceDestination(StorageService service, Preferences pref, int id, double lon, double lat, boolean finish) {
         boolean active = mActive;
+        String airport = null;
+        if(finish) {
+            airport = service.getDBResource().findClosestAirportID(lon, lat);
         
-        // replace
-        mDestination[id] = d;
-        mTrackShape.updateShapeFromPlan(getCoordinates());
+            if(null == airport) {
+                return;
+            }
+            mReplaceId = id;
+
+            Destination d = new Destination(airport, Destination.BASE, pref, service);
+            d.addObserver(this);
+            d.find();
+        }
+        else {
+
+            // replace
+            mDestination[id] = new Destination(service, lon, lat);
+
+            mTrackShape.updateShapeFromPlan(getCoordinates());
+        }
 
         // keep active state
         mActive = active;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public void update(Observable observable, Object data) {
+        if(mReplaceId >= getDestinationNumber() || mReplaceId < 0) {
+            return;
+        }
+        mDestination[mReplaceId] = (Destination)observable;
+
+        mTrackShape.updateShapeFromPlan(getCoordinates());
     }
     
 }
