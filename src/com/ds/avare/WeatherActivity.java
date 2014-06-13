@@ -124,6 +124,7 @@ public class WeatherActivity extends Activity {
         setContentView(view);
         mWebView = (WebView)view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
         if(mIsPageLoaded == false) {

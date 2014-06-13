@@ -35,7 +35,7 @@ import com.ds.avare.utils.Helper;
 public class Plan implements Observer {
 
     private Destination[] mDestination;
-    private Boolean[] mPassed;
+    private boolean[] mPassed;
     
     
     private static final int MAX_DESTINATIONS = 15;
@@ -75,9 +75,9 @@ public class Plan implements Observer {
         mDeclination = 0;
         mDestChanged = false;
         mDestination = new Destination[MAX_DESTINATIONS];
-        mPassed = new Boolean[MAX_DESTINATIONS];
+        mPassed = new boolean[MAX_DESTINATIONS];
         for(int i = 0; i < MAX_DESTINATIONS; i++) {
-            mPassed[i] = Boolean.valueOf(false);
+            mPassed[i] = false;
         }
         mEte = "--:--";
         mPassage = new Passage();
@@ -124,12 +124,12 @@ public class Plan implements Observer {
             return;
         }
         mDestination[rmId] = null;
-        mPassed[rmId] = null;
+        mPassed[rmId] = false;
         for(int id = rmId; id < num; id++) {
             mDestination[id] = mDestination[id + 1];
             mDestination[id + 1] = null;
             mPassed[id] = mPassed[id + 1];
-            mPassed[id + 1] = null;
+            mPassed[id + 1] = false;
         }
         if(getDestinationNumber() > 0) {
             if(mLastLocation != null) {
@@ -581,22 +581,29 @@ public class Plan implements Observer {
              * Find closest point
              */
             double dist1 = Double.MAX_VALUE;
+            int indexc = 0;
             
-            for(int id = 0; id < n; id++) {
-                double lon = dest.getLocation().getLongitude();
-                double lat = dest.getLocation().getLatitude();
-                double lon1 = mDestination[id].getLocation().getLongitude();
-                double lat1 = mDestination[id].getLocation().getLatitude();
+            Coordinate[] coord = getCoordinates();
+            
+            for(int id = 0; id < coord.length; id++) {
+                double lon = coord[id].getLongitude();
+                double lat = coord[id].getLatitude();
+                double lon1 = dest.getLocation().getLongitude();
+                double lat1 = dest.getLocation().getLatitude();
                 double dist = (lon - lon1) * (lon - lon1) + (lat - lat1) * (lat - lat1);
                 
+                if(coord[id].isSeparate()) {
+                    indexc++;
+                }
+                 
                 // first point
                 if(dist < dist1) {
                     dist1 = dist;
-                    index = id;
+                    index = indexc;
                 }
             }
             
-            if(index < 0 || index >= n) {
+            if(index < 0 || index >= MAX_DESTINATIONS) {
                 return false;
             }
             
