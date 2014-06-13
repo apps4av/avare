@@ -1507,7 +1507,7 @@ public class DataBaseHelper  {
             qry += " where ";
         }
 
-        qry += "dist < 0.001 order by dist limit 1;";
+        qry += "dist < " + Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE + " order by dist limit 1;";
         
         Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;

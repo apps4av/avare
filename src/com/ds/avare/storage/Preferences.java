@@ -59,6 +59,7 @@ public class Preferences {
        
     public static final int MAX_AREA_AIRPORTS = 20;
     
+    public static final double MIN_TOUCH_MOVEMENT_SQ_DISTANCE = 0.001;
 
     /*
      * Max memory and max screen size it will support

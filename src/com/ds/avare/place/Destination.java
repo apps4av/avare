@@ -152,6 +152,43 @@ public class Destination extends Observable {
     	mLond = mLatd = 0;
 	}
 
+    /**
+     * Simple GPS destination. No db query required
+     */
+    public Destination(StorageService service, double lon, double lat) {
+        GpsParams params = service.getGpsParams();
+        if(null != params) {
+            mLonInit = params.getLongitude();
+            mLatInit = params.getLatitude();
+        }
+        else {
+            mLonInit = lon;
+            mLatInit = lat;            
+        }
+        mInited = true;
+        mService = service;
+        mDbType = GPS;
+        mFound = true;
+        mLooking = false;
+        mRunways = new LinkedList<Runway>();
+        mTrackShape = new TrackShape();
+        mEte = new String("--:--");
+        mEta = new String("--:--");
+        mLond = lon;
+        mLatd = lat;
+        mParams = new LinkedHashMap<String, String>();
+        mFreq = new LinkedHashMap<String, String>();
+        mAwos = new LinkedList<Awos> ();
+        mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
+        mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
+        mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
+        addTime();
+        mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
+        mAfdFound = null;
+        mName = Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
+        mDestType = GPS;
+    }
+
 
 	/**
 	 * 

@@ -14,6 +14,8 @@ package com.ds.avare.place;
 
 
 
+import android.location.Location;
+
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
@@ -495,6 +497,42 @@ public class Plan {
         if(num > 0) {
             updateLocation(new GpsParams(mDestination[num - 1].getLocation()));
         }
+    }
+    
+    /**
+     * Find a point withing close range of this
+     * @param lon
+     * @param lat
+     */
+    public int findClosePointId(double lon, double lat) {
+        if(mActive) {
+            int num = getDestinationNumber();
+            for(int id = 0; id < num; id++) {
+                Location l = mDestination[id].getLocation();
+                double lon1 = l.getLongitude();
+                double lat1 = l.getLatitude();
+                double dist = (lon - lon1) * (lon -lon1) + (lat - lat1) * (lat - lat1);
+                if(dist < Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE) {
+                    return id;
+                }
+            }
+        }
+        return -1;
+    }    
+    
+    /**
+     * Used for rubberbanding only
+     * Replace destination
+     */
+    public void replaceDestination(int id, Destination d) {
+        boolean active = mActive;
+        
+        // replace
+        mDestination[id] = d;
+        mTrackShape.updateShapeFromPlan(getCoordinates());
+
+        // keep active state
+        mActive = active;
     }
     
 }

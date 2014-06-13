@@ -215,6 +215,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     private float                       mPx;
     private float                       mPy;
+
+    private int                mDragPlanPoint;
+    private float                mDragStartedX;
+    private float                mDragStartedY;
     
     /*
      * Shadow length 
@@ -224,18 +228,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
-    Paint mRunwayPaint;
-    Paint mTextPaintShadow;
-    Paint mShadowPaint;
-    Paint mDistanceRingPaint;
-    Rect mTextSize;
-    RectF mShadowBox;
+    private Paint mRunwayPaint;
+    private Paint mTextPaintShadow;
+    private Paint mShadowPaint;
+    private Paint mDistanceRingPaint;
+    private Rect mTextSize;
+    private RectF mShadowBox;
 
     /*
      * Text on screen color
      */
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
+    
+    private static final float MOVEMENT_THRESHOLD = 32.f;
     
     /*
      * dip to pix scaling factor
@@ -272,6 +278,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTrackUp = false;
         mElev = -1;
         mMacro = 1;
+        mDragPlanPoint = -1;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
         mVSIParams = new GpsParams(null);
@@ -402,6 +409,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public boolean onTouch(View view, MotionEvent e) {
         boolean bPassToGestureDetector = true;
         if(e.getAction() == MotionEvent.ACTION_UP) {
+
+            /*
+             * Drag stops for rubber band
+             */
+            mDragPlanPoint = -1;
+            
             /*
              * Do not draw point. Only when long press and down.
              */
@@ -416,6 +429,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            
+            /*
+             * Find if this is close to a plan point. Do rubber banding if true
+             */
+            double lon = mOrigin.getLongitudeOf(e.getX());
+            double lat = mOrigin.getLatitudeOf(e.getY());
+            if(mService.getPlan() != null && mDragPlanPoint < 0) {
+                mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat);
+                mDragStartedX = e.getX();
+                mDragStartedY = e.getY();
+            }
+            
             mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
             
             // Remember this point so we can make sure we move far enough before losing the long press
@@ -423,12 +448,36 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mDownFocusPoint = getFocusPoint(e);
             startClosestAirportTask(e.getX(), e.getY());
         }
-        else if(e.getAction() == MotionEvent.ACTION_MOVE && mDownFocusPoint != null) {
-            Point fp = getFocusPoint(e);
-            final int deltaX = fp.x - mDownFocusPoint.x;
-            final int deltaY = fp.y - mDownFocusPoint.y;
-            int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
-            bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
+        else if(e.getAction() == MotionEvent.ACTION_MOVE) {
+            if(mDownFocusPoint != null) {
+        
+                Point fp = getFocusPoint(e);
+                final int deltaX = fp.x - mDownFocusPoint.x;
+                final int deltaY = fp.y - mDownFocusPoint.y;
+                int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
+                bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
+                
+            }
+            // Rubberbanding
+            if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
+                
+                // Threshold for movement
+                float movementx = Math.abs(e.getX() - mDragStartedX);
+                float movementy = Math.abs(e.getY() - mDragStartedY);
+                if((movementx > MOVEMENT_THRESHOLD * mDipToPix) 
+                        || (movementy > MOVEMENT_THRESHOLD * mDipToPix)) {
+                    /*
+                     * Do something to plan
+                     * This is the new location
+                     */
+                    double lon = mOrigin.getLongitudeOf(e.getX());
+                    double lat = mOrigin.getLatitudeOf(e.getY());
+                    mService.modifyPlan(mDragPlanPoint, lon, lat);
+                    // This will not snap again
+                    mDragStartedX = -1000;
+                    mDragStartedY = -1000; 
+                }
+            }
         }
         
         if(bPassToGestureDetector) {
@@ -496,6 +545,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
+            
+            /*
+             * Do not move on drag
+             */
+            if(mDragPlanPoint >= 0) {
+                return true;                
+            }
+            
             /*
              * Do not move on multitouch
              */
@@ -523,6 +580,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
         else {
+            
+            // Zooming does not change drag
+            mDragPlanPoint = -1;
+            
             /*
              * on double touch find distance and bearing between two points.
              */
