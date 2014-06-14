@@ -744,32 +744,52 @@ public class Destination extends Observable {
 
 	    return retVS;
 	}
-
+	
+	/**
+     * Find flight path required to this dest in degrees
+     */
+    public String getFlightPathRequired(GpsParams params) {
+        double fpr = 0;
+        if(mDistance > 0) {
+            fpr = Math.atan2(getAltitudeAboveDest(params), mDistance * Preferences.feetConversion) * 180.0 / Math.PI;
+        }
+        
+        return String.format(Locale.getDefault(), "%+06.2f", -fpr);
+    }
+    
+    public double getAltitudeAboveDest(GpsParams gpsParams) {
+        double height = gpsParams.getAltitude();
+        if(mDestType.equals(BASE)) {
+            try {
+                /*
+                 * For bases, go to pattern altitude
+                 */
+                String pa = mParams.get("Pattern Altitude");
+                height -= Double.parseDouble(pa);
+            }
+            catch(Exception e) {
+                
+            }
+        }
+        else {
+            /*
+             * Only for airport
+             */
+            return 0;
+        }
+        
+        return height;
+    }
+    
 	public long getVerticalSpeedToNoFmt(GpsParams gpsParams)
 	{
+	    double altAbove = getAltitudeAboveDest(gpsParams);
 	    double time = (mDistance / gpsParams.getSpeed()) * 60;
-	    double height = gpsParams.getAltitude();
-	    if(mDestType.equals(BASE)) {
-	        try {
-	            /*
-	             * For bases, go to pattern altitude
-	             */
-	            String pa = mParams.get("Pattern Altitude");
-	            height -= Double.parseDouble(pa);
-	        }
-	        catch(Exception e) {
-	            
-	        }
-	    }
-	    else {
-	        /*
-	         * Only for airport
-	         */
+	    if(altAbove == 0 || time == 0) {
 	        return 0;
 	    }
-	    
-	    
-	    return -Math.round(height / time);
+
+	    return -Math.round(altAbove / time);
 	}
 	
 	/**

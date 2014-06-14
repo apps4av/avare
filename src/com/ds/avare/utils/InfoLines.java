@@ -89,7 +89,7 @@ public class InfoLines {
     // in the proper order
     static final int ID_FLD_NUL = 0;
     static final int ID_FLD_GMT = 1;
-    static final int ID_FLD_LT = 2;
+    static final int ID_FLD_LT  = 2;
     static final int ID_FLD_SPD = 3;
     static final int ID_FLD_HDG = 4;
     static final int ID_FLD_BRG = 5;
@@ -104,7 +104,8 @@ public class InfoLines {
     static final int ID_FLD_VSR = 14;
     static final int ID_FLD_ODO = 15;
     static final int ID_FLD_CDI = 16;
-    static final int ID_FLD_MAX = 17;
+    static final int ID_FLD_FPR = 17;
+    static final int ID_FLD_MAX = 18;
     static final String NOVALUE = "     ";
 
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -707,6 +708,20 @@ public class InfoLines {
             }
             break;
         }
+        
+        // If we have a destination set that is a BASE,
+        // calculate the flight path required to reach the destination
+        case ID_FLD_FPR: {
+            StorageService storageService = mLocationView.getStorageService();
+            if (storageService != null) {
+                Destination destination = storageService.getDestination();
+                if (destination != null) {
+                    return destination.getFlightPathRequired(mLocationView
+                            .getGpsParams());
+                }
+            }
+            break;
+        }        
 
         case ID_FLD_ODO: {
             StorageService storageService = mLocationView.getStorageService();
