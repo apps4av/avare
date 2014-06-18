@@ -468,18 +468,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            
-            /*
-             * Find if this is close to a plan point. Do rubber banding if true
-             */
-            double lon = mOrigin.getLongitudeOf(e.getX());
-            double lat = mOrigin.getLatitudeOf(e.getY());
-            if(mService.getPlan() != null && mDragPlanPoint < 0) {
-                mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat);
-                mDragStartedX = e.getX();
-                mDragStartedY = e.getY();
+
+            if(mService != null) {
+                /*
+                 * Find if this is close to a plan point. Do rubber banding if true
+                 */
+                if(mService.getPlan() != null && mDragPlanPoint < 0) {
+                    double lon = mOrigin.getLongitudeOf(e.getX());
+                    double lat = mOrigin.getLatitudeOf(e.getY());
+                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat);
+                    mDragStartedX = e.getX();
+                    mDragStartedY = e.getY();
+                }
+                
             }
-            
+
             mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
             
             // Remember this point so we can make sure we move far enough before losing the long press
