@@ -242,6 +242,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Vertical Speed Required</item>
 	    <item>Entfernungsmesser</item>
 	    <item>Course Deviation Indicator</item>
+	    <item>Flight Path Required</item>
 	</string-array>
 	    
 	<string-array name="TextFieldOptionTitles">
@@ -262,6 +263,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>VSR fpm</item>
 	    <item>Entfernungsmesser</item>
 	    <item>CDI</item>
+	    <item>FPR deg</item>
    	</string-array>
 
 </resources>
