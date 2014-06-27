@@ -633,10 +633,15 @@ public class InfoLines {
         case ID_FLD_DIS: {
             if (mLocationView.getStorageService() != null) {
                 if (mLocationView.getStorageService().getDestination() != null) {
-                    return Helper.centerString(String.format(
-                            Locale.getDefault(), "%.0f%s", mLocationView
-                                    .getStorageService().getDestination()
-                                    .getDistance(),
+                	double distance = mLocationView
+                            .getStorageService().getDestination()
+                            .getDistance();
+                	String fmtString = distance > 10 ? "%.0f%s" : "%4.1f%s";
+
+                	return Helper.centerString(String.format(
+                            Locale.getDefault(), 
+                            fmtString, // (distance) + "%s", // "%.0f%s", 
+                            distance,
                             Preferences.distanceConversionUnit),
                             MAX_FIELD_SIZE_IN_CHARS);
                 }
