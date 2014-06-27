@@ -636,7 +636,7 @@ public class InfoLines {
                 	double distance = mLocationView
                             .getStorageService().getDestination()
                             .getDistance();
-                	String fmtString = distance >= 10 ? "%.0f%s" : "%4.1f%s";
+                	String fmtString = distance >= 100 ? "%.0f%s" : "%4.1f%s";
 
                 	return Helper.centerString(String.format(
                             Locale.getDefault(), 
