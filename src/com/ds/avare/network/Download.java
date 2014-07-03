@@ -347,6 +347,12 @@ public class Download {
 
                         mCode = "code unable to delete old file";
                         File outf = new File(path + "/" + entry.getName());
+                        
+                        // Skip dir creation, its already created above
+                        if(outf.isDirectory()) {
+                            continue;
+                        }
+                        
                         if(outf.exists()) {
                             outf.delete();
                         }
