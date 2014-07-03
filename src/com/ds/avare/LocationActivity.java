@@ -195,7 +195,7 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
-            else if(!(new File(mPref.mapsFolder() + "/databases")).exists()) {
+            else if(!(new File(mPref.mapsFolder() + "/databases-eu")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
             else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
