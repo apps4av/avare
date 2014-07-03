@@ -1,0 +1,85 @@
+git pull
+git add .
+meld .
+commit
+git push
+
+
+-----------------------------------------------------------------
+make database>
+vare@avare-ch:~/1405$ make database
+sqlite3 main.db < importother.sql
+Error: cannot open "airport.csv"
+Error: cannot open "freq.csv"
+Error: cannot open "runway.csv"
+Error: cannot open "airdiags/aptdiags.csv"
+Error: cannot open "nav.csv"
+Error: cannot open "fix.csv"
+Error: cannot open "dof.csv"
+Error: cannot open "afd.csv"
+Error: cannot open "mins/to.csv"
+Error: cannot open "mins/alt.csv"
+Error: cannot open "awos.csv"
+Error: cannot open "saa.csv"
+Error: cannot open "canap.csv"
+Error: cannot open "canrun.csv"
+Error: cannot open "canfreq.csv"
+make: *** [database] Error 1
+------------------------------------------------------------------------
+
+
+airport.csv
+-----------
+
+** data **
+LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,FacilityName Text,Use Text,FSSPhone Text,Manager Text,ManagerPhone Text,ARPElevation Text,MagneticVariation Text,TrafficPatternAltitude Text,FuelTypes Text,Customs Text,Beacon Text,LightSchedule Text,SegCircle Text,ATCT Text,UNICOMFrequencies Text,CTAFFrequency Text,NonCommercialLandingFee Text,State Text, City Text
+
+** example **
+ADK,51.8779638888889,-176.646030555556,AIRPORT,ADAK,PU,1-800-478-7250,VINCE TUTIAKOFF,907-592-8026,18.0,07E,,JET-A1,NN,CG,SEE RMK,Y,N,,122.900,,AK,ADAK ISLAND
+
+
+freq.csv
+---------------
+
+** data **
+LocationID Text,Type Text, Freq Text
+
+** example **
+CYZV,ATIS,124.8
+CYZV,CNTR MONTREAL CNTR,135.55
+CYZV,FSS RDO,118.1
+CYZV,RCO QUEBEC RDO,123.15
+CYZV,RDO MF,118.1
+
+
+runway.csv
+----------
+
+** data **
+LocationID Text,Length Text,Width Text,Surface Text,LEIdent Text,HEIdent Text,LELatitude Text,HELatitude Text,LELongitude Text,HELongitude Text,LEElevation Text,HEElevation Text,LEHeadingT Text,HEHeading Text,LEDT Text,HEDT Text,LELights Text,HELights Text,LEILS Text,HEILS Text,LEVGSI Text,HEVGSI Text,LEPattern Text, HEPattern Text
+
+** example **
+
+BVY,4755,100,ASPH-E,09,27,42.579744,42.5832796944444,-70.9247553055556,-70.9077619722222,71.6,91.3,074,254,,250,,,,,,,N,N
+BVY,5000,100,ASPH-F,16,34,42.591943,42.5813369444444,-70.92192225,-70.9101482777778,107.3,82.2,141,321,238,,MALS,,LOC/DME,,P4L,,N,N
+
+
+fix.csv
+-------
+
+** data **
+LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,FacilityName Text
+
+** example **
+LOGAN,40.6669388888889,-86.128275,YMIL-REP-PT,LOGAN
+
+
+nav.csv
+-------
+
+** data **
+LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,FacilityName Text
+
+** example **
+BVY,42.6105938888889,-70.9432736111111,FAN MARKER,BEVERLY D
+

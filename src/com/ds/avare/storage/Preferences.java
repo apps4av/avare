@@ -147,10 +147,10 @@ public class Preferences {
             /*
              * I hope Android comes up with a better resource solution some time soon.
              */
-            return "http://208.113.226.170/new/";
+            return "http://208.113.226.170/eu/";
         }
         else if (val.equals("1")) {
-            return "http://avare.kitepilot.org/new/";
+            return "http://avare.kitepilot.org/eu/";
         }
         return("");
     }
@@ -739,7 +739,8 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), false);
+    	return true;
+    	//return mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**

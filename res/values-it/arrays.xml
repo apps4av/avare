@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--  
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) Translation by Franco Papa
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,23 +14,23 @@ Redistribution and use in source and binary forms, with or without modification,
 <resources> 
     
     <string-array name="resGroups">
-        <item>Databases</item>
-        <item>Weather</item>
-        <item>Plates/d-TPP/ADs</item>
-        <item>VFR Sectional Charts</item>
-        <item>TAC Charts</item>
-        <item>WAC Charts</item>
+        <item>Database</item>
+        <item>Meteo</item>
+        <item>Mappe AD e di avvicinamento</item>
+        <item>Mappe VFR</item>
+        <item>TAC Charts (USA) </item>
+        <item>WAC Charts (USA) </item>
         <item>IFR Low Enroute Charts</item>
-        <item>A/FD Images</item>
-        <item>Terrain</item>
+        <item>Mappe AD</item>
+        <item>Mappe Terreno</item>
         <item>IFR High Enroute Charts</item>
-        <item>Topographic Maps</item>
-        <item>Heli/Other Charts</item>
+        <item>Mappe Topografiche</item>
+        <item>Elicottero/altre Mappe</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
         <item>COMM</item>
-        <item>Performance</item>
+        <item>Prestazione</item>
         <item>METAR</item>
         <item>TAF</item>
         <item>Winds/Temp.</item>
@@ -80,7 +80,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesWeather">
-        <item>weather</item>
     </string-array>
         
     <string-array name="resFilesIFRLE">
@@ -124,9 +123,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>    
     
     <string-array name="UnitsD">
-        <item>Nautical Miles</item>
-        <item>Statute Miles</item>
-        <item>Kilometers</item>
+        <item>Miglio Nautico</item>
+        <item>Miglio Terrestre</item>
+        <item>Chilometro</item>
         </string-array>
 
     <string-array name="UnitsDValues">
@@ -136,7 +135,7 @@ Redistribution and use in source and binary forms, with or without modification,
         </string-array>       
     
     <string-array name="Server">
-        <item>Apps4av.org</item>
+        <item>Apps4av.com</item>
         <item>Kitepilot.org</item>
     </string-array>
 
@@ -146,8 +145,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="AirSig">
-        <item>ALL</item>
-        <item>NONE</item>
+        <item>Tutti</item>
+        <item>Niente</item>
         <item>IFR AIRMET</item>
         <item>ICE AIRMET</item>
         <item>TURB AIRMET</item>
@@ -175,9 +174,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="Opacity">
-        <item>Transparent</item>
-        <item>50 Percent</item>
-        <item>Opaque</item>
+        <item>Transparenza</item>
+        <item>Transparente 50 percento</item>
+        <item>Opaco</item>
     </string-array>
 
     <string-array name="OpacityValues">
@@ -187,17 +186,17 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="TimerRingSizePrompt">
-        <item>None</item>
-        <item>2 Minutes</item>
-        <item>5 Minutes</item>
-        <item>10 Minutes</item>
+        <item>mostra niente</item>
+        <item>2 Minuti</item>
+        <item>5 Minuti</item>
+        <item>10 Minuti</item>
     </string-array>
 
 	<string-array name="Orientation">
-        <item>Portrait</item>
-        <item>Landscape</item>
-        <item>Reverse Portrait</item>
-        <item>Reverse Landscape</item>
+        <item>verticale</item>
+        <item>orizontale</item>
+        <item>verticale opposto</item>
+        <item>orizontale opposto</item>
      </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
@@ -207,9 +206,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="DistanceRingTypePrompts">
-        <item>None</item>
-        <item>Dynamic</item>
-        <item>Fixed at 2/5/10</item>
+        <item>niente</item>
+        <item>dynamico</item>
+        <item>fisso 2/5/10</item>
     </string-array>
 
 	<string-array name="AutoPostTracksValues">
@@ -219,44 +218,36 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="AutoPostTracksPrompts">
-        <item>None</item>
-        <item>Send email</item>
-        <item>Send to all applications</item>
+        <item>Nessuno</item>
+        <item>Invia email</item>
+        <item>Invia a tutte le applicazioni</item>
     </string-array>
 
 	<string-array name="TextFieldOptions">
-	    <item>None</item>
-		<item>Greenwich Mean Time</item>
-	    <item>Local Time</item>
+	    <item>Niente</item>
+		<item>Tempo del meridiano di Greenwich</item>
+	    <item>Orario locale</item>
 		<item>Ground Speed</item>
 	    <item>Track</item>
 	    <item>Bearing</item>
-	    <item>Destination Identifier</item>
-	    <item>Distance to Destination</item>
-	    <item>Estimated Time Enroute</item>
-	    <item>Estimated Time of Arrival</item>
+	    <item>Identificatore di destinazione</item>
+	    <item>Distanza verso la destinazione</item>
+	    <item>Tempo estimato Enroute</item>
+	    <item>Tempo estimato di arrivo</item>
 	    <item>MSL Altitude</item>
 	    <item>AGL Height</item>
-	    <item>Hobbs Flight Timer</item>
-	    <item>Vertical Speed Indicator</item>
-	    <item>Vertical Speed Required</item>
-	    <item>Odometer</item>
-	    <item>Course Deviation Indicator</item>
-	    <item>Flight Path Required</item>
+	    <item>Contatore dell ore di funzionamento</item>
+	    <item>Indicatore della velocita verticale</item>
+	    <item>Velocita verticale richiesta</item>
+	    <item>Misuratore di Distanza</item>
+	    <item>Indicatore di Deviazione della Rotta</item>
 	</string-array>
-
-	<string-array name="AdsOptions">
-        <item>Select a category</item>
-        <item>Aviation apps</item>
-        <item>Aircrafts for sale</item>
-        <item>Miscellaneous</item>
-    </string-array>
-		    
+	    
 	<string-array name="TextFieldOptionTitles">
 	    <item></item>
 		<item>Zulu</item>
 	    <item></item>
-		<item>Ground Speed</item>
+		<item>Velocità di marcia al suolo</item>
 	    <item>Track</item>
 	    <item>Brg Next</item>
 	    <item>Next</item>
@@ -268,9 +259,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
 	    <item>VSR fpm</item>
-	    <item>Odometer</item>
+	    <item>Misuratore di Distanza</item>
 	    <item>CDI</item>
-	    <item>FPR deg</item>
    	</string-array>
 
 </resources>
