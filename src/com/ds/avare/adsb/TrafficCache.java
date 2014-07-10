@@ -20,7 +20,7 @@ import android.util.SparseArray;
  *
  */
 public class TrafficCache {
-    private static final int MAX_ENTRIES = 50;
+    private static final int MAX_ENTRIES = 100;
     private SparseArray<Traffic> mTraffic;
     
     public TrafficCache() { 
@@ -34,10 +34,15 @@ public class TrafficCache {
     public void putTarric(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
 
-        if(mTraffic.size() >= MAX_ENTRIES) {
-            return;
+        /*
+         * For any new entries, check max traffic objects.
+         */
+        if(mTraffic.get(address) == null) {
+            if(mTraffic.size() >= MAX_ENTRIES) {
+                return;
+            }            
         }
-            
+        
         mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude, 
                 heading, speed, time));
     }
