@@ -17,7 +17,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="OK">&quot;OK&quot;</string>    
     <string name="Nearest">&quot;Il piu vicino&quot;</string>
     <string name="Success">&quot;Successo&quot;</string>
-    <string name="DatabaseName">&quot;main.db&quot;</string>
     <string name="WarningMsg">&quot;L'utilizo del applicazione avviene a propria responsabilita !&quot;</string>
     <string name="DestinationPrompt">&quot;Inserisci un codice ICAO per la destinazione&quot;</string>
     <string name="DestinationNF">&quot;Destinazione non trovata&quot;</string>
