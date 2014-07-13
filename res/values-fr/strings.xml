@@ -262,4 +262,22 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregistered">Vous êtes maintenant dé-enregistré!</string>
     <string name="DensityAltitude">Densité Altitude</string>
     <string name="BestRunway">Meilleur piste selon les vents</string>
+    <string name="List">Notes</string>
+    <string name="SavedLists">Notes / Liste de contrôle sauvés </string>
+    <string name="listitem">Check list action item</string>
+    <string name="AddAction">Dossier neuf</string>
+    <string name="Add">Ajouter</string>
+    <string name="InvalidText">Donnée invalide</string>
+    <string name="SavedChecklist">Sauvé! Les dossier revenu perdue ce vous décharge l\'application</string>
+    <string name="DeleteListQuestion">Notes-Liste de contrôle supprimer?</string>
+    <string name="ImportAction">Notes/Liste de contrôle importer</string>
+    <string name="ImportActionFilePath">/chemin des dossier/nom de fichier</string>
+    <string name="Import">Importer</string>    
+    <string name="Advertisements">Ads</string>
+    <string name="Lock">Fermer</string>
+    <string name="Edict">Edit</string>
+    <string name="ExternalFolder">Choisir le répertoire extérieur</string>    
+    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="folderHelp">Ce cet répertoire ne pas le juste , alors faite un répertoire neuf comme Android/data/com.ds.avare, et choisissez ce</string>
+
 </resources>

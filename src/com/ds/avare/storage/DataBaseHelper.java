@@ -376,8 +376,10 @@ public class DataBaseHelper  {
      * @param name
      * @param params
      */
-    public void findClosestAirports(double lon, double lat, Airport[] airports) {
+    public Airport[] findClosestAirports(double lon, double lat) {
 
+        Airport airports[] = null;
+        
         /*
          * Limit to airports taken by array airports
          */
@@ -387,13 +389,14 @@ public class DataBaseHelper  {
         }
         qry += " order by ((" + 
                 lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
-                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + airports.length + ";";            
+                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + Preferences.MAX_AREA_AIRPORTS + ";";            
 
         Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             int id = 0;
             if(cursor != null) {
+                airports = new Airport[cursor.getCount()];
                 if(cursor.moveToFirst()) {
                     do {
                         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
@@ -415,6 +418,10 @@ public class DataBaseHelper  {
         catch (Exception e) {
         }
         closes(cursor);
+        
+        if(null == airports) {
+            return null;
+        }
 
         /*
          * Find longest runway for each airport
@@ -448,6 +455,7 @@ public class DataBaseHelper  {
              closes(cursor);        
         }
 
+        return airports;
     }
 
     /**
