@@ -429,75 +429,6 @@ public class Plan implements Observer {
     }
     
     /**
-     * A class that finds a station passage
-     * @author zkhan
-     *
-     */
-    private class Passage {
-
-        double mLastDistance;
-        double mLastBearing;
-        double mCurrentDistance;
-        double mCurrentBearing;
-        
-        private static final double PASSAGE_DISTANCE_MIN = 2;
-
-        public Passage() {
-            mLastDistance = -1;
-            mLastBearing = -1;
-        }
-
-        /*
-         * Algorithm to calculate passage.
-         */
-        private boolean hasPassed() {
-            
-            /*
-             * Distance increases
-             */
-            if(mCurrentDistance > mLastDistance) {
-                
-                /*
-                 * We are in passage zone
-                 */
-                if(mCurrentDistance < PASSAGE_DISTANCE_MIN) {
-                    return true;
-                }
-                
-            }
-            
-            return false;
-        }
-        
-        /**
-         * 
-         * @param params
-         */
-        public boolean updateLocation(GpsParams params, Destination nextDest) {
-            Projection p = new Projection(params.getLongitude(), params.getLatitude(),
-                    nextDest.getLocation().getLongitude(), nextDest.getLocation().getLatitude());
-            if(mLastBearing < 0) {
-                /*
-                 * Init on first input on location
-                 */
-                mLastDistance = p.getDistance();
-                mLastBearing = p.getBearing();
-                return false;
-            }
-          
-            mCurrentDistance = p.getDistance();
-            mCurrentBearing = p.getBearing();
-            
-            boolean ret = hasPassed();
-            
-            mLastDistance = mCurrentDistance;
-            mLastBearing = mCurrentBearing;
-            return ret;
-        }
-        
-    }
-    
-    /**
      * 
      */
     public void simulate() {
@@ -632,7 +563,73 @@ public class Plan implements Observer {
 
         mTrackShape.updateShapeFromPlan(getCoordinates());
     }
+
+    /**
+     * A class that finds a station passage
+     * @author zkhan
+     *
+     */
+    private class Passage {
+
+        double mInitBearing;
+        double mCurrentBearing;
+        
+        public Passage() {
+            mInitBearing = Double.MIN_VALUE;
+        }
+
+        /*
+         * Algorithm to calculate passage.
+         */
+        private boolean hasPassed() {
+
+            /*
+             * Coodrant change
+             */
+            if(mInitBearing >= 0 && mInitBearing <= 90) {
+                if(mCurrentBearing <= 270 && mCurrentBearing >= 180) {
+                    return true;
+                }
+            }
+            if(mInitBearing >= 90 && mInitBearing <= 180) {
+                if(mCurrentBearing <= 360 && mCurrentBearing >= 270) {
+                    return true;
+                }
+            }
+            if(mInitBearing >= 180 && mInitBearing <= 270) {
+                if(mCurrentBearing <= 90 && mCurrentBearing >= 0) {
+                    return true;
+                }
+            }
+            if(mInitBearing >= 270 && mInitBearing <= 360) {
+                if(mCurrentBearing <= 180 && mCurrentBearing >= 90) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        /**
+         * 
+         * @param params
+         */
+        public boolean updateLocation(GpsParams params, Destination nextDest) {
+            Projection p = new Projection(params.getLongitude(), params.getLatitude(),
+                    nextDest.getLocation().getLongitude(), nextDest.getLocation().getLatitude());
+            if(mInitBearing == Double.MIN_VALUE) {
+                mInitBearing = (p.getBearing() + 360) % 360;
+                return false;
+            }
+            
+            mCurrentBearing = (p.getBearing() + 360) % 360;
+            
+            return hasPassed();
+        }
+        
+    }
     
+
 }
 
 
