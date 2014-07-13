@@ -60,7 +60,7 @@ public class Area {
         /*
          * Check for null.
          */
-        if(index >= Preferences.MAX_AREA_AIRPORTS) {
+        if(index >= mAirports.length) {
             return null;
         }
         return(mAirports[index]);
@@ -76,7 +76,7 @@ public class Area {
          * Get all airports in a string array in this area.
          */
         int id;
-        for(id = 0; id < Preferences.MAX_AREA_AIRPORTS; id++) {
+        for(id = 0; id < mAirports.length; id++) {
             if(getAirport(id) == null) {
                 break;
             }
@@ -141,9 +141,7 @@ public class Area {
                 return null;
             }
             
-            airports = new Airport[Preferences.MAX_AREA_AIRPORTS];
-
-            mDataSource.findClosestAirports(mLon, mLat, airports);
+            airports = mDataSource.findClosestAirports(mLon, mLat);
             /*
              * Sort on distance because distance found from sqlite is less than perfect
              */

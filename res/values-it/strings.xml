@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Scarica le carte per il territorio in cui ti trovi&quot;</string>
+    <string name="MissingMaps">&quot;Scarica la mappa per il territorio in cui ti trovi&quot;</string>
     <string name="LoadingMaps">&quot;Scaricamento in corso&quot;</string>
     <string name="OK">&quot;OK&quot;</string>    
     <string name="Nearest">&quot;Il piu vicino&quot;</string>
@@ -41,7 +41,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShowTrackSummary">&quot;scegli se vuoi visualizzare una linia indicativa verso la destinazione&quot;</string>
     <string name="Help">&quot;Assistenza&quot;</string>
     <string name="desc">&quot;Image/Chart&quot;</string>
-			<!-- no translation needed  -->
     <string name="Destination">&quot;Destinazione&quot;</string>
     <string name="Settings">&quot;Impostazione&quot;</string>
     <string name="Downloading">&quot;scaricamento in corso&quot;</string>
@@ -150,7 +149,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Right">&quot;Destra&quot;</string>
     <string name="Next">&quot;Il prossimo&quot;</string>
     <string name="Last">&quot;L'ultimo&quot;</string>
-    <string name="Save">&quot;Memmorizza&quot;</string>
+    <string name="Save">&quot;Memmorizza il file&quot;</string>
     <string name="SavedPlan">&quot;Rotte di volo memmorizzate&quot;</string>
 	<string name="Load">&quot;Apri&quot;</string>
 	<string name="LoadReverse">&quot;cambia l'ordine di successione&quot;</string>
@@ -197,7 +196,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TimerRingSizeLabel">&quot;Visualiza il contaminuti tramite un cerchio&quot;</string>
     <string name="TimerRingSizeSummary">&quot;Determina il tempo per il contaminuti&quot;</string>
     <string name="Up">In alto</string>
-    <string name="PrivateFolder">Cartella pricipale</string>
+    <string name="PrivateFolder">Cartella principale</string>
     <string name="FileStore">I File verrano memmorizati in:</string>
     <string name="FileStoreInvalid">Accedere/scrivere nella cartella prescelta non possibile:</string>
     <string name="prefTracksCategoryTitle">Registrazione del volo</string>
@@ -231,25 +230,19 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ADSBTrafficLabel">&quot;Visualizza il Traffico indicato dell ricevitore ADSB&quot;</string>
     <string name="ADSBTrafficSummary">&quot;Scegli se vuoi visualizzare il Traffico indicato dall ricevitore ADSB (IO Plug-in di Avare occorente)&quot;</string>
     <string name="prefUseDynamicFields">UseDynamicFields</string>
-    	<!-- no translation needed  -->
     <string name="UseDynamicFieldsLabel">&quot;Visualizza dynamicamente&quot;</string>
     <string name="UseDynamicFieldsSummary">&quot;Scegli se voui visualizzare le due righe informative sullo schermo principale dynamicalmente&quot;</string>
 	<string name="prefGetRowFormats">RowFormats</string>
-		<!-- no translation needed  -->
-    <string name="SelectTextFieldTitle">&quot;Scegli quali informazione verano visualizzate&quot;</string>
+    <string name="SelectTextFieldTitle">&quot;Scegli quali informazioni verano visualizzate&quot;</string>
 	<string name="prefOdometer">Telemetro(misura della distanza)</string>
-		<!-- string name="prefOdometer">Odometer</string  -->
     <string name="DownloadDBShort">&quot;Scarica la Database&quot;</string>
     <string name="Radar">NEXRADTransparency</string>
-			<!--  NexRad cover currently USA, Canada ans Australia  -->
     <string name="RadarLabel">&quot;Indicatore NEXRAD&quot;</string>
     <string name="RadarSummary">&quot;Info: NEXRAD puo essere ricevuto negli USA, Canada e Australie&quot;</string>
     <string name="PlanWarning">&quot;Cancella la attuale rotta di volo e apri&quot;</string>
 	<string name="PlanDestinationNF">&quot;Non tutti i punti di percorso possono essere trovati.&quot;</string>
-<!-- string name="prefShowCDI">ShowCDI</string  -->
     <string name="prefShowCDI">ShowCDI</string>
     <string name="ShowCDILabel">&quot;Visualizza CDI/VDI&quot;</string>
-<!-- string name="ShowCDISummary">&quot;Display the course/vertical deviation indicators on the screen&quot;</string  -->
     <string name="ShowCDISummary">&quot;Visuallizza l'indicatore della Rotta e della Deviazione verticale sullo schermo&quot;</string>
     <string name="Nearest2000">&quot;Il piu vicino\n2000'&quot;</string>
     <string name="Nearest4000">&quot;Il piu vicino\n4000'&quot;</string>
@@ -260,10 +253,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GlideRatioSummary">&quot;Determina la Tassa di planata dell tuo aeroplano&quot;</string>
     <string name="NotGlideRange">&quot;Al di fuori della Tassa di planata&quot;</string>
     <string name="Fuel">&quot;Carburante&quot;</string>
-	    <string name="prefLastPlateIndex">LastPlateIndex</string>
-			<!-- no translatio needed  -->
+	<string name="prefLastPlateIndex">LastPlateIndex</string>
     <string name="prefLastPlateAirport">LastPlateAirport</string>
-			<!-- no translatio needed  -->
     <string name="EdgeTape">&quot;EdgeTape&quot;</string>
     <string name="EdgeTapeLabel">&quot;Indicatore di distanza al lato dello schermo&quot;</string>
     <string name="EdgeTapeSummary">&quot;Indica al lato dello schermo un misuratore di distanza della mappa&quot;</string>
@@ -275,7 +266,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="error_email">Occorre prima un account e-Mail da Gmail per procedere</string>
     <string name="already_registered">Siete registrati</string>
     <string name="already_unregistered">Attualmente non siete connessi</string>
-		<!--   -->
     <string name="registering_server">Registrati con il Apps4Av server</string>
 	<string name="unregistering_server">Sconnessione dal Apps4Av server</string>
 <!-- string name="register_msg">Thank you for installing Avare.\nThe development team for the free Avare aviation app is dedicated to empowering pilots with helpful free, open source, ad-free, and 
@@ -285,17 +275,31 @@ future features such as direct anonymous but verified communication between user
 our free tools more conveniently, without the need to click an agreement at every launch of Avare.\n\nThe next screen provides more details on our Privacy Policy, and another opportunity to decline 
 Registration.\nPlease press the Register button to continue.</string  -->
     <string name="register_msg">&quot;Lo Staff di Avare si impiega di evolvere und Applicazione affidabile, sicura, gratuita e senza Publicita. Per ragiungere qesta meta ci occorre una registrazione anonyma per realizare i seguenti Punti:\n\n1. Per informare l'utente immediatamente nel caso che ci siano errori nell Applicazione, nelle Mappe o i Documenti allegati.\n\n2. Offerire al Pilota la possibilita di trasmettere e publicare recensioni concernente gli Aeroporti.\n\n3. Offerire al Pilota la possibilita di inviare e dividere dei Punti georeferenziati e delle Rotte tramite una abbinamento sicuro.\n\n4. Die permettere che l'Utente non bisogna accetare le condizione di Licenza ogni volta in cui si riavvia l'Applicazione.\n\nNella prossima Finestra sono menzionate piu Informazioni riguardante la tuteal della privacy e inpiu la possibilita di declinare la registrazione.\nPer continuare sceglia prego Register.&quot;</string>
-			<!-- i think that we must here add the notification that only messages in englisch language are permitted/readable for the eu version  -->
     <string name="yes">Si</string>
     <string name="no">No</string>
     <string name="new_message">Un nuvo messagio da Apps4Av</string>
-	<string name="online">Account</string>
-		<!-- no translation needed  -->
     <string name="failed_register">Registrazione fallita!</string>
     <string name="failed_unregister">Cancellare la registrazione non possibile!</string>
-	<string name="registered">&quot;Registrazione successa! Scelga "indietro" per avviare l'Applicazione. Per primo bisogna caricare la database (occorrente) tramite il Menü Download. Dopodiché si puo caricare le Mappe e gli appartenienti Documenti tramite il Menü Download.&quot;</string>
+	<string name="registered">&quot;Registrazione successa! Scegli "indietro" per avviare l\'Applicazione. Per primo bisogna caricare la database (occorrente) tramite il Menü Download. Dopodiché si puo caricare le Mappe e gli appartenienti Documenti tramite il Menü Download.&quot;</string>
     <string name="unregistered">Vi siete disconessi!</string>
 	<string name="DensityAltitude">Density Altitude</string>
-<!-- string name="BestRunway">Best Wind Runway</string  -->
     <string name="BestRunway">Pista piu favorevole riguardante la direzione del vento</string>
+    <string name="List">Liste</string>
+    <string name="SavedLists">Liste memmorizate</string>
+    <string name="listitem">Check list action item</string>
+    <string name="AddAction">Modifica il file</string>
+    <string name="Add">Modificare</string>
+    <string name="InvalidText">Inserimento invalido</string>
+    <string name="SavedChecklist">Memorizzato! Nel caso che deinstallate l\'applicazione, i file verano cancellate</string>
+    <string name="DeleteListQuestion">Cancellare?</string>
+    <string name="ImportAction">Importare una checklist/notizia</string>
+    <string name="ImportActionFilePath">sentiero e nome del file</string>
+    <string name="Import">Importare</string>
+    <string name="Advertisements">Reclame</string>
+    <string name="Lock">Serrare</string>
+    <string name="Edit">Scrivere</string>
+    <string name="ExternalFolder">Scegli il discheto di memmoria esterno</string>
+    <string name="online">Edit Account</string>
+    <string name="onlineSummary">Registra o disconetti il tuo account Apps4Av</string>
+    <string name="folderHelp">Nel caso che questa non sia la cartella giusta, crae una nuova cartella  Android/data/com.ds.avare, e scegli questa</string>
 </resources>

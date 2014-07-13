@@ -144,7 +144,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Right">&quot;Rechts&quot;</string>
     <string name="Next">&quot;Nächster&quot;</string>
     <string name="Last">&quot;Letzter&quot;</string>
-    <string name="Save">&quot;Speichere&quot;</string>
+    <string name="Save">&quot;Datei speichern&quot;</string>
     <string name="SavedPlan">&quot;Gespeicherte Flugrouten&quot;</string>
     <string name="Load">&quot;Lade&quot;</string>
     <string name="LoadReverse">&quot;Reihenfolge umkehren&quot;</string>
@@ -261,6 +261,19 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="failed_unregister">Abmelden nicht möglich!</string>
     <string name="registered">Registrierung erfolgreich abgeschlossen! Wählen sie den Zurück Button um die Anwendung zu starten. Zuerst muss die Datenbank (erforderlich) mittels dem Downloadmenü heruntergeladen werden. Danach kann man über das Downloadmenü die Karten herunterladen.</string>
     <string name="unregistered">Sie haben sich abgemeldet!</string>
+    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="folderHelp">Fals dies nicht der richtige Ornder sein sollte, dann erstellen Sie im Stammverzeichnis der SD-Card den Ordner Android/data/com.ds.avare, und wählen diesen</string>
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
+    <string name="List">Notizen</string>
+    <string name="SavedLists">Gespeicherte Notizen / Checkliste</string>
+    <string name="listitem">Check list action item</string>
+    <string name="AddAction">Datei neu</string>
+    <string name="Add">Editieren</string>
+    <string name="InvalidText">Datei nicht gefunden</string>
+    <string name="SavedChecklist">Gespeichert! Die gespeicherten Dateien gehen verloren wenn die App gelöscht wird</string>
+    <string name="DeleteListQuestion">Notiz/Checkliste löschen?</string>
+    <string name="ImportAction">Checkliste/Notiz importieren</string>
+    <string name="ImportActionFilePath">/Pfad zur Datei/Dateiname</string>
+    <string name="Import">Importieren</string>
 	</resources>

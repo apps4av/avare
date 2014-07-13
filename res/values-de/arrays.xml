@@ -46,7 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
      </string-array>
      
     <string-array name="resNameWeather">
-        <item>Wetter</item>
+        <item>weather</item>
     </string-array>
         
     <string-array name="resNameAFD">
@@ -137,7 +137,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="Server">
         <item>Apps4av.com</item>
-        <item>avare.ch</item>
+        <item>Kitepilot.org</item>
     </string-array>
 
     <string-array name="ServerValues">
@@ -245,6 +245,13 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Flight Path Required</item>
 	</string-array>
 	    
+	<string-array name="AdsOptions">
+        <item>Kategorie auswählen</item>
+        <item>Aviatik Apps</item>
+        <item>Flugzeug zu verkaufen</item>
+        <item>Diverses</item>
+    </string-array>
+    
 	<string-array name="TextFieldOptionTitles">
 	    <item></item>
 		<item>Zulu</item>

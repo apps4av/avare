@@ -42,7 +42,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Help">&quot;Aide&quot;</string>
     <string name="desc">&quot;Image/Carte&quot;</string>	
     <string name="Destination">&quot;Destination&quot;</string>
-    <string name="Settings">&quot;Préférences&quot;</string>
+    <string name="Settings">&quot;Configuration&quot;</string>
     <string name="Downloading">&quot;En téléchargement&quot;</string>
     <string name="download">&quot;Télécharger&quot;</string>
     <string name="Failed">&quot;Échec&quot;</string>
@@ -131,7 +131,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Active">&quot;Actif&quot;</string>
     <string name="Total">&quot;Total&quot;</string>
     <string name="Near">&quot;près de&quot;</string>
-    <string name="Find">&quot;trouvé&quot;</string>
+    <string name="Find">&quot;Chercher&quot;</string>
     <string name="IconHelicopter">&quot;Icône d'hélicoptère&quot;</string>
     <string name="IconHelicopterLabel">&quot;icône d'hélicoptère&quot;</string>
     <string name="IconHelicopterSummary">&quot;Sélectionner pour changer l'icône de position à un hélicoptère (redémarrage requis)&quot;</string>
@@ -173,7 +173,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DistanceRingTypeSummary">&quot;Sélectionner le style d'anneau des distances à afficher&quot;</string>
     <string name="UnitKnot">kt</string>
     <string name="UnitMile">mi</string>
-    <string name="VsFpm">ppm</string>
+    <string name="VsFpm">fpm</string>
     <string name="UnitKilometer">km</string>
     <string name="DistKnot">nm</string>
     <string name="DistMile">mi</string>
@@ -255,11 +255,29 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="new_message">Vous avez un nouveau message d\'Apps4Av</string>
-    <string name="online">Compte</string>
+    <string name="online">Compte</string>    
     <string name="failed_register">Incapable de vous enregistrer!</string>
     <string name="failed_unregister">Incapable de vous dé-enregistrer!</string>
-    <string name="registered">Vous êtes maintenant enregistré! SVP. Peser sur le bouton retour pour utiliser l’application.  Vous devez premièrement télécharger les bases de données (requises) du menu téléchargement.  Pour visionner les cartes détaillées, veuillez télécharger les cartes des régions d’intérêt.</string>
+    <string name="registered">Vous êtes maintenant enregistré! SVP. Preser sur le bouton retour pour utiliser l’application.  Vous devez premièrement télécharger les bases de données (requises) du menu téléchargement.  Pour visionner les cartes détaillées, veuillez télécharger les cartes des régions d’intérêt.</string>
     <string name="unregistered">Vous êtes maintenant dé-enregistré!</string>
     <string name="DensityAltitude">Densité Altitude</string>
     <string name="BestRunway">Meilleur piste selon les vents</string>
+    <string name="List">Notes</string>
+    <string name="SavedLists">Notes / Liste de contrôle sauvés </string>
+    <string name="listitem">Check list action item</string>
+    <string name="AddAction">Dossier neuf</string>
+    <string name="Add">Ajouter</string>
+    <string name="InvalidText">Donnée invalide</string>
+    <string name="SavedChecklist">Sauvé! Les dossier revenu perdue ce vous décharge l\'application</string>
+    <string name="DeleteListQuestion">Notes-Liste de contrôle supprimer?</string>
+    <string name="ImportAction">Notes/Liste de contrôle importer</string>
+    <string name="ImportActionFilePath">/chemin des dossier/nom de fichier</string>
+    <string name="Import">Importer</string>    
+    <string name="Advertisements">Ads</string>
+    <string name="Lock">Fermer</string>
+    <string name="Edict">Edit</string>
+    <string name="ExternalFolder">Choisir le répertoire extérieur</string>    
+    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="folderHelp">Ce cet répertoire ne pas le juste , alors faite un répertoire neuf comme Android/data/com.ds.avare, et choisissez ce</string>
+
 </resources>

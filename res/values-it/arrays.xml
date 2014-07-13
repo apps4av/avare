@@ -18,14 +18,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Meteo</item>
         <item>Mappe AD e di avvicinamento</item>
         <item>Mappe VFR</item>
-        <item>TAC Charts (USA) </item>
-        <item>WAC Charts (USA) </item>
-        <item>IFR Low Enroute Charts</item>
+        <item>TAC Charts USA </item>
+        <item>WAC Charts USA </item>
+        <item>IFR Low Enroute Charts USA</item>
         <item>Mappe AD</item>
-        <item>Mappe Terreno</item>
-        <item>IFR High Enroute Charts</item>
-        <item>Mappe Topografiche</item>
-        <item>Elicottero/altre Mappe</item>
+        <item>Mappe Terreno USA</item>
+        <item>IFR High Enroute Charts USA</item>
+        <item>Mappe Topografiche USA</item>
+        <item>Elicottero/altre Mappe USA</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -227,7 +227,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Niente</item>
 		<item>Tempo del meridiano di Greenwich</item>
 	    <item>Orario locale</item>
-		<item>Ground Speed</item>
+		<item>Velocità di marcia al suolo</item>
 	    <item>Track</item>
 	    <item>Bearing</item>
 	    <item>Identificatore di destinazione</item>
@@ -242,12 +242,19 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Misuratore di Distanza</item>
 	    <item>Indicatore di Deviazione della Rotta</item>
 	</string-array>
-	    
+	
+	<string-array name="AdsOptions">
+        <item>Scegli una categoria</item>
+        <item>Applicazioni aviatiche</item>
+        <item>Aeroplani a vendersi</item>
+        <item>Vari</item>
+    </string-array>
+    
 	<string-array name="TextFieldOptionTitles">
 	    <item></item>
 		<item>Zulu</item>
 	    <item></item>
-		<item>Velocità di marcia al suolo</item>
+		<item>Ground Speed</item>
 	    <item>Track</item>
 	    <item>Brg Next</item>
 	    <item>Next</item>
@@ -259,8 +266,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
 	    <item>VSR fpm</item>
-	    <item>Misuratore di Distanza</item>
+	    <item>Odometro</item>
 	    <item>CDI</item>
+	    <item>FPR deg</item>
    	</string-array>
 
 </resources>
