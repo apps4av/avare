@@ -157,6 +157,7 @@ public class Destination extends Observable {
      */
     public Destination(StorageService service, double lon, double lat) {
         GpsParams params = service.getGpsParams();
+        mPref = new Preferences(service.getApplicationContext());
         if(null != params) {
             mLonInit = params.getLongitude();
             mLatInit = params.getLatitude();
