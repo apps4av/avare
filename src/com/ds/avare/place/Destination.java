@@ -286,11 +286,11 @@ public class Destination extends Observable {
     	/*
     	 * ETA when speed != 0
     	 */
-    	mEte = Helper.calculateEte(mDistance, speed, mBearing, params.getBearing());
+    	mEte = Helper.calculateEte(mPref.useBearingForETEA(), mDistance, speed, mBearing, params.getBearing());
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
+    	mEta = Helper.calculateEta(mPref.useBearingForETEA(), Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
 	}
 
 	/**

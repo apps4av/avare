@@ -801,4 +801,14 @@ public class Preferences {
     public void putLists(String name) {
         mPref.edit().putString(mContext.getString(R.string.List), name).commit();
     }
+    
+
+    /**
+     * 
+     * @return
+     */
+    public boolean useBearingForETEA() {
+        return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
+    }
+
 }

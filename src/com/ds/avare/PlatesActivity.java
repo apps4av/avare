@@ -607,82 +607,30 @@ public class PlatesActivity extends Activity {
         @Override
         public int compare(String o1, String o2) {
             /*
-             * Airport diagram must be  first
+             * Airport diagram must be first
              */
-            if(o1.startsWith(AD)) {
-                return -1;
-            }
-            if(o2.startsWith(AD)) {
-                return 1;
-            }
-
-            if(o1.startsWith("ILS")) {
-                return -1;
-            }
-            if(o2.startsWith("ILS")) {
-                return 1;
-            }
-
-            if(o1.startsWith("LOC")) {
-                return -1;
-            }
-            if(o2.startsWith("LOC")) {
-                return 1;
-            }
-
-            if(o1.startsWith("RNAV-GPS")) {
-                return -1;
-            }
-            if(o2.startsWith("RNAV-GPS")) {
-                return 1;
-            }
-
-            if(o1.startsWith("RNAV-RNP")) {
-                return -1;
-            }
-            if(o2.startsWith("RNAV-RNP")) {
-                return 1;
-            }
-
-            if(o1.startsWith("VOR")) {
-                return -1;
-            }
-            if(o2.startsWith("VOR")) {
-                return 1;
-            }
-
-            if(o1.startsWith("NDB")) {
-                return -1;
-            }
-            if(o2.startsWith("NDB")) {
-                return 1;
-            }
-
-            if(o1.startsWith("LAHSO")) {
-                return -1;
-            }
-            if(o2.startsWith("LAHSO")) {
-                return 1;
-            }
-
-            if(o1.startsWith("HOT-SPOT")) {
-                return -1;
-            }
-            if(o2.startsWith("HOT-SPOT")) {
-                return 1;
+            String[] type = {AD, "ILS", "LOC", "RNAV-GPS", "RNAV-RNP", "VOR", "NDB", "LAHSO", "HOT-SPOT"};
+            
+            for(int i = 0; i < type.length; i++) {
+                if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
+                    return -1;
+                }
+                if(o2.startsWith(type[i]) && (!o1.startsWith(type[i]))) {
+                    return 1;
+                }
             }
 
             /*
              * Continued must follow main
              */
             String comp1 = o2.replace(Preferences.IMAGE_EXTENSION, "");
-            if(o1.contains("-CONT.")) {
+            if(o1.contains("-CONT.") && (!o2.contains("-CONT."))) {
                 if(o1.startsWith(comp1)) {
                     return 1;
                 }
             }
             String comp2 = o1.replace(Preferences.IMAGE_EXTENSION, "");
-            if(o2.contains("-CONT.")) {
+            if(o2.contains("-CONT.") && (!o1.contains("-CONT."))) {
                 if(o2.startsWith(comp2)) {
                     return -1;
                 }

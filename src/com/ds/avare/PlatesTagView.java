@@ -46,6 +46,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     private BitmapHolder                 mBitmap;
     private Scale                        mScale;
 
+    private static final double MAX_PLATE_SCALE = 8;
+    
     /**
      * 
      * @param context
@@ -56,7 +58,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mPaint.setAntiAlias(true);
         mPan = new Pan();
         setOnTouchListener(this);
-        mScale = new Scale();
+        mScale = new Scale(MAX_PLATE_SCALE);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         setBackgroundColor(Color.BLACK);
@@ -204,7 +206,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          * On double tap, move to center
          */
         mPan = new Pan();
-        mScale = new Scale();
+        mScale = new Scale(MAX_PLATE_SCALE);
         
         /*
          * Fit plate to screen

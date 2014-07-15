@@ -23,14 +23,24 @@ public class Scale {
     private double mScaleCorrectY;
     private double mMacroMultiply;
     
-    private static final double MAX_SCALE = 2;
+    private double mMaxScale;
     private static final double MIN_SCALE = 0.03125; 
-    
 
     /**
-     * 
+     * Scale for pictures
+     */
+    public Scale(double max) {
+        mMaxScale = max;
+        mScaleFactor = 1;
+        mScaleCorrectY = 1;
+        mMacroMultiply = 1;
+    }
+
+    /**
+     * Scale for charts
      */
     public Scale() {
+        mMaxScale = 2;
         mScaleFactor = 1;
         mScaleCorrectY = 1;
         mMacroMultiply = 1;
@@ -89,8 +99,8 @@ public class Scale {
      */
     public float getScaleFactorRaw() {
         double s;
-        if(mScaleFactor > MAX_SCALE) {
-            s = MAX_SCALE;
+        if(mScaleFactor > mMaxScale) {
+            s = mMaxScale;
         }
         else if(mScaleFactor < MIN_SCALE) {
             s = MIN_SCALE;
@@ -107,8 +117,8 @@ public class Scale {
      */
     public float getScaleFactor() {
         double s;
-        if(mScaleFactor > MAX_SCALE) {
-            s = MAX_SCALE;
+        if(mScaleFactor > mMaxScale) {
+            s = mMaxScale;
         }
         else if(mScaleFactor < MIN_SCALE) {
             s = MIN_SCALE;
