@@ -278,4 +278,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="online">Edit Account</string>
     <string name="onlineSummary">Register or unregister your Apps4Av account</string>
     <string name="folderHelp">If this is not the correct SD card folder, then create a folder in root of SD card named Android/data/com.ds.avare, and select it from here</string>
+    <string name="ETABearing">&quot;ETABearing&quot;</string>
+    <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
+    <string name="ETABearingSummary">&quot;Select to calculate ETA/ETE considering the relative bearing to the destination&quot;</string>
 </resources>

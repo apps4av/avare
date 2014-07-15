@@ -49,6 +49,8 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     private BitmapHolder                 mBitmap;
     private Preferences                  mPref;
     
+    private static final double MAX_AFD_SCALE = 8;
+    
     /**
      * 
      * @param context
@@ -57,7 +59,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPan = new Pan();
-        mScale = new Scale();
+        mScale = new Scale(MAX_AFD_SCALE);
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
@@ -168,7 +170,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         /*
          * On double tap, move to center
          */
-        mScale = new Scale();
+        mScale = new Scale(MAX_AFD_SCALE);
         mPan = new Pan();
         
         /*

@@ -17,6 +17,7 @@ package com.ds.avare.place;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.content.Context;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
@@ -54,12 +55,14 @@ public class Plan implements Observer {
     private boolean mDestChanged;
     private double mDeclination;
     private int mReplaceId;
+    private Preferences mPref;
     
     /**
      * 
      * @param dataSource
      */
-    public Plan() {
+    public Plan(Context ctx) {
+        mPref = new Preferences(ctx);
         clear();
     }
 
@@ -329,7 +332,7 @@ public class Plan implements Observer {
                 }
             }   
         }
-        mEte = Helper.calculateEte(mDistance, params.getSpeed(), mBearing, params.getBearing());
+        mEte = Helper.calculateEte(mPref.useBearingForETEA(), mDistance, params.getSpeed(), mBearing, params.getBearing());
         mLastLocation = params;
     }
 

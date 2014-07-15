@@ -51,19 +51,23 @@ public class Helper {
 	 * @param heading - direction of movement
 	 * @return int value of HR * 100 + MIN for the ete, -1 if not applicable
 	 */
-	private static int fetchRawEte(double distance, double speed, double bearing, double heading) {
-        // We can't assume that we are heading DIRECTLY for the destination, so 
-        // we need to figure out the multiply factor by taking the COS of the difference
-        // between the bearing and the heading.
-		double angDif = angularDifference(heading, bearing);
-		
-		// If the difference is 90 or greater, then ETE means nothing as we are not
-		// closing on the target
-		if(angDif >= 90)
-			return -1;
-
-		// Calculate the actual relative speed closing on the target
-        double xFactor  = Math.cos(angDif * Math.PI / 180);
+	private static int fetchRawEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
+	    double xFactor = 1;
+	    if(useBearing) {
+            // We can't assume that we are heading DIRECTLY for the destination, so 
+            // we need to figure out the multiply factor by taking the COS of the difference
+            // between the bearing and the heading.
+    		double angDif = angularDifference(heading, bearing);
+    		
+    		// If the difference is 90 or greater, then ETE means nothing as we are not
+    		// closing on the target
+    		if(angDif >= 90)
+    			return -1;
+    
+    		// Calculate the actual relative speed closing on the target
+            xFactor  = Math.cos(angDif * Math.PI / 180);
+	    }
+	    
         double eteTotal = distance / (speed * xFactor);
 
         // Break that down into hours and minutes
@@ -85,10 +89,10 @@ public class Helper {
 	 * @param heading - direction of movement
 	 * @return String - "HH:MM" time to the target
 	 */
-    public static String calculateEte(double distance, double speed, double bearing, double heading) {
+    public static String calculateEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
 
     	// Fetch the eteRaw value
-    	int eteRaw = fetchRawEte(distance, speed, bearing, heading);
+    	int eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
 
     	// If no speed or an invalid eteRaw, then return the empty display value
         if(0 == speed || eteRaw == -1){
@@ -121,10 +125,10 @@ public class Helper {
 	 * @param heading - direction of movement
 	 * @return String - "HH:MM" current time at the target
      */
-    public static String calculateEta(TimeZone timeZone, double distance, double speed, double bearing, double heading) {
+    public static String calculateEta(boolean useBearing, TimeZone timeZone, double distance, double speed, double bearing, double heading) {
 
     	// fetch the raw ETE
-        int eteRaw = fetchRawEte(distance, speed, bearing, heading);
+        int eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
 
         // If no speed, or the eteRaw is meaningless, then return an empty display string
         if(0 == speed || eteRaw == -1){

@@ -59,6 +59,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private float			             mDipToPix;
     private boolean                    mShowingAD;
     
+    private static final double MAX_PLATE_SCALE = 8;
+
     /**
      * 
      * @param context
@@ -73,7 +75,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGpsParams = new GpsParams(null);
         mPref = new Preferences(context);
         mTextDiv = mPref.getOrientation().contains("Portrait") ? 24.f : 12.f;
-        mScale = new Scale();
+        mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
@@ -332,7 +334,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         /*
          * On double tap, move to center
          */
-        mScale = new Scale();
+        mScale = new Scale(MAX_PLATE_SCALE);
         mPan = new Pan();
         
         /*

@@ -228,7 +228,7 @@ public class StorageService extends Service {
         mImageDataSource = new DataSource(getApplicationContext());
         
         mArea = new Area(mImageDataSource);
-        mPlan = new Plan();
+        mPlan = new Plan(this);
         mDownloading = false;
         
         /*
@@ -605,7 +605,7 @@ public class StorageService extends Service {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan();
+        mPlan = new Plan(this);
     }
 
     /**
