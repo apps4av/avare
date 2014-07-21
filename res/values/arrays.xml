@@ -799,4 +799,16 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>FPR deg</item>
    	</string-array>
 
+	<string-array name="DisplayIconValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+	<string-array name="DisplayIconPrompt">
+        <item>High Wing Aircraft</item>
+        <item>Helicopter</item>
+        <item>Canard Aircraft</item>
+    </string-array>
+
 </resources>

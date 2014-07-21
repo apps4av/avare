@@ -41,6 +41,7 @@ import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
@@ -336,7 +337,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mShadowBox = new RectF(mTextSize);
 
         setOnTouchListener(this);
-        mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
+        mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mAirplaneOtherBitmap = new BitmapHolder(context, R.drawable.planeother);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
