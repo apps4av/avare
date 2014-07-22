@@ -242,8 +242,8 @@ public class Download {
                         mCode = "code stopped by user during download";
                         output.flush();
                         output.close();
-                        input.close();
                         sendFailure();
+                        input.close();
                         return;
                     }
                 }
