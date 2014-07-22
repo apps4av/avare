@@ -48,6 +48,7 @@ public class Download {
     private Handler mHandler;
     private Thread mThread;
     private String mCode;
+    private int mCycleAdjust;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -59,13 +60,14 @@ public class Download {
      * 
      * @param act
      */
-    public Download(String root, Handler handler) {
+    public Download(String root, Handler handler, int cycleAdjust) {
         mStop = false;
         mDt = null;
         mVersion = null;
         mRoot = root;
         mCode = "";
         mHandler = handler;
+        mCycleAdjust = cycleAdjust;
     }
     
     /**
@@ -151,10 +153,16 @@ public class Download {
             BufferedOutputStream output;
             int count;
             byte data[] = new byte[blocksize];
-            mVersion = NetworkHelper.getVersion(mRoot, mName);
             long fileLength;
                         
             try {
+                mVersion = NetworkHelper.getVersion(mRoot, mName);
+                
+                mCode = "code invalid chart cycle";
+                int vers = Integer.valueOf(mVersion);
+                vers += mCycleAdjust;
+                mVersion = "" + vers;
+
                 /*
                  * mCode allows debugging from users
                  */

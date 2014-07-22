@@ -553,7 +553,7 @@ public class Helper {
         epoch.add(Calendar.DAY_OF_MONTH, -28);
         cycle--;
         try {
-            if(cycle > Integer.parseInt(date)) {
+            if(cycle != Integer.parseInt(date)) {
                 return true;
             }
         }

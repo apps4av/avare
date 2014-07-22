@@ -422,7 +422,21 @@ public class Preferences {
         }
         return 0;
     }
-    
+
+    /**
+     * Get chart cycle previous, next, current
+     * @return
+     */
+    public int getCycleAdjust() {
+        String val = mPref.getString(mContext.getString(R.string.Cycle), "0");
+        try {
+            return(Integer.parseInt(val));
+        }
+        catch(Exception e) {
+        }
+        return 0;
+    }
+
     /**
      * 
      * @return

@@ -28,6 +28,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/Root"
             android:summary="@string/RootSummary"
             android:title="@string/RootLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="@string/Zero"
+            android:entries="@array/CyclePrompt"
+            android:entryValues="@array/CycleValues"
+            android:key="@string/Cycle"
+            android:summary="@string/CycleSummary"
+            android:title="@string/CycleLabel" />
     </PreferenceScreen>
 
     <PreferenceScreen 

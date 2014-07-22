@@ -818,4 +818,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Canard Aircraft</item>
     </string-array>
 
+	<string-array name="CycleValues">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="CyclePrompt">
+        <item>Current</item>
+        <item>Previous - may not be available</item>
+        <item>Next - may not be available</item>
+    </string-array>
+	
 </resources>

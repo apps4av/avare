@@ -401,7 +401,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                expired = Helper.isExpired(mVers[group][child]);
+                expired |= Helper.isExpired(mVers[group][child]);
             }
         }
         if(expired) {
