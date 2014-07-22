@@ -652,7 +652,7 @@ public class Preferences {
      * @return
      */
     public boolean showAdsbTraffic() {
-        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), false));
+        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), true));
     }
 
     /**

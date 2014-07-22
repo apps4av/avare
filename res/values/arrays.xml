@@ -82,10 +82,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Low Enroute SW</item>
         <item>IFR Low Enroute AK</item>
     </string-array>
+        
     <string-array name="resNameWAC">
+        <item>CC-8  (Nome AK)</item>
         <item>CC-9  (Fairbanks AK)</item>
+        <item>CD-10 (Bethel AK)</item>
         <item>CD-11 (Anchorage AK)</item>
         <item>CD-12 (Juneau AK)</item>
+        <item>CE-12 (Aleutian Islands AK)</item>
         <item>CE-13 (Dutch Harbor AK)</item>
         <item>CE-15 (Ketchikan AK)</item>
         <item>CF-16 (WA,OR,ID,MT)</item>
@@ -367,11 +371,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AFD_AK</item>
         <item>AFD_PAC</item>
     </string-array>
-    
+        
     <string-array name="resFilesWAC">
+        <item>CC-8</item>
         <item>CC-9</item>
+        <item>CD-10</item>
         <item>CD-11</item>
         <item>CD-12</item>
+        <item>CE-12</item>
         <item>CE-13</item>
         <item>CE-15</item>
         <item>CF-16</item>

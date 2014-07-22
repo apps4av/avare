@@ -158,7 +158,7 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ObstaclesSummary"
             android:title="@string/ObstaclesLabel" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/ADSBTraffic"
             android:summary="@string/ADSBTrafficSummary"
             android:title="@string/ADSBTrafficLabel" />
