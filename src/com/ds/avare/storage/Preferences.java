@@ -411,14 +411,18 @@ public class Preferences {
         return(mPref.getBoolean(mContext.getString(R.string.SimulationMode), false));
     }
 
-    /**
-     * 
-     * @return
-     */
-    public boolean isHelicopter() {
-        return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
+    // An int value that represents what ICON is used to show current location on
+    // the charts/diagrams. Airplane, Helicopter, Canard ... etc
+    public int getDisplayIcon() {
+        String val = mPref.getString(mContext.getString(R.string.DisplayIcon), "0");
+        try {
+            return(Integer.parseInt(val));
+        }
+        catch(Exception e) {
+        }
+        return 0;
     }
-
+    
     /**
      * 
      * @return

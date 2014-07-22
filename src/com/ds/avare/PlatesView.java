@@ -33,6 +33,7 @@ import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -81,7 +82,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
+        mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
 	/*
 	 *  Converts 1 dip (device independent pixel) into its equivalent physical pixels
 	 */
