@@ -13,7 +13,8 @@ public class Traffic {
     public String mCallSign;
     private long mLastUpdate;
     
-    private static final long EXPIRES = 1000 * 60 * 10;
+    // ms
+    private static final long EXPIRES = 1000 * 60 * 1;
 
     /**
      * 
