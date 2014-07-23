@@ -416,10 +416,6 @@ public class Destination extends Observable {
                 parseGps(mName, mDestType);
             }
 
-	        if(null == mDataSource) {
-	        	return false;
-        	}
-        	
 	        if(mDestType.equals(GPS)) {
 	            /*
 	             * For GPS coordinates, simply put parsed lon/lat in params
@@ -448,6 +444,11 @@ public class Destination extends Observable {
 	            }
 	            return true;
 	        }
+
+            if(null == mDataSource) {
+                return false;
+            }
+	            
 
 	        /*
 	         * For Google maps address, if we have already geo decoded it using internet,

@@ -56,6 +56,7 @@ public class Plan implements Observer {
     private double mDeclination;
     private int mReplaceId;
     private Preferences mPref;
+    private StorageService mService;
     
     /**
      * 
@@ -472,12 +473,16 @@ public class Plan implements Observer {
         if(finish) {
             airport = service.getDBResource().findClosestAirportID(lon, lat);
         
-            if(null == airport) {
-                return;
-            }
             mReplaceId = id;
 
-            Destination d = new Destination(airport, Destination.BASE, pref, service);
+            mService = service;
+            Destination d;
+            if(null != airport) {
+                d = new Destination(airport, Destination.BASE, pref, service);
+            }
+            else {
+                d = new Destination(service, lon, lat);                
+            }
             d.addObserver(this);
             d.find();
         }
@@ -562,7 +567,14 @@ public class Plan implements Observer {
         if(mReplaceId >= getDestinationNumber() || mReplaceId < 0) {
             return;
         }
-        mDestination[mReplaceId] = (Destination)observable;
+        
+        Destination d = (Destination)observable;
+        mDestination[mReplaceId] = d;
+        
+        // If same as the one being dragged, update the dest on map
+        if(mReplaceId == findNextNotPassed()) {
+           mService.setDestinationPlanNoChange(d);
+        }
 
         mTrackShape.updateShapeFromPlan(getCoordinates());
     }
