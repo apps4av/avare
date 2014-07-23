@@ -286,5 +286,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location (requires restart).&quot;</string>
     <string name="Cycle">Cycle</string>
     <string name="CycleLabel">Chart Download Cycle</string>
-    <string name="CycleSummary">Downloading charts from the selected cycle</string>
+    <string name="CycleSummary">Select which cycle to download the charts from</string>
 </resources>
