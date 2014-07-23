@@ -406,8 +406,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void rubberBand(float x, float y, boolean finish) {
         
-        String airport = null;
-        
         // Rubberbanding
         if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
             
