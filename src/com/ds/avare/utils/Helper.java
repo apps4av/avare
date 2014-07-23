@@ -33,6 +33,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
 
@@ -51,7 +52,7 @@ public class Helper {
 	 * @param heading - direction of movement
 	 * @return int value of HR * 100 + MIN for the ete, -1 if not applicable
 	 */
-	private static int fetchRawEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
+	private static Time fetchRawEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
 	    double xFactor = 1;
 	    if(useBearing) {
             // We can't assume that we are heading DIRECTLY for the destination, so 
@@ -62,23 +63,37 @@ public class Helper {
     		// If the difference is 90 or greater, then ETE means nothing as we are not
     		// closing on the target
     		if(angDif >= 90)
-    			return -1;
+    			return null;
     
     		// Calculate the actual relative speed closing on the target
             xFactor  = Math.cos(angDif * Math.PI / 180);
 	    }
 	    
-        double eteTotal = distance / (speed * xFactor);
+	    // Calculate the travel time in seconds
+	    double eteTotal = (distance / (speed * xFactor)) * 3600;
 
-        // Break that down into hours and minutes
-        int eteHr = (int)eteTotal;
-        int eteMin =  (int)Math.round((eteTotal - (double)eteHr) * 60);
+	    // Allocate an empty time object
+	    Time ete = new Time();
 
-        // account for the minutes being 60
-        if(eteMin >= 60) { eteHr++; eteMin -= 60; }
+	    // Extract the hours
+	    ete.hour  = (int)(eteTotal / 3600);	// take whole int value as the hours
+	    eteTotal -= (ete.hour * 3600);		// Remove the hours that we extracted
+	    
+	    // Convert what's left to fractional minutes
+        ete.minute = (int)(eteTotal / 60);	// Get the int value as the minutes now
+        eteTotal  -= (ete.minute * 60);		// remove the minutes we just extracted
+
+        // What's left is the remaining seconds 
+        ete.second = Math.round((int)eteTotal);	// round as appropriate
         
-        // Return with our estimate
-        return eteHr * 100 + eteMin;
+        // Account for the seconds being 60
+        if(ete.second >= 60) { ete.minute++; ete.second -= 60; }
+        
+        // account for the minutes being 60
+        if(ete.minute >= 60) { ete.hour++; ete.minute -= 60; }
+        
+        // Time object is good to go now
+        return ete;
 	}
 
 	/***
@@ -87,33 +102,50 @@ public class Helper {
 	 * @param speed - how fast we are moving
 	 * @param bearing - direction to target
 	 * @param heading - direction of movement
-	 * @return String - "HH:MM" time to the target
+	 * @return String - "HH:MM" or "MM.SS" time to the target
 	 */
     public static String calculateEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
 
-    	// Fetch the eteRaw value
-    	int eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+    	// If no speed, then return the empty display value
+        if(0 == speed){
+            return "--:--";
+        }
 
-    	// If no speed or an invalid eteRaw, then return the empty display value
-        if(0 == speed || eteRaw == -1){
+        // Fetch the eteRaw value
+    	Time eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+
+    	// If an invalid eteRaw, then return the empty display value
+        if(null == eteRaw){
             return "--:--";
         }
 
         // Break the eteRaw out into hours and minutes
-        int eteHr  = eteRaw / 100;
-        int eteMin = eteRaw %100;
+        int eteHr  = eteRaw.hour;
+        int eteMin = eteRaw.minute;
+        int eteSecond = eteRaw.second;
         
         // Hours greater than 99 are not displayable
         if(eteHr > 99) {
             return "XX:XX";
         }
-        
-        // Format the hours and minutes en router
-        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
-        String min = String.format(Locale.getDefault(), "%02d", eteMin);
 
-        // BUit the string for return
-        return hr + ":" + min;
+        // If hours is non zero then return HH:MM
+        if(eteHr >0) {
+	        // Format the hours and minutes en router
+	        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
+	        String min = String.format(Locale.getDefault(), "%02d", eteMin);
+	
+	        // Build the string for return
+	        return hr + ":" + min;
+        }
+
+        // Hours is zero, so return MM.SS
+        String min = String.format(Locale.getDefault(), "%02d", eteMin);
+        String sec = String.format(Locale.getDefault(), "%02d", eteSecond);
+
+        // Build the string for return
+        return min + "." + sec;
+        
     }
 
     /***
@@ -127,17 +159,22 @@ public class Helper {
      */
     public static String calculateEta(boolean useBearing, TimeZone timeZone, double distance, double speed, double bearing, double heading) {
 
-    	// fetch the raw ETE
-        int eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+        // If no speed, then return an empty display string
+        if(0 == speed ){
+            return "--:--";
+        }
 
-        // If no speed, or the eteRaw is meaningless, then return an empty display string
-        if(0 == speed || eteRaw == -1){
+    	// fetch the raw ETE
+        Time eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+
+        // If the eteRaw is meaningless, then return an empty display string
+        if(null == eteRaw){
             return "--:--";
         }
 
         // Break the hours and minutes out
-        int eteHr  = eteRaw / 100;
-        int eteMin = eteRaw %100;
+        int eteHr  = eteRaw.hour;
+        int eteMin = eteRaw.minute;
 
         // Hours greater than 99 are not displayable
         if(eteHr > 99) {
