@@ -154,14 +154,23 @@ public class Download {
             int count;
             byte data[] = new byte[blocksize];
             long fileLength;
-                        
+
+            mVersion = NetworkHelper.getVersion(mRoot, mName);
+
+            /*
+             * See if we can adjust the version based on number like 1408.
+             * If it is time, then ignore the adjust by catching exception
+             */
             try {
-                mVersion = NetworkHelper.getVersion(mRoot, mName);
-                
-                mCode = "code invalid chart cycle";
                 int vers = Integer.valueOf(mVersion);
                 vers += mCycleAdjust;
                 mVersion = "" + vers;
+            }
+            catch (Exception e) {
+                
+            }
+
+            try {
 
                 /*
                  * mCode allows debugging from users
