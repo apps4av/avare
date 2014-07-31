@@ -351,7 +351,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              
         mDipToPix = Helper.getDpiToPix(context);
         
-        mInfoLines = new InfoLines(this);
     }
     
     /**
@@ -1474,7 +1473,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDistanceRings(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
-      	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
+      	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
+      	        getWidth(), mErrorStatus, getPriorityMessage(), (float) mElev, mThreshold);
       	drawEdgeMarkers(canvas);
     }    
 
@@ -1556,6 +1556,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * but it will load previous combo on re-activation
          */
         mService = service;
+        mInfoLines = new InfoLines(mContext, mService, mPref);
+
         mMovement = mService.getMovement();
         mImageDataSource = mService.getDBResource();
         if(null == mMovement) {
@@ -2141,35 +2143,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         invalidate();
     }
 
-    public double getElev() {
-    	return mElev;
-    	
-    }
-    
-    public GpsParams getGpsParams() {
-    	return mGpsParams;
-    }
-    
-    public StorageService getStorageService() {
-    	return mService;
-    }
-    public int getDisplayWidth() {
-    	return getWidth();
-    }
-    
-    public Preferences getPref() {
-    	return mPref;
-    }
-    
-    public Context getAppContext() { 
-    	return mContext;
-    }
-
-    public String getErrorStatus() {
-    	return mErrorStatus;
-    }
-
-    public String getPriorityMessage() {
+    /**
+     * 
+     * @return
+     */
+    private String getPriorityMessage() {
         if(mPointProjection != null) {
         	String priorityMessage = 
         			Helper.makeLine2(mPointProjection.getDistance(),
@@ -2180,9 +2158,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return null;
     }
 
-    public float getThreshold() {
-    	return mThreshold;
-    }
     /**
      * 
      */
