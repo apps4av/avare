@@ -1473,8 +1473,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDistanceRings(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
-      	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-      	        getWidth(), mErrorStatus, getPriorityMessage(), (float) mElev, mThreshold);
+        if(mInfoLines != null) {
+          	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
+          	        getWidth(), mErrorStatus, getPriorityMessage(), (float) mElev, mThreshold);
+        }
       	drawEdgeMarkers(canvas);
     }    
 
