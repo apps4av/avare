@@ -1469,7 +1469,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param threshold
      */
     public void updateThreshold(float threshold) {
-        mService.setThreshold(threshold);
+        if(mService != null) {
+            mService.setThreshold(threshold);
+        }
         invalidate();
     }
 
