@@ -63,9 +63,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
-
-    
-
+    private static final int SHADOW = 4;
 
     /**
      * 
@@ -311,7 +309,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         }
 
         if(mService != null && mPref.showPlateInfoLines()) {
-            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
+            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
                     getWidth(), mErrorStatus, "");
         }
 
