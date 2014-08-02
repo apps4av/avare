@@ -731,7 +731,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Landscape</item>
         <item>Reverse Portrait</item>
         <item>Reverse Landscape</item>
-     </string-array>
+        <item>Sensor</item>
+    </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
         <item>0</item>

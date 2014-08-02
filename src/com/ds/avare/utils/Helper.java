@@ -487,6 +487,9 @@ public class Helper {
         }
 
         String orn = pref.getOrientation();
+        if(orn.equals("Sensor")) {
+            act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
         if(orn.equals("Portrait")) {
             act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
