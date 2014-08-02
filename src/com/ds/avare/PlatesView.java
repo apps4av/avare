@@ -58,6 +58,16 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private boolean                    mShowingAD;
     private StorageService              mService;
 
+    /*
+     * Is it drawing?
+     */
+    private boolean                   mDraw;
+
+    /*
+     * dip to pix scaling factor
+     */
+    private float                      mDipToPix;
+
     
     private static final double MAX_PLATE_SCALE = 8;
     
@@ -87,6 +97,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
+        mDipToPix = Helper.getDpiToPix(context);
+
     }
     
     /**
@@ -187,9 +199,23 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         touchPointChanged(touchPoint);
         if(false == mCurrTouchPoint.isMultiTouch()) {
             /*
+             * Do not move on multitouch
+             */
+            if(mDraw && mService != null) {
+                float x = mCurrTouchPoint.getX();
+                float y = mCurrTouchPoint.getY();
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
+                mService.getPixelDraw().addPoint(x, y);
+                return true;
+            }
+
+            /*
              * Multi-touch is zoom, single touch is pan
              */
             mPan.setMove(newObjPosAndScale.getXOff(), newObjPosAndScale.getYOff());
+            
         }
         else {
             /*
@@ -197,8 +223,27 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
              */
             mScale.setScaleFactor(newObjPosAndScale.getScale());
         }
+        
         invalidate();
         return true;
+    }
+
+    /**
+     * 
+     * @param canvas
+     */
+    private void drawDrawing(Canvas canvas) {
+        if(null == mService) {
+            return;
+        }
+
+        /*
+         * Get draw points.
+         */
+        mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(4 * mDipToPix);
+        mService.getPixelDraw().drawShape(canvas, mPaint);
+        
     }
 
     /**
@@ -308,6 +353,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             }
         }
 
+    	/*
+    	 * Draw drawing
+    	 */
+    	this.drawDrawing(canvas);
+
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
                     getWidth(), mErrorStatus, "");
@@ -359,5 +409,35 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         public void onLongPress(MotionEvent e) {
         	
         }
+        
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if(null != mService) {
+                /*
+                 * Add separation between chars
+                 */
+                mService.getPixelDraw().addSeparation();
+            }
+            return true;
+        }
+
     }
+    
+    
+    /**
+     * 
+     * @param b
+     */
+    public void setDraw(boolean b) {
+        mDraw = b;
+        invalidate();
+    }
+
+    /**
+     *
+     */
+    public boolean getDraw() {
+        return mDraw;
+    }
+
 }

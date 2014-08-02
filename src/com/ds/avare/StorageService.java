@@ -34,6 +34,7 @@ import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.ElevationTile;
+import com.ds.avare.shapes.PixelDraw;
 import com.ds.avare.shapes.Radar;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
@@ -82,8 +83,12 @@ public class StorageService extends Service {
      * Store this
      */
     private Movement mMovement;
-    
+
+    // Draw for Map
     private Draw mDraw;
+    
+    // Write for plates
+    private PixelDraw mPixelDraw;
     
     private InternetWeatherCache mInternetWeatherCache;
     
@@ -271,6 +276,7 @@ public class StorageService extends Service {
         mInfoLines = new InfoLines(this);
         
         mDraw = new Draw();
+        mPixelDraw = new PixelDraw();
         
         mElev = -1;
         mThreshold = 0;
@@ -742,6 +748,14 @@ public class StorageService extends Service {
      */
     public Draw getDraw() {
         return mDraw;
+    }
+    
+    /**
+     * Get points to draw
+     * @return
+     */
+    public PixelDraw getPixelDraw() {
+        return mPixelDraw;
     }
     
     /**

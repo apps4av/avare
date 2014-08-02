@@ -14,19 +14,17 @@ package com.ds.avare.shapes;
 
 import java.util.LinkedList;
 
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.Origin;
+import com.ds.avare.position.PixelCoordinate;
 
 /**
- * 
+ * A class that fakes lon
  * @author zkhan
  *
  */
-public class Draw {
+public class PixelDraw {
 
     private float mLastXDraw;
     private float mLastYDraw;
@@ -36,15 +34,15 @@ public class Draw {
     /*
      * A list of draw points
      */
-    protected LinkedList<Coordinate> mDrawPoints;
+    protected LinkedList<PixelCoordinate> mDrawPoints;
 
     /**
      * 
      */
-    public Draw() {
+    public PixelDraw() {
         mLastXDraw = 0;
         mLastYDraw = 0;
-        mDrawPoints = new LinkedList<Coordinate>();
+        mDrawPoints = new LinkedList<PixelCoordinate>();
     }
     
     /**
@@ -53,7 +51,7 @@ public class Draw {
      * @param y
      * @param origin
      */
-    public void addPoint(float x, float y, Origin origin) {
+    public void addPoint(float x, float y) {
         /*
          * Threshold the drawing so we do not generate too many points
          */
@@ -70,7 +68,7 @@ public class Draw {
         if(mDrawPoints.size() >= MAX_DRAW_POINTS) {
             mDrawPoints.remove(0);
         }
-        mDrawPoints.add(new Coordinate(origin.getLongitudeOf(mLastXDraw), origin.getLatitudeOf(mLastYDraw)));
+        mDrawPoints.add(new PixelCoordinate(x, y));
     }
 
     /**
@@ -80,7 +78,7 @@ public class Draw {
        if(mDrawPoints.isEmpty()) {
            return;
        }
-       Coordinate c = mDrawPoints.getLast();
+       PixelCoordinate c = mDrawPoints.getLast();
        /*
         * Add separation
         */
@@ -99,10 +97,10 @@ public class Draw {
     /**
      * 
      */
-    public void drawShape(Canvas canvas, Paint paint, Origin origin) {
-        Coordinate c0 = null;
-        Coordinate c1 = null;
-        for (Coordinate c : mDrawPoints) {
+    public void drawShape(Canvas canvas, Paint paint) {
+        PixelCoordinate c0 = null;
+        PixelCoordinate c1 = null;
+        for (PixelCoordinate c : mDrawPoints) {
             if(c0 == null) {
                 c0 = c;
                 continue;
@@ -113,10 +111,10 @@ public class Draw {
             /*
              * This logic will draw a continuous line between points. However, a discontinuity is required.
              */
-            float x0 = (float) (origin.getOffsetX(c0.getLongitude()));
-            float y0 = (float) (origin.getOffsetY(c0.getLatitude()));
-            float x1 = (float) (origin.getOffsetX(c1.getLongitude()));
-            float y1 = (float) (origin.getOffsetY(c1.getLatitude()));
+            float x0 = (float) c0.getX();
+            float y0 = (float) c0.getY();
+            float x1 = (float) c1.getX();
+            float y1 = (float) c1.getY();
             if(!c1.isSeparate()) {
                 canvas.drawLine(x0, y0, x1, y1, paint); 
             }
