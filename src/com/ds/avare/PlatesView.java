@@ -17,7 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.Paint.Align;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -53,11 +52,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private BitmapHolder                 mBitmap;
     private GpsParams                    mGpsParams;
     private String                       mErrorStatus;
-    private float                       mTextDiv;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
     private float[]                     mMatrix;
-    private float			             mDipToPix;
     private boolean                    mShowingAD;
     private StorageService              mService;
 
@@ -78,12 +75,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint = new Paint();
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
+        mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
+
         mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mPref = new Preferences(context);
-        mTextDiv = mPref.getOrientation().contains("Portrait") ? 24.f : 12.f;
         mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
@@ -91,10 +89,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
-	/*
-	 *  Converts 1 dip (device independent pixel) into its equivalent physical pixels
-	 */
-        mDipToPix = Helper.getDpiToPix(context);
     }
     
     /**
@@ -231,110 +225,91 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     @Override
     public void onDraw(Canvas canvas) {
-    	if(mBitmap == null) {
-    		return;
-    	}
-    	if(mBitmap.getBitmap() == null) {
-    		return;
-    	}
+        
+    	if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
-        float min = Math.min(getWidth(), getHeight()) - 8;
-        mPaint.setTextSize(min / 20);
-        mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-        
-        float scale = mScale.getScaleFactor();
-        
-    	/*
-    	 * Plate
-    	 */
-    	mBitmap.getTransform().setScale(scale, scale);
-    	mBitmap.getTransform().postTranslate(
-    			mPan.getMoveX() * scale,
-    			mPan.getMoveY() * scale);
-        
-    	if(mPref.isNightMode()) {
-            Helper.invertCanvasColors(mPaint);
+            
+            float scale = mScale.getScaleFactor();
+            
+        	/*
+        	 * Plate
+        	 */
+        	mBitmap.getTransform().setScale(scale, scale);
+        	mBitmap.getTransform().postTranslate(
+        			mPan.getMoveX() * scale,
+        			mPan.getMoveY() * scale);
+            
+        	if(mPref.isNightMode()) {
+                Helper.invertCanvasColors(mPaint);
+            }
+        	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
+            Helper.restoreCanvasColors(mPaint);
+            
+                
+            if(null != mGpsParams && null != mMatrix) {
+            
+                /*
+                 * Calculate offsets of our location
+                 */
+                
+                float lon = (float)mGpsParams.getLongitude();
+                float lat = (float)mGpsParams.getLatitude();
+                float pixx = 0;
+                float pixy = 0;
+                float angle = 0;
+                
+                if(mShowingAD) {
+                    /*
+                     * Mike's matrix
+                     */
+                    float wftA = mMatrix[6];
+                    float wftB = mMatrix[7];
+                    float wftC = mMatrix[8];
+                    float wftD = mMatrix[9];
+                    float wftE = mMatrix[10];
+                    float wftF = mMatrix[11];
+                    
+                    pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
+                    pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
+                    
+                    /*
+                     * Now find angle.
+                     * Add 0.1 to lat that gives us north
+                     * Y increase down so give -180
+                     */
+                    float pixxn = (wftA * lon + wftC * (lat + 0.1f) + wftE) / 2.f;
+                    float pixyn = (wftB * lon + wftD * (lat + 0.1f) + wftF) / 2.f;
+                    float diffx = pixxn - pixx;
+                    float diffy = pixyn - pixy;
+                    angle = (float)Math.toDegrees(Math.atan2(diffx, -diffy));
+                }
+                else {
+                    /*
+                     * Faisal's database
+                     */
+                    pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
+                    pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
+                    angle = -mMatrix[4];
+                }
+                
+                /*
+                 * Draw airplane at that location
+                 */
+                mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
+                        mAirplaneBitmap.getWidth() / 2.f,
+                        mAirplaneBitmap.getHeight() / 2.f);
+                
+                mAirplaneBitmap.getTransform().postTranslate(
+                        pixx * scale
+                        - mAirplaneBitmap.getWidth()  / 2.f
+                        + mPan.getMoveX() * scale,
+                        pixy * scale
+                        - mAirplaneBitmap.getHeight()  / 2.f
+                        + mPan.getMoveY() * scale);
+                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
+            }
         }
-    	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
-        Helper.restoreCanvasColors(mPaint);
-        
-    	mPaint.setStrokeWidth(4 * mDipToPix);
-    	
-    	
-        if(mErrorStatus != null) {
-            mPaint.setTextAlign(Align.RIGHT);
 
-            mPaint.setColor(Color.RED);
-            canvas.drawText(mErrorStatus,
-                    getWidth(), getHeight() / mTextDiv, mPaint);
-        }
-        else {
-            
-            if(null == mGpsParams || null == mMatrix) {
-                return;
-            }
-            
-            /*
-             * Calculate offsets of our location
-             */
-            
-            float lon = (float)mGpsParams.getLongitude();
-            float lat = (float)mGpsParams.getLatitude();
-            float pixx = 0;
-            float pixy = 0;
-            float angle = 0;
-            
-            if(mShowingAD) {
-                /*
-                 * Mike's matrix
-                 */
-                float wftA = mMatrix[6];
-                float wftB = mMatrix[7];
-                float wftC = mMatrix[8];
-                float wftD = mMatrix[9];
-                float wftE = mMatrix[10];
-                float wftF = mMatrix[11];
-                
-                pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
-                pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
-                
-                /*
-                 * Now find angle.
-                 * Add 0.1 to lat that gives us north
-                 * Y increase down so give -180
-                 */
-                float pixxn = (wftA * lon + wftC * (lat + 0.1f) + wftE) / 2.f;
-                float pixyn = (wftB * lon + wftD * (lat + 0.1f) + wftF) / 2.f;
-                float diffx = pixxn - pixx;
-                float diffy = pixyn - pixy;
-                angle = (float)Math.toDegrees(Math.atan2(diffx, -diffy));
-            }
-            else {
-                /*
-                 * Faisal's database
-                 */
-                pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
-                pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
-                angle = -mMatrix[4];
-            }
-            
-            /*
-             * Draw airplane at that location
-             */
-            mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
-                    mAirplaneBitmap.getWidth() / 2.f,
-                    mAirplaneBitmap.getHeight() / 2.f);
-            
-            mAirplaneBitmap.getTransform().postTranslate(
-                    pixx * scale
-                    - mAirplaneBitmap.getWidth()  / 2.f
-                    + mPan.getMoveX() * scale,
-                    pixy * scale
-                    - mAirplaneBitmap.getHeight()  / 2.f
-                    + mPan.getMoveY() * scale);
-            canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
-        }
-        
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
                     getWidth(), mErrorStatus, "");
