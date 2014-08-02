@@ -59,8 +59,16 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private float[]                     mMatrix;
     private float			             mDipToPix;
     private boolean                    mShowingAD;
+    private StorageService              mService;
+
     
     private static final double MAX_PLATE_SCALE = 8;
+    
+    private static final int TEXT_COLOR = Color.WHITE; 
+    private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
+
+    
+
 
     /**
      * 
@@ -326,6 +334,20 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                     + mPan.getMoveY() * scale);
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
+        
+        if(mService != null && mPref.showPlateInfoLines()) {
+            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
+                    getWidth(), mErrorStatus, "");
+        }
+
+    }
+    
+    /**
+     * 
+     * @param s
+     */
+    public void setService(StorageService s) {
+        mService = s;
     }
     
     /**

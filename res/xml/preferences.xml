@@ -206,6 +206,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/ETABearing"
             android:summary="@string/ETABearingSummary"
             android:title="@string/ETABearingLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ExtendInfoLines"
+            android:summary="@string/ExtendInfoLinesSummary"
+            android:title="@string/ExtendInfoLinesLabel" />
     </PreferenceScreen>
 
 	<PreferenceScreen 

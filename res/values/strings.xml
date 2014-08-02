@@ -287,4 +287,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Cycle">Cycle</string>
     <string name="CycleLabel">Chart Download Cycle</string>
     <string name="CycleSummary">Select which cycle to download the charts from</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+    <string name="ExtendInfoLinesLabel">Show Info Lines on Plates</string>
+    <string name="ExtendInfoLinesSummary">Select to show info. lines on Plate screen</string>
 </resources>

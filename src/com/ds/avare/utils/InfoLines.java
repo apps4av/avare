@@ -261,9 +261,9 @@ public class InfoLines {
      * 
      * @param locationView
      */
-    public InfoLines(Context context, StorageService service, Preferences pref) {
-        mContext = context;
-        mPref = pref;
+    public InfoLines(StorageService service) {
+        mContext = service;
+        mPref = new Preferences(mContext);
         mService = service;
 
         mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX]; // separate lines
@@ -390,7 +390,7 @@ public class InfoLines {
      */
     public void drawCornerTextsDynamic(Canvas canvas, Paint aPaint,
             int aTextColor, int aTextColorOpposite, int aShadow, int width,
-            String errorMessage, String priorityMessage, float elev, float threshold) {
+            String errorMessage, String priorityMessage) {
         // If the screen width has changed since the last time, we need to
         // recalc
         // the positions of the fields
@@ -401,8 +401,8 @@ public class InfoLines {
         float lineY = dataY + titleY;
         mShadowY = lineY * mRowCount + aShadow;
 
-        mElev = elev;
-        mThreshold = threshold;
+        mElev = (float) mService.getElevation();
+        mThreshold = (float) mService.getThreshold();
         
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so

@@ -829,4 +829,14 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
 
+
+    /**
+     * 
+     * @return
+     */
+    public boolean showPlateInfoLines() {
+        return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
+    }
+
+    
 }

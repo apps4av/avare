@@ -407,7 +407,9 @@ public class LocationActivity extends Activity implements Observer {
         		_InfoLineFieldLoc = infoLineFieldLoc;
         		
         		if(GestureInterface.LONG_PRESS == nEvent) {
-        			mLocationView.mInfoLines.longPress(_InfoLineFieldLoc);
+        		    if(mService != null) {
+        		        mService.getInfoLines().longPress(_InfoLineFieldLoc);
+        		    }
         		}
         		
         		if(GestureInterface.DOUBLE_TAP == nEvent) {
@@ -430,7 +432,9 @@ public class LocationActivity extends Activity implements Observer {
                     builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                    		mLocationView.mInfoLines.setFieldType(_InfoLineFieldLoc, _nNewSelection);
+                            if(mService != null) {
+                                mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
+                            }
                         }
                     });
 

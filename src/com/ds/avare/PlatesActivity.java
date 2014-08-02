@@ -479,6 +479,7 @@ public class PlatesActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);         
+            mPlatesView.setService(mService);
             
             mListPlates = new ArrayList<String>();
             

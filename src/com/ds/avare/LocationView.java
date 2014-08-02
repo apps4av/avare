@@ -43,7 +43,6 @@ import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
@@ -195,18 +194,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private boolean                   mDraw;
 
-    /*
-     * Threshold for terrain
-     */
-    private float                      mThreshold;
-    
-
     private boolean                    mTrackUp;
-    
-    /*
-     * Current ground elevation
-     */
-    private double                      mElev;
     
     /*
      * Macro of zoom
@@ -248,9 +236,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private float                      mDipToPix;
 
-    // Handler for the top two lines of status information
-    InfoLines mInfoLines;
-    
     Point mDownFocusPoint;
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
@@ -270,10 +255,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mThreshold = 0;
         mOnChart = null;
         mTrackUp = false;
-        mElev = -1;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -745,7 +728,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Terrain
                      */
-                    Helper.setThreshold(mPaint, mThreshold);
+                    Helper.setThreshold(mPaint, (float)mService.getThreshold());
                 }
                 
                 /*
@@ -1432,7 +1415,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
 	        float pixPerNm = mMovement.getNMPerLatitude(mScale);
 	      	EdgeDistanceTape.draw(canvas, mPaint, mScale, pixPerNm, x, y, 
-	      			(int) mInfoLines.getHeight(), getWidth(), getHeight());
+	      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
         }
     }
     
@@ -1473,9 +1456,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDistanceRings(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
-        if(mInfoLines != null) {
-          	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-          	        getWidth(), mErrorStatus, getPriorityMessage(), (float) mElev, mThreshold);
+        if(mService != null) {
+          	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
+          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
+          	        getWidth(), mErrorStatus, getPriorityMessage());
         }
       	drawEdgeMarkers(canvas);
     }    
@@ -1485,7 +1469,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param threshold
      */
     public void updateThreshold(float threshold) {
-        mThreshold = threshold;
+        mService.setThreshold(threshold);
         invalidate();
     }
 
@@ -1558,7 +1542,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * but it will load previous combo on re-activation
          */
         mService = service;
-        mInfoLines = new InfoLines(mContext, mService, mPref);
 
         mMovement = mService.getMovement();
         mImageDataSource = mService.getDBResource();
@@ -1993,7 +1976,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         @Override
         protected void onPostExecute(Object res) {
-            mElev = elev;
+            mService.setElevation(elev);
             mObstacles = obs;
         }
 
@@ -2044,7 +2027,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	
         	float posX = mCurrTouchPoint.getX();
         	float posY = mCurrTouchPoint.getY();
-        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, posX, posY);
+        	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, posX, posY);
         	if(infoLineFieldLoc != null) {
             	// We have the row and field. Tell the selection dialog to display
             	mGestureCallBack.gestureCallBack(GestureInterface.DOUBLE_TAP, infoLineFieldLoc);
@@ -2063,12 +2046,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double x = mCurrTouchPoint.getX();
             double y = mCurrTouchPoint.getY();
 
-        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, (float)x, (float)y);
-        	if(infoLineFieldLoc != null) {
-            	// We have the row and field. Send the gesture off for processing
-            	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
-            	return;
-        	}
+            if(mService != null) {
+            	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, (float)x, (float)y);
+            	if(infoLineFieldLoc != null) {
+                	// We have the row and field. Send the gesture off for processing
+                	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
+                	return;
+            	}
+            }
 
             /*
              * XXX:

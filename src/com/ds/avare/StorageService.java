@@ -40,6 +40,7 @@ import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
@@ -165,6 +166,15 @@ public class StorageService extends Service {
     
     private ElevationTile mElevTile;
     
+    // Handler for the top two lines of status information
+    private InfoLines mInfoLines;
+    
+    /*
+     * Curret ground elevation
+     */
+    private double mElev;
+    private double mThreshold;
+    
     /*
      * Hobbs time
      */
@@ -258,7 +268,12 @@ public class StorageService extends Service {
         mElevTile = new ElevationTile(getApplicationContext());
         mCheckLists = null;
         
+        mInfoLines = new InfoLines(this);
+        
         mDraw = new Draw();
+        
+        mElev = -1;
+        mThreshold = 0;
         
         /*
          * Allocate a flight timer object
@@ -460,6 +475,17 @@ public class StorageService extends Service {
         System.exit(0);
     }
     
+    /**
+     * 
+     */
+    public InfoLines getInfoLines() {
+       return mInfoLines; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
     public TileMap getTiles() {
         return mTiles;
     }
@@ -921,4 +947,36 @@ public class StorageService extends Service {
         mCheckLists = list;
     }
     
+    /**
+     * 
+     * @return
+     */
+    public double getElevation() {
+       return mElev; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public void setElevation(double elev) {
+       mElev = elev; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public double getThreshold() {
+       return mThreshold; 
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public void setThreshold(double thr) {
+       mThreshold = thr; 
+    }
+
 }
