@@ -238,6 +238,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             
             updateTimeout();
 
+            // MSL from NMEA is more correct as its not corrected by LocationManager
             if(mAltitude != Double.MIN_VALUE) {
                 location.setAltitude(mAltitude);
             }
@@ -250,7 +251,25 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             }
         }
     }
-    
+
+    /**
+     * From IO module
+     */
+    public void onLocationChanged(Location location, String from) {
+        if ((location != null)
+                && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+            
+            updateTimeout();
+
+            /*
+             * Called by GPS. Update everything driven by GPS.
+             */
+            if(!mPref.isSimulationMode()) {
+                mGpsCallback.locationCallback(location);
+            }
+        }
+    }
+
     /**
      * @author zkhan
      *
