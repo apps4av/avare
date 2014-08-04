@@ -209,19 +209,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private float                mDragStartedY;
     
     /*
-     * Shadow length 
-     */
-    private static final int SHADOW = 4;
-    
-    /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
     private Paint mRunwayPaint;
-    private Paint mTextPaintShadow;
-    private Paint mShadowPaint;
     private Paint mDistanceRingPaint;
-    private Rect mTextSize;
-    private RectF mShadowBox;
 
     /*
      * Text on screen color
@@ -295,24 +286,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mRunwayPaint = new Paint(mPaint);
         mRunwayPaint.setTextSize(getResources().getDimension(R.dimen.runwayNumberTextSize));
 
-        mTextPaintShadow = new Paint();
-        mTextPaintShadow.setTypeface(mFace);
-        mTextPaintShadow.setAntiAlias(true);
-        mTextPaintShadow.setColor(TEXT_COLOR);
-        mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-        mTextPaintShadow.setStyle(Paint.Style.FILL);
-        
-        mShadowPaint = new Paint(mTextPaintShadow);
-        mShadowPaint.setShadowLayer(0, 0, 0, 0);
-        mShadowPaint.setAlpha(0x7f);
-        mShadowPaint.setStyle(Style.FILL);
         
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
-
-        mTextSize = new Rect();
-        mShadowBox = new RectF(mTextSize);
 
         setOnTouchListener(this);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
@@ -763,7 +740,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             if(empty >= tn) {
                 mDistanceRingPaint.setColor(Color.WHITE);
-                drawShadowedText(canvas, mDistanceRingPaint,
+                mService.getShadowedText().draw(canvas, mDistanceRingPaint,
                         mContext.getString(R.string.MissingMaps), 
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
@@ -972,7 +949,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 float x = (float)mOrigin.getOffsetX(t.mLon);
                 float y = (float)mOrigin.getOffsetY(t.mLat);
-                drawShadowedText(canvas, mDistanceRingPaint,
+                mService.getShadowedText().draw(canvas, mDistanceRingPaint,
                         t.mAltitude + "'", Color.DKGRAY, x, y);
 
             }
@@ -1195,11 +1172,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * extended runway centerline
                      */
                     
-                    mRunwayPaint.setStyle(Style.FILL);
                     mRunwayPaint.setColor(Color.WHITE);
-                    mRunwayPaint.setAlpha(255);
-                    mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                    drawShadowedText(canvas, mRunwayPaint, num, Color.DKGRAY,
+                    mService.getShadowedText().draw(canvas, mRunwayPaint, num, Color.DKGRAY,
                             runwayNumberCoordinatesX, runwayNumberCoordinatesY);
                     if (mTrackUp) {
                         canvas.restore();
@@ -1264,9 +1238,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Restore some paint settings back to what they were so as not to
              * mess things up
              */
-            mDistanceRingPaint.setAlpha(0xFF);
             mDistanceRingPaint.setStyle(Style.FILL);
-            mDistanceRingPaint.setColor(Color.CYAN);
+            mDistanceRingPaint.setColor(Color.WHITE);
             
             /*
              * Draw the corresponding text
@@ -1276,16 +1249,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             float adjX = (float) Math.sin((bearing - 10) * Math.PI / 180);	// Distance ring numbers, offset from
             float adjY = (float) Math.cos((bearing - 10) * Math.PI / 180);	// the course line for readability
 
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_INNER], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_INNER], Color.BLACK,
                     x + ringR[DistanceRings.RING_INNER] * adjX, 
                     y - ringR[DistanceRings.RING_INNER] * adjY);
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_MIDDLE], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_MIDDLE], Color.BLACK,
                     x + ringR[DistanceRings.RING_MIDDLE] * adjX, 
                     y - ringR[DistanceRings.RING_MIDDLE] * adjY);
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_OUTER], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_OUTER], Color.BLACK,
                     x + ringR[DistanceRings.RING_OUTER] * adjX, 
                     y - ringR[DistanceRings.RING_OUTER] * adjY);
     
@@ -1305,12 +1278,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mDistanceRingPaint);
 
             
-            mDistanceRingPaint.setAlpha(0xFF);
             mDistanceRingPaint.setStyle(Style.FILL);
-            mDistanceRingPaint.setColor(Color.GREEN);
+            mDistanceRingPaint.setColor(Color.WHITE);
 
-            drawShadowedText(canvas, mDistanceRingPaint, 
-            		String.format("%d", mPref.getTimerRingSize()), Color.DKGRAY, 
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint, 
+            		String.format("%d", mPref.getTimerRingSize()), Color.BLACK, 
             		x + ringR[DistanceRings.RING_SPEED] * adjX, 
             		y - ringR[DistanceRings.RING_SPEED] * adjY);
         }
@@ -1341,34 +1313,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
         }
-    }
-
-    /**
-     * Display the text in the indicated paint with a shadow'd background. This aids in readability.
-     * 
-     * @param canvas where to draw
-     * @param text what to display
-     * @param shadowColor is the color of the shadow of course
-     * @param x center position of the text on the canvas
-     * @param y top edge of text on the canvas
-     */
-    private void drawShadowedText(Canvas canvas, Paint paint, String text, int shadowColor, float x, float y) {
-
-        final int XMARGIN = (int) (5 * mDipToPix);
-        final int YMARGIN = (int) (5 * mDipToPix);
-        final int SHADOWRECTRADIUS = (int) (5 * mDipToPix);
-        paint.getTextBounds(text, 0, text.length(), mTextSize);
-        
-        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.top    = mTextSize.top - YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
-        mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
-
-        
-        mShadowPaint.setColor(shadowColor);
-        mShadowPaint.setAlpha(0x80);
-        canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
-        canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
     }
 
     /***
@@ -1458,7 +1402,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawVASI(canvas);
         if(mService != null) {
           	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
-          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
+          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
           	        getWidth(), mErrorStatus, getPriorityMessage());
         }
       	drawEdgeMarkers(canvas);

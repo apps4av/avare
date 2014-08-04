@@ -43,6 +43,7 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
+import com.ds.avare.utils.ShadowedText;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
 
@@ -173,6 +174,9 @@ public class StorageService extends Service {
     
     // Handler for the top two lines of status information
     private InfoLines mInfoLines;
+
+    // Handler for drawing text with an oval shadow
+    private ShadowedText mShadowedText;
     
     /*
      * Curret ground elevation
@@ -274,6 +278,8 @@ public class StorageService extends Service {
         mCheckLists = null;
         
         mInfoLines = new InfoLines(this);
+
+        mShadowedText = new ShadowedText(getApplicationContext());
         
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
@@ -993,4 +999,7 @@ public class StorageService extends Service {
        mThreshold = thr; 
     }
 
+    public ShadowedText getShadowedText() {
+    	return mShadowedText;
+    }
 }
