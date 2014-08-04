@@ -1978,7 +1978,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         @Override
         protected void onPostExecute(Object res) {
-            mService.setElevation(elev);
+            if(mService != null) {
+                mService.setElevation(elev);
+            }
             mObstacles = obs;
         }
 
