@@ -360,7 +360,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-                    getWidth(), mErrorStatus, "");
+                    getWidth(), mErrorStatus, null);
         }
 
     }
