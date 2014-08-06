@@ -24,6 +24,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.storage.UDWFactory.Placemark;
 import com.ds.avare.utils.Helper;
 
 import android.content.Context;
@@ -237,10 +238,10 @@ public class UDW {
     	if(null != mPoints) {
     		final String uName = name.toUpperCase();
     		for(int idx = 0; idx < mPoints.size(); idx++) {
-    			UDWFactory.Placemark p = mPoints.get(idx);
+    			Placemark p = mPoints.get(idx);
     			final String mName = p.mName.toUpperCase();
     			if (mName.startsWith(uName)) {
-    		        StringPreference s = new StringPreference(Destination.UDW, Destination.UDW, p.mDescription, p.mName);
+    		        StringPreference s = new StringPreference(Destination.UDW, Destination.UDW, Placemark.DESCRIPTION, p.mName);
     		        s.putInHash(params);
     			}
     		}
@@ -249,11 +250,11 @@ public class UDW {
     
     // Return the placemark for the given name. Uppercase compare for everything
     //
-    public UDWFactory.Placemark getPlacemark(String name){
+    public Placemark getPlacemark(String name){
     	if(null != mPoints) {
     		final String uName = name.toUpperCase();
     		for(int idx = 0; idx < mPoints.size(); idx++) {
-    			UDWFactory.Placemark p = mPoints.get(idx);
+    			Placemark p = mPoints.get(idx);
     			final String mName = p.mName.toUpperCase();
     			if (mName.equals(uName)) {
     				return p;

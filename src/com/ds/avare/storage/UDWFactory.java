@@ -44,6 +44,7 @@ public class UDWFactory {
             this.mMarkerType = markerType;
         }
         
+        public static final String DESCRIPTION = "User Defined Waypoint";
         public static final int CYANDOT = 0;
     }
     
