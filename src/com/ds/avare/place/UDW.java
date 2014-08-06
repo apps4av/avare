@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.place;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +21,6 @@ import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.KmlUDWParser;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.StringPreference;
@@ -33,8 +31,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 
 /***
@@ -50,6 +46,7 @@ public class UDW {
 	Paint 			mPaint;		// Paint object used to do the display work
 	List<UDWFactory.Placemark> mPoints;	// Collection of points of interest
 	StorageService	mService;
+	Context			mContext;
 	float			mPix;
 	float 			m2Pix;
 	float 			m5Pix;
@@ -62,13 +59,51 @@ public class UDW {
 	 * public constructor for user defined waypoints collection
 	 * @param service the storage service
 	 * @param application context
-	 * @param directory where all of the POI files are located
 	 */
 	public UDW(StorageService service, Context context) {
+		mService = service;
+		mContext = context;
+		
+		// Time to load all the points in
+		forceReload();
+		
+		// Allocate and initialize the paint object
+		mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        
+        setDipToPix(Helper.getDpiToPix(context));
+	}
 
+	/***
+	 * Empty out the collection of points that we have.
+	 */
+	void clear() {
+		// If we already have a collection, then clear it
+		if(null != mPoints) {
+			mPoints.clear();
+		}
+		mPoints = null;
+	}
+
+	/***
+	 * Reload the datapoints from the configured directory
+	 */
+	public void forceReload() {
 		// Find out where to look for the files
-		Preferences pref = new Preferences(context);
-		String directory = pref.getUDWLocation();
+		Preferences pref = new Preferences(mContext);
+		
+		// Load them all in
+		populate(pref.getUDWLocation());
+	}
+	
+	/***
+	 * Populate our collection of points based upon the files found
+	 * in this directory
+	 * @param directory where to look for the user defined waypoint files
+	 */
+	void populate(String directory)
+	{
+		clear();
 		
 		// Start off with an empty collection
 		mPoints = new ArrayList<UDWFactory.Placemark>();
@@ -96,16 +131,8 @@ public class UDW {
 				}
 			}
 		}
-		
-		// Allocate and initialize the paint object
-		mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        
-        setDipToPix(Helper.getDpiToPix(context));
-        
-        mService = service;
 	}
-
+	
 	// Calculate some of the display size constants
 	void setDipToPix(float dipToPix) {
         mPix = dipToPix;

@@ -109,7 +109,6 @@ public class PrefActivity extends PreferenceActivity {
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-
     /**
      * 
      */
@@ -131,6 +130,7 @@ public class PrefActivity extends PreferenceActivity {
              * This will will sure we update tiles when someone changes storage folder
              */
             mService.getTiles().forceReload();
+            mService.getUDW().forceReload();	// Tell the UDWs to reload as well
         }
     }
 }
