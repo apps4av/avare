@@ -29,6 +29,7 @@ import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.UDW;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
@@ -54,6 +55,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
+
 import java.net.URI;
 
 /**
@@ -206,6 +208,9 @@ public class StorageService extends Service {
     // Vertical speed indicator
     private VSI mVSI;
     
+    // User defined points of interest
+    private UDW mUDW;
+
     /*
      * Watches GPS to notify of phases of flight
      */
@@ -317,6 +322,9 @@ public class StorageService extends Service {
         
         // Allocate the VSI
         mVSI = new VSI();
+        
+        // Allocate a handler for PointsOfInterest
+        mUDW = new UDW(this, getApplicationContext()); 
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -1001,5 +1009,9 @@ public class StorageService extends Service {
 
     public ShadowedText getShadowedText() {
     	return mShadowedText;
+    }
+    
+    public UDW getUDW() {
+    	return mUDW;
     }
 }

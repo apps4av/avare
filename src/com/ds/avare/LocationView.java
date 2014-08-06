@@ -1363,6 +1363,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
     
+    // Display all of the user defined waypoints if configured to do so
+    private void drawUserDefinedWaypoints(Canvas canvas) {
+        if(mService != null && mPointProjection == null) {
+        	mService.getUDW().draw(canvas, mFace, mOrigin);
+        }
+    }
+
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1405,6 +1412,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
           	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
           	        getWidth(), mErrorStatus, getPriorityMessage());
         }
+      	drawUserDefinedWaypoints(canvas);
       	drawEdgeMarkers(canvas);
     }    
 

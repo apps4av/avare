@@ -838,5 +838,15 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    public String getUDWLocation() {
+    	try {
+    		return mPref.getString(mContext.getString(R.string.UDWLocation), "");
+    	} catch (Exception e) {
+    		return "";
+    	}
+    }
     
+    public void setUDWLocation(String udwLocation) {
+        mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
+    }
 }

@@ -63,6 +63,9 @@ public class FolderPreference extends DialogPreference {
      * @param path
      */
     private void init(String path) {
+    	if(path.length() == 0) {
+    		path = "/";
+    	}
         if(path.equals("/")) {
             mFirstLevel = true;
         }
@@ -86,7 +89,18 @@ public class FolderPreference extends DialogPreference {
         super(context, attrs);
         mContext = context;
         mPref = new Preferences(context);
-        init(mPref.mapsFolder());
+        
+        // A "generic" handler that is used for several different config items
+        // we need to find out what control this is to see where to read the
+        // initial value from
+        //
+        // User defined Waypoints
+        if(getKey().equals(mContext.getString(R.string.UDWLocation)))
+        	init(mPref.getUDWLocation());
+        
+        // The chart/map location
+        else if(getKey().equals(mContext.getString(R.string.Maps)))
+        	init(mPref.mapsFolder());
     }
 
     /**
@@ -96,25 +110,41 @@ public class FolderPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
         if(positiveResult) {
-            Toast t;
-            /*
-             * Dir should be read/write to be a valid android folder.
-             */
+        	
+        	// Create a default toast message that assumes failure
+            Toast t = Toast.makeText(mContext, 
+                    mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);;
+
+             // Dir should be read/write to be a valid android folder.
             if(mPath.isDirectory() && mPath.canWrite() && mPath.canRead()) {
-                t = Toast.makeText(mContext, 
-                        mContext.getString(R.string.FileStore) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);               
-                mPref.setMapsFolder(mPath.getAbsolutePath());
+            	String absPath = mPath.getAbsolutePath();
+
+            	// If this is for the charts, then set it and display some toast
+                if(getKey().equals(mContext.getString(R.string.Maps))) {
+
+                	// Save this in the preferences for maps
+                	mPref.setMapsFolder(absPath);
+
+                	// Set our message to success for setting the maps folder
+                	t = Toast.makeText(mContext, 
+	                        mContext.getString(R.string.FileStore) + absPath, Toast.LENGTH_LONG);               
+                }
+                
+                // If this is for the UserDefinedWaypoints setting ...
+                else if (getKey().equals(mContext.getString(R.string.UDWLocation))) {
+                	
+                	// Save this in preferences for the UDWaypoints
+                	mPref.setUDWLocation(absPath);
+                	
+                	// Set our toast to success for setting the UDW directory
+	            	t = Toast.makeText(mContext, 
+	                        mContext.getString(R.string.UDWSearch) + absPath, Toast.LENGTH_LONG);               
+                }
             }
-            else {
-                /*
-                 * Save it
-                 */
-                t = Toast.makeText(mContext, 
-                        mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);
-            }
+            
+            // Show our status
             t.show();
         }
-        persistBoolean(positiveResult);
     }
     
     @Override

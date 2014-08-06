@@ -19,6 +19,7 @@ authors: zkhan, jlmcgraw
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
         <com.ds.avare.utils.FolderPreference
+            android:key="@string/Maps"
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
@@ -35,7 +36,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-    </PreferenceScreen>
+        <com.ds.avare.utils.FolderPreference
+            android:key="@string/UDWLocation"
+            android:summary="@string/UDWSummary"
+            android:title="@string/UDWLabel" />
+        </PreferenceScreen>
 
     <PreferenceScreen 
         android:title="@string/prefGpsCategoryTitle" 

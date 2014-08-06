@@ -28,6 +28,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.BitmapHolder;
@@ -115,6 +116,7 @@ public class Destination extends Observable {
     public static final String FIX = "Fix";
     public static final String NAVAID = "Navaid";
     public static final String AD = "AIRPORT-DIAGRAM";
+    public static final String UDW = "UDW";
     
     /**
      * Contains all info in a hash map for the destination
@@ -416,6 +418,25 @@ public class Destination extends Observable {
                 parseGps(mName, mDestType);
             }
 
+	        if(mDestType.equals(UDW)){
+	        	UDWFactory.Placemark p = mService.getUDW().getPlacemark(mName);
+	        	if(null != p) {
+	        		mLatd = p.mLat;
+	        		mLond = p.mLon;
+		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
+		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
+		            mParams.put(DataBaseHelper.FACILITY_NAME, "User Defined Waypoint");
+		            addTime();
+		            mAfdFound = null;
+		            mFound = true;
+		            mLooking = false;
+		            mDbType = UDW;
+		            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
+		        	return true;
+	        	}
+	        	return false;
+	        }
+
 	        if(mDestType.equals(GPS)) {
 	            /*
 	             * For GPS coordinates, simply put parsed lon/lat in params
@@ -570,7 +591,7 @@ public class Destination extends Observable {
         	 * This runs on UI
         	 */
             mFound = result;
-            if(mDbType.equals(GPS) || mDbType.equals(MAPS)) {
+            if(mDbType.equals(GPS) || mDbType.equals(UDW) || mDbType.equals(MAPS)) {
                 /*
                  * These dont come from db so dont assign from params.
                  */
