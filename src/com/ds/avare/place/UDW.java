@@ -43,6 +43,7 @@ import android.graphics.Typeface;
  *
  */
 public class UDW {
+	static final int MAXUDW = 100;
 	Paint 			mPaint;		// Paint object used to do the display work
 	List<UDWFactory.Placemark> mPoints;	// Collection of points of interest
 	StorageService	mService;
@@ -124,10 +125,16 @@ public class UDW {
 				
 				// Tell the factory to parse the file and get the collection of entries
 				List<UDWFactory.Placemark> entries = factory.parse(file.getPath());
-				
-				// If we found any, then add them to our stash
+
+				// If we found some entries here ...
 				if(null != entries) {
-					mPoints.addAll(entries);
+					for(int idx = 0; idx < entries.size(); idx++) {
+						// We will only allow MAXUDW defined points. We don't want to get the system
+						// bogged down
+						if(mPoints.size() < MAXUDW) {
+							mPoints.add(entries.get(idx));
+						}
+					}
 				}
 			}
 		}
