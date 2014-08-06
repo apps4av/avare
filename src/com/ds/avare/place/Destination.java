@@ -426,7 +426,7 @@ public class Destination extends Observable {
 	        		mLond = p.mLon;
 		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
 		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-		            mParams.put(DataBaseHelper.FACILITY_NAME, Placemark.DESCRIPTION);
+		            mParams.put(DataBaseHelper.FACILITY_NAME, UDWFactory.UDWDESCRIPTION);
 		            addTime();
 		            mAfdFound = null;
 		            mFound = true;

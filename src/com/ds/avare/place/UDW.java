@@ -113,7 +113,7 @@ public class UDW {
 		// Ensure that the directory we are given is semi-reasonable
 		if(null != directory && directory.length() > 0) {
 			// Create the factory to parse the input files
-			UDWFactory factory = new UDWFactory();
+			UDWFactory factory = new UDWFactory(mContext);
 	
 			// fileList will be used to hold the collection of files in this directory
 			File dirFile = new File(directory);
@@ -241,7 +241,7 @@ public class UDW {
     			Placemark p = mPoints.get(idx);
     			final String mName = p.mName.toUpperCase();
     			if (mName.startsWith(uName)) {
-    		        StringPreference s = new StringPreference(Destination.UDW, Destination.UDW, Placemark.DESCRIPTION, p.mName);
+    		        StringPreference s = new StringPreference(Destination.UDW, Destination.UDW, UDWFactory.UDWDESCRIPTION, p.mName);
     		        s.putInHash(params);
     			}
     		}

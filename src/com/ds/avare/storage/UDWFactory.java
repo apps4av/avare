@@ -15,6 +15,10 @@ package com.ds.avare.storage;
 import java.io.FileInputStream;
 import java.util.List;
 
+import android.content.Context;
+
+import com.ds.avare.R;
+
 public class UDWFactory {
 
 	final String TXT = "txt";
@@ -22,7 +26,12 @@ public class UDWFactory {
 	final String CSV = "csv";
 	final String KML = "kml";
 	final String GPX = "gpx";
-	
+    public static String UDWDESCRIPTION;
+
+    public UDWFactory (Context mContext) {
+    	UDWDESCRIPTION = mContext.getString(R.string.UDWDescription);
+    }
+    
     // Class to hold the definition of a placemark
     //
     public static class Placemark {
@@ -44,7 +53,6 @@ public class UDWFactory {
             this.mMarkerType = markerType;
         }
         
-        public static final String DESCRIPTION = "User Defined Waypoint";
         public static final int CYANDOT = 0;
     }
     

@@ -294,4 +294,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UDWSearch">User defined waypoint files are found in: </string>
     <string name="UDWLabel">&quot;User Defined Waypoints&quot;</string>
     <string name="UDWSummary">&quot;Select the directory where user defined waypoint files are stored.&quot;</string>
+    <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
 </resources>
