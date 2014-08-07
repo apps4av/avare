@@ -411,12 +411,30 @@ public class Preferences {
         return(mPref.getBoolean(mContext.getString(R.string.SimulationMode), false));
     }
 
+    // An int value that represents what ICON is used to show current location on
+    // the charts/diagrams. Airplane, Helicopter, Canard ... etc
+    public int getDisplayIcon() {
+        String val = mPref.getString(mContext.getString(R.string.DisplayIcon), "0");
+        try {
+            return(Integer.parseInt(val));
+        }
+        catch(Exception e) {
+        }
+        return 0;
+    }
+
     /**
-     * 
+     * Get chart cycle previous, next, current
      * @return
      */
-    public boolean isHelicopter() {
-        return(mPref.getBoolean(mContext.getString(R.string.IconHelicopter), false));
+    public int getCycleAdjust() {
+        String val = mPref.getString(mContext.getString(R.string.Cycle), "0");
+        try {
+            return(Integer.parseInt(val));
+        }
+        catch(Exception e) {
+        }
+        return 0;
     }
 
     /**
@@ -652,7 +670,7 @@ public class Preferences {
      * @return
      */
     public boolean showAdsbTraffic() {
-        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), false));
+        return(mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), true));
     }
 
     /**
@@ -811,4 +829,24 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
 
+
+    /**
+     * 
+     * @return
+     */
+    public boolean showPlateInfoLines() {
+        return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
+    }
+
+    public String getUDWLocation() {
+    	try {
+    		return mPref.getString(mContext.getString(R.string.UDWLocation), "");
+    	} catch (Exception e) {
+    		return "";
+    	}
+    }
+    
+    public void setUDWLocation(String udwLocation) {
+        mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
+    }
 }

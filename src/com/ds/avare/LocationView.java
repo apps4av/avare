@@ -41,8 +41,8 @@ import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
@@ -88,7 +88,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Current GPS location
      */
     private GpsParams                  mGpsParams;
-    private GpsParams				    mVSIParams;
     
     /**
      * The plane on screen
@@ -195,18 +194,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private boolean                   mDraw;
 
-    /*
-     * Threshold for terrain
-     */
-    private float                      mThreshold;
-    
-
     private boolean                    mTrackUp;
-    
-    /*
-     * Current ground elevation
-     */
-    private double                      mElev;
     
     /*
      * Macro of zoom
@@ -221,19 +209,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private float                mDragStartedY;
     
     /*
-     * Shadow length 
-     */
-    private static final int SHADOW = 4;
-    
-    /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
     private Paint mRunwayPaint;
-    private Paint mTextPaintShadow;
-    private Paint mShadowPaint;
     private Paint mDistanceRingPaint;
-    private Rect mTextSize;
-    private RectF mShadowBox;
 
     /*
      * Text on screen color
@@ -248,12 +227,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private float                      mDipToPix;
 
-    // Instantaneous vertical speed in feet per minute
-    double mVSI;
-
-    // Handler for the top two lines of status information
-    InfoLines mInfoLines;
-    
     Point mDownFocusPoint;
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
@@ -273,15 +246,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mThreshold = 0;
         mOnChart = null;
         mTrackUp = false;
-        mElev = -1;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
-        mVSIParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPointProjection = null;
@@ -316,27 +286,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mRunwayPaint = new Paint(mPaint);
         mRunwayPaint.setTextSize(getResources().getDimension(R.dimen.runwayNumberTextSize));
 
-        mTextPaintShadow = new Paint();
-        mTextPaintShadow.setTypeface(mFace);
-        mTextPaintShadow.setAntiAlias(true);
-        mTextPaintShadow.setColor(TEXT_COLOR);
-        mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-        mTextPaintShadow.setStyle(Paint.Style.FILL);
-        
-        mShadowPaint = new Paint(mTextPaintShadow);
-        mShadowPaint.setShadowLayer(0, 0, 0, 0);
-        mShadowPaint.setAlpha(0x7f);
-        mShadowPaint.setStyle(Style.FILL);
         
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
 
-        mTextSize = new Rect();
-        mShadowBox = new RectF(mTextSize);
-
         setOnTouchListener(this);
-        mAirplaneBitmap = new BitmapHolder(context, mPref.isHelicopter() ? R.drawable.heli : R.drawable.plane);
+        mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mAirplaneOtherBitmap = new BitmapHolder(context, R.drawable.planeother);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
@@ -355,7 +311,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              
         mDipToPix = Helper.getDpiToPix(context);
         
-        mInfoLines = new InfoLines(this);
     }
     
     /**
@@ -409,8 +364,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param finish
      */
     private void rubberBand(float x, float y, boolean finish) {
-        
-        String airport = null;
         
         // Rubberbanding
         if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
@@ -752,7 +705,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     /*
                      * Terrain
                      */
-                    Helper.setThreshold(mPaint, mThreshold);
+                    Helper.setThreshold(mPaint, (float)mService.getThreshold());
                 }
                 
                 /*
@@ -787,7 +740,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             if(empty >= tn) {
                 mDistanceRingPaint.setColor(Color.WHITE);
-                drawShadowedText(canvas, mDistanceRingPaint,
+                mService.getShadowedText().draw(canvas, mDistanceRingPaint,
                         mContext.getString(R.string.MissingMaps), 
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
@@ -996,7 +949,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 float x = (float)mOrigin.getOffsetX(t.mLon);
                 float y = (float)mOrigin.getOffsetY(t.mLat);
-                drawShadowedText(canvas, mDistanceRingPaint,
+                mService.getShadowedText().draw(canvas, mDistanceRingPaint,
                         t.mAltitude + "'", Color.DKGRAY, x, y);
 
             }
@@ -1219,11 +1172,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * extended runway centerline
                      */
                     
-                    mRunwayPaint.setStyle(Style.FILL);
                     mRunwayPaint.setColor(Color.WHITE);
-                    mRunwayPaint.setAlpha(255);
-                    mRunwayPaint.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-                    drawShadowedText(canvas, mRunwayPaint, num, Color.DKGRAY,
+                    mService.getShadowedText().draw(canvas, mRunwayPaint, num, Color.DKGRAY,
                             runwayNumberCoordinatesX, runwayNumberCoordinatesY);
                     if (mTrackUp) {
                         canvas.restore();
@@ -1288,9 +1238,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Restore some paint settings back to what they were so as not to
              * mess things up
              */
-            mDistanceRingPaint.setAlpha(0xFF);
             mDistanceRingPaint.setStyle(Style.FILL);
-            mDistanceRingPaint.setColor(Color.CYAN);
+            mDistanceRingPaint.setColor(Color.WHITE);
             
             /*
              * Draw the corresponding text
@@ -1300,16 +1249,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             float adjX = (float) Math.sin((bearing - 10) * Math.PI / 180);	// Distance ring numbers, offset from
             float adjY = (float) Math.cos((bearing - 10) * Math.PI / 180);	// the course line for readability
 
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_INNER], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_INNER], Color.BLACK,
                     x + ringR[DistanceRings.RING_INNER] * adjX, 
                     y - ringR[DistanceRings.RING_INNER] * adjY);
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_MIDDLE], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_MIDDLE], Color.BLACK,
                     x + ringR[DistanceRings.RING_MIDDLE] * adjX, 
                     y - ringR[DistanceRings.RING_MIDDLE] * adjY);
-            drawShadowedText(canvas, mDistanceRingPaint,
-                    text[DistanceRings.RING_OUTER], Color.DKGRAY,
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint,
+                    text[DistanceRings.RING_OUTER], Color.BLACK,
                     x + ringR[DistanceRings.RING_OUTER] * adjX, 
                     y - ringR[DistanceRings.RING_OUTER] * adjY);
     
@@ -1329,12 +1278,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mDistanceRingPaint);
 
             
-            mDistanceRingPaint.setAlpha(0xFF);
             mDistanceRingPaint.setStyle(Style.FILL);
-            mDistanceRingPaint.setColor(Color.GREEN);
+            mDistanceRingPaint.setColor(Color.WHITE);
 
-            drawShadowedText(canvas, mDistanceRingPaint, 
-            		String.format("%d", mPref.getTimerRingSize()), Color.DKGRAY, 
+            mService.getShadowedText().draw(canvas, mDistanceRingPaint, 
+            		String.format("%d", mPref.getTimerRingSize()), Color.BLACK, 
             		x + ringR[DistanceRings.RING_SPEED] * adjX, 
             		y - ringR[DistanceRings.RING_SPEED] * adjY);
         }
@@ -1365,34 +1313,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
         }
-    }
-
-    /**
-     * Display the text in the indicated paint with a shadow'd background. This aids in readability.
-     * 
-     * @param canvas where to draw
-     * @param text what to display
-     * @param shadowColor is the color of the shadow of course
-     * @param x center position of the text on the canvas
-     * @param y top edge of text on the canvas
-     */
-    private void drawShadowedText(Canvas canvas, Paint paint, String text, int shadowColor, float x, float y) {
-
-        final int XMARGIN = (int) (5 * mDipToPix);
-        final int YMARGIN = (int) (5 * mDipToPix);
-        final int SHADOWRECTRADIUS = (int) (5 * mDipToPix);
-        paint.getTextBounds(text, 0, text.length(), mTextSize);
-        
-        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.top    = mTextSize.top - YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
-        mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
-
-        
-        mShadowPaint.setColor(shadowColor);
-        mShadowPaint.setAlpha(0x80);
-        canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
-        canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
     }
 
     /***
@@ -1439,10 +1359,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
 	        float pixPerNm = mMovement.getNMPerLatitude(mScale);
 	      	EdgeDistanceTape.draw(canvas, mPaint, mScale, pixPerNm, x, y, 
-	      			(int) mInfoLines.getHeight(), getWidth(), getHeight());
+	      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
         }
     }
     
+    // Display all of the user defined waypoints if configured to do so
+    private void drawUserDefinedWaypoints(Canvas canvas) {
+        if(mService != null && mPointProjection == null) {
+        	mService.getUDW().draw(canvas, mFace, mOrigin);
+        }
+    }
+
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1480,7 +1407,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawDistanceRings(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
-      	mInfoLines.drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW);
+        if(mService != null) {
+          	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
+          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
+          	        getWidth(), mErrorStatus, getPriorityMessage());
+        }
+      	drawUserDefinedWaypoints(canvas);
       	drawEdgeMarkers(canvas);
     }    
 
@@ -1489,7 +1421,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param threshold
      */
     public void updateThreshold(float threshold) {
-        mThreshold = threshold;
+        if(mService != null) {
+            mService.setThreshold(threshold);
+        }
         invalidate();
     }
 
@@ -1527,15 +1461,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param params
      */
     public void updateParams(GpsParams params) {
-    	
-        double tdiff = ((double)(params.getTime() - mVSIParams.getTime()) / 1000.0);
-    	// Calculate the instantaneous vertical speed in ft/min
-    	if(tdiff > 1) {
-    		mVSI = ((double)(params.getAltitude() - mVSIParams.getAltitude())) * (60 / tdiff);
-    		mVSIParams = params;
-    	}
-    	
-        /*
+
+    	/*
          * Comes from location manager
          */
         mGpsParams = params;
@@ -1569,6 +1496,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * but it will load previous combo on re-activation
          */
         mService = service;
+
         mMovement = mService.getMovement();
         mImageDataSource = mService.getDBResource();
         if(null == mMovement) {
@@ -2002,7 +1930,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         @Override
         protected void onPostExecute(Object res) {
-            mElev = elev;
+            if(mService != null) {
+                mService.setElevation(elev);
+            }
             mObstacles = obs;
         }
 
@@ -2053,7 +1983,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	
         	float posX = mCurrTouchPoint.getX();
         	float posY = mCurrTouchPoint.getY();
-        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, posX, posY);
+        	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, posX, posY);
         	if(infoLineFieldLoc != null) {
             	// We have the row and field. Tell the selection dialog to display
             	mGestureCallBack.gestureCallBack(GestureInterface.DOUBLE_TAP, infoLineFieldLoc);
@@ -2072,12 +2002,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             double x = mCurrTouchPoint.getX();
             double y = mCurrTouchPoint.getY();
 
-        	InfoLineFieldLoc infoLineFieldLoc = mInfoLines.findField(mPaint, (float)x, (float)y);
-        	if(infoLineFieldLoc != null) {
-            	// We have the row and field. Send the gesture off for processing
-            	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
-            	return;
-        	}
+            if(mService != null) {
+            	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, (float)x, (float)y);
+            	if(infoLineFieldLoc != null) {
+                	// We have the row and field. Send the gesture off for processing
+                	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
+                	return;
+            	}
+            }
 
             /*
              * XXX:
@@ -2154,39 +2086,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         invalidate();
     }
 
-    public double getElev() {
-    	return mElev;
-    	
-    }
-    
-    public double getVSI() {
-    	return mVSI;
-    }
-    
-    public GpsParams getGpsParams() {
-    	return mGpsParams;
-    }
-    
-    public StorageService getStorageService() {
-    	return mService;
-    }
-    public int getDisplayWidth() {
-    	return getWidth();
-    }
-    
-    public Preferences getPref() {
-    	return mPref;
-    }
-    
-    public Context getAppContext() { 
-    	return mContext;
-    }
-
-    public String getErrorStatus() {
-    	return mErrorStatus;
-    }
-
-    public String getPriorityMessage() {
+    /**
+     * 
+     * @return
+     */
+    private String getPriorityMessage() {
         if(mPointProjection != null) {
         	String priorityMessage = 
         			Helper.makeLine2(mPointProjection.getDistance(),
@@ -2197,9 +2101,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return null;
     }
 
-    public float getThreshold() {
-    	return mThreshold;
-    }
     /**
      * 
      */

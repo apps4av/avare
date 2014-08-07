@@ -59,6 +59,8 @@ public class PlatesActivity extends Activity {
     private Button mPlatesTagButton;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
+    private Button mDrawClearButton;
+    private Button mDrawButton;
     private Toast mToast;
     private ArrayList<String> mListPlates;
     private ArrayList<String> mListAirports;
@@ -224,6 +226,43 @@ public class PlatesActivity extends Activity {
                 mPlatesPopup.show();
             }
         });         
+        
+        /*
+         * Draw
+         */
+        mDrawButton = (Button)view.findViewById(R.id.plate_button_draw);
+        mDrawButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                
+                /*
+                 * Bring up preferences
+                 */
+                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                    mPlatesView.setDraw(true);
+                    mDrawClearButton.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mPlatesView.setDraw(false);                    
+                    mDrawClearButton.setVisibility(View.INVISIBLE);
+                }
+            }
+            
+        });
+        
+        mDrawClearButton = (Button)view.findViewById(R.id.plate_button_draw_clear);
+        mDrawClearButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mService != null) {
+                    if(mPlatesView.getDraw()) {
+                        mService.getPixelDraw().clear();
+                    }
+                }
+            }            
+        });
         
         mAirportButton = (Button)view.findViewById(R.id.plates_button_airports);
         mAirportButton.getBackground().setAlpha(255);
@@ -479,6 +518,7 @@ public class PlatesActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);         
+            mPlatesView.setService(mService);
             
             mListPlates = new ArrayList<String>();
             

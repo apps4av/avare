@@ -13,7 +13,6 @@ package com.ds.avare;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,13 +135,13 @@ public class NearestAdapter extends ArrayAdapter<String> {
         textView = (TextView)rowView.findViewById(R.id.nearest_list_aid_name);
         textView.setText(mName[position] + (mFuel[position].equals("") ? "" : "$ " + mContext.getString(R.string.Fuel)));
         /*
-         * If cannot glide, mark it red
+         * If cannot glide, mark it reddish, or yellowish if can
          */
         if(mGlide[position] == false) {
-            textView.setTextColor(Color.RED);
+            textView.setTextColor(0xffe35327);
         }
         else {
-            textView.setTextColor(Color.GREEN);            
+            textView.setTextColor(0xffabb149);            
         }
         /*
          * Fuel shows as Fuel or none

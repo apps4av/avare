@@ -19,6 +19,7 @@ authors: zkhan, jlmcgraw
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
         <com.ds.avare.utils.FolderPreference
+            android:key="@string/Maps"
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
@@ -28,7 +29,18 @@ authors: zkhan, jlmcgraw
             android:key="@string/Root"
             android:summary="@string/RootSummary"
             android:title="@string/RootLabel" />
-    </PreferenceScreen>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="@string/Zero"
+            android:entries="@array/CyclePrompt"
+            android:entryValues="@array/CycleValues"
+            android:key="@string/Cycle"
+            android:summary="@string/CycleSummary"
+            android:title="@string/CycleLabel" />
+        <com.ds.avare.utils.FolderPreference
+            android:key="@string/UDWLocation"
+            android:summary="@string/UDWSummary"
+            android:title="@string/UDWLabel" />
+        </PreferenceScreen>
 
     <PreferenceScreen 
         android:title="@string/prefGpsCategoryTitle" 
@@ -130,7 +142,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefShowCDI"
             android:summary="@string/ShowCDISummary"
             android:title="@string/ShowCDILabel" />
-	</PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ETABearing"
+            android:summary="@string/ETABearingSummary"
+            android:title="@string/ETABearingLabel" />
+    </PreferenceScreen>
         
     <PreferenceScreen 
         android:title="@string/prefDisplayCategoryTitle" 
@@ -158,7 +175,7 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ObstaclesSummary"
             android:title="@string/ObstaclesLabel" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/ADSBTraffic"
             android:summary="@string/ADSBTrafficSummary"
             android:title="@string/ADSBTrafficLabel" />
@@ -187,16 +204,18 @@ authors: zkhan, jlmcgraw
             android:key="@string/Background"
             android:summary="@string/BackgroundSummary"
             android:title="@string/BackgroundLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/DisplayIconPrompt"
+            android:entryValues="@array/DisplayIconValues"
+            android:key="@string/DisplayIcon"
+            android:summary="@string/DisplayIconSummary"
+            android:title="@string/DisplayIconLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/IconHelicopter"
-            android:summary="@string/IconHelicopterSummary"
-            android:title="@string/IconHelicopterLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/ETABearing"
-            android:summary="@string/ETABearingSummary"
-            android:title="@string/ETABearingLabel" />
+            android:key="@string/ExtendInfoLines"
+            android:summary="@string/ExtendInfoLinesSummary"
+            android:title="@string/ExtendInfoLinesLabel" />
     </PreferenceScreen>
 
 	<PreferenceScreen 

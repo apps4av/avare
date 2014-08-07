@@ -48,6 +48,7 @@ public class Download {
     private Handler mHandler;
     private Thread mThread;
     private String mCode;
+    private int mCycleAdjust;
    
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
@@ -59,13 +60,14 @@ public class Download {
      * 
      * @param act
      */
-    public Download(String root, Handler handler) {
+    public Download(String root, Handler handler, int cycleAdjust) {
         mStop = false;
         mDt = null;
         mVersion = null;
         mRoot = root;
         mCode = "";
         mHandler = handler;
+        mCycleAdjust = cycleAdjust;
     }
     
     /**
@@ -151,10 +153,25 @@ public class Download {
             BufferedOutputStream output;
             int count;
             byte data[] = new byte[blocksize];
-            mVersion = NetworkHelper.getVersion(mRoot, mName);
             long fileLength;
-                        
+
+            mVersion = NetworkHelper.getVersion(mRoot, mName);
+
+            /*
+             * See if we can adjust the version based on number like 1408.
+             * If it is time, then ignore the adjust by catching exception
+             */
             try {
+                int vers = Integer.valueOf(mVersion);
+                vers += mCycleAdjust;
+                mVersion = "" + vers;
+            }
+            catch (Exception e) {
+                
+            }
+
+            try {
+
                 /*
                  * mCode allows debugging from users
                  */
@@ -242,8 +259,8 @@ public class Download {
                         mCode = "code stopped by user during download";
                         output.flush();
                         output.close();
-                        input.close();
                         sendFailure();
+                        input.close();
                         return;
                     }
                 }

@@ -207,7 +207,7 @@ public class IHelperService extends Service {
                     l.setBearing((float)object.getDouble("bearing"));
                     l.setAltitude(object.getDouble("altitude"));
                     l.setTime(object.getLong("time"));
-                    mService.getGps().onLocationChanged(l);
+                    mService.getGps().onLocationChanged(l, type);
                 }
                 else if(type.equals("nexrad")) {
                     long time = object.getLong("time");

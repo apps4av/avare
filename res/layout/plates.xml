@@ -33,11 +33,32 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/plates_button_tag"
         android:textStyle="bold"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/fullscreen"
         android:visibility="visible" />        
+    
+       <Button
+            android:id="@+id/plate_button_draw_clear"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/plate_button_draw"
+            android:drawableLeft="@drawable/erase"
+            android:visibility="invisible" />        
+        
+        <ToggleButton
+            android:id="@+id/plate_button_draw"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textOff="@string/Pan"
+            android:layout_width="wrap_content"
+            android:textOn="@string/Draw"
+            android:textStyle="bold" />
+    
     
     <LinearLayout
         android:baselineAligned="true"

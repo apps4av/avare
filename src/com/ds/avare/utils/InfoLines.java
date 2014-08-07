@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 
-import com.ds.avare.LocationView;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.instruments.CDI;
@@ -74,8 +74,12 @@ public class InfoLines {
     int mFieldPosX[]; // X positions of the fields left edges
     int mFieldLines[][]; // Configuration/content of the status lines
     int mRowCount; // How many status rows are in use
+    float mElev;
+    float mThreshold;
 
-    LocationView mLocationView; // Link back to the location view
+    private Context mContext;
+    private Preferences mPref;
+    private StorageService mService;
 
     // Constants to indicate the display orientation
     static final int ID_DO_LANDSCAPE = 0;
@@ -159,7 +163,7 @@ public class InfoLines {
         int nSelected = mFieldLines[nRowIdx][nFieldIdx];
 
         // Fetch the global option list of what this field could be
-        String[] optionList = mLocationView.getAppContext().getResources()
+        String[] optionList = mContext.getResources()
                 .getStringArray(R.array.TextFieldOptions);
 
         // Build up the available options list
@@ -231,7 +235,7 @@ public class InfoLines {
             String option = infoLineFieldLoc.mOptions[nSelected];
 
             // Fetch the global option list of what this field could be
-            String[] optionList = mLocationView.getAppContext().getResources()
+            String[] optionList = mContext.getResources()
                     .getStringArray(R.array.TextFieldOptions);
 
             // Find out the index of the new selection within the master list
@@ -241,7 +245,7 @@ public class InfoLines {
                 // re-calc a few things
                 if (optionList[idx].contentEquals(option) == true) {
                     mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx] = idx;
-                    mLocationView.getPref().setRowFormats(buildConfigString()); // Save
+                    mPref.setRowFormats(buildConfigString()); // Save
                                                                                 // to
                                                                                 // storage
                     setRowCount(); // A row may have been totally turned off
@@ -257,13 +261,15 @@ public class InfoLines {
      * 
      * @param locationView
      */
-    public InfoLines(LocationView locationView) {
-        mLocationView = locationView;
+    public InfoLines(StorageService service) {
+        mContext = service;
+        mPref = new Preferences(mContext);
+        mService = service;
 
         mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX]; // separate lines
                                                               // for portrait vs
                                                               // landscape
-        String rowFormats = mLocationView.getPref().getRowFormats(); // One
+        String rowFormats = mPref.getRowFormats(); // One
                                                                      // config
                                                                      // string
                                                                      // for all
@@ -292,16 +298,13 @@ public class InfoLines {
             return;
         }
 
-        // fetch our background storage service
-        StorageService storageService = mLocationView.getStorageService();
-
         // Each field processes the gesture differently.
         switch (mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx]) {
 
         // Odometer - reset the value to zero
         case ID_FLD_ODO: {
-            if (storageService != null) {
-                Odometer odometer = storageService.getOdometer();
+            if (mService != null) {
+                Odometer odometer = mService.getOdometer();
                 if (odometer != null) {
                     odometer.reset();
                 }
@@ -311,17 +314,17 @@ public class InfoLines {
 
         // Hobbs flight meter - reset it to zero
         case ID_FLD_HOB: {
-            if (storageService != null) {
-                storageService.getFlightTimer().reset();
+            if (mService != null) {
+                mService.getFlightTimer().reset();
             }
             break;
         }
 
         // Current destination - clear it out.
         case ID_FLD_DST: {
-            if (storageService != null) {
-                if (storageService.getDestination() != null) {
-                    storageService.setDestination(null);
+            if (mService != null) {
+                if (mService.getDestination() != null) {
+                    mService.setDestination(null);
                 }
             }
             break;
@@ -386,20 +389,24 @@ public class InfoLines {
      *            shadow radius
      */
     public void drawCornerTextsDynamic(Canvas canvas, Paint aPaint,
-            int aTextColor, int aTextColorOpposite, int aShadow) {
+            int aTextColor, int aTextColorOpposite, int aShadow, int width,
+            String errorMessage, String priorityMessage) {
         // If the screen width has changed since the last time, we need to
         // recalc
         // the positions of the fields
-        resizeFields(aPaint, mLocationView.getDisplayWidth());
+        resizeFields(aPaint, width);
 
         float dataY = aPaint.getTextSize();
         float titleY = dataY / (float) TITLE_TO_TEXT_RATIO;
         float lineY = dataY + titleY;
         mShadowY = lineY * mRowCount + aShadow;
 
+        mElev = (float) mService.getElevation();
+        mThreshold = (float) mService.getThreshold();
+        
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so
-        if (mLocationView.getPref().shouldShowBackground()) {
+        if (mPref.shouldShowBackground()) {
             aPaint.setShadowLayer(0, 0, 0, 0);
             aPaint.setColor(aTextColorOpposite);
             aPaint.setAlpha(0x7f);
@@ -407,10 +414,6 @@ public class InfoLines {
             aPaint.setAlpha(0xff);
         }
         aPaint.setShadowLayer(aShadow, aShadow, aShadow, Color.BLACK);
-
-        // Two special types of messages that can override what is displayed
-        String errorMessage = mLocationView.getErrorStatus();
-        String priorityMessage = mLocationView.getPriorityMessage();
 
         // White text that is left aligned
         aPaint.setTextAlign(Align.LEFT);
@@ -486,7 +489,7 @@ public class InfoLines {
 
         // Set if we are in portrait or landscape mode. This determines what
         // status lines we draw
-        mDisplayOrientation = mLocationView.getPref().getOrientation()
+        mDisplayOrientation = mPref.getOrientation()
                 .contains("Landscape") ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
 
         // Fetch the NULL field to figure out how large it is
@@ -559,7 +562,7 @@ public class InfoLines {
                 return Calendar.getInstance().getTimeZone().getID();
             }
 
-            String[] fieldTitles = mLocationView.getAppContext().getResources()
+            String[] fieldTitles = mContext.getResources()
                     .getStringArray(R.array.TextFieldOptionTitles);
             if (fieldTitles.length > aField) {
                 return fieldTitles[aField];
@@ -569,42 +572,51 @@ public class InfoLines {
 
         switch (aField) {
         case ID_FLD_VSI: {
-            return String.format(Locale.getDefault(), "%+05.0f",
-                    mLocationView.getVSI());
+            if (mService != null) {
+            	if (mService.getVSI() != null) {
+            		double vsi = mService.getVSI().getValue();
+            		return String.format(Locale.getDefault(), "%+05.0f", vsi);
+            	}
+            }
         }
 
         case ID_FLD_SPD: {
-            return Helper.centerString(String.format(Locale.getDefault(),
-                    "%.0f%s", mLocationView.getGpsParams().getSpeed(),
-                    Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
+            if (mService != null) {
+                return Helper.centerString(String.format(Locale.getDefault(),
+                        "%.0f%s", mService.getGpsParams().getSpeed(),
+                        Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
+            }
+            break;
         }
 
         case ID_FLD_HOB: {
-            if (mLocationView.getStorageService() != null) {
+            if (mService != null) {
                 return ""
-                        + mLocationView.getStorageService().getFlightTimer()
+                        + mService.getFlightTimer()
                                 .getValue();
             }
             break;
         }
 
         case ID_FLD_HDG: {
+            if (mService != null) {
             return " "
                     + Helper.correctConvertHeading(Math.round((Helper
-                            .getMagneticHeading(mLocationView.getGpsParams()
-                                    .getBearing(), mLocationView.getGpsParams()
+                            .getMagneticHeading(mService.getGpsParams()
+                                    .getBearing(), mService.getGpsParams()
                                     .getDeclinition())))) + '\u00B0';
+            }
+            break;
         }
 
         case ID_FLD_BRG: {
-            if (mLocationView.getStorageService() != null) {
-                if (mLocationView.getStorageService().getDestination() != null) {
+            if (mService != null) {
+                if (mService.getDestination() != null) {
                     return " "
                             + Helper.correctConvertHeading(Math.round((Helper
-                                    .getMagneticHeading(mLocationView
-                                            .getStorageService()
+                                    .getMagneticHeading(mService
                                             .getDestination().getBearing(),
-                                            mLocationView.getGpsParams()
+                                            mService.getGpsParams()
                                                     .getDeclinition()))))
                             + '\u00B0';
                 }
@@ -613,9 +625,9 @@ public class InfoLines {
         }
 
         case ID_FLD_DST: {
-            if (mLocationView.getStorageService() != null) {
-                if (mLocationView.getStorageService().getDestination() != null) {
-                    String name = mLocationView.getStorageService()
+            if (mService != null) {
+                if (mService.getDestination() != null) {
+                    String name = mService
                             .getDestination().getID();
                     if (name.contains("&")) { // Change a direct coordinate to
                                               // GPS
@@ -631,10 +643,9 @@ public class InfoLines {
         }
 
         case ID_FLD_DIS: {
-            if (mLocationView.getStorageService() != null) {
-                if (mLocationView.getStorageService().getDestination() != null) {
-                	double distance = mLocationView
-                            .getStorageService().getDestination()
+            if (mService != null) {
+                if (mService.getDestination() != null) {
+                	double distance = mService.getDestination()
                             .getDistance();
                 	String fmtString = distance >= 100 ? "%.0f%s" : "%4.1f%s";
 
@@ -650,22 +661,20 @@ public class InfoLines {
         }
 
         case ID_FLD_ETE: {
-            if (mLocationView.getStorageService() != null) {
-                if (mLocationView.getStorageService().getDestination() != null) {
+            if (mService != null) {
+                if (mService.getDestination() != null) {
                     return ""
-                            + mLocationView.getStorageService()
-                                    .getDestination().getEte();
+                            + mService.getDestination().getEte();
                 }
             }
             break;
         }
 
         case ID_FLD_ETA: {
-            if (mLocationView.getStorageService() != null) {
-                if (mLocationView.getStorageService().getDestination() != null) {
+            if (mService != null) {
+                if (mService.getDestination() != null) {
                     return ""
-                            + mLocationView.getStorageService()
-                                    .getDestination().getEta();
+                            + mService.getDestination().getEta();
                 }
             }
             break;
@@ -688,26 +697,24 @@ public class InfoLines {
 
         case ID_FLD_MSL: {
             return Helper.centerString(Helper
-                    .calculateAltitudeFromThreshold(mLocationView
-                            .getThreshold()), MAX_FIELD_SIZE_IN_CHARS);
+                    .calculateAltitudeFromThreshold(mThreshold), MAX_FIELD_SIZE_IN_CHARS);
         }
 
         case ID_FLD_AGL: {
             return Helper.centerString(
                     Helper.calculateAGLFromThreshold(
-                            mLocationView.getThreshold(),
-                            (float) mLocationView.getElev()),
+                            mThreshold,
+                            (float) mElev),
                     MAX_FIELD_SIZE_IN_CHARS);
         }
 
         // If we have a destination set that is a BASE,
         // calculate the vertical speed required to reach the destination
         case ID_FLD_VSR: {
-            StorageService storageService = mLocationView.getStorageService();
-            if (storageService != null) {
-                Destination destination = storageService.getDestination();
+            if (mService != null) {
+                Destination destination = mService.getDestination();
                 if (destination != null) {
-                    return destination.getVerticalSpeedTo(mLocationView
+                    return destination.getVerticalSpeedTo(mService
                             .getGpsParams());
                 }
             }
@@ -717,11 +724,10 @@ public class InfoLines {
         // If we have a destination set that is a BASE,
         // calculate the flight path required to reach the destination
         case ID_FLD_FPR: {
-            StorageService storageService = mLocationView.getStorageService();
-            if (storageService != null) {
-                Destination destination = storageService.getDestination();
+            if (mService != null) {
+                Destination destination = mService.getDestination();
                 if (destination != null) {
-                    return destination.getFlightPathRequired(mLocationView
+                    return destination.getFlightPathRequired(mService
                             .getGpsParams());
                 }
             }
@@ -729,9 +735,8 @@ public class InfoLines {
         }        
 
         case ID_FLD_ODO: {
-            StorageService storageService = mLocationView.getStorageService();
-            if (storageService != null) {
-                Odometer odometer = storageService.getOdometer();
+            if (mService != null) {
+                Odometer odometer = mService.getOdometer();
                 if (odometer != null) {
                     double value = odometer.getValue();
                     return String.format(Locale.getDefault(),
@@ -742,10 +747,9 @@ public class InfoLines {
         }
 
         case ID_FLD_CDI: {
-            StorageService storageService = mLocationView.getStorageService();
-            if (storageService != null) {
-                if (storageService.getDestination() != null) {
-                    CDI cdi = storageService.getCDI();
+            if (mService != null) {
+                if (mService.getDestination() != null) {
+                    CDI cdi = mService.getCDI();
                     if (cdi != null) {
                         double value = cdi.getDeviation();
                         return String.format(Locale.getDefault(),

@@ -108,6 +108,20 @@ public class ContentGenerator {
                 + "getImageIce(type, level, fore );"
                 + "}"
 
+                
+                /*
+                 * Misc.
+                 */
+                + "function getImageMisc(type){"
+                + "var elem = document.getElementById('weatherImage');"
+                + "elem.src = type;"
+                + "}"
+                + "function updateImageMisc(){"
+                + "var melem = document.getElementById('typeMisc');"
+                + "var misc = melem.options[melem.selectedIndex].value;"
+                + "getImageMisc(misc);"
+                + "}"
+                
                 /*
                  * Load image
                  */
@@ -320,6 +334,15 @@ public class ContentGenerator {
                 + "<option value='06'>6hr</option>"
                 + "<option value='09'>9hr</option>"
                 + "<option value='12'>12hr</option>"
+                + "</select><br>"
+                + "<label>Misc. Charts</label><br>\n"
+                + "<select id='typeMisc' name='typeMisc' onChange='updateImageMisc()'>"
+                + "<option value='http://aviationweather.gov/data/iffdp/2020.gif'>Weather Depiction</option>"
+                + "<option value='http://www.hpc.ncep.noaa.gov/sfc/90fwbg.gif'>Surface Analysis</option>"
+                + "<option value='http://aviationweather.gov/data/iffdp/2080.gif'>Radar Summary</option>"
+                + "<option value='http://aviationweather.gov/data/obs/sat/goes/vis_goesE.jpg'>Satellite East</option>"
+                + "<option value='http://aviationweather.gov/data/obs/sat/goes/vis_goesW.jpg'>Satellite West</option>"
+                + "<option value='http://www.ospo.noaa.gov/data/land/fire/currenthms.jpg'>Fire and Smoke</option>"
                 + "</select><br>"
                 + "<img id='weatherImage' src='http://aviationweather.gov/adds/data/progs/hpc_sfc_analysis.gif'><br>"
                 + "<h1>Plan Area</h1>\n"

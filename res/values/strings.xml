@@ -186,7 +186,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TimerRingSizeSummary">&quot;Select the timer ring size in minutes&quot;</string>
     <string name="Up">Up</string>
     <string name="PrivateFolder">Use the default folder</string>
-    <string name="FileStore">Files will be stored in:</string>
+    <string name="FileStore">Files will be stored in: </string>
     <string name="FileStoreInvalid">Unable to write to folder:</string>
     <string name="prefTracksCategoryTitle">Flight Tracking</string>
     <string name="TracksOn">Tracks On</string>
@@ -281,4 +281,17 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ETABearing">&quot;ETABearing&quot;</string>
     <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
     <string name="ETABearingSummary">&quot;Select to calculate ETA/ETE considering the relative bearing to the destination&quot;</string>
+    <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
+    <string name="DisplayIconLabel">&quot;Location Display Icon&quot;</string>
+    <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location (requires restart).&quot;</string>
+    <string name="Cycle">Cycle</string>
+    <string name="CycleLabel">Chart Download Cycle</string>
+    <string name="CycleSummary">Select which cycle to download the charts from</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+    <string name="ExtendInfoLinesLabel">Show Status Area on Plates</string>
+    <string name="ExtendInfoLinesSummary">Select to show the configuable status area on the Plate screen</string>
+    <string name="UDWLocation">&quot;UDWLocation&quot;</string>
+    <string name="UDWSearch">User defined waypoint files are found in: </string>
+    <string name="UDWLabel">&quot;User Defined Waypoints&quot;</string>
+    <string name="UDWSummary">&quot;Select the directory where user defined waypoint files are stored.&quot;</string>
 </resources>

@@ -14,18 +14,18 @@ Redistribution and use in source and binary forms, with or without modification,
 <resources> 
     
     <string-array name="resGroups">
-        <item>Databases</item>
-        <item>Weather</item>
-        <item>Plates/d-TPP/ADs</item>
-        <item>VFR Sectional Charts</item>
-        <item>TAC Charts</item>
-        <item>WAC Charts</item>
-        <item>IFR Low Enroute Charts</item>
-        <item>A/FD Images</item>
-        <item>Terrain</item>
-        <item>IFR High Enroute Charts</item>
-        <item>Topographic Maps</item>
-        <item>Heli/Other Charts</item>
+        <item>Base de données</item>
+        <item>Météo</item>
+        <item>Cartes AD-VAC-AREA</item>
+        <item>Cartes VFR</item>
+        <item>TAC Charts (seulement USA)</item>
+        <item>WAC Charts (seulement USA)</item>
+        <item>IFR Low Enroute Charts(seulement USA)</item>
+        <item>Cartes AD</item>
+        <item>Terrain (seulement USA)</item>
+        <item>IFR High Enroute Charts (seulement USA)</item>
+        <item>Topographic Maps (seulement USA)</item>
+        <item>Heli/Other Charts (seulement USA)</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -33,7 +33,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Performance</item>
         <item>METAR</item>
         <item>TAF</item>
-        <item>Winds/Temp.</item>
+        <item>Vent/Temp.</item>
         <item>AIREP/PIREP</item>
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
@@ -46,7 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
      </string-array>
      
     <string-array name="resNameWeather">
-        <item>Weather</item>
+        <item>weather</item>
     </string-array>
         
     <string-array name="resNameAFD">
@@ -75,10 +75,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameHeli">
     </string-array>
     
-    <string-array name="resFilesDatabase">
-        <item>databases</item>
-    </string-array>
-    
     <string-array name="resFilesWeather">
         <item>weather</item>
     </string-array>
@@ -97,11 +93,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesTAC">
     </string-array>
     <string-array name="resFilesSectional">
-        <item>vfr-eu</item>
+        <item>Cartes VFR EU</item>
     </string-array>
 
     <string-array name="resFilesPlate">
-        <item>vac-ad-eu</item>
+        <item>Cartes VAC/AD EU</item>
     </string-array>
     <string-array name="resFilesTerrain">
     </string-array>
@@ -109,6 +105,10 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesHeli">
+    </string-array>
+    
+    <string-array name="resFilesDatabase">
+        <item>databases</item>
     </string-array>
     
     <string-array name="ChartType">
@@ -124,9 +124,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>    
     
     <string-array name="UnitsD">
-        <item>Nautical Miles</item>
-        <item>Statute Miles</item>
-        <item>Kilometers</item>
+        <item>Mile nautique</item>
+        <item>Mile de terre</item>
+        <item>Kilomètre</item>
         </string-array>
 
     <string-array name="UnitsDValues">
@@ -146,8 +146,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="AirSig">
-        <item>ALL</item>
-        <item>NONE</item>
+        <item>Toutes</item>
+        <item>Pas</item>
         <item>IFR AIRMET</item>
         <item>ICE AIRMET</item>
         <item>TURB AIRMET</item>
@@ -194,12 +194,11 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="Orientation">
-        <item>Portrait</item>
-        <item>Landscape</item>
-        <item>Reverse Portrait</item>
-        <item>Reverse Landscape</item>
-        <item>Sensor</item>
-    </string-array>
+        <item>En haute</item>
+        <item>En travers</item>
+        <item>En haute renversé</item>
+        <item>En travers renversé</item>
+     </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
         <item>0</item>
@@ -208,9 +207,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="DistanceRingTypePrompts">
-        <item>None</item>
+        <item>Pas</item>
         <item>Dynamic</item>
-        <item>Fixed at 2/5/10</item>
+        <item>Fixer a 2/5/10</item>
     </string-array>
 
 	<string-array name="AutoPostTracksValues">
@@ -220,37 +219,37 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="AutoPostTracksPrompts">
-        <item>None</item>
-        <item>Send email</item>
-        <item>Send to all applications</item>
+        <item>Pas</item>
+        <item>Envoyer par email</item>
+        <item>Envoyer a tous les application</item>
     </string-array>
 
 	<string-array name="TextFieldOptions">
-	    <item>None</item>
-		<item>Greenwich Mean Time</item>
-	    <item>Local Time</item>
-		<item>Ground Speed</item>
+	    <item>Pas</item>
+		<item>Temps moyenne Greenwich</item>
+	    <item>Heure locale</item>
+		<item>Vitesse au sol</item>
 	    <item>Track</item>
 	    <item>Bearing</item>
-	    <item>Destination Identifier</item>
-	    <item>Distance to Destination</item>
+	    <item>Identificateur de destination</item>
+	    <item>Distance vers destination</item>
 	    <item>Estimated Time Enroute</item>
 	    <item>Estimated Time of Arrival</item>
-	    <item>MSL Altitude</item>
-	    <item>AGL Height</item>
-	    <item>Hobbs Flight Timer</item>
-	    <item>Vertical Speed Indicator</item>
-	    <item>Vertical Speed Required</item>
-	    <item>Odometer</item>
-	    <item>Course Deviation Indicator</item>
-	    <item>Flight Path Required</item>
+	    <item>Altitude au dessus du niveau moyen de la mer</item>
+	    <item>Hauteur au dessus du sol</item>
+	    <item>>Numérateur des heures de travail</item>
+	    <item>Indicateur vitesse vertical</item>
+	    <item>Vitesse vertical requise</item>
+	    <item>Odomètre</item>
+	    <item>Indicateur de déviaiton de cap</item>
+	    <item>Trajectoire de vol requise</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
-        <item>Select a category</item>
-        <item>Aviation apps</item>
-        <item>Aircrafts for sale</item>
-        <item>Miscellaneous</item>
+        <item>Choisir catégorie</item>
+        <item>Applications d\'aviation</item>
+        <item>Aéronef a vendre</item>
+        <item>Divers</item>
     </string-array>
 		    
 	<string-array name="TextFieldOptionTitles">
@@ -269,33 +268,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
 	    <item>VSR fpm</item>
-	    <item>Odometer</item>
+	    <item>Odomètre</item>
 	    <item>CDI</item>
 	    <item>FPR deg</item>
    	</string-array>
 
-	<string-array name="DisplayIconValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-	<string-array name="DisplayIconPrompt">
-        <item>High Wing Aircraft</item>
-        <item>Helicopter</item>
-        <item>Canard Aircraft</item>
-    </string-array>
-
-	<string-array name="CycleValues">
-        <item>0</item>
-        <item>-1</item>
-        <item>1</item>
-    </string-array>
-
-    <string-array name="CyclePrompt">
-        <item>Current</item>
-        <item>Previous - may not be available</item>
-        <item>Next - may not be available</item>
-    </string-array>
-	
 </resources>
