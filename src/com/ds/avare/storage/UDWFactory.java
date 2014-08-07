@@ -18,7 +18,15 @@ import java.util.List;
 import android.content.Context;
 
 import com.ds.avare.R;
+import com.ds.avare.storage.UDWParser.Placemark;
 
+/***
+ * A class that will generate the appropriate parser for the input file
+ * to extract User Defined Waypoints
+ * 
+ * @author Ron
+ *
+ */
 public class UDWFactory {
 
 	final String TXT = "txt";
@@ -31,36 +39,19 @@ public class UDWFactory {
     public UDWFactory (Context mContext) {
     	UDWDESCRIPTION = mContext.getString(R.string.UDWDescription);
     }
-    
-    // Class to hold the definition of a placemark
-    //
-    public static class Placemark {
-        public final String mName;
-        public final String mDescription;
-        public final float  mLat;
-        public final float  mLon;
-        public final float  mAlt;
-        public final boolean mShowDist;
-        public final int mMarkerType;
 
-        public Placemark(String name, String description, float lat, float lon, float alt, boolean showDist, int markerType) {
-            this.mName = name;
-            this.mDescription = description;
-            this.mLat = lat;
-            this.mLon = lon;
-            this.mAlt = alt;
-            this.mShowDist = showDist;
-            this.mMarkerType = markerType;
-        }
-        
-        public static final int CYANDOT = 0;
-    }
-    
+    /***
+     * Parse the file with the given name
+     * @param fileName - File to open/read/parse
+     * @return A collection(List) of Placemarks that were found or null
+     */
     public List<Placemark> parse(String fileName) {
 
+    	FileInputStream  inStream = null;
+    	
     	// Create an input stream from the file name
     	try {
-			FileInputStream  inStream = new FileInputStream(fileName);
+			inStream = new FileInputStream(fileName);
 			
 			// Based upon the extension, create the proper type of parser for 
 			// the file stream. Assume we are a text file
@@ -71,36 +62,40 @@ public class UDWFactory {
 			    ext = fileName.substring(dotIndex + 1).toLowerCase();
 			}
 
+			// Define the base parser object
+			UDWParser parser = null;
+			
 			// Parse the KML file that comes from GoogleEarth
 			if (ext.contentEquals(KML)) {
-				try {
-			    	KmlUDWParser kmlParser = new KmlUDWParser();
-			    	return kmlParser.parse(inStream);
-				} catch (Exception e) { return null; } 
+		    	parser = new KmlUDWParser();
 			}
 			
 			// Parse a CSV file
 			else if (ext.contentEquals(CSV)) {
-			
+		    	parser = new CsvUDWParser();
 			}
 			
-			// Parse a TXT file
-			else if (ext.contentEquals(TXT)) {
-			
-			}
-
-			// Parse an XML file
-			else if (ext.contentEquals(XML)) {
-			
-			}
-
 			// Parse a GPX file
 			else if (ext.contentEquals(GPX)) {
-			
+		    	parser = new GpxUDWParser();
 			}
 
-			// Most likely an error opening the file stream
+			// If a real parser was created, then run it now against
+			// the input stream and return the result
+			if(null != parser) {
+				return parser.parse(inStream);
+			}
+			
+		// An exception is most likely an error opening the file stream.
+		// we'll just ignore it
     	} catch (Exception e) { return null; }
+
+    	// Last thing we need to do is close the input stream.
+    	finally {
+    		if(null != inStream) {
+    			try { inStream.close(); } catch (Exception e) { }
+    		}
+    	}
     	
     	// Did not understand the type of input file content
     	return null;

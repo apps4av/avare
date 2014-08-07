@@ -31,7 +31,7 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.storage.UDWFactory.Placemark;
+import com.ds.avare.storage.UDWParser.Placemark;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;

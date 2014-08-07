@@ -12,13 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
 import android.util.Xml;
 
 //	XML Parser that reads KML formatted files. The Placemark definitions are extracted
@@ -51,7 +52,7 @@ import android.util.Xml;
  * @author Ron
  *
  */
-public class KmlUDWParser {
+public class KmlUDWParser extends UDWParser {
     private static final String NS = null;
     private static final String KML = "kml";
     private static final String DOCUMENT = "Document";
@@ -62,24 +63,23 @@ public class KmlUDWParser {
     private static final String DESCRIPTION = "description";
     private static final String COORDINATES = "coordinates";
 
-    // Constructor. Instantiate the parser and start reading from the input stream
-    //
-    public List<UDWFactory.Placemark> parse(InputStream in) throws XmlPullParserException, IOException {
+	@Override
+	public List<Placemark> parse(FileInputStream inputStream) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
+            parser.setInput(inputStream, null);
             parser.nextTag();
             return readKmlData(parser);
-        } finally {
-            in.close();
-        }
+        } catch (Exception e) { }
+        	
+        return null;
     }
 
     // The root tag should be "<kml>", search for the opening "<Document>" tag
     //
-    private List<UDWFactory.Placemark> readKmlData(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<UDWFactory.Placemark> entries = null;
+    private List<Placemark> readKmlData(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Placemark> entries = null;
 
         parser.require(XmlPullParser.START_TAG, NS, KML);	// We must be inside the <kml> tag now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -98,8 +98,8 @@ public class KmlUDWParser {
 
     // We are in the document tag, now search for either "Folder" or "Placemark"
     //
-    private List<UDWFactory.Placemark> readDocument(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<UDWFactory.Placemark> entries = new ArrayList<UDWFactory.Placemark>();
+    private List<Placemark> readDocument(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Placemark> entries = new ArrayList<Placemark>();
 
         parser.require(XmlPullParser.START_TAG, NS, DOCUMENT);	// Must be inside of <Document> now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -118,12 +118,12 @@ public class KmlUDWParser {
         return entries;
     }
 
-    // Found "Folder", now search for the "Placemark"
+    // Found "Folder", now search for the "Placemark" or another "Folder"
     //
-    private List<UDWFactory.Placemark> readFolder(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private List<Placemark> readFolder(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, FOLDER);	// We must be inside <Folder> at this point
 
-        List<UDWFactory.Placemark> entries = new ArrayList<UDWFactory.Placemark>();
+        List<Placemark> entries = new ArrayList<Placemark>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -132,6 +132,8 @@ public class KmlUDWParser {
             String name = parser.getName();
             if (name.equals(PLACEMARK)) {
                 entries.add(readPlacemark(parser));
+            } else if (name.equals(FOLDER)) {
+                entries.addAll(readFolder(parser));
             } else {
                 skip(parser);
             }
@@ -141,7 +143,7 @@ public class KmlUDWParser {
 
     // We are inside a "Placemark" tag - read the details
     //
-    private UDWFactory.Placemark readPlacemark(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private Placemark readPlacemark(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, PLACEMARK);
         String name = null;
         String description = null;
@@ -149,7 +151,7 @@ public class KmlUDWParser {
         float lon = 0;
         float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = UDWFactory.Placemark.CYANDOT;	// Type of marker to use on the chart (metadata again)
+        int markerType = Placemark.CYANDOT;	// Type of marker to use on the chart (metadata again)
         
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -170,7 +172,7 @@ public class KmlUDWParser {
                 skip(parser);
             }
         }
-        return new UDWFactory.Placemark(name, description, 
+        return new Placemark(name, description, 
         		lat, lon, alt, showDist, markerType);
     }
 

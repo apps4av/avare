@@ -24,7 +24,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.storage.UDWFactory.Placemark;
+import com.ds.avare.storage.UDWParser.Placemark;
 import com.ds.avare.utils.Helper;
 
 import android.content.Context;
@@ -46,7 +46,7 @@ import android.graphics.Typeface;
 public class UDW {
 	static final int MAXUDW = 100;
 	Paint 			mPaint;		// Paint object used to do the display work
-	List<UDWFactory.Placemark> mPoints;	// Collection of points of interest
+	List<Placemark> mPoints;	// Collection of points of interest
 	StorageService	mService;
 	Context			mContext;
 	float			mPix;
@@ -108,7 +108,7 @@ public class UDW {
 		clear();
 		
 		// Start off with an empty collection
-		mPoints = new ArrayList<UDWFactory.Placemark>();
+		mPoints = new ArrayList<Placemark>();
 
 		// Ensure that the directory we are given is semi-reasonable
 		if(null != directory && directory.length() > 0) {
@@ -125,7 +125,7 @@ public class UDW {
 			for(File file : fileList) {
 				
 				// Tell the factory to parse the file and get the collection of entries
-				List<UDWFactory.Placemark> entries = factory.parse(file.getPath());
+				List<Placemark> entries = factory.parse(file.getPath());
 
 				// If we found some entries here ...
 				if(null != entries) {
@@ -173,14 +173,14 @@ public class UDW {
 
 		// Loop through every point that we have
 		//
-		for (UDWFactory.Placemark p : mPoints) {
+		for (Placemark p : mPoints) {
 
 			// Map the lat/lon to the x/y of the current canvas
 			float x = (float) origin.getOffsetX(p.mLon);
 			float y = (float) origin.getOffsetY(p.mLat);
 
 			switch(p.mMarkerType){
-				case UDWFactory.Placemark.CYANDOT: {
+				case Placemark.CYANDOT: {
 					// Draw the filled circle, centered on the point
 			        mPaint.setStyle(Style.FILL);
 			        mPaint.setColor(Color.CYAN);
@@ -213,7 +213,7 @@ public class UDW {
 
     // Calculate the distance and bearing to the point from our current location
     //
-    String whereAndHowFar(UDWFactory.Placemark p) {
+    String whereAndHowFar(Placemark p) {
     	GpsParams gpsParams = mService.getGpsParams();
     	if(null == gpsParams) {
     		return "";
