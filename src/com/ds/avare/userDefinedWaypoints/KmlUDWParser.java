@@ -10,7 +10,7 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.storage;
+package com.ds.avare.userDefinedWaypoints;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 
-//	XML Parser that reads KML formatted files. The Placemark definitions are extracted
+//	XML Parser that reads KML formatted files. The Waypoint definitions are extracted
 //	and converted to user defined waypoints. The essential syntax is as follows:
 //
 //	<kml>
@@ -47,7 +47,7 @@ import android.util.Xml;
 //	</kml>
 
 /***
- * This class reads a file in kml format and extracts all the placemarks.
+ * This class reads a file in kml format and extracts all the Waypoints.
  * 
  * @author Ron
  *
@@ -64,7 +64,7 @@ public class KmlUDWParser extends UDWParser {
     private static final String COORDINATES = "coordinates";
 
 	@Override
-	public List<Placemark> parse(FileInputStream inputStream) {
+	public List<Waypoint> parse(FileInputStream inputStream) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -78,8 +78,8 @@ public class KmlUDWParser extends UDWParser {
 
     // The root tag should be "<kml>", search for the opening "<Document>" tag
     //
-    private List<Placemark> readKmlData(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Placemark> entries = null;
+    private List<Waypoint> readKmlData(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Waypoint> entries = null;
 
         parser.require(XmlPullParser.START_TAG, NS, KML);	// We must be inside the <kml> tag now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -96,10 +96,10 @@ public class KmlUDWParser extends UDWParser {
         return entries;
     }
 
-    // We are in the document tag, now search for either "Folder" or "Placemark"
+    // We are in the document tag, now search for either "Folder" or "Waypoint"
     //
-    private List<Placemark> readDocument(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Placemark> entries = new ArrayList<Placemark>();
+    private List<Waypoint> readDocument(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Waypoint> entries = new ArrayList<Waypoint>();
 
         parser.require(XmlPullParser.START_TAG, NS, DOCUMENT);	// Must be inside of <Document> now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -108,7 +108,7 @@ public class KmlUDWParser extends UDWParser {
             }
             String name = parser.getName();
             if (name.equals(PLACEMARK)) {
-                entries.add(readPlacemark(parser));
+                entries.add(readWaypoint(parser));
             } else if (name.equals(FOLDER)) {
                 entries = readFolder(parser);
             } else {
@@ -118,12 +118,12 @@ public class KmlUDWParser extends UDWParser {
         return entries;
     }
 
-    // Found "Folder", now search for the "Placemark" or another "Folder"
+    // Found "Folder", now search for the "Waypoint" or another "Folder"
     //
-    private List<Placemark> readFolder(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private List<Waypoint> readFolder(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, FOLDER);	// We must be inside <Folder> at this point
 
-        List<Placemark> entries = new ArrayList<Placemark>();
+        List<Waypoint> entries = new ArrayList<Waypoint>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -131,7 +131,7 @@ public class KmlUDWParser extends UDWParser {
 
             String name = parser.getName();
             if (name.equals(PLACEMARK)) {
-                entries.add(readPlacemark(parser));
+                entries.add(readWaypoint(parser));
             } else if (name.equals(FOLDER)) {
                 entries.addAll(readFolder(parser));
             } else {
@@ -141,9 +141,9 @@ public class KmlUDWParser extends UDWParser {
         return entries;
     }
 
-    // We are inside a "Placemark" tag - read the details
+    // We are inside a "Waypoint" tag - read the details
     //
-    private Placemark readPlacemark(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private Waypoint readWaypoint(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, PLACEMARK);
         String name = null;
         String description = null;
@@ -151,7 +151,7 @@ public class KmlUDWParser extends UDWParser {
         float lon = 0;
         float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Placemark.CYANDOT;	// Type of marker to use on the chart (metadata again)
+        int markerType = Waypoint.CYANDOT;	// Type of marker to use on the chart (metadata again)
         
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -172,7 +172,7 @@ public class KmlUDWParser extends UDWParser {
                 skip(parser);
             }
         }
-        return new Placemark(name, description, 
+        return new Waypoint(name, description, 
         		lat, lon, alt, showDist, markerType);
     }
 

@@ -130,7 +130,7 @@ public class PrefActivity extends PreferenceActivity {
              * This will will sure we update tiles when someone changes storage folder
              */
             mService.getTiles().forceReload();
-            mService.getUDW().forceReload();	// Tell the UDWs to reload as well
+            mService.getUDWMgr().forceReload();	// Tell the UDWs to reload as well
         }
     }
 }

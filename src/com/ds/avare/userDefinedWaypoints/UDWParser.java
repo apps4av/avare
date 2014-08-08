@@ -10,22 +10,18 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.storage;
+package com.ds.avare.userDefinedWaypoints;
 
 import java.io.FileInputStream;
 import java.util.List;
 
 /***
- * Class to read user defined waypoints from a CSV formatted file
+ * Base class to implement a parser for User Defined Waypoints
+ * All UDW Parsers are to derive from this class
  * @author Ron
  *
  */
-public class CsvUDWParser extends UDWParser {
-
-	@Override
-	public List<Placemark> parse(FileInputStream inputStream) {
-
-		return null;
-	}
-
+public abstract class UDWParser {
+	// Methods that each derived class need to implement
+	public abstract List<Waypoint> parse(FileInputStream inputStream);
 }

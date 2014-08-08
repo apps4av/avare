@@ -10,7 +10,7 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.storage;
+package com.ds.avare.userDefinedWaypoints;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,14 +20,12 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.ds.avare.storage.UDWParser.Placemark;
-
 import android.util.Xml;
 
 /***
  * Class to read user defined waypoints from a GPX formatted file
  * 
- * A GPX file is an XML formatted file from Garmin that defines placemarks in a file according
+ * A GPX file is an XML formatted file from Garmin that defines Waypoints in a file according
  * to the following syntax:
  * 
  * <?xml version="1.0" encoding="UTF-8" ?>
@@ -53,7 +51,7 @@ public class GpxUDWParser extends UDWParser {
     private static final String DESC = "desc";
 
 	@Override
-	public List<Placemark> parse(FileInputStream inputStream) {
+	public List<Waypoint> parse(FileInputStream inputStream) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -67,8 +65,8 @@ public class GpxUDWParser extends UDWParser {
 
     // The root tag should be "<gpx>", search for the opening "<wpt>" tag
     //
-    private List<Placemark> readGPX(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Placemark> entries = new ArrayList<Placemark>();
+    private List<Waypoint> readGPX(XmlPullParser parser) throws XmlPullParserException, IOException {
+        List<Waypoint> entries = new ArrayList<Waypoint>();
 
         parser.require(XmlPullParser.START_TAG, NS, GPX);	// We must be inside the <gpx> tag now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -88,7 +86,7 @@ public class GpxUDWParser extends UDWParser {
     // We are in the WPT tag, Get the LAT/LON attributes then search
     // for NAME or DESC
     //
-    private Placemark readWPT(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private Waypoint readWPT(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, WPT);
 
         String name = null;
@@ -97,7 +95,7 @@ public class GpxUDWParser extends UDWParser {
         float lon = 0;
         float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Placemark.CYANDOT;	// Type of marker to use on the chart (metadata again)
+        int markerType = Waypoint.CYANDOT;	// Type of marker to use on the chart (metadata again)
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -126,7 +124,7 @@ public class GpxUDWParser extends UDWParser {
         }
         
         // We've got all the data we're going to get from this entry
-        return new Placemark(name, description, 
+        return new Waypoint(name, description, 
         		lat, lon, alt, showDist, markerType);
     }
 

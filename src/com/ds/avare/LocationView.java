@@ -1366,7 +1366,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Display all of the user defined waypoints if configured to do so
     private void drawUserDefinedWaypoints(Canvas canvas) {
         if(mService != null && mPointProjection == null) {
-        	mService.getUDW().draw(canvas, mFace, mOrigin);
+        	mService.getUDWMgr().draw(canvas, mFace, mOrigin);
         }
     }
 

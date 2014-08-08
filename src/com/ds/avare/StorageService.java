@@ -29,7 +29,6 @@ import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.UDW;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
@@ -41,6 +40,7 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
@@ -209,7 +209,7 @@ public class StorageService extends Service {
     private VSI mVSI;
     
     // User defined points of interest
-    private UDW mUDW;
+    private UDWMgr mUDWMgr;
 
     /*
      * Watches GPS to notify of phases of flight
@@ -324,7 +324,7 @@ public class StorageService extends Service {
         mVSI = new VSI();
         
         // Allocate a handler for PointsOfInterest
-        mUDW = new UDW(this, getApplicationContext()); 
+        mUDWMgr = new UDWMgr(this, getApplicationContext()); 
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -1011,7 +1011,7 @@ public class StorageService extends Service {
     	return mShadowedText;
     }
     
-    public UDW getUDW() {
-    	return mUDW;
+    public UDWMgr getUDWMgr() {
+    	return mUDWMgr;
     }
 }
