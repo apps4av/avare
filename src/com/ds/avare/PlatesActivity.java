@@ -302,8 +302,22 @@ public class PlatesActivity extends Activity {
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
-                startActivity(intent);
+                if(mService != null) {
+                    String name = mService.getDiagram().getName();
+                    if(name != null) {
+                        String tokens[] = name.split("/");
+                        String aname = tokens[tokens.length - 1];
+                        /*
+                         * Limit geo tagging to taggable plates.
+                         */
+                        if(aname.startsWith("ILS") || aname.startsWith("VOR") || aname.startsWith("RNAV")
+                                || aname.startsWith("NDB") || aname.startsWith("LOC")) {
+                            Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                }
+                
             }
         });      
 
