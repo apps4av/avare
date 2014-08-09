@@ -809,7 +809,7 @@ public class Helper {
     public static long getMillisGMT() {
         Calendar calendar = new GregorianCalendar();  
         TimeZone mTimeZone = calendar.getTimeZone();  
-        int offset = mTimeZone.getRawOffset();  
+        int offset = mTimeZone.getRawOffset() + mTimeZone.getDSTSavings();  
         return System.currentTimeMillis() - offset;
     }
 
