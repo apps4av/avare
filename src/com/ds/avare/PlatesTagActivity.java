@@ -67,7 +67,8 @@ public class PlatesTagActivity extends Activity {
 
     
     private static final int POINTS = 2;
-    private static final double MIN_SEPARATION = 100.0;
+    private static final double MIN_SEPARATION = 10.0;
+    private static final double MIN_SEPARATION_COORD = 0.01;
     
     /*
      * These are params once plate is tagged
@@ -205,7 +206,12 @@ public class PlatesTagActivity extends Activity {
                     mDx = (mPoint[0].getX() - mPoint[1].getX()) / (mPointLL[0].getLongitude() - mPointLL[1].getLongitude()); 
                     mDy = (mPoint[0].getY() - mPoint[1].getY()) / (mPointLL[0].getLatitude() - mPointLL[1].getLatitude());
                     
-                    if((mDx < MIN_SEPARATION) || (mDy > -MIN_SEPARATION)) {
+                    if(
+                            (Math.abs(mPoint[0].getX() - mPoint[1].getX()) < MIN_SEPARATION) ||
+                            (Math.abs(mPoint[0].getY() - mPoint[1].getY()) < MIN_SEPARATION) ||
+                            (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD) ||
+                            (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD)
+                            ) {
                         mPoint[1] = null;
                         mPointLL[1] = null;
                         mToast.setText(getString(R.string.SelectOtherPoint));
