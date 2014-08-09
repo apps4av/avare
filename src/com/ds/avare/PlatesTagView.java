@@ -34,6 +34,8 @@ import com.ds.avare.utils.BitmapHolder;
 /**
  * 
  * @author zkhan
+ * 
+ * User tags a plate through this view
  *
  */
 public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
@@ -45,6 +47,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     private PointInfo                    mCurrTouchPoint;
     private BitmapHolder                 mBitmap;
     private Scale                        mScale;
+    private int                          mX;
+    private int                          mY;
 
     private static final double MAX_PLATE_SCALE = 8;
     
@@ -62,6 +66,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         setBackgroundColor(Color.BLACK);
+        mX = mY = 0;
     }
     
     /**
@@ -182,8 +187,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX() * scale,
-                mPan.getMoveY() * scale);
+                mPan.getMoveX(),
+                mPan.getMoveY());
         
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	
@@ -194,8 +199,26 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     	mPaint.setStyle(Style.STROKE);
         canvas.drawLine(0, getHeight() / 2, getWidth() , getHeight() / 2, mPaint);
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), mPaint);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 2, mPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);
         
+        /*
+         * Draw axis points where the red pointer is
+         */
+        mX = Math.round((-mPan.getMoveX() + getWidth() / 2) / scale);
+        mY = Math.round((-mPan.getMoveY() + getHeight() / 2) / scale);
+        canvas.drawText("(x=" + mX + ",y=" + mY + ")", mPaint.getTextSize(), mPaint.getTextSize(), mPaint);
+        
+    }
+    
+    /**
+     * Verify a point at x, y
+     * @param x
+     * @param y
+     */
+    public void verify(double x, double y) {
+        mScale = new Scale(MAX_PLATE_SCALE);
+        mPan.setMove((-(float)x + (getWidth() / 2)), -(float)y + (getHeight() / 2));
+        invalidate();
     }
     
     /**
@@ -219,6 +242,21 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         }
 
         postInvalidate();
+    }
+    
+    
+    /**
+     * Current X with scale adjusted
+     */
+    public int getx() {
+        return mX;
+    }
+    
+    /**
+     * Current Y with scale adjusted
+     */
+    public int gety() {
+        return mY;
     }
 
 }

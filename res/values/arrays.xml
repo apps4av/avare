@@ -830,5 +830,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Previous - may not be available</item>
         <item>Next - may not be available</item>
     </string-array>
-	
+
+    <string-array name="PointType">
+        <item>Navaid</item>
+        <item>Fix</item>
+        <item>Base</item>
+    </string-array>
+    	
 </resources>

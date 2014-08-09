@@ -829,7 +829,6 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
 
-
     /**
      * 
      * @return
@@ -838,6 +837,10 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getUDWLocation() {
     	try {
     		return mPref.getString(mContext.getString(R.string.UDWLocation), "");
@@ -846,7 +849,29 @@ public class Preferences {
     	}
     }
     
+    /**
+     * 
+     * @param udwLocation
+     */
     public void setUDWLocation(String udwLocation) {
         mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
     }
+    
+    
+    /**
+     * 
+     * @return
+     */
+    public String getGeotags() {
+        return mPref.getString(mContext.getString(R.string.Geotag), "");
+    }
+
+    /**
+     * 
+     * @param tags
+     */
+    public void setGeotags(String tags) {
+        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
+    }
+
 }

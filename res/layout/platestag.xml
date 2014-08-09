@@ -20,13 +20,40 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/platestag_button_center"
+    <EditText
+        android:id="@+id/platestag_text_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/center"
-        android:layout_centerInParent="true"
+        android:hint="@string/PointName"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"/>
-    
+    <Spinner
+        android:id="@+id/platestag_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/PointType"
+        android:layout_toRightOf="@+id/platestag_text_input"
+        android:layout_alignParentBottom="true"/>
+    <Button
+        android:id="@+id/platestag_button_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Geotag"
+        android:layout_toRightOf="@+id/platestag_spinner"
+        android:layout_alignParentBottom="true"/>
+    <Button
+        android:id="@+id/platestag_button_verify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Verify"
+        android:layout_toRightOf="@+id/platestag_button_tag"
+        android:layout_alignParentBottom="true"/>
+    <Button
+        android:id="@+id/platestag_button_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Clear"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
 </RelativeLayout>
 

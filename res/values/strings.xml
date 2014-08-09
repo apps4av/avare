@@ -295,4 +295,17 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UDWLabel">&quot;User Defined Waypoints&quot;</string>
     <string name="UDWSummary">&quot;Select the directory where user defined waypoint files are stored.&quot;</string>
     <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
+    <string name="Geotag">&quot;Geotag&quot;</string>
+    <string name="ToTag">&quot;To geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.&quot;</string>
+    <string name="AlreadyTagged">&quot;This plate is already tagged and stored. Please clear to re-tag.&quot;</string>
+    <string name="InvalidPoint">&quot;Invalid Point specified.&quot;</string>
+    <string name="PointNotFound">&quot;The Point is not found, please verify that the point type and its name matches the point on the plate.&quot;</string>
+    <string name="EnoughPoints">&quot;You have tagged enough points. Please clear to re-tag.&quot;</string>
+    <string name="AddedPoint">&quot;You have successfully tagged a point.&quot;</string>
+    <string name="SelectOtherPoint">&quot;The selected points are not sufficiently apart. Please select another point, or clear to re-tag.&quot;</string>
+    <string name="Tagged">&quot;The plate is now tagged and saved. Please verify before using.&quot;</string>
+    <string name="NotTagged">&quot;The plate is not tagged. Please tag it first.&quot;</string>
+    <string name="Cleared">&quot;Cleared! The plate is not tagged anymore.&quot;</string>
+    <string name="Verify">&quot;Verify&quot;</string>
+    <string name="PointName">&quot;Name of point&quot;</string>
 </resources>
