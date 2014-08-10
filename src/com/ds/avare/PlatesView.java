@@ -54,6 +54,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private String                       mErrorStatus;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
+    private BitmapHolder                 mPlateTaggedBitmap;
     private float[]                     mMatrix;
     private boolean                    mShowingAD;
     private StorageService              mService;
@@ -97,6 +98,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
+        mPlateTaggedBitmap = new BitmapHolder(context, R.drawable.check);
         mDipToPix = Helper.getDpiToPix(context);
 
     }
@@ -338,6 +340,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                     pixy = (lat - latTopLeft) * dy;
                     angle = 0;
                 }
+                
+                /*
+                 * Draw a check if the plate is tagged
+                 */
+                canvas.drawBitmap(mPlateTaggedBitmap.getBitmap(), (float)(getWidth() - mPlateTaggedBitmap.getWidth()), (float)getHeight() / 2, mPaint);
                 
                 /*
                  * Draw airplane at that location
