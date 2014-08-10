@@ -328,11 +328,15 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 }
                 else {
                     /*
-                     * Faisal's database
+                     * User's database
                      */
-                    pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
-                    pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
-                    angle = -mMatrix[4];
+                    float dx = mMatrix[0];
+                    float dy = mMatrix[1];
+                    float lonTopLeft = mMatrix[2];
+                    float latTopLeft = mMatrix[3];
+                    pixx = (lon - lonTopLeft) * dx;
+                    pixy = (lat - latTopLeft) * dy;
+                    angle = -(float) mGpsParams.getDeclinition();
                 }
                 
                 /*

@@ -59,6 +59,8 @@ public class PlatesTagActivity extends Activity {
     private Button                       mClearButton;
     private EditText                     mText;
     private Spinner                      mSpinner;
+    private EditText                     mTextVerify;
+    private Spinner                      mSpinnerVerify;
     private Toast                        mToast;
     private Preferences                  mPref;
     private LinkedList<String>           mTags;
@@ -137,6 +139,8 @@ public class PlatesTagActivity extends Activity {
          */
         mSpinner = (Spinner)view.findViewById(R.id.platestag_spinner);
         mSpinner.setSelection(0);
+        mSpinnerVerify = (Spinner)view.findViewById(R.id.platestag_verify_spinner);
+        mSpinnerVerify.setSelection(0);
 
         /*
          * The button that adds a point
@@ -146,7 +150,12 @@ public class PlatesTagActivity extends Activity {
         mGeotagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
+                String aname = getNameFromPath(mService.getDiagram().getName());
+                if(null == aname) {
+                    return;
+                }
+
                 /*
                  * Already tagged
                  */
@@ -228,7 +237,9 @@ public class PlatesTagActivity extends Activity {
                     /*
                      * Add
                      */
-                    mTags.add(new String(mService.getDiagram().getName() + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft));
+                    
+                    
+                    mTags.add(aname + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
                     
                     /*
                      * Store and show message
@@ -259,8 +270,8 @@ public class PlatesTagActivity extends Activity {
                     return;
                 }
                 
-                String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mSpinner.getSelectedItem().toString();
+                String toFind = mTextVerify.getText().toString().toUpperCase(Locale.getDefault());
+                String item = mSpinnerVerify.getSelectedItem().toString();
                 if(null == item || mService == null) {
                     mToast.setText(getString(R.string.InvalidPoint));
                     mToast.show();
@@ -292,6 +303,9 @@ public class PlatesTagActivity extends Activity {
                 double y = (lat - mLatTopLeft) * mDy;  
                 
                 mPlatesView.verify(x, y);
+                mToast.setText(getString(R.string.VerifyMessage));
+                mToast.show();
+                
             }
         });      
 
@@ -306,8 +320,8 @@ public class PlatesTagActivity extends Activity {
                 if(mService == null) {
                     return;
                 }
-                String name = mService.getDiagram().getName();
-                if(null == name) {
+                String aname = getNameFromPath(mService.getDiagram().getName());
+                if(null == aname) {
                     return;
                 }
                 
@@ -322,7 +336,7 @@ public class PlatesTagActivity extends Activity {
                 mLatTopLeft = 0;
                 
                 for(String t : mTags) {
-                    if(t.contains(name)) {
+                    if(t.contains(aname)) {
                         mTags.remove(t);
                         mPref.setGeotags(putTagsToStorageFormat(mTags));
                         mToast.setText(getString(R.string.Cleared));
@@ -334,6 +348,7 @@ public class PlatesTagActivity extends Activity {
         });      
 
         mText = (EditText)view.findViewById(R.id.platestag_text_input);
+        mTextVerify = (EditText)view.findViewById(R.id.platestag_text_verify_input);
         mService = null;
     }
     
@@ -368,7 +383,7 @@ public class PlatesTagActivity extends Activity {
             /*
              * See if we have this plate already tagged
              */
-            String name = mService.getDiagram().getName();
+            String name = getNameFromPath(mService.getDiagram().getName());
             if(null == name) {
                 mTagged = false;
                 return;
@@ -512,5 +527,20 @@ public class PlatesTagActivity extends Activity {
         }
         
         return ret;
+    }
+    
+    /**
+     * 
+     */
+    public static String getNameFromPath(String name) {
+        if(null == name) {
+            return null;
+        }
+        String parts[] = name.split("/");
+        if(parts.length < 2) {
+            return null;                    
+        }
+        String aname = parts[parts.length - 2] + "/" + parts[parts.length - 1];
+        return aname;
     }
 }

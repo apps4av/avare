@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedList;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -65,7 +65,6 @@ public class PlatesActivity extends Activity {
     private ArrayList<String> mListPlates;
     private ArrayList<String> mListAirports;
     private String mPlateFound[];
-    private double mDeclination;
     private String mDestString;
     private String nearString;
 
@@ -75,7 +74,6 @@ public class PlatesActivity extends Activity {
      * For GPS taxi
      */
     private float[] mMatrix;
-    private HashMap<String, float[]> mMatrixPlates;
        
     /**
      * @return
@@ -84,20 +82,33 @@ public class PlatesActivity extends Activity {
         if(name.equals(AD)) {
             return(mMatrix);            
         }
-        if(null != mMatrixPlates) {
+
+        if(mService != null) {
             
             /*
-             * Convert from points on plate to draw matrix
-             * 
+             * If the user has already tagged a plate, load its matrix
              */
-            float matrix[] = mMatrixPlates.get(name);            
-            if(null != matrix) {
-                
-                /*
-                 * Plates are in magnetic north orientation
-                 */
-                matrix[4] = (float)mDeclination;
-                return matrix;
+            String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
+            if(aname != null) {
+                String pname = PlatesTagActivity.getNameFromPath(aname);
+                if(pname != null) {
+                    LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
+                    
+                    for(String t : tags) {
+                        String toks[] = t.split(",");
+                        if(toks[0].equals(pname)) {
+                            /*
+                             * Found
+                             */
+                            float matrix[] = new float[4];
+                            matrix[0] = (float)Double.parseDouble(toks[1]);
+                            matrix[1] = (float)Double.parseDouble(toks[2]);
+                            matrix[2] = (float)Double.parseDouble(toks[3]);
+                            matrix[3] = (float)Double.parseDouble(toks[4]);
+                            return matrix;
+                        }
+                    }
+                }
             }
         }
         return null;
@@ -129,8 +140,6 @@ public class PlatesActivity extends Activity {
                  * Called by GPS. Update everything driven by GPS.
                  */
                 GpsParams params = new GpsParams(location);
-                
-                mDeclination = params.getDeclinition();
                 
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
@@ -342,11 +351,8 @@ public class PlatesActivity extends Activity {
             if(name.startsWith(Destination.AD)) {
                 mPlatesView.setParams(getMatrix(name), true);
             }
-            else if(name.startsWith("RNAV-GPS")) {
-                mPlatesView.setParams(getMatrix(name), false);                            
-            }
             else {
-                mPlatesView.setParams(null, true);
+                mPlatesView.setParams(getMatrix(name), false);                            
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
@@ -487,7 +493,6 @@ public class PlatesActivity extends Activity {
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-                mMatrixPlates = mService.getDBResource().findPlatesMatrix(airport);
                 
                 mListPlates.clear();
                 for(int plate = 0; plate < mPlateFound.length; plate++) {
