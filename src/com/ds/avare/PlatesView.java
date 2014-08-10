@@ -336,7 +336,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                     float latTopLeft = mMatrix[3];
                     pixx = (lon - lonTopLeft) * dx;
                     pixy = (lat - latTopLeft) * dy;
-                    angle = -(float) mGpsParams.getDeclinition();
+                    angle = 0;
                 }
                 
                 /*
