@@ -13,17 +13,22 @@ package com.ds.avare;
 
 
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.PossibleEmail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -34,6 +39,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -57,21 +63,23 @@ public class PlatesTagActivity extends Activity {
     private Button                       mGeotagButton;
     private Button                       mVerifyButton;
     private Button                       mClearButton;
+    private Button                       mGetButton;
+    private Button                       mShareButton;
     private EditText                     mText;
     private Spinner                      mSpinner;
-    private EditText                     mTextVerify;
-    private Spinner                      mSpinnerVerify;
     private Toast                        mToast;
     private Preferences                  mPref;
     private LinkedList<String>           mTags;
     private boolean                     mTagged;
     private AlertDialog                  mAlertDialog;
 
-    
+    static AsyncTask<Void, Void, Boolean> mPlateTask = null;
+
     private static final int POINTS = 2;
     private static final double MIN_SEPARATION = 10.0;
     private static final double MIN_SEPARATION_COORD = 0.01;
     
+
     /*
      * These are params once plate is tagged
      */
@@ -101,6 +109,63 @@ public class PlatesTagActivity extends Activity {
         public void enabledCallback(boolean enabled) {
         }
     };
+
+    /**
+     * 
+     */
+    private void store() {
+        String aname = getNameFromPath(mService.getDiagram().getName());
+        if(null == aname) {
+            return;
+        }
+        /*
+         * Add
+         */
+        mTags.add(aname + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
+        
+        /*
+         * Store and show message
+         */
+        mPref.setGeotags(putTagsToStorageFormat(mTags));
+        mToast.setText(getString(R.string.Tagged));
+        mToast.show();   
+        mTagged = true;
+        mPoint[0] = null;
+        mPointLL[0] = null;
+        mPoint[1] = null;
+        mPointLL[1] = null;
+        mText.setText("");
+    }
+
+    /**
+     * 
+     */
+    private void clear() {
+
+        String aname = getNameFromPath(mService.getDiagram().getName());
+        if(null != aname) {
+        
+            mPoint[0] = null;
+            mPointLL[0] = null;
+            mPoint[1] = null;
+            mPointLL[1] = null;
+            mTagged = false;
+            mDx = 0;
+            mDy = 0;
+            mLonTopLeft = 0;
+            mLatTopLeft = 0;
+            
+            for(String t : mTags) {
+                if(t.contains(aname)) {
+                    mTags.remove(t);
+                    mPref.setGeotags(putTagsToStorageFormat(mTags));
+                    mToast.setText(getString(R.string.Cleared));
+                    mToast.show();
+                    return;
+                }
+            }
+        }
+    }
 
     /**
      * 
@@ -139,8 +204,6 @@ public class PlatesTagActivity extends Activity {
          */
         mSpinner = (Spinner)view.findViewById(R.id.platestag_spinner);
         mSpinner.setSelection(0);
-        mSpinnerVerify = (Spinner)view.findViewById(R.id.platestag_verify_spinner);
-        mSpinnerVerify.setSelection(0);
 
         /*
          * The button that adds a point
@@ -150,11 +213,6 @@ public class PlatesTagActivity extends Activity {
         mGeotagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String aname = getNameFromPath(mService.getDiagram().getName());
-                if(null == aname) {
-                    return;
-                }
 
                 /*
                  * Already tagged
@@ -234,30 +292,12 @@ public class PlatesTagActivity extends Activity {
                      */
                     mLonTopLeft = mPointLL[0].getLongitude() - mPoint[0].getX() / mDx;
                     mLatTopLeft = mPointLL[0].getLatitude() - mPoint[0].getY() / mDy;  
-                    
-                    /*
-                     * Add
-                     */
-                    
-                    
-                    mTags.add(aname + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
-                    
-                    /*
-                     * Store and show message
-                     */
-                    mPref.setGeotags(putTagsToStorageFormat(mTags));
-                    mToast.setText(getString(R.string.Tagged));
-                    mToast.show();   
-                    mTagged = true;
-                    mPoint[0] = null;
-                    mPointLL[0] = null;
-                    mPoint[1] = null;
-                    mPointLL[1] = null;
-                    mText.setText("");
+
+                    store();
                 }
             }
         });      
-
+        
         /*
          * Verify button
          */
@@ -272,8 +312,8 @@ public class PlatesTagActivity extends Activity {
                     return;
                 }
                 
-                String toFind = mTextVerify.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mSpinnerVerify.getSelectedItem().toString();
+                String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
+                String item = mSpinner.getSelectedItem().toString();
                 if(null == item || mService == null) {
                     mToast.setText(getString(R.string.InvalidPoint));
                     mToast.show();
@@ -298,7 +338,7 @@ public class PlatesTagActivity extends Activity {
                 /*
                  * Do it
                  */
-                mTextVerify.setText("");
+                mText.setText("");
                 
                 double lon = Double.parseDouble(tokens[0]);
                 double lat = Double.parseDouble(tokens[1]);
@@ -314,6 +354,208 @@ public class PlatesTagActivity extends Activity {
         });      
 
         /*
+         * Share button
+         */
+        mShareButton = (Button)view.findViewById(R.id.platestag_button_share);
+        mShareButton.getBackground().setAlpha(255);
+        mShareButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                if(!mTagged) {
+                    mToast.setText(getString(R.string.NotTagged));
+                    mToast.show();                    
+                    return;
+                }
+                
+                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setMessage(getString(R.string.GeoShareText));
+                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        
+                        /*
+                         * Submit to apps4av server
+                         */
+                        if(mPlateTask != null) {
+                            if(mPlateTask.getStatus() != AsyncTask.Status.FINISHED) {
+                                mPlateTask.cancel(true);
+                            }
+                        }
+                        
+                        mPlateTask = new AsyncTask<Void, Void, Boolean>() {
+
+                            @Override
+                            protected Boolean doInBackground(Void... vals) {
+                                // Submit to server with username
+                                String serverUrl = NetworkHelper.getServer() + "submit_plate.php";
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("email", PossibleEmail.get(getApplicationContext()));
+                                params.put("procedure", getNameFromPath(mService.getDiagram().getName()));
+                                params.put("dx", "" + mDx);
+                                params.put("dy", "" + mDy);
+                                params.put("lon", "" + mLonTopLeft);
+                                params.put("lat", "" + mLatTopLeft);
+                                try {
+                                    publishProgress();
+                                    NetworkHelper.post(serverUrl, params);
+                                    return true;
+                                } 
+                                catch (Exception e) {
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            protected void onProgressUpdate(Void... vals) {
+                                mToast.setText(getString(R.string.Sharing));
+                                mToast.show();                            
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                if(result) {
+                                    mToast.setText(getString(R.string.GeoShareDone));
+                                    mToast.show();                    
+                                }
+                                else {
+                                    mToast.setText(getString(R.string.GeoShareFailed));
+                                    mToast.show();                    
+                                }
+                             }
+                        };
+                        
+                        mPlateTask.execute(null, null, null);
+
+                    }
+                });
+                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.show();
+
+            }
+        });
+
+        /*
+         * Share button
+         */
+        mGetButton = (Button)view.findViewById(R.id.platestag_button_get);
+        mGetButton.getBackground().setAlpha(255);
+        mGetButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setMessage(getString(R.string.GeoShareGetPrompt));
+                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        
+                        /*
+                         * Submit to apps4av server
+                         */
+                        if(mPlateTask != null) {
+                            if(mPlateTask.getStatus() != AsyncTask.Status.FINISHED) {
+                                mPlateTask.cancel(true);
+                            }
+                        }
+                        
+                        mPlateTask = new AsyncTask<Void, Void, Boolean>() {
+
+                            String ret;
+                            @Override
+                            protected Boolean doInBackground(Void... vals) {
+                                // Submit to server with username
+                                String serverUrl = NetworkHelper.getServer() + "get_plate.php";
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("email", PossibleEmail.get(getApplicationContext()));
+                                params.put("procedure", getNameFromPath(mService.getDiagram().getName()));
+                                try {
+                                    publishProgress();
+                                    ret = NetworkHelper.post(serverUrl, params);
+                                    if(null == ret) {
+                                        return false;
+                                    }
+                                    return true;
+                                } 
+                                catch (Exception e) {
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            protected void onProgressUpdate(Void... vals) {
+                                mToast.setText(getString(R.string.SharingGet));
+                                mToast.show();                            
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                if(result) {
+                                    /*
+                                     * Now parse
+                                     */
+                                    clear();
+                                    try {
+                                        JSONObject jObject=new JSONObject(ret);
+                                        mDx = jObject.getDouble("dx");
+                                        mDy = jObject.getDouble("dy");
+                                        mLonTopLeft = jObject.getDouble("lon");
+                                        mLatTopLeft = jObject.getDouble("lat");
+                                    } catch (JSONException e) {
+                                        mToast.setText(getString(R.string.GeoShareGetFailed));
+                                        mToast.show();
+                                        return;
+                                    }
+                                    mToast.setText(getString(R.string.GeoShareGetOK));
+                                    mToast.show();
+                                    /*
+                                     * Set it up
+                                     */
+                                    store();
+                                }
+                                else {
+                                    mToast.setText(getString(R.string.GeoShareGetFailed));
+                                    mToast.show();                    
+                                }
+                             }
+                        };
+                        
+                        mPlateTask.execute(null, null, null);
+
+                    }
+                });
+                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.show();
+
+            }
+        });
+
+        
+        /*
          * Verify button
          */
         mClearButton = (Button)view.findViewById(R.id.platestag_button_clear);
@@ -324,35 +566,38 @@ public class PlatesTagActivity extends Activity {
                 if(mService == null) {
                     return;
                 }
-                String aname = getNameFromPath(mService.getDiagram().getName());
-                if(null == aname) {
+
+                if(!mTagged) {
                     return;
                 }
-                
-                mPoint[0] = null;
-                mPointLL[0] = null;
-                mPoint[1] = null;
-                mPointLL[1] = null;
-                mTagged = false;
-                mDx = 0;
-                mDy = 0;
-                mLonTopLeft = 0;
-                mLatTopLeft = 0;
-                
-                for(String t : mTags) {
-                    if(t.contains(aname)) {
-                        mTags.remove(t);
-                        mPref.setGeotags(putTagsToStorageFormat(mTags));
-                        mToast.setText(getString(R.string.Cleared));
-                        mToast.show();
-                        return;
+
+                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setMessage(getString(R.string.ClearedPrompt));
+                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        clear();
+                        dialog.dismiss();
                     }
-                }
+                });
+                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.show();
+
             }
         });      
 
         mText = (EditText)view.findViewById(R.id.platestag_text_input);
-        mTextVerify = (EditText)view.findViewById(R.id.platestag_text_verify_input);
         mService = null;
     }
     

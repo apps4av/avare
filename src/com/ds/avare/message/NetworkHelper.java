@@ -34,7 +34,7 @@ public class NetworkHelper {
      *
      * @throws Exception propagated from POST.
      */
-    public static void post(String endpoint, Map<String, String> params)
+    public static String post(String endpoint, Map<String, String> params)
             throws Exception {   
          
         URL url;
@@ -69,7 +69,12 @@ public class NetworkHelper {
         if(status != 200) {
             throw new Exception("POST exception HTTP return code " + status);
         }
+        
+        // Return value
+        byte ret[] = new byte[4096];
+        conn.getInputStream().read(ret);
         conn.disconnect();
+        return new String(ret);
     }
 
 }

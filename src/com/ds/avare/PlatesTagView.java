@@ -152,6 +152,12 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
             mScale.setScaleFactor(newObjPosAndScale.getScale());
         }
 
+        /*
+         * Store location
+         */
+        mX = Math.round((-mPan.getMoveX() + getWidth() / 2) / mScale.getScaleFactor());
+        mY = Math.round((-mPan.getMoveY() + getHeight() / 2) / mScale.getScaleFactor());
+
         invalidate();
         return true;
     }
@@ -199,15 +205,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     	mPaint.setStyle(Style.STROKE);
         canvas.drawLine(0, getHeight() / 2, getWidth() , getHeight() / 2, mPaint);
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), mPaint);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);
-        
-        /*
-         * Draw axis points where the red pointer is
-         */
-        mX = Math.round((-mPan.getMoveX() + getWidth() / 2) / scale);
-        mY = Math.round((-mPan.getMoveY() + getHeight() / 2) / scale);
-        canvas.drawText("(x=" + mX + ",y=" + mY + ")", mPaint.getTextSize(), mPaint.getTextSize(), mPaint);
-        
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);        
     }
     
     /**
