@@ -208,6 +208,7 @@ public class PlatesTagActivity extends Activity {
                     mPointLL[0] = new Coordinate(Double.parseDouble(tokens[0]), Double.parseDouble(tokens[1]));
                     mToast.setText(getString(R.string.AddedPoint));
                     mToast.show();
+                    mText.setText("");
                 }
                 else if(mPoint[1] == null) {
                     mPoint[1] = new PixelCoordinate(mPlatesView.getx(), mPlatesView.gety());
@@ -252,6 +253,7 @@ public class PlatesTagActivity extends Activity {
                     mPointLL[0] = null;
                     mPoint[1] = null;
                     mPointLL[1] = null;
+                    mText.setText("");
                 }
             }
         });      
@@ -296,6 +298,8 @@ public class PlatesTagActivity extends Activity {
                 /*
                  * Do it
                  */
+                mTextVerify.setText("");
+                
                 double lon = Double.parseDouble(tokens[0]);
                 double lat = Double.parseDouble(tokens[1]);
                     
