@@ -581,7 +581,7 @@ public class InfoLines {
         }
 
         case ID_FLD_SPD: {
-            if (mService != null) {
+            if (mService != null && mService.getGpsParams() != null) {
                 return Helper.centerString(String.format(Locale.getDefault(),
                         "%.0f%s", mService.getGpsParams().getSpeed(),
                         Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
