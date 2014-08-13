@@ -65,6 +65,7 @@ public class PlatesTagActivity extends Activity {
     private Button                       mClearButton;
     private Button                       mGetButton;
     private Button                       mShareButton;
+    private Button                       mShareAllButton;
     private EditText                     mText;
     private Spinner                      mSpinner;
     private Toast                        mToast;
@@ -421,6 +422,109 @@ public class PlatesTagActivity extends Activity {
                                 catch (Exception e) {
                                 }
                                 return false;
+                            }
+
+                            @Override
+                            protected void onProgressUpdate(Void... vals) {
+                                mToast.setText(getString(R.string.Sharing));
+                                mToast.show();                            
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                if(result) {
+                                    mToast.setText(getString(R.string.GeoShareDone));
+                                    mToast.show();                    
+                                }
+                                else {
+                                    mToast.setText(getString(R.string.GeoShareFailed));
+                                    mToast.show();                    
+                                }
+                             }
+                        };
+                        
+                        mPlateTask.execute(null, null, null);
+
+                    }
+                });
+                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.show();
+
+            }
+        });
+
+        /*
+         * Share button
+         */
+        mShareAllButton = (Button)view.findViewById(R.id.platestag_button_share_all);
+        mShareAllButton.getBackground().setAlpha(255);
+        mShareAllButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mService == null) {
+                    return;
+                }
+                
+                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setMessage(getString(R.string.GeoShareTextAll));
+                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        
+                        if(mService == null) {
+                            return;
+                        }
+                        /*
+                         * Submit to apps4av server
+                         */
+                        if(mPlateTask != null) {
+                            if(mPlateTask.getStatus() != AsyncTask.Status.FINISHED) {
+                                mPlateTask.cancel(true);
+                            }
+                        }
+                        
+                        mPlateTask = new AsyncTask<Void, Void, Boolean>() {
+
+                            @Override
+                            protected Boolean doInBackground(Void... vals) {
+                                
+                                // Get all plates geo tagged
+                                for(String t : mTags) {
+                                    /*
+                                     * Already tagged. Get info
+                                     */
+                                    String tokens[] = t.split(",");
+                                    
+                                    // Submit to server with username
+                                    String serverUrl = NetworkHelper.getServer() + "submit_plate.php";
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    params.put("email", PossibleEmail.get(getApplicationContext()));
+                                    params.put("procedure", getNameFromPath(tokens[0]));
+                                    params.put("dx", tokens[1]);
+                                    params.put("dy", tokens[2]);
+                                    params.put("lon", tokens[3]);
+                                    params.put("lat", tokens[4]);
+                                    try {
+                                        publishProgress();
+                                        NetworkHelper.post(serverUrl, params);
+                                    } 
+                                    catch (Exception e) {
+                                        return false;
+                                    }
+                                }
+                                return true;
                             }
 
                             @Override
