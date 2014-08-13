@@ -114,6 +114,14 @@ public class PlatesTagActivity extends Activity {
      * 
      */
     private void store() {
+        
+        if(mService == null) {
+            return;
+        }
+        if(mService.getDiagram() == null) {
+            return;
+        }
+        
         String aname = getNameFromPath(mService.getDiagram().getName());
         if(null == aname) {
             return;
@@ -361,6 +369,10 @@ public class PlatesTagActivity extends Activity {
         mShareButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mService == null || mService.getDiagram() == null || mService.getDiagram().getName() == null) {
+                    return;
+                }
+                        
                 
                 if(!mTagged) {
                     mToast.setText(getString(R.string.NotTagged));
@@ -455,6 +467,11 @@ public class PlatesTagActivity extends Activity {
         mGetButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(mService == null || mService.getDiagram() == null || mService.getDiagram().getName() == null) {
+                    return;
+                }
+
                 
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);

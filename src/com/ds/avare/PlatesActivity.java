@@ -83,7 +83,7 @@ public class PlatesActivity extends Activity {
             return(mMatrix);            
         }
 
-        if(mService != null) {
+        if(mService != null && mService.getDiagram() != null && mService.getDiagram().getName() != null) {
             
             /*
              * If the user has already tagged a plate, load its matrix
@@ -311,7 +311,7 @@ public class PlatesActivity extends Activity {
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService != null) {
+                if(mService != null && mService.getDiagram() != null) {
                     String name = mService.getDiagram().getName();
                     if(name != null) {
                         String tokens[] = name.split("/");

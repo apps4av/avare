@@ -167,7 +167,12 @@ public class DataBaseHelper  {
      */
     private void closes(Cursor c) {
         if(null != c) {
-            c.close();
+            try {
+                c.close();
+            }
+            catch (Exception e) {
+                
+            }
         }
 
         synchronized(mUsers) {
@@ -1837,8 +1842,12 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesFiles(Cursor c) {
-        if(null != c) {
+        
+        try {
             c.close();
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersFiles) {
@@ -2039,8 +2048,14 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesWeather(Cursor c) {
-        if(null != c) {
-            c.close();
+
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersWeather) {
@@ -2314,8 +2329,14 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesElev(Cursor c) {
-        if(null != c) {
-            c.close();
+
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersElev) {
@@ -2456,8 +2477,13 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesPlates(Cursor c) {
-        if(null != c) {
-            c.close();
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersPlates) {
