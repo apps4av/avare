@@ -52,12 +52,21 @@ Redistribution and use in source and binary forms, with or without modification,
            android:layout_alignParentLeft="true"        
 	       android:layout_margin="1dp"
 	       android:text="@string/Geotag"/>
-	   <Button
+		 <Button
+	        android:id="@+id/platestag_button_get"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/Get"
+            android:layout_margin="1dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+		    />
+	   	 <Button
 	       android:id="@+id/platestag_button_verify"
 	       android:layout_width="wrap_content"
 	       android:layout_height="wrap_content"
            android:layout_below="@+id/platestag_spinner"
-           android:layout_alignParentRight="true"        
+           android:layout_toRightOf="@+id/platestag_button_tag"        
 	       android:layout_margin="1dp"
 	       android:text="@string/Verify"/>
 	</RelativeLayout>
@@ -70,12 +79,12 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentLeft="true"
         />
     <Button
-        android:id="@+id/platestag_button_share_all"
+        android:id="@+id/platestag_button_clear_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/ShareAll"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
+        android:text="@string/ClearAll"
+        android:layout_below="@+id/platestag_button_clear"
+        android:layout_alignParentLeft="true"
         />
     <Button
         android:id="@+id/platestag_button_share"
@@ -83,15 +92,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Share"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/platestag_button_share_all"
+        android:layout_alignParentRight="true"
         />
     <Button
-        android:id="@+id/platestag_button_get"
+        android:id="@+id/platestag_button_share_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Get"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/platestag_button_share"
+        android:text="@string/ShareAll"
+        android:layout_below="@+id/platestag_button_share"
+        android:layout_alignParentRight="true"
         />
 </RelativeLayout>
 

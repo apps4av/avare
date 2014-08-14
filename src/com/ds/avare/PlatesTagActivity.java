@@ -63,6 +63,7 @@ public class PlatesTagActivity extends Activity {
     private Button                       mGeotagButton;
     private Button                       mVerifyButton;
     private Button                       mClearButton;
+    private Button                       mClearAllButton;
     private Button                       mGetButton;
     private Button                       mShareButton;
     private Button                       mShareAllButton;
@@ -151,6 +152,11 @@ public class PlatesTagActivity extends Activity {
      */
     private void clear() {
 
+        mToast.setText(getString(R.string.Cleared));
+        mToast.show();
+        if(null == mService || null == mService.getDiagram()) {
+            return;
+        }
         String aname = getNameFromPath(mService.getDiagram().getName());
         if(null != aname) {
         
@@ -168,8 +174,6 @@ public class PlatesTagActivity extends Activity {
                 if(t.contains(aname)) {
                     mTags.remove(t);
                     mPref.setGeotags(putTagsToStorageFormat(mTags));
-                    mToast.setText(getString(R.string.Cleared));
-                    mToast.show();
                     return;
                 }
             }
@@ -250,7 +254,19 @@ public class PlatesTagActivity extends Activity {
                 /*
                  * Find point in database
                  */
-                String dat = mService.getDBResource().findLonLat(toFind, item);
+                String dat = null;
+                if(item.equals("GPS")) {
+                    /*
+                     * If direct GPS entry, make it Avare GPS input format like 42&-71
+                     */
+                    String tokens[] = toFind.split("&");
+                    if(tokens.length == 2) {
+                        dat = tokens[1] + "," + tokens[0];
+                    }
+                }
+                else {
+                    dat = mService.getDBResource().findLonLat(toFind, item);
+                }
                 if(null == dat) {
                     mToast.setText(getString(R.string.PointNotFound));
                     mToast.show();
@@ -328,7 +344,19 @@ public class PlatesTagActivity extends Activity {
                     mToast.show();
                     return;
                 }
-                String dat = mService.getDBResource().findLonLat(toFind, item);
+                String dat = null;
+                if(item.equals("GPS")) {
+                    /*
+                     * If direct GPS entry, make it Avare GPS input format like 42&-71
+                     */
+                    String tokens[] = toFind.split("&");
+                    if(tokens.length == 2) {
+                        dat = tokens[1] + "," + tokens[0];
+                    }
+                }
+                else {
+                    dat = mService.getDBResource().findLonLat(toFind, item);
+                }
                 if(null == dat) {
                     mToast.setText(getString(R.string.PointNotFound));
                     mToast.show();
@@ -677,7 +705,7 @@ public class PlatesTagActivity extends Activity {
 
         
         /*
-         * Verify button
+         * Clear button
          */
         mClearButton = (Button)view.findViewById(R.id.platestag_button_clear);
         mClearButton.getBackground().setAlpha(255);
@@ -685,10 +713,6 @@ public class PlatesTagActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if(mService == null) {
-                    return;
-                }
-
-                if(!mTagged) {
                     return;
                 }
 
@@ -718,10 +742,52 @@ public class PlatesTagActivity extends Activity {
             }
         });      
 
+        /*
+         * Clear button
+         */
+        mClearAllButton = (Button)view.findViewById(R.id.platestag_button_clear_all);
+        mClearAllButton.getBackground().setAlpha(255);
+        mClearAllButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mService == null) {
+                    return;
+                }
+
+                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog.setCancelable(false);
+                mAlertDialog.setCanceledOnTouchOutside(false);
+                mAlertDialog.setMessage(getString(R.string.ClearedAllPrompt));
+                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        clear();
+                        mTags.clear();
+                        mPref.setGeotags("");
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mAlertDialog.show();
+
+            }
+        });      
+
+
         mText = (EditText)view.findViewById(R.id.platestag_text_input);
         mService = null;
     }
     
+
     
     /** Defines callbacks for service binding, passed to bindService() */
     /**
