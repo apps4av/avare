@@ -318,6 +318,24 @@ public class PlatesTagActivity extends Activity {
                     mLonTopLeft = mPointLL[0].getLongitude() - mPoint[0].getX() / mDx;
                     mLatTopLeft = mPointLL[0].getLatitude() - mPoint[0].getY() / mDy;  
 
+                    /*
+                     * Simple verify
+                     */
+                    if((!Helper.isLatitudeSane(mLatTopLeft))
+                            || (!Helper.isLongitudeSane(mLonTopLeft))) {                                            
+                        mToast.setText(getString(R.string.InvalidPoint));
+                        mToast.show();
+                        mPoint[0] = null;
+                        mPointLL[0] = null;
+                        mPoint[1] = null;
+                        mPointLL[1] = null;
+                        mDx = 0;
+                        mDy = 0;
+                        mLonTopLeft = 0;
+                        mLatTopLeft = 0;
+                        return;
+                    }
+
                     store();
                 }
             }
@@ -667,6 +685,21 @@ public class PlatesTagActivity extends Activity {
                                         mDy = jObject.getDouble("dy");
                                         mLonTopLeft = jObject.getDouble("lon");
                                         mLatTopLeft = jObject.getDouble("lat");
+                                        
+                                        /*
+                                         * Simple verify
+                                         */
+                                        if((!Helper.isLatitudeSane(mLatTopLeft))
+                                                || (!Helper.isLongitudeSane(mLonTopLeft))) {                                            
+                                            mToast.setText(getString(R.string.GeoShareGetFailed));
+                                            mToast.show();
+                                            mDx = 0;
+                                            mDy = 0;
+                                            mLonTopLeft = 0;
+                                            mLatTopLeft = 0;
+                                            return;
+                                        }
+                                                                                
                                     } catch (JSONException e) {
                                         mToast.setText(getString(R.string.GeoShareGetFailed));
                                         mToast.show();
