@@ -287,6 +287,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mAirportX = x;
         mAirportY = y;
         mAirportName = name;
+        postInvalidate();
     }
     
     /**
@@ -296,6 +297,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mAirportX = -1;
         mAirportY = -1;
         mAirportName = "";        
+        postInvalidate();
     }
 }
 
