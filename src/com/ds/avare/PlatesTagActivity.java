@@ -264,9 +264,6 @@ public class PlatesTagActivity extends Activity {
                         dat = tokens[1] + "," + tokens[0];
                     }
                 }
-                else if(item.equals("Obstacle")) {
-                    dat = mService.getDBResource().findObstacle(toFind, mService.getDestination());
-                }
                 else {
                     dat = mService.getDBResource().findLonLat(toFind, item);
                 }
@@ -356,9 +353,6 @@ public class PlatesTagActivity extends Activity {
                     if(tokens.length == 2) {
                         dat = tokens[1] + "," + tokens[0];
                     }
-                }
-                else if(item.equals("Obstacle")) {
-                    dat = mService.getDBResource().findObstacle(toFind, mService.getDestination());
                 }
                 else {
                     dat = mService.getDBResource().findLonLat(toFind, item);
