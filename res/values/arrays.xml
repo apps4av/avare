@@ -835,6 +835,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Fix</item>
         <item>Navaid</item>
         <item>Base</item>
+        <item>Obstacle</item>
         <item>GPS</item>
     </string-array>
     	

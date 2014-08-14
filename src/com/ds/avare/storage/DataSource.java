@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
+import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
@@ -206,6 +207,16 @@ public class DataSource {
      */
     public String findLonLat(String name, String type) {
         return dbHelper.findLonLat(name, type);          
+    }
+
+    /**
+     * 
+     * @param name
+     * @param type
+     * @return
+     */
+    public String findObstacle(String height, Destination dest) {
+        return dbHelper.findObstacle(height, dest);          
     }
 
     /**

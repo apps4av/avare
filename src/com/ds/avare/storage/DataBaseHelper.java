@@ -1601,6 +1601,36 @@ public class DataBaseHelper  {
         return ret;
     }
 
+    public String findObstacle(String height, Destination dest) {
+
+        String ret = null;
+        if(null == dest) {
+            return ret;
+        }
+        double lon = dest.getLocation().getLongitude();
+        double lat = dest.getLocation().getLatitude();
+        
+        /*
+         * Find with sqlite query
+         */
+        String qry = "select * from " + TABLE_OBSTACLES + " where Height =='" + height + "' and " + 
+                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
+                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
+        Cursor cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    ret = new String(cursor.getString(1) + "," + cursor.getString(0));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return ret;
+    }
+
     /**
      * Find the lat/lon of an airport
      * @param name
