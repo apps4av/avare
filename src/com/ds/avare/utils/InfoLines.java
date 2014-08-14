@@ -599,18 +599,18 @@ public class InfoLines {
         }
 
         case ID_FLD_HDG: {
-            if (mService != null) {
-            return " "
-                    + Helper.correctConvertHeading(Math.round((Helper
-                            .getMagneticHeading(mService.getGpsParams()
-                                    .getBearing(), mService.getGpsParams()
-                                    .getDeclinition())))) + '\u00B0';
+            if (mService != null && mService.getGpsParams() != null) {
+                return " "
+                        + Helper.correctConvertHeading(Math.round((Helper
+                                .getMagneticHeading(mService.getGpsParams()
+                                        .getBearing(), mService.getGpsParams()
+                                        .getDeclinition())))) + '\u00B0';
             }
             break;
         }
 
         case ID_FLD_BRG: {
-            if (mService != null) {
+            if (mService != null && mService.getGpsParams() != null) {
                 if (mService.getDestination() != null) {
                     return " "
                             + Helper.correctConvertHeading(Math.round((Helper
@@ -711,7 +711,7 @@ public class InfoLines {
         // If we have a destination set that is a BASE,
         // calculate the vertical speed required to reach the destination
         case ID_FLD_VSR: {
-            if (mService != null) {
+            if (mService != null && mService.getGpsParams() != null) {
                 Destination destination = mService.getDestination();
                 if (destination != null) {
                     return destination.getVerticalSpeedTo(mService
@@ -724,7 +724,7 @@ public class InfoLines {
         // If we have a destination set that is a BASE,
         // calculate the flight path required to reach the destination
         case ID_FLD_FPR: {
-            if (mService != null) {
+            if (mService != null && mService.getGpsParams() != null) {
                 Destination destination = mService.getDestination();
                 if (destination != null) {
                     return destination.getFlightPathRequired(mService
