@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 
 import org.json.JSONArray;
@@ -58,7 +60,7 @@ import android.widget.Toast;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlatesTagActivity extends Activity {
+public class PlatesTagActivity extends Activity implements Observer {
     private PlatesTagView                mPlatesView;
     private StorageService               mService;
     private PixelCoordinate              mPoint[];
@@ -121,6 +123,20 @@ public class PlatesTagActivity extends Activity {
     /**
      * 
      */
+    private void drawAirport() {
+        /*
+         * Draw airport
+         */
+        if(mDest.isFound()) {
+            float ax = (float) ((mDest.getLocation().getLongitude() - mLonTopLeft) * mDx);
+            float ay = (float) ((mDest.getLocation().getLatitude() - mLatTopLeft) * mDy);  
+            mPlatesView.setAirport(mAirport, ax, ay);
+        }
+    }
+    
+    /**
+     * 
+     */
     private void store() {
         
         
@@ -141,6 +157,8 @@ public class PlatesTagActivity extends Activity {
         mPoint[1] = null;
         mPointLL[1] = null;
         mText.setText("");
+        
+        drawAirport();
     }
 
     /**
@@ -355,11 +373,7 @@ public class PlatesTagActivity extends Activity {
                 /*
                  * Draw airport
                  */
-                if(mDest.isFound()) {
-                    float ax = (float) ((mDest.getLocation().getLongitude() - mLonTopLeft) * mDx);
-                    float ay = (float) ((mDest.getLocation().getLatitude() - mLatTopLeft) * mDy);  
-                    mPlatesView.setAirport(mAirport, ax, ay);
-                }
+                drawAirport();
                 
                 String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
                 String item = mSpinner.getSelectedItem().toString();
@@ -821,6 +835,10 @@ public class PlatesTagActivity extends Activity {
             /*
              * Get proc name
              */
+            if(null == mService.getDiagram()) {
+                mTagged = false;
+                return;                
+            }
             mName = getNameFromPath(mService.getDiagram().getName());
             if(mName != null) {
                 mAirport = mName.split("/")[0];
@@ -838,6 +856,7 @@ public class PlatesTagActivity extends Activity {
              * By the time user is ready to tag, this should be found
              */
             mDest = new Destination(mAirport, Destination.BASE, mPref, mService);
+            mDest.addObserver(PlatesTagActivity.this);
             mDest.find();
             
             for(String t : mTags) {
@@ -994,6 +1013,14 @@ public class PlatesTagActivity extends Activity {
         }
         String aname = parts[parts.length - 2] + "/" + parts[parts.length - 1];
         return aname;
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        // TODO Auto-generated method stub
+        if(mDest.isFound() && mTagged) {
+            drawAirport();
+        }
     }
 
 }

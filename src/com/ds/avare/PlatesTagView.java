@@ -216,7 +216,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         /*
          * Draw Airport circle
          */
-        if(mAirportX > 0 && mAirportY > 0) {
+        if(mAirportX > 0 && mAirportY > 0 && mAirportName != null) {
             mPaint.setStrokeWidth(4);
             mPaint.setColor(Color.GREEN);
             float x = mAirportX + mPan.getMoveX();
