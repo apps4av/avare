@@ -18,14 +18,17 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.place.Destination;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.PossibleEmail;
@@ -74,6 +77,9 @@ public class PlatesTagActivity extends Activity {
     private LinkedList<String>           mTags;
     private boolean                     mTagged;
     private AlertDialog                  mAlertDialog;
+    private Destination                  mDest;
+    private String                       mName;
+    private String                       mAirport;
 
     static AsyncTask<Void, Void, Boolean> mPlateTask = null;
 
@@ -117,21 +123,11 @@ public class PlatesTagActivity extends Activity {
      */
     private void store() {
         
-        if(mService == null) {
-            return;
-        }
-        if(mService.getDiagram() == null) {
-            return;
-        }
         
-        String aname = getNameFromPath(mService.getDiagram().getName());
-        if(null == aname) {
-            return;
-        }
         /*
          * Add
          */
-        mTags.add(aname + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
+        mTags.add(mName + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
         
         /*
          * Store and show message
@@ -150,32 +146,33 @@ public class PlatesTagActivity extends Activity {
     /**
      * 
      */
+    private void clearParams() {
+        mPoint[0] = null;
+        mPointLL[0] = null;
+        mPoint[1] = null;
+        mPointLL[1] = null;
+        mTagged = false;
+        mDx = 0;
+        mDy = 0;
+        mLonTopLeft = 0;
+        mLatTopLeft = 0;
+        mPlatesView.unsetAirport();
+    }
+    
+    /**
+     * 
+     */
     private void clear() {
 
         mToast.setText(getString(R.string.Cleared));
         mToast.show();
-        if(null == mService || null == mService.getDiagram()) {
-            return;
-        }
-        String aname = getNameFromPath(mService.getDiagram().getName());
-        if(null != aname) {
         
-            mPoint[0] = null;
-            mPointLL[0] = null;
-            mPoint[1] = null;
-            mPointLL[1] = null;
-            mTagged = false;
-            mDx = 0;
-            mDy = 0;
-            mLonTopLeft = 0;
-            mLatTopLeft = 0;
-            
-            for(String t : mTags) {
-                if(t.contains(aname)) {
-                    mTags.remove(t);
-                    mPref.setGeotags(putTagsToStorageFormat(mTags));
-                    return;
-                }
+        clearParams();
+        for(String t : mTags) {
+            if(t.contains(mName)) {
+                mTags.remove(t);
+                mPref.setGeotags(putTagsToStorageFormat(mTags));
+                return;
             }
         }
     }
@@ -198,6 +195,7 @@ public class PlatesTagActivity extends Activity {
          * Get stored geotags
          */
         mTags = getTagsStorageFromat(mPref.getGeotags());
+        mName = mAirport = "";
         
         /*
          * Get views from XML
@@ -317,22 +315,21 @@ public class PlatesTagActivity extends Activity {
                      */
                     mLonTopLeft = mPointLL[0].getLongitude() - mPoint[0].getX() / mDx;
                     mLatTopLeft = mPointLL[0].getLatitude() - mPoint[0].getY() / mDy;  
-
+                    
                     /*
                      * Simple verify
                      */
-                    if((!Helper.isLatitudeSane(mLatTopLeft))
-                            || (!Helper.isLongitudeSane(mLonTopLeft))) {                                            
+                    Projection p = new Projection(mLonTopLeft, mLatTopLeft,
+                            mDest.getLocation().getLongitude(),
+                            mDest.getLocation().getLatitude());
+                    if(p.getDistance() > 50 || p.getDistance() < 5 || p.getBearing() < 90 || p.getBearing() > 180) {
+                        /*
+                         * 50 miles from top is definitely not near the airport.
+                         * anything less than 90 or more than 180 is out of page.
+                         */
                         mToast.setText(getString(R.string.InvalidPoint));
                         mToast.show();
-                        mPoint[0] = null;
-                        mPointLL[0] = null;
-                        mPoint[1] = null;
-                        mPointLL[1] = null;
-                        mDx = 0;
-                        mDy = 0;
-                        mLonTopLeft = 0;
-                        mLatTopLeft = 0;
+                        clearParams();
                         return;
                     }
 
@@ -353,6 +350,15 @@ public class PlatesTagActivity extends Activity {
                     mToast.setText(getString(R.string.NotTagged));
                     mToast.show();
                     return;
+                }
+
+                /*
+                 * Draw airport
+                 */
+                if(mDest.isFound()) {
+                    float ax = (float) ((mDest.getLocation().getLongitude() - mLonTopLeft) * mDx);
+                    float ay = (float) ((mDest.getLocation().getLatitude() - mLatTopLeft) * mDy);  
+                    mPlatesView.setAirport(mAirport, ax, ay);
                 }
                 
                 String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
@@ -416,10 +422,6 @@ public class PlatesTagActivity extends Activity {
         mShareButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService == null || mService.getDiagram() == null || mService.getDiagram().getName() == null) {
-                    return;
-                }
-                        
                 
                 if(!mTagged) {
                     mToast.setText(getString(R.string.NotTagged));
@@ -455,7 +457,7 @@ public class PlatesTagActivity extends Activity {
                                 String serverUrl = NetworkHelper.getServer() + "submit_plate.php";
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("email", PossibleEmail.get(getApplicationContext()));
-                                params.put("procedure", getNameFromPath(mService.getDiagram().getName()));
+                                params.put("procedure", mName);
                                 params.put("dx", "" + mDx);
                                 params.put("dy", "" + mDy);
                                 params.put("lon", "" + mLonTopLeft);
@@ -514,9 +516,6 @@ public class PlatesTagActivity extends Activity {
         mShareAllButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService == null) {
-                    return;
-                }
                 
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
@@ -529,9 +528,6 @@ public class PlatesTagActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         
-                        if(mService == null) {
-                            return;
-                        }
                         /*
                          * Submit to apps4av server
                          */
@@ -618,10 +614,6 @@ public class PlatesTagActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(mService == null || mService.getDiagram() == null || mService.getDiagram().getName() == null) {
-                    return;
-                }
-
                 
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
@@ -652,7 +644,7 @@ public class PlatesTagActivity extends Activity {
                                 String serverUrl = NetworkHelper.getServer() + "get_plate.php";
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("email", PossibleEmail.get(getApplicationContext()));
-                                params.put("procedure", getNameFromPath(mService.getDiagram().getName()));
+                                params.put("procedure", mName);
                                 try {
                                     publishProgress();
                                     ret = NetworkHelper.post(serverUrl, params);
@@ -685,21 +677,6 @@ public class PlatesTagActivity extends Activity {
                                         mDy = jObject.getDouble("dy");
                                         mLonTopLeft = jObject.getDouble("lon");
                                         mLatTopLeft = jObject.getDouble("lat");
-                                        
-                                        /*
-                                         * Simple verify
-                                         */
-                                        if((!Helper.isLatitudeSane(mLatTopLeft))
-                                                || (!Helper.isLongitudeSane(mLonTopLeft))) {                                            
-                                            mToast.setText(getString(R.string.GeoShareGetFailed));
-                                            mToast.show();
-                                            mDx = 0;
-                                            mDy = 0;
-                                            mLonTopLeft = 0;
-                                            mLatTopLeft = 0;
-                                            return;
-                                        }
-                                                                                
                                     } catch (JSONException e) {
                                         mToast.setText(getString(R.string.GeoShareGetFailed));
                                         mToast.show();
@@ -745,9 +722,6 @@ public class PlatesTagActivity extends Activity {
         mClearButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService == null) {
-                    return;
-                }
 
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
@@ -783,9 +757,6 @@ public class PlatesTagActivity extends Activity {
         mClearAllButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService == null) {
-                    return;
-                }
 
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
@@ -847,18 +818,30 @@ public class PlatesTagActivity extends Activity {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
             
-            mPlatesView.setBitmap(mService.getDiagram());
-            
             /*
-             * See if we have this plate already tagged
+             * Get proc name
              */
-            String name = getNameFromPath(mService.getDiagram().getName());
-            if(null == name) {
+            mName = getNameFromPath(mService.getDiagram().getName());
+            if(mName != null) {
+                mAirport = mName.split("/")[0];
+            }
+            else {
                 mTagged = false;
                 return;
             }
+            
+            mPlatesView.setBitmap(mService.getDiagram());
+
+            
+            /*
+             * Find who this plate is for, so we can verify its sane.
+             * By the time user is ready to tag, this should be found
+             */
+            mDest = new Destination(mAirport, Destination.BASE, mPref, mService);
+            mDest.find();
+            
             for(String t : mTags) {
-                if(t.contains(name)) {
+                if(t.contains(mName)) {
                     /*
                      * Already tagged. Get info
                      */
@@ -1012,4 +995,5 @@ public class PlatesTagActivity extends Activity {
         String aname = parts[parts.length - 2] + "/" + parts[parts.length - 1];
         return aname;
     }
+
 }
