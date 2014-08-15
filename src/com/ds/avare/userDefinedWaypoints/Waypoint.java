@@ -18,9 +18,19 @@ public class Waypoint {
     final int 		mMarkerType;
 
     public Waypoint(String name, String description, float lat, float lon, float alt, boolean showDist, int markerType) {
-        this.mName = name;
-        this.mDescription = description;
-        this.mLat = lat;
+    	if(null != name) {
+    		this.mName = name;
+    	} else {
+    		this.mName = "UNDEF";
+    	}
+    	
+    	if(null != description) {
+    		this.mDescription = description;
+		} else {
+			this.mDescription= "UNDEF";
+		}
+
+    	this.mLat = lat;
         this.mLon = lon;
         this.mAlt = alt;
         this.mShowDist = showDist;
@@ -28,6 +38,7 @@ public class Waypoint {
     }
     
     public String getName() { return mName; }
+    public String getDesc() { return mDescription; }
     public float getLat() { return mLat; }
     public float getLon() { return mLon; }
     
