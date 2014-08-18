@@ -88,6 +88,8 @@ public class PlatesTagActivity extends Activity implements Observer {
     private static final int POINTS = 2;
     private static final double MIN_SEPARATION = 10.0;
     private static final double MIN_SEPARATION_COORD = 0.01;
+    private static final int MAX_DISTANCE_FROM_TOP = 100;
+    private static final int MIN_DISTANCE_FROM_TOP = 5;
     
 
     /*
@@ -340,7 +342,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                     Projection p = new Projection(mLonTopLeft, mLatTopLeft,
                             mDest.getLocation().getLongitude(),
                             mDest.getLocation().getLatitude());
-                    if(p.getDistance() > 50 || p.getDistance() < 5 || p.getBearing() < 90 || p.getBearing() > 180) {
+                    if(p.getDistance() > MAX_DISTANCE_FROM_TOP || p.getDistance() < MIN_DISTANCE_FROM_TOP || p.getBearing() < 90 || p.getBearing() > 180) {
                         /*
                          * 50 miles from top is definitely not near the airport.
                          * anything less than 90 or more than 180 is out of page.
