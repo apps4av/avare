@@ -118,20 +118,22 @@ public class UDWMgr {
 			
 			// Enumerate all the files that are in here
 			File[] fileList = dirFile.listFiles();
-			
-			// For each file we found here
-			for(File file : fileList) {
-				
-				// Tell the factory to parse the file and get the collection of entries
-				List<Waypoint> entries = factory.parse(file.getPath());
 
-				// If we found some entries here ...
-				if(null != entries) {
-					for(int idx = 0; idx < entries.size(); idx++) {
-						// We will only allow MAXUDW defined points. We don't want to get the system
-						// bogged down
-						if(mPoints.size() < MAXUDW) {
-							mPoints.add(entries.get(idx));
+			if(null != fileList) {
+				// For each file we found here
+				for(File file : fileList) {
+					
+					// Tell the factory to parse the file and get the collection of entries
+					List<Waypoint> entries = factory.parse(file.getPath());
+	
+					// If we found some entries here ...
+					if(null != entries) {
+						for(int idx = 0; idx < entries.size(); idx++) {
+							// We will only allow MAXUDW defined points. We don't want to get the system
+							// bogged down
+							if(mPoints.size() < MAXUDW) {
+								mPoints.add(entries.get(idx));
+							}
 						}
 					}
 				}
