@@ -106,6 +106,10 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
+        /*
+         * This slows dows panning when zoomed in
+         */
+        e.setLocation(e.getX() / mScale.getScaleFactor(), e.getY() / mScale.getScaleFactor());
         return mMultiTouchC.onTouchEvent(e);
     }
 
@@ -160,8 +164,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         /*
          * Store location
          */
-        mX = Math.round((-mPan.getMoveX() + getWidth() / 2) / mScale.getScaleFactor());
-        mY = Math.round((-mPan.getMoveY() + getHeight() / 2) / mScale.getScaleFactor());
+        mX = Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
+        mY = Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
 
         invalidate();
         return true;
@@ -199,8 +203,12 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX(),
-                mPan.getMoveY());
+                mPan.getMoveX() * scale
+                + getWidth() / 2
+                - mBitmap.getWidth() / 2 * scale ,
+                mPan.getMoveY() * scale
+                + getHeight() / 2
+                - mBitmap.getHeight() / 2 * scale);
         
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	
@@ -219,8 +227,16 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         if(mAirportX > 0 && mAirportY > 0 && mAirportName != null) {
             mPaint.setStrokeWidth(4);
             mPaint.setColor(Color.GREEN);
-            float x = (mAirportX * mScale.getScaleFactor() + mPan.getMoveX());
-            float y = (mAirportY * mScale.getScaleFactor() + mPan.getMoveY());
+            float x =
+                    (mAirportX * scale
+                    + getWidth() / 2
+                    + mPan.getMoveX() * scale
+                    - mBitmap.getWidth() / 2 * scale);
+            float y =
+                    (mAirportY * scale
+                    + getHeight() / 2
+                    + mPan.getMoveY() * scale
+                    - mBitmap.getHeight() / 2 * scale);
             canvas.drawCircle(x, y, 16, mPaint);
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
