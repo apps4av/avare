@@ -303,7 +303,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="EnoughPoints">&quot;You have tagged enough points. Please clear to re-tag.&quot;</string>
     <string name="AddedPoint">&quot;You have successfully tagged a point.&quot;</string>
     <string name="SelectOtherPoint">&quot;The selected points are not sufficiently apart. Please select another point, or press clear to re-tag.&quot;</string>
-    <string name="Tagged">&quot;The plate is now tagged and saved. Please verify before using.&quot;</string>
+    <string name="Tagged">&quot;The plate is now tagged and saved, and should be verified before using. Please share your tagged plates with others through the Share button. &quot;</string>
     <string name="NotTagged">&quot;The plate is not tagged. Please tag it first.&quot;</string>
     <string name="Cleared">&quot;Cleared! The plate is not tagged anymore.&quot;</string>
     <string name="ClearedPrompt">&quot;Are you sure you want to delete the Geo. tag information for this plate?&quot;</string>

@@ -150,9 +150,21 @@ public class PlatesTagActivity extends Activity implements Observer {
         /*
          * Store and show message
          */
+        mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+        mAlertDialog.setCancelable(false);
+        mAlertDialog.setCanceledOnTouchOutside(false);
+        mAlertDialog.setMessage(getString(R.string.Tagged));
+        mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+            /* (non-Javadoc)
+             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+             */
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        mAlertDialog.show();
+
         mPref.setGeotags(putTagsToStorageFormat(mTags));
-        mToast.setText(getString(R.string.Tagged));
-        mToast.show();   
         mTagged = true;
         mPoint[0] = null;
         mPointLL[0] = null;
