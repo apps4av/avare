@@ -723,12 +723,20 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mTrackButton = (ToggleButton)view.findViewById(R.id.location_button_track);
-        mTrackButton.setChecked(mLocationView.getTrackUp());
         mTrackButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mLocationView.setTrackUp(!mLocationView.getTrackUp());
+                
+                /*
+                 * Bring up preferences
+                 */
+                if(mTrackButton.getText().equals(getString(R.string.TrackUp))) {
+                    mLocationView.setTrackUp(true);
+                }
+                else {
+                    mLocationView.setTrackUp(false);
+                }
             }
             
         });

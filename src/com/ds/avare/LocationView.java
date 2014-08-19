@@ -245,6 +245,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mMovement = new Movement();
         mErrorStatus = null;
         mOnChart = null;
+        mTrackUp = false;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -307,8 +308,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mDoCallbackWhenDone = false;
              
         mDipToPix = Helper.getDpiToPix(context);
-
-        setTrackUp(mPref.getTrackUp());
+        
     }
     
     /**
@@ -2080,13 +2080,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param tu
      */
     public void setTrackUp(boolean tu) {
-    	mPref.setTrackUp(tu);
         mTrackUp = tu;
         invalidate();
-    }
-    
-    public boolean getTrackUp() {
-    	return mTrackUp;
     }
 
     /**

@@ -873,12 +873,5 @@ public class Preferences {
     public void setGeotags(String tags) {
         mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
     }
-    
-    public boolean getTrackUp() {
-        return(mPref.getBoolean(mContext.getString(R.string.TrackUpPref), false));
-    }
 
-    public void setTrackUp(boolean bTrackUp) {
-        mPref.edit().putBoolean(mContext.getString(R.string.TrackUpPref), bTrackUp).commit();
-    } 
 }

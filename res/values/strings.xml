@@ -311,7 +311,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Verify">&quot;Verify&quot;</string>
     <string name="VerifyMessage">&quot;If the cross hair appears over the point to verify, the plate is correctly tagged&quot;</string>
     <string name="PointName">&quot;Name of point&quot;</string>
-    <string name="Export">&quot;Export&quot;</string>
     <string name="Share">&quot;Share&quot;</string>
     <string name="ShareAll">&quot;Share All&quot;</string>
     <string name="ClearAll">&quot;ClearAll&quot;</string>
@@ -324,5 +323,4 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoShareGetOK">&quot;Got shared Geo. tag information from the Internet&quot;</string>
     <string name="GeoShareGetFailed">&quot;No shared Geo. tag information found on the Internet for this plate&quot;</string>
     <string name="GeoShareGetPrompt">&quot;Would you like to get shared Geo. tag information from the Internet for this plate?&quot;</string>
-    <string name="TrackUpPref">&quot;TrackUp&quot;</string>
 </resources>
