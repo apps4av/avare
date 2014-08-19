@@ -252,7 +252,10 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      * @param y
      */
     public void verify(double x, double y) {
-        mPan.setMove((-(float)x * mScale.getScaleFactor() + (getWidth() / 2)), (-(float)y  * mScale.getScaleFactor() + (getHeight() / 2)));
+        mPan.setMove(
+                (float)-x + mBitmap.getWidth() / 2,
+                (float)-y + mBitmap.getHeight() / 2
+                );
         invalidate();
     }
     
