@@ -160,8 +160,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         /*
          * Store location
          */
-        mX = Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
-        mY = Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
+        mX = Math.round((-mPan.getMoveX() + getWidth() / 2) / mScale.getScaleFactor());
+        mY = Math.round((-mPan.getMoveY() + getHeight() / 2) / mScale.getScaleFactor());
 
         invalidate();
         return true;
@@ -199,12 +199,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX() * scale
-                + getWidth() / 2 
-                - mBitmap.getWidth() / 2 * scale ,
-                mPan.getMoveY() * scale 
-                + getHeight() / 2 
-                - mBitmap.getHeight() / 2 * scale);
+                mPan.getMoveX(),
+                mPan.getMoveY());
         
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	
@@ -223,17 +219,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         if(mAirportX > 0 && mAirportY > 0 && mAirportName != null) {
             mPaint.setStrokeWidth(4);
             mPaint.setColor(Color.GREEN);
-            float x = 
-            (mAirportX * scale
-            + getWidth() / 2
-            + mPan.getMoveX() * scale
-            - mBitmap.getWidth() / 2 * scale);
-            float y = 
-            (mAirportY * scale 
-            + getHeight() / 2
-            + mPan.getMoveY() * scale
-            - mBitmap.getHeight() / 2 * scale);
-            
+            float x = (mAirportX * mScale.getScaleFactor() + mPan.getMoveX());
+            float y = (mAirportY * mScale.getScaleFactor() + mPan.getMoveY());
             canvas.drawCircle(x, y, 16, mPaint);
             mPaint.setStyle(Paint.Style.FILL);
             mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
