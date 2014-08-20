@@ -329,17 +329,36 @@ public class PlatesTagActivity extends Activity implements Observer {
                     mDx = (mPoint[0].getX() - mPoint[1].getX()) / (mPointLL[0].getLongitude() - mPointLL[1].getLongitude()); 
                     mDy = (mPoint[0].getY() - mPoint[1].getY()) / (mPointLL[0].getLatitude() - mPointLL[1].getLatitude());
                     
+                    int numCorrect = 2;
                     if(
                             (Math.abs(mPoint[0].getX() - mPoint[1].getX()) < MIN_SEPARATION) ||
+                            (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD)) {
+                        /*
+                         * Estimate longitude dimension from latitude dim, using cos(lat)
+                         */
+                        mDx = mDy * Math.cos(mPointLL[0].getLatitude());
+                        numCorrect--;
+                    }
+                    if(
                             (Math.abs(mPoint[0].getY() - mPoint[1].getY()) < MIN_SEPARATION) ||
-                            (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD) ||
-                            (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD)
+                            (Math.abs(mPointLL[0].getLatitude() - mPointLL[1].getLatitude()) < MIN_SEPARATION_COORD)
                             ) {
+                        /*
+                         * Estimate latitude dimension from longitude dim, using cos(lat)
+                         */
+                        mDy = mDx / Math.cos(mPointLL[0].getLatitude());
+                        numCorrect--;
+                    }
+
+                    /*
+                     * Both dims wrong. Exit
+                     */
+                    if(0 == numCorrect) {
                         mPoint[1] = null;
                         mPointLL[1] = null;
                         mToast.setText(getString(R.string.SelectOtherPoint));
                         mToast.show();  
-                        return;
+                        return;                    
                     }
 
                     /*
