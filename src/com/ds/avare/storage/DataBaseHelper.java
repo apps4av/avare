@@ -53,6 +53,7 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBase; 
     private SQLiteDatabase mDataBaseFiles; 
     private SQLiteDatabase mDataBaseElev; 
+    private SQLiteDatabase mDataBaseProcedures; 
     private SQLiteDatabase mDataBasePlates; 
     private SQLiteDatabase mDataBaseWeather; 
     
@@ -80,6 +81,7 @@ public class DataBaseHelper  {
     private Integer mUsersElev;
     private Integer mUsersPlates;
     private Integer mUsersWeather;
+    private Integer mUsersProcedures;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -129,6 +131,7 @@ public class DataBaseHelper  {
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_OBSTACLES = "obs";
     private static final String TABLE_SUA = "saa";
+    private static final String TABLE_PROCEDURE = "procedures";
 
 
     private static final String TILE_NAME = "name";
@@ -147,7 +150,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersProcedures = 0;
         mContext = context;
     }
 
@@ -2444,6 +2447,139 @@ public class DataBaseHelper  {
     }
 
 
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryProcedures(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersProcedures) {
+            if(mDataBaseProcedures == null) {
+                mUsersProcedures = 0;
+                try {
+                    
+                    mDataBaseProcedures = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseProcedures = null;
+                }
+            }
+            if(mDataBaseProcedures == null) {
+                return c;
+            }
+            mUsersProcedures++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseProcedures == null) {
+            return c;
+        }
+        
+        if(!mDataBaseProcedures.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseProcedures.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    /**
+     * Close database
+     */
+    private void closesProcedures(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersProcedures) {
+            mUsersProcedures--;
+            if((mDataBaseProcedures != null) && (mUsersProcedures <= 0)) {
+                try {
+                    mDataBaseProcedures.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBaseProcedures = null;
+                mUsersProcedures = 0;
+            }
+        }
+    }
+
+
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<String> findProcedure(String name, String type, String runway) {
+        
+        LinkedList<String> ret = new LinkedList<String>();
+        
+        String qry =
+                "select * from " + TABLE_PROCEDURE + " where Airport='" + name + "' and AppType='" + type + "' and runway='"  + runway  + "';";
+        
+        Cursor cursor = doQueryProcedures(qry, "procedures.db");
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        
+                        /*
+                         * Add as inital course, initial alts, final course, final alts, missed course, missed alts
+                         */
+                        ret.add(cursor.getString(4));
+                        ret.add(cursor.getString(5));
+                        ret.add(cursor.getString(6));
+                        ret.add(cursor.getString(7));
+                        ret.add(cursor.getString(8));
+                        ret.add(cursor.getString(9));
+                    } while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesProcedures(cursor);
+        
+        if(ret.size() > 0) {
+            return ret;      
+        }
+        
+        return null;
+    }
+    
     /**
      * 
      * @param statement

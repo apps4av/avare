@@ -308,4 +308,15 @@ public class DataSource {
     public Tile findElevTile(double lon, double lat, double offset[], double p[], int factor) {
         return  dbHelper.findElevTile(lon, lat, offset, p, factor);        
     }
+    
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<String> findProcedure(String name, String type, String runway) {
+        return  dbHelper.findProcedure(name, type, runway);
+    }
 }
