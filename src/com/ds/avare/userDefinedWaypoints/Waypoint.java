@@ -73,7 +73,9 @@ public class Waypoint {
 
 	    // If we are in track up mode, then we need to rotate the text so it shows
 	    // properly
+	    boolean bRotated = false;
         if (trackUp && (gpsParams != null)) {
+        	bRotated = true;
             canvas.save();
             canvas.rotate((int) gpsParams.getBearing(), x, y);
         }
@@ -87,7 +89,7 @@ public class Waypoint {
 	    }
 	    
 	    // Restore canvas if we rotated it
-        if (trackUp) {
+        if (true == bRotated) {
             canvas.restore();
         }
 

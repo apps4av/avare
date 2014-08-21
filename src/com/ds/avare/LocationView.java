@@ -1158,7 +1158,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * where we want to draw runway numbers in opposite
                      * direction to bearing so they appear upright
                      */
+                    boolean bRotated = false;
                     if (mTrackUp && (mGpsParams != null)) {
+                    	bRotated = true;
                         canvas.save();
                         canvas.rotate((int) mGpsParams.getBearing(),
                             runwayNumberCoordinatesX,
@@ -1173,7 +1175,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mRunwayPaint.setColor(Color.WHITE);
                     mService.getShadowedText().draw(canvas, mRunwayPaint, num, Color.DKGRAY,
                             runwayNumberCoordinatesX, runwayNumberCoordinatesY);
-                    if (mTrackUp) {
+
+                    if (true == bRotated) {
                         canvas.restore();
                     }
                 }
@@ -1368,14 +1371,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
+    // Draw the top status lines
+    private void drawStatusLines(Canvas canvas) {
+        if(mService != null) {
+          	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
+          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
+          	        getWidth(), mErrorStatus, getPriorityMessage());
+        }
+    }
+    
     /**
      * @param canvas
      * Does pretty much all drawing on screen
      */
     private void drawMap(Canvas canvas) {
-
-        
+    	// If our track is supposed to be at the top, save the current
+    	// canvas and rotate it based upon our bearing if we have one
+    	boolean bRotated = false;
         if(mTrackUp && (mGpsParams != null)) {
+        	bRotated = true;
             canvas.save();
             /*
              * Rotate around current position
@@ -1384,6 +1398,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             float y = (float)mOrigin.getOffsetY(mGpsParams.getLatitude());
             canvas.rotate(-(int)mGpsParams.getBearing(), x, y);
         }
+        
+        // Call the draw routines for the items that rotate with
+        // the chart
         drawTiles(canvas);
         drawNexrad(canvas);
         drawRadar(canvas);
@@ -1399,18 +1416,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawAircraft(canvas);
       	drawUserDefinedWaypoints(canvas);
         
-        if(mTrackUp) {
+      	// Restore the canvas to be upright again
+        if(true == bRotated) {
             canvas.restore();
         }
         
+        // Now draw the items that do NOT rotate with the chart
         drawDistanceRings(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
-        if(mService != null) {
-          	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
-          	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
-          	        getWidth(), mErrorStatus, getPriorityMessage());
-        }
+        drawStatusLines(canvas);
       	drawEdgeMarkers(canvas); // Must be after the infolines
     }    
 
