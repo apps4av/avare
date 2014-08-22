@@ -32,6 +32,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
+import com.ds.avare.shapes.DistanceRings;
 import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.ElevationTile;
 import com.ds.avare.shapes.PixelDraw;
@@ -211,6 +212,9 @@ public class StorageService extends Service {
     // User defined points of interest
     private UDWMgr mUDWMgr;
 
+    // Distance ring instrument
+    private DistanceRings mDistanceRings;
+    
     /*
      * Watches GPS to notify of phases of flight
      */
@@ -325,6 +329,9 @@ public class StorageService extends Service {
         
         // Allocate a handler for PointsOfInterest
         mUDWMgr = new UDWMgr(this, getApplicationContext()); 
+      
+        // Allocate a new DistanceRing instrument
+        mDistanceRings = new DistanceRings(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -1013,5 +1020,9 @@ public class StorageService extends Service {
     
     public UDWMgr getUDWMgr() {
     	return mUDWMgr;
+    }
+    
+    public DistanceRings getDistanceRings() {
+    	return mDistanceRings;
     }
 }
