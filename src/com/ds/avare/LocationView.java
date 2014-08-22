@@ -27,7 +27,6 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
-import com.ds.avare.shapes.DistanceRings;
 import com.ds.avare.shapes.MetShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
