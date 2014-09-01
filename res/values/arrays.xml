@@ -198,6 +198,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
+        <item>User Georeferenced Plates Data</item>
         <item>Minimums T/A</item>
         <item>Alabama</item>
 		<item>Alaska</item>
@@ -488,6 +489,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
+        <item>geoplates</item>
         <item>alternates</item>
         <item>AL</item>
 		<item>AK</item>
@@ -654,6 +656,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>maps.rel.db</item>
         <item>maps.topo.db</item>
         <item>maps.oth.db</item>
+        <item>procedures.db</item>
     </string-array>    
     
     <string-array name="UnitsD">

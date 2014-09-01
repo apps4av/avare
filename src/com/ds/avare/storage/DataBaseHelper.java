@@ -55,6 +55,7 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBaseElev; 
     private SQLiteDatabase mDataBaseProcedures; 
     private SQLiteDatabase mDataBasePlates; 
+    private SQLiteDatabase mDataBaseGeoPlates; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -80,6 +81,7 @@ public class DataBaseHelper  {
     private Integer mUsersFiles;
     private Integer mUsersElev;
     private Integer mUsersPlates;
+    private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
     
@@ -115,6 +117,7 @@ public class DataBaseHelper  {
     private static final int    SEGCIRCLE_COL = 16;
     private static final String SEGCIRCLE = "Segmented Circle";
     public static final String MANAGER_PHONE = "Manager Phone";
+    public static final String PROC = "proc";
 
     public static final String ELEVATION = "Elevation";
     
@@ -132,6 +135,7 @@ public class DataBaseHelper  {
     private static final String TABLE_OBSTACLES = "obs";
     private static final String TABLE_SUA = "saa";
     private static final String TABLE_PROCEDURE = "procedures";
+    private static final String TABLE_GEOPLATES = "geoplates";
 
 
     private static final String TILE_NAME = "name";
@@ -150,7 +154,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersProcedures = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = 0;
         mContext = context;
     }
 
@@ -324,6 +328,14 @@ public class DataBaseHelper  {
         if(name.equals("conus")) {
             list.add("latest.txt");
             list.add("latest_radaronly.png");
+            return list;
+        }
+
+        /*
+         * Delete georef
+         */
+        if(name.equals("geoplates")) {
+            list.add(name + ".db");
             return list;
         }
 
@@ -2729,6 +2741,132 @@ public class DataBaseHelper  {
         }
         
         return null;
+    }
+
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryGeoPlates(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersGeoPlates) {
+            if(mDataBaseGeoPlates == null) {
+                mUsersGeoPlates = 0;
+                try {
+                    
+                    mDataBaseGeoPlates = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseGeoPlates = null;
+                }
+            }
+            if(mDataBaseGeoPlates == null) {
+                return c;
+            }
+            mUsersGeoPlates++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseGeoPlates == null) {
+            return c;
+        }
+        
+        if(!mDataBaseGeoPlates.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseGeoPlates.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesGeoPlates(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersGeoPlates) {
+            mUsersGeoPlates--;
+            if((mDataBaseGeoPlates != null) && (mUsersGeoPlates <= 0)) {
+                try {
+                    mDataBaseGeoPlates.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseGeoPlates = null;
+                mUsersGeoPlates = 0;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public float[] findGeoPlateMatrix(String name) {
+        float ret[] = new float[4];
+        boolean found = false;
+        
+        String qry = "select * from " + TABLE_GEOPLATES + " where " + PROC + "=='" + name +"'";
+        Cursor cursor = doQueryGeoPlates(qry, "geoplates.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+        
+                    /*
+                     * Database
+                     */
+                    ret[0] = cursor.getFloat(1);
+                    ret[1] = cursor.getFloat(2);
+                    ret[2] = cursor.getFloat(3);
+                    ret[3] = cursor.getFloat(4);
+                    found = true;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesGeoPlates(cursor);
+
+        if(found == false) {
+            return null;
+        }
+        
+        return ret;
     }
 
 }

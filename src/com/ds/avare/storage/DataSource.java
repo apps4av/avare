@@ -131,7 +131,16 @@ public class DataSource {
     public float[] findDiagramMatrix(String name) {
         return dbHelper.findDiagramMatrix(name);
     }
-    
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public float[] findGeoPlateMatrix(String name) {
+        return dbHelper.findGeoPlateMatrix(name);
+    }
+
     /**
      * 
      * @param name

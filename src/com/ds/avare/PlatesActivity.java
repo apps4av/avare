@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -90,25 +89,7 @@ public class PlatesActivity extends Activity {
              */
             String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
             if(aname != null) {
-                String pname = PlatesTagActivity.getNameFromPath(aname);
-                if(pname != null) {
-                    LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
-                    
-                    for(String t : tags) {
-                        String toks[] = t.split(",");
-                        if(toks[0].equals(pname)) {
-                            /*
-                             * Found
-                             */
-                            float matrix[] = new float[4];
-                            matrix[0] = (float)Double.parseDouble(toks[1]);
-                            matrix[1] = (float)Double.parseDouble(toks[2]);
-                            matrix[2] = (float)Double.parseDouble(toks[3]);
-                            matrix[3] = (float)Double.parseDouble(toks[4]);
-                            return matrix;
-                        }
-                    }
-                }
+                return(mService.getDBResource().findGeoPlateMatrix(aname));
             }
         }
         return null;
@@ -319,9 +300,9 @@ public class PlatesActivity extends Activity {
                         /*
                          * Limit geo tagging to taggable plates.
                          */
-                        if(aname.startsWith("ILS") || aname.startsWith("VOR") || aname.startsWith("LDA") || aname.startsWith("RNAV")
+                        if(aname.startsWith("ILS") || aname.startsWith("HI-ILS") || aname.startsWith("VOR") || aname.startsWith("LDA") || aname.startsWith("RNAV")
                                 || aname.startsWith("NDB") || aname.startsWith("LOC") || aname.startsWith("SDA") || aname.startsWith("GPS")
-                                || aname.startsWith("TACAN")) {
+                                || aname.startsWith("TACAN") || aname.startsWith("COPTER")) {
                             Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
                             startActivity(intent);
                         }
@@ -669,7 +650,7 @@ public class PlatesActivity extends Activity {
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "ILS", "LOC", "LDA", "SDA", "GPS", "RNAV-GPS", "RNAV-RNP", "VOR", "TACAN", "NDB", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "ILS", "LOC", "LDA", "SDA", "GPS", "RNAV-GPS", "RNAV-RNP", "VOR", "TACAN", "NDB", "COPTER", "LAHSO", "HOT-SPOT"};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
