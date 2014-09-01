@@ -1,6 +1,7 @@
 package com.ds.avare.userDefinedWaypoints;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Origin;
 
 import android.graphics.Canvas;
@@ -44,7 +45,7 @@ public class Waypoint {
     
     public static final int CYANDOT = 0;
     
-    public void draw(Canvas canvas, Origin origin, Paint paint, StorageService service, String dstBrg, float size ) {
+    public void draw(Canvas canvas, Origin origin, boolean trackUp, GpsParams gpsParams, Paint paint, StorageService service, String dstBrg, float size ) {
 		// Map the lat/lon to the x/y of the current canvas
 		float x = (float) origin.getOffsetX(mLon);
 		float y = (float) origin.getOffsetY(mLat);
@@ -55,13 +56,13 @@ public class Waypoint {
 				paint.setStyle(Style.FILL);
 				paint.setColor(Color.CYAN);
 				paint.setAlpha(0x9F);
-		        canvas.drawCircle(x, y, (float) size * 4, paint);
+		        canvas.drawCircle(x, y, (float) size * 3, paint);
 	
 		        // A black ring around it to highlight it a bit
 		        paint.setStyle(Style.STROKE);
 		        paint.setColor(Color.BLACK);
 		        paint.setStrokeWidth(size);
-		        canvas.drawCircle(x, y, (float) size * 4, paint);
+		        canvas.drawCircle(x, y, (float) size * 3, paint);
 		        break;
 			}
 		}
@@ -69,7 +70,16 @@ public class Waypoint {
 	    // Set the display text properties
 		paint.setStyle(Style.FILL);
 	    paint.setColor(Color.WHITE);
-	
+
+	    // If we are in track up mode, then we need to rotate the text so it shows
+	    // properly
+	    boolean bRotated = false;
+        if (trackUp && (gpsParams != null)) {
+        	bRotated = true;
+            canvas.save();
+            canvas.rotate((int) gpsParams.getBearing(), x, y);
+        }
+
 	    // Draw the name above
 	    service.getShadowedText().draw(canvas, paint, mName, Color.BLACK, x, y - size * 12);
 	    
@@ -77,5 +87,11 @@ public class Waypoint {
 	    if(true == mShowDist) {
 	        service.getShadowedText().draw(canvas, paint, dstBrg, Color.BLACK, x, y + size * 12);
 	    }
+	    
+	    // Restore canvas if we rotated it
+        if (true == bRotated) {
+            canvas.restore();
+        }
+
     }
 }

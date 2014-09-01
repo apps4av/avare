@@ -155,7 +155,7 @@ public class UDWMgr {
 	 * @param face Typeface to use
 	 * @param origin Top/Left origin of the logical display
 	 */
-	public void draw(Canvas canvas, Typeface face, Origin origin) {
+	public void draw(Canvas canvas, boolean trackUp, GpsParams gpsParams, Typeface face, Origin origin) {
 		
 		// If there are no points to display, then just get out of here
 		if(null == mPoints) {
@@ -169,7 +169,7 @@ public class UDWMgr {
 
 		// Loop through every point that we have and draw them
 		for (Waypoint p : mPoints) {
-			p.draw(canvas, origin, mPaint, mService, whereAndHowFar(p), m2Pix);
+			p.draw(canvas, origin, trackUp, gpsParams, mPaint, mService, whereAndHowFar(p), m2Pix);
 		}
 	}
 
