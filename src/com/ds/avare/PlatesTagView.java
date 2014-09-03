@@ -237,12 +237,15 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
                     + getHeight() / 2
                     + mPan.getMoveY() * scale
                     - mBitmap.getHeight() / 2 * scale);
-            canvas.drawCircle(x, y, 16, mPaint);
+            
+            mPaint.setAlpha(127);
             mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(x, y, 16, mPaint);
             mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
             mPaint.setColor(Color.RED);
             mPaint.setStrokeWidth(1);
             canvas.drawText(mAirportName, x + 16, y + 16, mPaint);
+            mPaint.setAlpha(255);
         }
     }
     

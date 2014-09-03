@@ -23,7 +23,6 @@ import java.util.Observer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.message.NetworkHelper;

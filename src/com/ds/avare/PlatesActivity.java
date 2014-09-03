@@ -17,6 +17,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -48,7 +50,7 @@ import android.widget.Toast;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity {
+public class PlatesActivity extends Activity implements Observer {
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -61,6 +63,7 @@ public class PlatesActivity extends Activity {
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
     private Button mDrawButton;
+    private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
     private ArrayList<String> mListAirports;
@@ -404,7 +407,7 @@ public class PlatesActivity extends Activity {
                 else {
                     airport = getLastIfAirport();
                 }
-                mService.setLastPlateAirport(mDestString);
+                mService.setLastPlateAirport(mDestString);                
             }
             else if(airport.equals(nearString)) {
                 int nearestNum = mService.getArea().getAirportsNumber();
@@ -433,6 +436,11 @@ public class PlatesActivity extends Activity {
             
             mPlateFound = null;
             if(null != airport) {
+                
+                mDest = new Destination(airport, Destination.BASE, mPref, mService);
+                mDest.addObserver(PlatesActivity.this);
+                mDest.find();
+
                 String mapFolder = mPref.mapsFolder();
 
                 /*
@@ -730,5 +738,13 @@ public class PlatesActivity extends Activity {
      */
     public static boolean doesAirportHaveAirportDiagram(String mapFolder, String id) {
         return new File(mapFolder + "/plates/" + id + "/" + AD + Preferences.IMAGE_EXTENSION).exists();
+    }
+    
+    
+    @Override
+    public void update(Observable observable, Object data) {
+        if(mDest.isFound()) {
+            mPlatesView.setAirport(mDest.getID(), mDest.getLocation().getLongitude(), mDest.getLocation().getLatitude());
+        }
     }
 }
