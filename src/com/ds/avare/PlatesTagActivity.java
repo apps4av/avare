@@ -68,10 +68,8 @@ public class PlatesTagActivity extends Activity implements Observer {
     private Button                       mGeotagButton;
     private Button                       mVerifyButton;
     private Button                       mClearButton;
-    private Button                       mClearAllButton;
-    private Button                       mGetButton;
+    private Button                       mReportButton;
     private Button                       mShareButton;
-    private Button                       mShareAllButton;
     private EditText                     mText;
     private Spinner                      mSpinner;
     private Toast                        mToast;
@@ -558,106 +556,9 @@ public class PlatesTagActivity extends Activity implements Observer {
         /*
          * Share button
          */
-        mShareAllButton = (Button)view.findViewById(R.id.platestag_button_share_all);
-        mShareAllButton.getBackground().setAlpha(255);
-        mShareAllButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.GeoShareTextAll));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        
-                        /*
-                         * Submit to apps4av server
-                         */
-                        if(mPlateTask != null) {
-                            if(mPlateTask.getStatus() != AsyncTask.Status.FINISHED) {
-                                mPlateTask.cancel(true);
-                            }
-                        }
-                        
-                        mPlateTask = new AsyncTask<Void, Void, Boolean>() {
-
-                            @Override
-                            protected Boolean doInBackground(Void... vals) {
-                                
-                                // Get all plates geo tagged
-                                for(String t : mTags) {
-                                    /*
-                                     * Already tagged. Get info
-                                     */
-                                    String tokens[] = t.split(",");
-                                    
-                                    // Submit to server with username
-                                    String serverUrl = NetworkHelper.getServer() + "submit_plate.php";
-                                    Map<String, String> params = new HashMap<String, String>();
-                                    params.put("email", PossibleEmail.get(getApplicationContext()));
-                                    params.put("procedure", getNameFromPath(tokens[0]));
-                                    params.put("dx", tokens[1]);
-                                    params.put("dy", tokens[2]);
-                                    params.put("lon", tokens[3]);
-                                    params.put("lat", tokens[4]);
-                                    try {
-                                        publishProgress();
-                                        NetworkHelper.post(serverUrl, params);
-                                    } 
-                                    catch (Exception e) {
-                                        return false;
-                                    }
-                                }
-                                return true;
-                            }
-
-                            @Override
-                            protected void onProgressUpdate(Void... vals) {
-                                mToast.setText(getString(R.string.Sharing));
-                                mToast.show();                            
-                            }
-
-                            @Override
-                            protected void onPostExecute(Boolean result) {
-                                if(result) {
-                                    mToast.setText(getString(R.string.GeoShareDone));
-                                    mToast.show();                    
-                                }
-                                else {
-                                    mToast.setText(getString(R.string.GeoShareFailed));
-                                    mToast.show();                    
-                                }
-                             }
-                        };
-                        
-                        mPlateTask.execute(null, null, null);
-
-                    }
-                });
-                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                mAlertDialog.show();
-
-            }
-        });
-
-        /*
-         * Share button
-         */
-        mGetButton = (Button)view.findViewById(R.id.platestag_button_get);
-        mGetButton.getBackground().setAlpha(255);
-        mGetButton.setOnClickListener(new OnClickListener() {
+        mReportButton = (Button)view.findViewById(R.id.platestag_button_report);
+        mReportButton.getBackground().setAlpha(255);
+        mReportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -665,7 +566,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                 mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.GeoShareGetPrompt));
+                mAlertDialog.setMessage(getString(R.string.GeoShareReportPrompt));
                 mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
                     /* (non-Javadoc)
                      * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
@@ -688,7 +589,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                             @Override
                             protected Boolean doInBackground(Void... vals) {
                                 // Submit to server with username
-                                String serverUrl = NetworkHelper.getServer() + "get_plate.php";
+                                String serverUrl = NetworkHelper.getServer() + "report_plate.php";
                                 Map<String, String> params = new HashMap<String, String>();
                                 params.put("email", PossibleEmail.get(getApplicationContext()));
                                 params.put("procedure", mName);
@@ -707,37 +608,18 @@ public class PlatesTagActivity extends Activity implements Observer {
 
                             @Override
                             protected void onProgressUpdate(Void... vals) {
-                                mToast.setText(getString(R.string.SharingGet));
+                                mToast.setText(getString(R.string.SharingReport));
                                 mToast.show();                            
                             }
 
                             @Override
                             protected void onPostExecute(Boolean result) {
                                 if(result) {
-                                    /*
-                                     * Now parse
-                                     */
-                                    clear();
-                                    try {
-                                        JSONObject jObject=new JSONObject(ret);
-                                        mDx = jObject.getDouble("dx");
-                                        mDy = jObject.getDouble("dy");
-                                        mLonTopLeft = jObject.getDouble("lon");
-                                        mLatTopLeft = jObject.getDouble("lat");
-                                    } catch (JSONException e) {
-                                        mToast.setText(getString(R.string.GeoShareGetFailed));
-                                        mToast.show();
-                                        return;
-                                    }
-                                    mToast.setText(getString(R.string.GeoShareGetOK));
+                                    mToast.setText(getString(R.string.GeoShareReportOK));
                                     mToast.show();
-                                    /*
-                                     * Set it up
-                                     */
-                                    store();
                                 }
                                 else {
-                                    mToast.setText(getString(R.string.GeoShareGetFailed));
+                                    mToast.setText(getString(R.string.GeoShareReportFailed));
                                     mToast.show();                    
                                 }
                              }
@@ -795,44 +677,6 @@ public class PlatesTagActivity extends Activity implements Observer {
 
             }
         });      
-
-        /*
-         * Clear button
-         */
-        mClearAllButton = (Button)view.findViewById(R.id.platestag_button_clear_all);
-        mClearAllButton.getBackground().setAlpha(255);
-        mClearAllButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.ClearedAllPrompt));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        clear();
-                        mTags.clear();
-                        mPref.setGeotags("");
-                        dialog.dismiss();
-                    }
-                });
-                mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                mAlertDialog.show();
-
-            }
-        });      
-
 
         mText = (EditText)view.findViewById(R.id.platestag_text_input);
         mService = null;
@@ -1050,7 +894,6 @@ public class PlatesTagActivity extends Activity implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
-        // TODO Auto-generated method stub
         if(mDest.isFound() && mTagged) {
             drawAirport();
         }
