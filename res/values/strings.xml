@@ -312,7 +312,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="PointName">&quot;Name of point&quot;</string>
     <string name="Share">&quot;Share&quot;</string>
     <string name="Sharing">&quot;Sharing the info over the Internet . . .&quot;</string>
-    <string name="GeoShareText">&quot;Are you sure you want to submit the plate's Geo. tag information? Have you verified it to be accurate for use by the others? Sharing requires permissions from Apps4Av forum.&quot;</string>
+    <string name="GeoShareText">&quot;Are you sure you want to submit the plate's Geo. tag information? Have you verified it to be accurate for use by the others?&quot;</string>
     <string name="GeoShareTextAll">&quot;Are you sure you want to submit all of your Geo. tagged plates info? Have you verified all of them to be accurate for use by the others?&quot;</string>
     <string name="GeoShareDone">&quot;Geo. tag information submitted, and will be available to everyone after review&quot;</string>
     <string name="GeoShareFailed">&quot;Geo. tag information could not be submitted. Are you connected to the Internet?&quot;</string>
