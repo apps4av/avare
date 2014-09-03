@@ -198,7 +198,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
-        <item>User Georeferenced Plates Data</item>
+        <item>Plates Georeference Info.</item>
         <item>Minimums T/A</item>
         <item>Alabama</item>
 		<item>Alaska</item>

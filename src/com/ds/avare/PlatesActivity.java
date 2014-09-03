@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -89,7 +90,37 @@ public class PlatesActivity extends Activity {
              */
             String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
             if(aname != null) {
-                return(mService.getDBResource().findGeoPlateMatrix(aname));
+                float ret[];
+                /*
+                 * First try to get plate info from downloaded plates. If not found there, do it local tags
+                 */
+                ret = mService.getDBResource().findGeoPlateMatrix(aname);
+                if(null != ret) {
+                    return ret;
+                }
+                
+                /*
+                 * Local plates are useful for tagging new plates, and for tagging own maps
+                 * Local plates tag info is in preferences.
+                 */
+                String pname = PlatesTagActivity.getNameFromPath(aname);
+                if(pname != null) {
+                    LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
+                    for(String t : tags) {
+                        String toks[] = t.split(",");
+                        if(toks[0].equals(pname)) {
+                            /*
+                            * Found
+                            */
+                            float matrix[] = new float[4];
+                            matrix[0] = (float)Double.parseDouble(toks[1]);
+                            matrix[1] = (float)Double.parseDouble(toks[2]);
+                            matrix[2] = (float)Double.parseDouble(toks[3]);
+                            matrix[3] = (float)Double.parseDouble(toks[4]);
+                            return matrix;
+                        }
+                    }
+                }
             }
         }
         return null;
