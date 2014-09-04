@@ -77,7 +77,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Share"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/platestag_button_clear"
+        android:layout_alignParentRight="true"
         />
     
     <Button
@@ -86,8 +86,8 @@ Redistribution and use in source and binary forms, with or without modification,
        android:layout_height="wrap_content"
        android:text="@string/Report"
        android:layout_margin="1dp"
-       android:layout_alignParentTop="true"
-       android:layout_toRightOf="@+id/platestag_button_share"
+       android:layout_alignParentBottom="true"
+       android:layout_alignParentRight="true"
        />
     
     
