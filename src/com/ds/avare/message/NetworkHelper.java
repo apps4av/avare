@@ -72,9 +72,12 @@ public class NetworkHelper {
         
         // Return value
         byte ret[] = new byte[4096];
-        conn.getInputStream().read(ret);
+        int len = conn.getInputStream().read(ret);
         conn.disconnect();
-        return new String(ret);
+        if(len > 0) {
+            return new String(ret);
+        }
+        return "";
     }
 
 }

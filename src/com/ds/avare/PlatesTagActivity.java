@@ -495,6 +495,8 @@ public class PlatesTagActivity extends Activity implements Observer {
                         
                         mPlateTask = new AsyncTask<Void, Void, Boolean>() {
 
+                            String err = "";
+                            
                             @Override
                             protected Boolean doInBackground(Void... vals) {
                                 // Submit to server with username
@@ -508,7 +510,10 @@ public class PlatesTagActivity extends Activity implements Observer {
                                 params.put("lat", "" + mLatTopLeft);
                                 try {
                                     publishProgress();
-                                    NetworkHelper.post(serverUrl, params);
+                                    err = NetworkHelper.post(serverUrl, params);
+                                    if(!err.equals("")) {
+                                        return false;
+                                    }
                                     return true;
                                 } 
                                 catch (Exception e) {
@@ -529,7 +534,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                                     mToast.show();                    
                                 }
                                 else {
-                                    mToast.setText(getString(R.string.GeoShareFailed));
+                                    mToast.setText(getString(R.string.GeoShareFailed) + " " + err);
                                     mToast.show();                    
                                 }
                              }
