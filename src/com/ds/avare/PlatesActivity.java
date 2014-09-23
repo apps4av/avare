@@ -94,13 +94,10 @@ public class PlatesActivity extends Activity implements Observer {
             String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
             if(aname != null) {
                 float ret[];
+                
                 /*
-                 * First try to get plate info from downloaded plates. If not found there, do it local tags
+                 * First try to get plate info from local tags, if not found there, use downloaded plates
                  */
-                ret = mService.getDBResource().findGeoPlateMatrix(aname);
-                if(null != ret) {
-                    return ret;
-                }
                 
                 /*
                  * Local plates are useful for tagging new plates, and for tagging own maps
@@ -124,6 +121,15 @@ public class PlatesActivity extends Activity implements Observer {
                         }
                     }
                 }
+                
+                /*
+                 * Downloaded one
+                 */
+                ret = mService.getDBResource().findGeoPlateMatrix(aname);
+                if(null != ret) {
+                    return ret;
+                }
+                
             }
         }
         return null;
