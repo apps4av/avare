@@ -508,6 +508,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                                 params.put("dy", "" + mDy);
                                 params.put("lon", "" + mLonTopLeft);
                                 params.put("lat", "" + mLatTopLeft);
+                                params.put("code", "" + mPref.getGeoCode());
                                 try {
                                     publishProgress();
                                     err = NetworkHelper.post(serverUrl, params);
@@ -529,13 +530,24 @@ public class PlatesTagActivity extends Activity implements Observer {
 
                             @Override
                             protected void onPostExecute(Boolean result) {
+                                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                                mAlertDialog.setCancelable(false);
+                                mAlertDialog.setCanceledOnTouchOutside(false);
+                                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                                    /* (non-Javadoc)
+                                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                                     */
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                                 if(result) {
-                                    mToast.setText(getString(R.string.GeoShareDone));
-                                    mToast.show();                    
+                                    mAlertDialog.setMessage(getString(R.string.GeoShareDone));
+                                    mAlertDialog.show();
                                 }
                                 else {
-                                    mToast.setText(getString(R.string.GeoShareFailed) + " " + err);
-                                    mToast.show();                    
+                                    mAlertDialog.setMessage(getString(R.string.GeoShareFailed) + " " + err);
+                                    mAlertDialog.show();
                                 }
                              }
                         };

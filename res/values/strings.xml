@@ -315,10 +315,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoShareText">&quot;Are you sure you want to submit the plate's Geo. tag information? Have you verified it to be accurate for use by the others?&quot;</string>
     <string name="GeoShareTextAll">&quot;Are you sure you want to submit all of your Geo. tagged plates info? Have you verified all of them to be accurate for use by the others?&quot;</string>
     <string name="GeoShareDone">&quot;Geo. tag information submitted, and will be available to everyone after review&quot;</string>
-    <string name="GeoShareFailed">&quot;Geo. tag information could not be submitted. Are you connected to the Internet?&quot;</string>
+    <string name="GeoShareFailed">&quot;Geo. tag information could not be submitted.&quot;</string>
     <string name="Report">&quot;Report&quot;</string>
     <string name="SharingReport">&quot;Reporting issues with Geo. tag information over the Internet . . .&quot;</string>
     <string name="GeoShareReportOK">&quot;Reported issues with Geo. tag information for correction&quot;</string>
     <string name="GeoShareReportFailed">&quot;Could not report issues with Geo. tag information for correction&quot;</string>
     <string name="GeoShareReportPrompt">&quot;Would you like to report that this plate is not correctly showing your position while flying this procedure?&quot;</string>
+    <string name="GeoCodeLabel">&quot;Geo. Reference Password&quot;</string>
+    <string name="GeoCode">&quot;GeoPassword&quot;</string>
+    <string name="GeoCodeSummary">&quot;Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)&quot;</string>
 </resources>

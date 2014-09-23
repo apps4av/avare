@@ -40,6 +40,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
             android:title="@string/UDWLabel" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="@string/GeoCode"
+            android:summary="@string/GeoCodeSummary"
+            android:title="@string/GeoCodeLabel" />
         </PreferenceScreen>
 
     <PreferenceScreen 

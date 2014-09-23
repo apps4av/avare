@@ -868,6 +868,14 @@ public class Preferences {
 
     /**
      * 
+     * @return
+     */
+    public String getGeoCode() {
+        return mPref.getString(mContext.getString(R.string.GeoCode), "");
+    }
+
+    /**
+     * 
      * @param tags
      */
     public void setGeotags(String tags) {

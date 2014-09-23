@@ -342,7 +342,7 @@ public class PlatesActivity extends Activity implements Observer {
                          */
                         if(aname.startsWith("ILS") || aname.startsWith("HI-ILS") || aname.startsWith("VOR") || aname.startsWith("LDA") || aname.startsWith("RNAV")
                                 || aname.startsWith("NDB") || aname.startsWith("LOC") || aname.startsWith("SDA") || aname.startsWith("GPS")
-                                || aname.startsWith("TACAN") || aname.startsWith("COPTER")) {
+                                || aname.startsWith("TACAN") || aname.startsWith("COPTER") || aname.startsWith("CUSTOM")) {
                             Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
                             startActivity(intent);
                         }
@@ -695,7 +695,7 @@ public class PlatesActivity extends Activity implements Observer {
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "ILS", "LOC", "LDA", "SDA", "GPS", "RNAV-GPS", "RNAV-RNP", "VOR", "TACAN", "NDB", "COPTER", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "ILS", "LOC", "LDA", "SDA", "GPS", "RNAV-GPS", "RNAV-RNP", "VOR", "TACAN", "NDB", "COPTER", "CUSTOM", "LAHSO", "HOT-SPOT"};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
