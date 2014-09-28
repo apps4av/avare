@@ -156,6 +156,7 @@ public class NearestActivity extends Activity  implements Observer {
                 if(mService != null) {
                     mService.setLastPlateAirport(mSelectedAirportId);
                     mService.setLastPlateIndex(0);
+                    mService.setLastApproachIndex(0);
                 }
                 ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
             }           

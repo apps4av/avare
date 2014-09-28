@@ -300,6 +300,7 @@ public class SearchActivity extends Activity implements Observer {
                     if(mService != null) {
                         mService.setLastPlateAirport(id);
                         mService.setLastPlateIndex(0);
+                        mService.setLastApproachIndex(0);
                         ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
                     }
                 }

@@ -44,6 +44,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ToggleButton; // TB
 import android.widget.Toast;
 
 /**
@@ -59,10 +60,11 @@ public class PlatesActivity extends Activity implements Observer {
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mPlatesTagButton;
+    private Button mApproachesButton;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
-    private Button mDrawButton;
+    private ToggleButton mDrawButton; // TB
     private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
@@ -70,6 +72,21 @@ public class PlatesActivity extends Activity implements Observer {
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
+    
+    // TB
+    private ArrayList<String> mListApproaches;
+    private String mApproachFound[];
+    private String mPlateName; // for favorites
+    private String mPlatePath; // for favorites
+    private LockDraw LockDrawState = LockDraw.Locked; // set locked
+    
+    enum LockDraw {
+    	Pan,
+    	Draw,
+    	Locked
+    };
+    // /TB
+
 
     public static final String AD = "AIRPORT-DIAGRAM";
     
@@ -208,6 +225,25 @@ public class PlatesActivity extends Activity implements Observer {
         return (null != mPlatesPopup && mPlatesPopup.isShowing()) || 
                 (null != mAirportPopup && mAirportPopup.isShowing());
     }
+    
+ // TB
+    private void SetDrawLock() {
+    	 mPlatesView.setDraw(LockDrawState == LockDraw.Draw);
+         mPlatesView.setLock(LockDrawState == LockDraw.Locked);
+         mDrawClearButton.setVisibility(LockDrawState == LockDraw.Draw ? View.VISIBLE : View.INVISIBLE);
+         mDrawButton.setChecked(LockDrawState != LockDraw.Pan);
+         if (LockDrawState == LockDraw.Draw) {
+        	 mDrawButton.setText(R.string.Draw);
+         }
+         else if (LockDrawState == LockDraw.Locked) {
+        	 mDrawButton.setText(R.string.Locked);
+         }
+         else  {
+        	 mDrawButton.setText(R.string.Pan);
+         }
+    }
+ // /TB
+
 
     /**
      * 
@@ -243,7 +279,7 @@ public class PlatesActivity extends Activity implements Observer {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        setPlateFromPos(which);
+                        setPlateFromPos(which, false);
                     }
                 };
                 
@@ -255,12 +291,40 @@ public class PlatesActivity extends Activity implements Observer {
                 mPlatesPopup = builder.setSingleChoiceItems(mListPlates.toArray(new String[mListPlates.size()]), index, onClickListener).create();
                 mPlatesPopup.show();
             }
-        });         
+        });
+        
+        mApproachesButton = (Button)view.findViewById(R.id.plates_button_approaches);
+        mApproachesButton.setText("APP");
+        mApproachesButton.getBackground().setAlpha(255);
+        mApproachesButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListApproaches.size() == 0 || arePopupsShowing()) {
+                    return;
+                }
+                
+                DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        setPlateFromPos(which, true);
+                    }
+                };
+                
+                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                int index = mService.getLastApproachIndex();
+                if(index >= mListApproaches.size()) {
+                    index = 0;
+                }
+                mPlatesPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), index, onClickListener).create();
+                mPlatesPopup.show();
+            }
+        });   
         
         /*
          * Draw
          */
-        mDrawButton = (Button)view.findViewById(R.id.plate_button_draw);
+        mDrawButton = (ToggleButton)view.findViewById(R.id.plate_button_draw);
         mDrawButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -269,14 +333,18 @@ public class PlatesActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
-                    mPlatesView.setDraw(true);
-                    mDrawClearButton.setVisibility(View.VISIBLE);
+            	// TB
+            	if(LockDrawState == LockDraw.Pan) { // Pan, set Draw
+                    LockDrawState = LockDraw.Draw;
                 }
-                else {
-                    mPlatesView.setDraw(false);                    
-                    mDrawClearButton.setVisibility(View.INVISIBLE);
+                else if(LockDrawState == LockDraw.Draw) { // Draw, set Locked
+                	LockDrawState = LockDraw.Locked;
                 }
+                else if(LockDrawState == LockDraw.Locked) { // Locked, set Pan
+                    LockDrawState = LockDraw.Pan;
+                }
+            	SetDrawLock();
+            	// /TB
             }
             
         });
@@ -358,16 +426,38 @@ public class PlatesActivity extends Activity implements Observer {
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         mService = null;
+        
+     // TB
+        // set locked as default
+        SetDrawLock();
+     // /TB
     }
     
-    private void setPlateFromPos(int pos) {
-        if(mService != null && mPlateFound != null) {
-            if(pos >= mPlateFound.length) {
+    private void setPlateFromPos(int pos, Boolean pfApproach) {
+    	String[] plate;
+    	if (pfApproach) {
+    		plate = mApproachFound;
+    	}
+    	else {
+    		plate = mPlateFound;
+    	}
+        if(mService != null && plate != null) {
+            if(pos >= plate.length) {
                 pos = 0;
             }
-            mService.loadDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
+            mService.loadDiagram(plate[pos] + Preferences.IMAGE_EXTENSION);
             mPlatesView.setBitmap(mService.getDiagram());
-            String name = mListPlates.get(pos);
+            String name;
+            if (pfApproach) {
+            	name = mListApproaches.get(pos);
+        	}
+            else {
+            	name = mListPlates.get(pos);
+            }
+            
+            // for favorites
+            mPlateName = name;
+            mPlatePath = plate[pos];
 
             mPlatesView.setParams(null, true);
             if(name.startsWith(Destination.AD)) {
@@ -377,7 +467,12 @@ public class PlatesActivity extends Activity implements Observer {
                 mPlatesView.setParams(getMatrix(name), false);                            
             }
             mPlatesButton.setText(name);
-            mService.setLastPlateIndex(pos);
+            if (pfApproach) {
+            	mService.setLastApproachIndex(pos);
+            }
+            else {
+            	mService.setLastPlateIndex(pos);
+            }
         }
         else {
             mPlatesButton.setText("");
@@ -441,6 +536,7 @@ public class PlatesActivity extends Activity implements Observer {
             }
             
             mPlateFound = null;
+            mApproachFound = null;
             if(null != airport) {
                 
                 mDest = new Destination(airport, Destination.BASE, mPref, mService);
@@ -516,6 +612,10 @@ public class PlatesActivity extends Activity implements Observer {
             }
 
             if(null != mPlateFound) {
+            	// TB split in approach and non-approach
+                ArrayList<String> app = new ArrayList<String>();
+                ArrayList<String> nonapp = new ArrayList<String>();
+                
                 /*
                  * GPS taxi for this airport?
                  */
@@ -524,8 +624,25 @@ public class PlatesActivity extends Activity implements Observer {
                 mListPlates.clear();
                 for(int plate = 0; plate < mPlateFound.length; plate++) {
                     String tokens[] = mPlateFound[plate].split("/");
-                    mListPlates.add(tokens[tokens.length - 1]);
-                }   
+                    if (!isApproach(tokens[tokens.length - 1])) { // TB
+                    	mListPlates.add(tokens[tokens.length - 1]);
+                    	nonapp.add(mPlateFound[plate]);
+                    } // TB
+                }
+                
+                // TB
+                mListApproaches.clear();
+                for(int plate = 0; plate < mPlateFound.length; plate++) {
+                    String tokens[] = mPlateFound[plate].split("/");
+                    if (isApproach(tokens[tokens.length - 1])) {
+                    	mListApproaches.add(tokens[tokens.length - 1]);
+                    	app.add(mPlateFound[plate]);
+                    }
+                }
+                
+                mPlateFound = nonapp.toArray(new String[nonapp.size()]);
+                mApproachFound = app.toArray(new String[app.size()]);
+                // /TB
                 
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);
@@ -533,7 +650,7 @@ public class PlatesActivity extends Activity implements Observer {
                 /*
                  * A list of plates available for this airport
                  */
-                setPlateFromPos(airport.equals(oldAirport) ? mService.getLastPlateIndex() : 0);
+                setPlateFromPos(airport.equals(oldAirport) ? mService.getLastPlateIndex() : 0, false);
             }
             else {
                 mAirportButton.setText(mService.getLastPlateAirport());
@@ -567,6 +684,7 @@ public class PlatesActivity extends Activity implements Observer {
             mPlatesView.setService(mService);
             
             mListPlates = new ArrayList<String>();
+            mListApproaches = new ArrayList<String>();
             
             mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
@@ -681,6 +799,22 @@ public class PlatesActivity extends Activity implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+    
+    public static Boolean isApproach(String pstrProcedure) {
+    	return 
+    			pstrProcedure.startsWith("ILS") || 
+    			pstrProcedure.startsWith("HI-ILS") || 
+    			pstrProcedure.startsWith("VOR") || 
+    			pstrProcedure.startsWith("LDA") || 
+    			pstrProcedure.startsWith("RNAV") || 
+    			pstrProcedure.startsWith("NDB") || 
+                pstrProcedure.startsWith("LOC") || 
+                pstrProcedure.startsWith("SDA") || 
+                pstrProcedure.startsWith("GPS") || 
+                pstrProcedure.startsWith("TACAN") || 
+                pstrProcedure.startsWith("COPTER");
+    		//"RNAV-GPS", "RNAV-RNP",
     }
    
     /**

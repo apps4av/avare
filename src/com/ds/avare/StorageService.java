@@ -104,6 +104,7 @@ public class StorageService extends Service {
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
+    private int mLastApproachIndex;
     
 	/*
      * Last location and its sem for sending NMEA to the world
@@ -283,6 +284,7 @@ public class StorageService extends Service {
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
+        mLastApproachIndex = 0;
         mElevTile = new ElevationTile(getApplicationContext());
         mCheckLists = null;
         
@@ -941,6 +943,22 @@ public class StorageService extends Service {
      */
     public int getLastPlateIndex() {
         return mLastPlateIndex;
+    }
+    
+    /**
+     * 
+     * @param index
+     */
+    public void setLastApproachIndex(int index) {
+        mLastApproachIndex = index;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public int getLastApproachIndex() {
+        return mLastApproachIndex;
     }
  
     /**
