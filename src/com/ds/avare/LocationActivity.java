@@ -149,6 +149,7 @@ public class LocationActivity extends Activity implements Observer {
                                 nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
+                            mService.setLastApproachIndex(0);
                             ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
                         }
                     }

@@ -65,6 +65,11 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * Is it drawing?
      */
     private boolean                   mDraw;
+    
+    /*
+     * Can we move it?
+     */
+    private boolean                   mLock;
 
     /*
      * dip to pix scaling factor
@@ -171,8 +176,16 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * @param name
      */
     public void setBitmap(BitmapHolder holder) {
+    	// TB
+    	boolean wasnull = mBitmap == null;
         mBitmap = holder;
-        postInvalidate();
+        if (wasnull) {
+        	center();
+        }
+        else {
+        	postInvalidate();
+        }
+        // /TB
     }
 
     /* (non-Javadoc)
@@ -214,6 +227,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                  */
                 mService.getPixelDraw().addPoint(x, y);
                 return true;
+            }
+            
+            if(mLock) { // dont't move
+            	return true;
             }
 
             /*
@@ -479,6 +496,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     public boolean getDraw() {
         return mDraw;
+    }
+    
+    /**
+     * 
+     * @param b
+     */
+    public void setLock(boolean b) {
+        mLock = b;
     }
 
     /**

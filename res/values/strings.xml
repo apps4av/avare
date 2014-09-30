@@ -273,6 +273,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Import">Import</string>
     <string name="Advertisements">Ads</string>
     <string name="Lock">Lock</string>
+    <string name="Locked">Locked</string><!--TB-->
+    <string name="Favorites">Favorites</string><!--TB-->
+    <string name="PlusFavs">+Favs</string><!--TB-->
     <string name="Edit">Edit</string>
     <string name="ExternalFolder">Use the default external folder</string>
     <string name="online">Edit Account</string>

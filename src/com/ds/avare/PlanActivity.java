@@ -254,6 +254,7 @@ public class PlanActivity extends Activity  implements Observer {
                 if(mService != null) {
                     mService.setLastPlateAirport(mDestination.getID());
                     mService.setLastPlateIndex(0);
+                    mService.setLastApproachIndex(0);
                 }
                 ((MainActivity) PlanActivity.this.getParent()).showPlatesTab();
             }   
