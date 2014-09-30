@@ -543,11 +543,23 @@ public class PlatesTagActivity extends Activity implements Observer {
                                 });
                                 if(result) {
                                     mAlertDialog.setMessage(getString(R.string.GeoShareDone));
-                                    mAlertDialog.show();
+                                    /*
+                                     * This try catch because it will give root excpetion as activity from which 
+                                     * dialog is created is killed but async task is running
+                                     */
+                                    try {
+                                        mAlertDialog.show();
+                                    }
+                                    catch (Exception e) {
+                                    }
                                 }
                                 else {
                                     mAlertDialog.setMessage(getString(R.string.GeoShareFailed) + " " + err);
-                                    mAlertDialog.show();
+                                    try {
+                                        mAlertDialog.show();
+                                    }
+                                    catch (Exception e) {
+                                    }
                                 }
                              }
                         };
