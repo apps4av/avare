@@ -833,6 +833,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean showGameTFRs() {
+        return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean showPlateInfoLines() {
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }

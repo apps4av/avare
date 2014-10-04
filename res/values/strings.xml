@@ -324,4 +324,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoCodeLabel">&quot;Geo. Reference Password&quot;</string>
     <string name="GeoCode">&quot;GeoPassword&quot;</string>
     <string name="GeoCodeSummary">&quot;Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)&quot;</string>
+    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
+    <string name="GameTFR">&quot;GameTFR&quot;</string>
+    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
 </resources>

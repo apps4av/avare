@@ -20,6 +20,7 @@ import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -765,6 +766,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             for(int shape = 0; shape < shapes.size(); shape++) {
                 shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
             }
+        }
+        
+        /*
+         * Possible game TFRs, Orange
+         */
+        if(null == mPointProjection && mPref.showGameTFRs()) {
+            mPaint.setColor(0xFFFF4500); 
+            mPaint.setStrokeWidth(3 * mDipToPix);
+            mPaint.setShadowLayer(0, 0, 0, 0);
+            Style style = mPaint.getStyle();
+            mPaint.setStyle(Style.STROKE);
+            float radius = Math.abs((float)((GameTFR.RADIUS_NM * Preferences.NM_TO_LATITUDE) * (1.0 / mMovement.getLatitudePerPixel()) * mScale.getScaleCorrected()));
+            for(int shape = 0; shape < GameTFR.GAME_TFR_COORDS.length; shape++) {
+                double lat = GameTFR.GAME_TFR_COORDS[shape][0];
+                double lon = GameTFR.GAME_TFR_COORDS[shape][1];
+                float x = (float)mOrigin.getOffsetX(lon);
+                float y = (float)mOrigin.getOffsetY(lat);
+                canvas.drawCircle(x, y, radius, mPaint);
+            }
+            mPaint.setStyle(style);
         }
     }
 

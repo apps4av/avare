@@ -185,6 +185,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ADSBTrafficSummary"
             android:title="@string/ADSBTrafficLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/GameTFR"
+            android:summary="@string/GameTFRSummary"
+            android:title="@string/GameTFRLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/Runways"
             android:summary="@string/RunwaysSummary"
