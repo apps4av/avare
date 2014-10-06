@@ -296,6 +296,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UDWSummary">&quot;Select the directory where user defined waypoint files are stored.&quot;</string>
     <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
     <string name="Geotag">&quot;Geotag&quot;</string>
+    <string name="Tag">&quot;Tag&quot;</string>
     <string name="ToTag">&quot;To geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.&quot;</string>
     <string name="AlreadyTagged">&quot;This plate is already tagged and stored. Press clear to re-tag.&quot;</string>
     <string name="InvalidPoint">&quot;Invalid Point specified.&quot;</string>

@@ -29,17 +29,42 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"/>
     
-    <Button
-        android:id="@+id/plates_button_tag"
-        android:textStyle="bold"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Geotag"
-        android:visibility="visible" />        
-    
-       <Button
+	    <Button
+	        android:id="@+id/plates_button_tag"
+	        android:textStyle="bold"
+	        android:layout_centerVertical="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/Tag"
+	        android:visibility="visible" />        
+
+	    <Button
+            android:id="@+id/plates_button_timer"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Set"
+            android:visibility="visible" /> 
+                   
+	    <Chronometer
+	        android:id="@+id/plates_chronometer"
+	        android:format="%s"
+	        android:layout_above="@+id/plates_button_timer"
+            android:layout_alignParentLeft="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+            android:textColor="#FF00FF00"
+            android:shadowColor="#FF000000"
+            android:shadowDx="4"
+            android:shadowDy="4"
+            android:shadowRadius="4"
+            android:visibility="invisible"
+	        android:textSize="40sp"/>   
+	        
+        <Button
             android:id="@+id/plate_button_draw_clear"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"

@@ -40,10 +40,12 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 /**
@@ -59,6 +61,8 @@ public class PlatesActivity extends Activity implements Observer {
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mPlatesTagButton;
+    private Button mPlatesTimerButton;
+    private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
@@ -70,6 +74,7 @@ public class PlatesActivity extends Activity implements Observer {
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
+    private boolean mCounting;
 
     public static final String AD = "AIRPORT-DIAGRAM";
     
@@ -257,6 +262,32 @@ public class PlatesActivity extends Activity implements Observer {
             }
         });         
         
+        /*
+         * Timer
+         */
+        mChronometer = (Chronometer)view.findViewById(R.id.plates_chronometer);
+        mCounting = false;
+        mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
+        mPlatesTimerButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(!mCounting) {
+                    /*
+                     * Show when counting, dont show when stopped
+                     */
+                    mCounting = true;
+                    mChronometer.setVisibility(View.VISIBLE);
+                    mChronometer.setBase(SystemClock.elapsedRealtime());
+                    mChronometer.start();
+                }
+                else {
+                    mCounting = false;
+                    mChronometer.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
         /*
          * Draw
          */
