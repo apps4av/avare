@@ -46,7 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentLeft="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Set"
+            android:text="@string/Timer"
             android:visibility="visible" /> 
                    
 	    <Chronometer
@@ -56,8 +56,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentLeft="true"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-            android:textColor="#FF00FF00"
-            android:shadowColor="#FF000000"
+            android:textColor="#ffe35327"
+            android:shadowColor="#ff000000"
             android:shadowDx="4"
             android:shadowDy="4"
             android:shadowRadius="4"
