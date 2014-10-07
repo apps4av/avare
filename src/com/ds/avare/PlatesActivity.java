@@ -52,7 +52,7 @@ import android.widget.Toast;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity implements Observer {
+public class PlatesActivity extends Activity implements Observer, Chronometer.OnChronometerTickListener  {
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -263,7 +263,7 @@ public class PlatesActivity extends Activity implements Observer {
         });         
         
         /*
-         * Timer
+         * Timer, make chronometer invisible. Just use button to show time
          */
         mChronometer = (Chronometer)view.findViewById(R.id.plates_chronometer);
         mCounting = false;
@@ -277,13 +277,14 @@ public class PlatesActivity extends Activity implements Observer {
                      * Show when counting, dont show when stopped
                      */
                     mCounting = true;
-                    mChronometer.setVisibility(View.VISIBLE);
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
+                    mChronometer.setOnChronometerTickListener(PlatesActivity.this);
                 }
                 else {
                     mCounting = false;
-                    mChronometer.setVisibility(View.INVISIBLE);
+                    mChronometer.setOnChronometerTickListener(null);
+                    mPlatesTimerButton.setText(getString(R.string.Timer));
                 }
             }
         });
@@ -783,5 +784,13 @@ public class PlatesActivity extends Activity implements Observer {
         if(mDest.isFound()) {
             mPlatesView.setAirport(mDest.getID(), mDest.getLocation().getLongitude(), mDest.getLocation().getLatitude());
         }
+    }
+
+    @Override
+    public void onChronometerTick(Chronometer chronometer) {
+        /*
+         * Set the label of timer button to time
+         */
+        mPlatesTimerButton.setText(chronometer.getText());
     }
 }
