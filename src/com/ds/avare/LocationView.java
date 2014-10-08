@@ -26,6 +26,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
+import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
 import com.ds.avare.shapes.MetShape;
@@ -94,7 +95,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private BitmapHolder               mLineBitmap;
     private BitmapHolder               mObstacleBitmap;
     private BitmapHolder               mLineHeadingBitmap;
-    private BitmapHolder               mAirplaneOtherBitmap;
     
     /**
      * The magic of multi touch
@@ -290,7 +290,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         setOnTouchListener(this);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
-        mAirplaneOtherBitmap = new BitmapHolder(context, R.drawable.planeother);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
@@ -938,9 +937,19 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-        
+        //XXX:
+        mService.getTrafficCache().putTarric(
+                "MA20",
+                12345,
+                (float)42.05,
+                (float)-71.05,
+                -1200,
+                180,
+                500,
+                Helper.getMillisGMT());
+
         /*
-         * Get nexrad bitmaps to draw.
+         * Get traffic to draw.
          */
         SparseArray<Traffic> traffic = mService.getTrafficCache().getTraffic();
 
@@ -948,6 +957,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
 
+        mMsgPaint.setColor(Color.WHITE);
         for(int i = 0; i < traffic.size(); i++) {
             int key = traffic.keyAt(i);
             Traffic t = traffic.get(key);
@@ -956,21 +966,44 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 continue;
             }
             
-            if(null != mAirplaneOtherBitmap) {
-                rotateBitmapIntoPlace(mAirplaneOtherBitmap, t.mHeading,
-                        t.mLon, t.mLat, true);
-                mMsgPaint.setColor(Color.WHITE);
-                canvas.drawBitmap(mAirplaneOtherBitmap.getBitmap(), mAirplaneOtherBitmap.getTransform(), mPaint);
-                /*
-                 * Make traffic line and info
-                 */
-                float x = (float)mOrigin.getOffsetX(t.mLon);
-                float y = (float)mOrigin.getOffsetY(t.mLat);
-                mService.getShadowedText().draw(canvas, mMsgPaint,
-                        t.mAltitude + "'", Color.DKGRAY, x, y);
-
-            }
+            /*
+             * Make traffic line and info
+             */
+            float x = (float)mOrigin.getOffsetX(t.mLon);
+            float y = (float)mOrigin.getOffsetY(t.mLat);
+            
+            /*
+             * Find color from altitude
+             */
+            int color = Traffic.getColorFromAltitude(mGpsParams.getAltitude(), t.mAltitude);
+            
+            
+            float radius = mDipToPix * 8;
+            String text = t.mAltitude + "'"; 
+            /*
+             * Draw outline to show it clearly
+             */
+            mPaint.setColor((~color) | 0xFF000000);
+            canvas.drawCircle(x, y, radius + 2, mPaint);
+            
+            mPaint.setColor(color);
+            canvas.drawCircle(x, y, radius, mPaint);
+            /*
+             * Show a barb for heading with length based on speed
+             * Vel can be 0 to 4096 knots (practically it can be 0 to 500 knots), so set from length 0 to 100 pixels (1/5)
+             */
+            float speedLength = radius + (float)t.mHorizVelocity * (float)mDipToPix / 5.f;
+            /*
+             * Rotation of points to show direction
+             */
+            double xr = x + PixelCoordinate.rotateX(speedLength, t.mHeading);
+            double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
+            canvas.drawLine(x, y, (float)xr, (float)yr, mPaint);
+            mService.getShadowedText().draw(canvas, mMsgPaint,
+                    text, Color.DKGRAY, (float)x, (float)y + radius + mMsgPaint.getTextSize());
+            
         }
+
     }
 
     /**
