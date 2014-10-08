@@ -60,6 +60,9 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
+        <com.ds.avare.utils.GpsActivityPreference
+            android:summary="@string/GpsStatusSummary"
+            android:title="@string/GpsStatus" />
     </PreferenceScreen>
     
     <PreferenceScreen 
@@ -94,7 +97,7 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefAppStateCategoryTitle" 
         android:icon="@android:drawable/ic_menu_mapmode" >
-        <com.ds.avare.utils.ActivityPreference
+        <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
         <CheckBoxPreference

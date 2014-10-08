@@ -329,4 +329,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
+    <string name="GpsStatus">&quot;Show GPS Status&quot;</string>
+    <string name="GpsStatusSummary">&quot;Select to see the internal GPS status&quot;</string>
 </resources>

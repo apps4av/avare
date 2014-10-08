@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
-import com.ds.avare.RegisterActivity;
+import com.ds.avare.SatelliteActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,7 +26,7 @@ import android.util.AttributeSet;
  * @author zkhan
  *
  */
-public class ActivityPreference extends DialogPreference {
+public class GpsActivityPreference extends DialogPreference {
 
     private Context mContext;
     
@@ -35,7 +35,7 @@ public class ActivityPreference extends DialogPreference {
      * @param context
      * @param attrs
      */
-    public ActivityPreference(Context context, AttributeSet attrs) {        
+    public GpsActivityPreference(Context context, AttributeSet attrs) {        
         super(context, attrs);
         mContext = context;
     }
@@ -55,7 +55,7 @@ public class ActivityPreference extends DialogPreference {
     @Override
     public void onClick (DialogInterface dialog, int which) {
         if(which == DialogInterface.BUTTON_POSITIVE) {
-            mContext.startActivity(new Intent(mContext, RegisterActivity.class));
+            mContext.startActivity(new Intent(mContext, SatelliteActivity.class));
         }
     }
 }
