@@ -937,16 +937,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-        //XXX:
-        mService.getTrafficCache().putTarric(
-                "MA20",
-                12345,
-                (float)42.05,
-                (float)-71.05,
-                -1200,
-                180,
-                500,
-                Helper.getMillisGMT());
 
         /*
          * Get traffic to draw.
