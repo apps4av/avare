@@ -131,6 +131,7 @@ public class PrefActivity extends PreferenceActivity {
              */
             mService.getTiles().forceReload();
             mService.getUDWMgr().forceReload();	// Tell the UDWs to reload as well
+            mService.getExternalPlanMgr().forceReload(); // Reload plans too
         }
     }
 }

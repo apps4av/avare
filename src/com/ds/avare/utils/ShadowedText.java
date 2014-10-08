@@ -94,4 +94,44 @@ public class ShadowedText {
         // Draw the text over it
         canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
     }
+
+    // Ordinals to lay out where we want the text to display relative to the provided point
+    public static final int ABOVE = 0;
+    public static final int ABOVERIGHT = 1;
+    public static final int RIGHT = 2;
+    public static final int BELOWRIGHT = 3;
+    public static final int BELOW = 4;
+    public static final int BELOWLEFT = 5;
+    public static final int LEFT = 6;
+    public static final int TOPLEFT = 7;
+
+    public void draw(Canvas canvas, Paint paint, String text, int shadowColor, int sector, float x, float y) {
+    	
+    	// Find out how much room this text will take
+        paint.getTextBounds(text, 0, text.length(), mTextSize);
+
+        // Depending upon which sector we paint, we adjust position
+        switch(sector) {
+
+	        // No change for default location or above
+	        default:
+	    	case ABOVE:
+	    		break;
+	
+	    	// Adjust Y down and X to the right
+	    	case RIGHT:
+	    		break;
+	    	
+	       	// Adjust Y down to underneath
+	    	case BELOW:
+	    		break;
+	    	
+	       	// Adjust Y down and X to the left
+	    	case LEFT:
+	    		break;
+    	}
+        
+        // We have the "where", no display the text
+        draw(canvas, paint, text, shadowColor, x, y);
+    }
 }

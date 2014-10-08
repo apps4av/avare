@@ -15,10 +15,6 @@ package com.ds.avare.userDefinedWaypoints;
 import java.io.FileInputStream;
 import java.util.List;
 
-import android.content.Context;
-
-import com.ds.avare.R;
-
 /***
  * A class that will generate the appropriate parser for the input file
  * to extract User Defined Waypoints

@@ -253,6 +253,9 @@ public class Preferences {
      */
     public String[] getPlans() {
         String plans = mPref.getString(mContext.getString(R.string.Plan), "");
+        if(plans.length() == 0) {
+        	return null;
+        }
         String[] tokens = plans.split(",");
         return tokens;
     }
@@ -264,11 +267,15 @@ public class Preferences {
      */
     public void addToPlans(String name) {
         String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for(int id = 0; id < l.size(); id++) {
-            if(l.get(id).equals(name)) {
-                l.remove(id);
-            }
+        List<String> l = new LinkedList<String>();
+        
+        if(null != tokens) {
+	        l = new LinkedList<String>(Arrays.asList(tokens));
+	        for(int id = 0; id < l.size(); id++) {
+	            if(l.get(id).equals(name)) {
+	                l.remove(id);
+	            }
+	        }
         }
         l.add(0, name);
         if(l.size() > MAX_PLANS) {
@@ -290,11 +297,14 @@ public class Preferences {
      */
     public void deleteAPlan(String name) {
         String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for(int id = 0; id < l.size(); id++) {
-            if(l.get(id).equals(name)) { 
-                l.remove(id);
-            }
+        List<String> l = new LinkedList<String>();
+        if(null != tokens) {
+        	l = new LinkedList<String>(Arrays.asList(tokens));
+	        for(int id = 0; id < l.size(); id++) {
+	            if(l.get(id).equals(name)) { 
+	                l.remove(id);
+	            }
+	        }
         }
         
         String plans = "";

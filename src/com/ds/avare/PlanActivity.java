@@ -14,6 +14,7 @@ package com.ds.avare;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
@@ -21,11 +22,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.TouchListView;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -75,7 +78,7 @@ public class PlanActivity extends Activity  implements Observer {
     private EditText mPlanText;
     private int mIndex;
     private Preferences mPref;
-    private String mPlans[];
+    private String mAllPlans[];
     private String mSearchDests[];
     private ProgressBar mProgressBar;
     
@@ -201,8 +204,6 @@ public class PlanActivity extends Activity  implements Observer {
         
         mPref = new Preferences(getApplicationContext());
               
-        mPlans = mPref.getPlans();
-        
         /*
          * This keeps a copy of destinations under search when composite plan is entered.
          */
@@ -409,11 +410,16 @@ public class PlanActivity extends Activity  implements Observer {
                  * Make plan active/inactive in which case, track will be drawn to dest/plan
                  */
                 if(null != mService) {
+                    String planName =  mSaveText.getText().toString().replace(",", " ");
                     if(mActivateButton.getText().equals(getString(R.string.Inactive))) {
                         mService.getPlan().makeInactive();
+                    	mService.getExternalPlanMgr().setActive(planName, false);
+                    	mService.setDestination(null);
                     }
                     else {
-                        if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
+                    	mService.getExternalPlanMgr().setActive(planName, true);
+                    	
+                    	if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
                             mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
                         }
                     }
@@ -495,12 +501,12 @@ public class PlanActivity extends Activity  implements Observer {
     private boolean prepareAdapterSave() {
         
         ArrayList<String> list = new ArrayList<String>();
-        mPlans = mPref.getPlans();
-        for (int i = 0; i < mPlans.length; i++) {
-            if(mPlans[i].equals("")) {
+//        mPlans = mPref.getPlans();
+        for (int i = 0; i < mAllPlans.length; i++) {
+            if(mAllPlans[i].equals("")) {
                 continue;
             }
-            String[] split = mPlans[i].split("::");
+            String[] split = mAllPlans[i].split("::");
             if(split.length < 2) {
                 continue;
             }
@@ -579,6 +585,28 @@ public class PlanActivity extends Activity  implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
+            // Read both internal and external plans and place them
+            // in a single string array.
+            String intPlans[] = mPref.getPlans();
+            String extPlans[] = mService.getExternalPlanMgr().getPlans();
+
+            int planCount = 0;
+            if(null != intPlans) { planCount += intPlans.length; }
+            if(null != extPlans) { planCount += extPlans.length; }
+            mAllPlans = new String[planCount];
+            
+            int planIdx = 0;
+            if(intPlans != null) {
+	            for(int idx = 0, max = intPlans.length; idx < max; idx++) {
+	            	mAllPlans[planIdx++] = intPlans[idx];
+	            }
+            }
+            if(null != extPlans) {
+	            for(int idx = 0, max = extPlans.length; idx < max; idx++) {
+	            	mAllPlans[planIdx++] = extPlans[idx];
+	            }
+            }
+            
             prepareAdapter();
             prepareAdapterSave();
             mPlan.setAdapter(mPlanAdapter);
@@ -633,10 +661,10 @@ public class PlanActivity extends Activity  implements Observer {
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
                             inactivatePlan();
-                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
                                 return;
                             }
-                            String item = mPlans[mxindex];
+                            String item = mAllPlans[mxindex];
                             String items[] = item.split("::");
                             if(items.length < 2) { 
                                 return;
@@ -663,10 +691,10 @@ public class PlanActivity extends Activity  implements Observer {
                         public void onClick(DialogInterface dialog, int which) {
                             mService.newPlan();
                             inactivatePlan();
-                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
                                 return;
                             }
-                            String item = mPlans[mxindex];
+                            String item = mAllPlans[mxindex];
                             String items[] = item.split("::");
                             if(items.length < 2) { 
                                 return;
@@ -691,10 +719,10 @@ public class PlanActivity extends Activity  implements Observer {
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
                         public void onClick(DialogInterface dialog, int which) {
-                            if(mxindex < 0 || mxindex >= mPlans.length) {
+                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
                                 return;
                             }
-                            mPref.deleteAPlan(mPlans[mxindex]);
+                            mPref.deleteAPlan(mAllPlans[mxindex]);
                             prepareAdapterSave();
                         }
                     });

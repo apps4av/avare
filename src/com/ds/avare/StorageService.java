@@ -17,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
@@ -215,6 +216,9 @@ public class StorageService extends Service {
     // Distance ring instrument
     private DistanceRings mDistanceRings;
     
+
+    private ExternalPlanMgr mExternalPlanMgr;
+    
     /*
      * Watches GPS to notify of phases of flight
      */
@@ -334,6 +338,9 @@ public class StorageService extends Service {
         mDistanceRings = new DistanceRings(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
+        
+        // For handling external flight plans
+        mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
         
         /*
          * Monitor TFR every hour.
@@ -1024,5 +1031,9 @@ public class StorageService extends Service {
     
     public DistanceRings getDistanceRings() {
     	return mDistanceRings;
+    }
+    
+    public ExternalPlanMgr getExternalPlanMgr() {
+    	return mExternalPlanMgr;
     }
 }

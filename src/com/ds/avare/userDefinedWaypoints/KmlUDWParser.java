@@ -151,7 +151,7 @@ public class KmlUDWParser extends UDWParser {
         float lon = 0;
         float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Waypoint.CYANDOT;	// Type of marker to use on the chart (metadata again)
+        int markerType = Waypoint.MT_CYANDOT;	// Type of marker to use on the chart (metadata again)
         
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -173,7 +173,7 @@ public class KmlUDWParser extends UDWParser {
             }
         }
         return new Waypoint(name, description, 
-        		lat, lon, alt, showDist, markerType);
+        		lon, lat, alt, showDist, markerType);
     }
 
     // Inside of the "Point" tag, we only care about the coordinates

@@ -129,19 +129,30 @@ public class UDWMgr {
 					// If we found some entries here ...
 					if(null != entries) {
 						for(int idx = 0; idx < entries.size(); idx++) {
-							// We will only allow MAXUDW defined points. We don't want to get the system
-							// bogged down
-							if(mPoints.size() < MAXUDW) {
-								mPoints.add(entries.get(idx));
-							}
+							add(entries.get(idx));
 						}
 					}
 				}
 			}
 		}
 	}
+
+	/***
+	 * Add the specific waypoint to our collection
+	 * @param waypoint
+	 */
+	public void add(Waypoint waypoint) {
+		if(null != waypoint) {
+			if(mPoints.size() < MAXUDW) {
+				mPoints.add(waypoint);
+			}
+		}
+	}
 	
-	// Calculate some of the display size constants
+	/***
+	 * Calculate the "device independent pixel" to "display pixel" conversion factor
+	 * @param dipToPix
+	 */
 	void setDipToPix(float dipToPix) {
         mPix = dipToPix;
         m2Pix = 2 * mPix;
@@ -209,9 +220,12 @@ public class UDWMgr {
     		}
     	}
     }
-    
-    // Return the Waypoint for the given name. Uppercase compare for everything
-    //
+
+    /***
+     * Return the named waypoint object
+     * @param name
+     * @return
+     */
     public Waypoint getWaypoint(String name){
     	if(null != mPoints) {
     		final String uName = name.toUpperCase();
@@ -220,6 +234,28 @@ public class UDWMgr {
     			final String mName = p.mName.toUpperCase();
     			if (mName.equals(uName)) {
     				return p;
+    			}
+    		}
+    	}
+    	return null;
+    }
+
+    /***
+     * Return the named waypoint tested for position
+     * @param name Name of the waypoint
+     * @param lon longitude
+     * @param lat latitude
+     * @return
+     */
+    public Waypoint getWaypoint(String name, float lon, float lat){
+    	if(null != mPoints) {
+    		final String uName = name.toUpperCase();
+    		for(int idx = 0; idx < mPoints.size(); idx++) {
+    			Waypoint p = mPoints.get(idx);
+    			final String mName = p.mName.toUpperCase();
+    			if (mName.equals(uName)) {
+    				if(p.getLon() == lon && p.getLat() == lat)
+    					return p;
     			}
     		}
     	}

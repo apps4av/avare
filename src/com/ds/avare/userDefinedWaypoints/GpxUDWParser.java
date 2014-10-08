@@ -49,6 +49,8 @@ public class GpxUDWParser extends UDWParser {
     private static final String LON = "lon";
     private static final String NAME = "name";
     private static final String DESC = "desc";
+    private static final String CREATOR = "creator";
+    private static final String VFRGPSPROCEDURES = "vfrgpsprocedures";
 
 	@Override
 	public List<Waypoint> parse(FileInputStream inputStream) {
@@ -67,15 +69,34 @@ public class GpxUDWParser extends UDWParser {
     //
     private List<Waypoint> readGPX(XmlPullParser parser) throws XmlPullParserException, IOException {
         List<Waypoint> entries = new ArrayList<Waypoint>();
-
+        String creator = null;
+        
         parser.require(XmlPullParser.START_TAG, NS, GPX);	// We must be inside the <gpx> tag now
+
+        // Pull off attributes here that we are interested in
+        for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
+        	String attrName = parser.getAttributeName(idx);
+        	String attrValue = parser.getAttributeValue(idx);
+        	if (attrName.equals(CREATOR)) {
+            	creator = attrValue;
+        	}
+        }
+
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
             String name = parser.getName();
             if (name.equals(WPT)) {
-                entries.add(readWPT(parser));
+            	Waypoint wpt = readWPT(parser); 
+                entries.add(wpt);
+                
+                if(null != creator) {
+	                if(creator.contains(VFRGPSPROCEDURES)) {
+	                	wpt.setMarkerType(Waypoint.MT_NONE);
+	                	wpt.setVisible(false);
+	                }
+                }
             } else {
                 skip(parser);
             }
@@ -95,7 +116,7 @@ public class GpxUDWParser extends UDWParser {
         float lon = 0;
         float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Waypoint.CYANDOT;	// Type of marker to use on the chart (metadata again)
+        int markerType = Waypoint.MT_CYANDOT;	// Type of marker to use on the chart (metadata again)
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -125,7 +146,7 @@ public class GpxUDWParser extends UDWParser {
         
         // We've got all the data we're going to get from this entry
         return new Waypoint(name, description, 
-        		lat, lon, alt, showDist, markerType);
+        		lon, lat, alt, showDist, markerType);
     }
 
     // Extract NAME
