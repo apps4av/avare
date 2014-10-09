@@ -42,7 +42,11 @@ public class MainActivity extends TabActivity {
     float    mTabHeight;
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
-    
+    Preferences mPref;
+
+    // Tab panels that can display at the bottom of the screen. These manifest as 
+    // separate display panes with their own intent to handle the content. Each one
+    // except tabMain is configurable on or off by the user. 
     public static final int tabMain = 0; 
     public static final int tabPlates = 1;
     public static final int tabAFD = 2;
@@ -51,6 +55,7 @@ public class MainActivity extends TabActivity {
     public static final int tabWX = 5;
     public static final int tabNear = 6;
     public static final int tabChecklist = 7;
+    public static final int tabGPS = 8;	
     
     @Override
     /**
@@ -58,6 +63,7 @@ public class MainActivity extends TabActivity {
      */
     public void onCreate(Bundle savedInstanceState) {
         
+        mPref = new Preferences(this);
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
          
@@ -89,15 +95,44 @@ public class MainActivity extends TabActivity {
  
         /*
          * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
+         * also add the new tab to the preferences.getTabs() method.
          */
-        setupTab(new TextView(this), getString(R.string.main), new Intent(this, LocationActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.plates), new Intent(this, PlatesActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());        
-        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());        
-        setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());        
-        setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+        long tabItems = mPref.getTabs();
+
+        // We will always show the main chart tab
+    	setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
+        
+        if(0 != (tabItems & (1 << tabPlates))) {
+        	setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabAFD))) {
+        	setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabFind))) {
+        	setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabPlan))) {
+        	setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabWX))) {
+        	setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabNear))) {
+        	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabChecklist))) {
+        	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabGPS))) {
+        	setupTab(new TextView(this), getString(R.string.GPS), new Intent(this, SatelliteActivity.class), getIntent());
+        }
     }
     
     /**
@@ -146,7 +181,6 @@ public class MainActivity extends TabActivity {
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
-        Preferences mPref = new Preferences(this);
         if(!mPref.shouldLeaveRunning()) {
             if (isFinishing()) {
                 /*

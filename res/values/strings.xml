@@ -65,7 +65,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
     <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
-    <string name="gps">&quot;GPS&quot;</string>
+    <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
     <string name="latitude">&quot;'N&quot;</string>
     <string name="accuracy">&quot;Accuracy ft.&quot;</string>
@@ -76,8 +76,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="PointsTooClose">&quot;Points too close to each other&quot;</string>
     <string name="BadCoords">&quot;Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N&quot;</string>
     <string name="GoodCoords">&quot;Plate marked and saved&quot;</string>
-    <string name="main">&quot;Map&quot;</string>
-    <string name="plates">&quot;Plate&quot;</string>
+    <string name="Main">&quot;Chart&quot;</string>
+    <string name="Plates">&quot;Plate&quot;</string>
     <string name="AFD">&quot;A/FD&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
@@ -329,6 +329,25 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
-    <string name="GpsStatus">&quot;Show GPS Status&quot;</string>
-    <string name="GpsStatusSummary">&quot;Select to see the internal GPS status&quot;</string>
+
+    <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
+    <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>
+    <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>
+	<string name="AFDSummary">&quot;Airport Facilitiy Directory information.&quot;</string>
+	<string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
+	<string name="PlanSummary">&quot;Flight plan creation and management.&quot;</string>
+	<string name="WXSummary">&quot;Weather briefing for local, destination or route.&quot;</string>
+	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
+	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
+	<string name="GPSSummary">&quot;Current GPS status/satellite display.&quot;</string>
+				
+	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
+	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
+	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
+	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
+	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
+	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
+	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
+	
 </resources>

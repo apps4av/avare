@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 
 import android.app.Activity;
@@ -900,4 +901,42 @@ public class Preferences {
         mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
     }
 
+    // Read all the tab preference selections and return them in a single bitmapped long value
+    public long getTabs() {
+    	long mTabs = 1;
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabPlates), true)) {
+    		mTabs |=  1 << MainActivity.tabPlates;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabAFD), true)) {
+    		mTabs |=  1 << MainActivity.tabAFD;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
+    		mTabs |=  1 << MainActivity.tabFind;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
+    		mTabs |=  1 << MainActivity.tabPlan;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
+    		mTabs |=  1 << MainActivity.tabWX;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
+    		mTabs |=  1 << MainActivity.tabNear;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
+    		mTabs |=  1 << MainActivity.tabChecklist;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabGPS), true)) {
+    		mTabs |=  1 << MainActivity.tabGPS;
+    	}
+
+    	return mTabs;
+    }
 }

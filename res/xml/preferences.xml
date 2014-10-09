@@ -60,9 +60,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
-        <com.ds.avare.utils.GpsActivityPreference
-            android:summary="@string/GpsStatusSummary"
-            android:title="@string/GpsStatus" />
     </PreferenceScreen>
     
     <PreferenceScreen 
@@ -229,7 +226,52 @@ authors: zkhan, jlmcgraw
             android:key="@string/ExtendInfoLines"
             android:summary="@string/ExtendInfoLinesSummary"
             android:title="@string/ExtendInfoLinesLabel" />
-    </PreferenceScreen>
+		<PreferenceScreen 
+	        android:title="@string/TabBarTitle" 
+            android:summary="@string/TabBarSummary"
+	        android:icon="@android:drawable/ic_menu_manage" >
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlates"
+		            android:summary="@string/PlatesSummary"
+		            android:title="@string/Plates" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabAFD"
+		            android:summary="@string/AFDSummary"
+		            android:title="@string/AFD" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabFind"
+		            android:summary="@string/FindSummary"
+		            android:title="@string/Find" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlan"
+		            android:summary="@string/PlanSummary"
+		            android:title="@string/Plan" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabWX"
+		            android:summary="@string/WXSummary"
+		            android:title="@string/WX" />
+				<CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabNear"
+		            android:summary="@string/NearSummary"
+		            android:title="@string/Near" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabChecklist"
+		            android:summary="@string/ChecklistSummary"
+		            android:title="@string/List" />
+				<CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabGPS"
+		            android:summary="@string/GPSSummary"
+		            android:title="@string/GPS" />
+			</PreferenceScreen>
+        </PreferenceScreen>
 
 	<PreferenceScreen 
     	    android:title="@string/prefTracksCategoryTitle" 
