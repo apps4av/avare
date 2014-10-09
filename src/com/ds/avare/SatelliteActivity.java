@@ -74,6 +74,16 @@ public class SatelliteActivity extends Activity  {
         }
     };
     
+    /*
+     * For being on tab this activity discards back to main activity
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        ((MainActivity)this.getParent()).showMapTab();
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
