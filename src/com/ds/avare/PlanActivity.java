@@ -501,7 +501,7 @@ public class PlanActivity extends Activity  implements Observer {
     private boolean prepareAdapterSave() {
         
         ArrayList<String> list = new ArrayList<String>();
-//        mPlans = mPref.getPlans();
+        refreshAllPlans();
         for (int i = 0; i < mAllPlans.length; i++) {
             if(mAllPlans[i].equals("")) {
                 continue;
@@ -566,6 +566,31 @@ public class PlanActivity extends Activity  implements Observer {
         d.findGuessType();
     }
 
+    // Read both internal and external plans and place them
+    // in a single string array.
+    private void refreshAllPlans()
+    {
+        String intPlans[] = mPref.getPlans();
+        String extPlans[] = mService.getExternalPlanMgr().getPlans();
+
+        int planCount = 0;
+        if(null != intPlans) { planCount += intPlans.length; }
+        if(null != extPlans) { planCount += extPlans.length; }
+        mAllPlans = new String[planCount];
+        
+        int planIdx = 0;
+        if(intPlans != null) {
+            for(int idx = 0, max = intPlans.length; idx < max; idx++) {
+            	mAllPlans[planIdx++] = intPlans[idx];
+            }
+        }
+        if(null != extPlans) {
+            for(int idx = 0, max = extPlans.length; idx < max; idx++) {
+            	mAllPlans[planIdx++] = extPlans[idx];
+            }
+        }
+    }
+    
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
@@ -585,28 +610,7 @@ public class PlanActivity extends Activity  implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-            // Read both internal and external plans and place them
-            // in a single string array.
-            String intPlans[] = mPref.getPlans();
-            String extPlans[] = mService.getExternalPlanMgr().getPlans();
-
-            int planCount = 0;
-            if(null != intPlans) { planCount += intPlans.length; }
-            if(null != extPlans) { planCount += extPlans.length; }
-            mAllPlans = new String[planCount];
-            
-            int planIdx = 0;
-            if(intPlans != null) {
-	            for(int idx = 0, max = intPlans.length; idx < max; idx++) {
-	            	mAllPlans[planIdx++] = intPlans[idx];
-	            }
-            }
-            if(null != extPlans) {
-	            for(int idx = 0, max = extPlans.length; idx < max; idx++) {
-	            	mAllPlans[planIdx++] = extPlans[idx];
-	            }
-            }
-            
+            refreshAllPlans();
             prepareAdapter();
             prepareAdapterSave();
             mPlan.setAdapter(mPlanAdapter);
