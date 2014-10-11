@@ -349,5 +349,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
 	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
-	
+
+	<string name="externalGps">GPSExternalOrInternal</string>
+    <string name="externalGpsLabel">GPS Position Source</string>
+    <string name="externalGpsSummary">Select the source of GPS position data</string>
+		
 </resources>

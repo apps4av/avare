@@ -60,6 +60,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/GpsPosition"
+            android:entryValues="@array/GpsPositionValues"
+            android:key="@string/externalGps"
+            android:summary="@string/externalGpsSummary"
+            android:title="@string/externalGpsLabel" />
     </PreferenceScreen>
     
     <PreferenceScreen 

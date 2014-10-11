@@ -773,6 +773,14 @@ public class Preferences {
 
     /**
      * 
+     * @return
+     */
+    public String getExternalGpsSource() {
+        return mPref.getString(mContext.getString(R.string.externalGps), "0");
+    }
+
+    /**
+     * 
      * @param value
      */
     public void setOdometer(double value) {
