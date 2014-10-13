@@ -421,8 +421,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(mService != null) {
                 /*
                  * Find if this is close to a plan point. Do rubber banding if true
+                 * This is where rubberbanding starts
                  */
-                if(mService.getPlan() != null && mDragPlanPoint < 0) {
+                if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
                     double lon = mOrigin.getLongitudeOf(e.getX());
                     double lat = mOrigin.getLatitudeOf(e.getY());
                     mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat);

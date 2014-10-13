@@ -852,6 +852,14 @@ public class Preferences {
      * 
      * @return
      */
+    public boolean allowRubberBanding() {
+        return mPref.getBoolean(mContext.getString(R.string.rubberBand), true);
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean showGameTFRs() {
         return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
     }
