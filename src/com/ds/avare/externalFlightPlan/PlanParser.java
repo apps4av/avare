@@ -25,7 +25,7 @@ import com.ds.avare.StorageService;
  */
 public abstract class PlanParser {
 	// Methods that each derived class need to implement
-	public abstract String getExt();
+	public abstract String getType();
 	public abstract ExternalFlightPlan parse(StorageService service, FileInputStream inputStream);
 	public abstract void generate(FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan);
 }

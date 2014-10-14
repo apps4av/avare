@@ -21,6 +21,8 @@ import android.content.Context;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
+import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
@@ -61,7 +63,8 @@ public class Plan implements Observer {
     private StorageService mService;
     private double mCurrentDistance;
     private boolean mReached;
-    
+    private String mName;
+    private ExternalPlanMgr mExtPlanMgr;
     
     /**
      * 
@@ -91,8 +94,20 @@ public class Plan implements Observer {
         }
         mEte = "--:--";
         mPassage = new Passage();
+        mName = null;
     }
     
+    public void setName(String name) {
+    	mName = name;
+    }
+    
+    public String getName() {
+    	return mName;
+    }
+    
+    public void setExtPlanMgr(ExternalPlanMgr extPlanMgr) {
+    	mExtPlanMgr = extPlanMgr;
+    }
     /**
      * 
      */
@@ -369,6 +384,14 @@ public class Plan implements Observer {
      * Inativate flight plan
      */
     public void makeInactive() {
+    	// If this is an externally loaded plan, then it specifically
+    	// needs to be turned off
+    	if(null != mExtPlanMgr) {
+	    	ExternalFlightPlan plan = mExtPlanMgr.get(mName);
+	    	if(null != plan) {
+	    		plan.setActive(false);
+	    	}
+    	}
         mActive = false;
     }
     

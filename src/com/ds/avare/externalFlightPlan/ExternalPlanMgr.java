@@ -24,6 +24,7 @@ public class ExternalPlanMgr {
 	List<ExternalFlightPlan> 	mPlans;	// Collection of external flight plans
 	StorageService	mService;
 	Context			mContext;
+	Preferences		mPref;
 	
 	/***
 	 * public constructor for user defined waypoints collection
@@ -33,7 +34,8 @@ public class ExternalPlanMgr {
 	public ExternalPlanMgr(StorageService service, Context context) {
 		mService = service;
 		mContext = context;
-		
+		mPref = new Preferences(mContext);
+
 		// Time to load all the points in
 		forceReload();
 	}
@@ -62,12 +64,30 @@ public class ExternalPlanMgr {
 	 * @return the plan or null if not found
 	 */
 	public ExternalFlightPlan get(String name) {
-		for(ExternalFlightPlan plan : mPlans) {
-			if(plan.getName().equals(name)) {
-				return plan;
+		if(null != name) {
+			for(ExternalFlightPlan plan : mPlans) {
+				if(plan.getName().equals(name)) {
+					return plan;
+				}
 			}
 		}
 		return null;
+	}
+
+	/***
+	 * Delete the named plan from our collection
+	 * @param name - what plan to delete
+	 */
+	public boolean delete(String name) {
+		ExternalFlightPlan plan = get(name);
+		if (null != plan) {
+			File file = new File(mPref.getUDWLocation(), name + "." + plan.getType());
+			if(true == file.delete()) {
+				mPlans.remove(plan);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/***
@@ -101,11 +121,8 @@ public class ExternalPlanMgr {
 	 * Reload the flight plans from disk
 	 */
 	public void forceReload() {
-		// Find out where to look for the files
-		Preferences pref = new Preferences(mContext);
-		
 		// Load them all in - use the UserDefinedWaypoints config location
-		populate(pref.getUDWLocation());
+		populate(mPref.getUDWLocation());
 	}
 	
 	/***

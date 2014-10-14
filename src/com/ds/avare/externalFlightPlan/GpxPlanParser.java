@@ -59,7 +59,6 @@ import android.util.Xml;
  */
 public class GpxPlanParser  extends PlanParser {
     private static final String NS = null;
-    private static final String EXT = "gpx";
     private static final String GPX = "gpx";
     private static final String RTE = "rte";
     private static final String RTEPT = "rtept";
@@ -73,8 +72,8 @@ public class GpxPlanParser  extends PlanParser {
     private StorageService mService;
     
     @Override 
-    public String getExt() {
-    	return EXT;
+    public String getType() {
+    	return GPX;
     }
     
 	@Override

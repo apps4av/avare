@@ -418,7 +418,8 @@ public class PlanActivity extends Activity  implements Observer {
                     }
                     else {
                     	mService.getExternalPlanMgr().setActive(planName, true);
-                    	
+                    	mService.getPlan().setExtPlanMgr(mService.getExternalPlanMgr());
+                    	mService.getPlan().setName(planName);
                     	if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
                             mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
                         }
@@ -650,6 +651,18 @@ public class PlanActivity extends Activity  implements Observer {
 
                     final int mxindex = index;
                     
+                    // Ensure the list index is valid
+                    if(mxindex < 0 || mxindex >= mAllPlans.length) {
+                        return true;
+                    }
+
+                    // Ensure the item string is formatted properly
+                    final String item = mAllPlans[mxindex];
+                    final String items[] = item.split("::");
+                    if(items.length < 2) { 
+                        return true;
+                    }
+
                     /*
                      * Confirm what needs to be done
                      * Delete a plan or load it
@@ -657,23 +670,15 @@ public class PlanActivity extends Activity  implements Observer {
                     mAlertDialogChoose = new AlertDialog.Builder(PlanActivity.this).create();
                     mAlertDialogChoose.setCanceledOnTouchOutside(false);
                     mAlertDialogChoose.setCancelable(true);
-                    mAlertDialogChoose.setTitle(getString(R.string.Plan));
+                    mAlertDialogChoose.setTitle(getString(R.string.Plan) + ": " + items[0]);
                     mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), new DialogInterface.OnClickListener() {
                         /* (non-Javadoc)
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
                         public void onClick(DialogInterface dialog, int which) {
-                            mService.newPlan();
                             inactivatePlan();
-                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
-                                return;
-                            }
-                            String item = mAllPlans[mxindex];
-                            String items[] = item.split("::");
-                            if(items.length < 2) { 
-                                return;
-                            }
-                  
+                            mService.newPlan();
+
                             mSaveText.setText(items[0]);
                             String tokens[] = items[1].split("\\)>");
                             for(int i = 0; i < tokens.length; i++) {
@@ -693,17 +698,9 @@ public class PlanActivity extends Activity  implements Observer {
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
                         public void onClick(DialogInterface dialog, int which) {
-                            mService.newPlan();
                             inactivatePlan();
-                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
-                                return;
-                            }
-                            String item = mAllPlans[mxindex];
-                            String items[] = item.split("::");
-                            if(items.length < 2) { 
-                                return;
-                            }
-                  
+                            mService.newPlan();
+
                             mSaveText.setText(items[0]);
                             String tokens[] = items[1].split("\\)>");
                             for(int i = tokens.length - 1; i >= 0; i--) {
@@ -723,10 +720,11 @@ public class PlanActivity extends Activity  implements Observer {
                          * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                          */
                         public void onClick(DialogInterface dialog, int which) {
-                            if(mxindex < 0 || mxindex >= mAllPlans.length) {
-                                return;
+                            // Try deleting the plan from external storage first. If that fails
+                            // then tell the preferences to delete it.
+                            if(false == mService.getExternalPlanMgr().delete(items[0])) { 
+                            	mPref.deleteAPlan(mAllPlans[mxindex]);
                             }
-                            mPref.deleteAPlan(mAllPlans[mxindex]);
                             prepareAdapterSave();
                         }
                     });

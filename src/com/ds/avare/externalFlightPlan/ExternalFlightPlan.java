@@ -10,12 +10,14 @@ public class ExternalFlightPlan {
 	String mDesc;
 	String mType;
 	String mCreator;
+	String mExt;
 	List<Waypoint> mWaypoints;
 
 	public List<Waypoint> getWaypoints() { return mWaypoints; }
 	public String getName() { return mName; }
 	public String getDesc() { return mDesc; }
-
+	public String getType() { return mType; }
+	
 	void setCreator(String creator) { mCreator = creator; } 
 	
 	public ExternalFlightPlan(String name, String desc, String type, List<Waypoint> waypoints) {
@@ -41,8 +43,8 @@ public class ExternalFlightPlan {
 	}
 	
 	/***
-	 * Set this plan as active. That means turning on all of the waypoints so they
-	 * will be displayed
+	 * Set this plan as active/inactive. That means turning on/off all of the waypoints so they
+	 * will be displayed or not
 	 * 
 	 * @param active 
 	 */

@@ -46,7 +46,7 @@ public class PlanFactory {
 
 			// Define a GPX parser and use if appropriate
 			PlanParser parser = new GpxPlanParser();
-			if(parser.getExt().equals(ext)) {
+			if(parser.getType().equals(ext)) {
 				return parser.parse(service, inStream);
 			}
 
