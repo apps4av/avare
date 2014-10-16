@@ -11,10 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,13 +19,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.animation.AnimateButton;
-import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.TouchListView;
-import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -59,78 +54,105 @@ import android.widget.ToggleButton;
 
 /**
  * @author zkhan
- * An activity that deals with plates
+ * An activity that deals with flight plans - loading, creating, deleting and activating
  */
 public class PlanActivity extends Activity  implements Observer {
-    
+	// System objects we need to survive
+    private Preferences    mPref;
     private StorageService mService;
-    private TouchListView mPlan;
-    private PlanAdapter mPlanAdapter;
-    private ListView mPlanSave;
-    private ArrayAdapter<String> mPlanSaveAdapter;
-    private Toast mToast;
-    private Button mDestButton;
-    private Button mSaveButton;
-    private Button mDeleteButton;
-    private Button mPlanButton;
-    private Button mPlatesButton;
+
+    // Currently loaded plan detail
+    private TouchListView  mPlanDetail;
+    private PlanAdapter    mPlanDetailAdapter;
+    private TextView       mPlanDetailSummary;
+
+    // Collection of known saved plans
+    private ListView             mSavedPlanList;
+    private ArrayAdapter<String> mPlanListAdapter;
+
+    // Items enabling the user to save the in memory plan 
+    private Button   mSaveButton;
     private EditText mSaveText;
-    private EditText mPlanText;
-    private int mIndex;
-    private Preferences mPref;
+
+    // To create a plan from a text string
+    private Button   mCreatePlanFromString;
+    private EditText mPlanStringText;
+    private String   mSearchWaypoints[];
+
+    // Used for long press events of the detail plan
+    private int         mIndex;
+    private Destination mDestination;
+
+    // Collection of all known saved plans
     private String mAllPlans[];
-    private String mSearchDests[];
+    
+    // Used when we have long background searches going on
     private ProgressBar mProgressBar;
     
-    /**
-     * Shows Choose message about Avare
-     */
-    private AlertDialog mAlertDialogChoose;
-    private AlertDialog mAlertDialogPlan;
+    // Dialogs to get user input on some actions
+    private AlertDialog mDlgLoadOrDelete;
+    private AlertDialog mDlgCreatePlan;
 
+    // For displaying some status messages
+    private Toast mToast;
+
+    // To enable/disable the current in memory plan
     private ToggleButton mActivateButton;
-    private TextView mTotalText;
-    private Destination mDestination;
+    
+    // The 3 sliding animation buttons on the left
+    private Button mDestButton;
+    private Button mDeleteButton;
+    private Button mPlatesButton;
     private AnimateButton mAnimateDest;
     private AnimateButton mAnimateDelete;
     private AnimateButton mAnimatePlates;
+
+    // A timer object to handle things when we are in sim mode 
     private Timer mTimer;
-
-
+    
+	/***
+	 * Declare a new GPS interface to handle position notifications
+	 * as we move throughout the sky 
+	 */
     private GpsInterface mGpsInfc = new GpsInterface() {
 
+    	// Status. Nothing we care about here
         @Override
         public void statusCallback(GpsStatus gpsStatus) {
         }
 
+        // A location message. 
         @Override
         public void locationCallback(Location location) {
+        	// If the location is valid and we have a background
+        	// service, then tell the plan detail adapter to update its info
             if(location != null && mService != null) {
-                updateAdapter();
+                updatePlanDetailAdapter();
             }
         }
 
+        // Timeout, we don't care
         @Override
         public void timeoutCallback(boolean timeout) {
         }
 
+        // Enabled, we don't care
         @Override
         public void enabledCallback(boolean enabled) {
         }
     };
 
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
+	/***
+	 * When the BACK button is pressed, go directly to the 
+	 * MAP/CHART tab 
+	 */
     @Override
     public void onBackPressed() {
         ((MainActivity)this.getParent()).showMapTab();
     }
 
     /**
-     * 
+     * Helper method to deactivate the current plan 
      */
     private void inactivatePlan() {
         mService.getPlan().makeInactive();
@@ -138,285 +160,368 @@ public class PlanActivity extends Activity  implements Observer {
     }
     
     /**
-     * 
+     * To handle when a line from the plan detail is dropped to a new location 
+     * in the plan detail
      */
     private TouchListView.DropListener onDrop = new TouchListView.DropListener() {
-        @Override
+
+    	// A line of text was just dropped
+    	@Override
         public void drop(int from, int to) {
+    		
+    		// We need the background service
             if(mService == null) {
                 return;
             }
-            String item = mPlanAdapter.getItem(from);
+            
+            // Fetch the line item that corresponds to where this came from
+            String item = mPlanDetailAdapter.getItem(from);
+            
+            // Tell the plan to move the line FROM to TO
             mService.getPlan().move(from, to);
-            mPlanAdapter.remove(item);
-            mPlanAdapter.insert(item, to);
-            PlanActivity.this.updateAdapter();
+            
+            // Remove this item from the displayed plan detail
+            mPlanDetailAdapter.remove(item);
+            
+            // Insert the item back into the detail at the TO location
+            mPlanDetailAdapter.insert(item, to);
+            
+            // Update the display detail of the displayed plan
+            updatePlanDetailAdapter();
+            
+            // Ensure the plan is turned OFF
             inactivatePlan();
         }
     };
     
-    
     /**
-     * 
-     * @param which
-     */
-    private void removePlan(int which) {
-        if(mService == null) {
-            return;
-        }
-        if(which >= mPlanAdapter.getCount()) {
-            return;
-        }
-        String item = mPlanAdapter.getItem(which);
-        mService.getPlan().remove(which);
-        mPlanAdapter.remove(item);
-        PlanActivity.this.updateAdapter();
-        if(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()) != null) {
-            mService.setDestinationPlan(mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()));
-        }
-        inactivatePlan();        
-    }
-    
-    
-    /**
-     * 
+     * Handle when a waypoint is interactively removed form the plan detail. This
+     * is done by "grabbing" the hand portion of the waypoint detail and "flinging" 
+     * it to the top right of the screen 
      */
     private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
         @Override
         public void remove(int which) {
-            removePlan(which);
+            removeFromPlanDetail(which);
         }
     };
     
     /**
-     * 
+     * Remove the indicated waypoint from the detailed plan 
+     * @param which
+     */
+    private void removeFromPlanDetail(int which) {
+    	
+    	// Ensure we have the background service
+        if(mService == null) {
+            return;
+        }
+        
+        // The index needs to be in range of what we have showing
+        if(which >= mPlanDetailAdapter.getCount()) {
+            return;
+        }
+        
+        // Get the line item
+        String item = mPlanDetailAdapter.getItem(which);
+        
+        // Remove this indexed waypoint from the active plan
+        mService.getPlan().remove(which);
+        
+        // Remove this waypoint item from the detail display
+        mPlanDetailAdapter.remove(item);
+        
+        // Tell the plan detail to update its content
+        updatePlanDetailAdapter();
+        
+        // Calculate the next waypoint that we have not yet passed
+        Destination nextWaypoint = mService.getPlan().getDestination(mService.getPlan().findNextNotPassed()); 
+        if(null != nextWaypoint) {
+            mService.setDestinationPlan(nextWaypoint);
+        }
+        
+        // Deactivate the current plan
+        inactivatePlan();        
+    }
+
+    /**
+     * We are just starting up. Get this tab in shape to be doing some work 
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
+
+    	// Helper method to set the day/nite theme of the tab
         Helper.setTheme(this);
+        
+        // Call the super method so it can do its work
         super.onCreate(savedInstanceState);
 
-        /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
-         */
+        // Create toast beforehand so multiple clicks dont throw up a new toast
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-        
+
+        // Get our preferences object in order
         mPref = new Preferences(getApplicationContext());
               
-        /*
-         * This keeps a copy of destinations under search when composite plan is entered.
-         */
-        mSearchDests = null;
+        // This keeps a copy of destinations under search when composite plan is entered.
+        mSearchWaypoints = null;
         
-        /*
-         * Get views from XML
-         */
+        // Get views from XML
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.plan, null);
         setContentView(view);
         
+        // Set our drop and remove listeners for the plan detail area
+        mPlanDetail = (TouchListView)view.findViewById(R.id.plan_list);
+        mPlanDetail.setDropListener(onDrop);
+        mPlanDetail.setRemoveListener(onRemove);
 
-        mPlan = (TouchListView)view.findViewById(R.id.plan_list);
-        mPlan.setDropListener(onDrop);
-        mPlan.setRemoveListener(onRemove);
-        mPlanSave = (ListView)view.findViewById(R.id.plan_list_save);
+        // The control that handles the list of saved plans
+        mSavedPlanList = (ListView)view.findViewById(R.id.plan_list_save);
 
+        // Ensure we have no service pointer yet. That comes in when we get 
+        // a connection notification
         mService = null;
+        
+        // The currently selected waypoint index from the displayed plan
         mIndex = -1;
-        mTotalText = (TextView)view.findViewById(R.id.plan_total_text);    
+        
+        // Top line of the plan detail area
+        mPlanDetailSummary = (TextView)view.findViewById(R.id.plan_total_text);    
 
+        // Progress bar, normally not visible
         mProgressBar = (ProgressBar)view.findViewById(R.id.plan_progress_bar);
 
-        /*
-         * Dest button
-         */
-        mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
-        mDeleteButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if(mIndex >= 0) {
-                    removePlan(mIndex);
-                }
-                mIndex = -1;
-            }   
-        });
-        
-        /*
-         * 
-         */
-        mPlatesButton = (Button)view.findViewById(R.id.plan_button_plates);
-        mPlatesButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(mService != null) {
-                    mService.setLastPlateAirport(mDestination.getID());
-                    mService.setLastPlateIndex(0);
-                }
-                ((MainActivity) PlanActivity.this.getParent()).showPlatesTab();
-            }   
-        });        
-
-        /*
-         * Plan button
-         */
-        mPlanText = (EditText)view.findViewById(R.id.plan_edit_text);
-        mPlanButton = (Button)view.findViewById(R.id.plan_button_find);
-        mPlanButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                /*
-                 * Confirm what needs to be done
-                 * Load a new plan or not
-                 */
-                /*
-                 * Now start the search.
-                 * Clear everything before that
-                 * If still searching, dont do another search;
-                 */
-                if(mSearchDests != null) {
-                    return;
-                }
-                final String plan = mPlanText.getText().toString().toUpperCase(Locale.getDefault());
-                mAlertDialogPlan = new AlertDialog.Builder(PlanActivity.this).create();
-                mAlertDialogPlan.setCanceledOnTouchOutside(false);
-                mAlertDialogPlan.setCancelable(true);
-                mAlertDialogPlan.setTitle(getString(R.string.Plan));
-                mAlertDialogPlan.setMessage(getString(R.string.PlanWarning) + " \"" + plan + "\" ?");
-                mAlertDialogPlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        /*
-                         * Show that we are searching by showing progress bar
-                         */
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mService.getPlan().clear();
-                        prepareAdapter();
-                        prepareAdapterSave();
-                        mPlan.setAdapter(mPlanAdapter);
-
-                        mSearchDests = plan.split(" ");
-                        searchDest();
-                    }
-                });
-                mAlertDialogPlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-
-                mAlertDialogPlan.show();              
-            }   
-        });
-
+        // Handle when the Direct/Destination button is pressed. This is normally hidden, but 
+        // comes in to view when one of the waypoints in the plan detail is long pressed
         mDestButton = (Button)view.findViewById(R.id.plan_button_dest);
         mDestButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                /*
-                 * On click, find destination that was pressed on in view
-                 */
+            	// mDestination was set when the user long pressed on the waypoint
+            	// tell the service that is where we want to go next
                 mService.setDestination(mDestination);
+                
+                // Tell the user via a slice o toast
                 mToast.setText(getString(R.string.DestinationSet) + mDestination.getID());
                 mToast.show();
+
+                // Clear out our working destination object
                 mDestination = null;
-                /*
-                 * Set everything behind this as passed.
-                 */
-                for(int i = 0; i < mIndex; i++) {
-                    mService.getPlan().setPassed(i);
-                }
+
+                // If the index is valid - set when the user long pressed
                 if(mIndex >= 0) {
-                    /*
-                     * Set everything after this as not yet passed.
-                     */
+
+                    // Everything before this index is behind us
+                	for(int i = 0; i < mIndex; i++) {
+                        mService.getPlan().setPassed(i);
+                    }
+
+                	// And everything in front of us is not yet passed
                     for(int i = mIndex; i < mService.getPlan().getDestinationNumber(); i++) {
                         mService.getPlan().setNotPassed(i);
                     }
                 }
+                
+                // Clear out our working index
                 mIndex = -1;
+                
+                // Switch view to the chart/map tab
                 ((MainActivity) PlanActivity.this.getParent()).showMapTab();
             }   
         });
 
-        /*
-         * Save button
-         */
-        mSaveText = (EditText)view.findViewById(R.id.plan_text_save);
-        mSaveButton = (Button)view.findViewById(R.id.plan_button_save);
-        mSaveButton.setOnClickListener(new OnClickListener() {
+        // Delete a waypoint from the plan detail list. The button is normally hidden
+        // but comes up when you long press on a waypoint in the list.
+        mDeleteButton = (Button)view.findViewById(R.id.plan_button_delete);
+        mDeleteButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
+            	// If the index is valid, then remove that line from the plan
+                if(mIndex >= 0) {
+                    removeFromPlanDetail(mIndex);
+                }
+                mIndex = -1;
+            }   
+        });
+        
+        // The PLATES button. Normally hidden, but comes into view when 
+        // the user long presses on a waypoint in the plan detail list AND
+        // that waypoint has plates associated with it.
+        mPlatesButton = (Button)view.findViewById(R.id.plan_button_plates);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+        	// User has clicked the button. Tell the service about the ID that
+        	// was selected then switch to the plates tab
+            @Override
+            public void onClick(View v) {
+            	
+            	// Ensure we have the background service
+                if(mService != null) {
+                	
+                	// Tell it the ID of the plate
+                	// mDestination is set on the long press action
+                    mService.setLastPlateAirport(mDestination.getID());
+                    mService.setLastPlateIndex(0);
+                }
                 
-                Plan p;
-                /*
-                 * Get plan, make its string, then send to storage
-                 */
-                if(mService == null) {
+                // Switch to that tab now
+                ((MainActivity) PlanActivity.this.getParent()).showPlatesTab();
+            }   
+        });        
+
+        // The plan string text field
+        mPlanStringText = (EditText)view.findViewById(R.id.plan_edit_text);
+        
+        // Create the plan from the mPlanStringText field content
+        mCreatePlanFromString = (Button)view.findViewById(R.id.plan_button_find);
+        mCreatePlanFromString.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            	// If we have waypoints, we are already in the process of searching the database
+            	// for plan waypoints - just exit
+                if(mSearchWaypoints != null) {
                     return;
                 }
-                p = mService.getPlan();
-                if(p == null) {
-                    return;
-                }
-                int num = p.getDestinationNumber();
-                if(num < 2) {
-                    return;
-                }
-                /*
-                 * Put plan name with :: and since comma separates, remove it. 
-                 */
-                String planName =  mSaveText.getText().toString().replace(",", " ");
-                if(planName.equals("")) {
-                    planName = getString(R.string.Plan);
-                }
-                String planStr = planName + "::";
-                for(int i = 0; i < (num - 1); i++) {
-                    /*
-                     * Separate by >, add type in ()
-                     */
-                    planStr += p.getDestination(i).getID() + "(" + p.getDestination(i).getType() + ")" +  ">";
-                }
-                planStr += p.getDestination(num - 1).getID() + "(" + p.getDestination(num - 1).getType() + ")";
-                mPref.addToPlans(planStr);
-                prepareAdapterSave();
+                
+                // Get the manually entered waypoints
+                final String planString = mPlanStringText.getText().toString().toUpperCase(Locale.getDefault());
+                
+                // Create a dialog box to allow the user to confirm or cancel this operation
+                mDlgCreatePlan = new AlertDialog.Builder(PlanActivity.this).create();
+                mDlgCreatePlan.setCanceledOnTouchOutside(false);
+                mDlgCreatePlan.setCancelable(true);
+                mDlgCreatePlan.setTitle(getString(R.string.Plan));
+                mDlgCreatePlan.setMessage(getString(R.string.PlanWarning) + " \"" + planString + "\" ?");
+
+                // OK button. The use wishes to continue the action 
+                mDlgCreatePlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                	// Clicked action.
+                    public void onClick(DialogInterface dialog, int which) {
+                    	// Display a progress bar
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        
+                        // Clear out current in memory plan
+                        mService.getPlan().clear();
+                        
+                        // Fill out the plan detail area
+                        preparePlanDetailAdapter();
+                        
+                        // Fill out the list of saved plans
+                        preparePlanListAdapter();
+                        
+                        // Give the detail data to our adapter
+                        mPlanDetail.setAdapter(mPlanDetailAdapter);
+
+                        // Split up all possible waypoints that were entered
+                        mSearchWaypoints = planString.split(" ");
+                        
+                        // Start searching for them all 
+                        searchForNextWaypoint();
+                    }
+                });
+                
+                // User does NOT want to clear current plan and start over
+                mDlgCreatePlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                	// Clicked action.
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                // Display the dialog for the user to interact with
+                mDlgCreatePlan.show();              
             }   
         });
 
+        // The SAVE functionality
+        mSaveText   = (EditText)view.findViewById(R.id.plan_text_save);
+        mSaveButton = (Button)view.findViewById(R.id.plan_button_save);
+        mSaveButton.setOnClickListener(new OnClickListener() {
+
+        	// User has pressed the save button. Save the in memory plan 
+        	// to the preferences storage area. 
+        	// TODO: Option to export externally as GPX/XML 
+            @Override
+            public void onClick(View v) {
+
+                // Ensure we have a background service
+                if(mService == null) {
+                    return;
+                }
+                
+                // Get the loaded plan. It's not necessarily active, just "in memory"
+                // If we don't have one, then nothing to do
+                Plan plan = mService.getPlan();
+                if(plan == null) {
+                    return;
+                }
+                
+                // How many points are in this plan ? If zero or one, then nothing
+                // to save
+                int num = plan.getDestinationNumber();
+                if(num < 2) {
+                    return;
+                }
+
+                // Get the name that the user entered. Replace any commas with spaces
+                String planName =  mSaveText.getText().toString().replace(",", " ");
+                
+                // If no name entered, then use the default name
+                if(planName.equals("")) {
+                    planName = getString(R.string.Plan);
+                }
+                
+                // Build the plan string that we will use to save this to storage
+                // [PlanName]::[DestID]([DestType])>[DestID]([DestType])
+                // TODO: Knowledge of how this is stored is none of this objects business
+                String planStr = planName + "::";
+
+                // For each waypoint in the plan EXCEPT the final one
+                for(int i = 0; i < (num - 1); i++) {
+                	// Append "[DestID]([DestType])>"
+                    planStr += plan.getDestination(i).getID() + "(" + plan.getDestination(i).getType() + ")" +  ">";
+                }
+                
+                // Now add the final waypoint
+                planStr += plan.getDestination(num - 1).getID() + "(" + plan.getDestination(num - 1).getType() + ")";
+                
+                // Tell preferences to save this off
+                mPref.addToPlans(planStr);
+                
+                // Update the list of saved plans
+                preparePlanListAdapter();
+            }   
+        });
+
+        // Handle the activation/deactivation of the current in memory plan
         mActivateButton = (ToggleButton)view.findViewById(R.id.plan_button_activate);
         mActivateButton.getBackground().setAlpha(255);
         mActivateButton.setOnClickListener(new OnClickListener() {
 
+        	// User has pressed the button. The text of the button has already been 
+        	// toggled at this point by the system
             @Override
-            /*
-             * (non-Javadoc)
-             * Delete the plan destination
-             * @see android.view.View.OnClickListener#onClick(android.view.View)
-             */
             public void onClick(View v) {
-                /*
-                 * Make plan active/inactive in which case, track will be drawn to dest/plan
-                 */
+
+            	// Ensure we have the background service
                 if(null != mService) {
+                	
+                	// Read the name of the plan from the text field
                     String planName =  mSaveText.getText().toString().replace(",", " ");
-                    if(mActivateButton.getText().equals(getString(R.string.Inactive))) {
+                    
+                    // TODO
+                    // This needs improvement. Internal and external flight plans are 
+                    // different kinds of ducks. They should both be handled in an identical fashion
+                    if(true == mActivateButton.getText().equals(getString(R.string.Inactive))) {
+                    	// The plan is currently ACTIVE. Make it inactive and clear out our destination
                         mService.getPlan().makeInactive();
                     	mService.getExternalPlanMgr().setActive(planName, false);
                     	mService.setDestination(null);
-                    }
-                    else {
+                    } else {
+                    	// The plan is currently INACTIVE. Set the name, then start this plan
                     	mService.getExternalPlanMgr().setActive(planName, true);
                     	mService.getPlan().setExtPlanMgr(mService.getExternalPlanMgr());
                     	mService.getPlan().setName(planName);
@@ -429,80 +534,122 @@ public class PlanActivity extends Activity  implements Observer {
             
         });
 
-        mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        // Create our 3 animated buttons that slide in from the left when a user long 
+        // presses any waypoint in the plan detail list
+        mAnimateDest   = new AnimateButton(getApplicationContext(), mDestButton,   AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
     /**
-     * Search in list format
+     * Look for the waypoints in the mSearchWaypoints array. Find
+     * the first non-null entry and tell the background thread to look for 
+     * it. If all of the waypoints have been nulled out, then we are done
+     * and we have a plan ready to go.
      */
-    private void searchDest() {
-        if(null != mSearchDests) {
-            if(mSearchDests.length > 0) {
-                /*
-                 * Make a list of waypoints to find. Then find one by one.
-                 * No guarantee that they will be found in order. So order them.
-                 */
-                int wp = 0;
-                for(wp = 0; wp < mSearchDests.length; wp++) {
-                    if(mSearchDests[wp] == null) {
-                        continue;
-                    }
-                    if(mSearchDests[wp].length() == 0) {
-                        mSearchDests[wp] = null;
-                        continue;
-                    }
-                    
-                    planToWithVerify(mSearchDests[wp]);
-                    break;
-                }
-                /*
-                 * All done.
-                 */
-                if(mSearchDests.length == wp) {
-                    prepareAdapter();
-                    mPlan.setAdapter(mPlanAdapter);
-                    /*
-                     * Show that we are looking
-                     */
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                    mSearchDests = null;
-                }
+    private void searchForNextWaypoint() {
+    	
+    	// If no waypoint list, then just get out of here
+    	if(null == mSearchWaypoints) {
+    		return;
+    	}
+
+    	// If the size of our list shows it is empty
+    	if(0 == mSearchWaypoints.length) {
+    		return;
+    	}
+
+    	// Used to index into our list
+        int wpIdx = 0;
+        
+        // Find the first non null waypoint in the array
+        for(wpIdx = 0; wpIdx < mSearchWaypoints.length; wpIdx++) {
+        	
+        	// Skip over a NULL string
+            if(mSearchWaypoints[wpIdx] == null) {
+                continue;
             }
+            
+            // Skip over a zero length string
+            if(mSearchWaypoints[wpIdx].length() == 0) {
+                mSearchWaypoints[wpIdx] = null;
+                continue;
+            }
+            
+            // Give this to the background search logic to find and load
+            planToWithVerify(mSearchWaypoints[wpIdx]);
+            break;
         }
+
+        // If we are not at the end of the list yet, then just
+        // return. There will be a search result waiting in the future
+        if(wpIdx != mSearchWaypoints.length) {
+        	return;
+        }
+
+        // Set the plan detail information according to the plan
+        // we just parsed
+        preparePlanDetailAdapter();
+        mPlanDetail.setAdapter(mPlanDetailAdapter);
+
+        // Turn off the progress bar
+        mProgressBar.setVisibility(View.INVISIBLE);
+        
+        // Now clear out our working collection of search waypoints
+        mSearchWaypoints = null;
     }
     
-    /**
-     * 
-     */
-    private boolean updateAdapter() {
-        if(null == mPlanAdapter) {
-            return false;
+	/***
+	 * Update the data that gets displayed in the plan detail area.
+	 * There are 3 pieces of data for each waypoint in the plan:
+	 * 1) Name of Waypoint
+	 * 2) Type of waypoint
+	 * 3) Bearing and distance to waypoint
+	 */
+    private void updatePlanDetailAdapter() {
+
+    	// If we don't have a reference back to the adapter then
+    	// do nothing
+    	if(null == mPlanDetailAdapter) {
+            return;
         }
+    	
+    	// How many waypoints make up the in memory plan
         int destnum = mService.getPlan().getDestinationNumber();
         
+        // New arrays to hold all of our line data
         ArrayList<String> name = new ArrayList<String>();
         ArrayList<String> info = new ArrayList<String>();
         ArrayList<Boolean> passed = new ArrayList<Boolean>();
 
+        // Loop through each of our plan waypoints to add its data
         for(int id = 0; id < destnum; id++) {
             name.add(mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")");
             info.add(mService.getPlan().getDestination(id).toString());
             passed.add(mService.getPlan().isPassed(id));
         }
-        mPlanAdapter.updateList(name, info, passed);
-        mTotalText.setText(getString(R.string.Total) + " " + mService.getPlan().toString());
-        return true;
+        
+        // Give the adapter this new data
+        mPlanDetailAdapter.updateList(name, info, passed);
+        
+        // Set the top summary line
+        mPlanDetailSummary.setText(getString(R.string.Total) + " " + mService.getPlan().toString());
     }
 
-    /**
-     * 
+
+    /***
+     * Build a list of plans that are displayed in the SavedPlans selection list
      */
-    private boolean prepareAdapterSave() {
+    private void preparePlanListAdapter() {
         
-        ArrayList<String> list = new ArrayList<String>();
+    	// Allocate a new string array
+        ArrayList<String> planList = new ArrayList<String>();
+        
+        // Refresh our internal collection of plans
         refreshAllPlans();
+        
+        // For each plan we know about, extract its name
+        // and add it to the planList
         for (int i = 0; i < mAllPlans.length; i++) {
             if(mAllPlans[i].equals("")) {
                 continue;
@@ -511,64 +658,78 @@ public class PlanActivity extends Activity  implements Observer {
             if(split.length < 2) {
                 continue;
             }
-            list.add(split[0]);
+            planList.add(split[0]);
         }
         
-        mPlanSaveAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, list);
+        // Allocate a new ArrayAdapter initialized with our plan list
+        mPlanListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, planList);
         
-        mPlanSave.setAdapter(mPlanSaveAdapter);
-
-        return true;
+        // Set our adapter to be this newly allocated one
+        mSavedPlanList.setAdapter(mPlanListAdapter);
     }
 
-    /**
-     * 
-     */
-    private boolean prepareAdapter() {
-        int destnum = mService.getPlan().getDestinationNumber();
+	/***
+	 * Prepare the detailed plan display for initial use.
+	 * There are 3 pieces of data for each waypoint in the plan:
+	 * 1) Name of Waypoint
+	 * 2) Type of waypoint
+	 * 3) Bearing and distance to waypoint
+	 */
+    private void preparePlanDetailAdapter() {
+    	// We need the service defined for this to work
+    	if(null == mService) {
+    		return;
+    	}
+    	
+    	// How many waypoints are in this plan
+    	Plan plan = mService.getPlan();
+        int destnum = plan.getDestinationNumber();
         
-        ArrayList<String> name = new ArrayList<String>();
-        ArrayList<String> info = new ArrayList<String>();
+        // Allocate storage for each piece of data in the waypoints
+        ArrayList<String>  name   = new ArrayList<String>();
+        ArrayList<String>  info   = new ArrayList<String>();
         ArrayList<Boolean> passed = new ArrayList<Boolean>();
 
+        // For each waypoint, build up its line data
         for(int id = 0; id < destnum; id++) {
-            name.add(mService.getPlan().getDestination(id).getID() + "(" + mService.getPlan().getDestination(id).getType() + ")");
-            info.add(mService.getPlan().getDestination(id).toString());
-            passed.add(mService.getPlan().isPassed(id));
+        	Destination dest = plan.getDestination(id);
+            name.add(dest.getID() + "(" + dest.getType() + ")");
+            info.add(dest.toString());
+            passed.add(plan.isPassed(id));
         }
-        mPlanAdapter = new PlanAdapter(PlanActivity.this, name, info, passed);
-        return true;
+
+        // Pass all of this data off to a new PlanAdapter
+        mPlanDetailAdapter = new PlanAdapter(PlanActivity.this, name, info, passed);
     }
 
-    /**
-     * 
-     * @param dst
+
+    /***
+     * Add a new waypoint to the end of the active plan
+     * @param dst - destination ID
+     * @param type - type of waypoint
      */
     private void planTo(String dst, String type) {
-        /*
-         * Add to plan
-         */
-        Destination d = new Destination(dst, type, mPref, mService);
-        mService.getPlan().appendDestination(d);
-        d.find();
+        Destination dest = new Destination(dst, type, mPref, mService);
+        mService.getPlan().appendDestination(dest);
+        dest.find();
     }
 
-    /**
-     * 
-     * @param dst
-     */
+	/***
+	 * Search for the indicated destination. Add THIS class as the observer
+	 * to get the search results.
+	 * @param dst - Destination Identifier
+	 */
     private void planToWithVerify(String dst) {
-        /*
-         * Add to plan
-         */
-        Destination d = new Destination(dst, "", mPref, mService);
-        d.addObserver(this);
-        d.findGuessType();
+    	// Create the destination
+        Destination dest = new Destination(dst, "", mPref, mService);
+        dest.addObserver(this);
+        dest.findGuessType();
     }
 
-    // Read both internal and external plans and place them
-    // in a single string array.
+	/***
+	 * Read both internal and external plans and place them
+	 * in a single string array.
+	 */
     private void refreshAllPlans()
     {
         String intPlans[] = mPref.getPlans();
@@ -592,63 +753,86 @@ public class PlanActivity extends Activity  implements Observer {
         }
     }
     
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
+    /** 
+     * Defines callbacks for service binding, passed to bindService() 
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
+    	// We've received a connection to the service. Time to get the 
+    	// ball rolling
         @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
+        public void onServiceConnected(ComponentName className, IBinder service) {
+        	 
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+
+            // Register our GPS object with the base service
             mService.registerGpsListener(mGpsInfc);
 
+            // Refresh our list of all the plans
             refreshAllPlans();
-            prepareAdapter();
-            prepareAdapterSave();
-            mPlan.setAdapter(mPlanAdapter);
-
             
-            mPlan.setClickable(true);
-            mPlan.setDividerHeight(10);
-            mPlan.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            // Ready the plan details
+            preparePlanDetailAdapter();
+            
+            // Set up some properties of the plan details
+            mPlanDetail.setAdapter(mPlanDetailAdapter);
+            mPlanDetail.setClickable(true);
+            mPlanDetail.setDividerHeight(10);
+
+            // Ready the entire list of plans
+            preparePlanListAdapter();
+
+            // Long press on a waypoint in the plan detail list
+            mPlanDetail.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
+                	
+                	// Index of the item that was long pressed
                     mIndex = index;
-                            
+
+                    // Get the destination object based on this index
                     mDestination = mService.getPlan().getDestination(index);
-                    mDestButton.setText(mDestination.getID());
+                    String destID = mDestination.getID();
+                    
+                    // Set the text of our animated button to be the Navaid ID
+                    mDestButton.setText(destID);
+                    
+                    // Turn on the DESTINATION button
                     mAnimateDest.animate(true);
+                    
+                    // Turn on the DELETE button
                     mAnimateDelete.animate(true);
-                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), mDestination.getID())) {
+                    
+                    // If the destination has plates, then turn on the PLATE button
+                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), destID)) {
                     	mAnimatePlates.animate(true);
-                    }
-                    else {
+                    } else {
                     	mAnimatePlates.stopAndHide();
                     }
 
+                    // Done
                     return true;
                 }
             }); 
 
-            mPlanSave.setClickable(true);
-            mPlanSave.setDividerHeight(10);
-            mPlanSave.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            // Some properties of the list of saved plans
+            mSavedPlanList.setClickable(true);
+            mSavedPlanList.setDividerHeight(10);
+            
+            /***
+             * Long press on the list of all saved plans
+             */
+            mSavedPlanList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
 
+                	// Which item in the list was pressed
                     final int mxindex = index;
                     
                     // Ensure the list index is valid
@@ -656,29 +840,32 @@ public class PlanActivity extends Activity  implements Observer {
                         return true;
                     }
 
-                    // Ensure the item string is formatted properly
+                    // Ensure the plan detail string that we have
+                    // at that index is formatted properly
+                    // TODO: We shouldn't be looking at the plan formatting
                     final String item = mAllPlans[mxindex];
                     final String items[] = item.split("::");
                     if(items.length < 2) { 
                         return true;
                     }
 
-                    /*
-                     * Confirm what needs to be done
-                     * Delete a plan or load it
-                     */
-                    mAlertDialogChoose = new AlertDialog.Builder(PlanActivity.this).create();
-                    mAlertDialogChoose.setCanceledOnTouchOutside(false);
-                    mAlertDialogChoose.setCancelable(true);
-                    mAlertDialogChoose.setTitle(getString(R.string.Plan) + ": " + items[0]);
-                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), new DialogInterface.OnClickListener() {
-                        /* (non-Javadoc)
-                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                         */
+                    // Build a dialog to let the user load/reverse load/delete the selected 
+                    // plan
+                    mDlgLoadOrDelete = new AlertDialog.Builder(PlanActivity.this).create();
+                    mDlgLoadOrDelete.setCanceledOnTouchOutside(false);
+                    mDlgLoadOrDelete.setCancelable(true);
+                    mDlgLoadOrDelete.setTitle(getString(R.string.Plan) + ": " + items[0]);
+                    
+                    // Leftmost button - LOAD
+                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), 
+                    		new DialogInterface.OnClickListener() {
+
+                    	// Click action will load the plan
                         public void onClick(DialogInterface dialog, int which) {
                             inactivatePlan();
                             mService.newPlan();
 
+                            // TODO: Parsing the plan is too much to know about
                             mSaveText.setText(items[0]);
                             String tokens[] = items[1].split("\\)>");
                             for(int i = 0; i < tokens.length; i++) {
@@ -689,18 +876,22 @@ public class PlanActivity extends Activity  implements Observer {
                                 }
                                 planTo(pair[0], pair[1]);
                             }
-                            prepareAdapter();
-                            mPlan.setAdapter(mPlanAdapter);            
+
+                            preparePlanDetailAdapter();
+                            mPlanDetail.setAdapter(mPlanDetailAdapter);            
                         }
                     });
-                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.LoadReverse), new DialogInterface.OnClickListener() {
-                        /* (non-Javadoc)
-                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                         */
+                    
+                    // Middle button - REVERSE LOAD
+                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.LoadReverse), 
+                    		new DialogInterface.OnClickListener() {
+
+                    	// Click will load the plan, then reverse all the waypoints
                         public void onClick(DialogInterface dialog, int which) {
                             inactivatePlan();
                             mService.newPlan();
 
+                            // TODO: Parsing the plan is too much to know about
                             mSaveText.setText(items[0]);
                             String tokens[] = items[1].split("\\)>");
                             for(int i = tokens.length - 1; i >= 0; i--) {
@@ -711,189 +902,203 @@ public class PlanActivity extends Activity  implements Observer {
                                 }
                                 planTo(pair[0], pair[1]);
                             }
-                            prepareAdapter();
-                            mPlan.setAdapter(mPlanAdapter);            
+
+                            preparePlanDetailAdapter();
+                            mPlanDetail.setAdapter(mPlanDetailAdapter);            
                         }
                     });
-                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), new DialogInterface.OnClickListener() {
-                        /* (non-Javadoc)
-                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                         */
+                    
+                    // Right button - DELETE the plan
+                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), 
+                    		new DialogInterface.OnClickListener() {
+
+                    	// Click will try and remove the plan from storage
                         public void onClick(DialogInterface dialog, int which) {
                             // Try deleting the plan from external storage first. If that fails
                             // then tell the preferences to delete it.
                             if(false == mService.getExternalPlanMgr().delete(items[0])) { 
                             	mPref.deleteAPlan(mAllPlans[mxindex]);
                             }
-                            prepareAdapterSave();
+                            preparePlanListAdapter();
                         }
                     });
 
-                    mAlertDialogChoose.show();
+                    // Display the dialog to the user for action
+                    mDlgLoadOrDelete.show();
 
-
+                    // All done, time to leave
                     return true;
                 }
             }); 
 
-            /*
-             * Set proper state of the active button.
-             * Plan only active when more than one dest.
-             */
+             // Set proper state of the active button.
+             // Plan only active when more than one dest.
             if((!mService.getPlan().isActive()) || (mService.getPlan().getDestinationNumber() <= 0)) {
                 mActivateButton.setChecked(false);                
-            }
-            else {
+            } else {
                 mActivateButton.setChecked(true);
             }
         }    
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
+        // We have been disconnected from the service
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
+    // We are being paused. Most likely switching to a different tab
+    // Ensure all dialogs are removed and remove our GPS listener
     @Override
     protected void onPause() {
-        super.onPause();
+    	// Call superclass onPause
+    	super.onPause();
         
+    	// If we have the underlying service, then remove our GPS
+    	// listener from it
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
-        if(null != mAlertDialogChoose) {
+        // If we are in the middle of a LOAD/DELETE action, then dismiss it
+        if(null != mDlgLoadOrDelete) {
             try {
-                mAlertDialogChoose.dismiss();
+                mDlgLoadOrDelete.dismiss();
             }
             catch (Exception e) {
             }
         }
 
-        if(null != mAlertDialogPlan) {
+        // Are we prompting to load the plan whose name was typed in ?
+        if(null != mDlgCreatePlan) {
             try {
-                mAlertDialogPlan.dismiss();
+                mDlgCreatePlan.dismiss();
             }
             catch (Exception e) {
             }
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
+         // Clean up on pause that was started in on resume
         getApplicationContext().unbindService(mConnection);
-        
+
+        // Cancel the timer if one is running
         if(mTimer != null) {
             mTimer.cancel();
         }
     }
 
     /**
-     * 
+     * We resuming operation. 
      */
     @Override
     public void onResume() {
+ 
+    	// Let the super class do its work
         super.onResume();
+        
+        // Restore some common display elements
         Helper.setOrientationAndOn(this);
         
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
+        // Re-bind the connection to the storage service
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         
-        /*
-         * Create sim timer
-         */
+        // Create sim timer
         mTimer = new Timer();
         TimerTask sim = new UpdateTask();
         mTimer.scheduleAtFixedRate(sim, 0, 1000);
     }
 
     /**
-     * 
+     * We are being destroyed. Called after onPause when we need to go away 
      */
     @Override
     public void onDestroy() {
+    	// Tell super class to do its thing
         super.onDestroy();
 
     }
 
-    
     /**
-     * 
+     * An update event needs to be processed. This will come as a result of adding this
+     * class as an observer to a destination object with planToWithVerify(); 
      */
     @Override
     public void update(Observable arg0, Object arg1) {
-        /*
-         * Destination found?
-         */
+
+    	// Extract the destination given to us. If there isn't one, then
+    	// nothing else to do
         Destination dest = (Destination)arg0;
-        if(null == mSearchDests) {
-            return;
-        }
         if(null == dest) {
             return;
         }
+
+        // Do we have a collection of waypoints we are searching for ?
+        if(null == mSearchWaypoints) {
+            return;
+        }
         
-        /*
-         * Find next
-         */
-        for(int wp = 0; wp < mSearchDests.length; wp++) {
-            if(null != mSearchDests[wp]) {
+        // Walk through all of the waypoints in our search list
+        // The mWaypoints array of strings gets filled earlier 
+        // and nulled out here one at a time when results are found
+        for(int wpIdx = 0; wpIdx < mSearchWaypoints.length; wpIdx++) {
+
+        	// If there is an entry here
+        	if(null != mSearchWaypoints[wpIdx]) {
+        		
+        		// Is this a valid waypoint ? ie: did we find it
                 if(dest.isFound()) {
-                    /*
-                     * Add to plan
-                     */
+
+                	// Append this waypoint to the end of the in memory plan
                     mService.getPlan().appendDestination(dest);
-                }
-                else {
+                } else {
+                	
+                	// Not found - display some toast to indicate such
                     mToast.setText(getString(R.string.PlanDestinationNF));
                     mToast.show();
                 }
-                mSearchDests[wp] = null;
+                
+                // NULL out the current waypoint index
+                mSearchWaypoints[wpIdx] = null;
                 break;
             }
         }
-        searchDest();        
+        
+        // Start the search for the next waypoint in the collection
+        searchForNextWaypoint();        
     }
     
-    /**
+    /***
+     * A background timer class to send off messages if we are in simulation mode
      * @author zkhan
-     *
      */
     private class UpdateTask extends TimerTask {
-        
-        /* (non-Javadoc)
-         * @see java.util.TimerTask#run()
-         */
-        public void run() {
 
-            /*
-             * In sim mode, keep feeding location
-             */
+    	// Called whenever the timer fires.
+    	public void run() {
+        	// If we are in sim mode, then send a message
             if(mPref.isSimulationMode()) {
                 mHandler.sendEmptyMessage(0);
             }
-
         }
     }
     
     /**
+	 * Declare a new message handler that will receive items from the UpdateTask
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
     private Handler mHandler = new Handler() {
-        @Override
+
+    	// Single method to handle the inbound message
+    	@Override
         public void handleMessage(Message msg) {
+    		
+    		// If the background service is defined, then send off a simulation
+    		// message to the active plan. This might change the current GPS position
             if(mService != null) {
                 mService.getPlan().simulate();
-                updateAdapter();
+                
+                // Update the plan detail list
+                updatePlanDetailAdapter();
             }
         }
     };

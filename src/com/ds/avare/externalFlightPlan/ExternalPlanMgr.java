@@ -41,6 +41,14 @@ public class ExternalPlanMgr {
 	}
 
 	/***
+	 * Return the configured directory where we find our plans
+	 * @return
+	 */
+	private String getDir() {
+		return mPref.getUDWLocation();
+	}
+	
+	/***
 	 * Build up a string[] that represents all plans we know about
 	 * @return the plans
 	 */
@@ -56,6 +64,38 @@ public class ExternalPlanMgr {
 			plans[idx++] = plan.toString();
 		}
 		return plans;
+	}
+
+	/***
+	 * Return a collection of plan names that contain the desired string
+	 * @param likeThis Plan name contains this string, if null or zero length, add it
+	 * @return the collection of strings that qualify
+	 */
+	public List<String> getPlanNames(String likeThis) {
+		
+		// The collection to hold our results
+		List<String> planNames = new ArrayList<String>();
+		
+		// fileList will be used to hold the collection of files in this directory
+		File dirFile = new File(getDir());
+		
+		// Enumerate all the files that are in here
+		File[] fileList = dirFile.listFiles();
+		
+		// For each file we found here
+		if(null != fileList) {
+			for(File file : fileList) {
+				String planName = file.getName();
+				if(null != likeThis && likeThis.length() > 0) { 
+					if(true == planName.contains(likeThis)) {
+						planNames.add(planName);
+					}
+				} else {
+					planNames.add(planName);
+				}
+			}
+		}
+		return planNames;
 	}
 
 	/***
@@ -81,7 +121,7 @@ public class ExternalPlanMgr {
 	public boolean delete(String name) {
 		ExternalFlightPlan plan = get(name);
 		if (null != plan) {
-			File file = new File(mPref.getUDWLocation(), name + "." + plan.getType());
+			File file = new File(getDir(), name + "." + plan.getType());
 			if(true == file.delete()) {
 				mPlans.remove(plan);
 				return true;
@@ -122,7 +162,7 @@ public class ExternalPlanMgr {
 	 */
 	public void forceReload() {
 		// Load them all in - use the UserDefinedWaypoints config location
-		populate(mPref.getUDWLocation());
+		populate(getDir());
 	}
 	
 	/***
