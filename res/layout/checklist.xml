@@ -73,8 +73,18 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/Import"/>
-	           
+
+       <ToggleButton 
+                android:id="@+id/checklist_button_lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="@string/Lock"
+                android:layout_weight="1"
+                android:textOn="@string/Edit"/>
+                
+	        	           
 	    </LinearLayout>
+	    
 	             <!-- This control has a xmlns ending in res-auto so gradle can
 	            automatically insert the appropriate package name based on the
 	            build type. -->
@@ -92,28 +102,22 @@ Redistribution and use in source and binary forms, with or without modification,
 	   	    <EditText
 	               android:id="@+id/checklist_text_save"
 	               android:layout_width="match_parent"
-	               android:layout_above="@+id/checklist_button_save"
 	               android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_alignParentLeft="true"
+                   android:layout_toLeftOf="@+id/checklist_button_save"
 	               android:textSize="20sp"
 	               android:hint=""/>
 	   	    
             <Button 
                 android:id="@+id/checklist_button_save"
                 android:layout_width="wrap_content"
-                   android:layout_alignParentBottom="true"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
                 android:textSize="20sp"
                 android:text="@string/Save"/>
             
-            <ToggleButton 
-                android:id="@+id/checklist_button_lock"
-                android:layout_width="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@+id/checklist_button_save"
-                android:layout_height="wrap_content"
-                android:textOff="@string/Lock"
-                android:textOn="@string/Edit"/>
-            	
 	           <ProgressBar
 			      android:id="@+id/checklist_progress_bar"
 			      style="?android:attr/progressBarStyleSmall"
