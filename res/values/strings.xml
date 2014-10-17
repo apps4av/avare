@@ -359,5 +359,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
     <string name="gt_sign">&#62;</string>
     <string name="lt_sign">&#60;</string>
+    <string name="CurrentPlanName">Current Plan Name</string>
     		
 </resources>

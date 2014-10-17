@@ -39,34 +39,11 @@ Redistribution and use in source and binary forms, with or without modification,
         
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/plan_layout_save"
-        android:baselineAligned="true"
-        android:layout_below="@+id/plan_layout_enter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        
-        <EditText
-            android:id="@+id/plan_text_save"
-            android:layout_width="wrap_content"
-            android:layout_weight="6"
-            android:layout_height="wrap_content"
-            android:hint=""/>
-        
-        <Button 
-            android:id="@+id/plan_button_save"
-            android:layout_width="wrap_content"
-             android:textSize="20sp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/Save"/>
-    
-    </LinearLayout>
         
     <TextView 
             android:id="@+id/plan_total_text"
             android:layout_width="match_parent"
-            android:layout_below="@+id/plan_layout_save"
+            android:layout_below="@+id/plan_layout_enter"
             android:background="@drawable/border_transparent"
             android:layout_height="wrap_content"
             android:textSize="30sp"/>
@@ -207,6 +184,31 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:background="@drawable/border_transparent"
                 android:text="@string/SavedPlan"
                 />
+            
+                <LinearLayout
+			        android:id="@+id/plan_layout_save"
+			        android:baselineAligned="true"
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content">
+			        
+			        <EditText
+			            android:id="@+id/plan_text_save"
+			            android:layout_width="wrap_content"
+			            android:layout_weight="6"
+			            android:layout_height="wrap_content"
+			            android:hint="@string/CurrentPlanName"/>
+			        
+			        <Button 
+			            android:id="@+id/plan_button_save"
+			            android:layout_width="wrap_content"
+			             android:textSize="20sp"
+			            android:layout_weight="1"
+			            android:layout_height="wrap_content"
+			            android:text="@string/Save"/>
+			    
+			    </LinearLayout>
+            
+            
             <ListView
                 android:id="@+id/plan_list_save"
                 android:cacheColorHint="#00000000"
