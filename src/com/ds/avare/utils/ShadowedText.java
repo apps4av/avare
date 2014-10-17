@@ -14,7 +14,6 @@ package com.ds.avare.utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -29,26 +28,18 @@ public class ShadowedText {
 
     private Rect mTextSize;
     private RectF mShadowBox;
-    private Paint mTextPaintShadow;
     private Paint mShadowPaint;
     private float mDipToPix;
     private int XMARGIN;
     private int YMARGIN;
     private int SHADOWRECTRADIUS;
 
-    private static final int SHADOW = 4;
-    
     // Build the shadowText object. This means allocating the paint
     // and required rectangle objects that we use during the draw
     // phase
 	public ShadowedText(Context context) {
-        mTextPaintShadow = new Paint();
-        mTextPaintShadow.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
-        mTextPaintShadow.setAntiAlias(true);
-        mTextPaintShadow.setShadowLayer(SHADOW, SHADOW, SHADOW, Color.BLACK);
-        mTextPaintShadow.setStyle(Paint.Style.FILL);
-        
-        mShadowPaint = new Paint(mTextPaintShadow);
+        mShadowPaint = new Paint();
+        mShadowPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mShadowPaint.setShadowLayer(0, 0, 0, 0);
         mShadowPaint.setAlpha(0x7f);
         mShadowPaint.setStyle(Style.FILL);
@@ -80,9 +71,9 @@ public class ShadowedText {
         
         // Calculate the size of the shadow
         mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.top    = mTextSize.top - YMARGIN + y - (mTextSize.top / 2);
-        mShadowBox.left   = mTextSize.left - XMARGIN + x  - (mTextSize.right / 2);
-        mShadowBox.right  = mTextSize.right + XMARGIN + x  - (mTextSize.right / 2);
+        mShadowBox.top    = mTextSize.top    - YMARGIN + y - (mTextSize.top / 2);
+        mShadowBox.left   = mTextSize.left   - XMARGIN + x - (mTextSize.right / 2);
+        mShadowBox.right  = mTextSize.right  + XMARGIN + x - (mTextSize.right / 2);
 
         // Set our shadow paint color and transparency 
         mShadowPaint.setColor(shadowColor);
@@ -96,42 +87,62 @@ public class ShadowedText {
     }
 
     // Ordinals to lay out where we want the text to display relative to the provided point
-    public static final int ABOVE = 0;
-    public static final int ABOVERIGHT = 1;
-    public static final int RIGHT = 2;
-    public static final int BELOWRIGHT = 3;
-    public static final int BELOW = 4;
-    public static final int BELOWLEFT = 5;
-    public static final int LEFT = 6;
-    public static final int TOPLEFT = 7;
+    public static final int ABOVE = 0x01;
+    public static final int RIGHT = 0x02;
+    public static final int BELOW = 0x04;
+    public static final int LEFT  = 0x08;
 
+    public static final int ABOVE_RIGHT = ABOVE | RIGHT;
+    public static final int BELOW_RIGHT = BELOW | RIGHT;
+    public static final int ABOVE_LEFT  = ABOVE | LEFT;
+    public static final int BELOW_LEFT  = BELOW | LEFT;
+    
+    /***
+     * Draw the shadowed text using the "sector" as a reference around the center position specified
+     * by x and y
+     * @param canvas
+     * @param paint
+     * @param text
+     * @param shadowColor
+     * @param sector
+     * @param x
+     * @param y
+     */
     public void draw(Canvas canvas, Paint paint, String text, int shadowColor, int sector, float x, float y) {
     	
     	// Find out how much room this text will take
         paint.getTextBounds(text, 0, text.length(), mTextSize);
-
-        // Depending upon which sector we paint, we adjust position
-        switch(sector) {
-
-	        // No change for default location or above
-	        default:
-	    	case ABOVE:
-	    		break;
-	
-	    	// Adjust Y down and X to the right
-	    	case RIGHT:
-	    		break;
-	    	
-	       	// Adjust Y down to underneath
-	    	case BELOW:
-	    		break;
-	    	
-	       	// Adjust Y down and X to the left
-	    	case LEFT:
-	    		break;
-    	}
         
-        // We have the "where", no display the text
+        // Now calculate the offsets to handle the relative position
+        int xText = mTextSize.right - mTextSize.left;
+        int yText = mTextSize.bottom - mTextSize.top;
+        int xAdjust = (yText * 2 + xText / 2);
+        int yAdjust = (yText + (yText / 2));
+
+        // sector is a bitmapped field that defines what adjustments we need
+        // to make to the position of the text
+
+        // Do we need to move the text to the right ? 
+        if(0 != (sector & RIGHT)) {
+        	x += xAdjust;
+        }
+
+        // How about moving it left ?
+        if(0 != (sector & LEFT)) {
+        	x -= xAdjust;
+        }
+
+        // Above ?
+        if(0 != (sector & ABOVE)) {
+        	y -= yAdjust;
+        }
+        
+        // Now check for below
+        if(0 != (sector & BELOW)) {
+        	y += yAdjust;
+        }
+
+        // We have the "where", now display the text
         draw(canvas, paint, text, shadowColor, x, y);
     }
 }
