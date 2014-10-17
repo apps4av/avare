@@ -26,7 +26,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_weight="6"
             android:layout_height="wrap_content"
-            android:hint="@string/Plan"
+            android:hint="@string/PlanPrompt"
             android:inputType="textNoSuggestions" />
         
         <Button
@@ -35,7 +35,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_weight="1"
              android:textSize="20sp"
             android:layout_height="wrap_content"
-            android:text="@string/Plan" />
+            android:text="@string/Create" />
         
     </LinearLayout>
 
@@ -153,20 +153,20 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_marginRight="14dp"
         android:layout_marginTop="14dp" />
 	
-    
     <SlidingDrawer
         android:id="@+id/plan_drawer"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:allowSingleTap="true"
         android:content="@+id/plan_drawer_content"
         android:handle="@+id/plan_drawer_handle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:orientation="vertical" >
 	    
         <Button
-              android:id="@+id/plan_drawer_handle"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:drawableLeft="@drawable/directory_icon" />
+            android:id="@+id/plan_drawer_handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/SavedPlan" />
 
 		<LinearLayout
 		    android:id="@+id/plan_drawer_content"
@@ -175,16 +175,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		    android:layout_width="wrap_content"
 		    android:layout_height="match_parent" >
 
-            <TextView 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:background="@drawable/border_transparent"
-                android:text="@string/SavedPlan"
-                />
-            
                 <LinearLayout
 			        android:id="@+id/plan_layout_save"
 			        android:baselineAligned="true"

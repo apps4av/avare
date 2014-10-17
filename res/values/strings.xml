@@ -120,9 +120,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
+    <string name="Create">&quot;Create&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
+    <string name="PlanPrompt">&quot;Enter waypoints of flight plan&quot;</string>
+    <string name="StoredPlans">&quot;Stored Plans&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
     <string name="RootLabel">&quot;Charts Download Server&quot;</string>
@@ -222,7 +225,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Radar">NEXRADTransparency</string>
     <string name="RadarLabel">&quot;NEXRAD Transparency&quot;</string>
     <string name="RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
-    <string name="PlanWarning">&quot;Clear the current plan and load&quot;</string>
+    <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
+    <string name="AndLoad">&quot;and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
     <string name="prefShowCDI">ShowCDI</string>
     <string name="ShowCDILabel">&quot;Show CDI/VDI&quot;</string>

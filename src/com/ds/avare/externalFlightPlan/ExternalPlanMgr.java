@@ -71,10 +71,10 @@ public class ExternalPlanMgr {
 	 * @param likeThis Plan name contains this string, if null or zero length, add it
 	 * @return the collection of strings that qualify
 	 */
-	public List<String> getPlanNames(String likeThis) {
+	public ArrayList<String> getPlanNames(String likeThis) {
 		
 		// The collection to hold our results
-		List<String> planNames = new ArrayList<String>();
+		ArrayList<String> planNames = new ArrayList<String>();
 		
 		// fileList will be used to hold the collection of files in this directory
 		File dirFile = new File(getDir());

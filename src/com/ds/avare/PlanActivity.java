@@ -42,12 +42,14 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -71,14 +73,18 @@ public class PlanActivity extends Activity  implements Observer {
     private ArrayAdapter<String> mPlanListAdapter;
 
     // Items enabling the user to save the in memory plan 
-    private Button   mSaveButton;
-    private EditText mSaveText;
+    private Button        mSaveButton;
+    private EditText      mSaveText;
 
+    // The saved plans drawer control
+    private SlidingDrawer mPlanDrawer;
+    
     // To create a plan from a text string
     private Button   mCreatePlanFromString;
     private EditText mPlanStringText;
     private String   mSearchWaypoints[];
-
+    private boolean  mClearPlanStringText;
+    
     // Used for long press events of the detail plan
     private int         mIndex;
     private Destination mDestination;
@@ -96,8 +102,10 @@ public class PlanActivity extends Activity  implements Observer {
     // For displaying some status messages
     private Toast mToast;
 
-    // To enable/disable the current in memory plan
+    // Plan control buttons
     private ToggleButton mActivateButton;
+    private Button 		 mAdvanceButton;
+    private Button 		 mRegressButton;
     
     // The 3 sliding animation buttons on the left
     private Button mDestButton;
@@ -395,7 +403,12 @@ public class PlanActivity extends Activity  implements Observer {
                 mDlgCreatePlan.setCanceledOnTouchOutside(false);
                 mDlgCreatePlan.setCancelable(true);
                 mDlgCreatePlan.setTitle(getString(R.string.Plan));
-                mDlgCreatePlan.setMessage(getString(R.string.PlanWarning) + " \"" + planString + "\" ?");
+                String msg = getString(R.string.PlanWarning);
+                if(planString.length() > 0) {
+                	msg += getString(R.string.AndLoad) + " \"" + planString + "\"";
+                }
+                msg += "?";
+                mDlgCreatePlan.setMessage(msg);
 
                 // OK button. The use wishes to continue the action 
                 mDlgCreatePlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
@@ -419,6 +432,20 @@ public class PlanActivity extends Activity  implements Observer {
                         // Split up all possible waypoints that were entered
                         mSearchWaypoints = planString.split(" ");
                         
+                        // Assume we will find all of the waypoints
+                        mClearPlanStringText = true;
+                        
+                        // If we have no waypoints, the in-memory plan will be cleared.
+                        // Also clear out the "plan name" and tell the external plan to shut off
+                        // as well
+                        if(0 == planString.length()) {
+                        	// TODO: More internal/external plan handling cleanup
+                        	mService.getExternalPlanMgr().setActive(mSaveText.getText().toString(), false);
+                        	inactivatePlan();
+                        	mService.setDestination(null);	// Clear out any destination also
+                        	mSaveText.setText(null);
+                        };
+                        
                         // Start searching for them all 
                         searchForNextWaypoint();
                     }
@@ -432,10 +459,16 @@ public class PlanActivity extends Activity  implements Observer {
                 });
 
                 // Display the dialog for the user to interact with
-                mDlgCreatePlan.show();              
-            }   
+                mDlgCreatePlan.show();
+                
+                // Slide the input keyboard out of the way
+                hideKeyboard();
+            }
         });
 
+        // Get the drawer control
+        mPlanDrawer = (SlidingDrawer)view.findViewById(R.id.plan_drawer);
+        
         // The SAVE functionality
         mSaveText   = (EditText)view.findViewById(R.id.plan_text_save);
         mSaveButton = (Button)view.findViewById(R.id.plan_button_save);
@@ -493,6 +526,10 @@ public class PlanActivity extends Activity  implements Observer {
                 
                 // Update the list of saved plans
                 preparePlanListAdapter();
+                
+                // Clear the text namd field and slide the keyboard out of the way.
+                mSaveText.setText(null);
+                hideKeyboard();
             }   
         });
 
@@ -532,6 +569,88 @@ public class PlanActivity extends Activity  implements Observer {
                 }
             }
             
+        });
+
+        // Advance to the next waypoint of the in-memory plan
+        mAdvanceButton = (Button)view.findViewById(R.id.plan_button_advance);
+        mAdvanceButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            	
+            	// Service needs to be valid
+            	if(null == mService) {
+            		return;
+            	}
+            	
+            	// Must have a plan on file
+            	Plan plan = mService.getPlan();
+            	if(null == plan) {
+            		return;
+            	}
+            	
+            	// Advance to the next waypoint in the plan
+            	// Search each one to find the first point we have
+            	// not yet passed. Mark that as passed and set destination to the one
+            	// after.
+            	int planSize = plan.getDestinationNumber();
+            	for(int idx = 0; idx < planSize; idx++) {
+            		if(false == plan.isPassed(idx)){
+            			plan.setPassed(idx);
+            			if(idx < (planSize - 1)) {
+            				Destination dest = plan.getDestination(idx + 1);
+            				mService.setDestinationPlan(dest);
+            				updatePlanDetailAdapter();
+            				return;
+            			}
+            		}
+            	}
+            	
+            	// We are at the end of our waypoint list - nothing to
+            	// advance toward, so just cancel the plan
+            	inactivatePlan();
+            	mService.setDestination(null);
+            }
+        });
+
+        // Regress to the previous waypoint of the in-memory plan
+        mRegressButton = (Button)view.findViewById(R.id.plan_button_regress);
+        mRegressButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            	// We need the background service
+            	if(null == mService) {
+            		return;
+            	}
+            	
+            	// And an in-memory plan
+            	Plan plan = mService.getPlan();
+            	if(null == plan) {
+            		return;
+            	}
+
+            	// Regress to the PREVIOUS waypoint in the plan
+            	// We do this by searching from the end of the plan
+            	// to find the first waypoint that is marked as passed and changing
+            	// it to NOT passed, then setting a new destination
+            	int planSize = plan.getDestinationNumber();
+            	for(int idx = planSize - 1; idx >= 0 ; idx--) {
+            		if(true == plan.isPassed(idx)){
+            			plan.setNotPassed(idx);
+            			if(idx >= 0) {
+            				Destination dest = plan.getDestination(idx);
+            				mService.setDestinationPlan(dest);
+            				updatePlanDetailAdapter();
+            				return;
+            			}
+            		}
+            	}
+            	
+            	// We are at the end of our waypoint list - nothing to
+            	// advance toward, so just cancel the plan
+            	inactivatePlan();
+            	mService.setDestination(null);
+            }
         });
 
         // Create our 3 animated buttons that slide in from the left when a user long 
@@ -594,7 +713,12 @@ public class PlanActivity extends Activity  implements Observer {
 
         // Turn off the progress bar
         mProgressBar.setVisibility(View.INVISIBLE);
-        
+
+        // If all the waypoints were found, then clear out the plan string text
+        if(true == mClearPlanStringText) {
+        	mPlanStringText.setText(null);
+        }
+    
         // Now clear out our working collection of search waypoints
         mSearchWaypoints = null;
     }
@@ -831,7 +955,7 @@ public class PlanActivity extends Activity  implements Observer {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
-
+                	
                 	// Which item in the list was pressed
                     final int mxindex = index;
                     
@@ -878,7 +1002,8 @@ public class PlanActivity extends Activity  implements Observer {
                             }
 
                             preparePlanDetailAdapter();
-                            mPlanDetail.setAdapter(mPlanDetailAdapter);            
+                            mPlanDetail.setAdapter(mPlanDetailAdapter);
+                            mPlanDrawer.animateClose();
                         }
                     });
                     
@@ -905,6 +1030,7 @@ public class PlanActivity extends Activity  implements Observer {
 
                             preparePlanDetailAdapter();
                             mPlanDetail.setAdapter(mPlanDetailAdapter);            
+                            mPlanDrawer.animateClose();
                         }
                     });
                     
@@ -1053,6 +1179,7 @@ public class PlanActivity extends Activity  implements Observer {
                 } else {
                 	
                 	// Not found - display some toast to indicate such
+                	mClearPlanStringText = false;
                     mToast.setText(getString(R.string.PlanDestinationNF));
                     mToast.show();
                 }
@@ -1102,4 +1229,17 @@ public class PlanActivity extends Activity  implements Observer {
             }
         }
     };
+
+    /***
+     * Helper function to slide the keyboard out of the way
+     */
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 }
