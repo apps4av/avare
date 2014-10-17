@@ -118,7 +118,7 @@ Redistribution and use in source and binary forms, with or without modification,
         
         <Button
               android:id="@+id/checklist_drawer_handle"
-              android:layout_width="wrap_content"
+              android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:text="@string/SavedLists"
               />
@@ -129,16 +129,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:background="#ff7f7f7f"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" >
-
-            <TextView 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:padding="10dp"
-                android:background="@drawable/border_transparent"
-                android:text="@string/SavedLists"
-                />
             
                 <LinearLayout
                     android:id="@+id/checklist_layout_save"
