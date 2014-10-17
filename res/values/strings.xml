@@ -124,7 +124,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
-    <string name="PlanPrompt">&quot;Enter waypoints of flight plan&quot;</string>
+    <string name="PlanPrompt">&quot;Enter waypoints of plan&quot;</string>
     <string name="StoredPlans">&quot;Stored Plans&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
@@ -363,6 +363,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
     <string name="gt_sign">&#62;</string>
     <string name="lt_sign">&#60;</string>
-    <string name="CurrentPlanName">Current Plan Name</string>
+    <string name="CurrentPlanName">Current plan name</string>
+    <string name="CurrentChecklistName">Current check list Name</string>
     		
 </resources>

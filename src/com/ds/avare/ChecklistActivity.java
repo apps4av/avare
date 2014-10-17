@@ -49,6 +49,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -71,12 +72,13 @@ public class ChecklistActivity extends Activity {
     private EditText mSaveText;
     private ToggleButton mLock;
     private int mIndex;
-    private int mIndexSave;
     private Preferences mPref;
     private Checklist mWorkingList;
     private int mWorkingIndex;
-    private AlertDialog mAlertDialogChoose;
     private AlertDialog mAlertDialogEnter;
+    private AlertDialog mDlgLoadOrDelete;
+    private SlidingDrawer mDrawer;
+
 
     private static final int MAX_FILE_LINE_SIZE = 256;
     private static final int MAX_FILE_LINES = 100;
@@ -188,10 +190,10 @@ public class ChecklistActivity extends Activity {
 
         mService = null;
         mIndex = -1;
-        mIndexSave = -1;
 
         mWorkingList = new Checklist("");
         mWorkingIndex = 0;
+        
         
         /*
          * Edit lock button
@@ -206,63 +208,12 @@ public class ChecklistActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-
                 /*
-                 * Delete on saved lists
+                 * Delete on step, but do not delete both as delete button is used for both
                  */
-                if(mIndexSave >= 0) {
-                    if(mService == null) {
-                        return;
-                    }
-                    
-                    final LinkedList<Checklist> lists = mService.getCheckLists();
-                    if(lists == null) {
-                        return;
-                    }
-                    
-                    if(mIndexSave < 0 || mIndexSave >= lists.size()) {
-                        mIndexSave = -1;
-                        return;
-                    }
-                    
-                    // Give confirm because lists are valuable
-                    mAlertDialogChoose = new AlertDialog.Builder(ChecklistActivity.this).create();
-                    mAlertDialogChoose.setCanceledOnTouchOutside(false);
-                    mAlertDialogChoose.setCancelable(true);
-                    mAlertDialogChoose.setTitle(lists.get(mIndexSave).getName() + ": " + getString(R.string.DeleteListQuestion));
-                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                        /* (non-Javadoc)
-                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                         */
-                        public void onClick(DialogInterface dialog, int which) {
-                            lists.remove(mIndexSave);
-                            
-                            mIndexSave = -1;
-                            prepareAdapterSave();
-                            dialog.dismiss();
-                        }
-                    });
-                    mAlertDialogChoose.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                        /* (non-Javadoc)
-                         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                         */
-                        public void onClick(DialogInterface dialog, int which) {
-                            mIndexSave = -1;
-                            dialog.dismiss();
-                        }
-                    });
-
-                    mAlertDialogChoose.show();
-                    
-                }
-                else if(mIndex >= 0) {
-                    /*
-                     * Delete on step, but do not delete both as delete button is used for both
-                     */
-                    mWorkingList.removeStep(mIndex);
-                    mWorkingIndex = 0;
-                    prepareAdapter();
-                }
+                mWorkingList.removeStep(mIndex);
+                mWorkingIndex = 0;
+                prepareAdapter();
                 
                 /*
                  * Always clear index
@@ -403,6 +354,7 @@ public class ChecklistActivity extends Activity {
         });
         
         mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mDrawer = (SlidingDrawer)view.findViewById(R.id.checklist_drawer); 
 
     }
 
@@ -491,6 +443,7 @@ public class ChecklistActivity extends Activity {
             mList.setDividerHeight(10);
             mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
+                // animate buttons on long press on the list
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
@@ -498,6 +451,7 @@ public class ChecklistActivity extends Activity {
                     if(mLock.isChecked()) {
 
                         // If list lock do not delete animate
+                        // save the index to work on this long clicked item
                         mIndex = index;
                         mAnimateDelete.animate(true);
                     }
@@ -512,6 +466,7 @@ public class ChecklistActivity extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                         int position, long id) {
+                    // Index of working list we clicked on
                     mWorkingIndex = position;
                     mListAdapter.setChecked(mWorkingIndex);
                 }
@@ -519,41 +474,81 @@ public class ChecklistActivity extends Activity {
 
             mListSave.setClickable(true);
             mListSave.setDividerHeight(10);
-            mListSave.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                        int position, long id) {
-                    if(mService == null) {
-                        return;
-                    }
-                    
-                    LinkedList<Checklist> lists = mService.getCheckLists();
-                    if(lists == null) {
-                        return;
-                    }
-                    
-                    if(position < 0 || position >= lists.size()) {
-                        return;
-                    }
-
-                    mWorkingList = new Checklist(lists.get(position).getName(), 
-                            lists.get(position).getSteps());
-                    
-                    mWorkingIndex = 0;
-                    mSaveText.setText(mWorkingList.getName());
-                    prepareAdapter();
-                                
-                }
-            }); 
-
             mListSave.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                        int index, long arg3) {
-                    mIndexSave = index;
+                        int position, long arg3) {
+                    
+                    final int pos = position;
+                    if(mService == null) {
+                        return true;
+                    }
+                    
+                    
+                    // Build a dialog to let the user load/reverse load/delete the selected 
+                    // plan
+                    mDlgLoadOrDelete = new AlertDialog.Builder(ChecklistActivity.this).create();
+                    mDlgLoadOrDelete.setCanceledOnTouchOutside(false);
+                    mDlgLoadOrDelete.setCancelable(true);
+                    mDlgLoadOrDelete.setTitle(getString(R.string.List) + ": " + mListSaveAdapter.getItem(pos));
+                    
+                    // Leftmost button - LOAD
+                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), 
+                            new DialogInterface.OnClickListener() {
+
+                        // Click action will load the plan
+                        public void onClick(DialogInterface dialog, int which) {
+                            // a view in Save list is clicked long
+                            // Get lists
+                            LinkedList<Checklist> lists = mService.getCheckLists();
+                            if(lists == null) {
+                                return;
+                            }
                             
-                    mAnimateDelete.animate(true);
+                            // check position
+                            if(pos < 0 || pos >= lists.size()) {
+                                return;
+                            }
+
+                            // change the working list so it loads on the main screen
+                            mWorkingList = new Checklist(lists.get(pos).getName(), 
+                                    lists.get(pos).getSteps());
+                            
+                            mWorkingIndex = 0;
+                            mSaveText.setText(mWorkingList.getName());
+                            prepareAdapter();
+                            mDrawer.animateClose();
+                        }
+                    });
+                    
+                    // Right button - DELETE the list
+                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), 
+                            new DialogInterface.OnClickListener() {
+
+                        // Click will try and remove the checklist from storage
+                        public void onClick(DialogInterface dialog, int which) {
+                            
+                            // a view in Save list is clicked long
+                            // Get lists
+                            LinkedList<Checklist> lists = mService.getCheckLists();
+                            if(lists == null) {
+                                return;
+                            }
+                            
+                            // check position
+                            if(pos < 0 || pos >= lists.size()) {
+                                return;
+                            }
+                            lists.remove(pos);
+                            prepareAdapterSave();
+                            dialog.dismiss();
+                        }
+                    });
+
+                    // Display the dialog to the user for action
+                    mDlgLoadOrDelete.show();
+                    
                     return true;
                 }
             }); 
@@ -574,16 +569,16 @@ public class ChecklistActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
-        if(null != mAlertDialogChoose) {
+        if(null != mDlgLoadOrDelete) {
             try {
-                mAlertDialogChoose.dismiss();
+                mDlgLoadOrDelete.dismiss();
             }
             catch (Exception e) {
             }
         }
-        if(null != mAlertDialogEnter) {
+        if(null != mDlgLoadOrDelete) {
             try {
-                mAlertDialogEnter.dismiss();
+                mDlgLoadOrDelete.dismiss();
             }
             catch (Exception e) {
             }
@@ -668,6 +663,7 @@ public class ChecklistActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             if(null == result) {
+                // show done with result
                 mToast.setText(getString(R.string.InvalidText));
                 mToast.show();
             }
@@ -685,6 +681,7 @@ public class ChecklistActivity extends Activity {
             if(values[0] == null) {
                 return;
             }
+            // keep adding lines
             mWorkingList.addStep(values[0]);
             prepareAdapter();
         }
