@@ -180,7 +180,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <SlidingDrawer
         android:id="@+id/plan_drawer"
         android:orientation="vertical"
-        android:layout_marginTop="30dp"
         android:content="@+id/plan_drawer_content"
         android:handle="@+id/plan_drawer_handle"
         android:layout_width="match_parent"
@@ -190,7 +189,7 @@ Redistribution and use in source and binary forms, with or without modification,
               android:id="@+id/plan_drawer_handle"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="+" />
+              android:drawableLeft="@drawable/directory_icon" />
 
 		<LinearLayout
 		    android:id="@+id/plan_drawer_content"
