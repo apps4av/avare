@@ -71,6 +71,7 @@ Redistribution and use in source and binary forms, with or without modification,
              android:layout_width="wrap_content"
              android:layout_height="match_parent"
              android:layout_weight="1"
+             android:background="@android:drawable/btn_default"
              android:textOff="@string/Inactive"
              android:textOn="@string/Active"
              android:visibility="visible" />

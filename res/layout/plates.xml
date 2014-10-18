@@ -75,6 +75,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:textOff="@string/Pan"
+            android:background="@android:drawable/btn_default"
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />

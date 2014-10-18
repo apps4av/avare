@@ -92,6 +92,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_above="@+id/location_button_track"
             android:visibility="invisible"
             android:textStyle="bold"
+            android:background="@android:drawable/btn_default"
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
         
@@ -99,6 +100,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_track"
             android:layout_height="wrap_content"
             android:visibility="invisible"
+            android:background="@android:drawable/btn_default"
             android:layout_above="@+id/location_button_sim"
             android:layout_alignParentRight="true"
             android:textOff="@string/NorthUp"
@@ -114,6 +116,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:textOff="@string/Navigate"
             android:textOn="@string/SimulationMode"
+            android:background="@android:drawable/btn_default"
             android:layout_width="150dp"
             android:textStyle="bold"/>
 
@@ -142,6 +145,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:textOff="@string/Pan"
+            android:background="@android:drawable/btn_default"
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />

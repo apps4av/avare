@@ -42,6 +42,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="match_parent"
             android:textOff="@string/Locked"
             android:layout_weight="1"
+            android:background="@android:drawable/btn_default"
             android:textOn="@string/Edit"/>
                 
     </LinearLayout>	        	           
