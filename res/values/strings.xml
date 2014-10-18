@@ -147,7 +147,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Next">&quot;Next&quot;</string>
     <string name="Last">&quot;Last&quot;</string>
     <string name="Save">&quot;Save&quot;</string>
-    <string name="SavedPlan">&quot;Saved Plans&quot;</string>
+    <string name="SavedPlan">&quot;Load/Save Plans&quot;</string>
     <string name="Load">&quot;Load&quot;</string>
     <string name="LoadReverse">&quot;Reverse Load&quot;</string>
     <string name="WeatherError">&quot;Could not download weather data&quot;</string>
@@ -265,7 +265,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
     <string name="List">List</string>
-    <string name="SavedLists">Saved Lists</string>
+    <string name="SavedLists">Load/Save Lists</string>
     <string name="listitem">Check list action item</string>
     <string name="AddAction">Add an action item</string>
     <string name="Add">Add</string>
@@ -276,7 +276,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ImportActionFilePath">File path and name</string>
     <string name="Import">Import</string>
     <string name="Advertisements">Ads</string>
-    <string name="Lock">Lock</string>
+    <string name="Locked">Locked</string>
     <string name="Edit">Edit</string>
     <string name="ExternalFolder">Use the default external folder</string>
     <string name="online">Edit Account</string>
@@ -364,6 +364,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="gt_sign">&#62;</string>
     <string name="lt_sign">&#60;</string>
     <string name="CurrentPlanName">Current plan name</string>
-    <string name="CurrentChecklistName">Current check list Name</string>
+    <string name="CurrentChecklistName">Current check list name</string>
     		
 </resources>

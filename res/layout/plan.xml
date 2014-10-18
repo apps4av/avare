@@ -33,7 +33,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/plan_button_find"
             android:layout_width="wrap_content"
             android:layout_weight="1"
-             android:textSize="20sp"
             android:layout_height="wrap_content"
             android:text="@string/Create" />
         
@@ -60,19 +59,16 @@ Redistribution and use in source and binary forms, with or without modification,
 		     android:layout_width="wrap_content"
              android:layout_height="match_parent"
 		     android:layout_weight="3"
-		     android:textSize="20sp"
 		     android:text="@string/lt_sign"/>
 		<Button
 		     android:id="@+id/plan_button_advance"
 		     android:layout_weight="3"
-             android:textSize="20sp"
 		     android:layout_width="wrap_content"
              android:layout_height="match_parent"
 		     android:text="@string/gt_sign"/>
         <ToggleButton
              android:id="@+id/plan_button_activate"
              android:layout_width="wrap_content"
-             android:textSize="20sp"
              android:layout_height="match_parent"
              android:layout_weight="1"
              android:textOff="@string/Inactive"
@@ -191,7 +187,6 @@ Redistribution and use in source and binary forms, with or without modification,
 			        <Button 
 			            android:id="@+id/plan_button_save"
 			            android:layout_width="wrap_content"
-			             android:textSize="20sp"
 			            android:layout_weight="1"
 			            android:layout_height="wrap_content"
 			            android:text="@string/Save"/>
