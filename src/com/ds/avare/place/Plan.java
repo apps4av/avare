@@ -628,6 +628,13 @@ public class Plan implements Observer {
         private boolean hasPassed() {
 
             /*
+             * no passing in sim mode
+             */
+            if(mPref.isSimulationMode()) {
+                return false;
+            }
+            
+            /*
              * quadrant change
              */
             if(mInitBearing >= 0 && mInitBearing <= 90) {
