@@ -389,12 +389,12 @@ public class InfoLines {
      *            shadow radius
      */
     public void drawCornerTextsDynamic(Canvas canvas, Paint aPaint,
-            int aTextColor, int aTextColorOpposite, int aShadow, int width,
+            int aTextColor, int aTextColorOpposite, int aShadow, int width, int orientQuad,
             String errorMessage, String priorityMessage) {
         // If the screen width has changed since the last time, we need to
         // recalc
         // the positions of the fields
-        resizeFields(aPaint, width);
+        resizeFields(aPaint, width, orientQuad);
 
         float dataY = aPaint.getTextSize();
         float titleY = dataY / (float) TITLE_TO_TEXT_RATIO;
@@ -479,7 +479,7 @@ public class InfoLines {
      * @param aPaint
      * @param aDisplayWidth
      */
-    private void resizeFields(Paint aPaint, int aDisplayWidth) {
+    private void resizeFields(Paint aPaint, int aDisplayWidth, int orientQuad) {
         // If the size did not change, then we don't need to do any work
         if (mDisplayWidth == aDisplayWidth)
             return;
@@ -489,8 +489,9 @@ public class InfoLines {
 
         // Set if we are in portrait or landscape mode. This determines what
         // status lines we draw
-        mDisplayOrientation = mPref.getOrientation()
-                .contains("Landscape") ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
+        mDisplayOrientation = (orientQuad == Helper.SCREEN_ORIENTATION_LANDSCAPE || 
+        					   orientQuad == Helper.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+                			  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
 
         // Fetch the NULL field to figure out how large it is
         String strField = getDisplayFieldValue(ID_FLD_NUL, false) + " ";
