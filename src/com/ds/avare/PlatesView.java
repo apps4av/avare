@@ -17,7 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -71,7 +70,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     private float                      mDipToPix;
 
-    
     private static final double MAX_PLATE_SCALE = 8;
     
     private static final int TEXT_COLOR = Color.WHITE; 
@@ -401,7 +399,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-                    getWidth(), mErrorStatus, null);
+                    getWidth(), getHeight(), mErrorStatus, null);
         }
 
     }
@@ -491,5 +489,4 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mAirportLat = lat;
         postInvalidate();
     }
-
 }

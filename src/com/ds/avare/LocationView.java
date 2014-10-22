@@ -204,7 +204,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private int                mDragPlanPoint;
     private float                mDragStartedX;
     private float                mDragStartedY;
-    
+
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
@@ -1332,7 +1332,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService != null) {
           	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
           	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
-          	        getWidth(), mErrorStatus, getPriorityMessage());
+          	        getWidth(), getHeight(), mErrorStatus, getPriorityMessage());
         }
     }
     
@@ -2136,5 +2136,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void zoomOut() {
         mScale.zoomOut();
     }
-
 }
