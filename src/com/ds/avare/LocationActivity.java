@@ -32,7 +32,6 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
 
-import android.hardware.SensorManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.net.Uri;
@@ -46,7 +45,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -135,7 +133,6 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimatePref;
     
     private ExpandableListView mListPopout;
-    private OrientationEventListener mOEL;
     
     private FlightStatusInterface mFSInfc = new FlightStatusInterface() {
         @Override
@@ -827,14 +824,6 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
-	     mOEL = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
-			@Override
-			public void onOrientationChanged(int orientation) {
-				mLocationView.setOrientation(orientation);
-			}
-
-	     };
-
     }    
 
     private void setTrackState(boolean bState)
@@ -1035,7 +1024,6 @@ public class LocationActivity extends Activity implements Observer {
 
         mDestLayout.setVisibility(View.INVISIBLE);
 
-        mOEL.enable();
     }
     
     /* (non-Javadoc)
@@ -1086,8 +1074,6 @@ public class LocationActivity extends Activity implements Observer {
          * Do this as switching from screen needs to hide its menu
          */
         hideMenu();
-        
-        mOEL.disable();
     }
     
     /* (non-Javadoc)

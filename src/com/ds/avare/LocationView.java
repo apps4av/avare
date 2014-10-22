@@ -211,9 +211,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Paint mRunwayPaint;
     private Paint mMsgPaint;
 
-    // The orientation of the display
-    int mOrientation;
-
     /*
      * Text on screen color
      */
@@ -1335,9 +1332,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService != null) {
           	mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, 
           	        TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
-          	        getWidth(),
-          	        Helper.getOrientationQuad(mOrientation),
-          	        mErrorStatus, getPriorityMessage());
+          	        getWidth(), mErrorStatus, getPriorityMessage());
         }
     }
     
@@ -2142,11 +2137,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mScale.zoomOut();
     }
 
-    /***
-     * The activity is telling us that the screen orientation has changed
-     * @param orientation
-     */
-    public void setOrientation(int orientation) {
-    	mOrientation = orientation;
-    }
 }

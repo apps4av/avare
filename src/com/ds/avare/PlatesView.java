@@ -60,8 +60,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private StorageService              mService;
     private double                     mAirportLon;
     private double                     mAirportLat;
-    private int							mOrientation;
-    
+
     /*
      * Is it drawing?
      */
@@ -402,9 +401,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-                    getWidth(),
-                    Helper.getOrientationQuad(mOrientation),
-                    mErrorStatus, null);
+                    getWidth(), mErrorStatus, null);
         }
 
     }
@@ -494,12 +491,5 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mAirportLat = lat;
         postInvalidate();
     }
-    
-    /***
-     * The activity is telling us that the screen orientation has changed
-     * @param orientation
-     */
-    public void setOrientation(int orientation) {
-    	mOrientation = orientation;
-    }
+
 }

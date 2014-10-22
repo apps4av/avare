@@ -36,14 +36,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.hardware.SensorManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -77,8 +75,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private String mDestString;
     private String nearString;
     private boolean mCounting;
-    private OrientationEventListener mOEL;;
-    
+
     public static final String AD = "AIRPORT-DIAGRAM";
     
     /*
@@ -392,14 +389,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-	     mOEL = new OrientationEventListener(getApplicationContext(), SensorManager.SENSOR_DELAY_UI) {
-			@Override
-			public void onOrientationChanged(int orientation) {
-				mPlatesView.setOrientation(orientation);
-			}
-
-	     };
-        
         mService = null;
     }
     
@@ -708,8 +697,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
-        
-        mOEL.disable();
     }
 
     /**
@@ -726,8 +713,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        mOEL.enable();
     }
    
     /**

@@ -822,28 +822,4 @@ public class Helper {
     public static double getSpeedInKnots(double displayedSpeed) {
         return displayedSpeed * Preferences.MS_TO_KT / Preferences.speedConversion; // m/s to knots
     }
-    
-    // Convert the orient degress passed in to a quadrant that represents
-    // how the screen is to display
-    
-    public static final int SCREEN_ORIENTATION_PORTRAIT = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    public static final int SCREEN_ORIENTATION_REVERSE_PORTRAIT = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-    public static final int SCREEN_ORIENTATION_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-    public static final int SCREEN_ORIENTATION_REVERSE_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-    
-    public static int getOrientationQuad(int orient) {
-        if(orient >= 0 && orient < 90) {
-            return SCREEN_ORIENTATION_PORTRAIT;
-        }
-
-        if(orient >= 90 && orient < 180) {
-            return SCREEN_ORIENTATION_LANDSCAPE;
-        }
-
-        if(orient >= 180 && orient < 270) {
-            return SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-        }
-
-        return SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-    }
 }
