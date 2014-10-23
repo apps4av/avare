@@ -17,6 +17,8 @@ import com.ds.avare.utils.BitmapHolder;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.Display;
+import android.view.WindowManager;
 
 import java.util.HashMap;
 
@@ -249,7 +251,11 @@ public class TileMap {
      * Set the correct tile orientation
      */
     public void setOrientation() {
-        if((new Preferences(mContext)).getOrientation().contains("Portrait")) {
+    	
+    	WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+    	Display display = wm.getDefaultDisplay();
+    	
+        if(display.getHeight() > display.getWidth()) {
             /*
              * Have more tiles in Y on portrait
              */
