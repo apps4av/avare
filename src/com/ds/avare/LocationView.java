@@ -219,6 +219,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     
     private static final float MOVEMENT_THRESHOLD = 32.f;
     
+    private static final int MAX_SCALE = 4;
+    
     /*
      * dip to pix scaling factor
      */
@@ -239,7 +241,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         mContext = context;
         mPan = new Pan();
-        mScale = new Scale();
+        mScale = new Scale(MAX_SCALE);
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
@@ -391,6 +393,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         boolean bPassToGestureDetector = true;
+        
         if(e.getAction() == MotionEvent.ACTION_UP) {
 
             /**
