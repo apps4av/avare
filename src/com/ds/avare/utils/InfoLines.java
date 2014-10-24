@@ -42,10 +42,10 @@ public class InfoLines {
 
     // Simple class to encapsulate a field location on the screen
     public class InfoLineFieldLoc {
-        int mRowIdx;
-        int mFieldIdx;
-        String[] mOptions;
-        int mSelected;
+    	private int 	 mRowIdx;
+    	private int 	 mFieldIdx;
+    	private String[] mOptions;
+    	private int 	 mSelected;
 
         private InfoLineFieldLoc(int aRowIdx, int aFieldIdx, String[] aOptions,
                 int aSelected) {
@@ -66,31 +66,33 @@ public class InfoLines {
     }
 
     // Dynamic data fields related items
-    float mShadowY; // How high the status display lines are
-    int mDisplayWidth; // Horizontal display size
-    int mFieldWidth; // width of each field
-    int mCharWidth; // width of one character
-    int mDisplayOrientation; // portrait or landscape
-    int mFieldPosX[]; // X positions of the fields left edges
-    int mFieldLines[][]; // Configuration/content of the status lines
-    int mRowCount; // How many status rows are in use
-    float mElev;
-    float mThreshold;
+    private float mShadowY; // How high the status display lines are
+    private int mDisplayWidth; // Horizontal display size
+    private int mFieldWidth; // width of each field
+    private int mCharWidth; // width of one character
+    private int mDisplayOrientation; // portrait or landscape
+    private int mFieldPosX[]; // X positions of the fields left edges
+    private int mFieldLines[][]; // Configuration/content of the status lines
+    private int mRowCount; // How many status rows are in use
+    private float mElev;
+    private float mThreshold;
 
     private Context mContext;
     private Preferences mPref;
     private StorageService mService;
 
+    private String[] mOptionList;	// Cache the options as well for performance
+    private String[] mFieldTitles;	// Cache field titles too
+
     // Constants to indicate the display orientation
     static final int ID_DO_LANDSCAPE = 0;
-    static final int ID_DO_PORTRAIT = 1;
+    static final int ID_DO_PORTRAIT  = 1;
 
     // To add new display fields, take the ID_FLD_MAX value, and adjust MAX up
     // by 1.
     // ID_FLD_MAX must always be the highest, and ID_FLD_NUL the lowest
     // Ensure that the string-array "TextFieldOptions" is update with the new
-    // entry
-    // in the proper order
+    // entry in the proper order
     static final int ID_FLD_NUL = 0;
     static final int ID_FLD_GMT = 1;
     static final int ID_FLD_LT  = 2;
@@ -117,6 +119,7 @@ public class InfoLines {
     static final int MAX_INFO_ROWS = 2;
     static final int MAX_FIELD_SIZE_IN_CHARS = 5;
 
+    // Return how much in the Y direction we take up
     public float getHeight() {
         return mShadowY;
     }
@@ -162,25 +165,21 @@ public class InfoLines {
         // Get our currently displayed value for this field
         int nSelected = mFieldLines[nRowIdx][nFieldIdx];
 
-        // Fetch the global option list of what this field could be
-        String[] optionList = mContext.getResources()
-                .getStringArray(R.array.TextFieldOptions);
-
         // Build up the available options list
         List<String> optionAvail = new ArrayList<String>();
 
         // Loop through the master list and include the item only under certain
         // conditions
-        for (int idx = 0, maxIdx = optionList.length; idx < maxIdx; idx++) {
+        for (int idx = 0, maxIdx = mOptionList.length; idx < maxIdx; idx++) {
             if (idx == 0) {
-                optionAvail.add(optionList[0]); // always allow the NONE
+                optionAvail.add(mOptionList[0]); // always allow the NONE
             } else if (idx == nSelected) {
-                optionAvail.add(optionList[idx]); // always add what it
+                optionAvail.add(mOptionList[idx]); // always add what it
                                                   // currently IS
                 nSelected = optionAvail.size() - 1; // reflect the selected
                                                     // position in the new list
             } else if (!isShowing(idx)) {
-                optionAvail.add(optionList[idx]); // add others
+                optionAvail.add(mOptionList[idx]); // add others
             }
         }
 
@@ -204,8 +203,8 @@ public class InfoLines {
      * @return true/false to indicate it is already shown at another location
      */
     private boolean isShowing(int nFieldType) {
-        int nRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0
-                : MAX_INFO_ROWS;
+        int nRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) 
+        				? 0 : MAX_INFO_ROWS;
 
         // Loop through the 2 entire status lines that are configured for
         // this display mode. Return true if we find it in either
@@ -234,20 +233,14 @@ public class InfoLines {
             // Fetch the string from the index passed in
             String option = infoLineFieldLoc.mOptions[nSelected];
 
-            // Fetch the global option list of what this field could be
-            String[] optionList = mContext.getResources()
-                    .getStringArray(R.array.TextFieldOptions);
-
             // Find out the index of the new selection within the master list
-            for (int idx = 0, maxIdx = optionList.length; idx < maxIdx; idx++) {
+            for (int idx = 0, maxIdx = mOptionList.length; idx < maxIdx; idx++) {
 
                 // If we find the exact match, then set the index, save and
                 // re-calc a few things
-                if (optionList[idx].contentEquals(option) == true) {
+                if (mOptionList[idx].contentEquals(option) == true) {
                     mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx] = idx;
-                    mPref.setRowFormats(buildConfigString()); // Save
-                                                                                // to
-                                                                                // storage
+                    mPref.setRowFormats(buildConfigString()); // Save to storage
                     setRowCount(); // A row may have been totally turned off
                     return;
                 }
@@ -266,25 +259,29 @@ public class InfoLines {
         mPref = new Preferences(mContext);
         mService = service;
 
-        mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX]; // separate lines
-                                                              // for portrait vs
-                                                              // landscape
-        String rowFormats = mPref.getRowFormats(); // One
-                                                                     // config
-                                                                     // string
-                                                                     // for all
-                                                                     // lines
-        String strRows[] = rowFormats.split(" "); // Split the string to get
-                                                  // each row
+        // separate lines for portrait vs landscape
+        mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX]; 
+
+        // One config string for all lines
+        String rowFormats = mPref.getRowFormats(); 
+
+        // Split the string to get each row
+        String strRows[] = rowFormats.split(" "); 
+
         for (int rowIdx = 0; rowIdx < strRows.length; rowIdx++) {
-            String arFields[] = strRows[rowIdx].split(","); // Split the row
-                                                            // string to get
-                                                            // each field
+        	// Split the row string to get each field
+            String arFields[] = strRows[rowIdx].split(","); 
+
+            // Now parse the line for the values
             for (int idx = 0; idx < arFields.length; idx++) {
                 mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
             }
         }
         setRowCount(); // Determine how many rows to use
+
+        // Read some string array values out of the resource list that we examine
+        mOptionList  = mContext.getResources().getStringArray(R.array.TextFieldOptions);
+        mFieldTitles = mContext.getResources().getStringArray(R.array.TextFieldOptionTitles);
     }
 
     /***
@@ -487,16 +484,10 @@ public class InfoLines {
         // Set our copy of what the display width is.
         mDisplayWidth = aDisplayWidth;
 
-        // Set if we are in portrait or landscape mode. This determines what
-        // status lines we draw
-        String Orientation = mPref.getOrientation();
-        if(true == Orientation.equals("Sensor")) {
-        	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
-        						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
-        } else {
-        	mDisplayOrientation = Orientation.contains("Landscape") ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
-        }
-
+        // In what direction is the display used  ?
+    	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
+    						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
+        	
         // Fetch the NULL field to figure out how large it is
         String strField = getDisplayFieldValue(ID_FLD_NUL, false) + " ";
         float charWidths[] = new float[strField.length()];
@@ -562,19 +553,28 @@ public class InfoLines {
      * @return string display value for that field
      */
     private String getDisplayFieldValue(int aField, boolean aTitle) {
+    	
+    	// If we are being requested to return the title, then look
+    	// it up in the resource string array
         if (aTitle == true) {
+        	
+        	// Local time is special, get the identifier of the local
+        	// timezone
             if (aField == ID_FLD_LT) {
                 return Calendar.getInstance().getTimeZone().getID();
             }
 
-            String[] fieldTitles = mContext.getResources()
-                    .getStringArray(R.array.TextFieldOptionTitles);
-            if (fieldTitles.length > aField) {
-                return fieldTitles[aField];
+            // Ensure the index is valid in our array and return 
+            // with that item
+            if (mFieldTitles.length > aField) {
+                return mFieldTitles[aField];
             }
+            
+            // Invalid request
             return NOVALUE;
         }
 
+        // Return the string value of a specific field
         switch (aField) {
         case ID_FLD_VSI: {
             if (mService != null) {
