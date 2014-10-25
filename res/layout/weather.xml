@@ -49,12 +49,10 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <WebView
 		    android:background="#FF000000"
 		    android:id="@+id/weather_mainpage"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
 		    android:layout_below="@+id/weather_edit_text"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"/>
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"/>
         
         <ProgressBar
             android:id="@+id/weather_progress_bar"
