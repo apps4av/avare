@@ -198,7 +198,8 @@ public class IHelperService extends Service {
                             object.getInt("altitude"),
                             (float)object.getDouble("bearing"),
                             (int)object.getInt("speed"),
-                            object.getLong("time"));
+                            Helper.getMillisGMT()
+                            /*XXX:object.getLong("time")*/);
                 }
                 else if(type.equals("ownship")) {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
