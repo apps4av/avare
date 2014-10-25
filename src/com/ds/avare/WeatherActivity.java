@@ -15,7 +15,6 @@ package com.ds.avare;
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.weather.ContentGenerator;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -33,6 +32,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -50,20 +50,12 @@ public class WeatherActivity extends Activity {
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
-    private WebAppInterface mInfc;
 
 
     /**
      * Service that keeps state even when activity is dead
      */
     private StorageService mService;
-    
-    /*
-     * If page it loaded
-     */
-    private boolean mIsPageLoaded;
-
-    private Context mContext;
     
     /**
      * App preferences
@@ -117,20 +109,20 @@ public class WeatherActivity extends Activity {
      
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mContext = this;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.weather, null);
         setContentView(view);
         mWebView = (WebView)view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return false;
+            }
+        });
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppInterface(mContext, mWebView);
-        mWebView.addJavascriptInterface(mInfc, "Android");
-        if(mIsPageLoaded == false) {
-            mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
-        }
-        mIsPageLoaded = true;
 
         /*
          * Progress bar
@@ -189,7 +181,6 @@ public class WeatherActivity extends Activity {
         });
 
         mService = null;
-        mIsPageLoaded = false;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -214,7 +205,6 @@ public class WeatherActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mInfc.connect(mService);
 
         }
 
@@ -257,7 +247,8 @@ public class WeatherActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
-
+        
+        mWebView.loadUrl("http://80.74.151.126/weather/index.htm");
     }
 
     /*
@@ -308,7 +299,6 @@ public class WeatherActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mInfc.cleanup();
     }
     
 }
