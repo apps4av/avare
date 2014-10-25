@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.utils.Helper;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -197,7 +198,8 @@ public class IHelperService extends Service {
                             object.getInt("altitude"),
                             (float)object.getDouble("bearing"),
                             (int)object.getInt("speed"),
-                            object.getLong("time"));
+                            Helper.getMillisGMT()
+                            /*XXX:object.getLong("time")*/);
                 }
                 else if(type.equals("ownship")) {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
@@ -210,7 +212,11 @@ public class IHelperService extends Service {
                     mService.getGps().onLocationChanged(l, type);
                 }
                 else if(type.equals("nexrad")) {
-                    long time = object.getLong("time");
+                    
+                    /*
+                     * XXX: If we are getting this from station, it must be current, fix this.
+                     */
+                    long time = Helper.getMillisGMT();//object.getLong("time");
                     int cols = object.getInt("x");
                     int rows = object.getInt("y");
                     int block = object.getInt("blocknumber");

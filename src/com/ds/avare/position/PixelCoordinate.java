@@ -64,4 +64,24 @@ public class PixelCoordinate {
         return mSeparate;
     }
 
+    /**
+     * 
+     * @param r
+     * @param angle
+     * @return
+     */
+    public static double rotateX(double r, double angle) {
+        return r * Math.sin(Math.toRadians(angle));
+    }
+    
+    /**
+     * 
+     * @param r
+     * @param angle
+     * @return
+     */
+    public static double rotateY(double r, double angle) {
+        return -r * Math.cos(Math.toRadians(angle));
+    }
+
 }

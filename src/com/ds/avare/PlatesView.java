@@ -57,6 +57,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private float[]                     mMatrix;
     private boolean                    mShowingAD;
     private StorageService              mService;
+    private double                     mAirportLon;
+    private double                     mAirportLat;
 
     /*
      * Is it drawing?
@@ -68,7 +70,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     private float                      mDipToPix;
 
-    
     private static final double MAX_PLATE_SCALE = 8;
     
     private static final int TEXT_COLOR = Color.WHITE; 
@@ -89,6 +90,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
+        mAirportLon = 0;
+        mAirportLat = 0;
         mPref = new Preferences(context);
         mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
@@ -278,9 +281,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         	 * Plate
         	 */
         	mBitmap.getTransform().setScale(scale, scale);
-        	mBitmap.getTransform().postTranslate(
-        			mPan.getMoveX() * scale,
-        			mPan.getMoveY() * scale);
+            mBitmap.getTransform().postTranslate(
+                    mPan.getMoveX() * scale
+                    + getWidth() / 2 
+                    - mBitmap.getWidth() / 2 * scale ,
+                    mPan.getMoveY() * scale 
+                    + getHeight() / 2 
+                    - mBitmap.getHeight() / 2 * scale);
             
         	if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);
@@ -299,6 +306,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 float lat = (float)mGpsParams.getLatitude();
                 float pixx = 0;
                 float pixy = 0;
+                float pixAirportx = 0;
+                float pixAirporty = 0;
                 float angle = 0;
                 
                 if(mShowingAD) {
@@ -314,6 +323,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                     
                     pixx = (wftA * lon + wftC * lat + wftE) / 2.f;
                     pixy = (wftB * lon + wftD * lat + wftF) / 2.f;
+                    pixAirportx = (wftA * (float)mAirportLon + wftC * (float)mAirportLat + wftE) / 2.f;
+                    pixAirporty = (wftB * (float)mAirportLon + wftD * (float)mAirportLat + wftF) / 2.f;
                     
                     /*
                      * Now find angle.
@@ -328,27 +339,55 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 }
                 else {
                     /*
-                     * Faisal's database
+                     * User's database
                      */
-                    pixx = (lon - mMatrix[0]) * mMatrix[1] / 2.f;
-                    pixy = (lat - mMatrix[2]) * mMatrix[3] / 2.f;
-                    angle = -mMatrix[4];
+                    float dx = mMatrix[0];
+                    float dy = mMatrix[1];
+                    float lonTopLeft = mMatrix[2];
+                    float latTopLeft = mMatrix[3];
+                    pixx = (lon - lonTopLeft) * dx;
+                    pixy = (lat - latTopLeft) * dy;
+                    pixAirportx = ((float)mAirportLon - lonTopLeft) * dx;
+                    pixAirporty = ((float)mAirportLat - latTopLeft) * dy;
+                    angle = 0;
                 }
+                
+                /*
+                 * Draw a circle at center of airport if tagged
+                 */
+                mPaint.setColor(Color.GREEN);
+                mPaint.setAlpha(127);
+                canvas.drawCircle(
+                        pixAirportx * scale
+                        + getWidth() / 2
+                        + mPan.getMoveX() * scale
+                        - mBitmap.getWidth() / 2 * scale,
+                        pixAirporty * scale
+                        + getHeight() / 2
+                        + mPan.getMoveY() * scale 
+                        - mBitmap.getHeight() / 2 * scale,
+                        16, mPaint);
+                mPaint.setAlpha(255);
+                
                 
                 /*
                  * Draw airplane at that location
                  */
                 mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
-                        mAirplaneBitmap.getWidth() / 2.f,
-                        mAirplaneBitmap.getHeight() / 2.f);
+                        mAirplaneBitmap.getWidth() / 2,
+                        mAirplaneBitmap.getHeight() / 2);
                 
                 mAirplaneBitmap.getTransform().postTranslate(
                         pixx * scale
-                        - mAirplaneBitmap.getWidth()  / 2.f
-                        + mPan.getMoveX() * scale,
+                        + getWidth() / 2
+                        - mAirplaneBitmap.getWidth() / 2
+                        + mPan.getMoveX() * scale
+                        - mBitmap.getWidth() / 2 * scale,
                         pixy * scale
-                        - mAirplaneBitmap.getHeight()  / 2.f
-                        + mPan.getMoveY() * scale);
+                        + getHeight() / 2
+                        - mAirplaneBitmap.getHeight() / 2
+                        + mPan.getMoveY() * scale 
+                        - mBitmap.getHeight() / 2 * scale);
                 canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
             }
         }
@@ -360,7 +399,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-                    getWidth(), mErrorStatus, null);
+                    getWidth(), getHeight(), mErrorStatus, null);
         }
 
     }
@@ -440,4 +479,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         return mDraw;
     }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     */
+    public void setAirport(String name, double lon, double lat) {
+        mAirportLon = lon;
+        mAirportLat = lat;
+        postInvalidate();
+    }
 }

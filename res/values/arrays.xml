@@ -297,5 +297,24 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Previous - may not be available</item>
         <item>Next - may not be available</item>
     </string-array>
-	
+
+    <string-array name="PointType">
+        <item>Fix</item>
+        <item>Navaid</item>
+        <item>Base</item>
+        <item>GPS</item>
+    </string-array>
+
+    <string-array name="GpsPosition">
+        <item>All Available</item>
+        <item>Internal Only</item>
+        <item>Avare IO Module Only</item>
+    </string-array>
+
+    <string-array name="GpsPositionValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    	
 </resources>

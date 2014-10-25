@@ -40,6 +40,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
             android:title="@string/UDWLabel" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="@string/GeoCode"
+            android:summary="@string/GeoCodeSummary"
+            android:title="@string/GeoCodeLabel" />
         </PreferenceScreen>
 
     <PreferenceScreen 
@@ -55,6 +60,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="0"
+            android:entries="@array/GpsPosition"
+            android:entryValues="@array/GpsPositionValues"
+            android:key="@string/externalGps"
+            android:summary="@string/externalGpsSummary"
+            android:title="@string/externalGpsLabel" />
     </PreferenceScreen>
     
     <PreferenceScreen 
@@ -89,7 +101,7 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefAppStateCategoryTitle" 
         android:icon="@android:drawable/ic_menu_mapmode" >
-        <com.ds.avare.utils.ActivityPreference
+        <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
         <CheckBoxPreference
@@ -180,6 +192,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ADSBTrafficSummary"
             android:title="@string/ADSBTrafficLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/GameTFR"
+            android:summary="@string/GameTFRSummary"
+            android:title="@string/GameTFRLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/Runways"
             android:summary="@string/RunwaysSummary"
@@ -216,7 +233,52 @@ authors: zkhan, jlmcgraw
             android:key="@string/ExtendInfoLines"
             android:summary="@string/ExtendInfoLinesSummary"
             android:title="@string/ExtendInfoLinesLabel" />
-    </PreferenceScreen>
+		<PreferenceScreen 
+	        android:title="@string/TabBarTitle" 
+            android:summary="@string/TabBarSummary"
+	        android:icon="@android:drawable/ic_menu_manage" >
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlates"
+		            android:summary="@string/PlatesSummary"
+		            android:title="@string/Plates" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabAFD"
+		            android:summary="@string/AFDSummary"
+		            android:title="@string/AFD" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabFind"
+		            android:summary="@string/FindSummary"
+		            android:title="@string/Find" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlan"
+		            android:summary="@string/PlanSummary"
+		            android:title="@string/Plan" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabWX"
+		            android:summary="@string/WXSummary"
+		            android:title="@string/WX" />
+				<CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabNear"
+		            android:summary="@string/NearSummary"
+		            android:title="@string/Near" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabChecklist"
+		            android:summary="@string/ChecklistSummary"
+		            android:title="@string/List" />
+				<CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabGPS"
+		            android:summary="@string/GPSSummary"
+		            android:title="@string/GPS" />
+			</PreferenceScreen>
+        </PreferenceScreen>
 
 	<PreferenceScreen 
     	    android:title="@string/prefTracksCategoryTitle" 
@@ -236,6 +298,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefAutoPostTracks"
             android:summary="@string/AutoPostTracksSummary"
             android:title="@string/AutoPostTracksLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"            
+            android:key="@string/rubberBand"
+            android:title="@string/rubberBandLabel"
+            android:summary="@string/rubberBandSummary"/>
         </PreferenceScreen>
     
 </PreferenceScreen>

@@ -34,6 +34,8 @@ import com.ds.avare.utils.BitmapHolder;
 /**
  * 
  * @author zkhan
+ * 
+ * User tags a plate through this view
  *
  */
 public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
@@ -45,6 +47,11 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     private PointInfo                    mCurrTouchPoint;
     private BitmapHolder                 mBitmap;
     private Scale                        mScale;
+    private int                          mX;
+    private int                          mY;
+    private float                        mAirportX;
+    private float                        mAirportY;
+    private String                        mAirportName;
 
     private static final double MAX_PLATE_SCALE = 8;
     
@@ -62,6 +69,9 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         setBackgroundColor(Color.BLACK);
+        mX = mY = 0;
+        mAirportName = "";
+        mAirportX = mAirportY = -1;
     }
     
     /**
@@ -96,6 +106,10 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
+        /*
+         * This slows dows panning when zoomed in
+         */
+        e.setLocation(e.getX() / mScale.getScaleFactor(), e.getY() / mScale.getScaleFactor());
         return mMultiTouchC.onTouchEvent(e);
     }
 
@@ -147,6 +161,12 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
             mScale.setScaleFactor(newObjPosAndScale.getScale());
         }
 
+        /*
+         * Store location
+         */
+        mX = Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
+        mY = Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
+
         invalidate();
         return true;
     }
@@ -171,6 +191,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     		return;
     	}
     	
+        mPaint.setStrokeWidth(1);
         float min = Math.min(getWidth(), getHeight()) - 8;
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
@@ -182,8 +203,12 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX() * scale,
-                mPan.getMoveY() * scale);
+                mPan.getMoveX() * scale
+                + getWidth() / 2
+                - mBitmap.getWidth() / 2 * scale ,
+                mPan.getMoveY() * scale
+                + getHeight() / 2
+                - mBitmap.getHeight() / 2 * scale);
         
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
     	
@@ -194,8 +219,47 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     	mPaint.setStyle(Style.STROKE);
         canvas.drawLine(0, getHeight() / 2, getWidth() , getHeight() / 2, mPaint);
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), mPaint);
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 2, mPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);
         
+        /*
+         * Draw Airport circle
+         */
+        if(mAirportX > 0 && mAirportY > 0 && mAirportName != null) {
+            mPaint.setStrokeWidth(4);
+            mPaint.setColor(Color.GREEN);
+            float x =
+                    (mAirportX * scale
+                    + getWidth() / 2
+                    + mPan.getMoveX() * scale
+                    - mBitmap.getWidth() / 2 * scale);
+            float y =
+                    (mAirportY * scale
+                    + getHeight() / 2
+                    + mPan.getMoveY() * scale
+                    - mBitmap.getHeight() / 2 * scale);
+            
+            mPaint.setAlpha(127);
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(x, y, 16, mPaint);
+            mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+            mPaint.setColor(Color.RED);
+            mPaint.setStrokeWidth(1);
+            canvas.drawText(mAirportName, x + 16, y + 16, mPaint);
+            mPaint.setAlpha(255);
+        }
+    }
+    
+    /**
+     * Verify a point at x, y
+     * @param x
+     * @param y
+     */
+    public void verify(double x, double y) {
+        mPan.setMove(
+                (float)-x + mBitmap.getWidth() / 2,
+                (float)-y + mBitmap.getHeight() / 2
+                );
+        invalidate();
     }
     
     /**
@@ -220,5 +284,42 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
 
         postInvalidate();
     }
+    
+    
+    /**
+     * Current X with scale adjusted
+     */
+    public int getx() {
+        return mX;
+    }
+    
+    /**
+     * Current Y with scale adjusted
+     */
+    public int gety() {
+        return mY;
+    }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     */
+    public void setAirport(String name, float x, float y) {
+        mAirportX = x;
+        mAirportY = y;
+        mAirportName = name;
+        postInvalidate();
+    }
+    
+    /**
+     * 
+     */
+    public void unsetAirport() {
+        mAirportX = -1;
+        mAirportY = -1;
+        mAirportName = "";        
+        postInvalidate();
+    }
 }
+

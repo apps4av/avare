@@ -38,7 +38,6 @@ public class CDI {
 	float mInstLeft;	// Left position of the CDI
 	final int mColorLeft   = Color.RED;
 	final int mColorRight  = Color.rgb(0x00,0xa0,0x00);
-	final int mColorCenter = Color.BLACK;
 	private float mBarDegrees = BAR_DEGREES_VOR;
 
 	// Calc'd instrument values
@@ -192,7 +191,7 @@ public class CDI {
 	{
 		// Assume an on-course display
 		mDspOffset = 0;
-		mBackColor = mColorCenter;
+		mBackColor = mColorLeft;
 		
 		// If either of these objects are null, there is nothing
 		// we can do
@@ -255,12 +254,5 @@ public class CDI {
 			mBackColor = mColorLeft;
 			mDspOffset = -mDspOffset;
 		}
-
-		/*
-		 * One bar width is OK, show no color
-		 */
-        if(brgDif <= mBarDegrees) {
-            mBackColor = mColorCenter;
-        }
 	}
 }

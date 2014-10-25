@@ -19,6 +19,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
+import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
@@ -130,7 +131,16 @@ public class DataSource {
     public float[] findDiagramMatrix(String name) {
         return dbHelper.findDiagramMatrix(name);
     }
-    
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public float[] findGeoPlateMatrix(String name) {
+        return dbHelper.findGeoPlateMatrix(name);
+    }
+
     /**
      * 
      * @param name
@@ -206,6 +216,16 @@ public class DataSource {
      */
     public String findLonLat(String name, String type) {
         return dbHelper.findLonLat(name, type);          
+    }
+
+    /**
+     * 
+     * @param name
+     * @param type
+     * @return
+     */
+    public String findObstacle(String height, Destination dest) {
+        return dbHelper.findObstacle(height, dest);          
     }
 
     /**
@@ -296,5 +316,16 @@ public class DataSource {
      */
     public Tile findElevTile(double lon, double lat, double offset[], double p[], int factor) {
         return  dbHelper.findElevTile(lon, lat, offset, p, factor);        
+    }
+    
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<String> findProcedure(String name, String type, String runway) {
+        return  dbHelper.findProcedure(name, type, runway);
     }
 }

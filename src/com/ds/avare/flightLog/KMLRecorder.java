@@ -323,8 +323,8 @@ public class KMLRecorder {
 			bRecordPoint = true;
 		}
 		
-		// If the bearing is 3 degrees or more different - standard rate turn is 3deg per second
-    	if(Helper.angularDifference(gpsParams.getBearing(), mLastFix.getBearing()) > 3) {
+		// If the bearing is 15 degrees or more different - that's 24 samples per 360 turn
+    	if(Helper.angularDifference(gpsParams.getBearing(), mLastFix.getBearing()) > 15) {
     		bRecordPoint = true;
     	}
 

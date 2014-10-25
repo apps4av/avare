@@ -103,6 +103,14 @@ public class Projection {
         return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
     }
 
+    /**
+     * 
+     * @param lon1
+     * @param lat1
+     * @param lon2
+     * @param lat2
+     * @return
+     */
     public static double getStaticDistance(double lon1, double lat1, double lon2, double lat2) {
         
         /*

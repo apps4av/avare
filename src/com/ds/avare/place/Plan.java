@@ -21,6 +21,8 @@ import android.content.Context;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
+import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
@@ -43,6 +45,8 @@ public class Plan implements Observer {
     
     private static final int MILES_PER_SEGMENT = 50;
     
+    private static final double MIN_REACHED_DISTANCE = 5;
+    
     private boolean mActive;
 
     private TrackShape mTrackShape;
@@ -57,6 +61,10 @@ public class Plan implements Observer {
     private int mReplaceId;
     private Preferences mPref;
     private StorageService mService;
+    private double mCurrentDistance;
+    private boolean mReached;
+    private String mName;
+    private ExternalPlanMgr mExtPlanMgr;
     
     /**
      * 
@@ -78,6 +86,7 @@ public class Plan implements Observer {
         mBearing = 0;
         mDeclination = 0;
         mDestChanged = false;
+        mReached = false;
         mDestination = new Destination[MAX_DESTINATIONS];
         mPassed = new boolean[MAX_DESTINATIONS];
         for(int i = 0; i < MAX_DESTINATIONS; i++) {
@@ -85,8 +94,20 @@ public class Plan implements Observer {
         }
         mEte = "--:--";
         mPassage = new Passage();
+        mName = null;
     }
     
+    public void setName(String name) {
+    	mName = name;
+    }
+    
+    public String getName() {
+    	return mName;
+    }
+    
+    public void setExtPlanMgr(ExternalPlanMgr extPlanMgr) {
+    	mExtPlanMgr = extPlanMgr;
+    }
     /**
      * 
      */
@@ -363,6 +384,14 @@ public class Plan implements Observer {
      * Inativate flight plan
      */
     public void makeInactive() {
+    	// If this is an externally loaded plan, then it specifically
+    	// needs to be turned off
+    	if(null != mExtPlanMgr) {
+	    	ExternalFlightPlan plan = mExtPlanMgr.get(mName);
+	    	if(null != plan) {
+	    		plan.setActive(false);
+	    	}
+    	}
         mActive = false;
     }
     
@@ -599,7 +628,14 @@ public class Plan implements Observer {
         private boolean hasPassed() {
 
             /*
-             * Coodrant change
+             * no passing in sim mode
+             */
+            if(mPref.isSimulationMode()) {
+                return false;
+            }
+            
+            /*
+             * quadrant change
              */
             if(mInitBearing >= 0 && mInitBearing <= 90) {
                 if(mCurrentBearing <= 270 && mCurrentBearing >= 180) {
@@ -622,6 +658,15 @@ public class Plan implements Observer {
                 }
             }
             
+            
+            /*
+             * If previously we got close to a point, and now getting away, we reached.
+             */
+            if((mCurrentDistance > (MIN_REACHED_DISTANCE + 1)) && mReached) {
+                mReached = false;
+                return true;
+            }
+
             return false;
         }
         
@@ -638,6 +683,16 @@ public class Plan implements Observer {
             }
             
             mCurrentBearing = (p.getBearing() + 360) % 360;
+            mCurrentDistance = p.getDistance();
+
+            /*
+             * Are we close enough?
+             */
+            if(mReached == false) {
+                if(mCurrentDistance < MIN_REACHED_DISTANCE) {
+                    mReached = true;
+                }
+            }
             
             return hasPassed();
         }

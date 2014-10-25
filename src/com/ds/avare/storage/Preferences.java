@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 
 import android.app.Activity;
@@ -70,9 +71,9 @@ public class Preferences {
     public static final long MEM_16 = 16 * 1024 * 1024;
     
     public static final int MEM_128_X = 7;
-    public static final int MEM_128_Y = 7;
+    public static final int MEM_128_Y = 5;
     public static final int MEM_64_X = 5;
-    public static final int MEM_64_Y = 5;
+    public static final int MEM_64_Y = 3;
     public static final int MEM_32_X = 3;
     public static final int MEM_32_Y = 3;
     public static final int MEM_16_X = 3;
@@ -253,6 +254,9 @@ public class Preferences {
      */
     public String[] getPlans() {
         String plans = mPref.getString(mContext.getString(R.string.Plan), "");
+        if(plans.length() == 0) {
+        	return null;
+        }
         String[] tokens = plans.split(",");
         return tokens;
     }
@@ -264,11 +268,15 @@ public class Preferences {
      */
     public void addToPlans(String name) {
         String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for(int id = 0; id < l.size(); id++) {
-            if(l.get(id).equals(name)) {
-                l.remove(id);
-            }
+        List<String> l = new LinkedList<String>();
+        
+        if(null != tokens) {
+	        l = new LinkedList<String>(Arrays.asList(tokens));
+	        for(int id = 0; id < l.size(); id++) {
+	            if(l.get(id).equals(name)) {
+	                l.remove(id);
+	            }
+	        }
         }
         l.add(0, name);
         if(l.size() > MAX_PLANS) {
@@ -290,11 +298,14 @@ public class Preferences {
      */
     public void deleteAPlan(String name) {
         String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for(int id = 0; id < l.size(); id++) {
-            if(l.get(id).equals(name)) { 
-                l.remove(id);
-            }
+        List<String> l = new LinkedList<String>();
+        if(null != tokens) {
+        	l = new LinkedList<String>(Arrays.asList(tokens));
+	        for(int id = 0; id < l.size(); id++) {
+	            if(l.get(id).equals(name)) { 
+	                l.remove(id);
+	            }
+	        }
         }
         
         String plans = "";
@@ -762,6 +773,14 @@ public class Preferences {
 
     /**
      * 
+     * @return
+     */
+    public String getExternalGpsSource() {
+        return mPref.getString(mContext.getString(R.string.externalGps), "0");
+    }
+
+    /**
+     * 
      * @param value
      */
     public void setOdometer(double value) {
@@ -829,6 +848,21 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean allowRubberBanding() {
+        return mPref.getBoolean(mContext.getString(R.string.rubberBand), true);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean showGameTFRs() {
+        return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
+    }
 
     /**
      * 
@@ -838,6 +872,10 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getUDWLocation() {
     	try {
     		return mPref.getString(mContext.getString(R.string.UDWLocation), "");
@@ -846,7 +884,75 @@ public class Preferences {
     	}
     }
     
+    /**
+     * 
+     * @param udwLocation
+     */
     public void setUDWLocation(String udwLocation) {
         mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
+    }
+    
+    
+    /**
+     * 
+     * @return
+     */
+    public String getGeotags() {
+        return mPref.getString(mContext.getString(R.string.Geotag), "");
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getGeoCode() {
+        return mPref.getString(mContext.getString(R.string.GeoCode), "");
+    }
+
+    /**
+     * 
+     * @param tags
+     */
+    public void setGeotags(String tags) {
+        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
+    }
+
+    // Read all the tab preference selections and return them in a single bitmapped long value
+    public long getTabs() {
+    	long mTabs = 1;
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabPlates), true)) {
+    		mTabs |=  1 << MainActivity.tabPlates;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabAFD), true)) {
+    		mTabs |=  1 << MainActivity.tabAFD;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
+    		mTabs |=  1 << MainActivity.tabFind;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
+    		mTabs |=  1 << MainActivity.tabPlan;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
+    		mTabs |=  1 << MainActivity.tabWX;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
+    		mTabs |=  1 << MainActivity.tabNear;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
+    		mTabs |=  1 << MainActivity.tabChecklist;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabGPS), true)) {
+    		mTabs |=  1 << MainActivity.tabGPS;
+    	}
+
+    	return mTabs;
     }
 }

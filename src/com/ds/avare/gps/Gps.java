@@ -233,6 +233,11 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onLocationChanged(Location location) {
+        
+        if(mPref.getExternalGpsSource().equals("2")) {
+            return;
+        }
+        
         if ((location != null)
                 && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
             
@@ -256,6 +261,10 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * From IO module
      */
     public void onLocationChanged(Location location, String from) {
+        if(mPref.getExternalGpsSource().equals("1")) {
+            return;
+        }
+        
         if ((location != null)
                 && location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
             

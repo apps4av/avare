@@ -17,11 +17,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.instruments.CDI;
+import com.ds.avare.instruments.DistanceRings;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.instruments.VNAV;
@@ -29,7 +31,6 @@ import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.UDW;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
@@ -41,6 +42,7 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
@@ -209,8 +211,14 @@ public class StorageService extends Service {
     private VSI mVSI;
     
     // User defined points of interest
-    private UDW mUDW;
+    private UDWMgr mUDWMgr;
 
+    // Distance ring instrument
+    private DistanceRings mDistanceRings;
+    
+
+    private ExternalPlanMgr mExternalPlanMgr;
+    
     /*
      * Watches GPS to notify of phases of flight
      */
@@ -324,9 +332,15 @@ public class StorageService extends Service {
         mVSI = new VSI();
         
         // Allocate a handler for PointsOfInterest
-        mUDW = new UDW(this, getApplicationContext()); 
+        mUDWMgr = new UDWMgr(this, getApplicationContext()); 
+      
+        // Allocate a new DistanceRing instrument
+        mDistanceRings = new DistanceRings(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
+        
+        // For handling external flight plans
+        mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
         
         /*
          * Monitor TFR every hour.
@@ -1011,7 +1025,15 @@ public class StorageService extends Service {
     	return mShadowedText;
     }
     
-    public UDW getUDW() {
-    	return mUDW;
+    public UDWMgr getUDWMgr() {
+    	return mUDWMgr;
+    }
+    
+    public DistanceRings getDistanceRings() {
+    	return mDistanceRings;
+    }
+    
+    public ExternalPlanMgr getExternalPlanMgr() {
+    	return mExternalPlanMgr;
     }
 }

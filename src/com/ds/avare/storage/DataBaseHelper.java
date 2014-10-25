@@ -53,7 +53,9 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBase; 
     private SQLiteDatabase mDataBaseFiles; 
     private SQLiteDatabase mDataBaseElev; 
+    private SQLiteDatabase mDataBaseProcedures; 
     private SQLiteDatabase mDataBasePlates; 
+    private SQLiteDatabase mDataBaseGeoPlates; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -79,7 +81,9 @@ public class DataBaseHelper  {
     private Integer mUsersFiles;
     private Integer mUsersElev;
     private Integer mUsersPlates;
+    private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
+    private Integer mUsersProcedures;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -113,6 +117,7 @@ public class DataBaseHelper  {
     private static final int    SEGCIRCLE_COL = 16;
     private static final String SEGCIRCLE = "Segmented Circle";
     public static final String MANAGER_PHONE = "Manager Phone";
+    public static final String PROC = "proc";
 
     public static final String ELEVATION = "Elevation";
     
@@ -129,6 +134,8 @@ public class DataBaseHelper  {
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_OBSTACLES = "obs";
     private static final String TABLE_SUA = "saa";
+    private static final String TABLE_PROCEDURE = "procedures";
+    private static final String TABLE_GEOPLATES = "geoplates";
 
 
     private static final String TILE_NAME = "name";
@@ -147,7 +154,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = 0;
         mContext = context;
     }
 
@@ -167,7 +174,12 @@ public class DataBaseHelper  {
      */
     private void closes(Cursor c) {
         if(null != c) {
-            c.close();
+            try {
+                c.close();
+            }
+            catch (Exception e) {
+                
+            }
         }
 
         synchronized(mUsers) {
@@ -316,6 +328,14 @@ public class DataBaseHelper  {
         if(name.equals("conus")) {
             list.add("latest.txt");
             list.add("latest_radaronly.png");
+            return list;
+        }
+
+        /*
+         * Delete georef
+         */
+        if(name.equals("geoplates")) {
+            list.add(name + ".db");
             return list;
         }
 
@@ -1596,6 +1616,36 @@ public class DataBaseHelper  {
         return ret;
     }
 
+    public String findObstacle(String height, Destination dest) {
+
+        String ret = null;
+        if(null == dest) {
+            return ret;
+        }
+        double lon = dest.getLocation().getLongitude();
+        double lat = dest.getLocation().getLatitude();
+        
+        /*
+         * Find with sqlite query
+         */
+        String qry = "select * from " + TABLE_OBSTACLES + " where Height =='" + height + "' and " + 
+                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
+                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
+        Cursor cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    ret = new String(cursor.getString(1) + "," + cursor.getString(0));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return ret;
+    }
+
     /**
      * Find the lat/lon of an airport
      * @param name
@@ -1837,8 +1887,12 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesFiles(Cursor c) {
-        if(null != c) {
+        
+        try {
             c.close();
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersFiles) {
@@ -2039,8 +2093,14 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesWeather(Cursor c) {
-        if(null != c) {
-            c.close();
+
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersWeather) {
@@ -2314,8 +2374,14 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesElev(Cursor c) {
-        if(null != c) {
-            c.close();
+
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersElev) {
@@ -2398,6 +2464,139 @@ public class DataBaseHelper  {
      * @param statement
      * @return
      */
+    private Cursor doQueryProcedures(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersProcedures) {
+            if(mDataBaseProcedures == null) {
+                mUsersProcedures = 0;
+                try {
+                    
+                    mDataBaseProcedures = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseProcedures = null;
+                }
+            }
+            if(mDataBaseProcedures == null) {
+                return c;
+            }
+            mUsersProcedures++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseProcedures == null) {
+            return c;
+        }
+        
+        if(!mDataBaseProcedures.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseProcedures.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    /**
+     * Close database
+     */
+    private void closesProcedures(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersProcedures) {
+            mUsersProcedures--;
+            if((mDataBaseProcedures != null) && (mUsersProcedures <= 0)) {
+                try {
+                    mDataBaseProcedures.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBaseProcedures = null;
+                mUsersProcedures = 0;
+            }
+        }
+    }
+
+
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<String> findProcedure(String name, String type, String runway) {
+        
+        LinkedList<String> ret = new LinkedList<String>();
+        
+        String qry =
+                "select * from " + TABLE_PROCEDURE + " where Airport='" + name + "' and AppType='" + type + "' and runway='"  + runway  + "';";
+        
+        Cursor cursor = doQueryProcedures(qry, "procedures.db");
+        
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        
+                        /*
+                         * Add as inital course, initial alts, final course, final alts, missed course, missed alts
+                         */
+                        ret.add(cursor.getString(4));
+                        ret.add(cursor.getString(5));
+                        ret.add(cursor.getString(6));
+                        ret.add(cursor.getString(7));
+                        ret.add(cursor.getString(8));
+                        ret.add(cursor.getString(9));
+                    } while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        
+        closesProcedures(cursor);
+        
+        if(ret.size() > 0) {
+            return ret;      
+        }
+        
+        return null;
+    }
+    
+    /**
+     * 
+     * @param statement
+     * @return
+     */
     private Cursor doQueryPlates(String statement, String name) {
         Cursor c = null;
         
@@ -2456,8 +2655,13 @@ public class DataBaseHelper  {
      * Close database
      */
     private void closesPlates(Cursor c) {
-        if(null != c) {
-            c.close();
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
         }
 
         synchronized(mUsersPlates) {
@@ -2537,6 +2741,132 @@ public class DataBaseHelper  {
         }
         
         return null;
+    }
+
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryGeoPlates(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersGeoPlates) {
+            if(mDataBaseGeoPlates == null) {
+                mUsersGeoPlates = 0;
+                try {
+                    
+                    mDataBaseGeoPlates = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseGeoPlates = null;
+                }
+            }
+            if(mDataBaseGeoPlates == null) {
+                return c;
+            }
+            mUsersGeoPlates++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseGeoPlates == null) {
+            return c;
+        }
+        
+        if(!mDataBaseGeoPlates.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseGeoPlates.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesGeoPlates(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersGeoPlates) {
+            mUsersGeoPlates--;
+            if((mDataBaseGeoPlates != null) && (mUsersGeoPlates <= 0)) {
+                try {
+                    mDataBaseGeoPlates.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseGeoPlates = null;
+                mUsersGeoPlates = 0;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public float[] findGeoPlateMatrix(String name) {
+        float ret[] = new float[4];
+        boolean found = false;
+        
+        String qry = "select * from " + TABLE_GEOPLATES + " where " + PROC + "=='" + name +"'";
+        Cursor cursor = doQueryGeoPlates(qry, "geoplates.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+        
+                    /*
+                     * Database
+                     */
+                    ret[0] = cursor.getFloat(1);
+                    ret[1] = cursor.getFloat(2);
+                    ret[2] = cursor.getFloat(3);
+                    ret[3] = cursor.getFloat(4);
+                    found = true;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesGeoPlates(cursor);
+
+        if(found == false) {
+            return null;
+        }
+        
+        return ret;
     }
 
 }

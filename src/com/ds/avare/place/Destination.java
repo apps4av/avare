@@ -28,10 +28,10 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.storage.UDWFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.storage.UDWFactory.Placemark;
+import com.ds.avare.userDefinedWaypoints.UDWMgr;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
@@ -420,13 +420,13 @@ public class Destination extends Observable {
             }
 
 	        if(mDestType.equals(UDW)){
-	        	Placemark p = mService.getUDW().getPlacemark(mName);
+	        	Waypoint p = mService.getUDWMgr().getWaypoint(mName);
 	        	if(null != p) {
-	        		mLatd = p.mLat;
-	        		mLond = p.mLon;
+	        		mLatd = p.getLat();
+	        		mLond = p.getLon();
 		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
 		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-		            mParams.put(DataBaseHelper.FACILITY_NAME, Placemark.DESCRIPTION);
+		            mParams.put(DataBaseHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
 		            addTime();
 		            mAfdFound = null;
 		            mFound = true;

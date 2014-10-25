@@ -294,7 +294,11 @@ public class ChartsDownloadActivity extends Activity {
                 }
             }
         });
-        mProgressDialog.show();
+        try {
+            mProgressDialog.show();
+        }
+        catch(Exception e) {
+        };
         return true;
     }
 
@@ -344,7 +348,11 @@ public class ChartsDownloadActivity extends Activity {
                 }
             }
         });
-        mProgressDialog.show();
+        try {
+            mProgressDialog.show();
+        }
+        catch(Exception e) {
+        };
         return true;
     }
 

@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -38,17 +40,19 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 /**
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity {
+public class PlatesActivity extends Activity implements Observer, Chronometer.OnChronometerTickListener  {
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -57,17 +61,20 @@ public class PlatesActivity extends Activity {
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mPlatesTagButton;
+    private Button mPlatesTimerButton;
+    private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
     private Button mDrawButton;
+    private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
     private ArrayList<String> mListAirports;
     private String mPlateFound[];
-    private double mDeclination;
     private String mDestString;
     private String nearString;
+    private boolean mCounting;
 
     public static final String AD = "AIRPORT-DIAGRAM";
     
@@ -75,7 +82,6 @@ public class PlatesActivity extends Activity {
      * For GPS taxi
      */
     private float[] mMatrix;
-    private HashMap<String, float[]> mMatrixPlates;
        
     /**
      * @return
@@ -84,20 +90,51 @@ public class PlatesActivity extends Activity {
         if(name.equals(AD)) {
             return(mMatrix);            
         }
-        if(null != mMatrixPlates) {
+
+        if(mService != null && mService.getDiagram() != null && mService.getDiagram().getName() != null) {
             
             /*
-             * Convert from points on plate to draw matrix
-             * 
+             * If the user has already tagged a plate, load its matrix
              */
-            float matrix[] = mMatrixPlates.get(name);            
-            if(null != matrix) {
+            String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
+            if(aname != null) {
+                float ret[];
                 
                 /*
-                 * Plates are in magnetic north orientation
+                 * First try to get plate info from local tags, if not found there, use downloaded plates
                  */
-                matrix[4] = (float)mDeclination;
-                return matrix;
+                
+                /*
+                 * Local plates are useful for tagging new plates, and for tagging own maps
+                 * Local plates tag info is in preferences.
+                 */
+                String pname = PlatesTagActivity.getNameFromPath(aname);
+                if(pname != null) {
+                    LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
+                    for(String t : tags) {
+                        String toks[] = t.split(",");
+                        if(toks[0].equals(pname)) {
+                            /*
+                            * Found
+                            */
+                            float matrix[] = new float[4];
+                            matrix[0] = (float)Double.parseDouble(toks[1]);
+                            matrix[1] = (float)Double.parseDouble(toks[2]);
+                            matrix[2] = (float)Double.parseDouble(toks[3]);
+                            matrix[3] = (float)Double.parseDouble(toks[4]);
+                            return matrix;
+                        }
+                    }
+                }
+                
+                /*
+                 * Downloaded one
+                 */
+                ret = mService.getDBResource().findGeoPlateMatrix(aname);
+                if(null != ret) {
+                    return ret;
+                }
+                
             }
         }
         return null;
@@ -129,8 +166,6 @@ public class PlatesActivity extends Activity {
                  * Called by GPS. Update everything driven by GPS.
                  */
                 GpsParams params = new GpsParams(location);
-                
-                mDeclination = params.getDeclinition();
                 
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
@@ -228,6 +263,33 @@ public class PlatesActivity extends Activity {
         });         
         
         /*
+         * Timer, make chronometer invisible. Just use button to show time
+         */
+        mChronometer = (Chronometer)view.findViewById(R.id.plates_chronometer);
+        mCounting = false;
+        mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
+        mPlatesTimerButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(!mCounting) {
+                    /*
+                     * Show when counting, dont show when stopped
+                     */
+                    mCounting = true;
+                    mChronometer.setBase(SystemClock.elapsedRealtime());
+                    mChronometer.start();
+                    mChronometer.setOnChronometerTickListener(PlatesActivity.this);
+                }
+                else {
+                    mCounting = false;
+                    mChronometer.setOnChronometerTickListener(null);
+                    mPlatesTimerButton.setText(getString(R.string.Timer));
+                }
+            }
+        });
+
+        /*
          * Draw
          */
         mDrawButton = (Button)view.findViewById(R.id.plate_button_draw);
@@ -302,8 +364,23 @@ public class PlatesActivity extends Activity {
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
-                startActivity(intent);
+                if(mService != null && mService.getDiagram() != null) {
+                    String name = mService.getDiagram().getName();
+                    if(name != null) {
+                        String tokens[] = name.split("/");
+                        String aname = tokens[tokens.length - 1];
+                        /*
+                         * Limit geo tagging to taggable plates.
+                         */
+                        if(aname.startsWith("ILS-") || aname.startsWith("HI-ILS-") || aname.startsWith("HI-TACAN-") || aname.startsWith("HI-VOR-") || aname.startsWith("VOR-") || aname.startsWith("LDA-") || aname.startsWith("RNAV-")
+                                || aname.startsWith("NDB-") || aname.startsWith("LOC-") || aname.startsWith("HI-LOC-") || aname.startsWith("SDA-") || aname.startsWith("GPS-")
+                                || aname.startsWith("TACAN-") || aname.startsWith("COPTER-") || aname.startsWith("CUSTOM-")) {
+                            Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                }
+                
             }
         });      
 
@@ -328,11 +405,8 @@ public class PlatesActivity extends Activity {
             if(name.startsWith(Destination.AD)) {
                 mPlatesView.setParams(getMatrix(name), true);
             }
-            else if(name.startsWith("RNAV-GPS")) {
-                mPlatesView.setParams(getMatrix(name), false);                            
-            }
             else {
-                mPlatesView.setParams(null, true);
+                mPlatesView.setParams(getMatrix(name), false);                            
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
@@ -371,7 +445,7 @@ public class PlatesActivity extends Activity {
                 else {
                     airport = getLastIfAirport();
                 }
-                mService.setLastPlateAirport(mDestString);
+                mService.setLastPlateAirport(mDestString);                
             }
             else if(airport.equals(nearString)) {
                 int nearestNum = mService.getArea().getAirportsNumber();
@@ -400,6 +474,11 @@ public class PlatesActivity extends Activity {
             
             mPlateFound = null;
             if(null != airport) {
+                
+                mDest = new Destination(airport, Destination.BASE, mPref, mService);
+                mDest.addObserver(PlatesActivity.this);
+                mDest.find();
+
                 String mapFolder = mPref.mapsFolder();
 
                 /*
@@ -473,7 +552,6 @@ public class PlatesActivity extends Activity {
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-                mMatrixPlates = mService.getDBResource().findPlatesMatrix(airport);
                 
                 mListPlates.clear();
                 for(int plate = 0; plate < mPlateFound.length; plate++) {
@@ -649,7 +727,7 @@ public class PlatesActivity extends Activity {
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "ILS", "LOC", "RNAV-GPS", "RNAV-RNP", "VOR", "NDB", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT"};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
@@ -698,5 +776,21 @@ public class PlatesActivity extends Activity {
      */
     public static boolean doesAirportHaveAirportDiagram(String mapFolder, String id) {
         return new File(mapFolder + "/plates/" + id + "/" + AD + Preferences.IMAGE_EXTENSION).exists();
+    }
+    
+    
+    @Override
+    public void update(Observable observable, Object data) {
+        if(mDest.isFound()) {
+            mPlatesView.setAirport(mDest.getID(), mDest.getLocation().getLongitude(), mDest.getLocation().getLatitude());
+        }
+    }
+
+    @Override
+    public void onChronometerTick(Chronometer chronometer) {
+        /*
+         * Set the label of timer button to time
+         */
+        mPlatesTimerButton.setText(chronometer.getText());
     }
 }
