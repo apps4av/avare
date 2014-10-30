@@ -17,6 +17,8 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.cap.GridSection;
+import com.ds.avare.cap.State;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.place.Destination;
@@ -29,7 +31,9 @@ import com.ds.avare.position.Pan;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.CAPGridShape;
 import com.ds.avare.shapes.MetShape;
+import com.ds.avare.shapes.Shape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.DataSource;
@@ -193,6 +197,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     private boolean                    mTrackUp;
     
+    private boolean					   mCAPGrids;
+    
     /*
      * Macro of zoom
      */
@@ -247,6 +253,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = null;
         mOnChart = null;
         mTrackUp = false;
+        mCAPGrids = false;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -1095,6 +1102,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
     }
+    
+    private void drawCAPGrids(Canvas canvas) {
+    	if (mService == null || false == mCAPGrids) {
+    		return;
+    	}
+    	
+    	mPaint.setShadowLayer(0, 0, 0, 0);
+    	mPaint.setStrokeWidth(2 * mDipToPix);
+    	mPaint.setColor(Color.RED);
+    	mPaint.setAlpha(162);
+    	mPaint.setTextSize(50);
+    	
+    	GridSection section = new GridSection();
+    	
+    	for (State state : section.getStates()) {
+			state.drawGrids(canvas, mOrigin, mPaint, mService, mScale, mMovement, mFace, mPref);
+		}
+    }
 
     /**
      * 
@@ -1368,6 +1393,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
+        drawCAPGrids(canvas);
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
@@ -2047,6 +2073,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public boolean getDraw() {
         return mDraw;
+    }
+    
+    public void enableCAPGrids(boolean enable) {
+    	mCAPGrids = enable;
+    	invalidate();
     }
     
     /**

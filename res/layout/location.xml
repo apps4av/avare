@@ -112,10 +112,22 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            android:layout_above="@+id/location_spinner_chart"
+            android:layout_above="@+id/cap_grids_toggle"
             android:layout_alignParentRight="true"
             android:textOff="@string/Navigate"
             android:textOn="@string/SimulationMode"
+            android:background="@android:drawable/btn_default"
+            android:layout_width="150dp"
+            android:textStyle="bold"/>
+        
+        <ToggleButton
+            android:id="@+id/cap_grids_toggle"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_above="@+id/location_spinner_chart"
+            android:layout_alignParentRight="true"
+            android:textOff="@string/CAPGridsOff"
+            android:textOn="@string/CAPGridsOn"
             android:background="@android:drawable/btn_default"
             android:layout_width="150dp"
             android:textStyle="bold"/>
