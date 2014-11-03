@@ -198,6 +198,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Quer</item>
         <item>Hoch entgegengesetzt</item>
         <item>Quer entgegengesetzt</item>
+        <item>Sensor</item>
      </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
@@ -273,4 +274,47 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>FPR deg</item>
    	</string-array>
 
+	<string-array name="DisplayIconValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+	
+	<string-array name="DisplayIconPrompt">
+        <item>Hochdecker</item>
+        <item>Helicopter</item>
+        <item>Entenflügler</item>        
+    </string-array>
+	
+	<string-array name="CycleValues">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+	
+    <string-array name="CyclePrompt">
+        <item>Aktuel</item>
+        <item>Vorgängig - nicht erhältlich</item>
+        <item>Nächster - nicht erhältlich</item>
+    </string-array>	
+	
+     <string-array name="PointType">
+		<item>Fix</item>
+		<item>Navaid</item>
+		<item>Base</item>
+		<item>GPS</item>
+	</string-array>
+	
+      <string-array name="GpsPosition">
+		<item>Alle verfügbare Quellen</item>
+		<item>Nur intern</item>
+		<item>Nur Avare IO Modul</item>
+	</string-array>
+     
+    <string-array name="GpsPositionValues">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		</string-array>      
+    
 </resources>

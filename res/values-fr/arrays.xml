@@ -198,6 +198,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>En travers</item>
         <item>En haute renversé</item>
         <item>En travers renversé</item>
+        <item>Capteur de déplacement incorporé</item>
      </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
@@ -273,4 +274,48 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>FPR deg</item>
    	</string-array>
 
+
+	<string-array name="DisplayIconValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+	<string-array name="DisplayIconPrompt">
+        <item>Aile haute</item>
+        <item>Hélicoptère</item>
+        <item>Aile Canard</item>
+    </string-array>
+
+	<string-array name="CycleValues">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="CyclePrompt">
+        <item>Courant</item>
+        <item>Précédent - pas disponible</item>
+        <item>Prochain - pas disponible</item>
+    </string-array>
+		
+     <string-array name="PointType">
+		<item>Fixé</item>
+		<item>Navaid</item>
+		<item>Base</item>
+		<item>GPS</item>
+	</string-array>
+	
+      <string-array name="GpsPosition">
+		<item>Tous sources</item>
+		<item>Seulement interne</item>
+		<item>Seulement Avare IO Modul</item>
+	</string-array>
+     
+    <string-array name="GpsPositionValues">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		</string-array>    
+	
 </resources>

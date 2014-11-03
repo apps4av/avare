@@ -197,6 +197,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>orizontale</item>
         <item>verticale opposto</item>
         <item>orizontale opposto</item>
+        <item>Sensore di movimento</item>
      </string-array>
 	
 	<string-array name="DistanceRingTypeValues">
@@ -271,4 +272,48 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>FPR deg</item>
    	</string-array>
 
+
+	<string-array name="DisplayIconValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+	<string-array name="DisplayIconPrompt">
+        <item>Ala alta</item>
+        <item>Elicotero</item>
+        <item>alette canard</item>
+    </string-array>
+
+	<string-array name="CycleValues">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="CyclePrompt">
+        <item>Attuale</item>
+        <item>Precedente - non disponibile</item>
+        <item>Prossimo - non disponibile</item>
+    </string-array>		
+    		
+     <string-array name="PointType">
+		<item>Fisso</item>
+		<item>Navaid</item>
+		<item>Base</item>
+		<item>GPS</item>
+	</string-array>
+	
+      <string-array name="GpsPosition">
+		<item>Tuti fonti disponibili</item>
+		<item>Solamente Sensore interno</item>
+		<item>Solamente Avare IO Modul</item>
+	</string-array>
+     
+    <string-array name="GpsPositionValues">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		</string-array>
+		    
 </resources>

@@ -274,6 +274,7 @@ we process and provide to our users at no charge.\n\n2. Begin offering additiona
 future features such as direct anonymous but verified communication between users or devices such as sharing Waypoints, Tracks, and Plans.\n\n4. Ensure that you assume all liability for your use of 
 our free tools more conveniently, without the need to click an agreement at every launch of Avare.\n\nThe next screen provides more details on our Privacy Policy, and another opportunity to decline 
 Registration.\nPlease press the Register button to continue.</string  -->
+
     <string name="register_msg">&quot;Lo Staff di Avare si impiega di evolvere und Applicazione affidabile, sicura, gratuita e senza Publicita. Per ragiungere qesta meta ci occorre una registrazione anonyma per realizare i seguenti Punti:\n\n1. Per informare l'utente immediatamente nel caso che ci siano errori nell Applicazione, nelle Mappe o i Documenti allegati.\n\n2. Offerire al Pilota la possibilita di trasmettere e publicare recensioni concernente gli Aeroporti.\n\n3. Offerire al Pilota la possibilita di inviare e dividere dei Punti georeferenziati e delle Rotte tramite una abbinamento sicuro.\n\n4. Die permettere che l'Utente non bisogna accetare le condizione di Licenza ogni volta in cui si riavvia l'Applicazione.\n\nNella prossima Finestra sono menzionate piu Informazioni riguardante la tuteal della privacy e inpiu la possibilita di declinare la registrazione.\nPer continuare sceglia prego Register.&quot;</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
@@ -290,16 +291,106 @@ Registration.\nPlease press the Register button to continue.</string  -->
     <string name="AddAction">Modifica il file</string>
     <string name="Add">Modificare</string>
     <string name="InvalidText">Inserimento invalido</string>
-    <string name="SavedChecklist">Memorizzato! Nel caso che deinstallate l\'applicazione, i file verano cancellate</string>
+    <string name="SavedChecklist">Memorizzato! Nel caso che deinstallate l\'applicazione, i file verano cancellati</string>
     <string name="DeleteListQuestion">Cancellare?</string>
     <string name="ImportAction">Importare una checklist/notizia</string>
     <string name="ImportActionFilePath">sentiero e nome del file</string>
     <string name="Import">Importare</string>
-    <string name="Advertisements">Reclame</string>
+    <string name="Advertisements">Annunci</string>
     <string name="Lock">Serrare</string>
     <string name="Edit">Scrivere</string>
     <string name="ExternalFolder">Scegli il discheto di memmoria esterno</string>
     <string name="online">Edit Account</string>
     <string name="onlineSummary">Registra o disconetti il tuo account Apps4Av</string>
     <string name="folderHelp">Nel caso che questa non sia la cartella giusta, crae una nuova cartella  Android/data/com.ds.avare, e scegli questa</string>
+
+	<string name="ETABearing">&quot;ETABearing&quot;</string>
+    <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
+    <string name="ETABearingSummary">&quot;Scegliere se per calcolare ETA/ETE si considera la relativa rotta verso la destinazione&quot;</string>
+    <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
+    <string name="DisplayIconLabel">&quot;Icona di posizione&quot;</string>
+    <string name="DisplayIconSummary">&quot;Scegliere quale icona viene usata per mostrare la propria posizione (riavviare l'aplicazione).&quot;</string>
+    <string name="Cycle">Cycle</string>
+    <string name="CycleLabel">Ciclo download carte</string>
+    <string name="CycleSummary">Scegli quale ciclo per il scaricamento delle carte viene adodatto</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+    <string name="ExtendInfoLinesLabel">Mostra lo stato delle carte VAC</string>
+    <string name="ExtendInfoLinesSummary">Scegli se sul schermo principale viene mostrato lo stato delle carte VAC</string>
+    <string name="UDWLocation">&quot;UDWLocation&quot;</string>
+    <string name="UDWSearch">&quot;Waypoint definite dall'utente trovate in: &quot;</string>
+    <string name="UDWLabel">&quot;Waypoint definite dall'utente&quot;</string>
+    <string name="UDWSummary">&quot;Scegli la cartella in cui verrano memorizate i waypoint definite dall'utente.&quot;</string>
+    
+    
+    		<!-- added some strings 02.November 2014 (FRANCO) -->
+    <string name="UDWDescription">&quot;Waypoint personali&quot;</string>
+    <string name="Geotag">&quot;Riferimento geografico&quot;</string>
+    <string name="Tag">&quot;Riferimento&quot;</string>
+    <string name="ToTag">&quot;Scegli un punto di riferimento ben conosciuto metendoci sopra la croce, scgeli un nome, scegli una categoria, poi scegli il button Riferimento. Ripeti tutti passi per aggiungere le informazioni di riferimento geografico alla cartina.&quot;</string>
+    <string name="AlreadyTagged">&quot;Questa cartina é già riferita geograficamente e memorizata. Scegli cancellare per aggiungere di nuovo le informazione di riferimento geografico&quot;</string>
+    <string name="InvalidPoint">&quot;Punto invalido.&quot;</string>
+    <string name="PointNotFound">&quot;Posizione non trovata, verifica la categoria e il nome. Verifica che tutti punti di riferimento coincidano sulla cartina&quot;</string>
+    <string name="EnoughPoints">&quot;Avete aggiunto i punti di referimento richiesti. Per incomciare di nuovo scegliere cancellare&quot;</string>
+    <string name="AddedPoint">&quot;Il riferimento geografico é stato aggiunto corretamente.&quot;</string>
+    <string name="SelectOtherPoint">&quot;I punti di riferimento sono troppo vincin l'uno dall'altro. Scegli un altro punto di riferimento o scegli cancellare per incominciare di nuovo.&quot;</string>
+    <string name="Tagged">&quot;La cartina é stata memorizata e i punti di riferimento geografico sono validi. Prima di usare la cartina assicurati che la cartina riporta i riferimenti geografici correti&quot;</string>
+    <string name="NotTagged">&quot;La cartina non contieni i punti di referimento geografico. Prima di usarla devi aggiungere i punti di riferimento geografico.&quot;</string>
+    <string name="Cleared">&quot;Cancellati! I punti di riferimento furono cancellati'.&quot;</string>
+    <string name="ClearedPrompt">&quot;Siete sicuro di voler cancellare i punti di riferimento da questa cartina?&quot;</string>
+    <string name="Verify">&quot;Verificare&quot;</string>
+    <string name="VerifyMessage">&quot;Se la croce appare sopra il punto da verificare, allora i punti di riferimento sono correti&quot;</string>
+    <string name="PointName">&quot;Nome della posizion&quot;</string>
+    <string name="Share">&quot;Distribuire&quot;</string>
+    <string name="Sharing">&quot;Distribuisci i tui punti di riferimento tramite l'internet . . .&quot;</string>
+    <string name="GeoShareText">&quot;Siete sicuro di volere distribuire le vostre informazioni di riferimento geografico? Vi siete assicurato che i punti di riferimento geografico siano messi abbastanza sicuri da essere usati da altri utenti?&quot;</string>
+    <string name="GeoShareTextAll">&quot;Siete sicuro di voler distribuire tutte le vostre informazioni riguardante i punti di riferimento geografico? Vi siete assicurato che avete aggiunto i punti di riferimento geografico con la richiesta accuratezza?&quot;</string>
+    <string name="GeoShareDone">&quot;Geo. informazioni di riferimento trasmesse e metute a disposizione al publico dopodiché che verrano controllate&quot;</string>
+    <string name="GeoShareFailed">&quot;Geo. informazioni di riferimento non possono essere trasmesse.&quot;</string>
+    <string name="Report">&quot;Invia un messagio&quot;</string>
+    <string name="SharingReport">&quot;Comunica un problema riguardante con le cartine geo riferite . . .&quot;</string>
+    <string name="GeoShareReportOK">&quot;Comunica il problema per corregere il sbaglio&quot;</string>
+    <string name="GeoShareReportFailed">&quot;La comunicazione é fallita &quot;</string>
+    <string name="GeoShareReportPrompt">&quot;Preferisci di riportare i sbagli della cartina durante il volo?&quot;</string>
+    <string name="GeoCodeLabel">&quot;Password per le cartine Geo. riferite&quot;</string>
+    <string name="GeoCode">&quot;GeoPassword&quot;</string>
+    <string name="GeoCodeSummary">&quot;Inserisci il tuo password per distribuire le tue cartine geo riferite (password ottenibile da Apps4Av)&quot;</string>
+    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
+    	<!-- what is this? -->
+    <string name="GameTFR">&quot;GameTFR&quot;</string>
+    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
+    <string name="Timer">&quot;Minuteur&quot;</string>
+
+    <string name="TabBarTitle">&quot;Visualiza il Tab Bar&quot;</string>
+    <string name="TabBarSummary">&quot;Scegli quali Tab vengono mostrati sullo schermo. (riavviare l'applicazione)&quot;</string>
+    <string name="PlatesSummary">&quot;Carte VAC/AREA/AD.&quot;</string>
+	<string name="AFDSummary">&quot;AD Info.&quot;</string>
+	<string name="FindSummary">&quot;Cercare.&quot;</string>
+	<string name="PlanSummary">&quot;Piano di volo.&quot;</string>
+	<string name="WXSummary">&quot;Meteo Link.&quot;</string>
+	<string name="NearSummary">&quot;Piu vicino.&quot;</string>
+	<string name="ChecklistSummary">&quot;Annotazioni e Checklist.&quot;</string>
+	<string name="GPSSummary">&quot;Stato del GPS.&quot;</string>
+				
+	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
+	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
+	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
+	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
+	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
+	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
+	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
+
+	<string name="externalGps">GPSExternalOrInternal</string>
+    <string name="externalGpsLabel">Origine dei dati GPS</string>
+    <string name="externalGpsSummary">Scegli quale fonte viene utilizata per ottenere i dati GPS</string>
+
+	  	  <!-- I (FRANCO) HAVE NOT TRANSLATED THE FOLLOW STRINGS -->
+    <string name="rubberBand">RubberBand</string>
+    <string name="rubberBandLabel">Use Rubber Banding</string>
+    <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
+    <string name="gt_sign">&#62;</string>
+    <string name="lt_sign">&#60;</string>
+    <string name="CurrentPlanName">Current plan name</string>
+    <string name="CurrentChecklistName">Current check list name</string>        
+    
 </resources>

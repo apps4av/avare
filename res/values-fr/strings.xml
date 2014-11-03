@@ -254,8 +254,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="register_msg">Merci pour avoir choisi Avare.\nL’équipe de développement est vouée à créer une application gratuite, sans publicité et fiable pour les pilotes.  Dans ce but, nous désirons que tout usager s’enregistre de façon anonyme dans le but de:\n\n1. Vous aviser immédiatement si nous trouvons une faille dans l’application ou dans nos sources de données que nous vous fournissons gratuitement.\n\n2. Vous offrir de nouvelles fonctionnalités utiles telles que de l’information sur les aéroports locaux ainsi que toutes autres informations pertinentes aux pilotes.\n\n3. Vous offrir de nouvelles fonctionnalités futures telles que plans de vol, repères et pistes.\n\n4. S’assurer que l’usager comprenne et s’engage à assumer toutes responsabilités découlant de l’utilisation gratuite de ce logiciel. Cet engagement sera enregistré pour que nous n’ayons pas à vous le redemander  à chaque démarrage de l’application.\n\nLe prochain écran vous fournira plus d’information au sujet de notre politique de confidentialité ainsi que la possibilité de décliner l’enregistrement.\n SVP. peser sur le bouton Enregistrement pour continuer.</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-    <string name="new_message">Vous avez un nouveau message d\'Apps4Av</string>
-    <string name="online">Compte</string>    
+    <string name="new_message">Vous avez un nouveau message d\'Apps4Av</string>    
     <string name="failed_register">Incapable de vous enregistrer!</string>
     <string name="failed_unregister">Incapable de vous dé-enregistrer!</string>
     <string name="registered">Vous êtes maintenant enregistré! SVP. Preser sur le bouton retour pour utiliser l’application.  Vous devez premièrement télécharger les bases de données (requises) du menu téléchargement.  Pour visionner les cartes détaillées, veuillez télécharger les cartes des régions d’intérêt.</string>
@@ -273,11 +272,99 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ImportAction">Notes/Liste de contrôle importer</string>
     <string name="ImportActionFilePath">/chemin des dossier/nom de fichier</string>
     <string name="Import">Importer</string>    
-    <string name="Advertisements">Ads</string>
+    <string name="Advertisements">Annonce</string>
     <string name="Lock">Fermer</string>
-    <string name="Edict">Edit</string>
+    <string name="Edit">Edict</string>
     <string name="ExternalFolder">Choisir le répertoire extérieur</string>    
     <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="online">Compte</string>
     <string name="folderHelp">Ce cet répertoire ne pas le juste , alors faite un répertoire neuf comme Android/data/com.ds.avare, et choisissez ce</string>
+	<string name="ETABearing">&quot;ETABearing&quot;</string>
+    <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
+    <string name="ETABearingSummary">&quot;Choisir de calculer ETA/ETE tenir compte du course relative vers la destination&quot;</string>
+    <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
+    <string name="DisplayIconLabel">&quot;Icone pour la position&quot;</string>
+    <string name="DisplayIconSummary">&quot;Choisir un icone pour indiquer la propre position(redémarrage requiert).&quot;</string>
+    <string name="Cycle">Cycle</string>
+    <string name="CycleLabel">Download Cycle des cartes</string>
+    <string name="CycleSummary">Choisir le cycle pour télécharge les cartes</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+    <string name="ExtendInfoLinesLabel">Montrer le Statut de les cartes VAC</string>
+    <string name="ExtendInfoLinesSummary">&quot;Choisir ci le statut de les cartes VAC peut-être affiché sur l'écran&quot;</string>
+    <string name="UDWLocation">&quot;UDWLocation&quot;</string>
+    <string name="UDWSearch">Waypoint personnalisée sont truvé dans: </string>
+    <string name="UDWLabel">&quot;Waypoint personnalisée&quot;</string>
+    <string name="UDWSummary">&quot;Choisir le répertorie ou sont sauvé le waypoints personnalisée.&quot;</string>
+    
+    		<!-- added some strings 02.November 2014 -->
+    <string name="UDWDescription">&quot;Waypoint personnalisée&quot;</string>
+    <string name="Geotag">&quot;Géoréférencé&quot;</string>
+    <string name="Tag">&quot;Référencé&quot;</string>
+    <string name="ToTag">&quot;Choisissiez un point bien connaissent et mettez il sous la croix, choisis un nome, choisis un catégorie, alors choisissiez le button Référencé. Répétez tous pour finir de ajouté tous les point de référencé pour la Géoréférencé.&quot;</string>
+    <string name="AlreadyTagged">&quot;Cette carte est bien géoréférené et sauvegardé. Choisissiez effacer pour géoréférené la carte encore une fois&quot;</string>
+    <string name="InvalidPoint">&quot;Point invalide.&quot;</string>
+    <string name="PointNotFound">&quot;Position pas trouvez, vérifiez la catégorie et le nom. Vérifiez ce tous sur la carte avait éte coïncideraient&quot;</string>
+    <string name="EnoughPoints">&quot;Vous avez ajoutée assez point de Référencé. Choisissiez effacer pour géoréferencé la carte encore une fois&quot;</string>
+    <string name="AddedPoint">&quot;Le point de référencé est mis correct.&quot;</string>
+    <string name="SelectOtherPoint">&quot;Les point de géoréférencé sont trop contigu l'un envers l'autre. Ajouter un point géoréférencé supplémentaire ou choisissiez effacer pour commencer à partir de l'avant.&quot;</string>
+    <string name="Tagged">&quot;La carte est bien géoréférencé et sauvegarde. En avant de utilisez la carte elle droit était examiné.&quot;</string>
+    <string name="NotTagged">&quot;La carte ne pas géoréférencé: Devant de utilisez la carte cette droit être géoréférencé.&quot;</string>
+    <string name="Cleared">&quot;Effacez! Le point géoréférencé sont effacent'.&quot;</string>
+    <string name="ClearedPrompt">&quot;être vous sûr de voulez effacez les point géoréférencé de cette carte?&quot;</string>
+    <string name="Verify">&quot;Examinér&quot;</string>
+    <string name="VerifyMessage">&quot;Ce la croix sera mis sûr le point que vous voullez vérifiez, allors les point de Référencé sont juste&quot;</string>
+    <string name="PointName">&quot;Nom de la Position&quot;</string>
+    <string name="Share">&quot;Partager&quot;</string>
+    <string name="Sharing">&quot;Partegez vous info par l'internet . . .&quot;</string>
+    <string name="GeoShareText">&quot;être vous sûr que vous voulez partegez vous information de Géoréférencé? Avez vous assurez que vous information de Géoréférencé sont sûr assez pour les autre??&quot;</string>
+    <string name="GeoShareTextAll">&quot;être vous sûr que vous voulez partegez tous vous information de Géoréférencé? Avez vous mis les point de référencé par une maniere que est sûr assez pour les autre?&quot;</string>
+    <string name="GeoShareDone">&quot;Geo. référencé envoient et après être révisez ils sont disponible pour les autre&quot;</string>
+    <string name="GeoShareFailed">&quot;Geo. référencé ne peut pas être envoyiez.&quot;</string>
+    <string name="Report">&quot;Enregistrer&quot;</string>
+    <string name="SharingReport">&quot;Enregistrez des problem avec les cartes géoréférencé par l'internet . . .&quot;</string>
+    <string name="GeoShareReportOK">&quot;Enregistrez des problem avec les cartes Geo. référencé pour correcte les erreur&quot;</string>
+    <string name="GeoShareReportFailed">&quot;Votre communication pour correcte les erreur de Geo. référencé ne peut pas transmise&quot;</string>
+    <string name="GeoShareReportPrompt">&quot;Préférer vous de envoyer les erreur de Géoréférencé pendant vous volez le cours?&quot;</string>
+    <string name="GeoCodeLabel">&quot;Mot de passe pour Geo. référencé&quot;</string>
+    <string name="GeoCode">&quot;GeoPassword&quot;</string>
+    <string name="GeoCodeSummary">&quot;Entrer un mot de passe ce vous voulez mettrez à disposition pour les autre vous information de Géoréférencé (mot de passe transmis par Apps4Av)&quot;</string>
+    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
+    	<!-- what is this? -->
+    <string name="GameTFR">&quot;GameTFR&quot;</string>
+    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
+    <string name="Timer">&quot;Minuteur&quot;</string>
 
+    <string name="TabBarTitle">&quot;Écran Tab Bar&quot;</string>
+    <string name="TabBarSummary">&quot;Choisissiez quelle Tab sont disponible sûr l'écran principale. (redémarrage requiert)&quot;</string>
+    <string name="PlatesSummary">&quot;Cartes VAC/AREA/AD.&quot;</string>
+	<string name="AFDSummary">&quot;AD Info.&quot;</string>
+	<string name="FindSummary">&quot;Chercher.&quot;</string>
+	<string name="PlanSummary">&quot;Plan de vol.&quot;</string>
+	<string name="WXSummary">&quot;Meteo Lien.&quot;</string>
+	<string name="NearSummary">&quot;Plus près.&quot;</string>
+	<string name="ChecklistSummary">&quot;Note et Checklist.&quot;</string>
+	<string name="GPSSummary">&quot;état GPS.&quot;</string>
+				
+	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
+	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
+	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
+	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
+	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
+	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
+	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
+
+	<string name="externalGps">GPSExternalOrInternal</string>
+    <string name="externalGpsLabel">Origin de les données GPS</string>
+    <string name="externalGpsSummary">Choisir la source pour obtenir les données GPS</string>
+
+	  	  <!-- I (FRANCO) HAVE NOT TRANSLATED THE FOLLOW STRINGS -->
+    <string name="rubberBand">RubberBand</string>
+    <string name="rubberBandLabel">Use Rubber Banding</string>
+    <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
+    <string name="gt_sign">&#62;</string>
+    <string name="lt_sign">&#60;</string>
+    <string name="CurrentPlanName">Current plan name</string>
+    <string name="CurrentChecklistName">Current check list name</string>
+    
 </resources>

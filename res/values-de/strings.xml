@@ -26,6 +26,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Cancel">&quot;Abbrechen&quot;</string>
     <string name="To">&quot;Zu&quot;</string>
     <string name="Maps">&quot;Karten&quot;</string>
+ 	   <!-- string "Karten" does not become translated in the app -->
     <string name="MapsLabel">&quot;Karten Verzeichnis&quot;</string>
     <string name="MapsSummary">&quot;Verzeichnis auswählen in welchem die Karten gespeichert werden&quot;</string>
     <string name="OrientationP">&quot;Ausrichtung&quot;</string>
@@ -78,7 +79,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="BadCoords">&quot;Werte für Longitude/Latitude input\nLongitude sind ungültig, Bereich: 0 bis 180 W\nLatitude , 0 bis 90 N&quot;</string>
     <string name="GoodCoords">&quot;Markierungen gesetzt und Karte gespeichert&quot;</string>
     <string name="main">&quot;Karte&quot;</string>
+    	<!-- string "Karte" does not become translated in the app -->
     <string name="plates">&quot;AD-VAC&quot;</string>
+    	<!-- string "AD-VAC" does not become translated in the app -->
     <string name="AFD">&quot;AD Info&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
@@ -256,13 +259,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="new_message">Eine neue Nachricht von Apps4Av</string>
-    <string name="online">Account</string>
     <string name="failed_register">Anmeldung fehlgeschlagen!</string>
     <string name="failed_unregister">Abmelden nicht möglich!</string>
     <string name="registered">Registrierung erfolgreich abgeschlossen! Wählen sie den Zurück Button um die Anwendung zu starten. Zuerst muss die Datenbank (erforderlich) mittels dem Downloadmenü heruntergeladen werden. Danach kann man über das Downloadmenü die Karten herunterladen.</string>
     <string name="unregistered">Sie haben sich abgemeldet!</string>
-    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
-    <string name="folderHelp">Fals dies nicht der richtige Ornder sein sollte, dann erstellen Sie im Stammverzeichnis der SD-Card den Ordner Android/data/com.ds.avare, und wählen diesen</string>
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
     <string name="List">Notizen</string>
@@ -276,4 +276,99 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ImportAction">Checkliste/Notiz importieren</string>
     <string name="ImportActionFilePath">/Pfad zur Datei/Dateiname</string>
     <string name="Import">Importieren</string>
-	</resources>
+    <string name="Advertisements">Inserate</string>
+    <string name="Lock">Gesperrt</string>
+    <string name="Edit">Editieren</string>
+    <string name="ExternalFolder">Benutze den externen Datenträger</string>
+    <string name="online">Account bearbeiten</string>
+    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="folderHelp">Fals dies nicht der richtige Ornder sein sollte, dann erstellen Sie im Stammverzeichnis der SD-Card den Ordner Android/data/com.ds.avare, und wählen diesen</string>
+   	<string name="ETABearing">&quot;ETABearing&quot;</string>
+    <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
+    <string name="ETABearingSummary">&quot;Berechnet ETA/ETE unter Berücksichtigung vom relativen Kurs zu DEST&quot;</string>
+    <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
+   	<string name="DisplayIconLabel">&quot;Icon Anzeige&quot;</string>
+    <string name="DisplayIconSummary">&quot;Wählen sie aus welches Icon für den aktuellen Standort angezeigt werden soll(Neustart erforderlich).&quot;</string>
+    <string name="Cycle">Cycle</string>
+    <string name="CycleLabel">Karten download Zyklus</string>
+    <string name="CycleSummary">Wählen sie den Zyklus aus nach welchem die Karten heruntergeladen werden sollen</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+   	<string name="ExtendInfoLinesLabel">Zeige den Status VAC Karten an</string>
+    <string name="ExtendInfoLinesSummary">Auswählen ob der Status der VAC Karten am Bildschirm angezeigt werden soll</string>
+    <string name="UDWLocation">&quot;UDWLocation&quot;</string>
+    <string name="UDWSearch">User defined waypoint files are found in: </string>
+    <string name="UDWLabel">&quot;Benutzerdefinierte Waypoint's&quot;</string>
+    <string name="UDWSummary">&quot;Wähle das Verzeichnis aus in welchem die benutzerdefinierten Waypoint's gespeichert werden.&quot;</string>
+
+    		<!-- added some strings 02.November 2014 -->
+    <string name="UDWDescription">&quot;Benutzerdefinierte Waypoint&quot;</string>
+    <string name="Geotag">&quot;Geotag&quot;</string>
+    <string name="Tag">&quot;Tag&quot;</string>
+    <string name="ToTag">&quot;Wähle einen bekannten Punkt und setze ihn unter dem Fadenkreuz, wähle einen Namen, wähle die Kategorie, wähle anschliesend den Geo Tag Button. Wiederhole alle Schritte bis die Karte geo referenziert ist.&quot;</string>
+    <string name="AlreadyTagged">&quot;Diese Karte ist bereits geo referenziert und abgespeichert. Wähle löschen um die Karte erneut zu geo referenzieren&quot;</string>
+    <string name="InvalidPoint">&quot;Ungültige Position gewählt.&quot;</string>
+    <string name="PointNotFound">&quot;Die Position wurde nicht gefunden, prüfe ob die Kategorie und Name mit der Position auf der Karte übereinstimmen&quot;</string>
+    <string name="EnoughPoints">&quot;Die Anzahl der geo referenzierten Punkte ist genügend. Wähle löschen um die Karte erneut zu geo referenzieren&quot;</string>
+    <string name="AddedPoint">&quot;Die geo Referenzierung ist korekt.&quot;</string>
+    <string name="SelectOtherPoint">&quot;Die Anzahl der geo referenz Punkte ist ungenügend. Erstelle einen zusätzlichen geo referenz Punkt oder wähle löschen um erneut mit der geo referenzierung zu beginnen&quot;</string>
+    <string name="Tagged">&quot;Die Karte wurde geo referenziert und gespeichert und muss vor der operativen Benutzung auf Richtigkeit hin überprüft werden.&quot;</string>
+    <string name="NotTagged">&quot;Die Karte ist nicht geo referenziert: vor der Benutzung muss diese geo referenziert werden.&quot;</string>
+    <string name="Cleared">&quot;Gelöscht! Die Geo. Referenzierung wurde gelöscht'.&quot;</string>
+    <string name="ClearedPrompt">&quot;Sind sie sicher das sie die Geo. Referenzpunkte aus dieser Karte löschen möchten?&quot;</string>
+    <string name="Verify">&quot;Überprüfe&quot;</string>
+    <string name="VerifyMessage">&quot;Wenn das Fadenkreuz über der zu überprüfenden Position angezeigt wird, so wurden die geo referenzpunkte korrekt gesetzt&quot;</string>
+    <string name="PointName">&quot;Name der Position&quot;</string>
+    <string name="Share">&quot;Teile&quot;</string>
+    <string name="Sharing">&quot;Teile die Info über das Internet . . .&quot;</string>
+    <string name="GeoShareText">&quot;Sind sie sicher das sie geo Referenzpunkte übermitteln möchten? Haben sie die geo Referenzpunkte in der Art und Weise gesetzt das diese für andere Nutzer sicher genug sind?&quot;</string>
+    <string name="GeoShareTextAll">&quot;Sind sie sicher das sie die geo Referenzpunkte sämtlicher Karten übermitteln möchten? Haben sie die geo Referenzpunkte in der Art und Weise gesetzt das diese für andere Nutzer sicher genug sind?&quot;</string>
+    <string name="GeoShareDone">&quot;Geo. Referenzierung übermittelt und nach Überprüfung für alle zugänglich&quot;</string>
+    <string name="GeoShareFailed">&quot;Geo. Referenzierung konnte nicht übermittelt werden.&quot;</string>
+    <string name="Report">&quot;Report&quot;</string>
+    <string name="SharingReport">&quot;Melde Probleme mit den Geo. Referenzpunkte über das Internet . . .&quot;</string>
+    <string name="GeoShareReportOK">&quot;Melde Probleme mit den Geo. Referenzpunkte um diese zu korigieren&quot;</string>
+    <string name="GeoShareReportFailed">&quot;Problemreport um die Geo. Referenzierung zu korigieren konnte nicht übermittelt werden&quot;</string>
+    <string name="GeoShareReportPrompt">&quot;Möchten sie lieber auf Fehler in der Geo Referenzierung hinweisen während sie den betreffenden Kurs fliegen?&quot;</string>
+    <string name="GeoCodeLabel">&quot;Geo. Referenzierung Passwort&quot;</string>
+    <string name="GeoCode">&quot;GeoPassword&quot;</string>
+    <string name="GeoCodeSummary">&quot;Geben sie ein Passwort ein um ihre Geo Referenzierung für andere zugänglich zu machen (Passwort wird von Apps4Av zugewiesen)&quot;</string>
+    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
+    	<!-- what is this? -->
+    <string name="GameTFR">&quot;GameTFR&quot;</string>
+    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
+    <string name="Timer">&quot;Timer&quot;</string>
+
+    <string name="TabBarTitle">&quot;Tab Bar Anzeige&quot;</string>
+    <string name="TabBarSummary">&quot;Wähle welche Tab unten auf dem Hauptbildschirm angezeigt werden sollen. (Neustart erforderlich)&quot;</string>
+    <string name="PlatesSummary">&quot;VAC/AREA/AD Karten.&quot;</string>
+	<string name="AFDSummary">&quot;AD Info.&quot;</string>
+	<string name="FindSummary">&quot;Suche.&quot;</string>
+	<string name="PlanSummary">&quot;Flugplan Erstellung und Management.&quot;</string>
+	<string name="WXSummary">&quot;Meteo Links.&quot;</string>
+	<string name="NearSummary">&quot;Am Nächsten.&quot;</string>
+	<string name="ChecklistSummary">&quot;Notizen und Checklisten.&quot;</string>
+	<string name="GPSSummary">&quot;GPS Status.&quot;</string>
+				
+	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
+	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
+	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
+	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
+	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
+	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
+	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
+
+	<string name="externalGps">GPSExternalOrInternal</string>
+    <string name="externalGpsLabel">Quelle der GPS Daten</string>
+    <string name="externalGpsSummary">Wählen sie die Quelle von welcher die GPS Daten verwendet werden sollen</string>
+
+  	  <!-- I (FRANCO) HAVE NOT TRANSLATED THE FOLLOW STRINGS -->
+    <string name="rubberBand">RubberBand</string>
+    <string name="rubberBandLabel">Use Rubber Banding</string>
+    <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
+    <string name="gt_sign">&#62;</string>
+    <string name="lt_sign">&#60;</string>
+    <string name="CurrentPlanName">Current plan name</string>
+    <string name="CurrentChecklistName">Current check list name</string>
+    
+</resources>
