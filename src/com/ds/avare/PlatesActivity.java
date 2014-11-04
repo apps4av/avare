@@ -41,6 +41,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -793,4 +794,22 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         mPlatesTimerButton.setText(chronometer.getText());
     }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) { 
+    	if (keyCode == KeyEvent.KEYCODE_VOLUME_UP){
+    		mPlatesView.adjustZoom(0.05);
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
+        	mPlatesView.adjustZoom(-0.05);
+            return true;
+        }
+        
+        // We don't handle any other keys
+        return super.onKeyDown(keyCode, event);
+    }
+    
+
 }

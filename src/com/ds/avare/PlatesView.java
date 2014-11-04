@@ -489,4 +489,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mAirportLat = lat;
         postInvalidate();
     }
+    
+    public void adjustZoom(double factor) {
+    	mScale.adjustZoom(factor);
+        postInvalidate();
+    }
 }

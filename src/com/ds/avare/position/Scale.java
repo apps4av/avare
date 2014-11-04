@@ -192,4 +192,16 @@ public class Scale {
     public void zoomOut() {
        mScaleFactor = MIN_SCALE; 
     }
+    
+    public void adjustZoom(double factor) {
+    	mScaleFactor += factor;
+    	
+    	if(mScaleFactor > mMaxScale) {
+    		mScaleFactor = mMaxScale;
+    	}
+
+    	if(mScaleFactor < MIN_SCALE) {
+    		mScaleFactor = MIN_SCALE;
+    	}
+    }
 }
