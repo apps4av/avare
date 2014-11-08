@@ -45,8 +45,6 @@ public class Plan implements Observer {
     
     private static final int MILES_PER_SEGMENT = 50;
     
-    private static final double MIN_REACHED_DISTANCE = 5;
-    
     private boolean mActive;
 
     private TrackShape mTrackShape;
@@ -61,8 +59,6 @@ public class Plan implements Observer {
     private int mReplaceId;
     private Preferences mPref;
     private StorageService mService;
-    private double mCurrentDistance;
-    private boolean mReached;
     private String mName;
     private ExternalPlanMgr mExtPlanMgr;
     
@@ -86,7 +82,6 @@ public class Plan implements Observer {
         mBearing = 0;
         mDeclination = 0;
         mDestChanged = false;
-        mReached = false;
         mDestination = new Destination[MAX_DESTINATIONS];
         mPassed = new boolean[MAX_DESTINATIONS];
         for(int i = 0; i < MAX_DESTINATIONS; i++) {
@@ -615,11 +610,16 @@ public class Plan implements Observer {
      */
     private class Passage {
 
-        double mInitBearing;
-        double mCurrentBearing;
-        
-        public Passage() {
-            mInitBearing = Double.MIN_VALUE;
+    	double mLastDistance;
+    	double mLastBearing;
+    	double mCurrentDistance;
+    	double mCurrentBearing;
+    	 
+    	private static final double PASSAGE_DISTANCE_MIN = 2;
+    	 
+    	public Passage() {
+        	mLastDistance = -1;
+        	mLastBearing = -1;        
         }
 
         /*
@@ -635,38 +635,16 @@ public class Plan implements Observer {
             }
             
             /*
-             * quadrant change
+             * Distance increases
              */
-            if(mInitBearing >= 0 && mInitBearing <= 90) {
-                if(mCurrentBearing <= 270 && mCurrentBearing >= 180) {
-                    return true;
-                }
-            }
-            if(mInitBearing >= 90 && mInitBearing <= 180) {
-                if(mCurrentBearing <= 360 && mCurrentBearing >= 270) {
-                    return true;
-                }
-            }
-            if(mInitBearing >= 180 && mInitBearing <= 270) {
-                if(mCurrentBearing <= 90 && mCurrentBearing >= 0) {
-                    return true;
-                }
-            }
-            if(mInitBearing >= 270 && mInitBearing <= 360) {
-                if(mCurrentBearing <= 180 && mCurrentBearing >= 90) {
-                    return true;
-                }
-            }
-            
-            
-            /*
-             * If previously we got close to a point, and now getting away, we reached.
-             */
-            if((mCurrentDistance > (MIN_REACHED_DISTANCE + 1)) && mReached) {
-                mReached = false;
-                return true;
-            }
-
+            if(mCurrentDistance > mLastDistance) {
+	            /*
+	             * We are in passage zone
+	             */
+	            if(mCurrentDistance < PASSAGE_DISTANCE_MIN) {
+	            	return true;
+	            }
+            }      
             return false;
         }
         
@@ -677,24 +655,24 @@ public class Plan implements Observer {
         public boolean updateLocation(GpsParams params, Destination nextDest) {
             Projection p = new Projection(params.getLongitude(), params.getLatitude(),
                     nextDest.getLocation().getLongitude(), nextDest.getLocation().getLatitude());
-            if(mInitBearing == Double.MIN_VALUE) {
-                mInitBearing = (p.getBearing() + 360) % 360;
-                return false;
+            
+            if(mLastBearing < 0) {
+            	/*
+            	 * Init on first input on location
+            	 */
+            	mLastDistance = p.getDistance();
+            	mLastBearing = (p.getBearing() + 360) % 360;
+            	return false;
             }
             
-            mCurrentBearing = (p.getBearing() + 360) % 360;
             mCurrentDistance = p.getDistance();
+            mCurrentBearing = (p.getBearing() + 360) % 360;
 
-            /*
-             * Are we close enough?
-             */
-            if(mReached == false) {
-                if(mCurrentDistance < MIN_REACHED_DISTANCE) {
-                    mReached = true;
-                }
-            }
+            boolean ret = hasPassed();
             
-            return hasPassed();
+            mLastDistance = mCurrentDistance;
+            mLastBearing = mCurrentBearing;
+            return ret;            
         }
         
     }
