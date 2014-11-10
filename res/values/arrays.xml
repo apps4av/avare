@@ -26,6 +26,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High Enroute Charts</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
+        <item>IFR Area Charts</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -63,6 +64,23 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>A/FD Pacific</item>
     </string-array>
 
+    <string-array name="resNameIFRArea">
+        <item>IFR Area ATL</item>
+        <item>IFR Area DCA</item>
+        <item>IFR Area DEN</item>
+        <item>IFR Area DET</item>
+        <item>IFR Area DFW</item>
+        <item>IFR Area JAX</item>
+        <item>IFR Area LAX</item>
+        <item>IFR Area MIA</item>
+        <item>IFR Area MKC</item>
+        <item>IFR Area MSP</item>
+        <item>IFR Area ORD</item>
+        <item>IFR Area PHX</item>
+        <item>IFR Area SFO</item>
+        <item>IFR Area STL</item>
+    </string-array>
+    
     <string-array name="resNameIFRHE">
         <item>IFR High Enroute NE</item>
         <item>IFR High Enroute NC</item>
@@ -360,6 +378,23 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>EHUS_SW</item>
         <item>EHUS_AK</item>
     </string-array>
+
+    <string-array name="resFilesIFRArea">
+        <item>ENRA_ATL</item>
+        <item>ENRA_DCA</item>
+        <item>ENRA_DEN</item>
+        <item>ENRA_DET</item>
+        <item>ENRA_DFW</item>
+        <item>ENRA_JAX</item>
+        <item>ENRA_LAX</item>
+        <item>ENRA_MIA</item>
+        <item>ENRA_MKC</item>
+        <item>ENRA_MSP</item>
+        <item>ENRA_ORD</item>
+        <item>ENRA_PHX</item>
+        <item>ENRA_SFO</item>
+        <item>ENRA_STL</item>
+    </string-array>
     
     <string-array name="resFilesAFD">
         <item>AFD_NE</item>
@@ -632,6 +667,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
+        <item>IFR Area</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
@@ -644,6 +680,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>6</item>
         <item>7</item>
         <item>8</item>
+        <item>9</item>
     </string-array>    
 
     <string-array name="ChartDbNames">
@@ -656,6 +693,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>maps.rel.db</item>
         <item>maps.topo.db</item>
         <item>maps.oth.db</item>
+        <item>maps.ea.db</item>
         <item>procedures.db</item>
     </string-array>    
     

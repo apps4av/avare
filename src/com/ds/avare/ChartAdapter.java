@@ -68,7 +68,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_IFRHE = 9;
     private static final int GROUP_TOPO = 10;
     private static final int GROUP_HELI = 11;
-    private static final int GROUP_NUM = 12;
+    private static final int GROUP_IFRA = 12;
+    private static final int GROUP_NUM = 13;
     
     /**
      * @param context
@@ -98,6 +99,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resNameIFRHE);
         mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
         mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
+        mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
         
         /*
          * Assign children file names
@@ -115,6 +117,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
+        mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         
         /*
          * Allocate space for versions
@@ -133,6 +136,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
+        mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         
         /*
          * Allocate space for checked charts
@@ -150,6 +154,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_IFRHE] = new int[mVers[GROUP_IFRHE].length];
         mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
         mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
+        mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
         
         /*
          * Get various bitmaps
