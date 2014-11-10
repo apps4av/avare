@@ -36,7 +36,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_height="match_parent"
 	        android:text="@string/Import"/>
 	
-        <ToggleButton 
+        <com.ds.avare.animation.TwoButton 
             android:id="@+id/checklist_button_lock"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

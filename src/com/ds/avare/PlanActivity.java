@@ -19,6 +19,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.animation.TwoButton;
+import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -52,7 +54,6 @@ import android.widget.ProgressBar;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 /**
  * @author zkhan
@@ -103,7 +104,7 @@ public class PlanActivity extends Activity  implements Observer {
     private Toast mToast;
 
     // Plan control buttons
-    private ToggleButton mActivateButton;
+    private TwoButton mActivateButton;
     private Button 		 mAdvanceButton;
     private Button 		 mRegressButton;
     
@@ -534,15 +535,15 @@ public class PlanActivity extends Activity  implements Observer {
         });
 
         // Handle the activation/deactivation of the current in memory plan
-        mActivateButton = (ToggleButton)view.findViewById(R.id.plan_button_activate);
+        mActivateButton = (TwoButton)view.findViewById(R.id.plan_button_activate);
         mActivateButton.getBackground().setAlpha(255);
-        mActivateButton.setOnClickListener(new OnClickListener() {
+        mActivateButton.setTwoClickListener(new TwoClickListener() {
 
         	// User has pressed the button. The text of the button has already been 
         	// toggled at this point by the system
             @Override
             public void onClick(View v) {
-
+            	
             	// Ensure we have the background service
                 if(null != mService) {
                 	

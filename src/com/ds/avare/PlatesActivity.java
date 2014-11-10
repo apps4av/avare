@@ -20,6 +20,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.animation.TwoButton;
+import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
@@ -67,7 +69,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
-    private Button mDrawButton;
+    private TwoButton mDrawButton;
     private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
@@ -293,8 +295,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         /*
          * Draw
          */
-        mDrawButton = (Button)view.findViewById(R.id.plate_button_draw);
-        mDrawButton.setOnClickListener(new OnClickListener() {
+        mDrawButton = (TwoButton)view.findViewById(R.id.plate_button_draw);
+        mDrawButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {

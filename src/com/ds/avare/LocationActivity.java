@@ -16,8 +16,11 @@ import java.io.File;
 import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
+
 import com.ds.avare.R;
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.animation.TwoButton;
+import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -59,7 +62,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 /**
  * @author zkhan, jlmcgraw
@@ -105,7 +107,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDestButton;
     private Button mCenterButton;
     private Button mDrawClearButton;
-    private Button mTracksButton;
+    private TwoButton mTracksButton;
     private Button mHelpButton;
     private Button mCrossButton;
     private Button mPrefButton;
@@ -113,10 +115,10 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDownloadButton;
     private Button mMenuButton;
     private RelativeLayout mDestLayout;
-    private ToggleButton mSimButton;
-    private Button mDrawButton;
+    private TwoButton mSimButton;
+    private TwoButton mDrawButton;
     private Button mWebButton;
-    private ToggleButton mTrackButton;
+    private TwoButton mTrackButton;
     private Spinner mChartSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
@@ -688,7 +690,7 @@ public class LocationActivity extends Activity implements Observer {
         });
         
         
-        mSimButton = (ToggleButton)view.findViewById(R.id.location_button_sim);
+        mSimButton = (TwoButton)view.findViewById(R.id.location_button_sim);
         if(mPref.isSimulationMode()) {
             mSimButton.setText(getString(R.string.SimulationMode));
             mSimButton.setChecked(true);
@@ -697,7 +699,7 @@ public class LocationActivity extends Activity implements Observer {
             mSimButton.setText(getString(R.string.Navigate));            
             mSimButton.setChecked(false);
         }
-        mSimButton.setOnClickListener(new OnClickListener() {
+        mSimButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -719,12 +721,13 @@ public class LocationActivity extends Activity implements Observer {
                 else {
                     mPref.setSimMode(false);
                 }
+                
             }
             
         });
 
-        mTrackButton = (ToggleButton)view.findViewById(R.id.location_button_track);
-        mTrackButton.setOnClickListener(new OnClickListener() {
+        mTrackButton = (TwoButton)view.findViewById(R.id.location_button_track);
+        mTrackButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -737,7 +740,7 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 else {
                     mLocationView.setTrackUp(false);
-                }
+                }                
             }
             
         });
@@ -745,8 +748,8 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Draw
          */
-        mDrawButton = (Button)view.findViewById(R.id.location_button_draw);
-        mDrawButton.setOnClickListener(new OnClickListener() {
+        mDrawButton = (TwoButton)view.findViewById(R.id.location_button_draw);
+        mDrawButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -770,14 +773,14 @@ public class LocationActivity extends Activity implements Observer {
          * The tracking button handler. Enable/Disable the saving of track points
          * to a KML file
          */
-        mTracksButton = (Button)view.findViewById(R.id.location_button_tracks);
-        mTracksButton.setOnClickListener(new OnClickListener() {
+        mTracksButton = (TwoButton)view.findViewById(R.id.location_button_tracks);
+        mTracksButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
-            if(null != mService && mPref.shouldSaveTracks()) {
-                setTrackState(!mService.getTracks());
-            }
+	            if(null != mService && mPref.shouldSaveTracks()) {
+	                setTrackState(!mService.getTracks());
+	            }
             }        
         });
 

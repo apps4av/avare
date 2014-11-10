@@ -69,7 +69,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/erase"
             android:visibility="invisible" />        
         
-        <ToggleButton
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/plate_button_draw"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.animation.TwoButton;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
@@ -51,7 +51,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 /**
  * @author zkhan
@@ -70,7 +69,7 @@ public class ChecklistActivity extends Activity {
     private Button mDeleteButton;
     private Button mListButton;
     private EditText mSaveText;
-    private ToggleButton mLock;
+    private TwoButton mLockButton;
     private int mIndex;
     private Preferences mPref;
     private Checklist mWorkingList;
@@ -121,7 +120,7 @@ public class ChecklistActivity extends Activity {
     private TouchListView.DropListener onDrop = new TouchListView.DropListener() {
         @Override
         public void drop(int from, int to) {
-            if(mLock.isChecked()) {
+            if(mLockButton.isChecked()) {
                 /*
                  * Do not modify list if locked
                  */
@@ -146,7 +145,7 @@ public class ChecklistActivity extends Activity {
     private TouchListView.RemoveListener onRemove = new TouchListView.RemoveListener() {
         @Override
         public void remove(int which) {
-            if(mLock.isChecked()) {
+            if(mLockButton.isChecked()) {
                 mWorkingIndex = 0;
                 mWorkingList.removeStep(which);
                 final Handler handler = new Handler();
@@ -198,7 +197,7 @@ public class ChecklistActivity extends Activity {
         /*
          * Edit lock button
          */
-        mLock = (ToggleButton)view.findViewById(R.id.checklist_button_lock);
+        mLockButton = (TwoButton)view.findViewById(R.id.checklist_button_lock);
         
         /*
          * Delete button
@@ -448,7 +447,7 @@ public class ChecklistActivity extends Activity {
                 public boolean onItemLongClick(AdapterView<?> arg0, View v,
                         int index, long arg3) {
               
-                    if(mLock.isChecked()) {
+                    if(mLockButton.isChecked()) {
 
                         // If list lock do not delete animate
                         // save the index to work on this long clicked item
