@@ -124,7 +124,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      */
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactor(), false, 0, 0, false, 0);
+                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
     }
 
     /* (non-Javadoc)
@@ -202,16 +202,20 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactor();
+        float scale = mScale.getScaleFactorRaw();
 
     	/*
     	 * A/FD
     	 */
-    	mBitmap.getTransform().setScale(scale, scale);
-    	mBitmap.getTransform().postTranslate(
-    			mPan.getMoveX() * scale,
-    			mPan.getMoveY() * scale);
-
+        mBitmap.getTransform().setScale(scale, scale);
+        mBitmap.getTransform().postTranslate(
+                mPan.getMoveX() * scale
+                + getWidth() / 2
+                - mBitmap.getWidth() / 2 * scale ,
+                mPan.getMoveY() * scale
+                + getHeight() / 2
+                - mBitmap.getHeight() / 2 * scale);
+        
         if(mPref.isNightMode()) {
             Helper.invertCanvasColors(mPaint);
         }

@@ -2125,6 +2125,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.setMovement(mMovement);
             mMacro = mScale.getMacroFactor();
             mScale.updateMacro();
+            mMultiTouchC.setMacro(mMacro);
             mPx = (float)t.centerTile.getPx();
             mPy = (float)t.centerTile.getPy();
             updateCoordinates();

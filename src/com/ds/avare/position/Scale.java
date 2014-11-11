@@ -112,7 +112,7 @@ public class Scale {
     }
 
     /**
-     * 
+     * This one is for plates drawing only
      * @return
      */
     public float getScaleFactor() {

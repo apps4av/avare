@@ -106,10 +106,6 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        /*
-         * This slows dows panning when zoomed in
-         */
-        e.setLocation(e.getX() / mScale.getScaleFactor(), e.getY() / mScale.getScaleFactor());
         return mMultiTouchC.onTouchEvent(e);
     }
 
@@ -133,7 +129,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactor(), false, 0, 0, false, 0);
+                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
     }
 
     /* (non-Javadoc)
@@ -196,7 +192,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactor();
+        float scale = mScale.getScaleFactorRaw();
         
         /*
          * Plate

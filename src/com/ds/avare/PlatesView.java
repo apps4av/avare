@@ -185,7 +185,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactor(), false, 0, 0, false, 0);
+                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
     }
 
     /* (non-Javadoc)
@@ -275,7 +275,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
-            float scale = mScale.getScaleFactor();
+            float scale = mScale.getScaleFactorRaw();
             
         	/*
         	 * Plate

@@ -245,11 +245,29 @@ public class MultiTouchController<T> {
 	private static final float[] pressureVals = new float[MAX_TOUCH_POINTS];
 	private static final int[] pointerIds = new int[MAX_TOUCH_POINTS];
 
+	/**
+	 * ZKZK
+	 */
+	private float mMacro = 1.f;
+	public void setMacro(float macro) {
+		mMacro = macro;
+	}
+	
 	/** Process incoming touch events */
 	@SuppressWarnings("unused")
 	public boolean onTouchEvent(MotionEvent event) {
 		try {
 			int pointerCount = multiTouchSupported ? (Integer) m_getPointerCount.invoke(event) : 1;
+
+			//ZKZK
+			float div = 1.f;
+			if(pointerCount == 1) {
+				/*
+				 * Panning, slow with zoom for grab
+				 */
+				div = mCurrXform.getScale() * mMacro;
+			}
+			//ZKZK
 			if (DEBUG)
 				Log.i("MultiTouch", "Got here 1 - " + multiTouchSupported + " " + mMode + " " + handleSingleTouchEvents + " " + pointerCount);
 			if (mMode == MODE_NOTHING && !handleSingleTouchEvents && pointerCount == 1)
@@ -270,8 +288,8 @@ public class MultiTouchController<T> {
 					// an exception if there's only one point down.
 					if (DEBUG)
 						Log.i("MultiTouch", "Got here 3");
-					xVals[0] = processingHist ? event.getHistoricalX(histIdx) : event.getX();
-					yVals[0] = processingHist ? event.getHistoricalY(histIdx) : event.getY();
+					xVals[0] = (processingHist ? event.getHistoricalX(histIdx) : event.getX()) /*ZKZK*/ / div;
+					yVals[0] = (processingHist ? event.getHistoricalY(histIdx) : event.getY()) /*ZKZK*/ / div;
 					pressureVals[0] = processingHist ? event.getHistoricalPressure(histIdx) : event.getPressure();
 				} else {
 					// Read x, y and pressure of each pointer
@@ -286,8 +304,8 @@ public class MultiTouchController<T> {
 						// N.B. if pointerCount == 1, then the following methods throw an array index out of range exception,
 						// and the code above is therefore required not just for Android 1.5/1.6 but also for when there is
 						// only one touch point on the screen -- pointlessly inconsistent :(
-						xVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalX.invoke(event, ptrIdx, histIdx) : m_getX.invoke(event, ptrIdx));
-						yVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalY.invoke(event, ptrIdx, histIdx) : m_getY.invoke(event, ptrIdx));
+						xVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalX.invoke(event, ptrIdx, histIdx) : m_getX.invoke(event, ptrIdx)) /*ZKZK*/ / div;
+						yVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalY.invoke(event, ptrIdx, histIdx) : m_getY.invoke(event, ptrIdx)) /*ZKZK*/ / div;
 						pressureVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalPressure.invoke(event, ptrIdx, histIdx) : m_getPressure
 								.invoke(event, ptrIdx));
 					}
