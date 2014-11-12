@@ -35,23 +35,26 @@ public class State {
 	public void drawGrids(Canvas canvas, Origin origin, Paint paint, StorageService service, Scale scale, 
 			Movement movement, Typeface face, Preferences pref) {
 		
-		float currentLon = minLon;
-		float currentLat = minLat;
-		while (currentLon < maxLon) {
-			while (currentLat < maxLat) {
-				if ((currentLat > (origin.getLatitudeUpper() + 1)) ||
-						(currentLat < (origin.getLatitudeLower() - 1)) ||
-						(currentLon < (origin.getLongitudeLeft() - 1)) ||
-						(currentLon > (origin.getLongitudeRight() + 1))) {
-					currentLat += 1;
-					continue;
-				}
+		float currentLon = (minLon + 1);
+		float currentLat = (minLat + 1);
+		int gridNumber = 1;
+		while (currentLat <= maxLat) {
+			while (currentLon <= maxLon) {
+//				if ((currentLat > (origin.getLatitudeUpper() + 1)) ||
+//						(currentLat < (origin.getLatitudeLower() - 1)) ||
+//						(currentLon < (origin.getLongitudeLeft() - 1)) ||
+//						(currentLon > (origin.getLongitudeRight() + 1))) {
+//					currentLat += 1;
+//					gridNumber++;
+//					continue;
+//				}
 				
-				drawGrid(canvas, origin, paint, service, scale, movement, face, pref, currentLon, currentLat);
-				currentLat += 0.25;
+				drawGrid(canvas, origin, paint, service, scale, movement, face, pref, currentLon, currentLat, gridNumber);
+				currentLon += 0.25;
+				gridNumber++;
 			}
-			currentLon += 0.25;
-			currentLat = minLat;
+			currentLat += 0.25;
+			currentLon = minLon;
 		}
 		
     	
@@ -59,9 +62,9 @@ public class State {
 
 	private void drawGrid(Canvas canvas, Origin origin, Paint paint,
 			StorageService service, Scale scale, Movement movement,
-			Typeface face, Preferences pref, float currentLon, float currentLat) {
+			Typeface face, Preferences pref, float currentLon, float currentLat, int gridNumber) {
 		
-		service.getShadowedText().draw(canvas, paint, "254", Color.GRAY,
+		service.getShadowedText().draw(canvas, paint, String.valueOf(gridNumber), Color.GRAY,
 				(float)origin.getOffsetX(((currentLon + (currentLon + 0.25)) / 2)),
 				(float)origin.getOffsetY(((currentLat + (currentLat + 0.25)) / 2)));
 		
