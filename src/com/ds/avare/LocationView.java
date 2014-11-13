@@ -534,8 +534,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not move on multitouch
              */
             if(mDraw && (!mTrackUp) && mService != null) {
-                float x = mCurrTouchPoint.getX();
-                float y = mCurrTouchPoint.getY();
+                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
+                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
@@ -1953,8 +1953,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         		return false;
         	}
         	
-        	float posX = mCurrTouchPoint.getX();
-        	float posY = mCurrTouchPoint.getY();
+        	float posX = e.getX();
+        	float posY = e.getY();
         	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, posX, posY);
         	if(infoLineFieldLoc != null) {
             	// We have the row and field. Tell the selection dialog to display
@@ -1971,8 +1971,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on long press, find a point where long press was done
              */
-            double x = mCurrTouchPoint.getX();
-            double y = mCurrTouchPoint.getY();
+            double x = e.getX();
+            double y = e.getY();
 
             if(mService != null) {
             	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, (float)x, (float)y);

@@ -205,8 +205,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
              * Do not move on multitouch
              */
             if(mDraw && mService != null) {
-                float x = mCurrTouchPoint.getX();
-                float y = mCurrTouchPoint.getY();
+                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
+                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
