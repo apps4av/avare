@@ -30,8 +30,10 @@ import com.ds.avare.storage.Preferences;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.text.format.Time;
 import android.util.TypedValue;
@@ -822,4 +824,50 @@ public class Helper {
     public static double getSpeedInKnots(double displayedSpeed) {
         return displayedSpeed * Preferences.MS_TO_KT / Preferences.speedConversion; // m/s to knots
     }
+ 
+    /***
+     * Downsize the bitmap to at most the indicated ratio of the max specified size
+     * @param bm Bitmap to resize
+     * @param maxX pixels of max width
+     * @param maxY pixels of max height
+     * @param maxRatio The max ratio wrt the display size
+     * @return the new bitmap, OR input bitmap if no change needed
+     */
+    public static Bitmap getResizedBitmap(Bitmap bm, int maxX, int maxY, double maxRatio) {
+
+    	// we have an starting bitmap object to work from
+    	if(null == bm) {
+    		return bm;
+    	}
+    	
+    	// Get current size and h:w ratio
+    	int height = bm.getHeight();
+    	int width = bm.getWidth();
+    	double ratio = height / width;
+    	
+    	// Figure out new max size
+    	int newHeight = (int) (Math.min(maxX,  maxY) * maxRatio);
+    	int newWidth = (int) (newHeight / ratio);
+    	
+    	// If we don't need to downsize, then return with the original
+    	if(newHeight >= height && newWidth >= width) {
+    		return bm;
+    	}
+
+    	// Calculate the scaling factors in both the x and y direction
+    	float scaleWidth = ((float) newWidth) / width;
+    	float scaleHeight = ((float) newHeight) / height;
+    	 
+    	// create a matrix for the manipulation
+    	Matrix matrix = new Matrix();
+    	 
+    	// resize the bit map
+    	matrix.postScale(scaleWidth, scaleHeight);
+    	 
+    	// recreate the new Bitmap, allowing for failure
+    	try {
+    		Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+    		return resizedBitmap;
+    	} catch (Exception e ) { return bm; }
+	}
 }

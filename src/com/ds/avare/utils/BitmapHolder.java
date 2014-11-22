@@ -244,6 +244,15 @@ public class BitmapHolder {
         }
     }
 
+    // Create a bitmapholder from an already loaded bitmap
+    public BitmapHolder(Bitmap bitMap) {
+        mBitmap = bitMap;
+        if(null != mBitmap) {
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+        }
+    }
+
     /**
      * Android does not free memory for a bitmap. Have to call this explicitly
      * especially for large bitmaps
