@@ -366,5 +366,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CurrentPlanName">Current plan name</string>
     <string name="CurrentChecklistName">Current check list name</string>
     <string name="Tools">Tools</string>
+    <string name="ScreenBrightness">Screen Brightness</string>
+    <string name="InternalGpsStatus">Internal GPS Status</string>
     		
 </resources>

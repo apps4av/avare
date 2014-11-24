@@ -20,7 +20,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/satellite_text_brightness"
         android:textColor="#FFFFFFFF"
         android:layout_marginLeft="10dp"
-    	android:text="Screen Brightness"
+    	android:text="@string/ScreenBrightness"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     
@@ -37,7 +37,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textColor="#FFFFFFFF"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/satellite_slider"
-        android:text="Internal GPS Status"
+        android:text="@string/InternalGpsStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 		

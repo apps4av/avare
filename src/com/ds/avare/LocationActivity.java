@@ -1105,22 +1105,6 @@ public class LocationActivity extends Activity implements Observer {
         mLocationView.cleanup();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) { 
-    	if (keyCode == KeyEvent.KEYCODE_VOLUME_UP){
-    		mLocationView.adjustZoom(0.05);
-            return true;
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
-    		mLocationView.adjustZoom(-0.05);
-            return true;
-        }
-        
-        // We don't handle any other keys
-        return super.onKeyDown(keyCode, event);
-    }
-    
     /**
      * 
      */

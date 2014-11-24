@@ -2152,16 +2152,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mScale.zoomOut();
     }
 
-    /**
-     * 
-     * @param factor
-     */
-    public void adjustZoom(double factor) {
-    	/**
-    	 * XXX: Disabled till fixed.
-    	mScale.adjustZoom(factor);
-    	postInvalidate();
-    	 */
-    }
-    
 }
