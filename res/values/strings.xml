@@ -365,5 +365,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="lt_sign">&#60;</string>
     <string name="CurrentPlanName">Current plan name</string>
     <string name="CurrentChecklistName">Current check list name</string>
+    <string name="Tools">Tools</string>
     		
 </resources>

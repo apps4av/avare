@@ -131,7 +131,7 @@ public class MainActivity extends TabActivity {
         }
         
         if(0 != (tabItems & (1 << tabGPS))) {
-        	setupTab(new TextView(this), getString(R.string.GPS), new Intent(this, SatelliteActivity.class), getIntent());
+        	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
         }
     }
     

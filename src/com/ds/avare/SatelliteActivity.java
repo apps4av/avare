@@ -28,6 +28,8 @@ import android.content.ServiceConnection;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 /**
  * @author zkhan
@@ -41,6 +43,8 @@ public class SatelliteActivity extends Activity  {
     private SatelliteView mSatelliteView;
     
     private StorageService mService;
+    
+    private SeekBar mBrightnessBar;
     
     /*
      * Start GPS
@@ -99,6 +103,33 @@ public class SatelliteActivity extends Activity  {
         setContentView(view);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
 
+        /*
+         * Set brightness bar
+         */        
+        mBrightnessBar = (SeekBar)view.findViewById(R.id.satellite_slider);
+        mBrightnessBar.setMax(255);
+        mBrightnessBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			@Override
+			public void onStartTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+				if(fromUser) {
+				    android.provider.Settings.System.putInt(getContentResolver(),
+				    	      android.provider.Settings.System.SCREEN_BRIGHTNESS,
+				    	      progress);				
+				}
+			}
+        });
         mService = null;      
         
     }
@@ -146,6 +177,18 @@ public class SatelliteActivity extends Activity  {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        /*
+         * Set brightness bar to current value
+         */
+        try {
+        	float curBrightnessValue = android.provider.Settings.System.getInt(
+        	     getContentResolver(),
+        	     android.provider.Settings.System.SCREEN_BRIGHTNESS);
+            mBrightnessBar.setProgress((int)curBrightnessValue);        	
+        } 
+        catch (Exception e) {
+        }
 
     }
     
