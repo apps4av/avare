@@ -124,9 +124,15 @@ public class SatelliteActivity extends Activity  {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 				boolean fromUser) {
 				if(fromUser) {
+					/*
+					 * Manually set brightness
+					 */
+					android.provider.Settings.System.putInt(getContentResolver(), 
+							android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE,
+							android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
 				    android.provider.Settings.System.putInt(getContentResolver(),
-				    	      android.provider.Settings.System.SCREEN_BRIGHTNESS,
-				    	      progress);				
+				    	    android.provider.Settings.System.SCREEN_BRIGHTNESS,
+				    	    progress);				
 				}
 			}
         });
