@@ -12,13 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.TimeZone;
 
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.content.Context;
@@ -26,10 +21,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.Paint.FontMetrics;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
-import android.location.Location;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -45,15 +38,9 @@ public class SatelliteView extends View {
      * Satellite view
      */
     private GpsStatus       mGpsStatus;
-    private double         mLatitude;
-    private double         mLongitude;
     private Paint           mPaint;
     private float          min;
     private Context         mContext;
-    private float          mFontHeight;
-    private int            mAccuracy;
-    String 				     mLastTime;
-    String                   mName;
     private float 	        mDipToPix;
 
     /**
@@ -61,9 +48,6 @@ public class SatelliteView extends View {
      */
     private void setup(Context context) {
         mContext = context;        
-        mLatitude = 0;
-        mLongitude = 0;
-        mName = "";
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.WHITE);
@@ -72,7 +56,6 @@ public class SatelliteView extends View {
         mDipToPix = Helper.getDpiToPix(context);
         mPaint.setStrokeWidth(4 * mDipToPix);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
-        mLastTime = "";
     }
     
     /**
@@ -112,48 +95,6 @@ public class SatelliteView extends View {
         postInvalidate();
     }
 
-    /**
-     * 
-     * @param status
-     */
-    public void updateLocation(Location location) {
-        if(null == location) {
-            mGpsStatus = null;
-            return;
-        }
-        mLatitude = Helper.truncGeo(location.getLatitude());
-        mLongitude = Helper.truncGeo(location.getLongitude());
-        mName = location.getProvider() == null ? "" : location.getProvider();
-        mAccuracy = (int) Math.round(location.getAccuracy() * Preferences.heightConversion);
-        Date dt = new Date(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mLastTime = sdf.format(dt);
-        sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        mLastTime += "/" + sdf.format(dt) + "Z";
-    }
-    
-    /**
-     * 
-     * @param num
-     * @param ttf
-     * @param lon
-     * @param lat
-     * @param accuracy
-     */
-    private void drawParamsText(Canvas canvas, String num, String lon, String lat, String accuracy) {
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.WHITE);
-
-        /*
-         * Now draw stats text
-         */
-        canvas.drawText(mName + "(@" + mLastTime + ")" + ":" + num, 4, mFontHeight, mPaint);
-        canvas.drawText(mContext.getString(R.string.Lon) + ":" + lon, 4, mFontHeight * 2, mPaint);
-        canvas.drawText(mContext.getString(R.string.Lat) + ":" + lat, 4, mFontHeight * 3, mPaint);
-        canvas.drawText(mContext.getString(R.string.accuracy) + ":" + accuracy, 4, mFontHeight * 4, mPaint);
-
-    }
-
     /* (non-Javadoc)
      * @see android.view.View#onDraw(android.graphics.Canvas)
      */
@@ -176,13 +117,11 @@ public class SatelliteView extends View {
          * Now draw the target cross hair
          */
         mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
         canvas.drawLine(getWidth() / 2 - min / 2, getHeight() / 2, getWidth() / 2 + min / 2, getHeight() / 2, mPaint);
         canvas.drawLine(getWidth() / 2, getHeight() / 2 - min / 2, getWidth() / 2, getHeight() / 2 + min / 2, mPaint);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, min / 2, mPaint);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, min / 4, mPaint);
-        mPaint.setTextSize(min / 20);
-        FontMetrics fm = mPaint.getFontMetrics();
-        mFontHeight =  fm.bottom - fm.top;
 
         if(mGpsStatus != null) {
 	        Iterable<GpsSatellite>satellites = mGpsStatus.getSatellites();
@@ -194,9 +133,7 @@ public class SatelliteView extends View {
 	         * Now draw a circle for each satellite, use simple projections of x = sin(theta), y = cos(theta)
 	         * Arm for each projection is sin(elevation). Theta = azimuth.
 	         */
-            int i = 0;
 	        while (sat.hasNext()) {
-	            i++;
 	            GpsSatellite satellite = sat.next();
 	            if(satellite.usedInFix()) {
 	                mPaint.setColor(Color.GREEN);
@@ -215,23 +152,11 @@ public class SatelliteView extends View {
 	        }
 	        canvas.restore();
 
-	        /*
-	         * Now draw stats text
-	         */
-	        drawParamsText(canvas, Integer.toString(i),
-	        		Double.toString(mLongitude), Double.toString(mLatitude),
-	        		Integer.toString(mAccuracy));
         }
         
         else {
         	
             canvas.restore();
-            /*
-             * Now draw stats text
-             */
-            drawParamsText(canvas, "0",
-                    Double.toString(mLongitude), Double.toString(mLatitude),
-                    Integer.toString(mAccuracy));
         }
     }
 }

@@ -55,7 +55,8 @@ public class MainActivity extends TabActivity {
     public static final int tabWX = 5;
     public static final int tabNear = 6;
     public static final int tabChecklist = 7;
-    public static final int tabGPS = 8;	
+    public static final int tabTools = 8;	
+    public static final int tabTrip = 9;	
     
     @Override
     /**
@@ -130,8 +131,12 @@ public class MainActivity extends TabActivity {
         	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
         }
         
-        if(0 != (tabItems & (1 << tabGPS))) {
+        if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
+        }
+        
+        if(0 != (tabItems & (1 << tabTrip))) {
+        	setupTab(new TextView(this), getString(R.string.Trip), new Intent(this, TripActivity.class), getIntent());
         }
     }
     

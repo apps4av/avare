@@ -949,8 +949,12 @@ public class Preferences {
     		mTabs |=  1 << MainActivity.tabChecklist;
     	}
 
-    	if(mPref.getBoolean(mContext.getString(R.string.prefTabGPS), true)) {
-    		mTabs |=  1 << MainActivity.tabGPS;
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
+    		mTabs |=  1 << MainActivity.tabTools;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
+    		mTabs |=  1 << MainActivity.tabTrip;
     	}
 
     	return mTabs;

@@ -59,6 +59,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".WeatherActivity" />
         <activity android:name=".ChecklistActivity"/>
+        <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>

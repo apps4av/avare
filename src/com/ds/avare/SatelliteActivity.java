@@ -12,8 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
@@ -30,6 +36,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 /**
  * @author zkhan
@@ -46,6 +53,8 @@ public class SatelliteActivity extends Activity  {
     
     private SeekBar mBrightnessBar;
     
+    private TextView mGpsText;
+    
     /*
      * Start GPS
      */
@@ -59,7 +68,26 @@ public class SatelliteActivity extends Activity  {
         @Override
         public void locationCallback(Location location) {
             if(location != null) {
-                mSatelliteView.updateLocation(location);
+                double latitude = Helper.truncGeo(location.getLatitude());
+                double longitude = Helper.truncGeo(location.getLongitude());
+                String name = location.getProvider() == null ? "" : location.getProvider();
+                int accuracy = (int) Math.round(location.getAccuracy() * Preferences.heightConversion);
+                Date dt = new Date(System.currentTimeMillis());
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                String lastTime = sdf.format(dt);
+                sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
+                lastTime += "/" + sdf.format(dt) + "Z";
+                
+                mGpsText.setText(
+                		getString(R.string.LatitudeLongitude) + ": " + latitude + "," + longitude + "\n" +
+                		getString(R.string.Provider) + ": " + name + "\n" + 	
+                		getString(R.string.Time) + ": " + lastTime + "\n" +
+                		getString(R.string.AltitudeAccuracy) + ": " + accuracy
+                		);
+            }
+            else {
+            	mSatelliteView.updateGpsStatus(null);
+                mGpsText.setText("");
             }
         }
 
@@ -102,6 +130,8 @@ public class SatelliteActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.satellite, null);
         setContentView(view);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
+
+        mGpsText = (TextView)view.findViewById(R.id.satellite_text_gps_details);
 
         /*
          * Set brightness bar
