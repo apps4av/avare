@@ -1,5 +1,6 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+
+Copyright (c) 2014, Apps4Av Inc. (apps4av.com) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -11,42 +12,55 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.trip;
 
+import java.util.Observable;
 
-import android.content.Context;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-import com.ds.avare.StorageService;
+import android.os.AsyncTask;
 
-public class ContentGenerator {
+/**
+ * A class that does all the fill in magic
+ * @author zkhan
+ *
+ */
+public class ContentGenerator extends Observable {
 
-    public static String makeContentImage(Context context, StorageService service) {       
-        
-        /*
-         * Generate the page
-         */
-        String data = "<html>\n"
-                /*
-                 * Title
-                 */
-                + "<head><meta content='text/html; charset=ISO-8859-1' http-equiv='content-type'>\n"
-                + "<title>Trip</title>\n"
-                /*
-                 * Javascript functions
-                 */
-                + "<script>\n"
-                /*
-                 * Refresh
-                 */
-                + "function refresh()\n"
-                + "{\n"
-                + "location.reload(true);\n"
-                + "}\n"
-                + "</script>\n"
-                + "</head>"
-                + "<body>"
-                + "</body>\n"
-                + "</html>\n";
-        return data;
+	private Document mDoc;
+	/**
+	 * 
+	 * @return
+	 */
+	public void getPage(String page) {
 
-    }
-    
+		mDoc = null;
+		/**
+		 * Do get the page in background
+		 */
+        AsyncTask<Object, Object, Boolean> task = new AsyncTask<Object, Object, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Object... vals) {
+        		try {
+        			/*
+        			 * Use JSOUP to get the page as we need to fill in data
+        			 */
+        			mDoc = Jsoup.connect((String)vals[0]).get();
+        		} catch (Exception e) {
+        			return false;
+        		}
+        		return true;
+            }
+            @Override
+            protected void onPostExecute(Boolean result) {
+            	if(result) {
+            		/*
+            		 * In background
+            		 */
+	    			ContentGenerator.this.setChanged();
+	    			ContentGenerator.this.notifyObservers(mDoc.html());
+            	}
+            }
+        };
+        task.execute(page);
+	}    
 }

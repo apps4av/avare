@@ -12,6 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
@@ -40,7 +43,7 @@ import android.widget.ProgressBar;
 /**
  * @author zkhan trip / hotel / car etc. activity
  */
-public class TripActivity extends Activity {
+public class TripActivity extends Activity implements Observer {
 
     /**
      * This view display location on the map.
@@ -58,11 +61,6 @@ public class TripActivity extends Activity {
      */
     private StorageService mService;
     
-    /*
-     * If page it loaded
-     */
-    private boolean mIsPageLoaded;
-
     private Context mContext;
     
     /**
@@ -127,10 +125,9 @@ public class TripActivity extends Activity {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
-        if(mIsPageLoaded == false) {
-            mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
-        }
-        mIsPageLoaded = true;
+        ContentGenerator cg = new ContentGenerator();
+        cg.addObserver(this);
+        cg.getPage("https://apps4av.net/hotwire.html");
 
         /*
          * Progress bar
@@ -189,7 +186,6 @@ public class TripActivity extends Activity {
         });
 
         mService = null;
-        mIsPageLoaded = false;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -310,5 +306,13 @@ public class TripActivity extends Activity {
         super.onDestroy();
         mInfc.cleanup();
     }
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		/*
+		 * Set webview from JSOUP
+		 */
+        mWebView.loadData((String)arg1, "text/html", null);
+	}
     
 }
