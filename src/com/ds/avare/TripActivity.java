@@ -12,8 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.lang.reflect.Method;
 import java.util.Observable;
 import java.util.Observer;
+
+import org.apache.http.protocol.HTTP;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
@@ -33,6 +36,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.webkit.CookieManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -194,7 +199,7 @@ public class TripActivity extends Activity implements Observer {
                 mUrl = LOCATION;
 	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
 	            cg.addObserver(TripActivity.this);
-	            cg.getPage("https://apps4av.net/hotwire.html");
+	            cg.getPage(LOCATION);
             }
 
         }
@@ -301,7 +306,7 @@ public class TripActivity extends Activity implements Observer {
 		 * Set webview from JSOUP
 		 */
 		mIsPageLoaded = true;
-        mWebView.loadDataWithBaseURL(mUrl, (String)arg1, "text/html", "utf8", null);
+        mWebView.loadDataWithBaseURL(mUrl, (String)arg1, "text/html", HTTP.UTF_8, null);
 	}
     
 }

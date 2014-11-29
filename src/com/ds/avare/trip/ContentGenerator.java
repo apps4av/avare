@@ -86,17 +86,28 @@ public class ContentGenerator extends Observable {
             		
             		Element elem;
 
+            		/*
+            		 * These elements must match HTML on server
+            		 */
             		elem = mDoc.getElementById("dest");
-            		elem.val(dest);
+            		if(null != elem) {
+            			elem.val(dest);
+            		}
 
             		elem = mDoc.getElementById("distance");
-            		elem.val("10");
+            		if(null != elem) {
+            			elem.val("10");
+            		}
 
             		elem = mDoc.getElementById("adults");
-            		elem.val("2");
+            		if(null != elem) {
+            			elem.val("2");
+            		}
 
             		elem = mDoc.getElementById("children");
-            		elem.val("2");
+            		if(null != elem) {
+            			elem.val("2");
+            		}
 
             		/*
             		 * Today
@@ -104,7 +115,9 @@ public class ContentGenerator extends Observable {
             		Date date = new Date(System.currentTimeMillis());
 
             		elem = mDoc.getElementById("startdate");
-            		elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+            		if(null != elem) {
+            			elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+            		}
 
             		/*
             		 * Tomorrow
@@ -112,13 +125,19 @@ public class ContentGenerator extends Observable {
             		date = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L);
 
             		elem = mDoc.getElementById("enddate");
-            		elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+            		if(null != elem) {
+            			elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+            		}
             		
             		elem = mDoc.getElementById("rooms");
-            		elem.val("1");
+            		if(null != elem) {
+            			elem.val("1");
+            		}
 
             		elem = mDoc.getElementById("starrating");
-            		elem.val("3");
+            		if(null != elem) {
+            			elem.val("3");
+            		}
 
 	    			ContentGenerator.this.setChanged();
 	    			ContentGenerator.this.notifyObservers(mDoc.html());
