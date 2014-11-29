@@ -1267,7 +1267,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              *  Set the brush color and width
              */
-            mPaint.setColor(Color.DKGRAY);
+            mPaint.setColor(Color.CYAN);
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
