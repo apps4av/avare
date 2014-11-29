@@ -63,6 +63,8 @@ public class TripActivity extends Activity implements Observer {
     
     private Context mContext;
     
+    private boolean mIsPageLoaded;
+    
     /**
      * App preferences
      */
@@ -125,9 +127,7 @@ public class TripActivity extends Activity implements Observer {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
-        ContentGenerator cg = new ContentGenerator();
-        cg.addObserver(this);
-        cg.getPage("https://apps4av.net/hotwire.html");
+        mIsPageLoaded = false;
 
         /*
          * Progress bar
@@ -211,6 +211,12 @@ public class TripActivity extends Activity implements Observer {
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
             mInfc.connect(mService);
+            
+            if(!mIsPageLoaded) {
+	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
+	            cg.addObserver(TripActivity.this);
+	            cg.getPage("https://apps4av.net/hotwire.html");
+            }
 
         }
 
@@ -312,7 +318,9 @@ public class TripActivity extends Activity implements Observer {
 		/*
 		 * Set webview from JSOUP
 		 */
-        mWebView.loadData((String)arg1, "text/html", null);
+		mIsPageLoaded = true;
+        mWebView.loadDataWithBaseURL("https://apps4av.net/hotwire.html", 
+        		(String)arg1, "text/html", "utf8", null);
 	}
     
 }

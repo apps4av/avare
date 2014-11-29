@@ -12,11 +12,19 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.trip;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Observable;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import com.ds.avare.StorageService;
+import com.ds.avare.storage.Preferences;
+
+import android.content.Context;
 import android.os.AsyncTask;
 
 /**
@@ -27,6 +35,21 @@ import android.os.AsyncTask;
 public class ContentGenerator extends Observable {
 
 	private Document mDoc;
+	private StorageService mService;
+	private Context mContext;
+	private Preferences mPref;
+	
+	/**
+	 * 
+	 * @param ctx
+	 * @param service
+	 */
+	public ContentGenerator(Context ctx, StorageService service) {
+		mContext = ctx;
+		mService = service;
+		mPref = new Preferences(ctx);
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -54,8 +77,56 @@ public class ContentGenerator extends Observable {
             protected void onPostExecute(Boolean result) {
             	if(result) {
             		/*
-            		 * In background
+            		 * In foreground
             		 */
+            		String dest = "";
+            		if(mService.getDestination() != null) {
+	            		dest = mService.getDestination().getLocation().getLatitude() + "," +
+	            				mService.getDestination().getLocation().getLongitude();
+            		}
+            		
+            		Element elem;
+
+            		elem = mDoc.getElementById("dest");
+            		elem.val(dest);
+
+            		elem = mDoc.getElementById("distance");
+            		elem.val("10");
+
+            		elem = mDoc.getElementById("adults");
+            		elem.val("2");
+
+            		elem = mDoc.getElementById("children");
+            		elem.val("2");
+
+            		/*
+            		 * Today
+            		 */
+            		Date date = new Date(System.currentTimeMillis());
+
+            		elem = mDoc.getElementById("startdate");
+            		elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+
+            		/*
+            		 * Tomorrow
+            		 */
+            		date = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L);
+
+            		elem = mDoc.getElementById("enddate");
+            		elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
+            		
+            		elem = mDoc.getElementById("rooms");
+            		elem.val("1");
+
+            		elem = mDoc.getElementById("starrating");
+            		elem.val("3");
+
+            		elem = mDoc.getElementById("pickuptime");
+            		elem.val(new SimpleDateFormat("HH:mm").format(date));
+
+            		elem = mDoc.getElementById("dropofftime");
+            		elem.val(new SimpleDateFormat("HH:mm").format(date));
+
 	    			ContentGenerator.this.setChanged();
 	    			ContentGenerator.this.notifyObservers(mDoc.html());
             	}
