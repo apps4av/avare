@@ -29,16 +29,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 
 /**
  * @author zkhan trip / hotel / car etc. activity
@@ -51,6 +48,11 @@ public class TripActivity extends Activity implements Observer {
     private WebView mWebView;
     private WebAppInterface mInfc;
     private Button mBackButton;
+    
+    /*
+     * For cross domain JS, set this to current loading page
+     */
+    private String mUrl;
 
     /**
      * Service that keeps state even when activity is dead
@@ -124,7 +126,22 @@ public class TripActivity extends Activity implements Observer {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppInterface(mContext, mWebView);
+        mUrl = LOCATION;
         mWebView.addJavascriptInterface(mInfc, "Android");
+        mWebView.setWebViewClient(new WebViewClient() {
+        	@Override
+        	public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        		/*
+        		 * Load the URL in webview itself
+        		 */
+                mUrl = url;
+	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
+	            cg.addObserver(TripActivity.this);
+	            cg.getPageThirdParty(url);
+	            return true;
+        	}
+        });
+        
         mIsPageLoaded = false;
 
         mBackButton = (Button)view.findViewById(R.id.trip_button_back);
@@ -133,6 +150,10 @@ public class TripActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
             	if(mService != null) {
+            		/*
+            		 * Reload
+            		 */
+                    mUrl = LOCATION;
     	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
     	            cg.addObserver(TripActivity.this);
     	            cg.getPage(LOCATION);            		
@@ -170,6 +191,7 @@ public class TripActivity extends Activity implements Observer {
             mInfc.connect(mService);
             
             if(!mIsPageLoaded) {
+                mUrl = LOCATION;
 	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
 	            cg.addObserver(TripActivity.this);
 	            cg.getPage("https://apps4av.net/hotwire.html");
@@ -270,13 +292,16 @@ public class TripActivity extends Activity implements Observer {
         mInfc.cleanup();
     }
 
+    /**
+     * 
+     */
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		/*
 		 * Set webview from JSOUP
 		 */
 		mIsPageLoaded = true;
-        mWebView.loadDataWithBaseURL(LOCATION, (String)arg1, "text/html", "utf8", null);
+        mWebView.loadDataWithBaseURL(mUrl, (String)arg1, "text/html", "utf8", null);
 	}
     
 }

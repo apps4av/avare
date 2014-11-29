@@ -127,4 +127,51 @@ public class ContentGenerator extends Observable {
         };
         task.execute(page);
 	}    
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public void getPageThirdParty(String page) {
+
+		mDoc = null;
+		/**
+		 * Do get the page in background
+		 */
+        AsyncTask<Object, Object, Boolean> task = new AsyncTask<Object, Object, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Object... vals) {
+        		try {
+        			/*
+        			 * Use JSOUP to get the page as we need to fill in data
+        			 */
+        			mDoc = Jsoup.connect((String)vals[0]).get();
+        		} catch (Exception e) {
+        			return false;
+        		}
+        		return true;
+            }
+            @Override
+            protected void onPostExecute(Boolean result) {
+            	if(result) {
+            		/*
+            		 * In foreground
+            		 */
+            		
+            		Element elem;
+
+            		elem = mDoc.getElementById("travelerInfoModel.travelers0.firstName");
+            		if(null != elem) {
+            			elem.val("SomeoneFromPrefs");
+            		}
+
+
+	    			ContentGenerator.this.setChanged();
+	    			ContentGenerator.this.notifyObservers(mDoc.html());
+            	}
+            }
+        };
+        task.execute(page);
+	}    
+
 }
