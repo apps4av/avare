@@ -49,12 +49,8 @@ public class TripActivity extends Activity implements Observer {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private EditText mSearchText;
-    private Button mNextButton;
-    private Button mLastButton;
-    private ProgressBar mProgressBar;
     private WebAppInterface mInfc;
-
+    private Button mBackButton;
 
     /**
      * Service that keeps state even when activity is dead
@@ -64,6 +60,8 @@ public class TripActivity extends Activity implements Observer {
     private Context mContext;
     
     private boolean mIsPageLoaded;
+    
+    private static final String LOCATION = "https://apps4av.net/hotwire.html";
     
     /**
      * App preferences
@@ -129,61 +127,20 @@ public class TripActivity extends Activity implements Observer {
         mWebView.addJavascriptInterface(mInfc, "Android");
         mIsPageLoaded = false;
 
-        /*
-         * Progress bar
-         */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.trip_progress_bar));
-
-        /*
-         * For searching, start search on every new key press
-         */
-        mSearchText = (EditText)view.findViewById(R.id.trip_edit_text);
-        mSearchText.addTextChangedListener(new TextWatcher() { 
-            @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-    
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-    
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int after) {
-                
-                /*
-                 * If text is 0 length or too long, then do not search, show last list
-                 */
-                if(s.length() < 3) {
-                    mWebView.clearMatches();
-                    return;
-                }
-
-                mProgressBar.setVisibility(ProgressBar.VISIBLE);
-                mWebView.findAll(s.toString());
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-            }
-        });
-
-        mNextButton = (Button)view.findViewById(R.id.trip_button_next);
-        mNextButton.setOnClickListener(new OnClickListener() {
+        mBackButton = (Button)view.findViewById(R.id.trip_button_back);
+        mBackButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mWebView.findNext(true);
+            	if(mService != null) {
+    	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
+    	            cg.addObserver(TripActivity.this);
+    	            cg.getPage(LOCATION);            		
+            	}
             }
             
         });
 
-        mLastButton = (Button)view.findViewById(R.id.trip_button_last);
-        mLastButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mWebView.findNext(false);
-            }
-            
-        });
 
         mService = null;
     }
@@ -319,8 +276,7 @@ public class TripActivity extends Activity implements Observer {
 		 * Set webview from JSOUP
 		 */
 		mIsPageLoaded = true;
-        mWebView.loadDataWithBaseURL("https://apps4av.net/hotwire.html", 
-        		(String)arg1, "text/html", "utf8", null);
+        mWebView.loadDataWithBaseURL(LOCATION, (String)arg1, "text/html", "utf8", null);
 	}
     
 }

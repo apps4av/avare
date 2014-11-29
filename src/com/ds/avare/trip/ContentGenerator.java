@@ -19,7 +19,6 @@ import java.util.Observable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
@@ -120,12 +119,6 @@ public class ContentGenerator extends Observable {
 
             		elem = mDoc.getElementById("starrating");
             		elem.val("3");
-
-            		elem = mDoc.getElementById("pickuptime");
-            		elem.val(new SimpleDateFormat("HH:mm").format(date));
-
-            		elem = mDoc.getElementById("dropofftime");
-            		elem.val(new SimpleDateFormat("HH:mm").format(date));
 
 	    			ContentGenerator.this.setChanged();
 	    			ContentGenerator.this.notifyObservers(mDoc.html());

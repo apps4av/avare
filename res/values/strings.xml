@@ -375,5 +375,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Provider">Location Povider</string>
     <string name="Time">Current Time</string>
     <string name="AltitudeAccuracy">Altitude Accuracy</string>
+    <string name="Back">Back</string>
     
 </resources>
