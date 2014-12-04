@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import java.lang.reflect.Method;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -20,8 +19,8 @@ import org.apache.http.protocol.HTTP;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.trip.ContentGenerator;
+import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -45,7 +44,7 @@ import android.widget.Button;
 /**
  * @author zkhan trip / hotel / car etc. activity
  */
-public class TripActivity extends Activity implements Observer {
+public class TripActivity extends Activity {
 
     /**
      * This view display location on the map.
@@ -54,10 +53,7 @@ public class TripActivity extends Activity implements Observer {
     private WebAppInterface mInfc;
     private Button mBackButton;
     
-    /*
-     * For cross domain JS, set this to current loading page
-     */
-    private String mUrl;
+    private ContentGenerator mContent;
 
     /**
      * Service that keeps state even when activity is dead
@@ -67,9 +63,7 @@ public class TripActivity extends Activity implements Observer {
     private Context mContext;
     
     private boolean mIsPageLoaded;
-    
-    private static final String LOCATION = "https://apps4av.net/hotwire.html";
-    
+        
     /**
      * App preferences
      */
@@ -131,21 +125,7 @@ public class TripActivity extends Activity implements Observer {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppInterface(mContext, mWebView);
-        mUrl = LOCATION;
         mWebView.addJavascriptInterface(mInfc, "Android");
-        mWebView.setWebViewClient(new WebViewClient() {
-        	@Override
-        	public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        		/*
-        		 * Load the URL in webview itself
-        		 */
-                mUrl = url;
-	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
-	            cg.addObserver(TripActivity.this);
-	            cg.getPageThirdParty(url);
-	            return true;
-        	}
-        });
         
         mIsPageLoaded = false;
 
@@ -154,14 +134,11 @@ public class TripActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-            	if(mService != null) {
+            	if(mService != null && mContent != null) {
             		/*
             		 * Reload
             		 */
-                    mUrl = LOCATION;
-    	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
-    	            cg.addObserver(TripActivity.this);
-    	            cg.getPage(LOCATION);            		
+                    mWebView.loadData(mContent.getPage(), "text/html", HTTP.UTF_8);
             	}
             }
             
@@ -193,13 +170,15 @@ public class TripActivity extends Activity implements Observer {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mContent = new ContentGenerator(mContext, mService);
             mInfc.connect(mService);
             
             if(!mIsPageLoaded) {
-                mUrl = LOCATION;
-	            ContentGenerator cg = new ContentGenerator(getApplicationContext(), mService);
-	            cg.addObserver(TripActivity.this);
-	            cg.getPage(LOCATION);
+        		/*
+        		 * Set webview from JSOUP
+        		 */
+        		mIsPageLoaded = true;
+                mWebView.loadData(mContent.getPage(), "text/html", HTTP.UTF_8);
             }
 
         }
@@ -296,17 +275,4 @@ public class TripActivity extends Activity implements Observer {
         super.onDestroy();
         mInfc.cleanup();
     }
-
-    /**
-     * 
-     */
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		/*
-		 * Set webview from JSOUP
-		 */
-		mIsPageLoaded = true;
-        mWebView.loadDataWithBaseURL(mUrl, (String)arg1, "text/html", HTTP.UTF_8, null);
-	}
-    
 }

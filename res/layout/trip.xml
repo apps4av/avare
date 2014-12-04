@@ -15,8 +15,6 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    
-        
         <Button
             android:id="@+id/trip_button_back"
             android:layout_alignParentTop="true"
@@ -32,17 +30,5 @@ Redistribution and use in source and binary forms, with or without modification,
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"/>
         
-        <ProgressBar
-            android:id="@+id/trip_progress_bar"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:visibility="invisible"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="14dp" />
-    
-	    
 </RelativeLayout>
 

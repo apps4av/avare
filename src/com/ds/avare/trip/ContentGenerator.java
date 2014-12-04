@@ -12,19 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.trip;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Observable;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 /**
  * A class that does all the fill in magic
@@ -33,7 +27,6 @@ import android.os.AsyncTask;
  */
 public class ContentGenerator extends Observable {
 
-	private Document mDoc;
 	private StorageService mService;
 	private Context mContext;
 	private Preferences mPref;
@@ -53,144 +46,11 @@ public class ContentGenerator extends Observable {
 	 * 
 	 * @return
 	 */
-	public void getPage(String page) {
-
-		mDoc = null;
-		/**
-		 * Do get the page in background
+	public String getPage() {
+		/*
+		 * Make a options page
 		 */
-        AsyncTask<Object, Object, Boolean> task = new AsyncTask<Object, Object, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Object... vals) {
-        		try {
-        			/*
-        			 * Use JSOUP to get the page as we need to fill in data
-        			 */
-        			mDoc = Jsoup.connect((String)vals[0]).get();
-        		} catch (Exception e) {
-        			return false;
-        		}
-        		return true;
-            }
-            @Override
-            protected void onPostExecute(Boolean result) {
-            	if(result) {
-            		/*
-            		 * In foreground
-            		 */
-            		String dest = "";
-            		if(mService.getDestination() != null) {
-	            		dest = mService.getDestination().getLocation().getLatitude() + "," +
-	            				mService.getDestination().getLocation().getLongitude();
-            		}
-            		
-            		Element elem;
-
-            		/*
-            		 * These elements must match HTML on server
-            		 */
-            		elem = mDoc.getElementById("dest");
-            		if(null != elem) {
-            			elem.val(dest);
-            		}
-
-            		elem = mDoc.getElementById("distance");
-            		if(null != elem) {
-            			elem.val("10");
-            		}
-
-            		elem = mDoc.getElementById("adults");
-            		if(null != elem) {
-            			elem.val("2");
-            		}
-
-            		elem = mDoc.getElementById("children");
-            		if(null != elem) {
-            			elem.val("2");
-            		}
-
-            		/*
-            		 * Today
-            		 */
-            		Date date = new Date(System.currentTimeMillis());
-
-            		elem = mDoc.getElementById("startdate");
-            		if(null != elem) {
-            			elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
-            		}
-
-            		/*
-            		 * Tomorrow
-            		 */
-            		date = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L);
-
-            		elem = mDoc.getElementById("enddate");
-            		if(null != elem) {
-            			elem.val(new SimpleDateFormat("MM/dd/yyyy").format(date));
-            		}
-            		
-            		elem = mDoc.getElementById("rooms");
-            		if(null != elem) {
-            			elem.val("1");
-            		}
-
-            		elem = mDoc.getElementById("starrating");
-            		if(null != elem) {
-            			elem.val("3");
-            		}
-
-	    			ContentGenerator.this.setChanged();
-	    			ContentGenerator.this.notifyObservers(mDoc.html());
-            	}
-            }
-        };
-        task.execute(page);
-	}    
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public void getPageThirdParty(String page) {
-
-		mDoc = null;
-		/**
-		 * Do get the page in background
-		 */
-        AsyncTask<Object, Object, Boolean> task = new AsyncTask<Object, Object, Boolean>() {
-            @Override
-            protected Boolean doInBackground(Object... vals) {
-        		try {
-        			/*
-        			 * Use JSOUP to get the page as we need to fill in data
-        			 */
-        			mDoc = Jsoup.connect((String)vals[0]).get();
-        		} catch (Exception e) {
-        			return false;
-        		}
-        		return true;
-            }
-            @Override
-            protected void onPostExecute(Boolean result) {
-            	if(result) {
-            		/*
-            		 * In foreground
-            		 */
-            		
-            		Element elem;
-
-            		elem = mDoc.getElementById("travelerInfoModel.travelers0.firstName");
-            		if(null != elem) {
-            			elem.val("SomeoneFromPrefs");
-            		}
-
-
-	    			ContentGenerator.this.setChanged();
-	    			ContentGenerator.this.notifyObservers(mDoc.html());
-            	}
-            }
-        };
-        task.execute(page);
-	}    
+		return "";
+	}    	
 
 }
