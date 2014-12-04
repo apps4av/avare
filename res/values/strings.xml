@@ -344,7 +344,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
     <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
-    <string name="TripSummary">&quot;Trip (hotel, car) display.&quot;</string>
+    <string name="TripSummary">&quot;Travel display.&quot;</string>
     				
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
 	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
