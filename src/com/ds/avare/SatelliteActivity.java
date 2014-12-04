@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
@@ -31,6 +32,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -191,9 +193,20 @@ public class SatelliteActivity extends Activity  {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mMemoryText.setText(Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB " +
-            		+ mService.getTiles().getXTilesNum() + "," + 
-            		+ mService.getTiles().getYTilesNum());
+            
+            /*
+             * Find various metrics for user info
+             */
+            Display display = getWindowManager().getDefaultDisplay(); 
+            int width = display.getWidth();
+            int height = display.getHeight();
+        
+            mMemoryText.setText(
+            		getString(R.string.AvailableMem) + " " + Runtime.getRuntime().maxMemory() / (1024 * 1024) + "MB, " +
+            	    // Divide map width/height by 2 because of zoom scale from 1 - 2 before zoom macro changes
+            		getString(R.string.MapSize) + " " + mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH / 2 + "x" + mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT / 2 + "px, " +
+            		getString(R.string.ScreenSize) + " " + width + "x" + height + "px"
+            		);
             
         }    
 

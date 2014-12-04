@@ -376,5 +376,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Time">Current Time</string>
     <string name="AltitudeAccuracy">Altitude Accuracy</string>
     <string name="Back">Back</string>
+    <string name="AvailableMem">Available Memory</string>
+    <string name="ScreenSize">Screen Size</string>
+    <string name="MapSize">Map Size</string>
     
 </resources>
