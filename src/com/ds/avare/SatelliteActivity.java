@@ -55,6 +55,8 @@ public class SatelliteActivity extends Activity  {
     
     private TextView mGpsText;
     
+    private TextView mMemoryText;
+    
     /*
      * Start GPS
      */
@@ -132,6 +134,7 @@ public class SatelliteActivity extends Activity  {
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
 
         mGpsText = (TextView)view.findViewById(R.id.satellite_text_gps_details);
+        mMemoryText = (TextView)view.findViewById(R.id.satellite_text_memory);
 
         /*
          * Set brightness bar
@@ -188,6 +191,10 @@ public class SatelliteActivity extends Activity  {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mMemoryText.setText(Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB " +
+            		+ mService.getTiles().getXTilesNum() + "," + 
+            		+ mService.getTiles().getYTilesNum());
+            
         }    
 
         /* (non-Javadoc)
