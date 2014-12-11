@@ -843,6 +843,13 @@ public class Helper {
     	// Get current size and h:w ratio
     	int height = bm.getHeight();
     	int width = bm.getWidth();
+    	
+    	// ensure bitmap size is valid
+    	if(0 == height || 0 == width) {
+    		return bm;
+    	}
+    	
+    	// What is the height to width ratio - will always be > 0 at this point
     	double ratio = height / width;
     	
     	// Figure out new max size
