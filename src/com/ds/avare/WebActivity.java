@@ -82,7 +82,9 @@ public class WebActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.web, null);
         setContentView(view);
         mWebView = (WebView) view.findViewById(R.id.web_mainpage);
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.loadUrl(getIntent().getStringExtra("url"));
+        
         /*
          * Progress bar
          */

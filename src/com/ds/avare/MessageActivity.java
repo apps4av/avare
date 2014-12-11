@@ -46,6 +46,7 @@ public class MessageActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.message, null);
         
         mWebView = (WebView) view.findViewById(R.id.message_mainpage);
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mSpinner = (Spinner)view.findViewById(R.id.message_type);
         
         mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
