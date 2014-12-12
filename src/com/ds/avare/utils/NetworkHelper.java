@@ -393,7 +393,7 @@ public class NetworkHelper {
         }
         int diff = cycle - 1400;
         
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM_dd_yyyy", Locale.US);
 
         String ret = "";
         GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
