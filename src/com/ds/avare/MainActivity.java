@@ -131,11 +131,9 @@ public class MainActivity extends TabActivity {
         	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
         }
         
-        /*XXX:
         if(0 != (tabItems & (1 << tabTrip))) {
         	setupTab(new TextView(this), getString(R.string.Trip), new Intent(this, TripActivity.class), getIntent());
-        }*/
-        
+        }
         
         if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());

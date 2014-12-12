@@ -15,20 +15,30 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/trip_button_back"
-            android:layout_alignParentTop="true"
-            android:layout_width="fill_parent"
-            android:text="@string/Back"
-            android:layout_height="wrap_content"/>
-        
+       <Button
+           android:id="@+id/trip_button_find"
+           android:layout_width="fill_parent"
+           android:text="@string/Hotels"
+           android:layout_height="wrap_content"/>
+	    
 	    <WebView
 		    android:background="#FF000000"
 		    android:id="@+id/trip_mainpage"
             android:layout_alignParentBottom="true"
-		    android:layout_below="@+id/trip_button_back"
+		    android:layout_below="@+id/trip_button_find"
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"/>
-        
+
+	    <ProgressBar
+           android:id="@+id/trip_load_progress"
+           android:layout_width="fill_parent"
+           android:text="@string/Hotels"
+           android:visibility="invisible"
+           android:layout_centerHorizontal="true"
+           android:layout_centerVertical="true"
+           android:layout_height="wrap_content"/>
+    
+
+	    
 </RelativeLayout>
 

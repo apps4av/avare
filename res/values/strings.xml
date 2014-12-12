@@ -379,5 +379,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AvailableMem">Available Memory</string>
     <string name="ScreenSize">Screen Size</string>
     <string name="MapSize">Map Size</string>
+    <string name="Hotels">Hotels</string>
+    <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
     
 </resources>
