@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -373,5 +374,35 @@ public class NetworkHelper {
         }
         return ret;
     }
+
     
+    /**
+     * Find a range for the FAA cycle
+     * @return
+     */
+    public static String getVersionRange(String cycleName) {
+        int cycle;
+        try {
+        	cycle = Integer.parseInt(cycleName);
+        	if(cycle < 1400) {
+        		return "";
+        	}
+        }
+        catch (Exception e) {
+        	return "";
+        }
+        int diff = cycle - 1400;
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        String ret = "";
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        epoch.set(2013, 11, 12, 9, 0, 0);
+        epoch.add(Calendar.DAY_OF_MONTH, 28 * diff);
+        ret = "(" + sdf.format(epoch.getTime());
+        epoch.add(Calendar.DAY_OF_MONTH, 28);
+        ret += "-" + sdf.format(epoch.getTime()) + ")";
+        return ret;
+    }
+
 }

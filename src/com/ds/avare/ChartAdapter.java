@@ -19,7 +19,7 @@ import java.io.IOException;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
-
+import com.ds.avare.utils.NetworkHelper;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -447,7 +447,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         TextView textView2 = (TextView)rowView.findViewById(R.id.chart_download_list_state);
         if(mVers[groupPosition][childPosition] != null) {
-            textView2.setText(mVers[groupPosition][childPosition]);
+            textView2.setText(mVers[groupPosition][childPosition] + " " + NetworkHelper.getVersionRange(mVers[groupPosition][childPosition]));
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             
             if(Helper.isExpired(mVers[groupPosition][childPosition])) {
