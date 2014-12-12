@@ -55,7 +55,6 @@ public class TripActivity extends Activity {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private WebAppInterface mInfc;
     private Button mFindButton;
     AlertDialog mAlertDialog;
     private Toast mToast;
@@ -357,8 +356,6 @@ public class TripActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mInfc.connect(mService);
-            
         }
 
         /*
@@ -456,6 +453,5 @@ public class TripActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mInfc.cleanup();
     }
 }
