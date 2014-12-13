@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
@@ -59,6 +60,7 @@ public class TripActivity extends Activity {
     AlertDialog mAlertDialog;
     private Toast mToast;
     private ProgressBar mProgress;
+    private Preferences mPref;
     
 
     /**
@@ -125,6 +127,8 @@ public class TripActivity extends Activity {
         
         mProgress = (ProgressBar)view.findViewById(R.id.trip_load_progress);
         
+        mPref = new Preferences(getApplicationContext());
+        
         mWebView = (WebView)view.findViewById(R.id.trip_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         
@@ -177,8 +181,29 @@ public class TripActivity extends Activity {
                     final View findView = layoutInflater.inflate(R.layout.hotel, null);
            
                     // arrival and departure date obtain from today and tomorrow
-                	EditText from = (EditText)findView.findViewById(R.id.hotel_datefrom_text);
-                	EditText to = (EditText)findView.findViewById(R.id.hotel_dateto_text);
+                	final EditText from = (EditText)findView.findViewById(R.id.hotel_datefrom_text);
+                	final EditText to = (EditText)findView.findViewById(R.id.hotel_dateto_text);
+                	final Spinner price = (Spinner)findView.findViewById(R.id.hotel_price);
+                	final Spinner stars = (Spinner)findView.findViewById(R.id.hotel_stars);
+                	final Spinner distance = (Spinner)findView.findViewById(R.id.hotel_radius);
+                	final Spinner adults = (Spinner)findView.findViewById(R.id.hotel_adults);
+                	final Spinner child1 = (Spinner)findView.findViewById(R.id.hotel_child_1);
+                	final Spinner child2 = (Spinner)findView.findViewById(R.id.hotel_child_2);
+                	final Spinner child3 = (Spinner)findView.findViewById(R.id.hotel_child_3);
+                	final Spinner child4 = (Spinner)findView.findViewById(R.id.hotel_child_4);
+                	final Spinner child5 = (Spinner)findView.findViewById(R.id.hotel_child_5);
+                	/*
+                	 * Others obtain from preferences
+                	 */
+                	price.setSelection(mPref.getHotelMaxPriceIndex());
+                	stars.setSelection(mPref.getHotelMinStarIndex());
+                	distance.setSelection(mPref.getHotelMaxDistanceIndex());
+                	adults.setSelection(mPref.getHotelAdultsIndex());
+                	child1.setSelection(mPref.getHotelChildIndex("1"));
+                	child2.setSelection(mPref.getHotelChildIndex("2"));
+                	child3.setSelection(mPref.getHotelChildIndex("3"));
+                	child4.setSelection(mPref.getHotelChildIndex("4"));
+                	child5.setSelection(mPref.getHotelChildIndex("5"));
 
                 	Calendar now = Calendar.getInstance(); // Current time
                 	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
@@ -191,6 +216,7 @@ public class TripActivity extends Activity {
                     askd.setView(findView);
                     askd.setCancelable(false);
                     mAlertDialog = askd.create();
+                    
                     /*
                      * Cancel last progress
                      */
@@ -207,7 +233,8 @@ public class TripActivity extends Activity {
                         	/*
                         	 * Make a URL from stuff
                         	 */
-                        	String url = makeURL(findView);
+                        	String url = makeURL(from, to, price, stars, distance, 
+                            		adults, child1, child2, child3, child4, child5);
                         	if(url != null) {
                         		/*
                         		 * Show loading progress for page in case internet is slow, it can take time
@@ -255,24 +282,13 @@ public class TripActivity extends Activity {
     /**
      * Make a URL from view
      */
-    private String makeURL(View view) {
-    	
+    private String makeURL(EditText from, EditText to, Spinner price, Spinner stars, Spinner distance, 
+    		Spinner adults, Spinner child1, Spinner child2, Spinner child3, Spinner child4, Spinner child5) {
     	/*
     	 * Get all the user input and make a URL
     	 */
-    	EditText from = (EditText)view.findViewById(R.id.hotel_datefrom_text);
-    	EditText to = (EditText)view.findViewById(R.id.hotel_dateto_text);
     	String fromtext = from.getText().toString();
     	String totext = to.getText().toString();
-    	Spinner price = (Spinner)view.findViewById(R.id.hotel_price);
-    	Spinner stars = (Spinner)view.findViewById(R.id.hotel_stars);
-    	Spinner distance = (Spinner)view.findViewById(R.id.hotel_radius);
-    	Spinner adults = (Spinner)view.findViewById(R.id.hotel_adults);
-    	Spinner child1 = (Spinner)view.findViewById(R.id.hotel_child_1);
-    	Spinner child2 = (Spinner)view.findViewById(R.id.hotel_child_2);
-    	Spinner child3 = (Spinner)view.findViewById(R.id.hotel_child_3);
-    	Spinner child4 = (Spinner)view.findViewById(R.id.hotel_child_4);
-    	Spinner child5 = (Spinner)view.findViewById(R.id.hotel_child_5);
 
     	/*
     	 * Set Dest from other screens
@@ -325,6 +341,20 @@ public class TripActivity extends Activity {
     				+ "arrival=" + fromtext + "&"
     				+ "departure=" + totext +
     				children;
+    		
+    		
+    		/*
+    		 * Save user preferences
+    		 */
+    		mPref.setHotelMaxPriceIndex(price.getSelectedItemPosition());
+    		mPref.setHotelMinStarIndex(stars.getSelectedItemPosition());
+    		mPref.setHotelMaxDistanceIndex(distance.getSelectedItemPosition());
+    		mPref.setHotelAdultsIndex(adults.getSelectedItemPosition());
+    		mPref.setHotelChildIndex("1", child1.getSelectedItemPosition());
+    		mPref.setHotelChildIndex("2", child2.getSelectedItemPosition());
+    		mPref.setHotelChildIndex("3", child3.getSelectedItemPosition());
+    		mPref.setHotelChildIndex("4", child4.getSelectedItemPosition());
+    		mPref.setHotelChildIndex("5", child5.getSelectedItemPosition());
     		return url;
     	}
     	
