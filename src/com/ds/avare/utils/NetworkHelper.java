@@ -319,17 +319,127 @@ public class NetworkHelper {
         }
         return(root + vers + "/" + file);
     }
+
+    /*
+     * 
+     */
+    private static final int getFirstDate(int year) {
+        // Date for first cycle every year in January starting 2014
+    	switch(year) {
+    		case 2014:
+    			return 9;
+    		case 2015:
+    			return 8;
+    		case 2016:
+    			return 7;
+    		case 2017:
+    			return 5;
+    		case 2018:
+    			return 4;
+    		case 2019:
+    			return 3;
+    		case 2020:
+    			return 2;
+    		default:
+    			return 0;
+    	}
+    }
     
+    /**
+     * Find the date in January when first cycle begins 
+     * @param year
+     */
+    private static String getCycle() {
+        /*
+         * US locale as this is a folder name not language translation
+         */
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        int firstdate = getFirstDate(now.get(Calendar.YEAR));
+    	
+    	// cycle's upper two digit are year
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    	int cycle = (now.get(Calendar.YEAR) - 2000) * 100;
+        
+        if(firstdate < 1) {
+        	return "";
+        }
+        
+        // now find cycle on todays date
+        epoch.set(now.get(Calendar.YEAR), Calendar.JANUARY, firstdate, 9, 0, 0);
+
+        while(epoch.before(now)) {
+            epoch.add(Calendar.DAY_OF_MONTH, 28);
+            cycle++;
+        }
+
+        return "" + cycle;
+    }
+    
+    /**
+     * 
+     * @param date
+     * @return
+     */
+    public static boolean isExpired(String date) {        
+        
+        if(null == date) {
+            return true;
+        }
+        
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        GregorianCalendar expires = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+
+        if(date.contains("_")) {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int min;
+            /*
+             * TFR date
+             */
+            String dates[] = date.split("_");
+            if(dates.length < 4) {
+                return true;            
+            }
+
+            month = Integer.parseInt(dates[0]) - 1;
+            day = Integer.parseInt(dates[1]);
+            year = Integer.parseInt(dates[2]);
+
+            String time[] = dates[3].split(":");
+            hour = Integer.parseInt(time[0]);
+            min = Integer.parseInt(time[1]);
+            if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
+                return true;
+            }
+            /*
+             * so many min expiry
+             */
+            expires.set(year, month, day, hour, min);
+            expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
+            if(now.after(expires)) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        if(!getCycle().equals(date)) {
+        	return true;
+        }
+        
+        return false;
+    }
+
     /**
      * 
      * @return
      */
     public static String getVersion(String root, String name) {
-        int cycle = 1400;
-        String ret = "";
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        epoch.set(2013, 11, 12, 9, 0, 0);
+        String ret = "";
+
         /*
          * Expires every so many mins
          */
@@ -360,17 +470,7 @@ public class NetworkHelper {
 
             }
 
-
-            while(epoch.before(now)) {
-                epoch.add(Calendar.DAY_OF_MONTH, 28);
-                cycle++;
-            }
-            epoch.add(Calendar.DAY_OF_MONTH, -28);
-            cycle--;
-            /*
-             * US locale as this is a folder name not language translation
-             */
-            ret = "" + cycle;
+            ret = getCycle();
         }
         return ret;
     }
@@ -384,21 +484,25 @@ public class NetworkHelper {
         int cycle;
         try {
         	cycle = Integer.parseInt(cycleName);
-        	if(cycle < 1400) {
-        		return "";
-        	}
         }
         catch (Exception e) {
         	return "";
         }
-        int diff = cycle - 1400;
         
-        SimpleDateFormat sdf = new SimpleDateFormat("MM_dd_yyyy", Locale.US);
+        // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
+        int cycleupper = (int)(cycle / 100);
+        int cyclelower = cycle - (cycleupper * 100);
+        int firstdate = getFirstDate(2000 + cycleupper);
+        if(firstdate < 1) {
+        	return "";
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
         String ret = "";
         GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        epoch.set(2013, 11, 12, 9, 0, 0);
-        epoch.add(Calendar.DAY_OF_MONTH, 28 * diff);
+        epoch.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+        epoch.add(Calendar.DAY_OF_MONTH, 28 * (cyclelower - 1));
         ret = "(" + sdf.format(epoch.getTime());
         epoch.add(Calendar.DAY_OF_MONTH, 28);
         ret += "-" + sdf.format(epoch.getTime()) + ")";

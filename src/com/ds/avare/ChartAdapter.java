@@ -18,7 +18,6 @@ import java.io.IOException;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 
 import android.content.Context;
@@ -372,7 +371,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                 if(mVers[group][child] == null) {
                     continue;
                 }
-                if(Helper.isExpired(mVers[group][child])) {
+                if(NetworkHelper.isExpired(mVers[group][child])) {
                     mChecked[group][child] = STATE_CHECKED;
                 }
             }
@@ -406,7 +405,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                expired |= Helper.isExpired(mVers[group][child]);
+                expired |= NetworkHelper.isExpired(mVers[group][child]);
             }
         }
         if(expired) {
@@ -450,7 +449,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             textView2.setText(mVers[groupPosition][childPosition] + " " + NetworkHelper.getVersionRange(mVers[groupPosition][childPosition]));
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             
-            if(Helper.isExpired(mVers[groupPosition][childPosition])) {
+            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition])) {
                 imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());                    
             }
         }
