@@ -97,8 +97,9 @@ public class PlanActivity extends Activity  implements Observer {
     private ProgressBar mProgressBar;
     
     // Dialogs to get user input on some actions
-    private AlertDialog mDlgLoadOrDelete;
-    private AlertDialog mDlgCreatePlan;
+    private AlertDialog mDialogLoadOrDelete;
+    private AlertDialog mDialogCreatePlan;
+    private AlertDialog mDialogAddPoint;
 
     // For displaying some status messages
     private Toast mToast;
@@ -111,11 +112,15 @@ public class PlanActivity extends Activity  implements Observer {
     // The 3 sliding animation buttons on the left
     private Button mDestButton;
     private Button mDeleteButton;
+    private Button mPlanButton;
     private Button mPlatesButton;
     private AnimateButton mAnimateDest;
     private AnimateButton mAnimateDelete;
     private AnimateButton mAnimatePlates;
+    private AnimateButton mAnimatePlan;
 
+    private int mLocToAdd;
+    
     // A timer object to handle things when we are in sim mode 
     private Timer mTimer;
     
@@ -294,6 +299,8 @@ public class PlanActivity extends Activity  implements Observer {
         // The currently selected waypoint index from the displayed plan
         mIndex = -1;
         
+        mLocToAdd = -1;
+        
         // Top line of the plan detail area
         mPlanDetailSummary = (TextView)view.findViewById(R.id.plan_total_text);    
 
@@ -381,6 +388,53 @@ public class PlanActivity extends Activity  implements Observer {
             }   
         });        
 
+        mPlanButton = (Button)view.findViewById(R.id.plan_button_plan);
+        mPlanButton.getBackground().setAlpha(255);
+        mPlanButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+    
+            	// prompt for what to add to plan
+            	final EditText txt = new EditText(getApplicationContext());
+            	txt.setHint(getString(R.string.AddPlanHelp));
+            	
+            	mDialogAddPoint = new AlertDialog.Builder(PlanActivity.this).create();
+            	mDialogAddPoint.setCanceledOnTouchOutside(false);
+            	mDialogAddPoint.setCancelable(true);
+            	mDialogAddPoint.setTitle(getString(R.string.AddPlan));
+            	mDialogAddPoint.setView(txt);
+                
+                // Get the point
+                mDialogAddPoint.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), 
+                		new DialogInterface.OnClickListener() {
+
+                	// Click will load the plan, then reverse all the waypoints
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                    	planToWithVerify(txt.getText().toString(), mIndex);
+                    	mService.getPlan().makeInactive();
+                    	mIndex = -1;
+                    	dialog.dismiss();
+                    }
+                });
+                
+                // Right button - cancel
+                mDialogAddPoint.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), 
+                		new DialogInterface.OnClickListener() {
+
+                	// Click will try and remove the plan from storage
+                    public void onClick(DialogInterface dialog, int which) {
+                    	dialog.dismiss();
+                    }
+                });
+
+                // Display the dialog to the user for action
+                mDialogAddPoint.show();            	
+            }
+        });
+
+        
         // The plan string text field
         mPlanStringText = (EditText)view.findViewById(R.id.plan_edit_text);
         
@@ -400,19 +454,19 @@ public class PlanActivity extends Activity  implements Observer {
                 final String planString = mPlanStringText.getText().toString().toUpperCase(Locale.getDefault());
                 
                 // Create a dialog box to allow the user to confirm or cancel this operation
-                mDlgCreatePlan = new AlertDialog.Builder(PlanActivity.this).create();
-                mDlgCreatePlan.setCanceledOnTouchOutside(false);
-                mDlgCreatePlan.setCancelable(true);
-                mDlgCreatePlan.setTitle(getString(R.string.Plan));
+                mDialogCreatePlan = new AlertDialog.Builder(PlanActivity.this).create();
+                mDialogCreatePlan.setCanceledOnTouchOutside(false);
+                mDialogCreatePlan.setCancelable(true);
+                mDialogCreatePlan.setTitle(getString(R.string.Plan));
                 String msg = getString(R.string.PlanWarning);
                 if(planString.length() > 0) {
                 	msg += getString(R.string.AndLoad) + " \"" + planString + "\"";
                 }
                 msg += "?";
-                mDlgCreatePlan.setMessage(msg);
+                mDialogCreatePlan.setMessage(msg);
 
                 // OK button. The use wishes to continue the action 
-                mDlgCreatePlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                mDialogCreatePlan.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
                 	// Clicked action.
                     public void onClick(DialogInterface dialog, int which) {
                     	// Display a progress bar
@@ -453,14 +507,14 @@ public class PlanActivity extends Activity  implements Observer {
                 });
                 
                 // User does NOT want to clear current plan and start over
-                mDlgCreatePlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                mDialogCreatePlan.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
                 	// Clicked action.
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
 
                 // Display the dialog for the user to interact with
-                mDlgCreatePlan.show();
+                mDialogCreatePlan.show();
                 
                 // Slide the input keyboard out of the way
                 hideKeyboard();
@@ -659,6 +713,7 @@ public class PlanActivity extends Activity  implements Observer {
         mAnimateDest   = new AnimateButton(getApplicationContext(), mDestButton,   AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateDelete = new AnimateButton(getApplicationContext(), mDeleteButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlan = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
     /**
@@ -852,6 +907,19 @@ public class PlanActivity extends Activity  implements Observer {
     }
 
 	/***
+	 * Search for the indicated destination. Add THIS class as the observer
+	 * to get the search results, then add at specified location.
+	 * @param dst - Destination Identifier
+	 */
+    private void planToWithVerify(String dst, int loc) {
+    	// Create the destination
+    	mLocToAdd = loc;
+        Destination dest = new Destination(dst, "", mPref, mService);
+        dest.addObserver(this);
+        dest.findGuessType();
+    }
+
+	/***
 	 * Read both internal and external plans and place them
 	 * in a single string array.
 	 */
@@ -939,6 +1007,9 @@ public class PlanActivity extends Activity  implements Observer {
                     	mAnimatePlates.stopAndHide();
                     }
 
+                    // Turn on the PLAN Button
+                    mAnimatePlan.animate(true);
+
                     // Done
                     return true;
                 }
@@ -976,13 +1047,13 @@ public class PlanActivity extends Activity  implements Observer {
 
                     // Build a dialog to let the user load/reverse load/delete the selected 
                     // plan
-                    mDlgLoadOrDelete = new AlertDialog.Builder(PlanActivity.this).create();
-                    mDlgLoadOrDelete.setCanceledOnTouchOutside(false);
-                    mDlgLoadOrDelete.setCancelable(true);
-                    mDlgLoadOrDelete.setTitle(getString(R.string.Plan) + ": " + items[0]);
+                    mDialogLoadOrDelete = new AlertDialog.Builder(PlanActivity.this).create();
+                    mDialogLoadOrDelete.setCanceledOnTouchOutside(false);
+                    mDialogLoadOrDelete.setCancelable(true);
+                    mDialogLoadOrDelete.setTitle(getString(R.string.Plan) + ": " + items[0]);
                     
                     // Leftmost button - LOAD
-                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), 
+                    mDialogLoadOrDelete.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Load), 
                     		new DialogInterface.OnClickListener() {
 
                     	// Click action will load the plan
@@ -1009,7 +1080,7 @@ public class PlanActivity extends Activity  implements Observer {
                     });
                     
                     // Middle button - REVERSE LOAD
-                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.LoadReverse), 
+                    mDialogLoadOrDelete.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.LoadReverse), 
                     		new DialogInterface.OnClickListener() {
 
                     	// Click will load the plan, then reverse all the waypoints
@@ -1036,7 +1107,7 @@ public class PlanActivity extends Activity  implements Observer {
                     });
                     
                     // Right button - DELETE the plan
-                    mDlgLoadOrDelete.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), 
+                    mDialogLoadOrDelete.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Delete), 
                     		new DialogInterface.OnClickListener() {
 
                     	// Click will try and remove the plan from storage
@@ -1051,7 +1122,7 @@ public class PlanActivity extends Activity  implements Observer {
                     });
 
                     // Display the dialog to the user for action
-                    mDlgLoadOrDelete.show();
+                    mDialogLoadOrDelete.show();
 
                     // All done, time to leave
                     return true;
@@ -1087,18 +1158,27 @@ public class PlanActivity extends Activity  implements Observer {
         }
 
         // If we are in the middle of a LOAD/DELETE action, then dismiss it
-        if(null != mDlgLoadOrDelete) {
+        if(null != mDialogLoadOrDelete) {
             try {
-                mDlgLoadOrDelete.dismiss();
+                mDialogLoadOrDelete.dismiss();
             }
             catch (Exception e) {
             }
         }
 
         // Are we prompting to load the plan whose name was typed in ?
-        if(null != mDlgCreatePlan) {
+        if(null != mDialogCreatePlan) {
             try {
-                mDlgCreatePlan.dismiss();
+                mDialogCreatePlan.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        
+        if(null != mDialogAddPoint) {
+            try {
+                mDialogAddPoint.dismiss();
             }
             catch (Exception e) {
             }
@@ -1159,6 +1239,29 @@ public class PlanActivity extends Activity  implements Observer {
             return;
         }
 
+        // This is an add at a specified location
+        if(mLocToAdd > -1) {
+        	
+        	if(dest.isFound()) {
+	        	// first add at end then move into location
+	            mService.getPlan().appendDestination(dest);
+	            mService.getPlan().move(mService.getPlan().getDestinationNumber() - 1, mLocToAdd + 1);
+	        	mLocToAdd = -1;
+	            // Set the plan detail information according to the plan
+	            // we just parsed
+	            preparePlanDetailAdapter();
+	            mPlanDetail.setAdapter(mPlanDetailAdapter);
+        	}
+        	else {
+        		mToast.setText(getString(R.string.PlanDestinationNF));
+        		mToast.show();
+        	}
+	
+	        // Turn off the progress bar
+	        mProgressBar.setVisibility(View.INVISIBLE);
+        	return;
+        }
+        
         // Do we have a collection of waypoints we are searching for ?
         if(null == mSearchWaypoints) {
             return;

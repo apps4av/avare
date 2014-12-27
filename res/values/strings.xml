@@ -124,7 +124,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
-    <string name="PlanPrompt">&quot;Enter waypoints of plan&quot;</string>
+    <string name="PlanPrompt">&quot;Enter waypoints of plan e.g. KLAX KSBA GVO&quot;</string>
     <string name="StoredPlans">&quot;Stored Plans&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
@@ -381,5 +381,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="MapSize">Map Size</string>
     <string name="Hotels">Hotels</string>
     <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
+    <string name="AddPlan">Add To Plan</string>
+    <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
     
 </resources>
