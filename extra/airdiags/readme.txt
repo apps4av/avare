@@ -20,6 +20,9 @@ Live Taxi coordinates determination.
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
+gmcs /reference:System.Drawing.dll ReadArptDgmPng.cs
+mono ReadArptDgmPng.exe
+
      1) Read png file into bitmap so we have an array of pixels.
      2) Make a monochromatic (strict black-and-white) version of the bitmap.
         Any pixel with a>200, r<100, g<100 and b<100 is considered black.
