@@ -509,4 +509,50 @@ public class NetworkHelper {
         return ret;
     }
 
+    
+    /**
+     * Find cycle + or - offset
+     * @param date
+     * @return
+     */
+    public static String findCycleOffset(String cycleName, int offset) {        
+        
+        int cycle;
+        try {
+        	cycle = Integer.parseInt(cycleName);
+        }
+        catch (Exception e) {
+        	return "";
+        }
+        
+        // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
+        int cycleupper = (int)(cycle / 100);
+        int cyclelower = cycle - (cycleupper * 100);
+        int firstdate = getFirstDate(2000 + cycleupper);
+        if(firstdate < 1) {
+        	return "";
+        }
+        
+        // find cycle time with offset
+        GregorianCalendar then = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        then.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+        then.add(Calendar.DAY_OF_MONTH, 28 * (cyclelower - 1 + offset));
+        
+        // find upper two digits of cycle.
+    	cycleupper = (then.get(Calendar.YEAR) - 2000);
+    	
+    	// find cyclelower
+    	firstdate = getFirstDate(2000 + cycleupper);
+        GregorianCalendar first = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        first.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+
+        cycle = cycleupper * 100 + 1;
+        while(first.before(then)) {
+            first.add(Calendar.DAY_OF_MONTH, 28);
+            cycle++;
+        }
+
+        return "" + cycle;
+    }
+
 }
