@@ -522,7 +522,7 @@ public class NetworkHelper {
         	cycle = Integer.parseInt(cycleName);
         }
         catch (Exception e) {
-        	return "";
+        	return cycleName;
         }
         
         // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
@@ -530,7 +530,7 @@ public class NetworkHelper {
         int cyclelower = cycle - (cycleupper * 100);
         int firstdate = getFirstDate(2000 + cycleupper);
         if(firstdate < 1) {
-        	return "";
+        	return cycleName;
         }
         
         // find cycle time with offset
