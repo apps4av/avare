@@ -354,18 +354,27 @@ public class NetworkHelper {
          * US locale as this is a folder name not language translation
          */
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        int firstdate = getFirstDate(now.get(Calendar.YEAR));
+        int year = now.get(Calendar.YEAR);
+        int firstdate = getFirstDate(year);
+        GregorianCalendar now2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        now2.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
+        if (now2.after(now)) {
+        	/*
+        	 * Lets handle the case when year has just turned
+        	 */
+        	year--;
+        }
     	
     	// cycle's upper two digit are year
         GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-    	int cycle = (now.get(Calendar.YEAR) - 2000) * 100;
+    	int cycle = (year - 2000) * 100;
         
         if(firstdate < 1) {
         	return "";
         }
         
         // now find cycle on todays date
-        epoch.set(now.get(Calendar.YEAR), Calendar.JANUARY, firstdate, 9, 0, 0);
+        epoch.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
 
         while(epoch.before(now)) {
             epoch.add(Calendar.DAY_OF_MONTH, 28);
