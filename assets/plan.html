@@ -1,0 +1,395 @@
+<html>
+<!--
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan 
+-->
+
+<head>
+
+<style>
+
+body {
+	width: 800px;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+p {
+	width: 800px;
+	border: solid green;
+	border-radius: 1em;
+}
+
+table { 
+	color: #333; /* Lighten up font color */
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	border-collapse: collapse; 
+	border-spacing: 0; 
+}
+ 
+button {
+	width: 100px;
+} 
+ 
+td, th { 
+	border: 1px solid #CCC;
+	height: 30px; 
+	width: 100px;
+	padding: 5px;
+} /* Make cells a bit taller */
+ 
+th {
+	background: #F3F3F3; /* Light grey background */
+	font-weight: bold; /* Make sure they're bold */
+}
+ 
+td {
+	background: #FAFAFA; /* Lighter grey background */
+	text-align: left; /* Left our text */
+}
+
+</style>
+
+<script type="text/javascript" >
+
+var CELL_DELETE = 0;
+var CELL_WP = 1;
+var CELL_TYPE = 2;
+var CELL_NEXT = 3;
+var CELL_DISTANCE = 4;
+var CELL_TIME = 5;
+var CELL_ACTION = 6;
+var CELL_LAST = 7;
+
+var CELL_SEARCH_WP = 0;
+var CELL_SEARCH_NAME = 1;
+var CELL_SEARCH_TYPE = 2;
+var CELL_SEARCH_ACTION = 3;
+var CELL_SEARCH_LAST = 4;
+
+var CELL_SAVE_DELETE = 0;
+var CELL_SAVE_NAME = 1;
+var CELL_SAVE_ACTION = 2;
+var CELL_SAVE_LAST = 3;
+
+var plan_index = 1;
+
+// Get plan index
+function get_plan_index() {
+	return plan_index;
+}
+
+// Get plan active
+function is_plan_active() {
+	return (document.getElementById("plan_activate_button").innerHTML == "Deactivate");
+}
+
+// Advance a plan progress
+function advance_plan() {
+	var plan_table = document.getElementById("plan_table");
+	if(plan_index < (plan_table.rows.length - 1)) {
+		// move the check mark to the next point if that point is not the last
+		plan_table.rows[plan_index].cells[CELL_NEXT].innerHTML = "";
+		plan_index++;
+		plan_table.rows[plan_index].cells[CELL_NEXT].innerHTML = "X";
+	}
+}
+
+// Regress a plan progress
+function regress_plan() {
+	var plan_table = document.getElementById("plan_table");
+	if(plan_index > 1) {
+		// move the check mark to last if we have 2 points at least
+		plan_table.rows[plan_index].cells[CELL_NEXT].innerHTML = "";
+		plan_index--;
+		plan_table.rows[plan_index].cells[CELL_NEXT].innerHTML = "X";
+	}
+}
+
+// load the plan
+function save_load(row) {
+}
+
+// load the plan reverse
+function save_load_reverse(row) {
+}
+
+// delete the plan
+function save_delete(row) {
+	var plan_save = document.getElementById("save_table");
+	if(plan_save.rows.length > 1) {
+		plan_save.deleteRow(row);
+	}
+	
+	set_buttons_save();
+}
+
+// add the current plan to saved list
+function save_plan_add() {
+	var plan_table = document.getElementById("plan_table");
+	var plan_save = document.getElementById("save_table");
+	var name = document.getElementById("save_name").value;
+
+	if(name == "") {
+		return 
+	}	
+	var row = plan_save.insertRow(-1);
+
+	var cell = [];
+	
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
+	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
+	cell[CELL_SAVE_ACTION] = row.insertCell(CELL_SAVE_ACTION);
+
+	cell[CELL_SAVE_NAME].innerHTML = name;
+
+	// set up buttons for plan delete
+	set_buttons_save();
+}
+
+
+// Sets buttons on each row
+function set_buttons_save() {
+
+	// Set buttons for each entry in plan
+	var plan_save = document.getElementById("save_table");
+	for(var i = 1; i < plan_save.rows.length; i++) {
+		plan_save.rows[i].cells[CELL_SAVE_ACTION].innerHTML = 
+		"<button onclick='save_load_reverse(" + i.toString() + ")'>Load Reverse</button>" +
+		"<button onclick='save_load(" + i.toString() + ")'>Load Saved</button>";
+		plan_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML = 
+			"<button onclick='save_delete(" + i.toString() + ")'>Delete</button>";
+	}
+	
+		// clear save input
+	document.getElementById("save_name").value = "";
+
+}
+
+
+// add a way point to the plan
+function plan_add(id, type) {
+	var plan_table = document.getElementById("plan_table");
+	var search_table = document.getElementById("search_table");
+
+	// clear the search table
+	for(var row = search_table.rows.length - 1; row >= 1; row--) {
+			search_table.deleteRow(row);
+	}
+
+	var row = plan_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_DELETE] = row.insertCell(CELL_DELETE);
+	cell[CELL_WP] = row.insertCell(CELL_WP);
+	cell[CELL_TYPE] = row.insertCell(CELL_TYPE);
+	cell[CELL_NEXT] = row.insertCell(CELL_NEXT);
+	cell[CELL_DISTANCE] = row.insertCell(CELL_DISTANCE);
+	cell[CELL_TIME] = row.insertCell(CELL_TIME);
+	cell[CELL_ACTION] = row.insertCell(CELL_ACTION);
+
+	cell[CELL_WP].innerHTML = id;
+	cell[CELL_TYPE].innerHTML = type;
+	cell[CELL_NEXT].innerHTML = "";	
+	cell[CELL_DISTANCE].innerHTML = "";
+	cell[CELL_TIME].innerHTML = "";	
+
+	set_buttons();
+}
+
+// Sets buttons on each row
+function set_buttons() {
+
+	// Set buttons for each entry in plan
+	var plan_table = document.getElementById("plan_table");
+	for(var i = 1; i < plan_table.rows.length; i++) {
+		plan_table.rows[i].cells[CELL_ACTION].innerHTML = 
+			"<button onclick='plan_moveup(" + i.toString() + ")'>Up</button><br>" +
+			"<button onclick='plan_movedn(" + i.toString() + ")'>Dn</button>";
+		plan_table.rows[i].cells[CELL_DELETE].innerHTML = 
+			"<button onclick='plan_delete(" + i.toString() + ")'>Delete</button>";
+		plan_table.rows[i].cells[CELL_NEXT].innerHTML = "";
+	}
+
+	// Reset the index of progress
+	plan_index = 1;
+	plan_table.rows[plan_index].cells[CELL_NEXT].innerHTML = "X";
+
+	// inactivate plan
+	document.getElementById("plan_activate_button").innerHTML = "Activate";
+
+	// clear search input
+	document.getElementById("search_input").value = "";
+
+	document.getElementById("test").innerHTML = plan_get_wp();
+}
+
+// Activate Plan
+function plan_toggle() {
+	if(document.getElementById("plan_activate_button").innerHTML == "Deactivate") {
+		document.getElementById("plan_activate_button").innerHTML = "Activate";
+	}
+	else {
+		document.getElementById("plan_activate_button").innerHTML = "Deactivate";
+	}
+}
+
+// Delete a waypoint in Plan
+function plan_delete(row) {
+	var plan_table = document.getElementById("plan_table");
+	if(plan_table.rows.length > 1) {
+		plan_table.deleteRow(row);
+	}
+
+	set_buttons();
+}
+
+// To get all waypoints in a Plan with comma separated values
+function plan_get_wp() {
+	var plan_table = document.getElementById("plan_table");
+	var wp = "";	
+	for(var i = 1; i < plan_table.rows.length; i++) {
+		// ID:Type format
+		wp += plan_table.rows[i].cells[CELL_WP].innerHTML + ":" + plan_table.rows[i].cells[CELL_TYPE].innerHTML + ",";
+	}
+	return wp;
+}
+
+// Move up in the list a waypoint
+function plan_moveup(row) {
+	var plan_table = document.getElementById("plan_table");
+	var thisrow = plan_table.rows[row];
+	var prevrow = plan_table.rows[row - 1];
+	var ihm;
+	// cannot move a single waypoint
+	if(row < 2) {
+		return;
+	}
+	// Move except buttons
+	for(var i = 0; i < plan_table.rows[row].cells.length; i++) {
+		ihm = prevrow.cells[i].innerHTML; 
+		prevrow.cells[i].innerHTML = thisrow.cells[i].innerHTML;
+		thisrow.cells[i].innerHTML = ihm;
+	}	
+
+	set_buttons();	
+}
+
+// Move down in the list a waypoint
+function plan_movedn(row) {
+	var plan_table = document.getElementById("plan_table");
+	var thisrow = plan_table.rows[row];
+	var nextrow = plan_table.rows[row + 1];
+	var ihm;
+	// Cannot move down if this is last
+	if(row > (plan_table.rows.length - 1)) {
+		return;
+	}
+	// Move except buttons
+	for(var i = 0; i < plan_table.rows[row].cells.length; i++) {
+		ihm = nextrow.cells[i].innerHTML; 
+		nextrow.cells[i].innerHTML = thisrow.cells[i].innerHTML;
+		thisrow.cells[i].innerHTML = ihm;
+	}
+	
+	set_buttons();	
+
+}
+
+// This function can change a row's cell value in a plan
+function plan_change_row(row, cell, value) {
+	var plan_table = document.getElementById("plan_table");
+	row++;
+	if(row < 0 || row >= plan_table.rows.length) {
+		return; 
+	}
+	plan_table.rows[row].cells[cell].innerHTML = value;
+}
+
+// Search a waypoint specified
+function search_waypoint() {
+
+	// search from input
+	var id = document.getElementById("search_input").value;
+	var search_table = document.getElementById("search_table");
+
+	if(id == "") {
+		return;
+	}
+
+	// clear the table
+	for(var row = search_table.rows.length - 1; row >= 1; row--) {
+			search_table.deleteRow(row);
+	}
+
+	// search
+	search_add(id, "VOR", Math.random().toString());
+	search_add(id, "Base", Math.random().toString());
+	
+}
+
+// Add the result of a search to search table
+function search_add(id, name, type) {
+
+	var search_table = document.getElementById("search_table");
+	
+	var row = search_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SEARCH_WP] = row.insertCell(CELL_SEARCH_WP);
+	cell[CELL_SEARCH_NAME] = row.insertCell(CELL_SEARCH_NAME);
+	cell[CELL_SEARCH_TYPE] = row.insertCell(CELL_SEARCH_TYPE);
+	cell[CELL_SEARCH_ACTION] = row.insertCell(CELL_SEARCH_ACTION);
+
+	cell[CELL_SEARCH_WP].innerHTML = id;
+	cell[CELL_SEARCH_NAME].innerHTML = name;
+	cell[CELL_SEARCH_TYPE].innerHTML = type;	
+	// this button will add to plan a particular result from search
+	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add(" + "\"" + id + "\",\"" + type + "\")'>Add</button>";
+}
+
+
+</script>
+
+</head>
+
+
+<body>
+	<p>
+		<h2>Plan</h2>
+		<button onclick="regress_plan()">Previous</button>
+		<button onclick="advance_plan()">Next</button>
+		<br></br>
+		<table id="plan_table" border="1"><th>Delete</th><th>Waypoint</th><th>Type</th><th>Next</th><th>Distance</th><th>Time</th><th>Action</th></table>
+		<br>
+		<button id="plan_activate_button" onclick="plan_toggle()">Activate</button>
+		<br></br>
+		<input id="save_name" placeholder="Name"/></input><button onclick="save_plan_add()">Save</button>
+	</p>
+	<p>
+		<h2>Waypoint</h2>
+		<input id="search_input" placeholder="BOS"></input>
+		<button onclick="search_waypoint()">Search</button>
+		<br></br>
+		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Action</th></table>
+	</p>
+	<p>
+		<h2>Manage</h2>
+		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Action</th></table>
+	</p>
+	<div id="test"></div>
+</body>
+</html>

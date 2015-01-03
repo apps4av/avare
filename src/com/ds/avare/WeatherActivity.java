@@ -15,7 +15,6 @@ package com.ds.avare;
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.weather.ContentGenerator;
 
 import android.location.GpsStatus;
 import android.location.Location;
@@ -128,7 +127,7 @@ public class WeatherActivity extends Activity {
         mInfc = new WebAppInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
         if(mIsPageLoaded == false) {
-            mWebView.loadData(ContentGenerator.makeContentImage(mContext, mService), "text/html", null);
+            mWebView.loadUrl("file:///android_asset/weather.html");
         }
         mIsPageLoaded = true;
 
