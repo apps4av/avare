@@ -138,7 +138,7 @@ public class WebAppInterface {
                     String outm[] = out.split("::::");
                     for(int i = 0; i < outm.length; i++) {
                         outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
-                        Pirep += "<font size='5' color='black'>" + outm[i] + "<br></br>";
+                        Pirep += "<font size='5' color='white'>" + outm[i] + "<br></br>";
                     }
                 }
                 catch(Exception e) {
@@ -155,8 +155,8 @@ public class WebAppInterface {
                         String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
                         String vals[] = taf.split(" ");
                         taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
-                        Taf += "<b><font size='5' color='black'>" + vals[0] + "</b><br>";
-                        Taf += "<font size='5' color='black'>" + taf + "<br></br>";
+                        Taf += "<b><font size='5' color='white'>" + vals[0] + "</b><br>";
+                        Taf += "<font size='5' color='white'>" + taf + "<br></br>";
                     }
                 }
                 catch(Exception e) {
@@ -194,15 +194,15 @@ public class WebAppInterface {
                     }
                 }
                 
-                plan = "<font size='5' color='black'>" + plan + "</font><br></br>";
+                plan = "<font size='5' color='white'>" + plan + "</font><br></br>";
                 plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
-                Metar = "<font size='6' color='black'>METARs</font><br></br>" + Metar; 
+                Metar = "<font size='6' color='white'>METARs</font><br></br>" + Metar; 
                 Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
-                Taf = "<font size='6' color='black'>TAFs</font><br></br>" + Taf; 
+                Taf = "<font size='6' color='white'>TAFs</font><br></br>" + Taf; 
                 Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
-                Pirep = "<font size='6' color='black'>PIREPs</font><br></br>" + Pirep; 
+                Pirep = "<font size='6' color='white'>PIREPs</font><br></br>" + Pirep; 
                 Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-                nam = "<font size='6' color='black'>Forecast</font><br></br>" +  
+                nam = "<font size='6' color='white'>Forecast</font><br></br>" +  
                         WeatherHelper.getNamMosLegend() + nam;
                 nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
 
