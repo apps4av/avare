@@ -132,75 +132,6 @@ public class WebAppPlanInterface implements Observer {
     }
 
     /**
-     * @author zkhan
-     *
-     */
-    private class SearchTask extends AsyncTask<Object, Void, Boolean> {
-
-        private String[] selection;
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Object... vals) {
-            
-            Thread.currentThread().setName("Search");
-
-            String srch = ((String)vals[0]).toUpperCase(Locale.US);
-            if(null == mService) {
-                return false;
-            }
-
-            LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            synchronized (SearchActivity.class) {
-                /*
-                 * Search from database. Make this a simple search
-                 */
-                mService.getDBResource().search(srch, params, true);
-                if(params.size() > 0) {
-                    selection = new String[params.size()];
-                    int iterator = 0;
-                    for(String key : params.keySet()){
-                        selection[iterator] = StringPreference.getHashedName(params.get(key), key);
-                        iterator++;
-                    }
-                }
-            }
-            return true;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-            /*
-             * Set new search adapter
-             */
-
-            if(null == selection) {
-                return;
-            }
-            
-            /*
-             * Add each to the plan search
-             */
-            for (int num = 0; num < selection.length; num++) {
-            	String val = selection[num];
-            	
-	            String id = StringPreference.parseHashedNameId(val);
-	            String name = StringPreference.parseHashedNameFacilityName(val);
-	            String type = StringPreference.parseHashedNameDestType(val);
-	            String dbtype = StringPreference.parseHashedNameDbType(val);
-
-	        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + id + "','" + name + "','" + type + "','" + dbtype + "'"));
-	        	mHandler.sendMessage(m);
-            }
-        }
-    }
-
-    /**
      * Update the passed point on the Plan page
      * @param passed
      */
@@ -208,67 +139,6 @@ public class WebAppPlanInterface implements Observer {
         mHandler.sendEmptyMessage(MSG_UPDATE_PLAN);
     }
     
-    /**
-     * This leak warning is not an issue if we do not post delayed messages, which is true here.
-     * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
-     */
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Plan plan = mService.getPlan();
-        	if(MSG_UPDATE_PLAN == msg.what) {
-                /*
-                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
-                 * things might have changed.
-                 */
-            	int passed = plan.findNextNotPassed();
-            	for(int num = 0; num < plan.getDestinationNumber(); num++) {
-            		String url = "javascript:set_plan_line(" + 
-            				num + "," +
-            				(passed == num ? 1 : 0) + ",'" +
-            				Math.round(plan.getDestination(num).getBearing()) + "','" + 
-            				Math.round(plan.getDestination(num).getDistance()) + "','" +
-            				plan.getDestination(num).getEte() +
-            				"')";
-            		mWebView.loadUrl(url);
-            	}
-            	
-            	// Set destination next
-        		if(plan.getDestination(plan.findNextNotPassed()) != null) {
-        			mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
-        		}
-        		// Then change state of activate button
-            	mWebView.loadUrl("javascript:set_active(" + plan.isActive() + ")");
-            	mWebView.loadUrl("javascript:plan_set_total('" + mContext.getString(R.string.Total) + " " + plan.toString() + "')");
-            	if(null != plan.getName()) {
-            		mWebView.loadUrl("javascript:plan_setname('" + plan.getName() + "')");
-            	}
-        	}
-        	else if(MSG_CLEAR_PLAN == msg.what) {
-        		mWebView.loadUrl("javascript:plan_clear()");
-        	}
-        	else if(MSG_ADD_PLAN == msg.what) {
-            	String func = "javascript:plan_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
-        	else if(MSG_ADD_SEARCH == msg.what) {
-            	String func = "javascript:search_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
-        	else if (MSG_TIMER == msg.what) {
-        		plan.simulate();
-        	}
-        	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
-            	String func = "javascript:save_clear()";
-            	mWebView.loadUrl(func);
-        	}
-        	else if(MSG_ADD_PLAN_SAVE == msg.what) {
-            	String func = "javascript:save_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
-        }
-    };
-
     /**
      * New dest
      * @param arg0
@@ -301,6 +171,7 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void discardPlan() {
     	mService.newPlan();
+    	mService.getPlan().setName("");
     	newPlan();
     	updatePlan();
     }
@@ -429,6 +300,14 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void search(String value) {
+        
+    	/*
+         * If text is 0 length or too long, then do not search, show last list
+         */
+        if(0 == value.length()) {
+            return;
+        }
+        
         if(null != mSearchTask) {
             if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
                 /*
@@ -438,14 +317,139 @@ public class WebAppPlanInterface implements Observer {
             }
         }
         
-        /*
-         * If text is 0 length or too long, then do not search, show last list
-         */
-        if(0 == value.length()) {
-            return;
-        }
-        
         mSearchTask = new SearchTask();
         mSearchTask.execute(value.toString());
     }
+
+    /**
+     * @author zkhan
+     *
+     */
+    private class SearchTask extends AsyncTask<Object, Void, Boolean> {
+
+        private String[] selection;
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Boolean doInBackground(Object... vals) {
+            
+            Thread.currentThread().setName("Search");
+
+            String srch = ((String)vals[0]).toUpperCase(Locale.US);
+            if(null == mService) {
+                return false;
+            }
+
+            LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+            synchronized (SearchActivity.class) {
+                /*
+                 * Search from database. Make this a simple search
+                 */
+                mService.getDBResource().search(srch, params, true);
+                if(params.size() > 0) {
+                    selection = new String[params.size()];
+                    int iterator = 0;
+                    for(String key : params.keySet()){
+                        selection[iterator] = StringPreference.getHashedName(params.get(key), key);
+                        iterator++;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            /*
+             * Set new search adapter
+             */
+
+            if(null == selection) {
+                return;
+            }
+            
+            /*
+             * Add each to the plan search
+             */
+            for (int num = 0; num < selection.length; num++) {
+            	String val = selection[num];
+            	
+	            String id = StringPreference.parseHashedNameId(val);
+	            String name = StringPreference.parseHashedNameFacilityName(val);
+	            String type = StringPreference.parseHashedNameDestType(val);
+	            String dbtype = StringPreference.parseHashedNameDbType(val);
+
+	        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + id + "','" + name + "','" + type + "','" + dbtype + "'"));
+	        	mHandler.sendMessage(m);
+            }
+        }
+    }
+
+
+    /**
+     * This leak warning is not an issue if we do not post delayed messages, which is true here.
+     * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Plan plan = mService.getPlan();
+        	if(MSG_UPDATE_PLAN == msg.what) {
+                /*
+                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
+                 * things might have changed.
+                 */
+            	int passed = plan.findNextNotPassed();
+            	for(int num = 0; num < plan.getDestinationNumber(); num++) {
+            		String url = "javascript:set_plan_line(" + 
+            				num + "," +
+            				(passed == num ? 1 : 0) + ",'" +
+            				Math.round(plan.getDestination(num).getBearing()) + "','" + 
+            				Math.round(plan.getDestination(num).getDistance()) + "','" +
+            				plan.getDestination(num).getEte() +
+            				"')";
+            		mWebView.loadUrl(url);
+            	}
+            	
+            	// Set destination next
+        		if(plan.getDestination(plan.findNextNotPassed()) != null) {
+        			mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
+        		}
+        		// Then change state of activate button
+            	mWebView.loadUrl("javascript:set_active(" + plan.isActive() + ")");
+            	mWebView.loadUrl("javascript:plan_set_total('" + mContext.getString(R.string.Total) + " " + plan.toString() + "')");
+            	if(null != plan.getName()) {
+            		mWebView.loadUrl("javascript:plan_setname('" + plan.getName() + "')");
+            	}
+        	}
+        	else if(MSG_CLEAR_PLAN == msg.what) {
+        		mWebView.loadUrl("javascript:plan_clear()");
+        	}
+        	else if(MSG_ADD_PLAN == msg.what) {
+            	String func = "javascript:plan_add(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_ADD_SEARCH == msg.what) {
+            	String func = "javascript:search_add(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+        	else if (MSG_TIMER == msg.what) {
+        		plan.simulate();
+        	}
+        	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
+            	String func = "javascript:save_clear()";
+            	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_ADD_PLAN_SAVE == msg.what) {
+            	String func = "javascript:save_add(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+        }
+    };
+
 }
