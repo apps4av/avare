@@ -35,6 +35,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -60,8 +62,12 @@ public class TripActivity extends Activity {
     AlertDialog mAlertDialog;
     private Toast mToast;
     private ProgressBar mProgress;
+    private ProgressBar mProgressBar;
     private Preferences mPref;
-    
+    private EditText mSearchText;
+    private Button mNextButton;
+    private Button mLastButton;
+
 
     /**
      * Service that keeps state even when activity is dead
@@ -127,6 +133,11 @@ public class TripActivity extends Activity {
         
         mProgress = (ProgressBar)view.findViewById(R.id.trip_load_progress);
         
+        /*
+         * Progress bar for search
+         */
+        mProgressBar = (ProgressBar)(view.findViewById(R.id.trip_progress_bar));
+
         mPref = new Preferences(getApplicationContext());
         
         mWebView = (WebView)view.findViewById(R.id.trip_mainpage);
@@ -260,6 +271,56 @@ public class TripActivity extends Activity {
             
         });
 
+        /*
+         * For searching, start search on every new key press
+         */
+        mSearchText = (EditText)view.findViewById(R.id.trip_edit_text);
+        mSearchText.addTextChangedListener(new TextWatcher() { 
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+    
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+    
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int after) {
+                
+                /*
+                 * If text is 0 length or too long, then do not search, show last list
+                 */
+                if(s.length() < 3) {
+                    mWebView.clearMatches();
+                    return;
+                }
+
+                mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                mWebView.findAll(s.toString());
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+            }
+        });
+
+        mNextButton = (Button)view.findViewById(R.id.trip_button_next);
+        mNextButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(true);
+            }
+            
+        });
+
+        mLastButton = (Button)view.findViewById(R.id.trip_button_last);
+        mLastButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.findNext(false);
+            }
+            
+        });
 
         mService = null;
     }
