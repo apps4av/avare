@@ -675,7 +675,7 @@ public class DataBaseHelper  {
         String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
         if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
 
-            String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+            String qry = "select * from " + TABLE_NAV + " where (" + LOCATION_ID_DB + "=='" + chopname + "') and (Type != 'VOT');";
             cursor = doQuery(qry, getMainDb());
             
             try {
