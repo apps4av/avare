@@ -308,6 +308,27 @@ public class WebAppPlanInterface implements Observer {
             return;
         }
         
+        /*
+         * This is a geo coordinate with &?
+         */
+        if(value.contains("&")) {
+        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + value + 
+        			"','" + Destination.GPS + "','" 
+        			+ Destination.GPS + "','" + Destination.GPS + "'"));
+        	mHandler.sendMessage(m);
+            return;
+        }
+        // This is address search?
+        else if(value.startsWith("address,")) {
+            String addr = value.substring(8); // 8 = length of "address,"
+            if(addr.length() > 1) {
+            	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + addr + 
+            			"','" + Destination.MAPS + "','" 
+            			+ Destination.MAPS + "','" + Destination.MAPS + "'"));
+            	mHandler.sendMessage(m);            	
+            }
+            return;
+        }
         if(null != mSearchTask) {
             if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
                 /*
