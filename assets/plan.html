@@ -77,6 +77,15 @@ var CELL_BEARING = 5;
 var CELL_ACTION = 6;
 var CELL_LAST = 7;
 
+
+// set plan name
+function plan_setname(name) {
+	var plan = document.getElementById("plan_name");
+
+	plan.innerHTML = "Plan" + "[" + name + "]";
+}
+
+
 // Set plan line
 function set_plan_line(row, next, bearing, distance, time) {
 	// rows here are 1 indexed
@@ -201,10 +210,20 @@ function plan_clear() {
 	}
 }
 
+// remove the entire plan
+function plan_discard() {
+	// calll Android
+	var r = confirm("Discard?");
+	if(r == true) {
+		Android.discardPlan();
+	}
+}
+
 var CELL_SAVE_DELETE = 0;
 var CELL_SAVE_NAME = 1;
-var CELL_SAVE_ACTION = 2;
-var CELL_SAVE_LAST = 3;
+var CELL_SAVE_LOAD = 2;
+var CELL_SAVE_LOAD_REV = 3;
+var CELL_SAVE_LAST = 4;
 
 // load the plan
 function save_load(row) {
@@ -220,6 +239,10 @@ function save_load_reverse(row) {
 
 // delete the plan
 function save_delete(row) {
+	var r = confirm("Delete?");
+	if(r == false) {
+		return;	
+	}
 	var plan_save = document.getElementById("save_table");
 	Android.saveDelete(plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
 }
@@ -243,15 +266,34 @@ function save_clear() {
 	}
 }
 
+// Plan table can be long. Hide it when asked or toggle it to show/hide
+function save_hide(toggle) {
+	var plan_save = document.getElementById("save_table");
+	for(var row = plan_save.rows.length - 1; row >= 1; row--) {
+			if(toggle) {
+				if(plan_save.rows[row].style.display == "none") {
+					plan_save.rows[row].style.display = "";			
+				}
+				else {
+					plan_save.rows[row].style.display = "none";
+				}
+			}
+			else {
+					plan_save.rows[row].style.display = "none";
+			}
+	}
+}
+
 // Sets buttons on each row
 function set_buttons_save() {
 
 	// Set buttons for each entry in plan
 	var plan_save = document.getElementById("save_table");
 	for(var i = 1; i < plan_save.rows.length; i++) {
-		plan_save.rows[i].cells[CELL_SAVE_ACTION].innerHTML = 
-		"<button onclick='save_load_reverse(" + i.toString() + ")'>Load Reverse</button>" +
-		"<button onclick='save_load(" + i.toString() + ")'>Load Saved</button>";
+		plan_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML = 
+			"<button onclick='save_load(" + i.toString() + ")'>Load</button>";
+		plan_save.rows[i].cells[CELL_SAVE_LOAD_REV].innerHTML = 
+			"<button onclick='save_load_reverse(" + i.toString() + ")'>Load Rev.</button>";
 		plan_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML = 
 			"<button onclick='save_delete(" + i.toString() + ")'>Delete</button>";
 	}
@@ -271,11 +313,14 @@ function save_add(name) {
 	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
 	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
 	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
-	cell[CELL_SAVE_ACTION] = row.insertCell(CELL_SAVE_ACTION);
+	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
+	cell[CELL_SAVE_LOAD_REV] = row.insertCell(CELL_SAVE_LOAD_REV);
 
 	cell[CELL_SAVE_NAME].innerHTML = name;
 
 	set_buttons_save();
+	
+	save_hide(false);
 }
 
 var CELL_SEARCH_WP = 0;
@@ -343,14 +388,15 @@ function search_add(id, name, type, subtype) {
 
 <body>
 	<p>
-		<label>Plan</label><br>
-		<button onclick="regress_plan()">Previous</button>
-		<button onclick="advance_plan()">Next</button>
+		<label id="plan_name">Plan[]</label><br>
+		<button onclick="plan_discard()">Discard</button>
+		<button id="plan_activate_button" onclick="plan_toggle()">Activate</button>
 		<br></br>
 		<table id="plan_table" border="1"><th>Delete</th><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th><th>Action</th></table>
 		<br>
 		<label id="plan_total"></label>
-		<button id="plan_activate_button" onclick="plan_toggle()">Activate</button>
+		<button onclick="regress_plan()">Previous</button>
+		<button onclick="advance_plan()">Next</button>
 	</p>
 	<p>
 		<label>Find</label><br>
@@ -363,7 +409,8 @@ function search_add(id, name, type, subtype) {
 		<label>Manage</label><br>
 		<input id="save_name" placeholder="Plan Name"/></input><button onclick="save_plan_add()">Save</button>
 		<br></br>
-		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Action</th></table>
+		<button onclick="save_hide(true)">Saved Plans</button><br>
+		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Load</th><th>Load Rev.</th></table>
 	</p>
 </body>
 </html>

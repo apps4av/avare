@@ -240,6 +240,9 @@ public class WebAppPlanInterface implements Observer {
         		// Then change state of activate button
             	mWebView.loadUrl("javascript:set_active(" + plan.isActive() + ")");
             	mWebView.loadUrl("javascript:plan_set_total('" + mContext.getString(R.string.Total) + " " + plan.toString() + "')");
+            	if(null != plan.getName()) {
+            		mWebView.loadUrl("javascript:plan_setname('" + plan.getName() + "')");
+            	}
         	}
         	else if(MSG_CLEAR_PLAN == msg.what) {
         		mWebView.loadUrl("javascript:plan_clear()");
@@ -291,6 +294,17 @@ public class WebAppPlanInterface implements Observer {
     	newPlan();
     	updatePlan();
     }
+
+    /**
+     * 
+     */
+    @JavascriptInterface
+    public void discardPlan() {
+    	mService.newPlan();
+    	newPlan();
+    	updatePlan();
+    }
+
 
     /**
      * Activate/Deactivate the plan	
@@ -364,6 +378,10 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void savePlan(String name) {
     	Plan plan = mService.getPlan();
+    	if(plan.getDestinationNumber() < 2) {
+    		// Anything less than 2 is not a plan
+    		return;
+    	}
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
@@ -378,6 +396,7 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void loadPlan(String name) {
     	mService.newPlanFromStorage(mSavedPlans.get(name), false);
+    	mService.getPlan().setName(name);
     	newPlan();
     	updatePlan();
     }
@@ -389,6 +408,7 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void loadPlanReverse(String name) {
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
+    	mService.getPlan().setName(name);
     	newPlan();
     	updatePlan();
     }

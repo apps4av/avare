@@ -33,8 +33,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -136,14 +136,14 @@ public class PlanActivity extends Activity {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppPlanInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
-        mWebView.setWebViewClient(new WebViewClient() {
-	     	public void onPageFinished(WebView view, String url) {
+        mWebView.setWebChromeClient(new WebChromeClient() {
+	     	public void onProgressChanged(WebView view, int progress) {
                 /*
                  * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
                  * things might have changed.
                  * When both service and page loaded then proceed.
                  */
-	     		if(mService != null) {
+	     		if(mService != null && 100 == progress) {
 	     		   	mInfc.newPlan();
 	                mInfc.newSavePlan();
 	     		}
