@@ -156,8 +156,8 @@ public class DataSource {
      * @param params
      * @return
      */
-    public void search(String name, LinkedHashMap<String, String> params) {
-        dbHelper.search(name, params);    
+    public void search(String name, LinkedHashMap<String, String> params, boolean exact) {
+        dbHelper.search(name, params, exact);    
     }
 
     /**

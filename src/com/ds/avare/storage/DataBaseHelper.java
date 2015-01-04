@@ -786,7 +786,7 @@ public class DataBaseHelper  {
      * @param name
      * @param params
      */
-    public void search(String name, LinkedHashMap<String, String> params) {
+    public void search(String name, LinkedHashMap<String, String> params, boolean exact) {
         
         Cursor cursor;
 
@@ -813,7 +813,14 @@ public class DataBaseHelper  {
          * If the user has typed enough, let's start looking for K prefixed airports as well
          */
         if(len > 2 && name.charAt(0) == 'K' || name.charAt(0) == 'k') {
-            String qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        	
+        	String qendK = "";
+        	if(exact) {
+                qendK = " (" + LOCATION_ID_DB + "=='" + name.substring(1) + "'" + ") order by " + LOCATION_ID_DB + " asc";
+        	}
+        	else {
+        		qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        	}
             qry = qbasic + TABLE_AIRPORTS + " where ";
             if(!mPref.shouldShowAllFacilities()) {
                 qry += TYPE_DB + "=='AIRPORT' and ";
@@ -836,7 +843,13 @@ public class DataBaseHelper  {
         /*
          * All queries for airports, navaids, fixes
          */
-        String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
+        String qend = "";
+        if(exact) {
+            qend = " (" + LOCATION_ID_DB + "=='" + name + "'" + ") order by " + LOCATION_ID_DB + " asc";         	
+        }
+        else {
+        	qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        }
         qry = qbasic + TABLE_NAV + " where " + qend;
         cursor = doQuery(qry, getMainDb());
 

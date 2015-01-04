@@ -378,7 +378,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 double lon = mOrigin.getLongitudeOf(x);
                 double lat = mOrigin.getLatitudeOf(y);
                 
-                mService.getPlan().replaceDestination(mService, mPref, mDragPlanPoint, lon, lat, finish);
+                mService.getPlan().replaceDestination(mPref, mDragPlanPoint, lon, lat, finish);
                
                 // This will not snap again
                 mDragStartedX = -1000;

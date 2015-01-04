@@ -252,13 +252,8 @@ public class Preferences {
      * 
      * @return
      */
-    public String[] getPlans() {
-        String plans = mPref.getString(mContext.getString(R.string.Plan), "");
-        if(plans.length() == 0) {
-        	return null;
-        }
-        String[] tokens = plans.split(",");
-        return tokens;
+    public String getPlans() {
+        return mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
     }
 
 
@@ -266,55 +261,8 @@ public class Preferences {
      * 
      * @return
      */
-    public void addToPlans(String name) {
-        String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>();
-        
-        if(null != tokens) {
-	        l = new LinkedList<String>(Arrays.asList(tokens));
-	        for(int id = 0; id < l.size(); id++) {
-	            if(l.get(id).equals(name)) {
-	                l.remove(id);
-	            }
-	        }
-        }
-        l.add(0, name);
-        if(l.size() > MAX_PLANS) {
-            l = l.subList(0, MAX_PLANS - 1);
-        }
-        
-        String plans = "";
-        for(int id = 0; id < l.size(); id++) {
-            plans = plans + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Plan), plans);
-        editor.commit();
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public void deleteAPlan(String name) {
-        String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>();
-        if(null != tokens) {
-        	l = new LinkedList<String>(Arrays.asList(tokens));
-	        for(int id = 0; id < l.size(); id++) {
-	            if(l.get(id).equals(name)) { 
-	                l.remove(id);
-	            }
-	        }
-        }
-        
-        String plans = "";
-        for(int id = 0; id < l.size(); id++) {
-            plans = plans + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Plan), plans);
-        editor.commit();
+    public void putPlans(String name) {
+        mPref.edit().putString(mContext.getString(R.string.Plan) + "v10", name).commit();
     }
 
 

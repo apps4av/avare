@@ -14,8 +14,13 @@ package com.ds.avare.place;
 
 
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.location.Location;
@@ -28,6 +33,7 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -66,8 +72,9 @@ public class Plan implements Observer {
      * 
      * @param dataSource
      */
-    public Plan(Context ctx) {
+    public Plan(Context ctx, StorageService service) {
         mPref = new Preferences(ctx);
+        mService = service;
         clear();
     }
 
@@ -491,21 +498,20 @@ public class Plan implements Observer {
      * Used for rubberbanding only
      * Replace destination
      */
-    public void replaceDestination(StorageService service, Preferences pref, int id, double lon, double lat, boolean finish) {
+    public void replaceDestination(Preferences pref, int id, double lon, double lat, boolean finish) {
         boolean active = mActive;
         String airport = null;
         if(finish) {
-            airport = service.getDBResource().findClosestAirportID(lon, lat);
+            airport = mService.getDBResource().findClosestAirportID(lon, lat);
         
             mReplaceId = id;
 
-            mService = service;
             Destination d;
             if(null != airport) {
-                d = new Destination(airport, Destination.BASE, pref, service);
+                d = new Destination(airport, Destination.BASE, pref, mService);
             }
             else {
-                d = new Destination(service, lon, lat);                
+                d = new Destination(mService, lon, lat);                
             }
             d.addObserver(this);
             d.find();
@@ -513,7 +519,7 @@ public class Plan implements Observer {
         else {
 
             // replace
-            mDestination[id] = new Destination(service, lon, lat);
+            mDestination[id] = new Destination(mService, lon, lat);
 
             mTrackShape.updateShapeFromPlan(getCoordinates());
         }
@@ -677,7 +683,140 @@ public class Plan implements Observer {
         
     }
     
+    // Regress to the PREVIOUS waypoint in the plan
+    // We do this by searching from the end of the plan
+    // to find the first waypoint that is marked as passed and changing
+    // it to NOT passed, then setting a new destination
+    public void regress() {
+    	int passed = findNextNotPassed() - 1;
+    	if(passed >= 0) {
+        	setNotPassed(passed);
+	    	Destination dest = getDestination(passed);
+	    	mService.setDestinationPlanNoChange(dest);
+    	}
+    }
+    
+    
+	// Advance to the next waypoint in the plan
+	// Search each one to find the first point we have
+	// not yet passed. Mark that as passed and set destination to the one
+	// after.
+    public void advance() {
+    	int notpassed = findNextNotPassed();
+    	if(notpassed == (getDestinationNumber() - 1)) {
+    		return;
+    	}
+    	setPassed(notpassed);
+    	Destination dest = getDestination(notpassed + 1);
+    	mService.setDestinationPlanNoChange(dest);
+    }
+    
+    /**
+     * Put this plan in JSON array
+     * @param cls
+     * @return
+     */
+    public String putPlanToStorageFormat() {
+    	/*
+    	 * Put in JSON array all destinations in storage types.
+    	 */
+        JSONArray jsonArr = new JSONArray();
+        for(int pln = 0; pln < getDestinationNumber(); pln++) {
 
+        	Destination d = mDestination[pln];
+            jsonArr.put(d.getStorageName());
+        }
+        
+        return jsonArr.toString();
+    }
+
+    /**
+     * Get plan made from JSON object
+     * @param cls
+     * @return
+     */
+    public Plan(Context ctx, StorageService service, String json, boolean reverse) {
+    	/*
+    	 * Do as the other constructor does, but make a plan from json
+    	 */
+    	
+        mPref = new Preferences(ctx);
+        mService = service;
+        clear();
+
+        JSONArray jsonArr = null;
+        try {
+            jsonArr = new JSONArray(json);
+        } catch (Exception e) {
+        }
+        
+        if(null == jsonArr) {
+        	return;
+        }
+        
+        int num;
+        for(int i = 0; i < jsonArr.length(); i++) {
+            try {
+            	String dest = jsonArr.getString(i);
+            	String id = StringPreference.parseHashedNameId(dest);
+            	String type = StringPreference.parseHashedNameDestType(dest);
+            	String dbtype = StringPreference.parseHashedNameDbType(dest);
+            	
+            	/*
+            	 * Reverse load if asked
+            	 */
+            	if(reverse) {
+            		num = jsonArr.length() - i - 1;
+            	}
+            	else {
+            		num = i;
+            	}
+            	mDestination[num] = new Destination(id, type, mPref, mService);
+            	mDestination[num].find(dbtype);
+            } catch (Exception e) {
+                continue;
+            }
+        }
+    }
+
+    /**
+     * Hashmap is used for storing ALL plans
+     * @param plans
+     * @return
+     */
+	public static LinkedHashMap<String, String> getAllPlans(String plans) {
+		
+		// Linked hashmap as we want to keep the order of plans
+		// hashmap because that deals with updating plans
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+
+		// parse JSON from storage
+		try {
+			JSONObject json = new JSONObject(plans);
+			Iterator<?> keys = json.keys();
+			while( keys.hasNext() ){
+	            String  name = (String)keys.next();
+	            String destinations = json.getString(name); 
+	            map.put(name, destinations);
+	        }		
+		} 
+		catch (Exception e) {
+		}
+				
+        // Return the map
+        return map;
+	}
+
+    /**
+     * 
+     * @param map
+     * @return
+     */
+	public static String putAllPlans(LinkedHashMap<String, String> map) {
+		// Put a collection of plans in storage format
+		JSONObject json = new JSONObject(map);
+		return json.toString();
+	}
 }
 
 

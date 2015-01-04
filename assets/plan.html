@@ -22,9 +22,17 @@ body {
 	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
 }
 
+label {
+	color : #FF0000;
+	font-weight: bold; /* Make sure they're bold */
+	font-size : 20px;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
 p {
 	border: solid green;
 	border-radius: 1em;
+	padding: 5px;
 }
 
 table { 
@@ -181,7 +189,7 @@ function plan_movedn(row) {
 
 // Set Plan totals
 function plan_set_total(total) {
-	document.getElementById("plan_total").innerHTML = "<h3>" + total + "</h3>";
+	document.getElementById("plan_total").innerHTML = "<label>" + total + "</label><br>";
 }
 
 // clear the entire plan
@@ -273,8 +281,9 @@ function save_add(name) {
 var CELL_SEARCH_WP = 0;
 var CELL_SEARCH_NAME = 1;
 var CELL_SEARCH_TYPE = 2;
-var CELL_SEARCH_ACTION = 3;
-var CELL_SEARCH_LAST = 4;
+var CELL_SEARCH_SUBTYPE = 3;
+var CELL_SEARCH_ACTION = 4;
+var CELL_SEARCH_LAST = 5;
 
 
 // Search a waypoint specified
@@ -297,14 +306,14 @@ function search_waypoint() {
 	Android.search(id);	
 }
 
-function plan_add_search(id, type) {
+function plan_add_search(id, type, subtype) {
 	// now call Android for result of add
 	
-	Android.addToPlan(id, type);
+	Android.addToPlan(id, type, subtype);
 }
 
 // Add the result of a search to search table
-function search_add(id, name, type) {
+function search_add(id, name, type, subtype) {
 
 	var search_table = document.getElementById("search_table");
 	
@@ -316,13 +325,15 @@ function search_add(id, name, type) {
 	cell[CELL_SEARCH_WP] = row.insertCell(CELL_SEARCH_WP);
 	cell[CELL_SEARCH_NAME] = row.insertCell(CELL_SEARCH_NAME);
 	cell[CELL_SEARCH_TYPE] = row.insertCell(CELL_SEARCH_TYPE);
+	cell[CELL_SEARCH_SUBTYPE] = row.insertCell(CELL_SEARCH_SUBTYPE);
 	cell[CELL_SEARCH_ACTION] = row.insertCell(CELL_SEARCH_ACTION);
 
 	cell[CELL_SEARCH_WP].innerHTML = id;
 	cell[CELL_SEARCH_NAME].innerHTML = name;
 	cell[CELL_SEARCH_TYPE].innerHTML = type;	
+	cell[CELL_SEARCH_SUBTYPE].innerHTML = subtype;	
 	// this button will add to plan a particular result from search
-	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\")'>Add</button>";	
+	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
 }
 
 
@@ -332,26 +343,24 @@ function search_add(id, name, type) {
 
 <body>
 	<p>
-		<h2>Plan</h2>
+		<label>Plan</label><br>
 		<button onclick="regress_plan()">Previous</button>
 		<button onclick="advance_plan()">Next</button>
 		<br></br>
 		<table id="plan_table" border="1"><th>Delete</th><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th><th>Action</th></table>
 		<br>
 		<label id="plan_total"></label>
-		<br>
 		<button id="plan_activate_button" onclick="plan_toggle()">Activate</button>
-		<br></br>
 	</p>
 	<p>
-		<h2>Waypoint</h2>
+		<label>Find</label><br>
 		<input id="search_input" placeholder="BOS"></input>
 		<button onclick="search_waypoint()">Search</button>
 		<br></br>
-		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Action</th></table>
+		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Sub Type</th><th>Action</th></table>
 	</p>
 	<p>
-		<h2>Manage</h2>
+		<label>Manage</label><br>
 		<input id="save_name" placeholder="Plan Name"/></input><button onclick="save_plan_add()">Save</button>
 		<br></br>
 		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Action</th></table>

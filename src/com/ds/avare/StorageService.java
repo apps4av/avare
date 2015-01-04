@@ -65,7 +65,7 @@ import java.net.URI;
  * Main storage service. It stores all states so when activity dies,
  * we dont start from no state.
  * This is especially important for start up functions that take time,
- * one of which is databse un-zipping.
+ * one of which is database un-zipping.
  * 
  * Also sends intent to display warning, since its too intrusive to show a 
  * warning every time activity starts.
@@ -264,7 +264,7 @@ public class StorageService extends Service {
         mImageDataSource = new DataSource(getApplicationContext());
         
         mArea = new Area(mImageDataSource);
-        mPlan = new Plan(this);
+        mPlan = new Plan(this, this);
         mDownloading = false;
         
         /*
@@ -575,17 +575,17 @@ public class StorageService extends Service {
     }
 
     /**
-     * @param destination from plan
+     * 
+     * @return
      */
-    public void setDestinationPlan(Destination destination) {
-        mDestination = destination;
-        mAfdIndex = 0;
-        getPlan().makeActive(mGpsParams);
-    }
-    
     public Destination getLastAfdDestination() {
         return mLastAfdDestination;
     }
+    
+    /**
+     * 
+     * @param destination
+     */
     public void setLastAfdDestination(Destination destination) {
         mLastAfdDestination = destination;
     }    
@@ -675,7 +675,14 @@ public class StorageService extends Service {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan(this);
+        mPlan = new Plan(this, this);
+    }
+
+    /**
+     * @return
+     */
+    public void newPlanFromStorage(String storage, boolean reverse) {
+        mPlan = new Plan(this, this, storage, reverse);
     }
 
     /**
