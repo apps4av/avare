@@ -53,6 +53,7 @@ public class PlanActivity extends Activity {
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
+    private ProgressBar mProgressBarSearch;
     private WebAppPlanInterface mInfc;
 
     // A timer object to handle things when we are in sim mode
@@ -133,7 +134,7 @@ public class PlanActivity extends Activity {
         setContentView(view);
         mWebView = (WebView)view.findViewById(R.id.plan_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setBuiltInZoomControls(false);
         mInfc = new WebAppPlanInterface(mContext, mWebView);
         mWebView.addJavascriptInterface(mInfc, "Android");
         mWebView.setWebChromeClient(new WebChromeClient() {
@@ -146,6 +147,7 @@ public class PlanActivity extends Activity {
 	     		if(mService != null && 100 == progress) {
 	     		   	mInfc.newPlan();
 	                mInfc.newSavePlan();
+	                mProgressBarSearch.setVisibility(View.INVISIBLE);
 	     		}
 	     		mIsPageLoaded = true;
      	    }
@@ -156,6 +158,8 @@ public class PlanActivity extends Activity {
          * Progress bar
          */
         mProgressBar = (ProgressBar)(view.findViewById(R.id.plan_progress_bar));
+        mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.plan_load_progress));
+        mProgressBarSearch.setVisibility(View.VISIBLE);
 
         /*
          * For searching, start search on every new key press
@@ -239,6 +243,7 @@ public class PlanActivity extends Activity {
      		if(mIsPageLoaded) {
      		   	mInfc.newPlan();
                 mInfc.newSavePlan();
+                mProgressBarSearch.setVisibility(View.INVISIBLE);
      		}
 
             mTimer = new Timer();
@@ -352,6 +357,4 @@ public class PlanActivity extends Activity {
 	    	mInfc.timer();
 	    }
     }
-    
-
 }
