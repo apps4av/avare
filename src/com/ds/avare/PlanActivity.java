@@ -152,7 +152,6 @@ public class PlanActivity extends Activity {
              */
         	@Override
         	public Object callback(Object o) {
-        		int msg = (Integer)o;
         		mHandler.sendEmptyMessage((Integer)o);
         		return null;
         	}

@@ -1,0 +1,328 @@
+<html>
+<!--
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan 
+-->
+
+<head>
+
+<style>
+
+body {
+	color : #FFFFFF;
+	width: 800px;
+	background: #000000;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+label {
+	color : #FF0000;
+	font-weight: bold; /* Make sure they're bold */
+	font-size : 20px;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+p {
+	border: solid green;
+	border-radius: 1em;
+	width: 800px;
+	padding: 5px;
+}
+
+table { 
+	color: #333; /* Lighten up font color */
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width: 800px;
+	border-collapse: collapse; 
+	border-spacing: 0; 
+}
+ 
+button {
+	width: 100px;
+} 
+ 
+td, th { 
+	color : #FFFFFF;
+	border: 1px solid #CCC;
+	height: 30px; 
+	width: 110px;
+	padding: 5px;
+} /* Make cells a bit taller */
+ 
+th {
+	background: #222222; /* Light grey background */
+	font-weight: bold; /* Make sure they're bold */
+}
+ 
+td {
+	background: #111111; /* Lighter grey background */
+	text-align: left; /* Left our text */
+}
+
+.halfbutton {
+	width: 50px; // For two buttons in one row
+}
+
+.tdhlong {
+	width: 600px;
+}
+
+
+</style>
+
+<script type="text/javascript" >
+
+var CELL_TEXT = 0;
+var CELL_DELETE = 1;
+var CELL_ACTION = 2;
+var CELL_LAST = 3;
+
+
+// set list name
+function list_setname(name) {
+	var list = document.getElementById("list_name");
+
+	list.innerHTML = "List" + "[" + name + "]";
+}
+
+
+// Set list line
+function set_list_line(row, next, text) {
+	// rows here are 1 indexed
+	row++;
+	var list_table = document.getElementById("list_table");
+
+	if(next == 1) {
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "green";
+	}
+	else {
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#111111";
+	}
+
+	list_table.rows[row].cells[CELL_TEXT].innerHTML = text;
+}
+
+// add a item to the list
+function list_add(text) {
+	var list_table = document.getElementById("list_table");
+
+	var row = list_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
+	cell[CELL_TEXT].className = "tdhlong";
+	cell[CELL_DELETE] = row.insertCell(CELL_DELETE);
+	cell[CELL_ACTION] = row.insertCell(CELL_ACTION);
+
+	cell[CELL_TEXT].innerHTML = text;
+
+	set_buttons();
+}
+
+// Sets buttons on each row
+function set_buttons() {
+
+	// Set buttons for each entry in list
+	var list_table = document.getElementById("list_table");
+	for(var i = 1; i < list_table.rows.length; i++) {
+		list_table.rows[i].cells[CELL_ACTION].innerHTML = 
+			"<button onclick='list_moveup(" + i.toString() + ")' class='halfbutton'>Up</button>" +
+			"<button onclick='list_movedn(" + i.toString() + ")' class='halfbutton'>Dn</button>";
+		list_table.rows[i].cells[CELL_DELETE].innerHTML = 
+			"<button onclick='list_delete(" + i.toString() + ")'>Delete</button>";
+	}
+}
+
+// Delete a item in list
+function list_delete(row) {
+	var r = confirm("Delete?");
+	if(r == true) {
+		Android.deleteItem(row - 1);
+	}
+}
+
+// Move up in the list a item
+function list_moveup(row) {
+	Android.move(row - 1, row - 2);
+}
+
+// Move down in the list a item
+function list_movedn(row) {
+	// Android is 0 based index	
+	Android.move(row - 1, row);
+}
+
+// clear the entire list
+function list_clear() {
+	// clear the table
+	var list_table = document.getElementById("list_table");
+	for(var row = list_table.rows.length - 1; row >= 1; row--) {
+			list_table.deleteRow(row);
+	}
+}
+
+// remove the entire list
+function list_discard() {
+	// call Android
+	var r = confirm("Discard?");
+	if(r == true) {
+		Android.discardList();
+	}
+}
+
+// import the entire list from file
+function list_import() {
+	// call Android
+	var path = document.getElementById("import_input");
+	var r = confirm("Discard List then Import?");
+	if(r == true) {
+		Android.importFromFile(path.value);
+		path.value = "";
+	}
+}
+
+// Add a line to list
+function add_list_item() {
+	var item = document.getElementById("item_input");
+	Android.addToList(item.value);
+	// clear when added
+	item.value = "";	
+}
+
+
+var CELL_SAVE_DELETE = 0;
+var CELL_SAVE_NAME = 1;
+var CELL_SAVE_LOAD = 2;
+var CELL_SAVE_LAST = 3;
+
+// load the list
+function save_load(row) {
+	var list_save = document.getElementById("save_table");
+	Android.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+}
+
+// delete the list
+function save_delete(row) {
+	var r = confirm("Delete?");
+	if(r == false) {
+		return;	
+	}
+	var list_save = document.getElementById("save_table");
+	Android.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+}
+
+// add the current list to saved list
+function save_list_add() {
+	var name = document.getElementById("save_name").value;
+
+	if(name == "") {
+		return 
+	}	
+	Android.saveList(name);
+}
+
+// clear the entire save list
+function save_clear() {
+	// clear the table
+	var list_save = document.getElementById("save_table");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			list_save.deleteRow(row);
+	}
+}
+
+// List table can be long. Hide it when asked or toggle it to show/hide
+function save_hide(toggle) {
+	var list_save = document.getElementById("save_table");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			if(toggle) {
+				if(list_save.rows[row].style.display == "none") {
+					list_save.rows[row].style.display = "";			
+				}
+				else {
+					list_save.rows[row].style.display = "none";
+				}
+			}
+			else {
+					list_save.rows[row].style.display = "none";
+			}
+	}
+}
+
+
+// Sets buttons on each row
+function set_buttons_save() {
+
+	// Set buttons for each entry in list
+	var list_save = document.getElementById("save_table");
+	for(var i = 1; i < list_save.rows.length; i++) {
+		list_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML = 
+			"<button onclick='save_load(" + i.toString() + ")'>Load</button>";
+		list_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML = 
+			"<button onclick='save_delete(" + i.toString() + ")'>Delete</button>";
+	}
+	
+		// clear save input
+	document.getElementById("save_name").value = "";
+}
+
+// add an item to the list
+function save_add(name) {
+	var list_save = document.getElementById("save_table");
+
+	var row = list_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
+	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
+	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
+
+	cell[CELL_SAVE_NAME].innerHTML = name;
+
+	set_buttons_save();
+	
+	save_hide(false);
+}
+
+
+</script>
+
+</head>
+
+<body>
+	<p>
+		<label id="list_name">List[]</label><br>
+		<button onclick="list_discard()">Discard</button>
+		<br></br>
+		<table id="list_table" border="1"><th class="tdhlong">Item</th><th>Delete</th><th>Action</th></table>
+		<br>
+		<label>Add</label>
+		<br>
+		<input id="item_input" placeholder="Mixture Full Rich."></input>
+		<button onclick="add_list_item()">Add</button>
+		<br></br>
+		<label>Import</label><br>
+		<input id="import_input" placeholder="/sdcard/list.txt"></input>
+		<button onclick="list_import()">Import</button>
+	</p>
+	<p>
+		<label>Manage</label><br>
+		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
+		<br></br>
+		<button onclick="save_hide(true)">Lists</button><br>
+		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Load</th></table>
+	</p>
+</body>
+</html>

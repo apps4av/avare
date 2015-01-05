@@ -154,6 +154,9 @@ public class Checklist {
      * @return
      */
     public String[] getStepsArray() {
+    	if(mSteps.equals("")) {
+    		return new String[0];
+    	}
         String tokens[] = mSteps.split(DELIM);
         return tokens;
     }
