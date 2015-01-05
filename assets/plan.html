@@ -68,6 +68,10 @@ td {
 	text-align: left; /* Left our text */
 }
 
+.halfbutton {
+	width: 50px; // For two buttons in one row
+}
+
 </style>
 
 <script type="text/javascript" >
@@ -157,8 +161,8 @@ function set_buttons() {
 	var plan_table = document.getElementById("plan_table");
 	for(var i = 1; i < plan_table.rows.length; i++) {
 		plan_table.rows[i].cells[CELL_ACTION].innerHTML = 
-			"<button onclick='plan_moveup(" + i.toString() + ")'>Up</button><br>" +
-			"<button onclick='plan_movedn(" + i.toString() + ")'>Dn</button>";
+			"<button onclick='plan_moveup(" + i.toString() + ")' class='halfbutton'>Up</button>" +
+			"<button onclick='plan_movedn(" + i.toString() + ")' class='halfbutton'>Dn</button>";
 		plan_table.rows[i].cells[CELL_DELETE].innerHTML = 
 			"<button onclick='plan_delete(" + i.toString() + ")'>Delete</button>";
 	}
@@ -202,7 +206,7 @@ function plan_movedn(row) {
 
 // Set Plan totals
 function plan_set_total(total) {
-	document.getElementById("plan_total").innerHTML = "<label>" + total + "</label><br>";
+	document.getElementById("plan_total").innerHTML = "<label style='font-size:15px'>" + total + "</label><br>";
 }
 
 // clear the entire plan
