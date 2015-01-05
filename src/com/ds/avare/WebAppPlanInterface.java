@@ -42,6 +42,7 @@ public class WebAppPlanInterface implements Observer {
     private Preferences mPref;
     private WebView mWebView;
     private SearchTask mSearchTask;
+    private CreateTask mCreateTask;
     private Context mContext;
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
@@ -299,7 +300,7 @@ public class WebAppPlanInterface implements Observer {
     }
 
     /** 
-     * Get weather data async
+     * Search for some place
      */
     @JavascriptInterface
     public void search(String value) {
@@ -311,27 +312,6 @@ public class WebAppPlanInterface implements Observer {
             return;
         }
         
-        /*
-         * This is a geo coordinate with &?
-         */
-        if(value.contains("&")) {
-        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + value + 
-        			"','" + Destination.GPS + "','" 
-        			+ Destination.GPS + "','" + Destination.GPS + "'"));
-        	mHandler.sendMessage(m);
-            return;
-        }
-        // This is address search?
-        else if(value.startsWith("address,")) {
-            String addr = value.substring(8); // 8 = length of "address,"
-            if(addr.length() > 1) {
-            	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + addr + 
-            			"','" + Destination.MAPS + "','" 
-            			+ Destination.MAPS + "','" + Destination.MAPS + "'"));
-            	mHandler.sendMessage(m);            	
-            }
-            return;
-        }
         if(null != mSearchTask) {
             if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
                 /*
@@ -340,11 +320,125 @@ public class WebAppPlanInterface implements Observer {
                 mSearchTask.cancel(true);
             }
         }
-        
+
         mCallback.callback((Object)PlanActivity.SHOW_BUSY);
         mSearchTask = new SearchTask();
-        mSearchTask.execute(value.toString());
+        mSearchTask.execute(value);
     }
+
+
+    /** 
+     * Create a plan, guessing the types
+     */
+    @JavascriptInterface
+    public void createPlan(String value) {
+        
+    	/*
+         * If text is 0 length or too long, then do not search, show last list
+         */
+        if(0 == value.length()) {
+            return;
+        }
+
+        if(null != mCreateTask) {
+            if (!mCreateTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
+                /*
+                 * Cancel the last query
+                 */
+                mCreateTask.cancel(true);
+            }
+        }
+
+        mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+        mCreateTask = new CreateTask();
+        mCreateTask.execute(value);
+    }
+    
+    /**
+     * @author zkhan
+     *
+     */
+    private class CreateTask extends AsyncTask<Object, Void, Boolean> {
+
+    	String selection[] = null;
+
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#doInBackground(Params[])
+         */
+        @Override
+        protected Boolean doInBackground(Object... vals) {
+
+            Thread.currentThread().setName("Create");
+
+            if(null == mService) {
+                return false;
+            }
+
+            String srch[] = ((String)vals[0]).toUpperCase(Locale.US).split(" ");
+            
+            /*
+             * Here we guess types since we do not have user select
+             */
+            selection = new String[srch.length];
+
+            for(int num = 0; num < srch.length; num++) {
+	            /*
+	             * This is a geo coordinate with &?
+	             */
+	            if(srch[num].contains("&")) {
+	
+	            	selection = new String[1];
+	            	selection[num] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
+	            	continue;
+	            }
+	            
+	            /*
+	             * Search from database. Make this a simple one off search
+	             */
+	            StringPreference s = mService.getDBResource().searchOne(srch[num]);
+	            if(s != null) {
+	                selection[num] = s.getHashedName();
+	            }
+            }
+            return true;
+        }
+        
+        /* (non-Javadoc)
+         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+         */
+        @Override
+        protected void onPostExecute(Boolean result) {
+            /*
+             * Set new search adapter
+             */
+            mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
+
+            if(null == selection || false == result) {
+                return;
+            }
+            
+            /*
+             * Add each to the plan search
+             */
+            for (int num = 0; num < selection.length; num++) {
+            	String val = selection[num];
+            	if(null == val) {
+            		continue;
+            	}
+	            String id = StringPreference.parseHashedNameId(val);
+	            String type = StringPreference.parseHashedNameDestType(val);
+	            String dbtype = StringPreference.parseHashedNameDbType(val);
+
+	        	/*
+	        	 * Add each
+	        	 */
+	        	Destination d = new Destination(id, type, mPref, mService);
+	        	d.addObserver(WebAppPlanInterface.this);
+	        	d.find(dbtype);
+            }
+        }
+    }
+
 
     /**
      * @author zkhan
@@ -352,14 +446,14 @@ public class WebAppPlanInterface implements Observer {
      */
     private class SearchTask extends AsyncTask<Object, Void, Boolean> {
 
-        private String[] selection;
+    	String selection[] = null;
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
         protected Boolean doInBackground(Object... vals) {
-            
+
             Thread.currentThread().setName("Search");
 
             String srch = ((String)vals[0]).toUpperCase(Locale.US);
@@ -367,19 +461,27 @@ public class WebAppPlanInterface implements Observer {
                 return false;
             }
 
+            /*
+             * This is a geo coordinate with &?
+             */
+            if(srch.contains("&")) {
+
+            	selection = new String[1];
+            	selection[0] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch)).getHashedName();
+                return true;
+            }
+            
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            synchronized (SearchActivity.class) {
-                /*
-                 * Search from database. Make this a simple search
-                 */
-                mService.getDBResource().search(srch, params, true);
-                if(params.size() > 0) {
-                    selection = new String[params.size()];
-                    int iterator = 0;
-                    for(String key : params.keySet()){
-                        selection[iterator] = StringPreference.getHashedName(params.get(key), key);
-                        iterator++;
-                    }
+            /*
+             * Search from database. Make this a simple search
+             */
+            mService.getDBResource().search(srch, params, true);
+            if(params.size() > 0) {
+                selection = new String[params.size()];
+                int iterator = 0;
+                for(String key : params.keySet()){
+                    selection[iterator] = StringPreference.getHashedName(params.get(key), key);
+                    iterator++;
                 }
             }
             return true;
@@ -395,7 +497,7 @@ public class WebAppPlanInterface implements Observer {
              */
             mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
 
-            if(null == selection) {
+            if(null == selection || false == result) {
                 return;
             }
             

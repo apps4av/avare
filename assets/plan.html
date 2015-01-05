@@ -239,7 +239,8 @@ function plan_create() {
 	// calll Android
 	var r = confirm("Discard Current then Create?");
 	if(r == true) {
-		Android.createPlan();
+		Android.discardPlan();
+		Android.createPlan(name);
 	}
 }
 
