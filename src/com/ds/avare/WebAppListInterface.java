@@ -49,6 +49,8 @@ public class WebAppListInterface {
     private static final int MSG_ADD_LIST = 3;
     private static final int MSG_CLEAR_LIST_SAVE = 7;
     private static final int MSG_ADD_LIST_SAVE = 8;
+    private static final int MSG_NOTBUSY = 9;
+    private static final int MSG_BUSY = 10;
     
     private static final int MAX_FILE_LINE_SIZE = 256;
     private static final int MAX_FILE_LINES = 100;
@@ -170,8 +172,12 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void move(int from, int to) {
+    	// surround JS each call with busy indication / not busy 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mWorkingList.moveStep(from, to);
     	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -179,9 +185,11 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void discardList() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
         mWorkingList = new Checklist("");
         mWorkingIndex = 0;
     	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
 
@@ -191,8 +199,11 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void deleteItem(int num) {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mWorkingList.removeStep(num);
     	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -205,8 +216,11 @@ public class WebAppListInterface {
     	/*
     	 * Add from JS add
     	 */
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mWorkingList.addStep(item);
     	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -225,6 +239,8 @@ public class WebAppListInterface {
             return;
         }
 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
         lists.add(mWorkingList);
         /*
          * Save to storage on save button
@@ -237,6 +253,7 @@ public class WebAppListInterface {
         mWorkingList = new Checklist(mWorkingList.getName(), mWorkingList.getSteps());
 
         newSaveList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -250,6 +267,8 @@ public class WebAppListInterface {
             return;
         }
 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
         for (Checklist cl : lists) {
         	if(cl.getName().equals(name)) {
         		mWorkingList = new Checklist(cl.getName(), cl.getSteps());
@@ -257,6 +276,7 @@ public class WebAppListInterface {
         	}
         }
     	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -271,6 +291,8 @@ public class WebAppListInterface {
         if(lists == null) {
             return;
         }
+
+    	mHandler.sendEmptyMessage(MSG_BUSY);
 
         // Find and remove
         for (Checklist cl : lists) {
@@ -289,6 +311,7 @@ public class WebAppListInterface {
         mPref.putLists(Checklist.putCheckListsToStorageFormat(lists));
 
     	newSaveList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /** 
@@ -313,12 +336,13 @@ public class WebAppListInterface {
             }
         }
 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
         /*
          * New list add from file
          */
         mWorkingList = new Checklist("");
         mWorkingIndex = 0;
-        mCallback.callback((Object)ChecklistActivity.SHOW_BUSY);
         mImportTask = new ImportTask();
         mImportTask.execute(path);
     }
@@ -386,7 +410,8 @@ public class WebAppListInterface {
              * Set new list in UI
              */
            	newList();
-            mCallback.callback((Object)ChecklistActivity.UNSHOW_BUSY);
+           	
+        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         }
 
         @Override
@@ -445,6 +470,12 @@ public class WebAppListInterface {
         	else if(MSG_ADD_LIST_SAVE == msg.what) {
             	String func = "javascript:save_add(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_NOTBUSY == msg.what) {
+        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
+        	}
+        	else if(MSG_BUSY == msg.what) {
+        		mCallback.callback((Object)PlanActivity.SHOW_BUSY);
         	}
         }
     };

@@ -49,25 +49,31 @@ Redistribution and use in source and binary forms, with or without modification,
         	android:id="@+id/list_mainpage"
         	android:layout_width="fill_parent"
         	android:layout_height="fill_parent"
-        	android:layout_above="@+id/list_button_back"
+        	android:layout_above="@+id/list_bottom_buttons"
         	android:layout_below="@+id/list_edit_text"
         	android:background="#FF000000" />
 
-        <Button
-            android:id="@+id/list_button_back"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:text="@string/Last"
+        <LinearLayout
+        	android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
-        
-        <Button
-            android:id="@+id/list_button_forward"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:text="@string/Next"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+        	android:id="@+id/list_bottom_buttons"
+            android:layout_alignParentBottom="true">
+	        <Button
+	            android:id="@+id/list_button_back"
+	            android:layout_alignParentLeft="true"
+	            android:layout_weight="0.5"
+	            android:text="@string/Last"
+	            android:layout_height="wrap_content"
+	            android:layout_width="0dp"/>
+	        
+	        <Button
+	            android:id="@+id/list_button_forward"
+	            android:layout_alignParentRight="true"
+	            android:layout_weight="0.5"
+	            android:text="@string/Next"
+	            android:layout_height="wrap_content"
+	            android:layout_width="0dp"/>
+        </LinearLayout>
         
         <ProgressBar
            android:id="@+id/list_load_progress"

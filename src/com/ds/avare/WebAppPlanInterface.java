@@ -54,6 +54,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_TIMER = 5;
     private static final int MSG_CLEAR_PLAN_SAVE = 7;
     private static final int MSG_ADD_PLAN_SAVE = 8;
+    private static final int MSG_NOTBUSY = 9;
+    private static final int MSG_BUSY = 10;
     
     /** 
      * Instantiate the interface and set the context
@@ -164,9 +166,13 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void move(int from, int to) {
+    	// surround JS each call with busy indication / not busy 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.getPlan().move(from, to);
     	newPlan();
     	updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -174,10 +180,13 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void discardPlan() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.newPlan();
     	mService.getPlan().setName("");
     	newPlan();
     	updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
 
@@ -186,6 +195,8 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void activateToggle() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	Plan plan = mService.getPlan();
     	if(plan.isActive()) {
     		plan.makeInactive();
@@ -200,6 +211,7 @@ public class WebAppPlanInterface implements Observer {
  
     	// Must use handler from functions called from JS
 		updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -208,9 +220,12 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void deleteWaypoint(int num) {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.getPlan().remove(num);
     	newPlan();
 		updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -218,8 +233,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveBack() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.getPlan().regress();
 		updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -227,8 +245,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveForward() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.getPlan().advance();
 		updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -241,9 +262,12 @@ public class WebAppPlanInterface implements Observer {
     	/*
     	 * Add from JS search query
     	 */
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	Destination d = new Destination(id, type, mPref, mService);
     	d.addObserver(this);
     	d.find(subtype);
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -252,16 +276,19 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void savePlan(String name) {
+
     	Plan plan = mService.getPlan();
     	if(plan.getDestinationNumber() < 2) {
     		// Anything less than 2 is not a plan
     		return;
     	}
+    	mHandler.sendEmptyMessage(MSG_BUSY);
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
     	mPref.putPlans(Plan.putAllPlans(mSavedPlans));
     	newSavePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -270,10 +297,15 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlan(String name) {
+    	// surround JS each call with busy indication / not busy 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.newPlanFromStorage(mSavedPlans.get(name), false);
     	mService.getPlan().setName(name);
     	newPlan();
     	updatePlan();
+    	
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -282,10 +314,13 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlanReverse(String name) {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
     	mService.getPlan().setName(name);
     	newPlan();
     	updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -294,9 +329,13 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void saveDelete(String name) {
+    	
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
     	mSavedPlans.remove(name);
     	mPref.putPlans(Plan.putAllPlans(mSavedPlans));
     	newSavePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /** 
@@ -321,7 +360,7 @@ public class WebAppPlanInterface implements Observer {
             }
         }
 
-        mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+    	mHandler.sendEmptyMessage(MSG_BUSY);
         mSearchTask = new SearchTask();
         mSearchTask.execute(value);
     }
@@ -349,7 +388,7 @@ public class WebAppPlanInterface implements Observer {
             }
         }
 
-        mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+    	mHandler.sendEmptyMessage(MSG_BUSY);
         mCreateTask = new CreateTask();
         mCreateTask.execute(value);
     }
@@ -411,9 +450,9 @@ public class WebAppPlanInterface implements Observer {
             /*
              * Set new search adapter
              */
-            mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
 
             if(null == selection || false == result) {
+            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                 return;
             }
             
@@ -436,6 +475,7 @@ public class WebAppPlanInterface implements Observer {
 	        	d.addObserver(WebAppPlanInterface.this);
 	        	d.find(dbtype);
             }
+        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         }
     }
 
@@ -495,9 +535,9 @@ public class WebAppPlanInterface implements Observer {
             /*
              * Set new search adapter
              */
-            mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
 
             if(null == selection || false == result) {
+            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                 return;
             }
             
@@ -515,6 +555,7 @@ public class WebAppPlanInterface implements Observer {
 	        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + id + "','" + name + "','" + type + "','" + dbtype + "'"));
 	        	mHandler.sendMessage(m);
             }
+        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         }
     }
 
@@ -576,6 +617,12 @@ public class WebAppPlanInterface implements Observer {
         	else if(MSG_ADD_PLAN_SAVE == msg.what) {
             	String func = "javascript:save_add(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_NOTBUSY == msg.what) {
+        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
+        	}
+        	else if(MSG_BUSY == msg.what) {
+        		mCallback.callback((Object)PlanActivity.SHOW_BUSY);
         	}
         }
     };
