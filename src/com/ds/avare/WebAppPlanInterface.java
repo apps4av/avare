@@ -23,6 +23,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.GenericCallback;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -43,6 +44,7 @@ public class WebAppPlanInterface implements Observer {
     private SearchTask mSearchTask;
     private Context mContext;
     private LinkedHashMap<String, String> mSavedPlans;
+    private GenericCallback mCallback;
     
     private static final int MSG_UPDATE_PLAN = 1;
     private static final int MSG_CLEAR_PLAN = 2;
@@ -55,10 +57,11 @@ public class WebAppPlanInterface implements Observer {
     /** 
      * Instantiate the interface and set the context
      */
-    WebAppPlanInterface(Context c, WebView ww) {
+    WebAppPlanInterface(Context c, WebView ww, GenericCallback cb) {
         mPref = new Preferences(c);
         mWebView = ww;
         mContext = c;
+        mCallback = cb;
         mSavedPlans = Plan.getAllPlans(mPref.getPlans());
     }
 
@@ -338,6 +341,7 @@ public class WebAppPlanInterface implements Observer {
             }
         }
         
+        mCallback.callback((Object)PlanActivity.SHOW_BUSY);
         mSearchTask = new SearchTask();
         mSearchTask.execute(value.toString());
     }
@@ -389,6 +393,7 @@ public class WebAppPlanInterface implements Observer {
             /*
              * Set new search adapter
              */
+            mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
 
             if(null == selection) {
                 return;

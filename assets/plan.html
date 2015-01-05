@@ -223,6 +223,22 @@ function plan_discard() {
 	}
 }
 
+// create the plan
+function plan_create() {
+
+	var name = document.getElementById("create_input").value;
+
+	if(name == "") {
+		return 
+	}	
+
+	// calll Android
+	var r = confirm("Discard Current then Create?");
+	if(r == true) {
+		Android.createPlan();
+	}
+}
+
 var CELL_SAVE_DELETE = 0;
 var CELL_SAVE_NAME = 1;
 var CELL_SAVE_LOAD = 2;
@@ -401,19 +417,23 @@ function search_add(id, name, type, subtype) {
 		<label id="plan_total"></label>
 		<button onclick="regress_plan()">Previous</button>
 		<button onclick="advance_plan()">Next</button>
-	</p>
-	<p>
-		<label>Find</label><br>
+		<br></br>
+		<label>Add</label>
+		<br>
 		<input id="search_input" placeholder="BOS"></input>
 		<button onclick="search_waypoint()">Search</button>
 		<br></br>
 		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Sub Type</th><th>Action</th></table>
+		<br>
+		<label>Create</label><br>
+		<input id="create_input" placeholder="KBOS LWM KMHT"></input>
+		<button onclick="plan_create()">Create</button>
 	</p>
 	<p>
 		<label>Manage</label><br>
-		<input id="save_name" placeholder="Plan Name"/></input><button onclick="save_plan_add()">Save</button>
+		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
 		<br></br>
-		<button onclick="save_hide(true)">Saved Plans</button><br>
+		<button onclick="save_hide(true)">Plan List</button><br>
 		<table id="save_table" border="1"><th>Delete</th><th>Name</th><th>Load</th><th>Load Rev.</th></table>
 	</p>
 </body>

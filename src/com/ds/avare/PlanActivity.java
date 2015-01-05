@@ -16,6 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
@@ -26,7 +27,9 @@ import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -71,7 +74,14 @@ public class PlanActivity extends Activity {
     private boolean mIsPageLoaded;
 
     private Context mContext;
-    
+
+    /*
+     * Callback actions from web app
+     */
+    public static final int SHOW_BUSY = 1;
+    public static final int UNSHOW_BUSY = 2;
+
+
     /**
      * App preferences
      */
@@ -135,7 +145,18 @@ public class PlanActivity extends Activity {
         mWebView = (WebView)view.findViewById(R.id.plan_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(false);
-        mInfc = new WebAppPlanInterface(mContext, mWebView);
+        mInfc = new WebAppPlanInterface(mContext, mWebView, new GenericCallback() {
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
+             */
+        	@Override
+        	public Object callback(Object o) {
+        		int msg = (Integer)o;
+        		mHandler.sendEmptyMessage((Integer)o);
+        		return null;
+        	}
+        });
         mWebView.addJavascriptInterface(mInfc, "Android");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
@@ -357,4 +378,20 @@ public class PlanActivity extends Activity {
 	    	mInfc.timer();
 	    }
     }
+
+    /**
+     * 
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+    		if(msg.what == SHOW_BUSY) {
+    			mProgressBarSearch.setVisibility(View.VISIBLE);
+    		}
+    		else if(msg.what == UNSHOW_BUSY) {
+    			mProgressBarSearch.setVisibility(View.INVISIBLE);
+    		}
+        }
+    };
+
 }
