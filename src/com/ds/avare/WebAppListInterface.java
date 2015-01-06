@@ -171,11 +171,34 @@ public class WebAppListInterface {
      * Move an entry in the list
      */
     @JavascriptInterface
-    public void move(int from, int to) {
+    public void moveUpItem() {
+    	if(mWorkingIndex <= 0) {
+    		return;
+    	}
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mWorkingList.moveStep(from, to);
+    	mWorkingList.moveStep(mWorkingIndex, mWorkingIndex - 1);
+    	mWorkingIndex--; // Move with step
+    	newList();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    /**
+     * Move an entry in the list
+     */
+    @JavascriptInterface
+    public void moveDownItem() {
+    	// Do not get past last
+    	mWorkingIndex++;
+    	if(mWorkingIndex >= mWorkingList.getStepsArray().length) {
+    		mWorkingIndex = mWorkingList.getStepsArray().length - 1;
+    		return;
+    	}
+    	// surround JS each call with busy indication / not busy 
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	mWorkingList.moveStep(mWorkingIndex - 1, mWorkingIndex);
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -192,16 +215,20 @@ public class WebAppListInterface {
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
-
     /**
      * 
      * @param num
      */
     @JavascriptInterface
-    public void deleteItem(int num) {
+    public void deleteItem() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mWorkingList.removeStep(num);
+    	// remove current item, change working index to not overflow
+    	mWorkingList.removeStep(mWorkingIndex);
+    	mWorkingIndex--;
+    	if(mWorkingIndex < 0) {
+    		mWorkingIndex = 0;
+    	}
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }

@@ -144,7 +144,7 @@ public class PlanActivity extends Activity {
         setContentView(view);
         mWebView = (WebView)view.findViewById(R.id.plan_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(false);
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppPlanInterface(mContext, mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)

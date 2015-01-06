@@ -82,9 +82,7 @@ td {
 <script type="text/javascript" >
 
 var CELL_TEXT = 0;
-var CELL_DELETE = 1;
-var CELL_ACTION = 2;
-var CELL_LAST = 3;
+var CELL_LAST = 1;
 
 
 // set list name
@@ -122,45 +120,8 @@ function list_add(text) {
 	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
 	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
 	cell[CELL_TEXT].className = "tdhlong";
-	cell[CELL_DELETE] = row.insertCell(CELL_DELETE);
-	cell[CELL_ACTION] = row.insertCell(CELL_ACTION);
 
 	cell[CELL_TEXT].innerHTML = text;
-
-	set_buttons();
-}
-
-// Sets buttons on each row
-function set_buttons() {
-
-	// Set buttons for each entry in list
-	var list_table = document.getElementById("list_table");
-	for(var i = 1; i < list_table.rows.length; i++) {
-		list_table.rows[i].cells[CELL_ACTION].innerHTML = 
-			"<button onclick='list_moveup(" + i.toString() + ")' class='halfbutton'>Up</button>" +
-			"<button onclick='list_movedn(" + i.toString() + ")' class='halfbutton'>Dn</button>";
-		list_table.rows[i].cells[CELL_DELETE].innerHTML = 
-			"<button onclick='list_delete(" + i.toString() + ")'>Delete</button>";
-	}
-}
-
-// Delete a item in list
-function list_delete(row) {
-	var r = confirm("Delete?");
-	if(r == true) {
-		Android.deleteItem(row - 1);
-	}
-}
-
-// Move up in the list a item
-function list_moveup(row) {
-	Android.move(row - 1, row - 2);
-}
-
-// Move down in the list a item
-function list_movedn(row) {
-	// Android is 0 based index	
-	Android.move(row - 1, row);
 }
 
 // clear the entire list
@@ -198,6 +159,30 @@ function add_list_item() {
 	Android.addToList(item.value);
 	// clear when added
 	item.value = "";	
+}
+
+// delete current item
+function list_delete_item() {
+	var r = confirm("Delete Selected?");
+	if(r == false) {
+		return;	
+	}	
+	Android.deleteListItem();
+}
+
+// move up current item
+function list_moveup_item() {
+	Android.moveUpItem();
+}
+
+// move down current item
+function list_movedown_item() {
+	Android.moveDownItem();
+}
+
+// delete current item
+function list_delete_item() {
+	Android.deleteItem();
 }
 
 
@@ -306,8 +291,12 @@ function save_add(name) {
 		<label id="list_name">List[]</label><br>
 		<button onclick="list_discard()">Discard</button>
 		<br></br>
-		<table id="list_table" border="1"><th class="tdhlong">Item</th><th>Delete</th><th>Action</th></table>
+		<table id="list_table" border="1"><th class="tdhlong">Item</th></table>
 		<br>
+		<button onclick="list_delete_item()">Delete</button>
+		<button onclick="list_moveup_item()">Up</button>
+		<button onclick="list_movedown_item()">Down</button>
+		<br></br>
 		<label>Add</label>
 		<br>
 		<input id="item_input" placeholder="Mixture Full Rich."></input>
