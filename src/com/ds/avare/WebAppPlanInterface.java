@@ -585,8 +585,8 @@ public class WebAppPlanInterface implements Observer {
             		mWebView.loadUrl(url);
             	}
             	
-            	// Set destination next
-        		if(plan.getDestination(plan.findNextNotPassed()) != null) {
+            	// Set destination next if plan active only
+        		if(plan.getDestination(plan.findNextNotPassed()) != null && plan.isActive()) {
         			mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
         		}
         		// Then change state of activate button
