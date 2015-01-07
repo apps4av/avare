@@ -55,6 +55,9 @@ public class PlanActivity extends Activity {
     private EditText mSearchText;
     private Button mNextButton;
     private Button mLastButton;
+    private Button mBackButton;
+    private Button mActivateButton;
+    private Button mForwardButton;
     private ProgressBar mProgressBar;
     private ProgressBar mProgressBarSearch;
     private WebAppPlanInterface mInfc;
@@ -80,6 +83,8 @@ public class PlanActivity extends Activity {
      */
     public static final int SHOW_BUSY = 1;
     public static final int UNSHOW_BUSY = 2;
+    public static final int ACTIVE = 3;
+    public static final int INACTIVE = 4;
 
 
     /**
@@ -222,6 +227,34 @@ public class PlanActivity extends Activity {
                 mWebView.findNext(false);
             }
             
+        });
+        
+        mBackButton = (Button)view.findViewById(R.id.plan_button_back);
+        mBackButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mInfc.moveBack();
+            }
+        });
+
+        mForwardButton = (Button)view.findViewById(R.id.plan_button_forward);
+        mForwardButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mInfc.moveForward();
+            }
+            
+        });
+
+        mActivateButton = (Button)view.findViewById(R.id.plan_button_activate);
+        mActivateButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mInfc.activateToggle();
+            }
         });
     }
 
@@ -372,7 +405,7 @@ public class PlanActivity extends Activity {
     }
 
     /**
-     * 
+     * This is needed to change views from web app interface class
      */
     private Handler mHandler = new Handler() {
         @Override
@@ -382,6 +415,12 @@ public class PlanActivity extends Activity {
     		}
     		else if(msg.what == UNSHOW_BUSY) {
     			mProgressBarSearch.setVisibility(View.INVISIBLE);
+    		}
+    		else if(msg.what == ACTIVE) {
+    			mActivateButton.setText(getString(R.string.Active));
+    		}
+    		else if(msg.what == INACTIVE) {
+    			mActivateButton.setText(getString(R.string.Inactive));
     		}
         }
     };

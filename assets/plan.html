@@ -76,14 +76,12 @@ td {
 
 <script type="text/javascript" >
 
-var CELL_DELETE = 0;
-var CELL_WP = 1;
-var CELL_TYPE = 2;
-var CELL_DISTANCE = 3;
-var CELL_TIME = 4;
-var CELL_BEARING = 5;
-var CELL_ACTION = 6;
-var CELL_LAST = 7;
+var CELL_WP = 0;
+var CELL_TYPE = 1;
+var CELL_DISTANCE = 2;
+var CELL_TIME = 3;
+var CELL_BEARING = 4;
+var CELL_LAST = 5;
 
 
 // set plan name
@@ -112,16 +110,6 @@ function set_plan_line(row, next, bearing, distance, time) {
 	plan_table.rows[row].cells[CELL_TIME].innerHTML = time;
 }
 
-// Advance a plan progress
-function advance_plan() {
-	Android.moveForward();
-}
-
-// Regress a plan progress
-function regress_plan() {
-	Android.moveBack();
-}
-
 // add a way point to the plan
 function plan_add(id, type) {
 	var plan_table = document.getElementById("plan_table");
@@ -137,13 +125,11 @@ function plan_add(id, type) {
 	var cell = [];
 
 	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-	cell[CELL_DELETE] = row.insertCell(CELL_DELETE);
 	cell[CELL_WP] = row.insertCell(CELL_WP);
 	cell[CELL_TYPE] = row.insertCell(CELL_TYPE);
 	cell[CELL_DISTANCE] = row.insertCell(CELL_DISTANCE);
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_BEARING] = row.insertCell(CELL_BEARING);
-	cell[CELL_ACTION] = row.insertCell(CELL_ACTION);
 
 	cell[CELL_WP].innerHTML = id;
 	cell[CELL_TYPE].innerHTML = type;
@@ -151,56 +137,27 @@ function plan_add(id, type) {
 	cell[CELL_TIME].innerHTML = "";	
 	cell[CELL_BEARING].innerHTML = "";	
 
-	set_buttons();
-}
-
-// Sets buttons on each row
-function set_buttons() {
-
-	// Set buttons for each entry in plan
-	var plan_table = document.getElementById("plan_table");
-	for(var i = 1; i < plan_table.rows.length; i++) {
-		plan_table.rows[i].cells[CELL_ACTION].innerHTML = 
-			"<button onclick='plan_moveup(" + i.toString() + ")' class='halfbutton'>Up</button>" +
-			"<button onclick='plan_movedn(" + i.toString() + ")' class='halfbutton'>Dn</button>";
-		plan_table.rows[i].cells[CELL_DELETE].innerHTML = 
-			"<button onclick='plan_delete(" + i.toString() + ")'>Delete</button>";
-	}
-
-	// clear search input
-	document.getElementById("search_input").value = "";
-}
-
-// Activate Plan
-function plan_toggle() {
-	Android.activateToggle();
-}
-
-
-// Activate Plan
-function set_active(active) {
-	if(!active) {
-		document.getElementById("plan_activate_button").innerHTML = "Activate";
-	}
-	else {
-		document.getElementById("plan_activate_button").innerHTML = "Deactivate";
-	}
+    // clear search input
+    document.getElementById("search_input").value = "";
 }
 
 // Delete a waypoint in Plan
-function plan_delete(row) {
-	Android.deleteWaypoint(row - 1);
+function plan_delete() {
+	var r = confirm("Delete Selected?");
+	if(r == false) {
+		return;	
+	}
+	Android.deleteWaypoint();
 }
 
 // Move up in the list a waypoint
-function plan_moveup(row) {
-	Android.move(row - 1, row - 2);
+function plan_moveup() {
+	Android.moveUp();
 }
 
 // Move down in the list a waypoint
-function plan_movedn(row) {
-	// Android is 0 based index	
-	Android.move(row - 1, row);
+function plan_movedn() {
+	Android.moveDown();
 }
 
 
@@ -415,13 +372,14 @@ function search_add(id, name, type, subtype) {
 	<p>
 		<label id="plan_name">Plan[]</label><br>
 		<button onclick="plan_discard()">Discard</button>
-		<button id="plan_activate_button" onclick="plan_toggle()">Activate</button>
 		<br></br>
-		<table id="plan_table" border="1"><th>Delete</th><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th><th>Action</th></table>
+		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th></table>
 		<br>
 		<label id="plan_total"></label>
-		<button onclick="regress_plan()">Previous</button>
-		<button onclick="advance_plan()">Next</button>
+		<br>
+		<button onclick="plan_delete()">Delete</button>
+		<button onclick="plan_moveup()">Up</button>
+		<button onclick="plan_movedn()">Down</button>
 		<br></br>
 		<label>Add</label>
 		<br>

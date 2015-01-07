@@ -48,10 +48,40 @@ Redistribution and use in source and binary forms, with or without modification,
         <WebView
             android:background="#FF000000"
             android:id="@+id/plan_mainpage"
-            android:layout_alignParentBottom="true"
             android:layout_below="@+id/plan_edit_text"
+            android:layout_above="@+id/plan_bottom_buttons"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/plan_bottom_buttons"
+            android:layout_alignParentBottom="true">
+            <Button
+                android:id="@+id/plan_button_back"
+                android:layout_alignParentLeft="true"
+                android:layout_weight="0.33"
+                android:text="@string/Last"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"/>
+
+            <Button
+                android:id="@+id/plan_button_activate"
+                android:layout_alignParentRight="true"
+                android:layout_weight="0.33"
+                android:text="@string/Inactive"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"/>
+            
+            <Button
+                android:id="@+id/plan_button_forward"
+                android:layout_alignParentRight="true"
+                android:layout_weight="0.33"
+                android:text="@string/Next"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"/>
+        </LinearLayout>
         
         <ProgressBar
            android:id="@+id/plan_load_progress"

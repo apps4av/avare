@@ -56,6 +56,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_ADD_PLAN_SAVE = 8;
     private static final int MSG_NOTBUSY = 9;
     private static final int MSG_BUSY = 10;
+    private static final int MSG_ACTIVE = 11;
+    private static final int MSG_INACTIVE = 12;
     
     /** 
      * Instantiate the interface and set the context
@@ -84,6 +86,15 @@ public class WebAppPlanInterface implements Observer {
 	    if(mPref.isSimulationMode()) {
 	    	mHandler.sendEmptyMessage(MSG_TIMER);
 	    }
+	    
+	    // Also update active state
+	    if(mService.getPlan().isActive()) {
+	    	mHandler.sendEmptyMessage(MSG_ACTIVE);	    	
+	    }
+	    else {
+	    	mHandler.sendEmptyMessage(MSG_INACTIVE);  	
+	    }
+	    
     	// In sim mode or not, keep updating plan
     	updatePlan();
     }
@@ -167,11 +178,45 @@ public class WebAppPlanInterface implements Observer {
      * Move an entry in the plan
      */
     @JavascriptInterface
-    public void move(int from, int to) {
+    public void moveUp() {
     	// surround JS each call with busy indication / not busy 
+
+    	Plan plan = mService.getPlan();
+    	// move active point up
+    	int next = plan.findNextNotPassed();
+    	if(next == 0) {
+    		// cannot do already at top
+    		return;
+    	}
+    	plan.move(next, next - 1);
+    	plan.regress(); // move with the point
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	newPlan();
+    	updatePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    /**
+     * Move an entry in the plan
+     */
+    @JavascriptInterface
+    public void moveDown() {
+    	// surround JS each call with busy indication / not busy 
+    	
+    	// move active point down
+    	Plan plan = mService.getPlan();
+    	
+    	int next = plan.findNextNotPassed();
+    	if(next == (plan.getDestinationNumber() - 1)) {
+    		// cannot do already at bottom
+    		return;
+    	}
+
+    	plan.move(next, next + 1);
+    	plan.advance();
+    	
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mService.getPlan().move(from, to);
     	newPlan();
     	updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -197,23 +242,20 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void activateToggle() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	Plan plan = mService.getPlan();
     	if(plan.isActive()) {
     		plan.makeInactive();
+	    	mHandler.sendEmptyMessage(MSG_INACTIVE);
     		mService.setDestination(null);
     	}
     	else {
     		plan.makeActive(mService.getGpsParams());    		
+	    	mHandler.sendEmptyMessage(MSG_ACTIVE);
     		if(plan.getDestination(plan.findNextNotPassed()) != null) {
     			mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
     		}
     	}
- 
-    	// Must use handler from functions called from JS
-		updatePlan();
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -221,10 +263,10 @@ public class WebAppPlanInterface implements Observer {
      * @param num
      */
     @JavascriptInterface
-    public void deleteWaypoint(int num) {
+    public void deleteWaypoint() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
-
-    	mService.getPlan().remove(num);
+    	// Delete the one that has a mark on it, or the active waypoint
+    	mService.getPlan().remove(mService.getPlan().findNextNotPassed());
     	newPlan();
 		updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -625,6 +667,12 @@ public class WebAppPlanInterface implements Observer {
         	}
         	else if(MSG_BUSY == msg.what) {
         		mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+        	}
+        	else if(MSG_ACTIVE == msg.what) {
+        		mCallback.callback((Object)PlanActivity.ACTIVE);
+        	}
+        	else if(MSG_INACTIVE == msg.what) {
+        		mCallback.callback((Object)PlanActivity.INACTIVE);
         	}
         }
     };
