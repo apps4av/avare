@@ -619,11 +619,15 @@ public class WebAppPlanInterface implements Observer {
                  * things might have changed.
                  */
             	int passed = plan.findNextNotPassed();
+            	double declination = 0;            	
+            	if(mService.getGpsParams() != null) {
+            		declination = mService.getGpsParams().getDeclinition();
+            	}
             	for(int num = 0; num < plan.getDestinationNumber(); num++) {
             		String url = "javascript:set_plan_line(" + 
             				num + "," +
             				(passed == num ? 1 : 0) + ",'" +
-            				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), mService.getGpsParams().getDeclinition())) + "','" + 
+            				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), declination)) + "','" + 
             				Math.round(plan.getDestination(num).getDistance()) + "','" +
             				plan.getDestination(num).getEte() +
             				"')";
