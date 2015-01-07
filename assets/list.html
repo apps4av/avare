@@ -136,7 +136,7 @@ function list_clear() {
 // remove the entire list
 function list_discard() {
 	// call Android
-	var r = confirm("Discard?");
+	var r = confirm("Delete List?");
 	if(r == true) {
 		Android.discardList();
 	}
@@ -146,7 +146,7 @@ function list_discard() {
 function list_import() {
 	// call Android
 	var path = document.getElementById("import_input");
-	var r = confirm("Discard List then Import?");
+	var r = confirm("Delete List then Import?");
 	if(r == true) {
 		Android.importFromFile(path.value);
 		path.value = "";
@@ -161,15 +161,6 @@ function add_list_item() {
 	item.value = "";	
 }
 
-// delete current item
-function list_delete_item() {
-	var r = confirm("Delete Selected?");
-	if(r == false) {
-		return;	
-	}	
-	Android.deleteListItem();
-}
-
 // move up current item
 function list_moveup_item() {
 	Android.moveUpItem();
@@ -182,9 +173,12 @@ function list_movedown_item() {
 
 // delete current item
 function list_delete_item() {
-	Android.deleteItem();
+    var r = confirm("Delete Selected?");
+    if(r == false) {
+        return; 
+    }   
+    Android.deleteItem();
 }
-
 
 var CELL_SAVE_NAME = 0;
 var CELL_SAVE_LOAD = 1;
@@ -289,7 +283,7 @@ function save_add(name) {
 <body>
 	<p>
 		<label id="list_name">List[]</label><br>
-		<button onclick="list_discard()">Discard</button>
+		<button onclick="list_discard()">Delete All</button>
 		<button onclick="list_delete_item()">Delete</button>
 		<br></br>
 		<table id="list_table" border="1"><th class="tdhlong">Item</th></table>
@@ -303,7 +297,7 @@ function save_add(name) {
 		<button onclick="add_list_item()">Add</button>
 		<br></br>
 		<label>Import</label><br>
-		<input id="import_input" placeholder="/sdcard/list.txt"></input>
+		<input id="import_input" placeholder="/sdcard/list.txt[html]"></input>
 		<button onclick="list_import()">Import</button>
 	</p>
 	<p>
