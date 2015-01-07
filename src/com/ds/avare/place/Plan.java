@@ -464,9 +464,11 @@ public class Plan implements Observer {
      * 
      */
     public void simulate() {
-        int num = getDestinationNumber(); 
-        if(num > 0) {
-            updateLocation(new GpsParams(mDestination[num - 1].getLocation()));
+        if(getDestinationNumber() > 0) {
+        	// Now if we have at least one destination, set GPS coords
+        	// to the next not passed to simulate we are there.
+        	// This gives accurate plan total from start of plan
+        	updateLocation(new GpsParams(mDestination[findNextNotPassed()].getLocation()));
         }
     }
     
