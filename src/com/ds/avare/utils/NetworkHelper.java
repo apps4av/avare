@@ -375,9 +375,13 @@ public class NetworkHelper {
         
         // now find cycle on todays date
         epoch.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
-
-        while(epoch.before(now)) {
+        cycle++;
+        epoch.add(Calendar.DAY_OF_MONTH, 28);
+        while(true) {
             epoch.add(Calendar.DAY_OF_MONTH, 28);
+            if(epoch.after(now)) {
+            	break;
+            }
             cycle++;
         }
 
