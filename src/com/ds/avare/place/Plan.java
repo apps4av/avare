@@ -301,9 +301,6 @@ public class Plan implements Observer {
             mPassage = new Passage();
             return;
         }
-        if(mPassed[0] == false) {
-            mPassed[0] = true;
-        }
         
         /*
          * Depends if it is active or plan

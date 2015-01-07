@@ -84,6 +84,8 @@ public class WebAppPlanInterface implements Observer {
 	    if(mPref.isSimulationMode()) {
 	    	mHandler.sendEmptyMessage(MSG_TIMER);
 	    }
+    	// In sim mode or not, keep updating plan
+    	updatePlan();
     }
     
     /**

@@ -94,13 +94,6 @@ public class PlanActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            if (location != null && mService != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-            	mInfc.updatePlan();
-            }
         }
 
         @Override
