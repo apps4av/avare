@@ -29,6 +29,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -162,6 +163,15 @@ public class ChecklistActivity extends Activity {
 	    });
         mWebView.loadUrl("file:///android_asset/list.html");
 
+        // This is need on some old phones to get focus back to webview.
+        mWebView.setOnTouchListener(new View.OnTouchListener() {  
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				arg0.requestFocus();
+				return false;
+			}
+        });
+        
         /*
          * Progress bar
          */
