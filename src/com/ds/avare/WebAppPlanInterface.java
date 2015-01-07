@@ -24,6 +24,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -622,7 +623,7 @@ public class WebAppPlanInterface implements Observer {
             		String url = "javascript:set_plan_line(" + 
             				num + "," +
             				(passed == num ? 1 : 0) + ",'" +
-            				Math.round(plan.getDestination(num).getBearing()) + "','" + 
+            				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), mService.getGpsParams().getDeclinition())) + "','" + 
             				Math.round(plan.getDestination(num).getDistance()) + "','" +
             				plan.getDestination(num).getEte() +
             				"')";
