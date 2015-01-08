@@ -193,7 +193,7 @@ function save_load(row) {
 
 // delete the list
 function save_delete(row) {
-	var r = confirm("Delete?");
+	var r = confirm("Delete Saved?");
 	if(r == false) {
 		return;	
 	}
@@ -284,7 +284,7 @@ function save_add(name) {
 	<p>
 		<label id="list_name">List[]</label><br>
 		<button onclick="list_discard()">Delete All</button>
-		<button onclick="list_delete_item()">Delete Item</button>
+		<button onclick="list_delete_item()">Delete</button>
 		<br></br>
 		<table id="list_table" border="1"><th class="tdhlong">Item</th></table>
 		<br>

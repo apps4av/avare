@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +34,6 @@ import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 /**
@@ -49,12 +46,8 @@ public class ChecklistActivity extends Activity {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private EditText mSearchText;
-    private Button mNextButton;
-    private Button mLastButton;
     private Button mBackButton;
     private Button mForwardButton;
-    private ProgressBar mProgressBar;
     private ProgressBar mProgressBarSearch;
     private WebAppListInterface mInfc;
     
@@ -175,60 +168,8 @@ public class ChecklistActivity extends Activity {
         /*
          * Progress bar
          */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.list_progress_bar));
         mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.list_load_progress));
         mProgressBarSearch.setVisibility(View.VISIBLE);
-
-        /*
-         * For searching, start search on every new key press
-         */
-        mSearchText = (EditText)view.findViewById(R.id.list_edit_text);
-        mSearchText.addTextChangedListener(new TextWatcher() { 
-            @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-    
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-    
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int after) {
-                
-                /*
-                 * If text is 0 length or too long, then do not search, show last list
-                 */
-                if(s.length() < 3) {
-                    mWebView.clearMatches();
-                    return;
-                }
-
-                mProgressBar.setVisibility(ProgressBar.VISIBLE);
-                mWebView.findAll(s.toString());
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-            }
-        });
-
-        mNextButton = (Button)view.findViewById(R.id.list_button_next);
-        mNextButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mWebView.findNext(true);
-            }
-        });
-
-        mLastButton = (Button)view.findViewById(R.id.list_button_last);
-        mLastButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mWebView.findNext(false);
-            }
-            
-        });
-        
         
         mBackButton = (Button)view.findViewById(R.id.list_button_back);
         mBackButton.setOnClickListener(new OnClickListener() {

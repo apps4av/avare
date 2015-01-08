@@ -243,7 +243,7 @@ function save_load_reverse(row) {
 
 // delete the plan
 function save_delete(row) {
-	var r = confirm("Delete?");
+	var r = confirm("Delete Saved?");
 	if(r == false) {
 		return;	
 	}
@@ -393,8 +393,8 @@ function search_add(id, name, type, subtype) {
 <body>
 	<p>
 		<label id="plan_name">Plan[]</label><br>
-		<button onclick="plan_discard()">Delete Plan</button>
-		<button onclick="plan_delete()">Delete W.P.</button>
+		<button onclick="plan_discard()">Delete All</button>
+		<button onclick="plan_delete()">Delete</button>
 		<br></br>
 		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th></table>
 		<br>

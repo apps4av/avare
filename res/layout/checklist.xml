@@ -15,42 +15,12 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-        <Button
-            android:id="@+id/list_button_last"
-            android:contentDescription="@string/Last"
-            android:drawableLeft="@drawable/left"
-            android:layout_width="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_height="wrap_content"/>
-            
-        <EditText
-            android:id="@+id/list_edit_text"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:layout_marginRight="40dp"
-            android:layout_marginLeft="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
-            android:hint="@string/Search"
-            android:inputType="textNoSuggestions" />
-        
-        <Button
-            android:id="@+id/list_button_next"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_width="40dp"
-            android:drawableRight="@drawable/right"
-            android:contentDescription="@string/Next"
-            android:layout_height="wrap_content"/>
-        
         <WebView
         	android:id="@+id/list_mainpage"
         	android:layout_width="fill_parent"
         	android:layout_height="fill_parent"
+        	android:layout_alignParentTop="true"
         	android:layout_above="@+id/list_bottom_buttons"
-        	android:layout_below="@+id/list_edit_text"
         	android:background="#FF000000" />
 
         <LinearLayout
