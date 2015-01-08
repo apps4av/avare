@@ -174,6 +174,7 @@ public class PlanActivity extends Activity {
         mWebView.loadUrl("file:///android_asset/plan.html");
 
         // This is need on some old phones to get focus back to webview.
+        mWebView.setFocusable(true);
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
@@ -301,7 +302,6 @@ public class PlanActivity extends Activity {
                 mInfc.newSavePlan();
                 mProgressBarSearch.setVisibility(View.INVISIBLE);
      		}
-
             mTimer = new Timer();
             TimerTask sim = new UpdateTask();
             mTimer.scheduleAtFixedRate(sim, 0, 1000);
@@ -346,7 +346,7 @@ public class PlanActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
-        
+		mWebView.requestFocus();
     }
 
     /*

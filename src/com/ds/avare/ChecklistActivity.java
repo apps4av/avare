@@ -327,6 +327,7 @@ public class ChecklistActivity extends Activity {
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
         
+		mWebView.requestFocus();        
     }
 
     /*

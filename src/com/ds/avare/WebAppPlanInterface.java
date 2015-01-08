@@ -48,7 +48,6 @@ public class WebAppPlanInterface implements Observer {
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
     
-    private static final int MSG_UPDATE_PLAN = 1;
     private static final int MSG_CLEAR_PLAN = 2;
     private static final int MSG_ADD_PLAN = 3;
     private static final int MSG_ADD_SEARCH = 4;
@@ -83,21 +82,25 @@ public class WebAppPlanInterface implements Observer {
      * 
      */
     public void timer() {
-	    // If we are in sim mode, then send a message
+    	
+    	Plan plan = mService.getPlan();
+
+    	// If we are in sim mode, then send a message
 	    if(mPref.isSimulationMode()) {
 	    	mHandler.sendEmptyMessage(MSG_TIMER);
 	    }
 	    
 	    // Also update active state
-	    if(mService.getPlan().isActive()) {
+	    if(plan.isActive()) {
 	    	mHandler.sendEmptyMessage(MSG_ACTIVE);	    	
+	    	// Set destination next if plan active only
+			if(plan.getDestination(plan.findNextNotPassed()) != null) {
+				mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
+			}
 	    }
 	    else {
 	    	mHandler.sendEmptyMessage(MSG_INACTIVE);  	
 	    }
-	    
-    	// In sim mode or not, keep updating plan
-    	updatePlan();
     }
     
     /**
@@ -148,17 +151,8 @@ public class WebAppPlanInterface implements Observer {
         	Destination d = plan.getDestination(dest);
         	addWaypointToPlan(d.getID(), d.getType(), d.getFacilityName());
         }
-        updatePlan();
     }
 
-    /**
-     * Update the passed point on the Plan page
-     * @param passed
-     */
-    public void updatePlan() {
-        mHandler.sendEmptyMessage(MSG_UPDATE_PLAN);
-    }
-    
     /**
      * New dest
      * @param arg0
@@ -172,7 +166,6 @@ public class WebAppPlanInterface implements Observer {
 		Destination d = (Destination)arg0;
 		mService.getPlan().appendDestination(d);
 		addWaypointToPlan(d.getID(), d.getType(), d.getFacilityName());
-		updatePlan();
 	}
 	
     /**
@@ -193,7 +186,6 @@ public class WebAppPlanInterface implements Observer {
     	plan.regress(); // move with the point
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	newPlan();
-    	updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -219,7 +211,6 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	newPlan();
-    	updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -233,7 +224,6 @@ public class WebAppPlanInterface implements Observer {
     	mService.newPlan();
     	mService.getPlan().setName("");
     	newPlan();
-    	updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -269,7 +259,6 @@ public class WebAppPlanInterface implements Observer {
     	// Delete the one that has a mark on it, or the active waypoint
     	mService.getPlan().remove(mService.getPlan().findNextNotPassed());
     	newPlan();
-		updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -281,7 +270,6 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().regress();
-		updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -293,7 +281,6 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().advance();
-		updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -348,7 +335,6 @@ public class WebAppPlanInterface implements Observer {
     	mService.newPlanFromStorage(mSavedPlans.get(name), false);
     	mService.getPlan().setName(name);
     	newPlan();
-    	updatePlan();
     	
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -364,7 +350,6 @@ public class WebAppPlanInterface implements Observer {
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
     	mService.getPlan().setName(name);
     	newPlan();
-    	updatePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -408,6 +393,39 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
         mSearchTask = new SearchTask();
         mSearchTask.execute(value);
+    }
+
+    /** 
+     * JS polls every second to get all plan data.
+     */
+    @JavascriptInterface
+    public String getPlanData() {
+    	Plan plan = mService.getPlan();
+        /*
+         * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
+         * things might have changed.
+         */
+    	int passed = plan.findNextNotPassed();
+    	int numDest = plan.getDestinationNumber();
+    	double declination = 0;
+    	// add plan name upfront
+    	String plans = plan.getName() + "::::";
+    	if(mService.getGpsParams() != null) {
+    		declination = mService.getGpsParams().getDeclinition();
+    	}
+    	
+    	// make a :: separated plan list, then add totals to it
+    	for(int num = 0; num < numDest; num++) {
+    		plans += 
+    				(passed == num ? 1 : 0) + "," +
+    				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), declination)) + "," + 
+    				Math.round(plan.getDestination(num).getDistance()) + "," +
+    				plan.getDestination(num).getEte() + "::::";
+    	}
+    	// add total
+    	plans += mContext.getString(R.string.Total) + " " + plan.toString();
+    	
+    	return plans;
     }
 
 
@@ -613,39 +631,7 @@ public class WebAppPlanInterface implements Observer {
         @Override
         public void handleMessage(Message msg) {
             Plan plan = mService.getPlan();
-        	if(MSG_UPDATE_PLAN == msg.what) {
-                /*
-                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
-                 * things might have changed.
-                 */
-            	int passed = plan.findNextNotPassed();
-            	double declination = 0;            	
-            	if(mService.getGpsParams() != null) {
-            		declination = mService.getGpsParams().getDeclinition();
-            	}
-            	for(int num = 0; num < plan.getDestinationNumber(); num++) {
-            		String url = "javascript:set_plan_line(" + 
-            				num + "," +
-            				(passed == num ? 1 : 0) + ",'" +
-            				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), declination)) + "','" + 
-            				Math.round(plan.getDestination(num).getDistance()) + "','" +
-            				plan.getDestination(num).getEte() +
-            				"')";
-            		mWebView.loadUrl(url);
-            	}
-            	
-            	// Set destination next if plan active only
-        		if(plan.getDestination(plan.findNextNotPassed()) != null && plan.isActive()) {
-        			mService.setDestinationPlanNoChange(plan.getDestination(plan.findNextNotPassed()));
-        		}
-        		// Then change state of activate button
-            	mWebView.loadUrl("javascript:set_active(" + plan.isActive() + ")");
-            	mWebView.loadUrl("javascript:plan_set_total('" + mContext.getString(R.string.Total) + " " + plan.toString() + "')");
-            	if(null != plan.getName()) {
-            		mWebView.loadUrl("javascript:plan_setname('" + plan.getName() + "')");
-            	}
-        	}
-        	else if(MSG_CLEAR_PLAN == msg.what) {
+        	if(MSG_CLEAR_PLAN == msg.what) {
         		mWebView.loadUrl("javascript:plan_clear()");
         	}
         	else if(MSG_ADD_PLAN == msg.what) {

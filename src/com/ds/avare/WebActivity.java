@@ -169,6 +169,8 @@ public class WebActivity extends Activity  {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+		mWebView.requestFocus();
 
     }
 

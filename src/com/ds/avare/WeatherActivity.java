@@ -266,7 +266,7 @@ public class WeatherActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
-
+		mWebView.requestFocus();
     }
 
     /*

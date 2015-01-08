@@ -84,6 +84,23 @@ var CELL_BEARING = 4;
 var CELL_LAST = 5;
 
 
+var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
+
+// load plan from Android then display every second
+function loadplan() {
+	//var str = "myplanname::::1,102,18,--:--::::0,5,23,--:--::::0,317,14,--:--::::0,352,23,--:--::::0,122,3,--:--::::Total  82nm --:-- 102°";
+	var str = Android.getPlanData();
+	// split plan data encoded in ::
+	var plans = str.split("::::");
+	plan_setname(plans[0]);
+	for(var pl = 1; pl < (plans.length - 1); pl++) {
+		// split plan individual fields
+		var data = plans[pl].split(",");
+		set_plan_line(pl, data[0], data[1], data[2], data[3]);
+	}
+	plan_set_total(plans[plans.length - 1]);
+}
+
 // set plan name
 function plan_setname(name) {
 	var plan = document.getElementById("plan_name");
@@ -95,17 +112,22 @@ function plan_setname(name) {
 // Set plan line
 function set_plan_line(row, next, bearing, distance, time) {
 	// rows here are 1 indexed
-	row++;
 	var plan_table = document.getElementById("plan_table");
 
-	if(next == 1) {
+	// do not overwrite array
+	if(row >= plan_table.rows.length) {
+		return;
+	}
+
+	if(next == "1") {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "green";
 	}
 	else {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#111111";
 	}
 
-	plan_table.rows[row].cells[CELL_BEARING].innerHTML = bearing;
+
+	plan_table.rows[row].cells	[CELL_BEARING].innerHTML = bearing;
 	plan_table.rows[row].cells[CELL_DISTANCE].innerHTML = distance;
 	plan_table.rows[row].cells[CELL_TIME].innerHTML = time;
 }
