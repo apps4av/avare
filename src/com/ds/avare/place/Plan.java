@@ -47,7 +47,7 @@ public class Plan implements Observer {
     private boolean[] mPassed;
     
     
-    private static final int MAX_DESTINATIONS = 15;
+    private static final int MAX_DESTINATIONS = 50;
     
     private static final int MILES_PER_SEGMENT = 50;
     
@@ -620,8 +620,19 @@ public class Plan implements Observer {
     	double mCurrentDistance;
     	double mCurrentBearing;
     	 
-    	private static final double PASSAGE_DISTANCE_MIN = 2;
-    	 
+    	// The idea is to adjust the passage distance to lower value near the airport to 
+    	// have the approaches work properly.
+    	// For enroute 30+ NM, your pass zone is 7 NM
+    	private static final double PASSAGE_ENROUTE_DISTANCE_MIN = 7;
+
+    	// For terminal (8-30NM), your pass zone is 2 miles 
+    	private static final double PASSAGE_TERMINAL_DISTANCE_MIN = 2;
+    	private static final double PASSAGE_TERMINAL_DISTANCE = 30;
+
+    	// For approach (<8NM) your pass zone is 0.2 miles
+    	private static final double PASSAGE_APPROACH_MIN = 0.2;
+    	private static final double PASSAGE_APPROACH_DISTANCE = 8;
+
     	public Passage() {
         	mLastDistance = -1;
         	mLastBearing = -1;        
@@ -630,8 +641,19 @@ public class Plan implements Observer {
         /*
          * Algorithm to calculate passage.
          */
-        private boolean hasPassed() {
+        private boolean hasPassed(double distanceFromLanding) {
 
+        	double max;
+        	if(distanceFromLanding < PASSAGE_APPROACH_DISTANCE) {
+        		max = PASSAGE_APPROACH_MIN;
+        	}
+        	else if(distanceFromLanding < PASSAGE_TERMINAL_DISTANCE) {
+        		max = PASSAGE_TERMINAL_DISTANCE_MIN;
+        	}
+        	else {
+        		max = PASSAGE_ENROUTE_DISTANCE_MIN;
+        	}
+        	
             /*
              * no passing in sim mode
              */
@@ -646,7 +668,7 @@ public class Plan implements Observer {
 	            /*
 	             * We are in passage zone
 	             */
-	            if(mCurrentDistance < PASSAGE_DISTANCE_MIN) {
+	            if(mCurrentDistance < max) {
 	            	return true;
 	            }
             }      
@@ -673,7 +695,11 @@ public class Plan implements Observer {
             mCurrentDistance = p.getDistance();
             mCurrentBearing = (p.getBearing() + 360) % 360;
 
-            boolean ret = hasPassed();
+            Destination lastDest = mDestination[getDestinationNumber() - 1];
+            Projection plast = new Projection(params.getLongitude(), params.getLatitude(),
+                    lastDest.getLocation().getLongitude(), lastDest.getLocation().getLatitude());
+
+            boolean ret = hasPassed(plast.getDistance());
             
             mLastDistance = mCurrentDistance;
             mLastBearing = mCurrentBearing;
