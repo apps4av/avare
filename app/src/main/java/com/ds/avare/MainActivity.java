@@ -13,12 +13,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
-
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +28,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
  
 /**
  * 
@@ -137,6 +138,8 @@ public class MainActivity extends TabActivity {
         
         if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
+        }else{
+            MediaPlayer.create(this, R.raw.singing_vuvuzela).start();
         }
         
     }
