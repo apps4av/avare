@@ -488,8 +488,6 @@ public class WebAppPlanInterface implements Observer {
 	             * This is a geo coordinate with &?
 	             */
 	            if(srch[num].contains("&")) {
-	
-	            	selection = new String[1];
 	            	selection[num] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
 	            	continue;
 	            }
