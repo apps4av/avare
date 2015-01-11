@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="/Users/elyseturner/GitHub/avare/app/src/main/assets" >
+            <file
+                name="avare-offlinehelp.html"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/avare-offlinehelp.html" />
+            <file
+                name="LiberationMono-Bold.ttf"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/LiberationMono-Bold.ttf" />
+            <file
+                name="list.html"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/list.html" />
+            <file
+                name="plan.html"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/plan.html" />
+            <file
+                name="privacy.html"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/privacy.html" />
+            <file
+                name="weather.html"
+                path="/Users/elyseturner/GitHub/avare/app/src/main/assets/weather.html" />
+        </source>
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/Users/elyseturner/GitHub/avare/app/src/debug/assets" />
+    </dataSet>
+
+</merger>

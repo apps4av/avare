@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ds.avare"
+    android:versionCode="212"
+    android:versionName="5.9.2" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+
+    <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <!-- Network State Permissions to detect Internet status -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/aircraft"
+        android:label="@string/app_name" >
+        <service android:name="com.ds.avare.StorageService" />
+        <service
+            android:name="com.ds.avare.IHelperService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.ds.avare.START_SERVICE" />
+            </intent-filter>
+        </service>
+
+        <activity android:name="com.ds.avare.PrefActivity" />
+        <activity android:name="com.ds.avare.SearchActivity" />
+        <activity android:name="com.ds.avare.PlanActivity" />
+        <activity android:name="com.ds.avare.AirportActivity" />
+        <activity android:name="com.ds.avare.SatelliteActivity" />
+        <activity android:name="com.ds.avare.WebActivity" />
+        <activity android:name="com.ds.avare.LocationActivity" />
+        <activity android:name="com.ds.avare.NearestActivity" />
+        <activity android:name="com.ds.avare.PlatesActivity" />
+        <activity android:name="com.ds.avare.PlatesTagActivity" />
+        <activity android:name="com.ds.avare.ChartsDownloadActivity" />
+        <activity android:name="com.ds.avare.WeatherActivity" />
+        <activity android:name="com.ds.avare.ChecklistActivity" />
+        <activity android:name="com.ds.avare.TripActivity" />
+        <activity android:name="com.ds.avare.RegisterActivity" />
+        <activity android:name="com.ds.avare.MessageActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.ds.avare.MainActivity"
+            android:label="@string/title_activity_main" >
+
+            <!-- Intent for mock gps built into app -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

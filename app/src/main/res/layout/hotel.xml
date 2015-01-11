@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="#FF000000"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+	<LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hotel_layout_date_text" >
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textColor="#FFFFFFFF"
+             android:layout_weight="1"
+             android:textSize="10dp"
+             android:text="Arrive"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textColor="#FFFFFFFF"
+             android:layout_weight="1"
+             android:textSize="10dp"
+             android:text="Depart"
+             >
+        </TextView>
+        
+    </LinearLayout>
+	
+    <LinearLayout
+    	android:layout_below="@+id/hotel_layout_date_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hotel_layout_date" >
+		
+	    <EditText
+	         android:id="@+id/hotel_datefrom_text"
+	         android:layout_height="wrap_content"
+	         android:layout_width="0dp"
+	         android:layout_weight="1"
+	         android:inputType="date"
+	         >
+	    </EditText>
+
+        <EditText
+	         android:id="@+id/hotel_dateto_text"
+	         android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:inputType="date"
+	         >
+	    </EditText>
+	    
+	</LinearLayout>
+    
+    <LinearLayout
+    	android:layout_below="@+id/hotel_layout_date"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hotel_layout_type_text" >
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textColor="#FFFFFFFF"
+             android:layout_weight="1"
+             android:textSize="10dp"
+             android:text="Maximum Price"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textColor="#FFFFFFFF"
+             android:layout_weight="1"
+             android:textSize="10dp"
+             android:text="Minimum Stars"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textColor="#FFFFFFFF"
+             android:layout_weight="1"
+             android:textSize="10dp"
+             android:text="Maximum Distance"
+             >
+        </TextView>
+        
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_below="@+id/hotel_layout_type_text"
+        android:layout_width="fill_parent"
+        android:id="@+id/hotel_layout_type"
+        android:layout_height="wrap_content" >
+            	   	
+	   	   <Spinner
+		        android:id="@+id/hotel_price"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+		        android:layout_height="wrap_content"
+		        android:entries="@array/hotel_max_price">
+		   </Spinner>
+		
+		   <Spinner
+		        android:id="@+id/hotel_stars"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_min_stars">
+		   </Spinner>
+		   
+			<Spinner
+			     android:id="@+id/hotel_radius"
+			     android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+			     android:entries="@array/hotel_max_radius">
+			</Spinner>
+		
+      </LinearLayout>
+
+    
+     <LinearLayout
+        android:layout_below="@+id/hotel_layout_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hotel_layout_ac1_text" >
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Adults"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Child Age"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Child Age"
+             >
+        </TextView>
+        
+    </LinearLayout>
+    
+      <LinearLayout
+        	android:id="@+id/hotel_layout_ac1"
+            android:layout_below="@+id/hotel_layout_ac1_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+    		
+			<Spinner
+		        android:id="@+id/hotel_adults"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_count_adults">
+		   </Spinner>
+		
+	       <Spinner
+		        android:id="@+id/hotel_child_1"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_age_child">
+		   </Spinner>
+		
+		   <Spinner
+		        android:id="@+id/hotel_child_2"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_age_child">
+		   </Spinner>
+	
+	   </LinearLayout>
+	   
+      <LinearLayout
+        android:layout_below="@+id/hotel_layout_ac1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hotel_layout_ac2_text" >
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Child Age"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Child Age"
+             >
+        </TextView>
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textColor="#FFFFFFFF"
+             android:textSize="10dp"
+             android:text="Child Age"
+             >
+        </TextView>
+        
+      </LinearLayout>
+      
+       <LinearLayout
+            android:id="@+id/hotel_layout_ac2"
+            android:layout_below="@+id/hotel_layout_ac2_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        
+	       <Spinner
+		        android:id="@+id/hotel_child_3"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_age_child">
+		   </Spinner>
+		   
+		   <Spinner
+		        android:id="@+id/hotel_child_4"
+		        android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+		        android:entries="@array/hotel_age_child">
+		   </Spinner>
+		   
+           <Spinner
+                android:id="@+id/hotel_child_5"
+                android:layout_height="wrap_content"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+                android:entries="@array/hotel_age_child">
+           </Spinner>
+	   
+    </LinearLayout>
+            	
+</RelativeLayout>
