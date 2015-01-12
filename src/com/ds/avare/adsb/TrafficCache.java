@@ -31,7 +31,7 @@ public class TrafficCache {
      * 
      * @param product
      */
-    public void putTarric(String callsign, int address, float lat, float lon, int altitude, 
+    public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
 
         /*

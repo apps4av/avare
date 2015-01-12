@@ -190,7 +190,7 @@ public class IHelperService extends Service {
                     return;
                 }
                 else if(type.equals("traffic")) {
-                    mService.getTrafficCache().putTarric(
+                    mService.getTrafficCache().putTraffic(
                             object.getString("callsign"),
                             object.getInt("address"),
                             (float)object.getDouble("latitude"),

@@ -253,6 +253,13 @@ public class Destination extends Observable {
 	    StringPreference s = new StringPreference(mDestType, mDbType, getFacilityName(), getID());
 	    return s.getHashedName();
 	}
+
+	// Build up a storage name using the values passed in
+	public static String getStorageName(String destType, String dbType, String facilityName, String id) {
+	    StringPreference s = new StringPreference(destType, dbType, facilityName, id);
+	    return s.getHashedName();
+		
+	}
 	
 	/**
      * Update the current speed, lat, lon, that will update

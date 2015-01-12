@@ -2,6 +2,8 @@ package com.ds.avare.externalFlightPlan;
 
 import java.util.List;
 
+import org.json.JSONArray;
+
 import com.ds.avare.place.Destination;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
@@ -40,6 +42,19 @@ public class ExternalFlightPlan {
 			}
 		}
 		return plan;
+	}
+	
+	/***
+	 * Return a JSON formatted string that contains the way points of this plan
+	 * @return
+	 */
+	public String toJSONString() {
+        JSONArray jsonArr = new JSONArray();
+		for(int idx = 0; idx < mWaypoints.size(); idx++) {
+			Waypoint wp = mWaypoints.get(idx);
+			jsonArr.put(Destination.getStorageName(Destination.UDW, null, null, wp.getName()));
+        }
+        return jsonArr.toString();
 	}
 	
 	/***
