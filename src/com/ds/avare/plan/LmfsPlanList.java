@@ -12,6 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.plan;
 
+import java.util.LinkedList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 /**
  * Get a list of plans
@@ -20,8 +25,48 @@ package com.ds.avare.plan;
  */
 public class LmfsPlanList {
 
-	public LmfsPlanList(String json) {
-		
+	private LinkedList<LmfsPlan> mPlans;
+	
+	/*
+	 * Parse something like:
+	 * 
+	 * {
+	 *  "returnStatus":true,"returnCodedMessage":[],"returnMessage":[],"flightPlanSummary":
+	 *  [
+	 * 	 {"route":"DCT","versionStamp":"20150112162243160","aircraftIdentifier":"N172EF","alertCount":0,"departureInstant":1421274180000,"flightDuration":"PT1H30M","actualDepartureInstant":null,"currentState":"PROPOSED","flightId":"66052270_527360_258","icaoSummaryFields":null,"nasSummaryFields":{"destination":{"latLong":"2548N08017W","locationIdentifier":"MIA"},"departure":{"latLong":"2939N09517W","locationIdentifier":"HOU"},"flightRules":"VFR"}},
+	 *   {"route":"DCT","versionStamp":"20150112163040050","aircraftIdentifier":"N172EF","alertCount":0,"departureInstant":1421360580000,"flightDuration":"PT1H30M","actualDepartureInstant":null,"currentState":"PROPOSED","flightId":"66052270_527360_259","icaoSummaryFields":null,"nasSummaryFields":{"destination":{"latLong":"2548N08017W","locationIdentifier":"MIA"},"departure":{"latLong":"2939N09517W","locationIdentifier":"HOU"},"flightRules":"VFR"}}
+	 *  ]
+	 * }
+	 */
+	public LmfsPlanList(String data) {
+		try {
+			/*
+			 * Get all plans from summaries (do not get plan details till user needs)".
+			 */
+			JSONObject json = new JSONObject(data);
+			JSONArray array = json.getJSONArray("flightPlanSummary");
+			mPlans = new LinkedList<LmfsPlan>();
+		    for(int plan = 0 ; plan < array.length(); plan++) {
+		    	LmfsPlan pl = new LmfsPlan();
+		    	JSONObject obj = array.getJSONObject(plan);
+		    	// Fill in all data needed to show user and identifiable plan
+		    	pl.setId(obj.getString("flightId"));
+		    	pl.currentState = obj.getString("currentState");
+		    	pl.aircraftIdentifier = obj.getString("aircraftIdentifier");
+		    	pl.destination = obj.getJSONObject("nasSummaryFields").getJSONObject("destination").getString("locationIdentifier");
+		    	pl.departure = obj.getJSONObject("nasSummaryFields").getJSONObject("departure").getString("locationIdentifier");
+		    }
+		}
+		catch(Exception e) {
+			
+		}
 	}
 
+	/**
+	 * List of all plans (may not be filled in except the ID)
+	 * @return
+	 */
+	public LinkedList<LmfsPlan> getPlans() {
+		return mPlans;
+	}
 }

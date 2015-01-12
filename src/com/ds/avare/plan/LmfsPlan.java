@@ -14,6 +14,8 @@ package com.ds.avare.plan;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 /**
  * 
  * @author zkhan
@@ -23,6 +25,8 @@ public class LmfsPlan {
 
 	
 	private static final String DOMESTIC = "DOMESTIC";
+	private static final String PROPOSED = "PROPOSED";
+	private static final String DIRECT = "DCT";
 
 	private boolean mValid;
 	private String mId;
@@ -45,7 +49,9 @@ public class LmfsPlan {
 	public String pilotData;
 	public String peopleOnBoard; 
 	public String aircraftColor;
+	public String route;
 	public String type;
+	public String currentState;
 
 	/**
 	 * 
@@ -72,6 +78,8 @@ public class LmfsPlan {
 		pilotData = "";
 		peopleOnBoard = ""; 
 		aircraftColor = "";
+		currentState = PROPOSED;
+		route = DIRECT;
 
 		type = DOMESTIC;		
 	}
@@ -100,11 +108,64 @@ public class LmfsPlan {
 	}
 
 	/**
-	 * LMFS plan from JSON
-	 * @param json
+	 * Set ID. Used when we get plan summary
+	 * @param id
 	 */
-	public LmfsPlan(String json) {
+	public void setId(String id) {
+		mId = id;
+	}
+
+	/**
+	 * LMFS plan from JSON
+	 * @param data will be like:
+	 * {"versionStamp":"20150112162243160","actualDepartureInstant":null,"beaconCode":null,"currentState":"PROPOSED","sarTracking":true,"nasFlightPlan":{"destination":{"latLong":"2548N08017W","locationIdentifier":"MIA"},"departure":{"latLong":"2939N09517W","locationIdentifier":"HOU"},"route":"DCT","aircraftColor":"BLUE","aircraftEquipment":"G","aircraftIdentifier":"N172EF","aircraftType":"P28A","flightRules":"VFR","fuelOnBoard":"PT20H0M","numberOfAircraft":3,"altDestination1":{"latLong":"3219N09005W","locationIdentifier":"JAN"},"altDestination2":null,"altitude":{"altitudeBlock":null,"altitudeVFR":null,"altitudeVFRFL":null,"altitudeABVFL":null,"altitudeFL":35,"altitudeOTP":null,"altitudeOTPFL":null},"departureInstant":1421274180000,"flightDuration":"PT1H30M","remarks":null,"peopleOnBoard":1,"speed":{"speedKnots":100,"speedMach":null,"speedClassified":null},"heavyWakeTurbulence":true,"pilotData":"PII restricted"},"returnCodedMessage":[],"returnMessage":[],"artccInfo":null,"icaoFlightPlan":null,"alertSubscription":true,"notificationsSubscription":true,"returnStatus":true,"artccState":null}
+	 */
+	public LmfsPlan(String data) {
 		init();
+		
+		// Parse JSON
+		try {
+			/*
+			 * Get all plans from summaries (do not get plan details till user needs)".
+			 */
+			JSONObject json = new JSONObject(data);
+			// Only support NAS
+			JSONObject nas = json.getJSONObject("nasFlightPlan");
+			if(nas == null) {
+				return;
+			}
+			flightRules = json.getString("flightRules");
+			aircraftIdentifier = json.getString("aircraftIdentifier");
+			departure = nas.getJSONObject("departure").getString("locationIdentifier");
+			destination = nas.getJSONObject("destination").getString("locationIdentifier");
+			departureInstant = json.getString("departureInstant"); 
+			flightDuration = json.getString("flightDuration");
+			altDestination1 = json.getString("altDestination1"); 
+			altDestination2 = json.getString("altDestination12"); 
+			aircraftType = json.getString("aircraftType");
+			numberOfAircraft = json.getString("numberOfAircraft");
+			heavyWakeTurbulence = json.getString("heavyWakeTurbulence");
+			aircraftEquipment = json.getString("aircraftEquipment");
+			speedKnots = json.getString("speedKnots");
+			altitudeFL = json.getJSONObject("altitude").getString("altitudeFL");
+			fuelOnBoard = json.getString("fuelOnBoard");
+			pilotData = json.getString("pilotData");
+			peopleOnBoard = json.getString("peopleOnBoard"); 
+			aircraftColor = json.getString("aircraftColor");
+			route = json.getString("route");
+	    	currentState = json.getString("currentState");
+		}
+		catch(Exception e) {
+			
+		}
+		
+	}
+
+	// Hashmap safety from null
+	private void put(Map<String, String> params, String name, String val) {
+		if(null != name && null != val) {
+			params.put(name, val);
+		}
 	}
 	
 	/**
@@ -113,26 +174,26 @@ public class LmfsPlan {
 	 */
 	public Map<String, String> makeHashMap() {
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("type", type);
-		params.put("flightRules" , flightRules); 
-		params.put("aircraftIdentifier" , aircraftIdentifier); 
-		params.put("departure" , departure);
-		params.put("destination" , destination); 
-		params.put("departureInstant" , departureInstant); 
-		params.put("flightDuration" , flightDuration);
-		params.put("altDestination1" , altDestination1); 
-		params.put("altDestination2" , altDestination2); 
-		params.put("aircraftType" , aircraftType); 
-		params.put("numberOfAircraft" , numberOfAircraft);
-		params.put("heavyWakeTurbulence" , heavyWakeTurbulence);
-		params.put("aircraftEquipment" , aircraftEquipment); 
-		params.put("speedKnots" , speedKnots);
-		params.put("altitudeFL" , altitudeFL);
-		params.put("fuelOnBoard" , fuelOnBoard);
-		params.put("pilotData" , pilotData);
-		params.put("peopleOnBoard" , peopleOnBoard); 
-		params.put("aircraftColor" , aircraftColor);
-		
+		put(params, "type", type);
+		put(params, "flightRules" , flightRules); 
+		put(params, "aircraftIdentifier" , aircraftIdentifier); 
+		put(params, "departure" , departure);
+		put(params, "destination" , destination); 
+		put(params, "departureInstant" , departureInstant); 
+		put(params, "flightDuration" , flightDuration);
+		put(params, "altDestination1" , altDestination1); 
+		put(params, "altDestination2" , altDestination2); 
+		put(params, "aircraftType" , aircraftType); 
+		put(params, "numberOfAircraft" , numberOfAircraft);
+		put(params, "heavyWakeTurbulence" , heavyWakeTurbulence);
+		put(params, "aircraftEquipment" , aircraftEquipment); 
+		put(params, "speedKnots" , speedKnots);
+		put(params, "altitudeFL" , altitudeFL);
+		put(params, "fuelOnBoard" , fuelOnBoard);
+		put(params, "pilotData" , pilotData);
+		put(params, "peopleOnBoard" , peopleOnBoard); 
+		put(params, "aircraftColor" , aircraftColor);
+		put(params, "route" , route);
 		return params;
 	}
 	

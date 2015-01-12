@@ -29,10 +29,10 @@ import android.content.Context;
  */
 public class LmfsInterface {
 
-	
 	private static final String AVARE_LMFS_URL = "https://apps4av.net/new/lmfs.php";
 	
 	private Context mContext;
+	private String mError; // null means no error (success), value means error message
 	
 	/**
 	 * Call apps4av servers to use REST calls to 1-800-WX-Brief. 
@@ -52,6 +52,7 @@ public class LmfsInterface {
 	 */
 	private String parseError(String ret) {
 		try {
+			// Something like {"returnCodedMessage":[],"returnMessage":[],"flightPlanSummary":[],"returnStatus":true}
 			JSONObject json = new JSONObject(ret);
 			boolean status = json.getBoolean("returnStatus");
 			if(!status) {
@@ -79,7 +80,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 
@@ -104,7 +105,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 
@@ -129,7 +130,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 
@@ -154,7 +155,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 
@@ -178,7 +179,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 
@@ -202,7 +203,7 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 		
@@ -227,10 +228,18 @@ public class LmfsInterface {
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			ret = parseError(ret);
+			mError = parseError(ret);
 		} catch (Exception e) {
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * Get error for last xaction
+	 * @return
+	 */
+	public String getError() {
+		return mError;
 	}
 }
