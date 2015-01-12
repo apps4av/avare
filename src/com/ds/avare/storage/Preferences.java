@@ -993,4 +993,12 @@ public class Preferences {
         mPref.edit().putInt("HotelChild" + id, index).commit();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public void saveLMFSPlan(String json) {
+        mPref.edit().putString("LMFSPlan", json).commit();
+    }
+
 }

@@ -197,4 +197,52 @@ public class LmfsPlan {
 		return params;
 	}
 	
+	/**
+	 * Make a JSON of the plan. This is for storage only so people's preferred settings are filled in on the File form.
+	 * @return
+	 */
+	public String makeJSON() {
+		String ret = "";
+		// Parse JSON
+		try {
+			/*
+			 * Get all plans from summaries (do not get plan details till user needs)".
+			 */
+			JSONObject json = new JSONObject();
+			// Only support NAS
+			JSONObject nas = new JSONObject();
+			JSONObject dep = new JSONObject();
+			JSONObject des = new JSONObject();
+			json.put("flightRules", flightRules);
+			json.put("aircraftIdentifier", aircraftIdentifier);
+			dep.put("locationIdentifier", departure);
+			des.put("locationIdentifier", destination);
+			nas.put("departure", dep);
+			nas.put("destination", des);
+			json.put("nasFLightPlan", nas);
+			json.put("departureInstant", departureInstant); 
+			json.put("flightDuration", flightDuration);
+			json.put("altDestination1", altDestination1); 
+			json.put("altDestination2", altDestination2); 
+			json.put("aircraftType", aircraftType); 
+			json.put("numberOfAircraft", numberOfAircraft); 
+			json.put("heavyWakeTurbulence", heavyWakeTurbulence); 
+			json.put("aircraftEquipment", aircraftEquipment); 
+			json.put("speedKnots", speedKnots); 
+			json.put("altitudeFL", altitudeFL); 
+			json.put("fuelOnBoard", fuelOnBoard); 
+			json.put("pilotData", pilotData); 
+			json.put("peopleOnBoard", peopleOnBoard);
+			json.put("aircraftColor", aircraftColor);
+			json.put("route", route);
+			json.put("currentState", currentState);
+			ret = json.toString();
+			
+		}
+		catch(Exception e) {
+			
+		}
+		return ret;
+	}
+	
 }
