@@ -14,6 +14,7 @@ package com.ds.avare.place;
 
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Observable;
@@ -809,7 +810,7 @@ public class Plan implements Observer {
      * @param plans
      * @return
      */
-	public static LinkedHashMap<String, String> getAllPlans(String plans) {
+	public static LinkedHashMap<String, String> getAllPlans(StorageService service, String plans) {
 		
 		// Linked hashmap as we want to keep the order of plans
 		// hashmap because that deals with updating plans
@@ -828,18 +829,47 @@ public class Plan implements Observer {
 		catch (Exception e) {
 		}
 				
+		// Now fetch the external plans
+		if(null != service) {
+			ExternalPlanMgr epm = service.getExternalPlanMgr();
+			ArrayList<String> planNames = epm.getPlanNames(null);
+			for(String planName : planNames) {
+				ExternalFlightPlan extPlan = epm.get(planName);
+				map.put(planName, extPlan.toJSONString());
+			}
+		}
+		
         // Return the map
         return map;
 	}
 
     /**
-     * 
-     * @param map
-     * @return
+     * Build and return a string for storage that represents all internally managed plans
+     * @param service - the Storage service
+     * @param map collection of known flight plans
+     * @return json string to save
      */
-	public static String putAllPlans(LinkedHashMap<String, String> map) {
+	@SuppressWarnings("unchecked")
+	public static String putAllPlans(StorageService service, LinkedHashMap<String, String> map) {
+
+		// We need to make a copy here to work on. "map" as passed in may contain externally saved 
+		// flight plans. 
+		LinkedHashMap<String, String> localMap = (LinkedHashMap<String, String>) map.clone();
+		
+		// For all of the known external flight plans, we need to remove that name from the cloned
+		// map so that it will not be saved to memory
+		if(null != service) {
+			ExternalPlanMgr epm = service.getExternalPlanMgr();
+			ArrayList<String> planNames = epm.getPlanNames(null);
+			for(String planName : planNames) {
+				if(true == localMap.containsKey(planName)) {
+					localMap.remove(planName);
+				}
+			}
+		}
+		
 		// Put a collection of plans in storage format
-		JSONObject json = new JSONObject(map);
+		JSONObject json = new JSONObject(localMap);
 		return json.toString();
 	}
 }

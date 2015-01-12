@@ -71,7 +71,7 @@ public class ExternalPlanMgr {
 	 * @param likeThis Plan name contains this string, if null or zero length, add it
 	 * @return the collection of strings that qualify
 	 */
-	public ArrayList<String> getPlanNames(String likeThis) {
+	public ArrayList<String> getPlanFileNames(String likeThis) {
 		
 		// The collection to hold our results
 		ArrayList<String> planNames = new ArrayList<String>();
@@ -93,6 +93,29 @@ public class ExternalPlanMgr {
 				} else {
 					planNames.add(planName);
 				}
+			}
+		}
+		return planNames;
+	}
+
+	/***
+	 * Return a collection of plan names that contain the desired string
+	 * @param likeThis Plan name contains this string, if null or zero length, add it
+	 * @return the collection of strings that qualify
+	 */
+	public ArrayList<String> getPlanNames(String likeThis) {
+		
+		// The collection to hold our results
+		ArrayList<String> planNames = new ArrayList<String>();
+		
+		for(ExternalFlightPlan plan : mPlans) {
+			String planName = plan.getName();
+			if(null != likeThis && likeThis.length() > 0) { 
+				if(true == planName.contains(likeThis)) {
+					planNames.add(planName);
+				}
+			} else {
+				planNames.add(planName);
 			}
 		}
 		return planNames;

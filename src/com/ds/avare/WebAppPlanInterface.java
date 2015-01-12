@@ -67,7 +67,6 @@ public class WebAppPlanInterface implements Observer {
         mWebView = ww;
         mContext = c;
         mCallback = cb;
-        mSavedPlans = Plan.getAllPlans(mPref.getPlans());
     }
 
     /**
@@ -76,6 +75,7 @@ public class WebAppPlanInterface implements Observer {
      */
     public void connect(StorageService s) { 
         mService = s;
+        mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
     }
 
     /**
@@ -318,7 +318,7 @@ public class WebAppPlanInterface implements Observer {
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
-    	mPref.putPlans(Plan.putAllPlans(mSavedPlans));
+    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -363,7 +363,7 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mSavedPlans.remove(name);
-    	mPref.putPlans(Plan.putAllPlans(mSavedPlans));
+    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
