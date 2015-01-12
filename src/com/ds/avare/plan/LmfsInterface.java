@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.plan;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -30,7 +29,6 @@ import android.content.Context;
  */
 public class LmfsInterface {
 
-	private static final String FILE_DOMESTIC = "DOMESTIC";
 	
 	private static final String AVARE_LMFS_URL = "https://apps4av.net/new/lmfs.php";
 	
@@ -67,8 +65,7 @@ public class LmfsInterface {
 	/**
 	 * Get all flight plans
 	 */
-	public LinkedList<String> getFlightPlans() {
-		LinkedList<String> plans = new LinkedList<String>();
+	public LmfsPlanList getFlightPlans() {
 		
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/" + webUserName + "/retrieveFlightPlanSummaries";
@@ -86,14 +83,14 @@ public class LmfsInterface {
 		} catch (Exception e) {
 		}
 
-		return plans;
+		return new LmfsPlanList(ret);
 	}
 			
 
 	/**
 	 * Get a flight plans
 	 */
-	public String getFlightPlan(String id) {
+	public LmfsPlan getFlightPlan(String id) {
 		
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/" + id + "/retrieve";
@@ -111,7 +108,7 @@ public class LmfsInterface {
 		} catch (Exception e) {
 		}
 
-		return ret;
+		return new LmfsPlan(ret);
 	}
 			
 
@@ -191,54 +188,16 @@ public class LmfsInterface {
 	/**
 	 * File a flight plan
 	 */
-	public String fileFlightPlan(
-			String flightRules, 
-			String aircraftIdentifier,
-			String departure,
-			String destination, 
-			String departureInstant, 
-			String flightDuration,
-			String altDestination1, 
-			String altDestination2, 
-			String aircraftType, 
-			String numberOfAircraft, 
-			String heavyWakeTurbulence,
-			String aircraftEquipment, 
-			String speedKnots, 
-			String altitudeFL, 
-			String fuelOnBoard, 
-			String pilotData,
-			String peopleOnBoard, 
-			String aircraftColor) {
+	public String fileFlightPlan(LmfsPlan plan) {
 		
 		String webUserName = PossibleEmail.get(mContext);
-		String type = FILE_DOMESTIC;
 		String avareMethod = "FP/file";
 		String httpMethod = "POST";
 		
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = plan.makeHashMap();
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
-		params.put("type", type);
-		params.put("flightRules" , flightRules); 
-		params.put("aircraftIdentifier" , aircraftIdentifier); 
-		params.put("departure" , departure);
-		params.put("destination" , destination); 
-		params.put("departureInstant" , departureInstant); 
-		params.put("flightDuration" , flightDuration);
-		params.put("altDestination1" , altDestination1); 
-		params.put("altDestination2" , altDestination2); 
-		params.put("aircraftType" , aircraftType); 
-		params.put("numberOfAircraft" , numberOfAircraft);
-		params.put("heavyWakeTurbulence" , heavyWakeTurbulence);
-		params.put("aircraftEquipment" , aircraftEquipment); 
-		params.put("speedKnots" , speedKnots);
-		params.put("altitudeFL" , altitudeFL);
-		params.put("fuelOnBoard" , fuelOnBoard);
-		params.put("pilotData" , pilotData);
-		params.put("peopleOnBoard" , peopleOnBoard); 
-		params.put("aircraftColor" , aircraftColor);
 		
 		String ret = null;
 		try {
@@ -254,55 +213,16 @@ public class LmfsInterface {
 	/**
 	 * Amend a flight plan
 	 */
-	public String amendFlightPlan(
-			String id,
-			String flightRules, 
-			String aircraftIdentifier,
-			String departure,
-			String destination, 
-			String departureInstant, 
-			String flightDuration,
-			String altDestination1, 
-			String altDestination2, 
-			String aircraftType, 
-			String numberOfAircraft,
-			String heavyWakeTurbulence,
-			String aircraftEquipment, 
-			String speedKnots, 
-			String altitudeFL, 
-			String fuelOnBoard, 
-			String pilotData,
-			String peopleOnBoard, 
-			String aircraftColor) {
+	public String amendFlightPlan(LmfsPlan plan) {
 		
 		String webUserName = PossibleEmail.get(mContext);
-		String type = FILE_DOMESTIC;
-		String avareMethod = "FP/" + id + "/amend";
+		String avareMethod = "FP/" + plan.getId() + "/amend";
 		String httpMethod = "POST";
 		
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = plan.makeHashMap();
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
-		params.put("type", type);
-		params.put("flightRules" , flightRules); 
-		params.put("aircraftIdentifier" , aircraftIdentifier); 
-		params.put("departure" , departure);
-		params.put("destination" , destination); 
-		params.put("departureInstant" , departureInstant); 
-		params.put("flightDuration" , flightDuration);
-		params.put("altDestination1" , altDestination1); 
-		params.put("altDestination2" , altDestination2); 
-		params.put("aircraftType" , aircraftType); 
-		params.put("numberOfAircraft" , numberOfAircraft);
-		params.put("heavyWakeTurbulence" , heavyWakeTurbulence);
-		params.put("aircraftEquipment" , aircraftEquipment); 
-		params.put("speedKnots" , speedKnots);
-		params.put("altitudeFL" , altitudeFL);
-		params.put("fuelOnBoard" , fuelOnBoard);
-		params.put("pilotData" , pilotData);
-		params.put("peopleOnBoard" , peopleOnBoard); 
-		params.put("aircraftColor" , aircraftColor);
 		
 		String ret = null;
 		try {
