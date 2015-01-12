@@ -423,7 +423,7 @@ public class WebAppPlanInterface implements Observer {
     				plan.getDestination(num).getEte() + "::::";
     	}
     	// add total
-    	plans += mContext.getString(R.string.Total) + " " + plan.toString();
+    	plans += plan.toString();
     	
     	return plans;
     }

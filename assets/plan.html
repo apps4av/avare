@@ -81,6 +81,11 @@ td {
 	width : 100px;
 }
 
+.sublabel {
+	font-size : 15px;
+	color : #00FF00;
+}
+
 </style>
 
 <script type="text/javascript" >
@@ -194,7 +199,11 @@ function plan_movedn() {
 
 // Set Plan totals
 function plan_set_total(total) {
-	document.getElementById("plan_total").innerHTML = "<label style='font-size:15px'>" + total + "</label><br>";
+	// plan total is split to show individual values
+	var vals = total.split(" ");
+	document.getElementById("plan_total_distance").innerHTML = vals[1];
+	document.getElementById("plan_total_time").innerHTML = vals[2];
+	document.getElementById("plan_total_bearing").innerHTML = vals[3];
 }
 
 // clear the entire plan
@@ -394,17 +403,15 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
 }
 
+function get_faa_plans() {
+}
+
 function file() {
-	Android.file(
-	
-	
-	);
 }
 
 </script>
 
 </head>
-
 <body>
 	<p>
 		<label id="plan_name">Plan[]</label><br>
@@ -412,33 +419,29 @@ function file() {
 		<button onclick="plan_delete()">Delete</button>
 		<br></br>
 		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th></table>
-		<br>
-		<label id="plan_total"></label>
+		<table border="1"><tr><td></td><td>Total</td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_bearing"></td><tr></table>
 		<br>
 		<button onclick="plan_moveup()">Up</button>
 		<button onclick="plan_movedn()">Down</button>
 		<br></br>
-		<label>Add</label>
+		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
+		<br></br>
+		<label class="sublabel" >Add To Plan</label>
 		<br>
 		<input id="search_input" placeholder="BOS"></input>
 		<button onclick="search_waypoint()">Search</button>
 		<br></br>
 		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Sub Type</th><th>Action</th></table>
 		<br>
-		<label>Create</label><br>
+		<label class="sublabel">Create New Plan</label><br>
 		<input id="create_input" placeholder="KBOS LWM KMHT"></input>
-		<button onclick="plan_create()">Create</button>
-	</p>
-	<p>
-		<label>Manage</label><br>
-		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
-		<br></br>
+		<button onclick="plan_create()">Create</button><br></br>
+		<label class="sublabel">Saved Plans</label><br>
 		<button onclick="save_hide(true)">Plans</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
 	</p>
-	
 	<p>
-		<label>File</label><br>
+		<label>File (FAA)</label><br>
 			<table border="1">
 			<tr>
 				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option><option>MVFR</option><option>MIFR</option></select></td>		
@@ -451,30 +454,33 @@ function file() {
 			<tr>
 				<td>True Airspeed<br><input class="halfinput" id="true_airspeed"/></td>
 				<td>Altitude<br><input class="halfinput" id="altitude"/></td>
-				<td>Departure Point<br><input class="halfinput" id="departure_point"/></td>
-				<td>Departure Date (Z)<br><input class="halfinput" id="departure_date"/></td>
-				<td>Departure Time (Z)<br><input class="halfinput" id="departure_time"/></td>
+				<td>Origin<br><input class="halfinput" id="departure_point"/></td>
+				<td>Time (Zulu)<br><input class="halfinput" id="departure_date"/></td>
+				<td>Time Enroute<br><input class="halfinput" id="time_enroute"/></td>
 				<td>Destination<br><input class="halfinput" id="destination"/></td>
 			</tr>
 			<tr>
-				<td>Time Enroute<br><input class="halfinput" id="time_enroute"/></td>
 				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
 				<td>Alternate 1<br><input class="halfinput" id="alternate1"/></td>
 				<td>Alternate 2<br><input class="halfinput" id="alterante2"/></td>
 				<td>Aircraft Color<br><input class="halfinput" id="aircraft_color"/></td>
 				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
+				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
 			</tr>
+		<button onlick="autofill()">Fill</button>
+		<button onlick="allclear()">Clear</button><br></br>
 		<table border="1">
 			<tr>
-				<td>Route (Blank for Direct)<br><input id="route"/></td>
+				<td>Route (DCT for Direct)<br><input id="route"/></td>
 				<td>Remarks (Optional)<br><input id="remarks"/></td>
 				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
 			</tr>
 		</table>
 		<br>
-		<button onlick="autofill()">Auto Fill</button>
-		<button onlick="file()">File Plan</button>
-		</table></table>
+		<button onlick="file()">File Plan</button><br></br>
+		<label class="sublabel" >Saved Plans</label><br>
+		<button onclick="get_faa_plans()">Plans</button><br>
+		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>
 	</p>
 
 

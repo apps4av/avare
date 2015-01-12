@@ -76,6 +76,11 @@ td {
 	width: 600px;
 }
 
+.sublabel {
+	font-size : 15px;
+	color : #00FF00;
+}
+
 
 </style>
 
@@ -291,19 +296,18 @@ function save_add(name) {
 		<button onclick="list_moveup_item()">Up</button>
 		<button onclick="list_movedown_item()">Down</button>
 		<br></br>
-		<label>Add</label>
+		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
+		<br></br>
+		<label class="sublabel" >Add To List</label>
 		<br>
 		<input id="item_input" placeholder="Mixture Full Rich."></input>
 		<button onclick="add_list_item()">Add</button>
 		<br></br>
-		<label>Import</label><br>
+		<label class="sublabel" >Import A File</label><br>
 		<input id="import_input" placeholder="/sdcard/list.txt[html]"></input>
 		<button onclick="list_import()">Import</button>
-	</p>
-	<p>
-		<label>Manage</label><br>
-		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
 		<br></br>
+		<label class="sublabel" >Saved Lists</label><br>
 		<button onclick="save_hide(true)">Lists</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Delete</th></table>
 	</p>
