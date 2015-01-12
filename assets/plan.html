@@ -31,6 +31,11 @@ label {
 	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
 }
 
+input {
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width:200px;
+}
+
 p {
 	border: solid green;
 	border-radius: 1em;
@@ -70,6 +75,10 @@ td {
 
 .halfbutton {
 	width: 50px; // For two buttons in one row
+}
+
+.halfinput {
+	width : 100px;
 }
 
 </style>
@@ -385,6 +394,12 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
 }
 
+function file() {
+	Android.file(
+	
+	
+	);
+}
 
 </script>
 
@@ -421,5 +436,47 @@ function search_add(id, name, type, subtype) {
 		<button onclick="save_hide(true)">Plans</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
 	</p>
+	
+	<p>
+		<label>File</label><br>
+			<table border="1">
+			<tr>
+				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option><option>MVFR</option><option>MIFR</option></select></td>		
+				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
+				<td>Aircraft Type<br><input class="halfinput" id="aricraft_type"/></td>		
+				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
+				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
+				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
+			</tr>	
+			<tr>
+				<td>True Airspeed<br><input class="halfinput" id="true_airspeed"/></td>
+				<td>Altitude<br><input class="halfinput" id="altitude"/></td>
+				<td>Departure Point<br><input class="halfinput" id="departure_point"/></td>
+				<td>Departure Date (Z)<br><input class="halfinput" id="departure_date"/></td>
+				<td>Departure Time (Z)<br><input class="halfinput" id="departure_time"/></td>
+				<td>Destination<br><input class="halfinput" id="destination"/></td>
+			</tr>
+			<tr>
+				<td>Time Enroute<br><input class="halfinput" id="time_enroute"/></td>
+				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
+				<td>Alternate 1<br><input class="halfinput" id="alternate1"/></td>
+				<td>Alternate 2<br><input class="halfinput" id="alterante2"/></td>
+				<td>Aircraft Color<br><input class="halfinput" id="aircraft_color"/></td>
+				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
+			</tr>
+		<table border="1">
+			<tr>
+				<td>Route (Blank for Direct)<br><input id="route"/></td>
+				<td>Remarks (Optional)<br><input id="remarks"/></td>
+				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
+			</tr>
+		</table>
+		<br>
+		<button onlick="autofill()">Auto Fill</button>
+		<button onlick="file()">File Plan</button>
+		</table></table>
+	</p>
+
+
 </body>
 </html>
