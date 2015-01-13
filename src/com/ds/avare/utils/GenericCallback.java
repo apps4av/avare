@@ -22,7 +22,7 @@ public class GenericCallback {
 	 * @param o
 	 * @return
 	 */
-	public Object callback(Object o) {
+	public Object callback(Object o, Object o1) {
 		return null;
 	}
 

@@ -16,8 +16,10 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -69,6 +71,7 @@ public class ChecklistActivity extends Activity {
      */
     public static final int SHOW_BUSY = 1;
     public static final int UNSHOW_BUSY = 2;
+    private static final int MESSAGE = 14;
 
 
     /**
@@ -133,8 +136,9 @@ public class ChecklistActivity extends Activity {
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
              */
         	@Override
-        	public Object callback(Object o) {
-        		mHandler.sendEmptyMessage((Integer)o);
+        	public Object callback(Object o, Object o1) {
+            	Message m = mHandler.obtainMessage((Integer)o, o1);
+            	mHandler.sendMessage(m);
         		return null;
         	}
         });
@@ -223,9 +227,7 @@ public class ChecklistActivity extends Activity {
      		if(mIsPageLoaded) {
      		   	mInfc.newList();
                 mInfc.newSaveList();
-                mProgressBarSearch.setVisibility(View.INVISIBLE);
      		}
-
         }
 
         /*
@@ -332,6 +334,19 @@ public class ChecklistActivity extends Activity {
     		}
     		else if(msg.what == UNSHOW_BUSY) {
     			mProgressBarSearch.setVisibility(View.INVISIBLE);
+    		}
+    		else if(msg.what == MESSAGE) {
+    			// Show an important message
+    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			builder.setMessage((String)msg.obj)
+    			       .setCancelable(false)
+    			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    			           public void onClick(DialogInterface dialog, int id) {
+    			                dialog.dismiss();
+    			           }
+    			});
+    			AlertDialog alert = builder.create();
+    			alert.show();
     		}
         }
     };

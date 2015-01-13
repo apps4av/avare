@@ -11,8 +11,13 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.plan;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -254,4 +259,55 @@ public class LmfsPlan {
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getTimeNow() {
+    	// fill time to now()
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf.format(now.getTime());
+	}
+
+	/**
+	 * Get time from user input to time in milliseconds
+	 * @return
+	 */
+	public static long getTimeFromInput(String time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date d;
+        try {
+			d = sdf.parse(time);
+		} catch (Exception e) {
+			return 0;
+		}
+        return d.getTime();
+	}
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String getDurationFromInput(String input) {
+		String ret = "PT" + input;
+		return ret;
+	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String durationToTime(String input) {
+		String ret[] = input.split("PT");
+		if(ret.length < 2) {
+			return input;
+		}
+		return ret[1];
+	}
+
 }

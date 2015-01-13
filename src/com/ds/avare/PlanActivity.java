@@ -20,8 +20,10 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -79,6 +81,7 @@ public class PlanActivity extends Activity {
     public static final int UNSHOW_BUSY = 2;
     public static final int ACTIVE = 3;
     public static final int INACTIVE = 4;
+    public static final int MESSAGE = 5;
 
 
     /**
@@ -143,8 +146,9 @@ public class PlanActivity extends Activity {
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
              */
         	@Override
-        	public Object callback(Object o) {
-        		mHandler.sendEmptyMessage((Integer)o);
+        	public Object callback(Object o, Object o1) {
+            	Message m = mHandler.obtainMessage((Integer)o, o1);
+            	mHandler.sendMessage(m);
         		return null;
         	}
         });
@@ -243,7 +247,6 @@ public class PlanActivity extends Activity {
      		if(mIsPageLoaded) {
      		   	mInfc.newPlan();
                 mInfc.newSavePlan();
-                mProgressBarSearch.setVisibility(View.INVISIBLE);
      		}
             mTimer = new Timer();
             TimerTask sim = new UpdateTask();
@@ -374,6 +377,19 @@ public class PlanActivity extends Activity {
     		}
     		else if(msg.what == INACTIVE) {
     			mActivateButton.setText(getString(R.string.Inactive));
+    		}
+    		else if(msg.what == MESSAGE) {
+    			// Show an important message
+    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			builder.setMessage((String)msg.obj)
+    			       .setCancelable(false)
+    			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    			           public void onClick(DialogInterface dialog, int id) {
+    			                dialog.dismiss();
+    			           }
+    			});
+    			AlertDialog alert = builder.create();
+    			alert.show();
     		}
         }
     };

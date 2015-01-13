@@ -499,10 +499,10 @@ public class WebAppListInterface {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
+        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
         	}
         }
     };

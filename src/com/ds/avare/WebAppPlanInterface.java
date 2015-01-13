@@ -21,6 +21,7 @@ import java.util.Observer;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.plan.LmfsInterface;
 import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -60,6 +61,7 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_ACTIVE = 11;
     private static final int MSG_INACTIVE = 12;
     private static final int MSG_FILL_FORM = 13;
+    private static final int MSG_ERROR = 14;
     
     /** 
      * Instantiate the interface and set the context
@@ -482,6 +484,10 @@ public class WebAppPlanInterface implements Observer {
     			}
     		}
     	}
+    	
+    	// fill time to now()
+        pl.departureInstant = LmfsPlan.getTimeNow();
+
 
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
     	    	"'" +  pl.flightRules  + "'," +
@@ -489,7 +495,7 @@ public class WebAppPlanInterface implements Observer {
     			"'" +  pl.departure + "'," +
     			"'" +  pl.destination + "'," +
     			"'" +  pl.departureInstant + "'," + 
-    			"'" +  pl.flightDuration + "'," +
+    			"'" +  LmfsPlan.durationToTime(pl.flightDuration) + "'," +
     			"'" +  pl.altDestination1 + "'," + 
     			"'" +  pl.altDestination2 + "'," + 
     			"'" +  pl.aircraftType + "'," +
@@ -498,7 +504,7 @@ public class WebAppPlanInterface implements Observer {
     			"'" +  pl.aircraftEquipment + "'," +
     			"'" +  pl.speedKnots + "'," + 
     			"'" +  pl.altitudeFL + "'," +
-    			"'" +  pl.fuelOnBoard + "'," + 
+    			"'" +  LmfsPlan.durationToTime(pl.fuelOnBoard) + "'," + 
     			"'" +  pl.pilotData + "'," +
     			"'" +  pl.peopleOnBoard + "'," + 
     			"'" +  pl.aircraftColor + "'," +
@@ -538,13 +544,14 @@ public class WebAppPlanInterface implements Observer {
     	String type,
     	String remarks) {
         
+    	mHandler.sendEmptyMessage(MSG_BUSY);
     	LmfsPlan pl = new LmfsPlan();
     	pl.flightRules = flightRules;
     	pl.aircraftIdentifier = aircraftIdentifier;
     	pl.departure = departure;
     	pl.destination = destination;
-    	pl.departureInstant = departureInstant; 
-    	pl.flightDuration = flightDuration;
+    	pl.departureInstant = String.valueOf(LmfsPlan.getTimeFromInput(departureInstant));
+    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
     	pl.altDestination1 = altDestination1; 
     	pl.altDestination2 = altDestination2; 
     	pl.aircraftType = aircraftType;
@@ -553,7 +560,7 @@ public class WebAppPlanInterface implements Observer {
     	pl.aircraftEquipment = aircraftEquipment;
     	pl.speedKnots = speedKnots; 
     	pl.altitudeFL = altitudeFL;
-    	pl.fuelOnBoard = fuelOnBoard; 
+    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
     	pl.pilotData = pilotData;
     	pl.peopleOnBoard = peopleOnBoard; 
     	pl.aircraftColor = aircraftColor;
@@ -563,6 +570,19 @@ public class WebAppPlanInterface implements Observer {
  
     	// Save user input for auto fill
     	mPref.saveLMFSPlan(pl.makeJSON());
+    	
+    	// Now file and show error messages
+    	LmfsInterface infc = new LmfsInterface(mContext);
+    	infc.fileFlightPlan(pl);
+    	String err = infc.getError();
+    	if(null == err) {
+    		// success filing
+    		err = mContext.getString(R.string.Success);
+    	}
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);
+    	
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -761,20 +781,23 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY);
+        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY);
+        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
         	}
         	else if(MSG_ACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.ACTIVE);
+        		mCallback.callback((Object)PlanActivity.ACTIVE, null);
         	}
         	else if(MSG_INACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.INACTIVE);
+        		mCallback.callback((Object)PlanActivity.INACTIVE, null);
         	}
         	else if(MSG_FILL_FORM == msg.what) {	
             	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_ERROR == msg.what) {	
+        		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
         	}
         }
     };
