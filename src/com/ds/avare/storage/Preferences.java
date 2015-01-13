@@ -1001,4 +1001,12 @@ public class Preferences {
         mPref.edit().putString("LMFSPlan", json).commit();
     }
 
+    /**
+     * 
+     * @return
+     */
+    public String getLMFSPlan() {
+        return mPref.getString("LMFSPlan", "");
+    }
+
 }

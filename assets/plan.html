@@ -200,10 +200,10 @@ function plan_movedn() {
 // Set Plan totals
 function plan_set_total(total) {
 	// plan total is split to show individual values
-	var vals = total.split(" ");
-	document.getElementById("plan_total_distance").innerHTML = vals[1];
-	document.getElementById("plan_total_time").innerHTML = vals[2];
-	document.getElementById("plan_total_bearing").innerHTML = vals[3];
+	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
+	document.getElementById("plan_total_distance").innerHTML = vals[0];
+	document.getElementById("plan_total_time").innerHTML = vals[1];
+	document.getElementById("plan_total_bearing").innerHTML = vals[2];
 }
 
 // clear the entire plan
@@ -406,7 +406,118 @@ function search_add(id, name, type, subtype) {
 function get_faa_plans() {
 }
 
-function file() {
+// fill a plan page from stored values
+function plan_fill(
+				flight_rule,
+				aircraft_id,
+				departure_point,
+				destination,
+				departure_date,
+				time_enroute,
+				alternate1,
+				alterante2,
+				aircraft_type,		
+				no_of_aircraft,
+				heavy,
+				aircraft_equip,		
+				true_airspeed,
+				altitude,
+				fuel_onboard,
+				pilot_info,
+				no_onboard,
+				aircraft_color,
+				route,
+				type_flight,				
+				remarks) {
+
+            document.getElementById("flight_rule").value = flight_rule;
+				document.getElementById("aircraft_id").value = aircraft_id;
+				document.getElementById("departure_point").value = departure_point;
+				document.getElementById("destination").value = destination;
+				document.getElementById("departure_date").value = departure_date;
+				document.getElementById("time_enroute").value = time_enroute;
+				document.getElementById("alternate1").value = alternate1;
+				document.getElementById("alterante2").value = alterante2;
+				document.getElementById("aircraft_type").value = aircraft_type;		
+				document.getElementById("no_of_aircraft").value = no_of_aircraft;
+				document.getElementById("heavy").checked = (heavy == "true") ? true : false;
+				document.getElementById("aircraft_equip").value = aircraft_equip;
+				document.getElementById("true_airspeed").value = true_airspeed;
+				document.getElementById("altitude").value = altitude;
+				document.getElementById("fuel_onboard").value = fuel_onboard;
+				document.getElementById("pilot_info").value = pilot_info;
+				document.getElementById("no_onboard").value = no_onboard;
+				document.getElementById("aircraft_color").value = aircraft_color;
+				document.getElementById("route").value = route;
+				document.getElementById("type_flight").value = type_flight;				
+				document.getElementById("remarks").value = remarks;
+}
+
+// clear all form values
+function clearall() {
+            document.getElementById("flight_rule").value = "";
+				document.getElementById("aircraft_id").value = "";
+				document.getElementById("departure_point").value = "";
+				document.getElementById("destination").value = "";
+				document.getElementById("departure_date").value = "";
+				document.getElementById("time_enroute").value = "";
+				document.getElementById("alternate1").value = "";
+				document.getElementById("alterante2").value = "";
+				document.getElementById("aircraft_type").value = "";		
+				document.getElementById("no_of_aircraft").value = "";
+				document.getElementById("heavy").checked = false;
+				document.getElementById("aircraft_equip").value = "";
+				document.getElementById("true_airspeed").value = "";
+				document.getElementById("altitude").value = "";
+				document.getElementById("fuel_onboard").value = "";
+				document.getElementById("pilot_info").value = "";
+				document.getElementById("no_onboard").value = "";
+				document.getElementById("aircraft_color").value = "";
+				document.getElementById("route").value = "";
+				document.getElementById("type_flight").value = "";				
+				document.getElementById("remarks").value = "";
+}
+
+// function to call plan_fill
+function autofill() {
+	var r = confirm("Do you want to discard all fields, and let the app fill new ones in the form?");
+	if(r == false) {
+		return;	
+	}
+	Android.fillPlan();	
+}
+
+// file a plan
+function plan_file() {
+
+	var r = confirm("You are about to file a flight plan with the FAA. Are you sure you want to file this plan?");
+	if(r == false) {
+		return;	
+	}
+
+	Android.filePlan(
+				document.getElementById("flight_rule").value,
+				document.getElementById("aircraft_id").value,
+				document.getElementById("departure_point").value,
+				document.getElementById("destination").value,
+				document.getElementById("departure_date").value,
+				document.getElementById("time_enroute").value,
+				document.getElementById("alternate1").value,
+				document.getElementById("alterante2").value,
+				document.getElementById("aircraft_type").value,		
+				document.getElementById("no_of_aircraft").value,
+				document.getElementById("heavy").checked ? "true" : "false",
+				document.getElementById("aircraft_equip").value,		
+				document.getElementById("true_airspeed").value,
+				document.getElementById("altitude").value,
+				document.getElementById("fuel_onboard").value,
+				document.getElementById("pilot_info").value,
+				document.getElementById("no_onboard").value,
+				document.getElementById("aircraft_color").value,
+				document.getElementById("route").value,
+				document.getElementById("type_flight").value,				
+				document.getElementById("remarks").value
+    );
 }
 
 </script>
@@ -419,7 +530,7 @@ function file() {
 		<button onclick="plan_delete()">Delete</button>
 		<br></br>
 		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th></table>
-		<table border="1"><tr><td></td><td>Total</td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_bearing"></td><tr></table>
+		<table border="1"><tr><td></td><td><b>Total<b></td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_bearing"></td><tr></table>
 		<br>
 		<button onclick="plan_moveup()">Up</button>
 		<button onclick="plan_movedn()">Down</button>
@@ -446,7 +557,7 @@ function file() {
 			<tr>
 				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option><option>MVFR</option><option>MIFR</option></select></td>		
 				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
-				<td>Aircraft Type<br><input class="halfinput" id="aricraft_type"/></td>		
+				<td>Aircraft Type<br><input class="halfinput" id="aircraft_type"/></td>		
 				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
 				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
 				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
@@ -467,8 +578,8 @@ function file() {
 				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
 				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
 			</tr>
-		<button onlick="autofill()">Fill</button>
-		<button onlick="allclear()">Clear</button><br></br>
+		<button onclick="autofill()">Fill</button>
+		<button onclick="clearall()">Clear</button><br></br>
 		<table border="1">
 			<tr>
 				<td>Route (DCT for Direct)<br><input id="route"/></td>
@@ -477,7 +588,7 @@ function file() {
 			</tr>
 		</table>
 		<br>
-		<button onlick="file()">File Plan</button><br></br>
+		<button onclick="plan_file()">File Plan</button><br></br>
 		<label class="sublabel" >Saved Plans</label><br>
 		<button onclick="get_faa_plans()">Plans</button><br>
 		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>

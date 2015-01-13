@@ -51,6 +51,7 @@ public class LmfsPlan {
 	public String aircraftColor;
 	public String route;
 	public String type;
+	public String remarks;
 	public String currentState;
 
 	/**
@@ -80,8 +81,8 @@ public class LmfsPlan {
 		aircraftColor = "";
 		currentState = PROPOSED;
 		route = DIRECT;
-
 		type = DOMESTIC;		
+		remarks = "";
 	}
 	
 	/**
@@ -141,7 +142,7 @@ public class LmfsPlan {
 			departureInstant = json.getString("departureInstant"); 
 			flightDuration = json.getString("flightDuration");
 			altDestination1 = json.getString("altDestination1"); 
-			altDestination2 = json.getString("altDestination12"); 
+			altDestination2 = json.getString("altDestination2"); 
 			aircraftType = json.getString("aircraftType");
 			numberOfAircraft = json.getString("numberOfAircraft");
 			heavyWakeTurbulence = json.getString("heavyWakeTurbulence");
@@ -153,10 +154,12 @@ public class LmfsPlan {
 			peopleOnBoard = json.getString("peopleOnBoard"); 
 			aircraftColor = json.getString("aircraftColor");
 			route = json.getString("route");
+			remarks = json.getString("remarks");
 	    	currentState = json.getString("currentState");
+			mValid = true;
 		}
 		catch(Exception e) {
-			
+			mValid = false;			
 		}
 		
 	}
@@ -164,7 +167,9 @@ public class LmfsPlan {
 	// Hashmap safety from null
 	private void put(Map<String, String> params, String name, String val) {
 		if(null != name && null != val) {
-			params.put(name, val);
+			if(val.length() != 0) {
+				params.put(name, val);
+			}
 		}
 	}
 	
@@ -194,6 +199,7 @@ public class LmfsPlan {
 		put(params, "peopleOnBoard" , peopleOnBoard); 
 		put(params, "aircraftColor" , aircraftColor);
 		put(params, "route" , route);
+		put(params, "remarks" , remarks);
 		return params;
 	}
 	
@@ -213,13 +219,14 @@ public class LmfsPlan {
 			JSONObject nas = new JSONObject();
 			JSONObject dep = new JSONObject();
 			JSONObject des = new JSONObject();
+			JSONObject alt = new JSONObject();
 			json.put("flightRules", flightRules);
 			json.put("aircraftIdentifier", aircraftIdentifier);
 			dep.put("locationIdentifier", departure);
 			des.put("locationIdentifier", destination);
 			nas.put("departure", dep);
 			nas.put("destination", des);
-			json.put("nasFLightPlan", nas);
+			json.put("nasFlightPlan", nas);
 			json.put("departureInstant", departureInstant); 
 			json.put("flightDuration", flightDuration);
 			json.put("altDestination1", altDestination1); 
@@ -228,19 +235,21 @@ public class LmfsPlan {
 			json.put("numberOfAircraft", numberOfAircraft); 
 			json.put("heavyWakeTurbulence", heavyWakeTurbulence); 
 			json.put("aircraftEquipment", aircraftEquipment); 
-			json.put("speedKnots", speedKnots); 
-			json.put("altitudeFL", altitudeFL); 
+			json.put("speedKnots", speedKnots);
+			alt.put("altitudeFL", altitudeFL);
+			json.put("altitude", alt);
 			json.put("fuelOnBoard", fuelOnBoard); 
 			json.put("pilotData", pilotData); 
 			json.put("peopleOnBoard", peopleOnBoard);
 			json.put("aircraftColor", aircraftColor);
 			json.put("route", route);
+			json.put("remarks", remarks);
 			json.put("currentState", currentState);
 			ret = json.toString();
-			
+			mValid = true;
 		}
 		catch(Exception e) {
-			
+			mValid = false;
 		}
 		return ret;
 	}

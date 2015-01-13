@@ -21,6 +21,7 @@ import java.util.Observer;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.GenericCallback;
@@ -58,6 +59,7 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_BUSY = 10;
     private static final int MSG_ACTIVE = 11;
     private static final int MSG_INACTIVE = 12;
+    private static final int MSG_FILL_FORM = 13;
     
     /** 
      * Instantiate the interface and set the context
@@ -455,7 +457,97 @@ public class WebAppPlanInterface implements Observer {
         mCreateTask = new CreateTask();
         mCreateTask.execute(value);
     }
+
+    /**
+     * Fill plan form with data stored
+     */
+    @JavascriptInterface
+    public void fillPlan() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
+    	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
+    	    	"'" +  pl.flightRules  + "'," +
+    			"'" +  pl.aircraftIdentifier + "'," +
+    			"'" +  pl.departure + "'," +
+    			"'" +  pl.destination + "'," +
+    			"'" +  pl.departureInstant + "'," + 
+    			"'" +  pl.flightDuration + "'," +
+    			"'" +  pl.altDestination1 + "'," + 
+    			"'" +  pl.altDestination2 + "'," + 
+    			"'" +  pl.aircraftType + "'," +
+    			"'" +  pl.numberOfAircraft + "'," +
+    			"'" +  pl.heavyWakeTurbulence + "'," +
+    			"'" +  pl.aircraftEquipment + "'," +
+    			"'" +  pl.speedKnots + "'," + 
+    			"'" +  pl.altitudeFL + "'," +
+    			"'" +  pl.fuelOnBoard + "'," + 
+    			"'" +  pl.pilotData + "'," +
+    			"'" +  pl.peopleOnBoard + "'," + 
+    			"'" +  pl.aircraftColor + "'," +
+    			"'" +  pl.route + "'," +
+    			"'" +  pl.type + "'," +
+    			"'" +  pl.remarks + "'"
+    			));
+    	mHandler.sendMessage(m);
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
     
+    
+    /** 
+     * File an FAA plan and save it
+     */
+    @JavascriptInterface
+    public void filePlan(
+    	String flightRules,
+    	String aircraftIdentifier,
+    	String departure,
+    	String destination,
+    	String departureInstant, 
+    	String flightDuration,
+    	String altDestination1, 
+    	String altDestination2, 
+    	String aircraftType,
+    	String numberOfAircraft,
+    	String heavyWakeTurbulence,
+    	String aircraftEquipment,
+    	String speedKnots, 
+    	String altitudeFL,
+    	String fuelOnBoard, 
+    	String pilotData,
+    	String peopleOnBoard, 
+    	String aircraftColor,
+    	String route,
+    	String type,
+    	String remarks) {
+        
+    	LmfsPlan pl = new LmfsPlan();
+    	pl.flightRules = flightRules;
+    	pl.aircraftIdentifier = aircraftIdentifier;
+    	pl.departure = departure;
+    	pl.destination = destination;
+    	pl.departureInstant = departureInstant; 
+    	pl.flightDuration = flightDuration;
+    	pl.altDestination1 = altDestination1; 
+    	pl.altDestination2 = altDestination2; 
+    	pl.aircraftType = aircraftType;
+    	pl.numberOfAircraft = numberOfAircraft;
+    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
+    	pl.aircraftEquipment = aircraftEquipment;
+    	pl.speedKnots = speedKnots; 
+    	pl.altitudeFL = altitudeFL;
+    	pl.fuelOnBoard = fuelOnBoard; 
+    	pl.pilotData = pilotData;
+    	pl.peopleOnBoard = peopleOnBoard; 
+    	pl.aircraftColor = aircraftColor;
+    	pl.route = route;
+    	pl.type = type;
+    	pl.remarks = remarks;
+ 
+    	// Save user input for auto fill
+    	mPref.saveLMFSPlan(pl.makeJSON());
+    }
+
     /**
      * @author zkhan
      *
@@ -662,6 +754,10 @@ public class WebAppPlanInterface implements Observer {
         	}
         	else if(MSG_INACTIVE == msg.what) {
         		mCallback.callback((Object)PlanActivity.INACTIVE);
+        	}
+        	else if(MSG_FILL_FORM == msg.what) {	
+            	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
         	}
         }
     };
