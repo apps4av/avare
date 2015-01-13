@@ -465,7 +465,24 @@ public class WebAppPlanInterface implements Observer {
     public void fillPlan() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
+    	// Fill in from storage, this is going to be mostly reflecting the user's most 
+    	// used settings in the form
     	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
+    	
+    	// If plan has valid BASE origin and destinations, fill them in
+    	if(mService != null) {
+    		Plan p = mService.getPlan();
+    		int num = p.getDestinationNumber();
+    		if(num >= 2) {
+    			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
+    				pl.destination = p.getDestination(num - 1).getID();
+    			}
+    			if(p.getDestination(0).getType().equals(Destination.BASE)) {
+    				pl.departure = p.getDestination(0).getID();
+    			}
+    		}
+    	}
+
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
     	    	"'" +  pl.flightRules  + "'," +
     			"'" +  pl.aircraftIdentifier + "'," +
