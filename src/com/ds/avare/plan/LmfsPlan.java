@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.plan;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -20,6 +19,9 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.json.JSONObject;
+
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 
 /**
  * 
@@ -272,19 +274,12 @@ public class LmfsPlan {
 	}
 
 	/**
-	 * Get time from user input to time in milliseconds
+	 * Get time from user input to time acceptable by LMFS
 	 * @return
 	 */
-	public static long getTimeFromInput(String time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Date d;
-        try {
-			d = sdf.parse(time);
-		} catch (Exception e) {
-			return 0;
-		}
-        return d.getTime();
+	public static String getTimeFromInput(String time) {
+		String data = time.replace(" ", "T") + ":00";
+		return data;
 	}
 
 	/**
@@ -322,4 +317,47 @@ public class LmfsPlan {
 		return "PT" + hours + "H" + min + "M";
 	}
 
+
+	/**
+	 * Fill this LMFS form based on plan
+	 * @param p
+	 */
+	public void setFromPlan(Plan p) {
+		int num = p.getDestinationNumber();
+		if(num >= 2) {
+			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
+				destination = p.getDestination(num - 1).getID();
+			}
+			if(p.getDestination(0).getType().equals(Destination.BASE)) {
+				departure = p.getDestination(0).getID();
+			}
+		}
+    	// find time remaining time based on true AS
+		double time = 0;
+		try {
+			time = p.getDistance() / Double.parseDouble(speedKnots);
+		}
+		catch (Exception e) {
+		}
+		flightDuration = LmfsPlan.timeToDuration(time);
+		fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
+		
+    	// fill time to now()
+        departureInstant = getTimeNow();
+
+        if(num > 2) {
+        	route = "";
+	        // Fill route
+	        for(int dest = 1; dest < (num - 1); dest++) {
+	        	String type = p.getDestination(dest).getType();
+	        	// Only add fixes and navaids
+	        	if(type.equals(Destination.FIX) || type.equals(Destination.NAVAID)) {
+	        		route += p.getDestination(dest).getID();
+	        	}
+	        }
+        }
+        if(route.equals("")) {
+        	route = DIRECT;
+        }
+	}
 }

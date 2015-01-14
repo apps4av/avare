@@ -473,32 +473,10 @@ public class WebAppPlanInterface implements Observer {
     	
     	// If plan has valid BASE origin and destinations, fill them in
     	if(mService != null) {
-    		Plan p = mService.getPlan();
-    		int num = p.getDestinationNumber();
-    		if(num >= 2) {
-    			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
-    				pl.destination = p.getDestination(num - 1).getID();
-    			}
-    			if(p.getDestination(0).getType().equals(Destination.BASE)) {
-    				pl.departure = p.getDestination(0).getID();
-    			}
-    		}
-        	// find time remaining time based on true AS
-    		double time = 0;
-    		try {
-    			time = p.getDistance() / Double.parseDouble(pl.speedKnots);
-    		}
-    		catch (Exception e) {
-    		}
-    		pl.flightDuration = LmfsPlan.timeToDuration(time);
-    		pl.fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
+    		pl.setFromPlan(mService.getPlan());
     	}
     	
-    	
-    	// fill time to now()
-        pl.departureInstant = LmfsPlan.getTimeNow();
-
-
+    	// Fill form
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
     	    	"'" +  pl.flightRules  + "'," +
     			"'" +  pl.aircraftIdentifier + "'," +
@@ -560,7 +538,7 @@ public class WebAppPlanInterface implements Observer {
     	pl.aircraftIdentifier = aircraftIdentifier;
     	pl.departure = departure;
     	pl.destination = destination;
-    	pl.departureInstant = String.valueOf(LmfsPlan.getTimeFromInput(departureInstant));
+    	pl.departureInstant = LmfsPlan.getTimeFromInput(departureInstant);
     	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
     	pl.altDestination1 = altDestination1; 
     	pl.altDestination2 = altDestination2; 
