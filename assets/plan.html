@@ -306,6 +306,11 @@ function save_hide(toggle) {
 	}
 }
 
+function plan_filter() {
+	var plan_filter = document.getElementById("plan_filter").value;
+	Android.planFilter(plan_filter);
+}
+
 // Sets buttons on each row
 function set_buttons_save() {
 
@@ -548,7 +553,9 @@ function plan_file() {
 		<input id="create_input" placeholder="KBOS LWM KMHT"></input>
 		<button onclick="plan_create()">Create</button><br></br>
 		<label class="sublabel">Saved Plans</label><br>
-		<button onclick="save_hide(true)">Plans</button><br>
+		<button onclick="save_hide(true)">Show Plans</button>
+		<input id="plan_filter" placeholder="Plan Filter"></input>
+		<button onclick="plan_filter()">Apply Filter</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
 	</p>
 	<p>
