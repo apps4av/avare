@@ -872,6 +872,14 @@ public class Plan implements Observer {
 		JSONObject json = new JSONObject(localMap);
 		return json.toString();
 	}
+	
+	/**
+	 * Get total distance remaining
+	 * @return
+	 */
+	public double getDistance() {
+		return mDistance;
+	}
 }
 
 

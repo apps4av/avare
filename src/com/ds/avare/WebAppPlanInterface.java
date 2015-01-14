@@ -483,7 +483,17 @@ public class WebAppPlanInterface implements Observer {
     				pl.departure = p.getDestination(0).getID();
     			}
     		}
+        	// find time remaining time based on true AS
+    		double time = 0;
+    		try {
+    			time = p.getDistance() / Double.parseDouble(pl.speedKnots);
+    		}
+    		catch (Exception e) {
+    		}
+    		pl.flightDuration = LmfsPlan.timeToDuration(time);
+    		pl.fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
     	}
+    	
     	
     	// fill time to now()
         pl.departureInstant = LmfsPlan.getTimeNow();

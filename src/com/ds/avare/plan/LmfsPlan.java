@@ -310,4 +310,16 @@ public class LmfsPlan {
 		return ret[1];
 	}
 
+	/**
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public static String timeToDuration(double time) {
+		// time is in hours, convert to LMFS format of PTXXHYYM
+		int hours = (int)time;
+		int min = (int)((time - hours) * 60.0);
+		return "PT" + hours + "H" + min + "M";
+	}
+
 }
