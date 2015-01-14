@@ -61,7 +61,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_ACTIVE = 11;
     private static final int MSG_INACTIVE = 12;
     private static final int MSG_FILL_FORM = 13;
-    private static final int MSG_ERROR = 14;
+    private static final int MSG_SAVE_HIDE = 14;
+    private static final int MSG_ERROR = 15;
     
     /** 
      * Instantiate the interface and set the context
@@ -336,6 +337,15 @@ public class WebAppPlanInterface implements Observer {
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
+    	// If we have an active plan, we need to turn it off now since we are
+    	// loading a new one.
+    	if(null != mService.getPlan()) {
+    		mService.getPlan().makeInactive();
+    	}
+
+    	// Clear out any destination that may have been set.
+		mService.setDestination(null);
+
     	mService.newPlanFromStorage(mSavedPlans.get(name), false);
     	mService.getPlan().setName(name);
     	newPlan();
@@ -354,6 +364,53 @@ public class WebAppPlanInterface implements Observer {
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
     	mService.getPlan().setName(name);
     	newPlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    /**
+     * Called from the javascript page when we need to build a new
+     * list of flight plans that are screened by the indicated filter
+     * 
+     * @param planFilter flight plan must contain this string
+     */
+    @JavascriptInterface
+    public void planFilter(String planFilter) {
+    	
+    	// Turn on the spinny wheel to indicate we are thinking
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	// Clear out the list of plans
+    	clearPlanSave();
+    	
+    	// Make the filter string uppercase
+    	planFilter = planFilter.toUpperCase();
+    	
+    	// Get the starting iterator of our collection of plans
+    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
+    	
+    	// While we have a 'next' plan
+    	while(it.hasNext()) {
+    		
+    		// Get the name of the plan
+    		String planName = it.next();
+    		
+    		//Make an upper case copy
+    		String planNameUC = planName.toUpperCase();
+    		
+    		// If the plan name contains the plan filter string
+    		if(true == planNameUC.contains(planFilter)) {
+    			
+    			// Tell the web page to add this plan name to its list
+	        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + planName + "'"));
+	        	mHandler.sendMessage(m);
+    		}
+        }
+
+    	// Tell the plan list table to show the plans
+    	Message m = mHandler.obtainMessage(MSG_SAVE_HIDE, (Object)("true"));
+    	mHandler.sendMessage(m);
+    	
+    	// Turn off the spinny wheel thingy
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -802,8 +859,12 @@ public class WebAppPlanInterface implements Observer {
         	else if(MSG_INACTIVE == msg.what) {
         		mCallback.callback((Object)PlanActivity.INACTIVE, null);
         	}
-        	else if(MSG_FILL_FORM == msg.what) {	
+           	else if(MSG_FILL_FORM == msg.what) {	
             	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+           	else if(MSG_SAVE_HIDE == msg.what) {	
+            	String func = "javascript:save_hide(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	

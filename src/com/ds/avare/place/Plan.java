@@ -67,7 +67,6 @@ public class Plan implements Observer {
     private Preferences mPref;
     private StorageService mService;
     private String mName;
-    private ExternalPlanMgr mExtPlanMgr;
     
     /**
      * 
@@ -108,9 +107,6 @@ public class Plan implements Observer {
     	return mName;
     }
     
-    public void setExtPlanMgr(ExternalPlanMgr extPlanMgr) {
-    	mExtPlanMgr = extPlanMgr;
-    }
     /**
      * 
      */
@@ -377,21 +373,30 @@ public class Plan implements Observer {
         if(null != params) {
             mTrackShape.updateShapeFromPlan(getCoordinates());
         }
-        mActive = true;
+
+    	// If this is an externally defined plan, then it specifically
+    	// needs to be turned on
+        if(null != mService) {
+	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
+	       	if(null != mExtPlanMgr) {
+	    		mExtPlanMgr.setActive(mName, true);
+	    	}
+        }
+    	mActive = true;
     }
     
     /**
-     * Inativate flight plan
+     * Inactivate flight plan
      */
     public void makeInactive() {
-    	// If this is an externally loaded plan, then it specifically
+    	// If this is an externally defined plan, then it specifically
     	// needs to be turned off
-    	if(null != mExtPlanMgr) {
-	    	ExternalFlightPlan plan = mExtPlanMgr.get(mName);
-	    	if(null != plan) {
-	    		plan.setActive(false);
+        if(null != mService) {
+	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
+	       	if(null != mExtPlanMgr) {
+	    		mExtPlanMgr.setActive(mName, false);
 	    	}
-    	}
+        }
         mActive = false;
     }
     
