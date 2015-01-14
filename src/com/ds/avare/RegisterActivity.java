@@ -262,7 +262,8 @@ public class RegisterActivity extends Activity {
          * Click event on Register button
          *
          */
-        mButtonRegister = (Button) findViewById(R.id.btn_register);        
+        mButtonRegister = (Button) findViewById(R.id.btn_register);   
+        mButtonRegister.setText(getString(R.string.register) + "(" + PossibleEmail.get(this) + ")");
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
              
             @Override
