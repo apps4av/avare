@@ -66,7 +66,6 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_SAVE_HIDE = 14;
     private static final int MSG_ERROR = 15;
     private static final int MSG_FAA_PLANS = 16;
-    private static final int MSG_FAA_PLANS_CHANGE_STATE = 17;
     
     /** 
      * Instantiate the interface and set the context
