@@ -50,7 +50,8 @@ public class WebAppPlanInterface implements Observer {
     private Context mContext;
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
-    
+	private LmfsPlanList mFaaPlans;
+	
     private static final int MSG_CLEAR_PLAN = 2;
     private static final int MSG_ADD_PLAN = 3;
     private static final int MSG_ADD_SEARCH = 4;
@@ -64,6 +65,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_FILL_FORM = 13;
     private static final int MSG_SAVE_HIDE = 14;
     private static final int MSG_ERROR = 15;
+    private static final int MSG_FAA_PLANS = 16;
+    private static final int MSG_FAA_PLANS_CHANGE_STATE = 17;
     
     /** 
      * Instantiate the interface and set the context
@@ -632,6 +635,49 @@ public class WebAppPlanInterface implements Observer {
     }
 
     
+    /**
+     * Close, open plan at FAA
+     */
+    @JavascriptInterface
+    public void planChangeState(int row, String action) {
+    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || row >= mFaaPlans.getPlans().size()) {
+    		return;
+    	}
+    	
+    	/*
+    	 * Do the action of the plan
+    	 */
+    	LmfsInterface infc = new LmfsInterface(mContext);
+
+    	String err = null;
+    	String id = mFaaPlans.getPlans().get(row).getId();
+    	if(id == null) {
+    		return;
+    	}
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	if(action.equals("Activate")) {
+    		// Activate plan with given ID
+    		err = infc.activateFlightPlan(id);
+    	}
+    	if(action.equals("Close")) {
+    		// Activate plan with given ID
+    		err = infc.closeFlightPlan(id);
+    	}
+    	if(action.equals("Cancel")) {
+    		// Activate plan with given ID
+    		err = infc.cancelFlightPlan(id);
+    	}
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    	if(null == err) {
+    		// success changing, update state
+    		getPlans();
+    	}
+    	
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);    	
+    }
+
+
     /** 
      * Get a list of FAA plans
      */
@@ -641,14 +687,17 @@ public class WebAppPlanInterface implements Observer {
 
     	LmfsInterface infc = new LmfsInterface(mContext);
 
-    	LmfsPlanList data = infc.getFlightPlans();
+    	mFaaPlans = infc.getFlightPlans();
     	String err = infc.getError();
     	if(null == err) {
     		// success filing
     		err = mContext.getString(R.string.Success);
     	}
+    	
     	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
     	mHandler.sendMessage(m);
+    	
+    	mHandler.sendEmptyMessage(MSG_FAA_PLANS);
 
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -870,6 +919,17 @@ public class WebAppPlanInterface implements Observer {
         	}
         	else if(MSG_ERROR == msg.what) {	
         		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
+        	}
+        	else if(MSG_FAA_PLANS == msg.what) {
+        		/*
+        		 * Fill the table of plans
+        		 */
+        		String p = "";
+        		for (LmfsPlan pl : mFaaPlans.getPlans()) {
+        			p += pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
+        		}
+        		String func = "javascript:set_faa_plans('" + p + "')";
+            	mWebView.loadUrl(func);
         	}
         }
     };

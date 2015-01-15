@@ -55,6 +55,7 @@ public class LmfsPlanList {
 		    	pl.aircraftIdentifier = obj.getString("aircraftIdentifier");
 		    	pl.destination = obj.getJSONObject("nasSummaryFields").getJSONObject("destination").getString("locationIdentifier");
 		    	pl.departure = obj.getJSONObject("nasSummaryFields").getJSONObject("departure").getString("locationIdentifier");
+		    	mPlans.add(pl);
 		    }
 		}
 		catch(Exception e) {

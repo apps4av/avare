@@ -408,8 +408,59 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
 }
 
+// fetch faa plans from internet 
 function get_faa_plans() {
+	var r = confirm("Do you want to fetch or update your list of FAA filed plans from Internet?");
+	if(r == false) {
+		return;	
+	}
 	Android.getPlans();
+}
+
+// set the table for faa plans
+//>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
+var CELL_FAA_NAME = 0;
+var CELL_FAA_STATE = 1;
+var CELL_FAA_ACTIVATE = 2;
+var CELL_FAA_CANCEL = 3;
+var CELL_FAA_CLOSE = 4;
+var CELL_FAA_LAST = 5;
+function set_faa_plans(plan) {
+	var plans = plan.split(",");
+	
+	// delete the table
+	var faa_plan_save = document.getElementById("save_table_faa");
+	for(var row = faa_plan_save.rows.length - 1; row >= 1; row--) {
+			faa_plan_save.deleteRow(row);
+	}
+
+	// add all rows
+	for(var r = 0; r < plans.length - 2; r += 2) {
+		var row = faa_plan_save.insertRow(-1);
+		var cell = [];
+
+		// Insert new cells (<td> elements) at the positions of the "new" <tr> element:
+		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
+		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
+		cell[CELL_FAA_ACTIVATE] = row.insertCell(CELL_FAA_ACTIVATE);
+		cell[CELL_FAA_CANCEL] = row.insertCell(CELL_FAA_CANCEL);
+		cell[CELL_FAA_CLOSE] = row.insertCell(CELL_FAA_CLOSE);
+		
+		cell[CELL_FAA_NAME].innerHTML = plans[r];
+		cell[CELL_FAA_STATE].innerHTML = plans[r + 1];
+		cell[CELL_FAA_ACTIVATE].innerHTML = "<button onclick='plan_state_change(" + (r / 2) + ",\"Activate\")'>Activate</button>";
+		cell[CELL_FAA_CANCEL].innerHTML =   "<button onclick='plan_state_change(" + (r / 2) + ",\"Cancel\")'>Cancel</button>";
+		cell[CELL_FAA_CLOSE].innerHTML =    "<button onclick='plan_state_change(" + (r / 2) + ",\"Close\")'>Close</button>";	
+	}
+
+}
+
+function plan_state_change(row, action) {
+	var r = confirm("Do you want to " + action + " the plan?");
+	if(r == false) {
+		return;	
+	}
+	Android.planChangeState(row, action);
 }
 
 // fill a plan page from stored values
@@ -490,7 +541,7 @@ function autofill() {
 	if(r == false) {
 		return;	
 	}
-	Android.fillPlan();	
+	Android.fillPlan();
 }
 
 // file a plan
