@@ -57,6 +57,7 @@ public class PlanActivity extends Activity {
     private Button mForwardButton;
     private ProgressBar mProgressBarSearch;
     private WebAppPlanInterface mInfc;
+    private boolean mInited;
 
     // A timer object to handle things when we are in sim mode
     private Timer mTimer;
@@ -82,6 +83,7 @@ public class PlanActivity extends Activity {
     public static final int ACTIVE = 3;
     public static final int INACTIVE = 4;
     public static final int MESSAGE = 5;
+    public static final int INIT = 6;
 
 
     /**
@@ -133,6 +135,7 @@ public class PlanActivity extends Activity {
         mContext = this;
         mService = null;
         mIsPageLoaded = false;
+        mInited = false;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.plan, null);
@@ -160,12 +163,9 @@ public class PlanActivity extends Activity {
                  * things might have changed.
                  * When both service and page loaded then proceed.
                  */
-	     		if(mService != null && 100 == progress) {
-	     		   	mInfc.newPlan();
-	                mInfc.newSavePlan();
-	                mProgressBarSearch.setVisibility(View.INVISIBLE);
+	     		if(100 == progress) {
+	     			mIsPageLoaded = true;
 	     		}
-	     		mIsPageLoaded = true;
      	    }
 	    });
         mWebView.loadUrl("file:///android_asset/plan.html");
@@ -236,18 +236,14 @@ public class PlanActivity extends Activity {
              * LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
+            mInfc.connect(binder.getService());
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mInfc.connect(mService);
 
             /*
              * When both service and page loaded then proceed.
              * The plan will be loaded either from here or from page load end event
              */
-     		if(mIsPageLoaded) {
-     		   	mInfc.newPlan();
-                mInfc.newSavePlan();
-     		}
             mTimer = new Timer();
             TimerTask sim = new UpdateTask();
             mTimer.scheduleAtFixedRate(sim, 0, 1000);
@@ -356,6 +352,11 @@ public class PlanActivity extends Activity {
     private class UpdateTask extends TimerTask {
 	    // Called whenever the timer fires.
 	    public void run() {
+	    	if(mService != null && mIsPageLoaded && !mInited) {
+	    		// Load plans when done with service and page loading
+	    		mHandler.sendEmptyMessage(INIT);
+	    		mInited = true;
+	    	}
 	    	mInfc.timer();
 	    }
     }
@@ -390,6 +391,11 @@ public class PlanActivity extends Activity {
     			});
     			AlertDialog alert = builder.create();
     			alert.show();
+    		}
+    		else if(msg.what == INIT) {
+                mProgressBarSearch.setVisibility(View.INVISIBLE);
+  				mInfc.newPlan();
+   				mInfc.newSavePlan();
     		}
         }
     };

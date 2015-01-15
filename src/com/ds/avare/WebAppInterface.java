@@ -291,6 +291,8 @@ public class WebAppInterface {
                     
                 }
 
+            	mHandler.sendEmptyMessage(MSG_BUSY);
+
                 String Pirep = "";
                 String Metar = "";
                 String Taf = "";
@@ -426,7 +428,8 @@ public class WebAppInterface {
         	if(MSG_WEATHER == msg.what) {
                 String data = (String)msg.obj;
                 String load = "javascript:updateData('" + data + "');";
-                mWebView.loadUrl(load);        		
+                mWebView.loadUrl(load);
+            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
         		mCallback.callback((Object)WeatherActivity.UNSHOW_BUSY, null);

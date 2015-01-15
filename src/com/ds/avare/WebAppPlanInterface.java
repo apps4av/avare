@@ -464,7 +464,11 @@ public class WebAppPlanInterface implements Observer {
     	int numDest = plan.getDestinationNumber();
     	double declination = 0;
     	// add plan name upfront
-    	String plans = plan.getName() + "::::";
+    	String name = plan.getName();
+    	if(name == null) {
+    		name = "";
+    	}
+    	String plans = name + "::::";
     	if(mService.getGpsParams() != null) {
     		declination = mService.getGpsParams().getDeclinition();
     	}

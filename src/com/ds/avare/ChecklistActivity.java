@@ -52,7 +52,8 @@ public class ChecklistActivity extends Activity {
     private Button mForwardButton;
     private ProgressBar mProgressBarSearch;
     private WebAppListInterface mInfc;
-    
+    private boolean mInited;
+
 
     /**
      * Service that keeps state even when activity is dead
@@ -72,7 +73,18 @@ public class ChecklistActivity extends Activity {
     public static final int SHOW_BUSY = 1;
     public static final int UNSHOW_BUSY = 2;
     private static final int MESSAGE = 14;
+    public static final int INIT = 6;
 
+    /**
+     * 
+     */
+    private void init() {
+    	if(mService != null && mIsPageLoaded && !mInited) {
+    		// Load plans when done with service and page loading
+    		mHandler.sendEmptyMessage(INIT);
+    		mInited = true;
+    	}    	
+    }
 
     /**
      * App preferences
@@ -82,18 +94,22 @@ public class ChecklistActivity extends Activity {
 
         @Override
         public void statusCallback(GpsStatus gpsStatus) {
+        	init();
         }
 
         @Override
         public void locationCallback(Location location) {
+        	init();
         }
 
         @Override
         public void timeoutCallback(boolean timeout) {
+        	init();
         }
 
         @Override
         public void enabledCallback(boolean enabled) {
+        	init();
         }
     };
 
@@ -123,6 +139,7 @@ public class ChecklistActivity extends Activity {
         mContext = this;
         mService = null;
         mIsPageLoaded = false;
+        mInited = false;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.checklist, null);
@@ -150,12 +167,9 @@ public class ChecklistActivity extends Activity {
                  * things might have changed.
                  * When both service and page loaded then proceed.
                  */
-	     		if(mService != null && 100 == progress) {
-	     		   	mInfc.newList();
-	                mInfc.newSaveList();
-	                mProgressBarSearch.setVisibility(View.INVISIBLE);
+	     		if(100 == progress) {
+		     		mIsPageLoaded = true;
 	     		}
-	     		mIsPageLoaded = true;
      	    }
 	    });
         mWebView.loadUrl("file:///android_asset/list.html");
@@ -216,18 +230,9 @@ public class ChecklistActivity extends Activity {
              * LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
+            mInfc.connect(binder.getService());
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mInfc.connect(mService);
-
-            /*
-             * When both service and page loaded then proceed.
-             * The list will be loaded either from here or from page load end event
-             */
-     		if(mIsPageLoaded) {
-     		   	mInfc.newList();
-                mInfc.newSaveList();
-     		}
         }
 
         /*
@@ -347,6 +352,11 @@ public class ChecklistActivity extends Activity {
     			});
     			AlertDialog alert = builder.create();
     			alert.show();
+    		}
+    		else if(msg.what == INIT) {
+                mProgressBarSearch.setVisibility(View.INVISIBLE);
+  				mInfc.newList();
+   				mInfc.newSaveList();
     		}
         }
     };
