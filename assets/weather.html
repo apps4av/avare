@@ -413,57 +413,28 @@ function get_faa_plans() {
 	AndroidWeather.getPlans();
 }
 
+function erase_plan_wx() {
+	r = confirm("Do you want to clear all weather data?");
+	if(false == r) {
+		return;	
+	}
+	var table = document.getElementById('plantable');
+	table.innerHTML = "";
+	
+}
+
+function erase_plan_chart() {	
+	var img = document.getElementById('weatherImage');
+	img.src = '';
+}
 
 </script>
 
 </head>
 
 <body>
-		<h1>Filing</h1>
-		<p>
-		<label>File (FAA)</label><br>
-			<table border="1">
-			<tr>
-				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option></select></td>		
-				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
-				<td>Aircraft Type<br><input class="halfinput" id="aircraft_type"/></td>		
-				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
-				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
-				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
-			</tr>	
-			<tr>
-				<td>True Airspeed<br><input class="halfinput" id="true_airspeed"/></td>
-				<td>Altitude<br><input class="halfinput" id="altitude"/></td>
-				<td>Origin<br><input class="halfinput" id="departure_point"/></td>
-				<td>Time (Zulu)<br><input class="halfinput" id="departure_date"/></td>
-				<td>Time Enroute<br><input class="halfinput" id="time_enroute"/></td>
-				<td>Destination<br><input class="halfinput" id="destination"/></td>
-			</tr>
-			<tr>
-				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
-				<td>Alternate 1<br><input class="halfinput" id="alternate1"/></td>
-				<td>Alternate 2<br><input class="halfinput" id="alterante2"/></td>
-				<td>Aircraft Color<br><input class="halfinput" id="aircraft_color"/></td>
-				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
-				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
-			</tr>
-		<button onclick="autofill()">Prepare</button>
-		<button onclick="clearall()">Clear</button><br></br>
-		<table border="1">
-			<tr>
-				<td>Route (DCT for Direct)<br><input id="route"/></td>
-				<td>Remarks (Optional)<br><input id="remarks"/></td>
-				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
-			</tr>
-		</table>
-		<br>
-		<button onclick="plan_file()">File Plan</button><br></br>
-		<label class="sublabel" >FAA Plans</label><br>
-		<button onclick="get_faa_plans()">Get Plans</button><br>
-		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>
-	</p>
-
 	<h1>Charts</h1>
+	<p>
 	<label>Prog.</label><br>
 	<select onchange='weatherImg(this.value)'>
 		<option value='WSA'>WPC Surface Analysis</option>
@@ -596,10 +567,60 @@ function get_faa_plans() {
 		<option value='http://aviationweather.gov/data/obs/sat/goes/vis_goesW.jpg'>Satellite West</option>
 		<option value='http://www.ospo.noaa.gov/data/land/fire/currenthms.jpg'>Fire and Smoke</option>
 	</select>
+	<br></br><button type='button' onClick='erase_plan_chart()'>Clear</button><br>
+	</p>
 	<br><img id='weatherImage' src='http://aviationweather.gov/adds/data/progs/hpc_sfc_analysis.gif'><br>
 	<h1>Plan Area</h1>
-	<input type='text' id='timetxt' readonly><button type='button' id='refreshbutton' onClick='refresh()' >Update</button>
-	<form id='plantable' readonly></form>
+	<p>
+		<input type='text' id='timetxt' readonly><button type='button' id='refreshbutton' onClick='refresh()' >Update</button><br></br>
+		<button type='button' onClick='erase_plan_wx()'>Clear</button><br>
+		<a id='plantable' readonly></a>
+	</p>
+	<!--
+	<h1>Filing</h1>
+		<p>
+		<label>File (FAA)</label><br>
+			<table border="1">
+			<tr>
+				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option></select></td>		
+				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
+				<td>Aircraft Type<br><input class="halfinput" id="aircraft_type"/></td>		
+				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
+				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
+				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
+			</tr>	
+			<tr>
+				<td>True Airspeed<br><input class="halfinput" id="true_airspeed"/></td>
+				<td>Altitude<br><input class="halfinput" id="altitude"/></td>
+				<td>Origin<br><input class="halfinput" id="departure_point"/></td>
+				<td>Time (Zulu)<br><input class="halfinput" id="departure_date"/></td>
+				<td>Time Enroute<br><input class="halfinput" id="time_enroute"/></td>
+				<td>Destination<br><input class="halfinput" id="destination"/></td>
+			</tr>
+			<tr>
+				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
+				<td>Alternate 1<br><input class="halfinput" id="alternate1"/></td>
+				<td>Alternate 2<br><input class="halfinput" id="alterante2"/></td>
+				<td>Aircraft Color<br><input class="halfinput" id="aircraft_color"/></td>
+				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
+				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
+			</tr>
+		<button onclick="autofill()">Prepare</button>
+		<button onclick="clearall()">Clear</button><br></br>
+		<table border="1">
+			<tr>
+				<td>Route (DCT for Direct)<br><input id="route"/></td>
+				<td>Remarks (Optional)<br><input id="remarks"/></td>
+				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
+			</tr>
+		</table>
+		<br>
+		<button onclick="plan_file()">File Plan</button><br></br>
+		<label class="sublabel" >FAA Plans</label><br>
+		<button onclick="get_faa_plans()">Get Plans</button><br>
+		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>
+	</p>
+	-->
 
 </body>
 

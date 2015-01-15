@@ -44,7 +44,7 @@ public class WebAppInterface {
 	private LmfsPlanList mFaaPlans;
     private GenericCallback mCallback;
 
-    private static final int MSG_WEATHER = 9;
+    private static final int MSG_WEATHER = 8;
     private static final int MSG_NOTBUSY = 9;
     private static final int MSG_BUSY = 10;
     private static final int MSG_FILL_FORM = 13;
