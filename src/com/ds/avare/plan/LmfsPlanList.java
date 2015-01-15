@@ -52,6 +52,7 @@ public class LmfsPlanList {
 		    	// Fill in all data needed to show user and identifiable plan
 		    	pl.setId(obj.getString("flightId"));
 		    	pl.currentState = obj.getString("currentState");
+		    	pl.versionStamp = obj.getString("versionStamp");
 		    	pl.aircraftIdentifier = obj.getString("aircraftIdentifier");
 		    	pl.destination = obj.getJSONObject("nasSummaryFields").getJSONObject("destination").getString("locationIdentifier");
 		    	pl.departure = obj.getJSONObject("nasSummaryFields").getJSONObject("departure").getString("locationIdentifier");

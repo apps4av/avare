@@ -626,7 +626,8 @@ public class WebAppPlanInterface implements Observer {
     	String err = infc.getError();
     	if(null == err) {
     		// success filing
-    		err = mContext.getString(R.string.Success);
+    		getPlans();
+    		return;
     	}
     	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
     	mHandler.sendMessage(m);
@@ -651,26 +652,29 @@ public class WebAppPlanInterface implements Observer {
 
     	String err = null;
     	String id = mFaaPlans.getPlans().get(row).getId();
+    	String ver = mFaaPlans.getPlans().get(row).versionStamp;
     	if(id == null) {
     		return;
     	}
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	if(action.equals("Activate")) {
     		// Activate plan with given ID
-    		err = infc.activateFlightPlan(id);
+    		infc.activateFlightPlan(id, ver);
     	}
-    	if(action.equals("Close")) {
+    	else if(action.equals("Close")) {
     		// Activate plan with given ID
-    		err = infc.closeFlightPlan(id);
+    		infc.closeFlightPlan(id);
     	}
-    	if(action.equals("Cancel")) {
+    	else if(action.equals("Cancel")) {
     		// Activate plan with given ID
-    		err = infc.cancelFlightPlan(id);
+    		infc.cancelFlightPlan(id);
     	}
+    	err = infc.getError();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     	if(null == err) {
     		// success changing, update state
     		getPlans();
+    		return;
     	}
     	
     	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
@@ -924,6 +928,9 @@ public class WebAppPlanInterface implements Observer {
         		/*
         		 * Fill the table of plans
         		 */
+        		if(mFaaPlans.getPlans() == null) {
+        			return;
+        		}
         		String p = "";
         		for (LmfsPlan pl : mFaaPlans.getPlans()) {
         			p += pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";

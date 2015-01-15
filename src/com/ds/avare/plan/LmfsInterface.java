@@ -141,7 +141,7 @@ public class LmfsInterface {
 	/**
 	 * Activate a flight plan
 	 */
-	public String activateFlightPlan(String id) {
+	public String activateFlightPlan(String id, String version) {
 		
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/" + id + "/activate";
@@ -151,6 +151,9 @@ public class LmfsInterface {
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
+		// Always activate NOW. Depart within 30 mins
+		params.put("actualDepartureInstant", LmfsPlan.getTimeFromInput(LmfsPlan.getTimeNow()));
+		params.put("versionStamp", version);
 
 		String ret = null;
 		try {
@@ -168,7 +171,7 @@ public class LmfsInterface {
 	public String cancelFlightPlan(String id) {
 		
 		String webUserName = PossibleEmail.get(mContext);
-		String avareMethod = "FP/" + id + "/retrieve";
+		String avareMethod = "FP/" + id + "/cancel";
 		String httpMethod = "POST";
 		
 		Map<String, String> params = new HashMap<String, String>();

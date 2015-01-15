@@ -60,6 +60,7 @@ public class LmfsPlan {
 	public String type;
 	public String remarks;
 	public String currentState;
+	public String versionStamp;
 
 	/**
 	 * 
@@ -90,6 +91,7 @@ public class LmfsPlan {
 		route = DIRECT;
 		type = DOMESTIC;		
 		remarks = "";
+		versionStamp = "";
 	}
 	
 	/**
