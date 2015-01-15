@@ -65,6 +65,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_marginRight="50dp"
             android:layout_marginTop="14dp" />
     
-	    
+	    <ProgressBar
+           android:id="@+id/weather_load_progress"
+           android:layout_width="fill_parent"
+           android:visibility="invisible"
+           android:layout_centerHorizontal="true"
+           android:layout_centerVertical="true"
+           android:layout_height="wrap_content"/>
+        
 </RelativeLayout>
 

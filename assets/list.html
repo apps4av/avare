@@ -143,7 +143,7 @@ function list_discard() {
 	// call Android
 	var r = confirm("Delete List?");
 	if(r == true) {
-		Android.discardList();
+		AndroidList.discardList();
 	}
 }
 
@@ -153,7 +153,7 @@ function list_import() {
 	var path = document.getElementById("import_input");
 	var r = confirm("Delete List then Import?");
 	if(r == true) {
-		Android.importFromFile(path.value);
+		AndroidList.importFromFile(path.value);
 		path.value = "";
 	}
 }
@@ -161,19 +161,19 @@ function list_import() {
 // Add a line to list
 function add_list_item() {
 	var item = document.getElementById("item_input");
-	Android.addToList(item.value);
+	AndroidList.addToList(item.value);
 	// clear when added
 	item.value = "";	
 }
 
 // move up current item
 function list_moveup_item() {
-	Android.moveUpItem();
+	AndroidList.moveUpItem();
 }
 
 // move down current item
 function list_movedown_item() {
-	Android.moveDownItem();
+	AndroidList.moveDownItem();
 }
 
 // delete current item
@@ -182,7 +182,7 @@ function list_delete_item() {
     if(r == false) {
         return; 
     }   
-    Android.deleteItem();
+    AndroidList.deleteItem();
 }
 
 var CELL_SAVE_NAME = 0;
@@ -193,7 +193,7 @@ var CELL_SAVE_LAST = 3;
 // load the list
 function save_load(row) {
 	var list_save = document.getElementById("save_table");
-	Android.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
 }
 
 // delete the list
@@ -203,7 +203,7 @@ function save_delete(row) {
 		return;	
 	}
 	var list_save = document.getElementById("save_table");
-	Android.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+	AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
 }
 
 // add the current list to saved list
@@ -213,7 +213,7 @@ function save_list_add() {
 	if(name == "") {
 		return 
 	}	
-	Android.saveList(name);
+	AndroidList.saveList(name);
 }
 
 // clear the entire save list

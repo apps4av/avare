@@ -14,15 +14,20 @@ package com.ds.avare;
 
 import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.text.Editable;
@@ -32,6 +37,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,7 +57,11 @@ public class WeatherActivity extends Activity {
     private Button mLastButton;
     private ProgressBar mProgressBar;
     private WebAppInterface mInfc;
+    private ProgressBar mProgressBarSearch;
 
+    public static final int SHOW_BUSY = 1;
+    public static final int UNSHOW_BUSY = 2;
+	public static final int MESSAGE = 3;
 
     /**
      * Service that keeps state even when activity is dead
@@ -125,8 +135,32 @@ public class WeatherActivity extends Activity {
         mWebView = (WebView)view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppInterface(mContext, mWebView);
-        mWebView.addJavascriptInterface(mInfc, "Android");
+        mInfc = new WebAppInterface(mContext, mWebView, new GenericCallback() {
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
+             */
+        	@Override
+        	public Object callback(Object o, Object o1) {
+            	Message m = mHandler.obtainMessage((Integer)o, o1);
+            	mHandler.sendMessage(m);
+        		return null;
+        	}
+        });
+        mWebView.addJavascriptInterface(mInfc, "AndroidWeather");
+        mWebView.setWebChromeClient(new WebChromeClient() {
+	     	public void onProgressChanged(WebView view, int progress) {
+                /*
+                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
+                 * things might have changed.
+                 * When both service and page loaded then proceed.
+                 */
+	     		if(mService != null && 100 == progress) {
+	                mProgressBarSearch.setVisibility(View.INVISIBLE);
+	     		}
+	     		mIsPageLoaded = true;
+     	    }
+	    });
         if(mIsPageLoaded == false) {
             mWebView.loadUrl("file:///android_asset/weather.html");
         }
@@ -145,6 +179,9 @@ public class WeatherActivity extends Activity {
          * Progress bar
          */
         mProgressBar = (ProgressBar)(view.findViewById(R.id.weather_progress_bar));
+
+        mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.weather_load_progress));
+        mProgressBarSearch.setVisibility(View.VISIBLE);
 
         /*
          * For searching, start search on every new key press
@@ -320,4 +357,33 @@ public class WeatherActivity extends Activity {
         mInfc.cleanup();
     }
     
+    /**
+     * This is needed to change views from web app interface class
+     */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+    		if(msg.what == SHOW_BUSY) {
+    			mProgressBarSearch.setVisibility(View.VISIBLE);
+    		}
+    		else if(msg.what == UNSHOW_BUSY) {
+    			mProgressBarSearch.setVisibility(View.INVISIBLE);
+    		}
+    		else if(msg.what == MESSAGE) {
+    			// Show an important message
+    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			builder.setMessage((String)msg.obj)
+    			       .setCancelable(false)
+    			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    			           public void onClick(DialogInterface dialog, int id) {
+    			                dialog.dismiss();
+    			           }
+    			});
+    			AlertDialog alert = builder.create();
+    			alert.show();
+    		}
+        }
+    };
+
+
 }

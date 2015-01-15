@@ -21,9 +21,6 @@ import java.util.Observer;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
-import com.ds.avare.plan.LmfsInterface;
-import com.ds.avare.plan.LmfsPlan;
-import com.ds.avare.plan.LmfsPlanList;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.GenericCallback;
@@ -47,10 +44,8 @@ public class WebAppPlanInterface implements Observer {
     private WebView mWebView;
     private SearchTask mSearchTask;
     private CreateTask mCreateTask;
-    private Context mContext;
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
-	private LmfsPlanList mFaaPlans;
 	
     private static final int MSG_CLEAR_PLAN = 2;
     private static final int MSG_ADD_PLAN = 3;
@@ -62,10 +57,7 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_BUSY = 10;
     private static final int MSG_ACTIVE = 11;
     private static final int MSG_INACTIVE = 12;
-    private static final int MSG_FILL_FORM = 13;
     private static final int MSG_SAVE_HIDE = 14;
-    private static final int MSG_ERROR = 15;
-    private static final int MSG_FAA_PLANS = 16;
     
     /** 
      * Instantiate the interface and set the context
@@ -73,7 +65,6 @@ public class WebAppPlanInterface implements Observer {
     WebAppPlanInterface(Context c, WebView ww, GenericCallback cb) {
         mPref = new Preferences(c);
         mWebView = ww;
-        mContext = c;
         mCallback = cb;
     }
 
@@ -386,7 +377,7 @@ public class WebAppPlanInterface implements Observer {
     	clearPlanSave();
     	
     	// Make the filter string uppercase
-    	planFilter = planFilter.toUpperCase();
+    	planFilter = planFilter.toUpperCase(Locale.getDefault());
     	
     	// Get the starting iterator of our collection of plans
     	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
@@ -398,7 +389,7 @@ public class WebAppPlanInterface implements Observer {
     		String planName = it.next();
     		
     		//Make an upper case copy
-    		String planNameUC = planName.toUpperCase();
+    		String planNameUC = planName.toUpperCase(Locale.getDefault());
     		
     		// If the plan name contains the plan filter string
     		if(true == planNameUC.contains(planFilter)) {
@@ -518,191 +509,6 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_BUSY);
         mCreateTask = new CreateTask();
         mCreateTask.execute(value);
-    }
-
-    /**
-     * Fill plan form with data stored
-     */
-    @JavascriptInterface
-    public void fillPlan() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-
-    	// Fill in from storage, this is going to be mostly reflecting the user's most 
-    	// used settings in the form
-    	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
-    	
-    	// If plan has valid BASE origin and destinations, fill them in
-    	if(mService != null) {
-    		pl.setFromPlan(mService.getPlan());
-    	}
-    	
-    	// Fill form
-    	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
-    	    	"'" +  pl.flightRules  + "'," +
-    			"'" +  pl.aircraftIdentifier + "'," +
-    			"'" +  pl.departure + "'," +
-    			"'" +  pl.destination + "'," +
-    			"'" +  pl.departureInstant + "'," + 
-    			"'" +  LmfsPlan.durationToTime(pl.flightDuration) + "'," +
-    			"'" +  pl.altDestination1 + "'," + 
-    			"'" +  pl.altDestination2 + "'," + 
-    			"'" +  pl.aircraftType + "'," +
-    			"'" +  pl.numberOfAircraft + "'," +
-    			"'" +  pl.heavyWakeTurbulence + "'," +
-    			"'" +  pl.aircraftEquipment + "'," +
-    			"'" +  pl.speedKnots + "'," + 
-    			"'" +  pl.altitudeFL + "'," +
-    			"'" +  LmfsPlan.durationToTime(pl.fuelOnBoard) + "'," + 
-    			"'" +  pl.pilotData + "'," +
-    			"'" +  pl.peopleOnBoard + "'," + 
-    			"'" +  pl.aircraftColor + "'," +
-    			"'" +  pl.route + "'," +
-    			"'" +  pl.type + "'," +
-    			"'" +  pl.remarks + "'"
-    			));
-    	mHandler.sendMessage(m);
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-    }
-    
-    
-    /** 
-     * File an FAA plan and save it
-     */
-    @JavascriptInterface
-    public void filePlan(
-    	String flightRules,
-    	String aircraftIdentifier,
-    	String departure,
-    	String destination,
-    	String departureInstant, 
-    	String flightDuration,
-    	String altDestination1, 
-    	String altDestination2, 
-    	String aircraftType,
-    	String numberOfAircraft,
-    	String heavyWakeTurbulence,
-    	String aircraftEquipment,
-    	String speedKnots, 
-    	String altitudeFL,
-    	String fuelOnBoard, 
-    	String pilotData,
-    	String peopleOnBoard, 
-    	String aircraftColor,
-    	String route,
-    	String type,
-    	String remarks) {
-        
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-    	LmfsPlan pl = new LmfsPlan();
-    	pl.flightRules = flightRules;
-    	pl.aircraftIdentifier = aircraftIdentifier;
-    	pl.departure = departure;
-    	pl.destination = destination;
-    	pl.departureInstant = LmfsPlan.getTimeFromInput(departureInstant);
-    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
-    	pl.altDestination1 = altDestination1; 
-    	pl.altDestination2 = altDestination2; 
-    	pl.aircraftType = aircraftType;
-    	pl.numberOfAircraft = numberOfAircraft;
-    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
-    	pl.aircraftEquipment = aircraftEquipment;
-    	pl.speedKnots = speedKnots; 
-    	pl.altitudeFL = altitudeFL;
-    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
-    	pl.pilotData = pilotData;
-    	pl.peopleOnBoard = peopleOnBoard; 
-    	pl.aircraftColor = aircraftColor;
-    	pl.route = route;
-    	pl.type = type;
-    	pl.remarks = remarks;
- 
-    	// Save user input for auto fill
-    	mPref.saveLMFSPlan(pl.makeJSON());
-    	
-    	// Now file and show error messages
-    	LmfsInterface infc = new LmfsInterface(mContext);
-    	infc.fileFlightPlan(pl);
-    	String err = infc.getError();
-    	if(null == err) {
-    		// success filing
-    		getPlans();
-    		return;
-    	}
-    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
-    	mHandler.sendMessage(m);
-    	
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-    }
-
-    
-    /**
-     * Close, open plan at FAA
-     */
-    @JavascriptInterface
-    public void planChangeState(int row, String action) {
-    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || row >= mFaaPlans.getPlans().size()) {
-    		return;
-    	}
-    	
-    	/*
-    	 * Do the action of the plan
-    	 */
-    	LmfsInterface infc = new LmfsInterface(mContext);
-
-    	String err = null;
-    	String id = mFaaPlans.getPlans().get(row).getId();
-    	String ver = mFaaPlans.getPlans().get(row).versionStamp;
-    	if(id == null) {
-    		return;
-    	}
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-    	if(action.equals("Activate")) {
-    		// Activate plan with given ID
-    		infc.activateFlightPlan(id, ver);
-    	}
-    	else if(action.equals("Close")) {
-    		// Activate plan with given ID
-    		infc.closeFlightPlan(id);
-    	}
-    	else if(action.equals("Cancel")) {
-    		// Activate plan with given ID
-    		infc.cancelFlightPlan(id);
-    	}
-    	err = infc.getError();
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-    	if(null == err) {
-    		// success changing, update state
-    		getPlans();
-    		return;
-    	}
-    	
-    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
-    	mHandler.sendMessage(m);    	
-    }
-
-
-    /** 
-     * Get a list of FAA plans
-     */
-    @JavascriptInterface
-    public void getPlans() {      
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-
-    	LmfsInterface infc = new LmfsInterface(mContext);
-
-    	mFaaPlans = infc.getFlightPlans();
-    	String err = infc.getError();
-    	if(null == err) {
-    		// success filing
-    		err = mContext.getString(R.string.Success);
-    	}
-    	
-    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
-    	mHandler.sendMessage(m);
-    	
-    	mHandler.sendEmptyMessage(MSG_FAA_PLANS);
-
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
@@ -912,29 +718,8 @@ public class WebAppPlanInterface implements Observer {
         	else if(MSG_INACTIVE == msg.what) {
         		mCallback.callback((Object)PlanActivity.INACTIVE, null);
         	}
-           	else if(MSG_FILL_FORM == msg.what) {	
-            	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
            	else if(MSG_SAVE_HIDE == msg.what) {	
             	String func = "javascript:save_hide(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
-        	else if(MSG_ERROR == msg.what) {	
-        		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
-        	}
-        	else if(MSG_FAA_PLANS == msg.what) {
-        		/*
-        		 * Fill the table of plans
-        		 */
-        		if(mFaaPlans.getPlans() == null) {
-        			return;
-        		}
-        		String p = "";
-        		for (LmfsPlan pl : mFaaPlans.getPlans()) {
-        			p += pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
-        		}
-        		String func = "javascript:set_faa_plans('" + p + "')";
             	mWebView.loadUrl(func);
         	}
         }

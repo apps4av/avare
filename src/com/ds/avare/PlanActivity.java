@@ -152,7 +152,7 @@ public class PlanActivity extends Activity {
         		return null;
         	}
         });
-        mWebView.addJavascriptInterface(mInfc, "Android");
+        mWebView.addJavascriptInterface(mInfc, "AndroidPlan");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
                 /*

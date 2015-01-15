@@ -14,7 +14,11 @@ package com.ds.avare;
 
 
 import com.ds.avare.place.Destination;
+import com.ds.avare.plan.LmfsInterface;
+import com.ds.avare.plan.LmfsPlan;
+import com.ds.avare.plan.LmfsPlanList;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
@@ -37,12 +41,20 @@ public class WebAppInterface {
     private Thread mWeatherThread;
     private WebView mWebView;
     private Preferences mPref;
+	private LmfsPlanList mFaaPlans;
+    private GenericCallback mCallback;
 
+    private static final int MSG_WEATHER = 9;
+    private static final int MSG_NOTBUSY = 9;
+    private static final int MSG_BUSY = 10;
+    private static final int MSG_FILL_FORM = 13;
+    private static final int MSG_ERROR = 15;
+    private static final int MSG_FAA_PLANS = 16;
 
     /** 
      * Instantiate the interface and set the context
      */
-    WebAppInterface(Context c, WebView v) {
+    WebAppInterface(Context c, WebView v, GenericCallback cb) {
         mWebView = v;
         mContext = c;
         mPref = new Preferences(c);
@@ -50,6 +62,7 @@ public class WebAppInterface {
         mWeatherTask = new WeatherTask();
         mWeatherThread = new Thread(mWeatherTask);
         mWeatherThread.start();
+        mCallback = cb;
     }
     
     /**
@@ -66,6 +79,191 @@ public class WebAppInterface {
     @JavascriptInterface
     public void getWeather() {
         mWeatherThread.interrupt();
+    }
+
+    /**
+     * Fill plan form with data stored
+     */
+    @JavascriptInterface
+    public void fillPlan() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	// Fill in from storage, this is going to be mostly reflecting the user's most 
+    	// used settings in the form
+    	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
+    	
+    	// If plan has valid BASE origin and destinations, fill them in
+    	if(mService != null) {
+    		pl.setFromPlan(mService.getPlan());
+    	}
+    	
+    	// Fill form
+    	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
+    	    	"'" +  pl.flightRules  + "'," +
+    			"'" +  pl.aircraftIdentifier + "'," +
+    			"'" +  pl.departure + "'," +
+    			"'" +  pl.destination + "'," +
+    			"'" +  pl.departureInstant + "'," + 
+    			"'" +  LmfsPlan.durationToTime(pl.flightDuration) + "'," +
+    			"'" +  pl.altDestination1 + "'," + 
+    			"'" +  pl.altDestination2 + "'," + 
+    			"'" +  pl.aircraftType + "'," +
+    			"'" +  pl.numberOfAircraft + "'," +
+    			"'" +  pl.heavyWakeTurbulence + "'," +
+    			"'" +  pl.aircraftEquipment + "'," +
+    			"'" +  pl.speedKnots + "'," + 
+    			"'" +  pl.altitudeFL + "'," +
+    			"'" +  LmfsPlan.durationToTime(pl.fuelOnBoard) + "'," + 
+    			"'" +  pl.pilotData + "'," +
+    			"'" +  pl.peopleOnBoard + "'," + 
+    			"'" +  pl.aircraftColor + "'," +
+    			"'" +  pl.route + "'," +
+    			"'" +  pl.type + "'," +
+    			"'" +  pl.remarks + "'"
+    			));
+    	mHandler.sendMessage(m);
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+    
+    
+    /** 
+     * File an FAA plan and save it
+     */
+    @JavascriptInterface
+    public void filePlan(
+    	String flightRules,
+    	String aircraftIdentifier,
+    	String departure,
+    	String destination,
+    	String departureInstant, 
+    	String flightDuration,
+    	String altDestination1, 
+    	String altDestination2, 
+    	String aircraftType,
+    	String numberOfAircraft,
+    	String heavyWakeTurbulence,
+    	String aircraftEquipment,
+    	String speedKnots, 
+    	String altitudeFL,
+    	String fuelOnBoard, 
+    	String pilotData,
+    	String peopleOnBoard, 
+    	String aircraftColor,
+    	String route,
+    	String type,
+    	String remarks) {
+        
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	LmfsPlan pl = new LmfsPlan();
+    	pl.flightRules = flightRules;
+    	pl.aircraftIdentifier = aircraftIdentifier;
+    	pl.departure = departure;
+    	pl.destination = destination;
+    	pl.departureInstant = LmfsPlan.getTimeFromInput(departureInstant);
+    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
+    	pl.altDestination1 = altDestination1; 
+    	pl.altDestination2 = altDestination2; 
+    	pl.aircraftType = aircraftType;
+    	pl.numberOfAircraft = numberOfAircraft;
+    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
+    	pl.aircraftEquipment = aircraftEquipment;
+    	pl.speedKnots = speedKnots; 
+    	pl.altitudeFL = altitudeFL;
+    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
+    	pl.pilotData = pilotData;
+    	pl.peopleOnBoard = peopleOnBoard; 
+    	pl.aircraftColor = aircraftColor;
+    	pl.route = route;
+    	pl.type = type;
+    	pl.remarks = remarks;
+ 
+    	// Save user input for auto fill
+    	mPref.saveLMFSPlan(pl.makeJSON());
+    	
+    	// Now file and show error messages
+    	LmfsInterface infc = new LmfsInterface(mContext);
+    	infc.fileFlightPlan(pl);
+    	String err = infc.getError();
+    	if(null == err) {
+    		// success filing
+    		getPlans();
+    		return;
+    	}
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);
+    	
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    
+    /**
+     * Close, open plan at FAA
+     */
+    @JavascriptInterface
+    public void planChangeState(int row, String action) {
+    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || row >= mFaaPlans.getPlans().size()) {
+    		return;
+    	}
+    	
+    	/*
+    	 * Do the action of the plan
+    	 */
+    	LmfsInterface infc = new LmfsInterface(mContext);
+
+    	String err = null;
+    	String id = mFaaPlans.getPlans().get(row).getId();
+    	String ver = mFaaPlans.getPlans().get(row).versionStamp;
+    	if(id == null) {
+    		return;
+    	}
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	if(action.equals("Activate")) {
+    		// Activate plan with given ID
+    		infc.activateFlightPlan(id, ver);
+    	}
+    	else if(action.equals("Close")) {
+    		// Activate plan with given ID
+    		infc.closeFlightPlan(id);
+    	}
+    	else if(action.equals("Cancel")) {
+    		// Activate plan with given ID
+    		infc.cancelFlightPlan(id);
+    	}
+    	err = infc.getError();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    	if(null == err) {
+    		// success changing, update state
+    		getPlans();
+    		return;
+    	}
+    	
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);    	
+    }
+
+
+    /** 
+     * Get a list of FAA plans
+     */
+    @JavascriptInterface
+    public void getPlans() {      
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	LmfsInterface infc = new LmfsInterface(mContext);
+
+    	mFaaPlans = infc.getFlightPlans();
+    	String err = infc.getError();
+    	if(null == err) {
+    		// success filing
+    		err = mContext.getString(R.string.Success);
+    	}
+    	
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);
+    	
+    	mHandler.sendEmptyMessage(MSG_FAA_PLANS);
+
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
 
@@ -101,9 +299,7 @@ public class WebAppInterface {
                 String planf = "";
                 String plan = "";
                 if(null == mService) {
-                    Message m = new Message();
-                    m.obj = mContext.getString(R.string.WeatherPlan);
-                    mHandler.sendMessage(m);
+                    sendWeather(mContext.getString(R.string.WeatherPlan));
                     continue;
                 }
     
@@ -112,9 +308,7 @@ public class WebAppInterface {
                     /*
                      * Not a route.
                      */
-                    Message m = new Message();
-                    m.obj = mContext.getString(R.string.WeatherPlan);
-                    mHandler.sendMessage(m);
+                    sendWeather(mContext.getString(R.string.WeatherPlan));
                     continue;
                 }
                 for(int i = 0; i < num; i++) {
@@ -124,9 +318,7 @@ public class WebAppInterface {
                             mService.getPlan().getDestination(i).getType() + ") ";
                 }
                 if(planf.equals("")) {
-                    Message m = new Message();
-                    m.obj = mContext.getString(R.string.WeatherPlan);
-                    mHandler.sendMessage(m);
+                    sendWeather(mContext.getString(R.string.WeatherPlan));
                     continue;
                 }                
                 
@@ -208,13 +400,21 @@ public class WebAppInterface {
 
                 String weather = plan + Metar + Taf + Pirep + nam;
                 
-                Message m = new Message();
-                m.obj = weather;
-                mHandler.sendMessage(m);
+                sendWeather(weather);
             }        
         }
     }
 
+    /**
+     * 
+     * @param data
+     */
+    private void sendWeather(String data) {
+        Message m = mHandler.obtainMessage();
+        m.obj = data;
+        m.what = MSG_WEATHER;
+        mHandler.sendMessage(m);
+    }
     
     /**
      * 
@@ -222,9 +422,40 @@ public class WebAppInterface {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            String data = (String)msg.obj;
-            String load = "javascript:updateData('" + data + "');";
-            mWebView.loadUrl(load);                        
+            
+        	if(MSG_WEATHER == msg.what) {
+                String data = (String)msg.obj;
+                String load = "javascript:updateData('" + data + "');";
+                mWebView.loadUrl(load);        		
+        	}
+        	else if(MSG_NOTBUSY == msg.what) {
+        		mCallback.callback((Object)WeatherActivity.UNSHOW_BUSY, null);
+        	}
+        	else if(MSG_BUSY == msg.what) {
+        		mCallback.callback((Object)WeatherActivity.SHOW_BUSY, null);
+        	}
+           	else if(MSG_FILL_FORM == msg.what) {	
+            	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+        	else if(MSG_ERROR == msg.what) {	
+        		mCallback.callback((Object)WeatherActivity.MESSAGE, msg.obj);
+        	}
+        	else if(MSG_FAA_PLANS == msg.what) {
+        		/*
+        		 * Fill the table of plans
+        		 */
+        		if(mFaaPlans.getPlans() == null) {
+        			return;
+        		}
+        		String p = "";
+        		for (LmfsPlan pl : mFaaPlans.getPlans()) {
+        			p += pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
+        		}
+        		String func = "javascript:set_faa_plans('" + p + "')";
+            	mWebView.loadUrl(func);
+        	}
+
         }
     };
 

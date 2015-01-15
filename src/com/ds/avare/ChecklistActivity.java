@@ -142,7 +142,7 @@ public class ChecklistActivity extends Activity {
         		return null;
         	}
         });
-        mWebView.addJavascriptInterface(mInfc, "Android");
+        mWebView.addJavascriptInterface(mInfc, "AndroidList");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
                 /*
