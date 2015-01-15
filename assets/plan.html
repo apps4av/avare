@@ -409,6 +409,7 @@ function search_add(id, name, type, subtype) {
 }
 
 function get_faa_plans() {
+	Android.getPlans();
 }
 
 // fill a plan page from stored values
@@ -585,7 +586,7 @@ function plan_file() {
 				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
 				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
 			</tr>
-		<button onclick="autofill()">Fill</button>
+		<button onclick="autofill()">Prepare</button>
 		<button onclick="clearall()">Clear</button><br></br>
 		<table border="1">
 			<tr>
@@ -597,10 +598,8 @@ function plan_file() {
 		<br>
 		<button onclick="plan_file()">File Plan</button><br></br>
 		<label class="sublabel" >FAA Plans</label><br>
-		<button onclick="get_faa_plans()">Plans</button><br>
+		<button onclick="get_faa_plans()">Get Plans</button><br>
 		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>
 	</p>
-
-
 </body>
 </html>

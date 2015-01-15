@@ -23,6 +23,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.plan.LmfsInterface;
 import com.ds.avare.plan.LmfsPlan;
+import com.ds.avare.plan.LmfsPlanList;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.GenericCallback;
@@ -627,6 +628,28 @@ public class WebAppPlanInterface implements Observer {
     	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
     	mHandler.sendMessage(m);
     	
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    
+    /** 
+     * Get a list of FAA plans
+     */
+    @JavascriptInterface
+    public void getPlans() {      
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	LmfsInterface infc = new LmfsInterface(mContext);
+
+    	LmfsPlanList data = infc.getFlightPlans();
+    	String err = infc.getError();
+    	if(null == err) {
+    		// success filing
+    		err = mContext.getString(R.string.Success);
+    	}
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);
+
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
