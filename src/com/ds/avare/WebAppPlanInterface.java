@@ -426,6 +426,17 @@ public class WebAppPlanInterface implements Observer {
     	
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
+    	// If we have a plan that is active, and it is the plan
+    	// we are attempting to delete, then make it inactive
+    	Plan plan = mService.getPlan();
+    	if(null != plan) {
+    		if(true == plan.getName().equalsIgnoreCase(name)) {
+        		if(true == plan.isActive()) {
+	    			plan.makeInactive();
+        		}
+    		}
+    	}
+    	
     	// Remove the plan from our internal list of names
     	mSavedPlans.remove(name);
 
