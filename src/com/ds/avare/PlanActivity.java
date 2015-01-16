@@ -173,6 +173,14 @@ public class PlanActivity extends Activity {
 	            new AlertDialog.Builder(PlanActivity.this)
 	            	.setTitle("")
 	            	.setMessage(message)
+	            	// on cancel is needed for without it JS may hang
+	            	.setCancelable(true)
+	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
+						@Override
+						public void onCancel(DialogInterface arg0) {
+	            			result.cancel();							
+						}
+	            	})
 	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	            		public void onClick(DialogInterface dialog, int which) {
 	            			result.confirm();

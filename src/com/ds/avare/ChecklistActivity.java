@@ -167,6 +167,13 @@ public class ChecklistActivity extends Activity {
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
 	            new AlertDialog.Builder(ChecklistActivity.this)
 	            	.setTitle("")
+	            	.setCancelable(true)
+	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
+						@Override
+						public void onCancel(DialogInterface arg0) {
+	            			result.cancel();							
+						}
+	            	})
 	            	.setMessage(message)
 	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	            		public void onClick(DialogInterface dialog, int which) {

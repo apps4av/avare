@@ -68,11 +68,6 @@ public class WeatherActivity extends Activity {
      */
     private StorageService mService;
     
-    /*
-     * If page it loaded
-     */
-    private boolean mIsPageLoaded;
-
     private Context mContext;
     
     /**
@@ -150,15 +145,7 @@ public class WeatherActivity extends Activity {
         mWebView.addJavascriptInterface(mInfc, "AndroidWeather");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
-                /*
-                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
-                 * things might have changed.
-                 * When both service and page loaded then proceed.
-                 */
-	     		if(mService != null && 100 == progress) {
-	                mProgressBarSearch.setVisibility(View.INVISIBLE);
-	     		}
-	     		mIsPageLoaded = true;
+                mProgressBarSearch.setVisibility(View.INVISIBLE);
      	    }
 	     	
 	     	// This is needed to remove title from Confirm dialog
@@ -166,6 +153,13 @@ public class WeatherActivity extends Activity {
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
 	            new AlertDialog.Builder(WeatherActivity.this)
 	            	.setTitle("")
+	            	.setCancelable(true)
+	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
+						@Override
+						public void onCancel(DialogInterface arg0) {
+	            			result.cancel();							
+						}
+	            	})
 	            	.setMessage(message)
 	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	            		public void onClick(DialogInterface dialog, int which) {
@@ -183,10 +177,8 @@ public class WeatherActivity extends Activity {
 	        }
 
 	    });
-        if(mIsPageLoaded == false) {
-            mWebView.loadUrl("file:///android_asset/weather.html");
-        }
-        mIsPageLoaded = true;
+        
+        mWebView.loadUrl("file:///android_asset/weather.html");
 
         // This is need on some old phones to get focus back to webview.
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
@@ -257,7 +249,6 @@ public class WeatherActivity extends Activity {
         });
 
         mService = null;
-        mIsPageLoaded = false;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
