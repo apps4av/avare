@@ -90,6 +90,7 @@ public class WebActivity extends Activity  {
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
+				arg0.performClick();
 				arg0.requestFocus();
 				return false;
 			}
