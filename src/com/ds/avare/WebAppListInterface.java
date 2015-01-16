@@ -41,8 +41,6 @@ public class WebAppListInterface {
     private WebView mWebView;
     private ImportTask mImportTask;
     private GenericCallback mCallback;
-    private Checklist mWorkingList;
-    private int mWorkingIndex;
     
     private static final int MSG_UPDATE_LIST = 1;
     private static final int MSG_CLEAR_LIST = 2;
@@ -62,8 +60,6 @@ public class WebAppListInterface {
         mPref = new Preferences(c);
         mWebView = ww;
         mCallback = cb;
-        mWorkingList = new Checklist("");
-        mWorkingIndex = 0;
     }
 
     /**
@@ -122,7 +118,7 @@ public class WebAppListInterface {
     public void newList() {
         clearList();
         
-        String steps[] = mWorkingList.getStepsArray();
+        String steps[] = mService.getChecklist().getStepsArray();
         if(steps == null) {
             updateList();
             return;
@@ -147,10 +143,7 @@ public class WebAppListInterface {
      * on long list. Hence do from Android widgets 
      */
     public void moveBack() {
-    	mWorkingIndex--;
-    	if(mWorkingIndex < 0) {
-    		mWorkingIndex = 0;
-    	}
+    	mService.getChecklist().moveBack();
 		updateList();
     }
 
@@ -159,10 +152,7 @@ public class WebAppListInterface {
      * on long list. Hence do from Android widgets 
      */
     public void moveForward() {
-    	mWorkingIndex++;
-    	if(mWorkingIndex >= mWorkingList.getStepsArray().length) {
-    		mWorkingIndex = mWorkingList.getStepsArray().length - 1;
-    	}
+    	mService.getChecklist().moveForward();
 		updateList();
     }
 
@@ -172,14 +162,10 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void moveUpItem() {
-    	if(mWorkingIndex <= 0) {
-    		return;
-    	}
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mWorkingList.moveStep(mWorkingIndex, mWorkingIndex - 1);
-    	mWorkingIndex--; // Move with step
+    	mService.getChecklist().moveItemUp();
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -189,16 +175,11 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void moveDownItem() {
-    	// Do not get past last
-    	mWorkingIndex++;
-    	if(mWorkingIndex >= mWorkingList.getStepsArray().length) {
-    		mWorkingIndex = mWorkingList.getStepsArray().length - 1;
-    		return;
-    	}
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mWorkingList.moveStep(mWorkingIndex - 1, mWorkingIndex);
+    	mService.getChecklist().moveItemDown();
+    	
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -209,8 +190,7 @@ public class WebAppListInterface {
     @JavascriptInterface
     public void discardList() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
-        mWorkingList = new Checklist("");
-        mWorkingIndex = 0;
+        mService.setChecklist(new Checklist(""));
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -224,11 +204,7 @@ public class WebAppListInterface {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// remove current item, change working index to not overflow
-    	mWorkingList.removeStep(mWorkingIndex);
-    	mWorkingIndex--;
-    	if(mWorkingIndex < 0) {
-    		mWorkingIndex = 0;
-    	}
+    	mService.getChecklist().deleteItem();
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -245,7 +221,7 @@ public class WebAppListInterface {
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mWorkingList.addStep(item);
+    	mService.getChecklist().addStep(item);
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -256,11 +232,11 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void saveList(String name) {
-    	if(mWorkingList.getStepsArray().length < 1) {
+    	if(mService.getChecklist().getStepsArray().length < 1) {
     		// Anything less than 1 is not a list
     		return;
     	}
-    	mWorkingList.changeName(name);
+    	mService.getChecklist().changeName(name);
         LinkedList<Checklist> lists = mService.getCheckLists();
         if(lists == null) {
             return;
@@ -268,7 +244,7 @@ public class WebAppListInterface {
 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-        lists.add(mWorkingList);
+        lists.add(mService.getChecklist());
         /*
          * Save to storage on save button
          */
@@ -277,7 +253,7 @@ public class WebAppListInterface {
         /*
          * Make a new working list since last one stored already 
          */
-        mWorkingList = new Checklist(mWorkingList.getName(), mWorkingList.getSteps());
+        mService.setChecklist(new Checklist(mService.getChecklist().getName(), mService.getChecklist().getSteps()));
 
         newSaveList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -298,8 +274,7 @@ public class WebAppListInterface {
 
         for (Checklist cl : lists) {
         	if(cl.getName().equals(name)) {
-        		mWorkingList = new Checklist(cl.getName(), cl.getSteps());
-        		mWorkingIndex = 0;
+        		mService.setChecklist(new Checklist(cl.getName(), cl.getSteps()));
         	}
         }
     	newList();
@@ -368,8 +343,7 @@ public class WebAppListInterface {
         /*
          * New list add from file
          */
-        mWorkingList = new Checklist("");
-        mWorkingIndex = 0;
+        mService.setChecklist(new Checklist(""));
         mImportTask = new ImportTask();
         mImportTask.execute(path);
     }
@@ -454,7 +428,7 @@ public class WebAppListInterface {
                 return;
             }
             
-            mWorkingList.addStep(values[0]);
+            mService.getChecklist().addStep(values[0]);
             // keep adding lines
         }
     }
@@ -471,16 +445,16 @@ public class WebAppListInterface {
                  * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
                  * things might have changed.
                  */
-        		String[] steps = mWorkingList.getStepsArray();
+        		String[] steps = mService.getChecklist().getStepsArray();
             	for(int num = 0; num < steps.length; num++) {
             		String url = "javascript:set_list_line(" + 
             				num + "," +
-            				(mWorkingIndex == num ? 1 : 0) + ",'" + steps[num] + "')";
+            				(mService.getChecklist().isSelected(num) ? 1 : 0) + ",'" + steps[num] + "')";
             		mWebView.loadUrl(url);
             	}
             	
-            	if(null != mWorkingList.getName()) {
-            		mWebView.loadUrl("javascript:list_setname('" + mWorkingList.getName() + "')");
+            	if(null != mService.getChecklist().getName()) {
+            		mWebView.loadUrl("javascript:list_setname('" + mService.getChecklist().getName() + "')");
             	}
         	}
         	else if(MSG_CLEAR_LIST == msg.what) {

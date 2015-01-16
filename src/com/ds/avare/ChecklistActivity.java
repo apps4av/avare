@@ -11,6 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -54,6 +57,8 @@ public class ChecklistActivity extends Activity {
     private WebAppListInterface mInfc;
     private boolean mInited;
 
+    // A timer object to handle things when GPS goes away
+    private Timer mTimer;
 
     /**
      * Service that keeps state even when activity is dead
@@ -76,17 +81,6 @@ public class ChecklistActivity extends Activity {
     public static final int INIT = 6;
 
     /**
-     * 
-     */
-    private void init() {
-    	if(mService != null && mIsPageLoaded && !mInited) {
-    		// Load plans when done with service and page loading
-    		mHandler.sendEmptyMessage(INIT);
-    		mInited = true;
-    	}    	
-    }
-
-    /**
      * App preferences
      */
 
@@ -94,22 +88,18 @@ public class ChecklistActivity extends Activity {
 
         @Override
         public void statusCallback(GpsStatus gpsStatus) {
-        	init();
         }
 
         @Override
         public void locationCallback(Location location) {
-        	init();
         }
 
         @Override
         public void timeoutCallback(boolean timeout) {
-        	init();
         }
 
         @Override
         public void enabledCallback(boolean enabled) {
-        	init();
         }
     };
 
@@ -255,6 +245,14 @@ public class ChecklistActivity extends Activity {
             mInfc.connect(binder.getService());
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            
+            /*
+             * When both service and page loaded then proceed.
+             * The plan will be loaded either from here or from page load end event
+             */
+            mTimer = new Timer();
+            TimerTask sim = new UpdateTask();
+            mTimer.scheduleAtFixedRate(sim, 0, 1000);
         }
 
         /*
@@ -318,6 +316,10 @@ public class ChecklistActivity extends Activity {
          */
         getApplicationContext().unbindService(mConnection);
 
+        // Cancel the timer if one is running
+        if(mTimer != null) {
+        	mTimer.cancel();
+        }
     }
 
     /*
@@ -350,6 +352,22 @@ public class ChecklistActivity extends Activity {
         super.onDestroy();
     }
     
+    /***
+    * A background timer class to send off messages if we are in simulation mode
+    * @author zkhan
+    */
+    private class UpdateTask extends TimerTask {
+	    // Called whenever the timer fires.
+	    public void run() {
+	    	if(mService != null && mIsPageLoaded && !mInited) {
+	    		// Load plans when done with service and page loading
+	    		mHandler.sendEmptyMessage(INIT);
+	    		mInited = true;
+	    	}
+	    }
+    }
+
+
     /**
      * 
      */

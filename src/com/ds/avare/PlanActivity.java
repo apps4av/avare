@@ -62,7 +62,6 @@ public class PlanActivity extends Activity {
     // A timer object to handle things when we are in sim mode
     private Timer mTimer;
     
-
     /**
      * Service that keeps state even when activity is dead
      */

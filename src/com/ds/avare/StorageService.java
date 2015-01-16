@@ -223,6 +223,11 @@ public class StorageService extends Service {
      * Watches GPS to notify of phases of flight
      */
     private FlightStatus mFlightStatus;
+   
+    /*
+     * Current checklist
+     */
+    private Checklist mChecklist;
     
     /**
      * @author zkhan
@@ -299,6 +304,8 @@ public class StorageService extends Service {
         
         mElev = -1;
         mThreshold = 0;
+        
+        mChecklist = new Checklist("");
         
         /*
          * Allocate a flight timer object
@@ -1043,4 +1050,13 @@ public class StorageService extends Service {
     public ExternalPlanMgr getExternalPlanMgr() {
     	return mExternalPlanMgr;
     }
+    
+    public Checklist getChecklist() {
+    	return mChecklist;
+    }
+    
+    public void setChecklist(Checklist cl) {
+    	mChecklist = cl;
+    }
+
 }

@@ -25,8 +25,9 @@ import org.json.JSONObject;
  */
 public class Checklist {
     
-    String mSteps;
-    String mName;
+    private String mSteps;
+    private String mName;
+    private int mWorkingIndex;
     
     private static String DELIM = "::";
     
@@ -37,6 +38,7 @@ public class Checklist {
     public Checklist(String name) {
         mName = name;
         mSteps = "";
+        mWorkingIndex = 0;
     }
 
     
@@ -47,6 +49,7 @@ public class Checklist {
     public Checklist(String name, String steps) {
         mName = name;
         mSteps = steps;
+        mWorkingIndex = 0;
     }
 
     /**
@@ -228,4 +231,68 @@ public class Checklist {
         return ret;
     }
    
+    
+    /**
+     * Move index back
+     */
+    public void moveBack() {
+    	mWorkingIndex--;
+    	if(mWorkingIndex < 0) {
+    		mWorkingIndex = 0;
+    	}    	
+    }
+
+    /**
+     * Move index forward
+     */
+    public void moveForward() {
+    	mWorkingIndex++;
+    	if(mWorkingIndex >= getStepsArray().length) {
+    		mWorkingIndex = getStepsArray().length - 1;
+    	}
+    }
+
+    /**
+     * Item goes up with index 
+     */
+    public void moveItemUp() {
+    	if(mWorkingIndex <= 0) {
+    		return;
+    	}
+    	moveStep(mWorkingIndex, mWorkingIndex - 1);
+    	mWorkingIndex--; // Move with step
+    }
+    
+    /**
+     * Item goes down with index 
+     */
+    public void moveItemDown() {
+    	// Do not get past last
+    	mWorkingIndex++;
+    	if(mWorkingIndex >= getStepsArray().length) {
+    		mWorkingIndex = getStepsArray().length - 1;
+    		return;
+    	}
+    	moveStep(mWorkingIndex - 1, mWorkingIndex);    	
+    }
+    
+    /**
+     * Delete item at index
+     */
+    public void deleteItem() {
+    	removeStep(mWorkingIndex);
+    	mWorkingIndex--;
+    	// move with index
+    	if(mWorkingIndex < 0) {
+    		mWorkingIndex = 0;
+    	}
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isSelected(int step) {
+    	return (mWorkingIndex == step);
+    }
 }
