@@ -167,6 +167,27 @@ public class PlanActivity extends Activity {
 	     			mIsPageLoaded = true;
 	     		}
      	    }
+	     	
+	     	// This is needed to remove title from Confirm dialog
+	        @Override
+	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
+	            new AlertDialog.Builder(PlanActivity.this)
+	            	.setTitle("")
+	            	.setMessage(message)
+	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	            		public void onClick(DialogInterface dialog, int which) {
+	            			result.confirm();
+	            		}
+	            	})
+	            	.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+	            		public void onClick(DialogInterface dialog, int which) {
+	            			result.cancel();
+	            		}
+	            	})
+	            	.create()
+	            	.show();
+	            return true;
+	        }
 	    });
         mWebView.loadUrl("file:///android_asset/plan.html");
 
