@@ -171,6 +171,15 @@ public class WebAppListInterface {
     }
 
     /**
+     * Move the pointer to a particular location
+     */
+    @JavascriptInterface
+    public void moveTo(int item) {
+    	mService.getChecklist().moveTo(item);
+		updateList();
+    }
+
+    /**
      * Move an entry in the list
      */
     @JavascriptInterface

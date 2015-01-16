@@ -273,6 +273,15 @@ public class WebAppPlanInterface implements Observer {
     }
 
     /**
+     * Move the pointer to a particular location
+     */
+    @JavascriptInterface
+    public void moveTo(int index) {
+    	mService.getPlan().moveTo(index);
+    }
+
+
+    /**
      * 
      */
     @JavascriptInterface

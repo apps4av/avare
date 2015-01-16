@@ -253,6 +253,19 @@ public class Checklist {
     }
 
     /**
+     * Move index to
+     */
+    public void moveTo(int item) {
+    	mWorkingIndex = item;
+    	if(mWorkingIndex >= getStepsArray().length) {
+    		mWorkingIndex = getStepsArray().length - 1;
+    	}
+    	if(mWorkingIndex < 0) {
+    		mWorkingIndex = 0;
+    	}
+    }
+
+    /**
      * Item goes up with index 
      */
     public void moveItemUp() {

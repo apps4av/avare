@@ -885,6 +885,24 @@ public class Plan implements Observer {
 	public double getDistance() {
 		return mDistance;
 	}
+	
+	/**
+	 * Move index forward to a given place
+	 * @param index
+	 */
+	public void moveTo(int index) {		
+		int num = getDestinationNumber();
+		if((index < 0) || (index >= num)) {
+			return;
+		}
+		
+		for(int i = 0; i < num; i++) {
+			mPassed[i] = false;
+		}
+		for(int i = 0; i < index; i++) {
+			mPassed[i] = true;
+		}
+	}
 }
 
 

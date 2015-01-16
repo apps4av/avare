@@ -98,6 +98,12 @@ function list_setname(name) {
 }
 
 
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidList.moveTo(row - 1);
+}
+	
+	
 // Set list line
 function set_list_line(row, next, text) {
 	// rows here are 1 indexed
@@ -112,6 +118,14 @@ function set_list_line(row, next, text) {
 	}
 
 	list_table.rows[row].cells[CELL_TEXT].innerHTML = text;
+	// set onclick on row
+	list_table.rows[row].onclick = (function() {
+      var currentI = row;
+      return function() {
+          onclick_row(currentI);
+      }
+   })();
+		
 }
 
 // add a item to the list

@@ -123,6 +123,11 @@ function plan_setname(name) {
 }
 
 
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidPlan.moveTo(row - 1);
+}
+
 // Set plan line
 function set_plan_line(row, next, bearing, distance, time) {
 	// rows here are 1 indexed
@@ -144,6 +149,13 @@ function set_plan_line(row, next, bearing, distance, time) {
 	plan_table.rows[row].cells	[CELL_BEARING].innerHTML = bearing;
 	plan_table.rows[row].cells[CELL_DISTANCE].innerHTML = distance;
 	plan_table.rows[row].cells[CELL_TIME].innerHTML = time;
+	
+	plan_table.rows[row].onclick = (function() {
+      var currentI = row;
+      return function() {
+          onclick_row(currentI);
+      }
+   })();
 }
 
 // add a way point to the plan
