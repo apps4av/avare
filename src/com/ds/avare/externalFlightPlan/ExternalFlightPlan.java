@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2014, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package com.ds.avare.externalFlightPlan;
 
 import java.util.List;
@@ -7,24 +19,46 @@ import org.json.JSONArray;
 import com.ds.avare.place.Destination;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
+/***
+ * Encapsulation of an externally stored flight plan
+ * 
+ * @author Ron
+ *
+ */
 public class ExternalFlightPlan {
+	String mFileName;
 	String mName;
 	String mDesc;
+	String mCmt;
 	String mType;
 	String mCreator;
-	String mExt;
 	List<Waypoint> mWaypoints;
-
+	
+	// Get 'ers
 	public List<Waypoint> getWaypoints() { return mWaypoints; }
 	public String getName() { return mName; }
 	public String getDesc() { return mDesc; }
 	public String getType() { return mType; }
-	
+	public String getCmt()  { return mCmt; }
+	public String getFileName() { return mFileName; }
+
+	// Set 'ers
 	void setCreator(String creator) { mCreator = creator; } 
+	void setFileName(String fileName) { mFileName = fileName;
 	
-	public ExternalFlightPlan(String name, String desc, String type, List<Waypoint> waypoints) {
+	}
+	/***
+	 * Construct a complete flight plan with the given parameters
+	 * @param name Name of the plan, must be unique
+	 * @param desc A description
+	 * @param cmt Comment about the flight plan
+	 * @param type GPX/CSV/KML etc
+	 * @param waypoints Collection of waypoints that make up the plan
+	 */
+	public ExternalFlightPlan(String name, String desc, String cmt, String type, List<Waypoint> waypoints) {
 		mName  = name;
 		mDesc  = desc;
+		mCmt   = cmt;
 		mType  = type;
 		mWaypoints = waypoints;
 	}
@@ -50,8 +84,7 @@ public class ExternalFlightPlan {
 	 */
 	public String toJSONString() {
         JSONArray jsonArr = new JSONArray();
-		for(int idx = 0; idx < mWaypoints.size(); idx++) {
-			Waypoint wp = mWaypoints.get(idx);
+		for(Waypoint wp : mWaypoints) {
 			jsonArr.put(Destination.getStorageName(Destination.UDW, null, null, wp.getName()));
         }
         return jsonArr.toString();
@@ -61,11 +94,11 @@ public class ExternalFlightPlan {
 	 * Set this plan as active/inactive. That means turning on/off all of the waypoints so they
 	 * will be displayed or not
 	 * 
-	 * @param active 
+	 * @param active true to show the waypoint, false to hide it
 	 */
 	public void setActive(boolean active) {
-		for(int idx = 0; idx < mWaypoints.size(); idx++) {
-			mWaypoints.get(idx).setVisible(active);
+		for(Waypoint wp : mWaypoints) {
+			wp.setVisible(active);
 		}
 	}
 }

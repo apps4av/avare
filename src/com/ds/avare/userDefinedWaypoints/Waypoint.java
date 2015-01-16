@@ -15,6 +15,7 @@ package com.ds.avare.userDefinedWaypoints;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Origin;
+import com.ds.avare.utils.ShadowedText;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,7 +24,8 @@ import android.graphics.Paint.Style;
 
 public class Waypoint {
     String 	mName;
-    String 	mDescription;
+    String 	mDesc;
+    String  mCmt;
     float  	mLat;
     float  	mLon;
     float  	mAlt;
@@ -31,17 +33,17 @@ public class Waypoint {
     int 	mMarkerType;
     boolean mVisible;
 
-    public Waypoint(String name, String description, float lon, float lat, float alt, boolean showDist, int markerType) {
+    public Waypoint(String name, String desc, float lon, float lat, float alt, boolean showDist, int markerType) {
     	if(null != name) {
     		mName = name;
     	} else {
     		mName = "UNDEF";
     	}
     	
-    	if(null != description) {
-    		mDescription = description;
+    	if(null != desc) {
+    		mDesc = desc;
 		} else {
-			mDescription= "UNDEF";
+			mDesc= "UNDEF";
 		}
 
     	mLat = lat;
@@ -54,13 +56,16 @@ public class Waypoint {
     
     // Get'ers
     public String getName() { return mName; }
-    public String getDesc() { return mDescription; }
+    public String getDesc() { return mDesc; }
+    public String getCmt()  { return mCmt; }
     public float getLat() { return mLat; }
     public float getLon() { return mLon; }
+    public boolean getVisible() { return mVisible; }
 
     // Set'ers
     public void setMarkerType(int markerType) { mMarkerType = markerType; }
     public void setVisible(boolean visible) { mVisible = visible; }
+    public void setCmt(String cmt) { mCmt = cmt; }
 
     // Constants
     public static final int MT_NONE = 0;
@@ -104,7 +109,7 @@ public class Waypoint {
 		        
 		        // Solid (almost) white chewy center
 		        paint.setStyle(Style.FILL);
-				paint.setColor(Color.WHITE);
+				paint.setColor(Color.CYAN);
 				paint.setAlpha(0xF0);
 		        canvas.drawCircle(x, y, (float) size * 2, paint);
 
@@ -141,11 +146,11 @@ public class Waypoint {
         }
 
 	    // Draw the name above
-	    service.getShadowedText().draw(canvas, paint, mName, Color.BLACK, x, y - size * 12);
+	    service.getShadowedText().draw(canvas, paint, mName, Color.BLACK, ShadowedText.ABOVE, x, y);
 	    
 	    // and the distance/brg below IF that piece of metadata is true
 	    if(true == mShowDist) {
-	        service.getShadowedText().draw(canvas, paint, dstBrg, Color.BLACK, x, y + size * 12);
+	        service.getShadowedText().draw(canvas, paint, dstBrg, Color.BLACK, ShadowedText.BELOW, x, y);
 	    }
 	    
 	    // Restore canvas if we rotated it

@@ -426,9 +426,18 @@ public class WebAppPlanInterface implements Observer {
     	
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
+    	// Remove the plan from our internal list of names
     	mSavedPlans.remove(name);
-    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
-    	newSavePlan();
+
+    	// Now remove the plan from storage
+    	// TODO: all plans should be a single abstraction
+    	if(true == mService.getExternalPlanMgr().isExternal(name)) {
+    		mService.getExternalPlanMgr().delete(name);
+    	} else {
+	    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+    	}
+    	
+	    newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
@@ -641,6 +650,10 @@ public class WebAppPlanInterface implements Observer {
             }
             
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+            
+            // Search our list of user defined waypoints first
+            mService.getUDWMgr().search(srch,  params);
+            
             /*
              * Search from database. Make this a simple search
              */

@@ -39,6 +39,7 @@ import android.util.Xml;
 		<rte>
 			<name>NameOfThePlan</name>
 			<desc>Description of the plan</desc>
+			<cmt>comment to display in bottom left of screen</cmt>
 		
 			<rtept lat="43.98431" lon="-88.56628">
 				<name>Point 1</name>
@@ -66,6 +67,7 @@ public class GpxPlanParser  extends PlanParser {
     private static final String LON = "lon";
     private static final String NAME = "name";
     private static final String DESC = "desc";
+    private static final String CMT  = "cmt";
     private static final String CREATOR = "creator";
     private static final String VFRGPSPROCEDURES = "vfrgpsprocedures";
     
@@ -96,6 +98,7 @@ public class GpxPlanParser  extends PlanParser {
 		printStream.println("\t<" + RTE + ">");
 		printStream.println("\t\t<" + NAME + ">" + externalFlightPlan.getName() + "</" + NAME + ">");
 		printStream.println("\t\t<" + DESC + ">" + externalFlightPlan.getDesc() + "</" + DESC + ">");
+		printStream.println("\t\t<" + CMT + ">"  + externalFlightPlan.getCmt()  + "</" + CMT + ">");
 		for(Waypoint wp : externalFlightPlan.getWaypoints()) {
 			printStream.println("\t\t<" + RTEPT + ">");
 			printStream.println("\t\t\t<" + NAME + ">" + wp.getName() + "</" + NAME + ">");
@@ -145,7 +148,8 @@ public class GpxPlanParser  extends PlanParser {
         parser.require(XmlPullParser.START_TAG, NS, RTE);
 
         String name = null;
-    	String desc = null;;
+    	String desc = null;
+    	String cmt  = null;
     	List<Waypoint> p = new ArrayList<Waypoint>();
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -157,6 +161,8 @@ public class GpxPlanParser  extends PlanParser {
                 name = readNAME(parser);
             } else if (nodeName.equals(DESC)) {
                 desc = readDESC(parser);
+            } else if (nodeName.equals(CMT)) {
+                cmt = readCMT(parser);
             } else if (nodeName.equals(RTEPT)) {
                 p.add(readRTEPT(parser));
             } else {
@@ -165,7 +171,7 @@ public class GpxPlanParser  extends PlanParser {
         }
         
         // We have all the data for the plan. Create one and return
-        return new ExternalFlightPlan(name, desc, GPX, p);
+        return new ExternalFlightPlan(name, desc, cmt, GPX, p);
     }
         
     // We are in the RTEPT tag, Get the LAT/LON attributes then search
@@ -173,13 +179,12 @@ public class GpxPlanParser  extends PlanParser {
     private Waypoint readRTEPT(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, RTEPT);
 
-        String name = null;
-        String description = null;
-        float lat = 0;
-        float lon = 0;
-        float alt = 0;
-        boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Waypoint.MT_CROSSHAIRS;	// Type of marker to use on the chart (metadata again)
+        String name = null;	// Waypoint name
+        String desc = null;	// User description
+        String cmt  = null;	// Comment about the waypoint
+        
+        float lat = 0;	// latitude
+        float lon = 0;	// longitude
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -192,7 +197,7 @@ public class GpxPlanParser  extends PlanParser {
         	}
         }
         
-        // The NAME and DESCRIPTION are sub tags under here
+        // The NAME, DESC, and CMT are sub tags under here
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -201,7 +206,9 @@ public class GpxPlanParser  extends PlanParser {
             if (nodeName.equals(NAME)) {
                 name = readNAME(parser);
             } else if (nodeName.equals(DESC)) {
-                description = readDESC(parser);
+                desc = readDESC(parser);
+            } else if (nodeName.equals(CMT)) {
+                cmt = readCMT(parser);
             } else {
                 skip(parser);
             }
@@ -211,15 +218,18 @@ public class GpxPlanParser  extends PlanParser {
         // waypoints for a match. If we find one, then return THAT value and don't 
         // create a new one.
         UDWMgr udwMgr = mService.getUDWMgr();
-        Waypoint wp = udwMgr.getWaypoint(name, lon, lat); 
+        Waypoint wp = udwMgr.get(name); 
         if(null != wp) {
         	return wp;
         }
 
-        // Create a new waypoint from this data, add it to the global collection
-        // and return it to the caller
-        wp = new Waypoint(name, description, 
-        		lon, lat, alt, showDist, markerType);
+        // Create a new waypoint from this data. Set the comment and make sure it's not
+        // visible. It is made visible when the plan is enabled
+        wp = new Waypoint(name, desc, lon, lat, 0, false, Waypoint.MT_NONE);
+        wp.setCmt(cmt);
+        wp.setVisible(false);
+        
+        // Add the waypoint to the manager and return
         udwMgr.add(wp);
         return wp;
     }
@@ -237,20 +247,29 @@ public class GpxPlanParser  extends PlanParser {
     //
     private String readDESC(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, NS, DESC);
-        String name = readText(parser);
+        String desc = readText(parser);
         parser.require(XmlPullParser.END_TAG, NS, DESC);
-        return name;
+        return desc;
+    }
+
+    // Extract CMT
+    //
+    private String readCMT(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, NS, CMT);
+        String cmt = readText(parser);
+        parser.require(XmlPullParser.END_TAG, NS, CMT);
+        return cmt;
     }
 
     // Read the text from the current tag
     //
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
+        String text = "";
         if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
+            text = parser.getText();
             parser.nextTag();
         }
-        return result;
+        return text;
     }
 
     /***

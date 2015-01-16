@@ -41,12 +41,12 @@ public class PlanFactory {
 			String ext = null;
 			int dotIndex = fileName.lastIndexOf('.');
 			if (dotIndex > 0) {
-			    ext = fileName.substring(dotIndex + 1).toLowerCase();
+			    ext = fileName.substring(dotIndex + 1);
 			}
 
 			// Define a GPX parser and use if appropriate
 			PlanParser parser = new GpxPlanParser();
-			if(parser.getType().equals(ext)) {
+			if(parser.getType().equalsIgnoreCase(ext)) {
 				return parser.parse(service, inStream);
 			}
 

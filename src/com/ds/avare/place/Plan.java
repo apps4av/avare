@@ -12,8 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -379,7 +377,11 @@ public class Plan implements Observer {
         if(null != mService) {
 	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
 	       	if(null != mExtPlanMgr) {
-	    		mExtPlanMgr.setActive(mName, true);
+	       		ExternalFlightPlan efp = mExtPlanMgr.get(mName);
+	       		if(null != efp) {
+	       			efp.setActive(true);
+	       			mService.getNavComments().setLeft(efp.getCmt());
+	       		}
 	    	}
         }
     	mActive = true;
@@ -394,7 +396,11 @@ public class Plan implements Observer {
         if(null != mService) {
 	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
 	       	if(null != mExtPlanMgr) {
-	    		mExtPlanMgr.setActive(mName, false);
+	       		ExternalFlightPlan efp = mExtPlanMgr.get(mName);
+	       		if(null != efp) {
+	       			efp.setActive(false);	// Turn off the plan 
+	       			mService.getNavComments().clear();
+	       		}
 	    	}
         }
         mActive = false;
@@ -863,6 +869,7 @@ public class Plan implements Observer {
 		
 		// For all of the known external flight plans, we need to remove that name from the cloned
 		// map so that it will not be saved to memory
+		// TODO: Abstract all plans to a single base class and this step can be removed
 		if(null != service) {
 			ExternalPlanMgr epm = service.getExternalPlanMgr();
 			ArrayList<String> planNames = epm.getPlanNames(null);

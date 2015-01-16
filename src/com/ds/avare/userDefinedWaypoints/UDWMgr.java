@@ -124,12 +124,12 @@ public class UDWMgr {
 				for(File file : fileList) {
 					
 					// Tell the factory to parse the file and get the collection of entries
-					List<Waypoint> entries = factory.parse(file.getPath());
+					List<Waypoint> waypoints = factory.parse(file.getPath());
 	
 					// If we found some entries here ...
-					if(null != entries) {
-						for(int idx = 0; idx < entries.size(); idx++) {
-							add(entries.get(idx));
+					if(null != waypoints) {
+						for(Waypoint p : waypoints) {
+							add(p);
 						}
 					}
 				}
@@ -139,12 +139,16 @@ public class UDWMgr {
 
 	/***
 	 * Add the specific waypoint to our collection
+	 * Duplicates not allowed
+	 * Max of MAXUDW in our collection
 	 * @param waypoint
 	 */
 	public void add(Waypoint waypoint) {
 		if(null != waypoint) {
-			if(mPoints.size() < MAXUDW) {
-				mPoints.add(waypoint);
+			if(null == get(waypoint.mName)) {
+				if(mPoints.size() < MAXUDW) {
+					mPoints.add(waypoint);
+				}
 			}
 		}
 	}
@@ -178,9 +182,11 @@ public class UDWMgr {
         mPaint.setTextSize(m15Pix);
         mPaint.setShadowLayer(2, 3, 3, Color.BLACK );
 
-		// Loop through every point that we have and draw them
+		// Loop through every point that we have and draw them if its set visible
 		for (Waypoint p : mPoints) {
-			p.draw(canvas, origin, trackUp, gpsParams, mPaint, mService, whereAndHowFar(p), m2Pix);
+			if(true == p.getVisible()) {
+				p.draw(canvas, origin, trackUp, gpsParams, mPaint, mService, whereAndHowFar(p), m2Pix);
+			}
 		}
 	}
 
@@ -209,10 +215,9 @@ public class UDWMgr {
     //
     public void search(String name, LinkedHashMap<String, String> params) {
     	if(null != mPoints) {
-    		final String uName = name.toUpperCase();
-    		for(int idx = 0; idx < mPoints.size(); idx++) {
-    			Waypoint p = mPoints.get(idx);
-    			final String mName = p.mName.toUpperCase();
+    		String uName = name.toUpperCase();
+    		for(Waypoint p : mPoints) {
+    			String mName = p.mName.toUpperCase();
     			if (mName.startsWith(uName)) {
     		        StringPreference s = new StringPreference(Destination.UDW, Destination.UDW, UDWDESCRIPTION, p.mName);
     		        s.putInHash(params);
@@ -226,36 +231,11 @@ public class UDWMgr {
      * @param name
      * @return
      */
-    public Waypoint getWaypoint(String name){
+    public Waypoint get(String name){
     	if(null != mPoints) {
-    		final String uName = name.toUpperCase();
-    		for(int idx = 0; idx < mPoints.size(); idx++) {
-    			Waypoint p = mPoints.get(idx);
-    			final String mName = p.mName.toUpperCase();
-    			if (mName.equals(uName)) {
+    		for(Waypoint p : mPoints) {
+    			if(true == p.mName.equalsIgnoreCase(name)) {
     				return p;
-    			}
-    		}
-    	}
-    	return null;
-    }
-
-    /***
-     * Return the named waypoint tested for position
-     * @param name Name of the waypoint
-     * @param lon longitude
-     * @param lat latitude
-     * @return
-     */
-    public Waypoint getWaypoint(String name, float lon, float lat){
-    	if(null != mPoints) {
-    		final String uName = name.toUpperCase();
-    		for(int idx = 0; idx < mPoints.size(); idx++) {
-    			Waypoint p = mPoints.get(idx);
-    			final String mName = p.mName.toUpperCase();
-    			if (mName.equals(uName)) {
-    				if(p.getLon() == lon && p.getLat() == lat)
-    					return p;
     			}
     		}
     	}

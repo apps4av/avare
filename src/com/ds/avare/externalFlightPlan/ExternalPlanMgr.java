@@ -129,7 +129,7 @@ public class ExternalPlanMgr {
 	public ExternalFlightPlan get(String name) {
 		if(null != name) {
 			for(ExternalFlightPlan plan : mPlans) {
-				if(plan.getName().equals(name)) {
+				if(true == plan.getName().equalsIgnoreCase(name)) {
 					return plan;
 				}
 			}
@@ -138,35 +138,32 @@ public class ExternalPlanMgr {
 	}
 
 	/***
+	 * Is the indicated name saved as an external plan ?
+	 * @param name
+	 * @return true/false
+	 */
+	public boolean isExternal(String name) {
+		return null == get(name) ? false : true; 
+	}
+	
+	/***
 	 * Delete the named plan from our collection
 	 * @param name - what plan to delete
 	 */
 	public boolean delete(String name) {
+		// Find the plan based upon its name
 		ExternalFlightPlan plan = get(name);
 		if (null != plan) {
-			File file = new File(getDir(), name + "." + plan.getType());
+			// We have the plan, now get the name of the file it was saved as
+			File file = new File(plan.getFileName());
+			
+			// Do the delete, if successful, then remove it from our plan collection
 			if(true == file.delete()) {
 				mPlans.remove(plan);
 				return true;
 			}
 		}
 		return false;
-	}
-	
-	/***
-	 * Set the named external flight plan to the indicated state
-	 * @param name plan to find
-	 * @param active turn it on or off
-	 */
-	public void setActive(String name, boolean active) {
-		if(null != name) {
-			for(ExternalFlightPlan plan : mPlans) {
-				if(plan.getName().equals(name)) {
-					plan.setActive(active);
-					return;
-				}
-			}
-		}
 	}
 	
 	/***
@@ -217,7 +214,12 @@ public class ExternalPlanMgr {
 					// Tell the factory to parse the file 
 					ExternalFlightPlan plan = factory.parse(mService, file.getPath());
 					if(null != plan) {
-						mPlans.add(plan);
+						// Only add this new one if we do NOT have one with the same name
+						if (null == get(plan.mName)) {
+							// Set the full file path in this plan
+							plan.setFileName(file.getPath());
+							mPlans.add(plan);
+						}
 					}
 				}
 			}

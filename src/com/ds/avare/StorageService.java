@@ -46,6 +46,7 @@ import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
+import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.ShadowedText;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
@@ -179,6 +180,9 @@ public class StorageService extends Service {
     // Handler for the top two lines of status information
     private InfoLines mInfoLines;
 
+    // Navigation comments from flight plans
+    private NavComments mNavComments;
+    
     // Handler for drawing text with an oval shadow
     private ShadowedText mShadowedText;
     
@@ -348,7 +352,9 @@ public class StorageService extends Service {
         
         // For handling external flight plans
         mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
-        
+
+        // Allocate the nav comments object
+        mNavComments = new NavComments();
         /*
          * Monitor TFR every hour.
          */
@@ -417,8 +423,8 @@ public class StorageService extends Service {
                     setGpsParams(new GpsParams(location));
                     mLocation = location;
                     mLocationSem.unlock();
-                    getArea().updateLocation(getGpsParams());
-                    getPlan().updateLocation(getGpsParams());
+                    mArea.updateLocation(getGpsParams());
+                    mPlan.updateLocation(getGpsParams());
 
                     // Adjust the flight timer
                     getFlightTimer().setSpeed(mGpsParams.getSpeed());
@@ -440,11 +446,11 @@ public class StorageService extends Service {
                     
                     getFlightStatus().updateLocation(mGpsParams);
                     
-                    if(getPlan().hasDestinationChanged()) {
+                    if(mPlan.hasDestinationChanged()) {
                         /*
                          * If plan active then set destination to next not passed way point
                          */
-                        setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
+                        setDestinationPlanNoChange(mPlan.getDestination(mPlan.findNextNotPassed()));
                     }
 
                     if(mDestination != null) {
@@ -570,7 +576,12 @@ public class StorageService extends Service {
     public void setDestination(Destination destination) {
         mDestination = destination;
         mAfdIndex = 0;
-        getPlan().makeInactive();
+
+        // A direct destination implies a new plan. Ensure to turn off
+        // the plan
+        if(null != mPlan){
+        	mPlan.makeInactive();
+        }
     }
 
     /**
@@ -579,6 +590,12 @@ public class StorageService extends Service {
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
         mAfdIndex = 0;
+        
+        // Update the right side of the nav comments from the destination
+        // TODO: I don't like this here, it should be pushed into the PLAN itself
+        if(null != destination) {
+        	mNavComments.setRight(destination.getCmt());
+        }
     }
 
     /**
@@ -1049,6 +1066,10 @@ public class StorageService extends Service {
     
     public ExternalPlanMgr getExternalPlanMgr() {
     	return mExternalPlanMgr;
+    }
+    
+    public NavComments getNavComments() {
+    	return mNavComments;
     }
     
     public Checklist getChecklist() {

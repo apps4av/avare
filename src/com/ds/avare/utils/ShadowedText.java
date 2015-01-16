@@ -66,6 +66,11 @@ public class ShadowedText {
      */
     public void draw(Canvas canvas, Paint paint, String text, int shadowColor, float x, float y) {
 
+    	// If nothing to draw, then get out of here now
+    	if((null == text) || 0 == text.length()) {
+    		return;
+    	}
+    	
     	// How big is the text we are about to draw
         paint.getTextBounds(text, 0, text.length(), mTextSize);
         
@@ -110,38 +115,46 @@ public class ShadowedText {
      */
     public void draw(Canvas canvas, Paint paint, String text, int shadowColor, int sector, float x, float y) {
     	
-    	// Find out how much room this text will take
-        paint.getTextBounds(text, 0, text.length(), mTextSize);
-        
-        // Now calculate the offsets to handle the relative position
-        int xText = mTextSize.right - mTextSize.left;
-        int yText = mTextSize.bottom - mTextSize.top;
-        int xAdjust = (yText * 2 + xText / 2);
-        int yAdjust = (yText + (yText / 2));
+    	// If nothing to draw, then get out of here now
+    	if((null == text) || 0 == text.length()) {
+    		return;
+    	}
 
-        // sector is a bitmapped field that defines what adjustments we need
-        // to make to the position of the text
-
-        // Do we need to move the text to the right ? 
-        if(0 != (sector & RIGHT)) {
-        	x += xAdjust;
-        }
-
-        // How about moving it left ?
-        if(0 != (sector & LEFT)) {
-        	x -= xAdjust;
-        }
-
-        // Above ?
-        if(0 != (sector & ABOVE)) {
-        	y -= yAdjust;
-        }
-        
-        // Now check for below
-        if(0 != (sector & BELOW)) {
-        	y += yAdjust;
-        }
-
+    	// Only do this work if we need to re-calc based on a new sector
+    	if(0 != sector) {
+	    	// Find out how much room this text will take
+	        paint.getTextBounds(text, 0, text.length(), mTextSize);
+	        
+	        // Now calculate the offsets to handle the relative position
+	        int xText = mTextSize.right - mTextSize.left;
+	        int yText = mTextSize.bottom - mTextSize.top;
+	        int xAdjust = (yText * 2 + xText / 2);
+	        int yAdjust = (yText + (yText / 2));
+	
+	        // sector is a bitmapped field that defines what adjustments we need
+	        // to make to the position of the text
+	
+	        // Do we need to move the text to the right ? 
+	        if(0 != (sector & RIGHT)) {
+	        	x += xAdjust;
+	        }
+	
+	        // How about moving it left ?
+	        if(0 != (sector & LEFT)) {
+	        	x -= xAdjust;
+	        }
+	
+	        // Above ?
+	        if(0 != (sector & ABOVE)) {
+	        	y -= yAdjust;
+	        }
+	        
+	        // Now check for below
+	        if(0 != (sector & BELOW)) {
+	        	y += yAdjust;
+	        }
+    	}
+    	
         // We have the "where", now display the text
         draw(canvas, paint, text, shadowColor, x, y);
     }

@@ -107,6 +107,7 @@ public class Destination extends Observable {
     
     private String mDestType;
     private String mDbType;
+    private String mCmt;
     private LinkedList<Runway> mRunways;
     private LinkedHashMap <String, String>mFreq;
     private LinkedList<Awos> mAwos;
@@ -124,6 +125,10 @@ public class Destination extends Observable {
      * Dozens of parameters in a linked map because simple map would rearrange the importance
      */
     private LinkedHashMap <String, String>mParams;
+    
+    public String getCmt() {
+    	return mCmt;
+    }
     
 	/**
 	 * @param name
@@ -427,10 +432,11 @@ public class Destination extends Observable {
             }
 
 	        if(mDestType.equals(UDW)){
-	        	Waypoint p = mService.getUDWMgr().getWaypoint(mName);
+	        	Waypoint p = mService.getUDWMgr().get(mName);
 	        	if(null != p) {
 	        		mLatd = p.getLat();
 	        		mLond = p.getLon();
+	        		mCmt  = p.getCmt();
 		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
 		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
 		            mParams.put(DataBaseHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);

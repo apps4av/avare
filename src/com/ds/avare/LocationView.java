@@ -44,6 +44,7 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
+import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -1339,6 +1340,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
     
+    // Display the nav comments
+    private void drawNavComments(Canvas canvas) {
+        if(mService != null) {
+        	NavComments navComments = mService.getNavComments();
+        	if(null != navComments) {
+        		navComments.draw(this, canvas, mMsgPaint,  mService.getShadowedText());
+        	}
+        }
+    }
+    
     /**
      * @param canvas
      * Does pretty much all drawing on screen
@@ -1386,6 +1397,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawVASI(canvas);
         drawStatusLines(canvas);
       	drawEdgeMarkers(canvas); // Must be after the infolines
+      	drawNavComments(canvas);
     }    
 
     /**

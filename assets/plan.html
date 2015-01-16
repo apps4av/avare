@@ -273,11 +273,16 @@ function save_load_reverse(row) {
 
 // delete the plan
 function save_delete(row) {
-	var r = confirm("Delete Saved?");
+	var plan_save = document.getElementById("save_table");
+	var plan_name = plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML;
+	var prompt_text = "Delete \"";
+	var prompt = prompt_text.concat(plan_name, "\" ?");
+	
+	var r = confirm(prompt);
 	if(r == false) {
 		return;	
 	}
-	var plan_save = document.getElementById("save_table");
+	
 	AndroidPlan.saveDelete(plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
 }
 
