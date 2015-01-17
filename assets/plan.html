@@ -110,7 +110,11 @@ function loadplan() {
 	for(var pl = 1; pl < (plans.length - 1); pl++) {
 		// split plan individual fields
 		var data = plans[pl].split(",");
-		set_plan_line(pl, data[0], data[1], data[2], data[3]);
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3])) {
+			// mismatch in view and model, sync	
+			AndroidPlan.refreshPlan();
+			return;
+		}
 	}
 	plan_set_total(plans[plans.length - 1]);
 }
@@ -135,7 +139,7 @@ function set_plan_line(row, next, bearing, distance, time) {
 
 	// do not overwrite array
 	if(row >= plan_table.rows.length) {
-		return;
+		return false;
 	}
 
 	if(next == "1") {
@@ -156,6 +160,8 @@ function set_plan_line(row, next, bearing, distance, time) {
           onclick_row(currentI);
       }
    })();
+   
+   return true;
 }
 
 // add a way point to the plan

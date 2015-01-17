@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -95,6 +96,14 @@ public class WebActivity extends Activity  {
 				return false;
 			}
         });
+
+        mWebView.setOnLongClickListener(new OnLongClickListener() {
+        	@Override
+        	public boolean onLongClick(View v) {
+        	    return true;
+        	}
+        });
+        mWebView.setLongClickable(false);
 
         /*
          * Progress bar

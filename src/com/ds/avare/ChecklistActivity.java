@@ -36,6 +36,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -191,7 +192,6 @@ public class ChecklistActivity extends Activity {
 	        }
 
 	    });
-        mWebView.loadUrl("file:///android_asset/list.html");
 
         // This is need on some old phones to get focus back to webview.
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
@@ -203,6 +203,15 @@ public class ChecklistActivity extends Activity {
 			}
         });
         
+        mWebView.setOnLongClickListener(new OnLongClickListener() {
+        	@Override
+        	public boolean onLongClick(View v) {
+        	    return true;
+        	}
+        });
+        mWebView.setLongClickable(false);
+
+        mWebView.loadUrl("file:///android_asset/list.html");
         /*
          * Progress bar
          */

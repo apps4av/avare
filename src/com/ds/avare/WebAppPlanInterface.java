@@ -516,6 +516,14 @@ public class WebAppPlanInterface implements Observer {
     	return plans;
     }
 
+    /** 
+     * refresh a plan on change from other screens
+     */
+    @JavascriptInterface
+    public void refreshPlan() {
+    	clearPlan();
+    	newPlan();    	
+    }
 
     /** 
      * Create a plan, guessing the types
