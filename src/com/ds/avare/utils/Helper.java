@@ -13,9 +13,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -802,4 +806,74 @@ public class Helper {
     		return resizedBitmap;
     	} catch (Exception e ) { return bm; }
 	}
+    
+    /**
+     * Read a file, used for reading weather file from assets
+     * @param fileName
+     * @param context
+     * @return
+     */
+    public static String readFromAssetsFile(String fileName, Context context) {
+	    StringBuilder returnString = new StringBuilder();
+	    InputStream fIn = null;
+	    InputStreamReader isr = null;
+	    BufferedReader input = null;
+	    try {
+	        fIn = context.getResources().getAssets()
+	                .open(fileName, Context.MODE_WORLD_READABLE);
+	        isr = new InputStreamReader(fIn);
+	        input = new BufferedReader(isr);
+	        String line = "";
+	        while ((line = input.readLine()) != null) {
+	            returnString.append(line);
+	        }
+	    }
+	    catch (Exception e) {
+	    } 
+	    finally {
+	        try {
+	            if (isr != null) {
+	                isr.close();
+	            }
+	            if (fIn != null) {
+	                fIn.close();
+	            }
+	            if (input != null) {
+	                input.close();
+	            }
+	        } 
+	        catch (Exception e2) {
+	        }
+	    }
+	    return returnString.toString();
+	}
+
+    
+    /**
+     * Write to file in given folder
+     * @param fcontent
+     * @return
+     */
+    public static boolean writeFile(String fcontent, String path){
+    	
+    	/*
+    	 * Write file contents to file path
+    	 */
+        try {
+            File file = new File(path);
+            // If file does not exists, then create it
+            if (!file.exists()) {
+              file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(fcontent);
+            bw.close();
+            return true;
+        } 
+        catch (Exception e) {
+            return false;
+        }
+     }    
+
 }

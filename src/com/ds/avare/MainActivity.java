@@ -52,7 +52,7 @@ public class MainActivity extends TabActivity {
     public static final int tabAFD = 2;
     public static final int tabFind = 3;
     public static final int tabPlan = 4;
-    public static final int tabWX = 5;
+    public static final int tabWXB = 5;
     public static final int tabNear = 6;
     public static final int tabChecklist = 7;
     public static final int tabTrip = 8;	
@@ -119,8 +119,8 @@ public class MainActivity extends TabActivity {
         	setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
         }
         
-        if(0 != (tabItems & (1 << tabWX))) {
-        	setupTab(new TextView(this), getString(R.string.WX), new Intent(this, WeatherActivity.class), getIntent());
+        if(0 != (tabItems & (1 << tabWXB))) {
+        	setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, WeatherActivity.class), getIntent());
         }
         
         if(0 != (tabItems & (1 << tabNear))) {

@@ -886,7 +886,7 @@ public class Preferences {
     	}
 
     	if(mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-    		mTabs |=  1 << MainActivity.tabWX;
+    		mTabs |=  1 << MainActivity.tabWXB;
     	}
 
     	if(mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {

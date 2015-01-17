@@ -30,8 +30,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,7 +39,6 @@ import android.view.View.OnLongClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 /**
@@ -53,12 +50,9 @@ public class WeatherActivity extends Activity {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private EditText mSearchText;
-    private Button mNextButton;
-    private Button mLastButton;
-    private ProgressBar mProgressBar;
     private WebAppInterface mInfc;
-    private ProgressBar mProgressBarSearch;
+    private ProgressBar Search;
+    private Button mGetButton;
 
     public static final int SHOW_BUSY = 1;
     public static final int UNSHOW_BUSY = 2;
@@ -146,7 +140,7 @@ public class WeatherActivity extends Activity {
         mWebView.addJavascriptInterface(mInfc, "AndroidWeather");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
-                mProgressBarSearch.setVisibility(View.INVISIBLE);
+                Search.setVisibility(View.INVISIBLE);
      	    }
 	     	
 	     	// This is needed to remove title from Confirm dialog
@@ -197,63 +191,21 @@ public class WeatherActivity extends Activity {
         });
         mWebView.setLongClickable(false);
         
-        mWebView.loadUrl("file:///android_asset/weather.html");
+        mWebView.loadUrl("file:///android_asset/wxb.html");
 
         /*
          * Progress bar
          */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.weather_progress_bar));
 
-        mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.weather_load_progress));
-        mProgressBarSearch.setVisibility(View.VISIBLE);
+        Search = (ProgressBar)(view.findViewById(R.id.weather_load_progress));
+        Search.setVisibility(View.VISIBLE);
 
-        /*
-         * For searching, start search on every new key press
-         */
-        mSearchText = (EditText)view.findViewById(R.id.weather_edit_text);
-        mSearchText.addTextChangedListener(new TextWatcher() { 
-            @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-    
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-    
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int after) {
-                
-                /*
-                 * If text is 0 length or too long, then do not search, show last list
-                 */
-                if(s.length() < 3) {
-                    mWebView.clearMatches();
-                    return;
-                }
-
-                mProgressBar.setVisibility(ProgressBar.VISIBLE);
-                mWebView.findAll(s.toString());
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-            }
-        });
-
-        mNextButton = (Button)view.findViewById(R.id.weather_button_next);
-        mNextButton.setOnClickListener(new OnClickListener() {
+        mGetButton = (Button)view.findViewById(R.id.weather_button);
+        mGetButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mWebView.findNext(true);
-            }
-            
-        });
-
-        mLastButton = (Button)view.findViewById(R.id.weather_button_last);
-        mLastButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mWebView.findNext(false);
+               mInfc.getWeather();
             }
             
         });
@@ -387,10 +339,10 @@ public class WeatherActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
     		if(msg.what == SHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.VISIBLE);
+    			Search.setVisibility(View.VISIBLE);
     		}
     		else if(msg.what == UNSHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.INVISIBLE);
+    			Search.setVisibility(View.INVISIBLE);
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message

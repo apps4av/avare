@@ -261,7 +261,7 @@ authors: zkhan, jlmcgraw
 		            android:defaultValue="true"
 		            android:key="@string/prefTabWX"
 		            android:summary="@string/WXSummary"
-		            android:title="@string/WX" />
+		            android:title="@string/WXB" />
 				<CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabNear"

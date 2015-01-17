@@ -141,7 +141,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Draw">&quot;Draw&quot;</string>
     <string name="Pan">&quot;Pan&quot;</string>
     <string name="Clear">&quot;Clear&quot;</string>
-    <string name="WX">&quot;WX&quot;</string>
+    <string name="WXB">&quot;WXB&quot;</string>
     <string name="Left">&quot;Left&quot;</string>
     <string name="Right">&quot;Right&quot;</string>
     <string name="Next">&quot;Next&quot;</string>
@@ -152,7 +152,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Load">&quot;Load&quot;</string>
     <string name="LoadReverse">&quot;Reverse Load&quot;</string>
     <string name="WeatherError">&quot;Could not download weather data&quot;</string>
-    <string name="WeatherPlan">&quot;Load a plan and press Update to get the latest route weather&quot;</string>
+    <string name="WeatherPlan">&quot;You must create a plan in Plan screen to get the latest Plan weather&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="Understand">&quot;I Understand&quot;</string>
@@ -384,5 +384,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
     <string name="AddPlan">Add To Plan</string>
     <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
+    <string name="GetWeather">Get Plan Weather</string>
     
 </resources>

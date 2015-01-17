@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import java.io.File;
 
 import com.ds.avare.place.Destination;
 import com.ds.avare.plan.LmfsInterface;
@@ -19,11 +20,15 @@ import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.plan.LmfsPlanList;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.webkit.JavascriptInterface;
@@ -44,7 +49,6 @@ public class WebAppInterface {
 	private LmfsPlanList mFaaPlans;
     private GenericCallback mCallback;
 
-    private static final int MSG_WEATHER = 8;
     private static final int MSG_NOTBUSY = 9;
     private static final int MSG_BUSY = 10;
     private static final int MSG_FILL_FORM = 13;
@@ -76,7 +80,6 @@ public class WebAppInterface {
     /** 
      * Get weather data async
      */
-    @JavascriptInterface
     public void getWeather() {
         mWeatherThread.interrupt();
     }
@@ -301,7 +304,9 @@ public class WebAppInterface {
                 String planf = "";
                 String plan = "";
                 if(null == mService) {
-                    sendWeather(mContext.getString(R.string.WeatherPlan));
+                	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
+                	mHandler.sendMessage(m);
+                	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                     continue;
                 }
     
@@ -310,7 +315,9 @@ public class WebAppInterface {
                     /*
                      * Not a route.
                      */
-                    sendWeather(mContext.getString(R.string.WeatherPlan));
+                	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
+                	mHandler.sendMessage(m);
+                	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                     continue;
                 }
                 for(int i = 0; i < num; i++) {
@@ -320,7 +327,9 @@ public class WebAppInterface {
                             mService.getPlan().getDestination(i).getType() + ") ";
                 }
                 if(planf.equals("")) {
-                    sendWeather(mContext.getString(R.string.WeatherPlan));
+                	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
+                	mHandler.sendMessage(m);
+                	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                     continue;
                 }                
                 
@@ -400,22 +409,23 @@ public class WebAppInterface {
                         WeatherHelper.getNamMosLegend() + nam;
                 nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
 
-                String weather = plan + Metar + Taf + Pirep + nam;
+                String time = NetworkHelper.getVersion("", "weather");
+                String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + nam;
                 
-                sendWeather(weather);
+                // Read weather template
+                String html = Helper.readFromAssetsFile("weather.html", mContext);
+                // Fill in weather where the placeholder is then write to a file in download folder
+                String fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/weather_" + time + ".html";
+                Helper.writeFile(html.replace("placeholder", weather), fpath);
+                // Send to browser.
+        		Intent i = new Intent(Intent.ACTION_VIEW);
+        		File file = new File(fpath);
+        		Uri uri = Uri.fromFile(file);
+        		i.setDataAndType(uri, "multipart/related");
+        		mContext.startActivity(i);
+            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
             }        
         }
-    }
-
-    /**
-     * 
-     * @param data
-     */
-    private void sendWeather(String data) {
-        Message m = mHandler.obtainMessage();
-        m.obj = data;
-        m.what = MSG_WEATHER;
-        mHandler.sendMessage(m);
     }
     
     /**
@@ -425,13 +435,7 @@ public class WebAppInterface {
         @Override
         public void handleMessage(Message msg) {
             
-        	if(MSG_WEATHER == msg.what) {
-                String data = (String)msg.obj;
-                String load = "javascript:updateData('" + data + "');";
-                mWebView.loadUrl(load);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-        	}
-        	else if(MSG_NOTBUSY == msg.what) {
+        	if(MSG_NOTBUSY == msg.what) {
         		mCallback.callback((Object)WeatherActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
