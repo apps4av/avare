@@ -642,7 +642,7 @@ public class Plan implements Observer {
     	private static final double PASSAGE_TERMINAL_DISTANCE = 30;
 
     	// For approach (<8NM) your pass zone is 0.2 miles
-    	private static final double PASSAGE_APPROACH_MIN = 0.2;
+    	private static final double PASSAGE_APPROACH_MIN = 0.4;
     	private static final double PASSAGE_APPROACH_DISTANCE = 8;
 
     	public Passage() {

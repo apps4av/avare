@@ -504,22 +504,18 @@ public class WebAppPlanInterface implements Observer {
          */
     	int passed = plan.findNextNotPassed();
     	int numDest = plan.getDestinationNumber();
-    	double declination = 0;
     	// add plan name upfront
     	String name = plan.getName();
     	if(name == null) {
     		name = "";
     	}
     	String plans = name + "::::";
-    	if(mService.getGpsParams() != null) {
-    		declination = mService.getGpsParams().getDeclinition();
-    	}
     	
     	// make a :: separated plan list, then add totals to it
     	for(int num = 0; num < numDest; num++) {
     		plans += 
     				(passed == num ? 1 : 0) + "," +
-    				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), declination)) + "," + 
+    				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), plan.getDestination(num).getDeclination())) + "," + 
     				Math.round(plan.getDestination(num).getDistance()) + "," +
     				plan.getDestination(num).getEte() + "::::";
     	}

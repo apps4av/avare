@@ -849,4 +849,12 @@ public class Destination extends Observable {
         }
 	    return false;
 	}
+
+	/**
+	 * Get declination
+	 * @return
+	 */
+	public double getDeclination() {
+		return mDeclination;
+	}
 }
