@@ -151,11 +151,14 @@ public class LmfsPlan {
 			destination = nas.getJSONObject("destination").getString("locationIdentifier");
 			departureInstant = nas.getString("departureInstant"); 
 			flightDuration = nas.getString("flightDuration");
-			altDestination1 = nas.getString("altDestination1"); 
+			altDestination1 = nas.getString("altDestination1");
+			altDestination1 = altDestination1.equals("null") ? null : altDestination1; 
 			altDestination2 = nas.getString("altDestination2"); 
+			altDestination2 = altDestination2.equals("null") ? null : altDestination2; 
 			aircraftType = nas.getString("aircraftType");
 			numberOfAircraft = nas.getString("numberOfAircraft");
 			heavyWakeTurbulence = nas.getString("heavyWakeTurbulence");
+			heavyWakeTurbulence = heavyWakeTurbulence.equals("null") ? null : heavyWakeTurbulence; 
 			aircraftEquipment = nas.getString("aircraftEquipment");
 			speedKnots = nas.getJSONObject("speed").getString("speedKnots");
 			altitudeFL = nas.getJSONObject("altitude").getString("altitudeFL");
@@ -164,7 +167,9 @@ public class LmfsPlan {
 			peopleOnBoard = nas.getString("peopleOnBoard"); 
 			aircraftColor = nas.getString("aircraftColor");
 			route = nas.getString("route");
+			route = route.equals("null") ? null : route;
 			remarks = nas.getString("remarks");
+			remarks = remarks.equals("null") ? null : remarks;
 	    	currentState = json.getString("currentState");
 			mValid = true;
 		}
@@ -274,6 +279,25 @@ public class LmfsPlan {
     	// fill time to now()
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         now.add(Calendar.MINUTE, Integer.parseInt(future));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf.format(now.getTime());
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getTimeFromInstance(String instance) {
+    	// fill time to now()
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+		try {
+			long time = Long.parseLong(instance);
+	        now.setTimeInMillis(time);
+		}
+		catch (Exception e) {
+			return "";
+		}
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         return sdf.format(now.getTime());

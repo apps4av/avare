@@ -260,7 +260,9 @@ public class LmfsInterface {
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
 		params.put("briefingType", "SIMPLE");
-		
+		// Adjust instance to time
+		params.put("departureInstant", LmfsPlan.getTimeFromInput(LmfsPlan.getTimeFromInstance(params.get("departureInstant"))));
+		params.put("recipientEmailAddresses", PossibleEmail.get(mContext));
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
