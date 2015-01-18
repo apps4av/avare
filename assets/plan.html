@@ -441,6 +441,14 @@ function show_help() {
 	}
 }
 
+function plan_get_weather() {
+	var r = confirm("Get Latest Plan Weather from Internet?");
+	if(r == false) {
+		return;	
+	}
+	AndroidPlan.getWeather();
+}
+
 window.onload = show_help;
 
 </script>
@@ -474,7 +482,9 @@ window.onload = show_help;
 		<input id="plan_filter" placeholder="Saved Plans Filter"></input>
 		<button onclick="plan_filter()">Filter</button><br>
 		<button onclick="save_hide(true)">Show Plans</button><br>
-		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
+		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table><br>
+		<label class="sublabel">Plan Weather</label><br>
+		<button onclick="plan_get_weather()">Get Weather</button><br>
 	</p>
 	
 	<button onclick="show_help()">Show Help</button><br>
@@ -568,6 +578,16 @@ The Plan screen allows you to create and follow a basic flight plan with multipl
 <li>Magenta on the map will disappear.</li>
 <li>If you choose to fly direct to a destination by choosing any direct functions from other screens, the plan will auto de-activate.</li>
 </ul>
+
+<b>Getting Plan Weather</b>
+<ul>
+<li>Once a plan is entered, you can get the latest weather for that plan area.</li>
+<li>Enter a plan with at least two points, at least one of which is an airport.</li>
+<li>Make sure you are connected to the Internet.</li>
+<li>Press the "Get Weather" button.</li>
+<li>After a few seconds, the weather will show in the browser window.</li>
+</ul>
+
 	</a>
 
 </body>

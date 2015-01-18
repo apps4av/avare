@@ -243,7 +243,30 @@ public class LmfsInterface {
 		
 		return ret;
 	}
-	
+
+	/**
+	 * Gte briefing
+	 * @param id
+	 */
+	public void getBriefing(String id) {
+		String webUserName = PossibleEmail.get(mContext);
+		String avareMethod = "FP/" + id + "/cancel";
+		String httpMethod = "POST";
+		
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("webUserName", webUserName);
+		params.put("avareMethod", avareMethod);
+		params.put("httpMethod", httpMethod);
+
+		String ret = null;
+		try {
+			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
+			mError = parseError(ret);
+		} catch (Exception e) {
+		}
+
+	}
+
 	/**
 	 * Get error for last xaction
 	 * @return
@@ -251,4 +274,5 @@ public class LmfsInterface {
 	public String getError() {
 		return mError;
 	}
+
 }

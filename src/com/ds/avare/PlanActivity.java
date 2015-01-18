@@ -381,6 +381,7 @@ public class PlanActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mInfc.cleanup();
     }
     
     /***

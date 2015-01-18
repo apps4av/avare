@@ -34,11 +34,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 /**
@@ -52,7 +50,6 @@ public class WeatherActivity extends Activity {
     private WebView mWebView;
     private WebAppInterface mInfc;
     private ProgressBar Search;
-    private Button mGetButton;
 
     public static final int SHOW_BUSY = 1;
     public static final int UNSHOW_BUSY = 2;
@@ -206,16 +203,6 @@ public class WeatherActivity extends Activity {
         Search = (ProgressBar)(view.findViewById(R.id.weather_load_progress));
         Search.setVisibility(View.VISIBLE);
 
-        mGetButton = (Button)view.findViewById(R.id.weather_button);
-        mGetButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-               mInfc.getWeather();
-            }
-            
-        });
-
         mService = null;
     }
 
@@ -335,7 +322,6 @@ public class WeatherActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mInfc.cleanup();
     }
     
     /**

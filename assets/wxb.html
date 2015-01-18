@@ -310,6 +310,16 @@ function get_faa_plans() {
 	AndroidWeather.getPlans();
 }
 
+
+function get_briefing() {
+	var r = confirm("Get an Email with Briefing?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.getWeather();
+}
+
+
 </script>
 
 </head>
@@ -417,7 +427,8 @@ function get_faa_plans() {
 		</select>
 		<button onclick="activate_plan()">Activate</button><br></br>
 		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
-		<button onclick="close_plan()">Close</button><br>
+		<button onclick="close_plan()">Close</button><br></br>
+		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
 	<a id="help">
@@ -426,7 +437,7 @@ The WXB screen allows you to file, activate, close, and cancel flight plans with
 <b>To Fill and File the Flight Plan Form</b>
 <ul>
 <li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. The app will remember the aircraft and pilot information from the last filing.</li>
-<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots at 110, Altitude in flight level as 45, Origin as BOS, Time(Zulu) as 2015-01-31 22:30, Time Enroute as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
+<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots as 110, Altitude in flight level as 45, Origin as BOS, Date Time(Zulu) as 2015-01-31 22:30, Time En route as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
 <li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
 <li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "FAA Plans" list with state PROPOSED.</li>
 </ul>
@@ -452,6 +463,12 @@ The WXB screen allows you to file, activate, close, and cancel flight plans with
 <li>If you are overdue, enter the location you are at in the box left of the "Close" button.</li>
 <li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the FAA Plans list.</li>
 <li><b>Never trust Avare for closing your plans. Always confirm that the plan is closed by calling the phone number 1-800-WX-BRIEF!</b></li>
+</ul>
+<b>To Get Plan Briefing</b>
+<ul>
+<li>Select the plan you want to get briefing for in the FAA Plans list, by touching on it. The green bar will move to it.</li>
+<li>Press the "Get Email Briefing" button once.</li>
+<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
 </ul>
 	</a>
 </body>
