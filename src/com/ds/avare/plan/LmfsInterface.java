@@ -116,7 +116,7 @@ public class LmfsInterface {
 	/**
 	 * Close a flight plan
 	 */
-	public String closeFlightPlan(String id) {
+	public String closeFlightPlan(String id, String loc) {
 		
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/" + id + "/close";
@@ -126,6 +126,10 @@ public class LmfsInterface {
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
+		if(!loc.equals("")) {
+			// Only when overdue
+			params.put("closeDestinationInfo", loc);
+		}
 
 		String ret = null;
 		try {
@@ -141,7 +145,7 @@ public class LmfsInterface {
 	/**
 	 * Activate a flight plan
 	 */
-	public String activateFlightPlan(String id, String version) {
+	public String activateFlightPlan(String id, String version, String future) {
 		
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/" + id + "/activate";
@@ -152,7 +156,7 @@ public class LmfsInterface {
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
 		// Always activate NOW. Depart within 30 mins
-		params.put("actualDepartureInstant", LmfsPlan.getTimeFromInput(LmfsPlan.getTimeNow()));
+		params.put("actualDepartureInstant", LmfsPlan.getTimeFromInput(LmfsPlan.getTime(future)));
 		params.put("versionStamp", version);
 
 		String ret = null;

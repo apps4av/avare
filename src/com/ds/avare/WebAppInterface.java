@@ -22,6 +22,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.PossibleEmail;
 import com.ds.avare.utils.WeatherHelper;
 
 import android.content.Context;
@@ -54,6 +55,7 @@ public class WebAppInterface {
     private static final int MSG_FILL_FORM = 13;
     private static final int MSG_ERROR = 15;
     private static final int MSG_FAA_PLANS = 16;
+    private static final int MSG_SET_EMAIL = 17;
 
     /** 
      * Instantiate the interface and set the context
@@ -127,7 +129,26 @@ public class WebAppInterface {
     	mHandler.sendMessage(m);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
-    
+
+    /** 
+     * Select the plan on the FAA list
+     */
+    @JavascriptInterface
+    public void moveTo(int index) {
+    	if(null == mFaaPlans) {
+    		return;
+    	}
+    	
+    	// refresh
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	mFaaPlans.mSelectedIndex = index;
+    	mHandler.sendEmptyMessage(MSG_FAA_PLANS);
+
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+
+    }
+
     
     /** 
      * File an FAA plan and save it
@@ -203,8 +224,8 @@ public class WebAppInterface {
      * Close, open plan at FAA
      */
     @JavascriptInterface
-    public void planChangeState(int row, String action) {
-    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || row >= mFaaPlans.getPlans().size()) {
+    public void planChangeState(String action, String arg) {
+    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
     		return;
     	}
     	
@@ -214,19 +235,19 @@ public class WebAppInterface {
     	LmfsInterface infc = new LmfsInterface(mContext);
 
     	String err = null;
-    	String id = mFaaPlans.getPlans().get(row).getId();
-    	String ver = mFaaPlans.getPlans().get(row).versionStamp;
+    	String id = mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId();
+    	String ver = mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).versionStamp;
     	if(id == null) {
     		return;
     	}
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	if(action.equals("Activate")) {
     		// Activate plan with given ID
-    		infc.activateFlightPlan(id, ver);
+    		infc.activateFlightPlan(id, ver, arg);
     	}
     	else if(action.equals("Close")) {
     		// Activate plan with given ID
-    		infc.closeFlightPlan(id);
+    		infc.closeFlightPlan(id, arg);
     	}
     	else if(action.equals("Cancel")) {
     		// Activate plan with given ID
@@ -269,6 +290,13 @@ public class WebAppInterface {
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
+    /**
+     * 
+     */
+    public void setEmail() {
+        // Set email in page for user to know where to register with
+        mHandler.sendEmptyMessage(MSG_SET_EMAIL);
+    }
 
     /**
      * @author zkhan
@@ -456,13 +484,19 @@ public class WebAppInterface {
         			return;
         		}
         		String p = "";
+        		int i = 0;
+        		// Sent out plans as text separated by commas like selected,name,state
         		for (LmfsPlan pl : mFaaPlans.getPlans()) {
-        			p += pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
+        			p += ((i == mFaaPlans.mSelectedIndex) ? "1" : "0") + "," + pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
+        			i++;
         		}
         		String func = "javascript:set_faa_plans('" + p + "')";
             	mWebView.loadUrl(func);
         	}
-
+        	else if(MSG_SET_EMAIL == msg.what) {
+	    		String func = "javascript:set_email('" + PossibleEmail.get(mContext) + "')";
+	        	mWebView.loadUrl(func);
+        	}
         }
     };
 

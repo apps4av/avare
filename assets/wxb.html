@@ -69,6 +69,11 @@ td {
 	width : 100px;
 }
 
+.fullinput {
+	width : 200px;
+}
+
+
 .sublabel {
 	font-size : 15px;
 	color : #00FF00;
@@ -82,10 +87,7 @@ td {
 //>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
 var CELL_FAA_NAME = 0;
 var CELL_FAA_STATE = 1;
-var CELL_FAA_ACTIVATE = 2;
-var CELL_FAA_CANCEL = 3;
-var CELL_FAA_CLOSE = 4;
-var CELL_FAA_LAST = 5;
+var CELL_FAA_LAST = 2;
 function set_faa_plans(plan) {
 	var plans = plan.split(",");
 	
@@ -96,26 +98,49 @@ function set_faa_plans(plan) {
 	}
 
 	// add all rows
-	for(var r = 0; r < plans.length - 2; r += 2) {
+	var count = 0;
+	for(var r = 0; r < plans.length - 3; r += 3) {
 		var row = faa_plan_save.insertRow(-1);
 		var cell = [];
 
 		// Insert new cells (<td> elements) at the positions of the "new" <tr> element:
 		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
 		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
-		cell[CELL_FAA_ACTIVATE] = row.insertCell(CELL_FAA_ACTIVATE);
-		cell[CELL_FAA_CANCEL] = row.insertCell(CELL_FAA_CANCEL);
-		cell[CELL_FAA_CLOSE] = row.insertCell(CELL_FAA_CLOSE);
 		
-		cell[CELL_FAA_NAME].innerHTML = plans[r];
-		cell[CELL_FAA_STATE].innerHTML = plans[r + 1];
-		cell[CELL_FAA_ACTIVATE].innerHTML = "<button onclick='plan_state_change(" + (r / 2) + ",\"Activate\")'>Activate</button>";
-		cell[CELL_FAA_CANCEL].innerHTML =   "<button onclick='plan_state_change(" + (r / 2) + ",\"Cancel\")'>Cancel</button>";
-		cell[CELL_FAA_CLOSE].innerHTML =    "<button onclick='plan_state_change(" + (r / 2) + ",\"Close\")'>Close</button>";	
-	}
+		cell[CELL_FAA_NAME].innerHTML = plans[r + 1];
+		cell[CELL_FAA_STATE].innerHTML = plans[r + 2];
+		
+		var next = plans[r];
+		if(next == "1") {
+			cell[CELL_FAA_NAME].style.backgroundColor = "green";
+		}
+		else {
+			cell[CELL_FAA_NAME].style.backgroundColor = "#111111";
+		}
 
+		// set onclick on row
+		row.onclick = (function() {
+      	var currentI = count;
+      	return function() {
+         	onclick_row(currentI);
+      	}
+   	})();
+   	
+   	count++;
+	}
 }
 
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidWeather.moveTo(row);
+}
+
+// Set email
+function set_email(email) {
+	document.getElementById("email_id").innerHTML = "<b>" + email + "<b>";
+}
+
+// State change of plan like active
 function plan_state_change(row, action) {
 	var r = confirm("Do you want to " + action + " the plan?");
 	if(r == false) {
@@ -218,6 +243,31 @@ function show_help() {
 
 window.onload = show_help;
 
+
+function activate_plan() {
+	var r = confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate this plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Activate", document.getElementById("activate_time").value);
+}
+
+function close_plan() {
+	var r = confirm("You are about to close a flight plan with the FAA. Are you sure you want to close this plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Close", document.getElementById("close_location").value);
+}
+
+function cancel_plan() {
+	var r = confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel this plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Cancel", "");
+}
+
 // file a plan
 function plan_file() {
 
@@ -265,9 +315,10 @@ function get_faa_plans() {
 </head>
 
 <body>
-	<h1>File A Plan</h1>
+	<h1>Flight Plans</h1>
+		To file/activate/close plans, you must create an account at <a href="https://www.1800wxbrief.com/Website/">1-800-WX-BRIEF Website</a>. You must create the account using the email address <a id="email_id"></a> - email you used for Avare Registration.<br>Please make sure you file the plan as if you are filing it over the phone. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.<br>
 		<p>
-		<label>File (FAA)</label><br>
+		<label>File</label><br>
 			<table border="1">
 			<tr>
 				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option></select></td>		
@@ -303,19 +354,61 @@ function get_faa_plans() {
 			</tr>
 		</table>
 		<br>
-		<button onclick="plan_file()">File Plan</button><br></br>
-		<label class="sublabel" >FAA Plans</label><br>
-		<button onclick="get_faa_plans()">Get Plans</button><br>
-		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close</th></table>
+		<button onclick="plan_file()">File Plan</button><br>
 	</p>
-
+	<p>
+		<label>FAA Plans</label><br>
+		<button onclick="get_faa_plans()">Get Plans</button><br>
+		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
+		<button onclick="cancel_plan()">Cancel</button><br></br>
+		<select id="activate_time" class="fullinput">
+			<option value="0">Departing Now</option>
+			<option value="5">Departing 5 minutes from now</option>
+			<option value="10">Departing 10 minutes from now</option>
+			<option value="15">Departing 15 minutes from now</option>
+			<option value="20">Departing 20 minutes from now</option>
+			<option value="25">Departing 25 minutes from now</option>
+			<option value="30">Departing 30 minutes from now</option>
+		</select>
+		<button onclick="activate_plan()">Activate</button><br></br>
+		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
+		<button onclick="close_plan()">Close</button><br>
+	</p>
 	<button onclick="show_help()">Show Help</button><br>
 	<a id="help">
-The WXB screen allows you to file, activate, close, and cancel flight plans with the FAA using the Lockheed Martin Flight Services. 
+The WXB screen allows you to file, activate, close, and cancel flight plans with the FAA using the Lockheed Martin Flight Services (1-800-WX-BRIEF).
 <br>
-<b>To Fill the Flight Plan Filing Form</b>
-
-
+<b>To Fill and File the Flight Plan Form</b>
+<ul>
+<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. The app will remember the aircraft and pilot information from the last filing.</li>
+<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots at 110, Altitude in flight level as 45, Origin as BOS, Time(Zulu) as 2015-01-31 22:30, Time Enroute as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
+<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
+<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "FAA Plans" list with state PROPOSED.</li>
+</ul>
+<b>To Cancel the Filed Plan</b>
+<ul>
+<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
+<li>Select the plan you want to cancel in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the FAA Plans list.</li>
+</ul>
+<b>To Activate a Filed Plan</b>
+<ul>
+<li>Note: If you activate a plan, and forget to close it, search and rescue will commence when you are overdue.</li>
+<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
+<li>Select the plan you want to activate in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the time from now when you will take off from the drop down left of the "Activate" button.</li>
+<li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+</ul>
+<b>To Close an Active Plan</b>
+<ul>
+<li>Note: If you activate a plan, and forget to close it, search and rescue will commence when you are overdue.</li>
+<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
+<li>Select the plan you want to close in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>If you are overdue, enter the location you are at in the box left of the "Close" button.</li>
+<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the FAA Plans list.</li>
+<li><b>Never trust Avare for closing your plans. Always confirm that the plan is closed by calling the phone number 1-800-WX-BRIEF!</b></li>
+</ul>
+	</a>
 </body>
 
 </html>

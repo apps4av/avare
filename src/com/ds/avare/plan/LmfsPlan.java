@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.plan;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -267,9 +268,10 @@ public class LmfsPlan {
 	 * 
 	 * @return
 	 */
-	public static String getTimeNow() {
+	public static String getTime(String future) {
     	// fill time to now()
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        now.add(Calendar.MINUTE, Integer.parseInt(future));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         return sdf.format(now.getTime());
@@ -345,7 +347,7 @@ public class LmfsPlan {
 		fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
 		
     	// fill time to now()
-        departureInstant = getTimeNow();
+        departureInstant = getTime("0");
 
         if(num > 2) {
         	route = "";

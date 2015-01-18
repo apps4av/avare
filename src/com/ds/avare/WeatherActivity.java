@@ -140,7 +140,13 @@ public class WeatherActivity extends Activity {
         mWebView.addJavascriptInterface(mInfc, "AndroidWeather");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
-                Search.setVisibility(View.INVISIBLE);
+                /*
+                 * Init
+                 */
+	     		if(100 == progress) {
+	     			mInfc.setEmail();
+	                Search.setVisibility(View.INVISIBLE);
+	     		}
      	    }
 	     	
 	     	// This is needed to remove title from Confirm dialog

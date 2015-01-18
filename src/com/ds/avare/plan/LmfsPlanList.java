@@ -26,6 +26,7 @@ import org.json.JSONObject;
 public class LmfsPlanList {
 
 	private LinkedList<LmfsPlan> mPlans;
+	public int mSelectedIndex;
 	
 	/*
 	 * Parse something like:
@@ -39,6 +40,7 @@ public class LmfsPlanList {
 	 * }
 	 */
 	public LmfsPlanList(String data) {
+		mSelectedIndex = 0;
 		try {
 			/*
 			 * Get all plans from summaries (do not get plan details till user needs)".

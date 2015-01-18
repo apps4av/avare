@@ -15,23 +15,23 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    
-        <Button
-            android:id="@+id/weather_button"
+	    <WebView
+		    android:background="#FF000000"
+		    android:id="@+id/weather_mainpage"
             android:layout_alignParentTop="true"
+		    android:layout_above="@+id/weather_button"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"/>
+
+	    <Button
+            android:id="@+id/weather_button"
+            android:layout_alignParentBottom="true"
             android:text="@string/GetWeather"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             />
         
-	    <WebView
-		    android:background="#FF000000"
-		    android:id="@+id/weather_mainpage"
-            android:layout_alignParentBottom="true"
-		    android:layout_below="@+id/weather_button"
-		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent"/>
-        
+	    
 	    <ProgressBar
            android:id="@+id/weather_load_progress"
            android:layout_width="fill_parent"
