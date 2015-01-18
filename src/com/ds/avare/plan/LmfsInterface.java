@@ -17,6 +17,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ds.avare.R;
 import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.utils.PossibleEmail;
 
@@ -59,6 +60,7 @@ public class LmfsInterface {
 				return json.getString("returnMessage");
 			}
 		} catch (JSONException e) {
+			return(mContext.getString(R.string.Failed));
 		}
 		return null;
 	}
