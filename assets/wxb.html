@@ -294,7 +294,7 @@ function plan_file() {
 				document.getElementById("fuel_onboard").value,
 				document.getElementById("pilot_info").value,
 				document.getElementById("no_onboard").value,
-				document.getElementById("aircraft_color").value,
+				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
 				document.getElementById("route").value,
 				document.getElementById("type_flight").value,				
 				document.getElementById("remarks").value
@@ -315,8 +315,9 @@ function get_faa_plans() {
 </head>
 
 <body>
-	<h1>Flight Plans</h1>
-		To file/activate/close plans, you must create an account at <a href="https://www.1800wxbrief.com/Website/">1-800-WX-BRIEF Website</a>. You must create the account using the email address <a id="email_id"></a> - email you used for Avare Registration.<br>Please make sure you file the plan as if you are filing it over the phone. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.<br>
+	<h1>Filing/Briefing</h1>
+	<label class="sublabel">Warning! You MUST read all information below and under "Show Help" button before proceeding with filing plans.</label><br>
+		To file/activate/close plans, you must create an account with <a href="https://www.1800wxbrief.com/Website/">1-800-WX-BRIEF Website</a>. You must create the account using the email address <a id="email_id"></a> - email you used for Avare Registration.<br>Please make sure you file the plan as if you are filing it over the phone. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.<br>
 		<p>
 		<label>File</label><br>
 			<table border="1">
@@ -340,7 +341,51 @@ function get_faa_plans() {
 				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
 				<td>Alternate 1<br><input class="halfinput" id="alternate1"/></td>
 				<td>Alternate 2<br><input class="halfinput" id="alterante2"/></td>
-				<td>Aircraft Color<br><input class="halfinput" id="aircraft_color"/></td>
+				<td>Aircraft Color<br>
+					<select class="halfbutton" id="aircraft_color_1">
+						<option value="A">Amber</option>
+						<option value="B">Blue</option>
+						<option value="BE">Beige</option> 
+						<option value="BK">Black</option> 
+						<option value="BR">Brown</option> 
+						<option value="G">Green</option> 
+						<option value="GD">Gold</option> 
+						<option value="GY">Gray</option> 
+						<option value="M">Maroon</option> 
+						<option value="O">Orange</option> 
+						<option value="P">Purple</option> 
+						<option value="PK">Pink</option> 
+						<option value="R">Red</option> 
+						<option value="S">Silver</option> 
+						<option value="TQ">Turquoise</option> 
+						<option value="T">Tan</option> 
+						<option value="V">Violet</option> 
+						<option value="W">White</option> 
+						<option value="Y">Yellow</option>
+					</select>
+					/
+					<select class="halfbutton" id="aircraft_color_2">
+						<option value="A">Amber</option>
+						<option value="B">Blue</option>
+						<option value="BE">Beige</option> 
+						<option value="BK">Black</option> 
+						<option value="BR">Brown</option> 
+						<option value="G">Green</option> 
+						<option value="GD">Gold</option> 
+						<option value="GY">Gray</option> 
+						<option value="M">Maroon</option> 
+						<option value="O">Orange</option> 
+						<option value="P">Purple</option> 
+						<option value="PK">Pink</option> 
+						<option value="R">Red</option> 
+						<option value="S">Silver</option> 
+						<option value="TQ">Turquoise</option> 
+						<option value="T">Tan</option> 
+						<option value="V">Violet</option> 
+						<option value="W">White</option> 
+						<option value="Y">Yellow</option>
+					</select>
+				</td>
 				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
 				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
 			</tr>
