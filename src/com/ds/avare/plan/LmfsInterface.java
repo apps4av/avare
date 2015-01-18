@@ -248,16 +248,19 @@ public class LmfsInterface {
 	 * Gte briefing
 	 * @param id
 	 */
-	public void getBriefing(String id) {
+	public void getBriefing(LmfsPlan pl) {
+
 		String webUserName = PossibleEmail.get(mContext);
-		String avareMethod = "FP/" + id + "/cancel";
+		String avareMethod = "FP/emailBriefing";
 		String httpMethod = "POST";
 		
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = pl.makeHashMap();
+
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
-
+		params.put("briefingType", "SIMPLE");
+		
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);

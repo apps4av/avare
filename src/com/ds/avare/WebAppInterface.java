@@ -139,8 +139,20 @@ public class WebAppInterface {
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     		return;
     	}
-    	infc.getBriefing(mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId());
+    	
+		// Get plan, then request its briefing
+		LmfsPlan pl = infc.getFlightPlan(mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId());
     	String err = infc.getError();
+    	if(null != err) {
+    		// failed to get plan
+        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+        	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+        	mHandler.sendMessage(m);
+        	return;
+    	}
+
+    	infc.getBriefing(pl);
+    	err = infc.getError();
     	if(null == err) {
     		// success
     		err = mContext.getString(R.string.Success);
