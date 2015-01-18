@@ -326,8 +326,7 @@ function get_briefing() {
 
 <body>
 	<h1>Filing/Briefing</h1>
-	<label class="sublabel">Warning! You MUST read all information below and under "Show Help" button before proceeding with filing plans.</label><br>
-		To file/activate/close plans, you must create an account with <a href="https://www.1800wxbrief.com/Website/">1-800-WX-BRIEF Website</a>, then activate Avare on this website under Account->Service Providers. You must create the account using the email address <a id="email_id"></a> - email you used for Avare Registration.<br>Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.<br>
+	<label class="sublabel">Warning! You MUST read all information under "Show Help" button below before proceeding.</label><br>
 		<p>
 		<label>File</label><br>
 			<table border="1">
@@ -431,9 +430,13 @@ function get_briefing() {
 		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
+	<br>
+
 	<a id="help">
-The WXB screen allows you to file, activate, close, and cancel flight plans with the FAA using the Lockheed Martin Flight Services (1-800-WX-BRIEF).
+The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
 <br>
+To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers. 
+<br></br>
 <b>To Fill and File the Flight Plan Form</b>
 <ul>
 <li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. The app will remember the aircraft and pilot information from the last filing.</li>
