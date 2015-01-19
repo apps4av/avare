@@ -12,6 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 import com.ds.avare.plan.LmfsInterface;
 import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.plan.LmfsPlanList;
@@ -63,45 +65,97 @@ public class WebAppInterface {
         mService = s;
     }
 
+    private String checkNull(String input) {
+    	if(input == null) {
+    		return "";
+    	}
+    	return input;
+    }
+    
     /**
      * Fill plan form with data stored
      */
     @JavascriptInterface
     public void fillPlan() {
+    	if(mService == null) {
+    		return;
+    	}
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// Fill in from storage, this is going to be mostly reflecting the user's most 
     	// used settings in the form
     	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
+    	Plan p = mService.getPlan();
+    	String destination = "";
+    	String departure = "";
+    	String flightDuration = "";
+    	String fuelOnBoard = "";
+    	String departureInstant = "";
+    	String route = "";
     	
     	// If plan has valid BASE origin and destinations, fill them in
-    	if(mService != null) {
-    		pl.setFromPlan(mService.getPlan());
-    	}
+    	// Fill this LMFS form based on plan
+		int num = p.getDestinationNumber();
+		if(num >= 2) {
+			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
+				destination = p.getDestination(num - 1).getID();
+			}
+			if(p.getDestination(0).getType().equals(Destination.BASE)) {
+				departure = p.getDestination(0).getID();
+			}
+		}
+			
+    	// find time remaining time based on true AS
+		double time = 0;
+		try {
+			time = p.getDistance() / Double.parseDouble(pl.speedKnots);
+		}
+		catch (Exception e) {
+		}
+		flightDuration = LmfsPlan.timeToDuration(time);
+		fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
+			
+    	// fill time to now()
+        departureInstant = System.currentTimeMillis() + "";
+
+        if(num > 2) {
+        	route = "";
+	        // Fill route
+	        for(int dest = 1; dest < (num - 1); dest++) {
+	        	String type = p.getDestination(dest).getType();
+	        	// Only add fixes and navaids
+	        	if(type.equals(Destination.FIX) || type.equals(Destination.NAVAID)) {
+	        		route += p.getDestination(dest).getID() + " ";
+	        	}
+	        }
+        }
+        if(route.equals("")) {
+        	route = LmfsPlan.DIRECT;
+        }
     	
     	// Fill form
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
-    	    	"'" +  pl.flightRules  + "'," +
-    			"'" +  pl.aircraftIdentifier + "'," +
-    			"'" +  pl.departure + "'," +
-    			"'" +  pl.destination + "'," +
-    			"'" +  pl.departureInstant + "'," + 
-    			"'" +  LmfsPlan.durationToTime(pl.flightDuration) + "'," +
-    			"'" +  pl.altDestination1 + "'," + 
-    			"'" +  pl.altDestination2 + "'," + 
-    			"'" +  pl.aircraftType + "'," +
-    			"'" +  pl.numberOfAircraft + "'," +
-    			"'" +  pl.heavyWakeTurbulence + "'," +
-    			"'" +  pl.aircraftEquipment + "'," +
-    			"'" +  pl.speedKnots + "'," + 
-    			"'" +  pl.altitudeFL + "'," +
-    			"'" +  LmfsPlan.durationToTime(pl.fuelOnBoard) + "'," + 
-    			"'" +  pl.pilotData + "'," +
-    			"'" +  pl.peopleOnBoard + "'," + 
-    			"'" +  pl.aircraftColor + "'," +
-    			"'" +  pl.route + "'," +
-    			"'" +  pl.type + "'," +
-    			"'" +  pl.remarks + "'"
+    	    	"'" +  checkNull(pl.flightRules)  + "'," +
+    			"'" +  checkNull(pl.aircraftIdentifier) + "'," +
+    			"'" +  checkNull(departure) + "'," +
+    			"'" +  checkNull(destination) + "'," +
+    			"'" +  checkNull(LmfsPlan.getTimeFromInstance(departureInstant)) + "'," + 
+    			"'" +  checkNull(LmfsPlan.durationToTime(flightDuration)) + "'," +
+    			"'" +  checkNull(pl.altDestination1) + "'," + 
+    			"'" +  checkNull(pl.altDestination2) + "'," + 
+    			"'" +  checkNull(pl.aircraftType) + "'," +
+    			"'" +  checkNull(pl.numberOfAircraft) + "'," +
+    			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
+    			"'" +  checkNull(pl.aircraftEquipment) + "'," +
+    			"'" +  checkNull(pl.speedKnots) + "'," + 
+    			"'" +  checkNull(pl.altitudeFL) + "'," +
+    			"'" +  checkNull(LmfsPlan.durationToTime(fuelOnBoard)) + "'," + 
+    			"'" +  checkNull(pl.pilotData) + "'," +
+    			"'" +  checkNull(pl.peopleOnBoard) + "'," + 
+    			"'" +  checkNull(pl.aircraftColor) + "'," +
+    			"'" +  checkNull(route) + "'," +
+    			"'" +  checkNull(pl.type) + "'," +
+    			"'" +  checkNull(pl.remarks) + "'"
     			));
     	mHandler.sendMessage(m);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -196,10 +250,10 @@ public class WebAppInterface {
     	pl.aircraftIdentifier = aircraftIdentifier;
     	pl.departure = departure;
     	pl.destination = destination;
-    	pl.departureInstant = LmfsPlan.getTimeFromInput(departureInstant);
+    	pl.departureInstant = LmfsPlan.getInstanceFromTime(departureInstant);
     	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
-    	pl.altDestination1 = altDestination1; 
-    	pl.altDestination2 = altDestination2; 
+    	pl.altDestination1 = altDestination1;
+    	pl.altDestination2 = altDestination2;
     	pl.aircraftType = aircraftType;
     	pl.numberOfAircraft = numberOfAircraft;
     	pl.heavyWakeTurbulence = heavyWakeTurbulence;

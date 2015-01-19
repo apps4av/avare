@@ -13,16 +13,15 @@ package com.ds.avare.plan;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.ds.avare.place.Destination;
-import com.ds.avare.place.Plan;
 
 /**
  * 
@@ -32,9 +31,9 @@ import com.ds.avare.place.Plan;
 public class LmfsPlan {
 
 	
-	private static final String DOMESTIC = "DOMESTIC";
-	private static final String PROPOSED = "PROPOSED";
-	private static final String DIRECT = "DCT";
+	public static final String DOMESTIC = "DOMESTIC";
+	public static final String PROPOSED = "PROPOSED";
+	public static final String DIRECT = "DCT";
 
 	private boolean mValid;
 	private String mId;
@@ -80,7 +79,7 @@ public class LmfsPlan {
 		altDestination2 = ""; 
 		aircraftType = "";
 		numberOfAircraft = "";
-		heavyWakeTurbulence = "";
+		heavyWakeTurbulence = "false";
 		aircraftEquipment = "";
 		speedKnots = ""; 
 		altitudeFL = "";
@@ -137,7 +136,7 @@ public class LmfsPlan {
 		// Parse JSON
 		try {
 			/*
-			 * Get all plans from summaries (do not get plan details till user needs)".
+			 * Get plan from data which can be internet or storage.
 			 */
 			JSONObject json = new JSONObject(data);
 			// Only support NAS
@@ -149,16 +148,10 @@ public class LmfsPlan {
 			aircraftIdentifier = nas.getString("aircraftIdentifier");
 			departure = nas.getJSONObject("departure").getString("locationIdentifier");
 			destination = nas.getJSONObject("destination").getString("locationIdentifier");
-			departureInstant = nas.getString("departureInstant"); 
+			departureInstant = nas.getString("departureInstant");
 			flightDuration = nas.getString("flightDuration");
-			altDestination1 = nas.getString("altDestination1");
-			altDestination1 = altDestination1.equals("null") ? null : altDestination1; 
-			altDestination2 = nas.getString("altDestination2"); 
-			altDestination2 = altDestination2.equals("null") ? null : altDestination2; 
 			aircraftType = nas.getString("aircraftType");
 			numberOfAircraft = nas.getString("numberOfAircraft");
-			heavyWakeTurbulence = nas.getString("heavyWakeTurbulence");
-			heavyWakeTurbulence = heavyWakeTurbulence.equals("null") ? null : heavyWakeTurbulence; 
 			aircraftEquipment = nas.getString("aircraftEquipment");
 			speedKnots = nas.getJSONObject("speed").getString("speedKnots");
 			altitudeFL = nas.getJSONObject("altitude").getString("altitudeFL");
@@ -166,11 +159,68 @@ public class LmfsPlan {
 			pilotData = nas.getString("pilotData");
 			peopleOnBoard = nas.getString("peopleOnBoard"); 
 			aircraftColor = nas.getString("aircraftColor");
-			route = nas.getString("route");
-			route = route.equals("null") ? null : route;
-			remarks = nas.getString("remarks");
-			remarks = remarks.equals("null") ? null : remarks;
-	    	currentState = json.getString("currentState");
+			heavyWakeTurbulence = nas.getString("heavyWakeTurbulence");
+	    	
+			currentState = json.getString("currentState");
+	    	
+			// all optional fields			
+			try {
+				altDestination1 = nas.getJSONObject("altDestination1").getString("locationIdentifier");
+			}
+			catch (Exception e2) {
+				altDestination1 = null;
+			}
+			if(altDestination1 != null) {
+				if(altDestination1.equals("null")) {
+					altDestination1 = null;
+				}
+			}
+
+			try {
+				altDestination2 = nas.getJSONObject("altDestination2").getString("locationIdentifier");; 
+				if(altDestination2.equals("null")) {
+					altDestination2 = null;
+				}
+			}
+			catch (Exception e2) {
+				altDestination2 = null;				
+			}
+			if(altDestination2 != null) {
+				if(altDestination2.equals("null")) {
+					altDestination2 = null;
+				}
+			}
+			
+			try {
+				route = nas.getString("route");
+				if(route.equals("null")) {
+					route = null;
+				}
+			}
+			catch(Exception e2) {
+				route = "DCT";
+			}
+			if(route != null) {
+				if(route.equals("null")) {
+					route = null;
+				}
+			}
+
+			try {
+				remarks = nas.getString("remarks");
+				if(remarks.equals("null")) {
+					remarks = null;
+				}
+			}
+			catch (Exception e2) {
+				remarks = null;
+			}
+			if(remarks != null) {
+				if(remarks.equals("null")) {
+					remarks = null;
+				}
+			}
+	
 			mValid = true;
 		}
 		catch(Exception e) {
@@ -179,11 +229,106 @@ public class LmfsPlan {
 		
 	}
 
+	
+	// JSON safety from null
+	private boolean putJSON(JSONObject obj, String name, String val) throws JSONException {
+		if(null != name && null != val) {
+			if(val.length() != 0) {
+				if(!val.equals("null")) {
+					obj.put(name, val);	
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Make a JSON of the plan. This is for storage only so people's preferred settings are filled in on the File form.
+	 * @return
+	 */
+	public String makeJSON() {
+		String ret = "";
+		// Parse JSON
+		try {
+			/*
+			 * Put all stuff. This is for storage
+			 */
+			JSONObject json = new JSONObject();
+			
+			// Only support NAS
+			JSONObject nas = new JSONObject();
+			
+			putJSON(nas, "flightRules", flightRules);
+			putJSON(nas, "aircraftIdentifier", aircraftIdentifier);
+
+			JSONObject dep = new JSONObject();
+			if(putJSON(dep, "locationIdentifier", departure)) {
+				nas.put("departure", dep);
+			}
+
+			JSONObject des = new JSONObject();
+			if(putJSON(des, "locationIdentifier", destination)) {
+				nas.put("destination", des);
+			}
+			
+			putJSON(nas, "departureInstant", departureInstant); 
+			putJSON(nas, "flightDuration", flightDuration);
+			putJSON(nas, "aircraftType", aircraftType); 
+			putJSON(nas, "numberOfAircraft", numberOfAircraft); 
+			putJSON(nas, "heavyWakeTurbulence", heavyWakeTurbulence); 
+			putJSON(nas, "aircraftEquipment", aircraftEquipment); 
+
+			JSONObject spd = new JSONObject();
+			if(putJSON(spd, "speedKnots", speedKnots)) {
+				nas.put("speed", spd);
+			}
+			
+			JSONObject alt = new JSONObject();
+			if(putJSON(alt, "altitudeFL", altitudeFL)) {
+				nas.put("altitude", alt);
+			}
+			
+			putJSON(nas, "fuelOnBoard", fuelOnBoard); 
+			putJSON(nas, "pilotData", pilotData); 
+			putJSON(nas, "peopleOnBoard", peopleOnBoard);
+			putJSON(nas, "aircraftColor", aircraftColor);
+			putJSON(json, "currentState", currentState);
+
+			// optional stuff
+			JSONObject altd1 = new JSONObject();
+			if(putJSON(altd1, "locationIdentifier", altDestination1)) {
+				nas.put("altDestination1", altd1); 
+			}
+			
+			JSONObject altd2 = new JSONObject();
+			if(putJSON(altd2, "locationIdentifier", altDestination2)) {
+				nas.put("altDestination2", altd2); 
+			}
+
+			putJSON(nas, "route", route);
+			putJSON(nas, "remarks", remarks);
+			
+			json.put("nasFlightPlan", nas);
+			
+			ret = json.toString();
+			
+			mValid = true;
+		}
+		catch(Exception e) {
+			mValid = false;
+		}
+		return ret;
+	}
+	
+
 	// Hashmap safety from null
 	private void put(Map<String, String> params, String name, String val) {
 		if(null != name && null != val) {
 			if(val.length() != 0) {
-				params.put(name, val);
+				if(!val.equals("null")) {
+					params.put(name, val);					
+				}
 			}
 		}
 	}
@@ -195,81 +340,29 @@ public class LmfsPlan {
 	public Map<String, String> makeHashMap() {
 		Map<String, String> params = new HashMap<String, String>();
 		put(params, "type", type);
-		put(params, "flightRules" , flightRules); 
-		put(params, "aircraftIdentifier" , aircraftIdentifier); 
-		put(params, "departure" , departure);
-		put(params, "destination" , destination); 
-		put(params, "departureInstant" , departureInstant); 
-		put(params, "flightDuration" , flightDuration);
-		put(params, "altDestination1" , altDestination1); 
-		put(params, "altDestination2" , altDestination2); 
-		put(params, "aircraftType" , aircraftType); 
-		put(params, "numberOfAircraft" , numberOfAircraft);
-		put(params, "heavyWakeTurbulence" , heavyWakeTurbulence);
-		put(params, "aircraftEquipment" , aircraftEquipment); 
-		put(params, "speedKnots" , speedKnots);
-		put(params, "altitudeFL" , altitudeFL);
-		put(params, "fuelOnBoard" , fuelOnBoard);
-		put(params, "pilotData" , pilotData);
-		put(params, "peopleOnBoard" , peopleOnBoard); 
-		put(params, "aircraftColor" , aircraftColor);
-		put(params, "route" , route);
-		put(params, "remarks" , remarks);
+		put(params, "flightRules", flightRules); 
+		put(params, "aircraftIdentifier", aircraftIdentifier); 
+		put(params, "departure", departure);
+		put(params, "destination", destination); 
+		put(params, "departureInstant", LmfsPlan.getTimeFromInput(LmfsPlan.getTimeFromInstance(departureInstant))); 
+		put(params, "flightDuration", flightDuration);
+		put(params, "altDestination1", altDestination1); 
+		put(params, "altDestination2", altDestination2); 
+		put(params, "aircraftType", aircraftType); 
+		put(params, "numberOfAircraft", numberOfAircraft);
+		put(params, "heavyWakeTurbulence", heavyWakeTurbulence);
+		put(params, "aircraftEquipment", aircraftEquipment); 
+		put(params, "speedKnots", speedKnots);
+		put(params, "altitudeFL", altitudeFL);
+		put(params, "fuelOnBoard", fuelOnBoard);
+		put(params, "pilotData", pilotData);
+		put(params, "peopleOnBoard", peopleOnBoard); 
+		put(params, "aircraftColor", aircraftColor);
+		put(params, "route", route);
+		put(params, "remarks", remarks);
 		return params;
 	}
 	
-	/**
-	 * Make a JSON of the plan. This is for storage only so people's preferred settings are filled in on the File form.
-	 * @return
-	 */
-	public String makeJSON() {
-		String ret = "";
-		// Parse JSON
-		try {
-			/*
-			 * Get all plans from summaries (do not get plan details till user needs)".
-			 */
-			JSONObject json = new JSONObject();
-			// Only support NAS
-			JSONObject nas = new JSONObject();
-			JSONObject dep = new JSONObject();
-			JSONObject des = new JSONObject();
-			JSONObject alt = new JSONObject();
-			JSONObject spd = new JSONObject();
-			nas.put("flightRules", flightRules);
-			nas.put("aircraftIdentifier", aircraftIdentifier);
-			dep.put("locationIdentifier", departure);
-			des.put("locationIdentifier", destination);
-			nas.put("departure", dep);
-			nas.put("destination", des);
-			nas.put("departureInstant", departureInstant); 
-			nas.put("flightDuration", flightDuration);
-			nas.put("altDestination1", altDestination1); 
-			nas.put("altDestination2", altDestination2); 
-			nas.put("aircraftType", aircraftType); 
-			nas.put("numberOfAircraft", numberOfAircraft); 
-			nas.put("heavyWakeTurbulence", heavyWakeTurbulence); 
-			nas.put("aircraftEquipment", aircraftEquipment); 
-			spd.put("speedKnots", speedKnots);
-			nas.put("speed", spd);
-			alt.put("altitudeFL", altitudeFL);
-			nas.put("altitude", alt);
-			nas.put("fuelOnBoard", fuelOnBoard); 
-			nas.put("pilotData", pilotData); 
-			nas.put("peopleOnBoard", peopleOnBoard);
-			nas.put("aircraftColor", aircraftColor);
-			nas.put("route", route);
-			nas.put("remarks", remarks);
-			json.put("currentState", currentState);
-			json.put("nasFlightPlan", nas);
-			ret = json.toString();
-			mValid = true;
-		}
-		catch(Exception e) {
-			mValid = false;
-		}
-		return ret;
-	}
 	
 	/**
 	 * 
@@ -301,6 +394,24 @@ public class LmfsPlan {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         return sdf.format(now.getTime());
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getInstanceFromTime(String time) {
+    	// fill time to now()
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date dt;
+        try {
+        	dt = sdf.parse(time);
+        }
+        catch(Exception e) {
+        	return "";
+        }
+        return "" + dt.getTime();
 	}
 
 	/**
@@ -347,47 +458,4 @@ public class LmfsPlan {
 		return "PT" + hours + "H" + min + "M";
 	}
 
-
-	/**
-	 * Fill this LMFS form based on plan
-	 * @param p
-	 */
-	public void setFromPlan(Plan p) {
-		int num = p.getDestinationNumber();
-		if(num >= 2) {
-			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
-				destination = p.getDestination(num - 1).getID();
-			}
-			if(p.getDestination(0).getType().equals(Destination.BASE)) {
-				departure = p.getDestination(0).getID();
-			}
-		}
-    	// find time remaining time based on true AS
-		double time = 0;
-		try {
-			time = p.getDistance() / Double.parseDouble(speedKnots);
-		}
-		catch (Exception e) {
-		}
-		flightDuration = LmfsPlan.timeToDuration(time);
-		fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
-		
-    	// fill time to now()
-        departureInstant = getTime("0");
-
-        if(num > 2) {
-        	route = "";
-	        // Fill route
-	        for(int dest = 1; dest < (num - 1); dest++) {
-	        	String type = p.getDestination(dest).getType();
-	        	// Only add fixes and navaids
-	        	if(type.equals(Destination.FIX) || type.equals(Destination.NAVAID)) {
-	        		route += p.getDestination(dest).getID() + " ";
-	        	}
-	        }
-        }
-        if(route.equals("")) {
-        	route = DIRECT;
-        }
-	}
 }
