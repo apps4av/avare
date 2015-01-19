@@ -143,6 +143,8 @@ public class TripActivity extends Activity {
         
         mWebView = (WebView)view.findViewById(R.id.trip_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
+		mProgress.setVisibility(View.VISIBLE);
+
         
         mWebView.setWebViewClient(new WebViewClient() {
    
@@ -162,7 +164,12 @@ public class TripActivity extends Activity {
         	@Override
         	public boolean shouldOverrideUrlLoading(WebView view, String url) {
         		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        		startActivity(browserIntent);
+        		try {
+        			startActivity(browserIntent);
+        		}
+        		catch (Exception e) {
+        			
+        		}
         		return true;
         	}
     	});
@@ -177,10 +184,12 @@ public class TripActivity extends Activity {
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
+				arg0.performClick();
 				arg0.requestFocus();
 				return false;
 			}
         });
+        mWebView.loadUrl("file:///android_asset/trip.html");
 
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
@@ -264,7 +273,8 @@ public class TripActivity extends Activity {
                         		mWebView.loadUrl(url);
                         	}
                         	else {
-                        		mWebView.loadData("<h1>!<h1>", "text/html", null);
+                      		    mProgress.setVisibility(View.VISIBLE);
+                                mWebView.loadUrl("file:///android_asset/trip.html");
                         	}
                         	dialog.dismiss();
                         }
