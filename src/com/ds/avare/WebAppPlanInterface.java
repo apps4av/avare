@@ -953,14 +953,20 @@ public class WebAppPlanInterface implements Observer {
             // Read weather template
             String html = Helper.readFromAssetsFile("weather.html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/weather_" + time + ".html";
+            String fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/weather_" + System.currentTimeMillis() + ".html";
             Helper.writeFile(html.replace("placeholder", weather), fpath);
             // Send to browser.
     		Intent i = new Intent(Intent.ACTION_VIEW);
     		File file = new File(fpath);
     		Uri uri = Uri.fromFile(file);
-    		i.setDataAndType(uri, "multipart/related");
-    		mContext.startActivity(i);
+    		i.setDataAndType(uri, "*/*");
+    		try {
+    			mContext.startActivity(i);
+    		}
+    		catch(Exception e) {
+            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherBrowser));
+            	mHandler.sendMessage(m);
+    		}
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         	
         	running = false;
