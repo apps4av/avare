@@ -149,6 +149,29 @@ function plan_state_change(row, action) {
 	AndroidWeather.planChangeState(row, action);
 }
 
+
+// Set aircraft color
+function move_select_color(color) {
+	var colors = color.split("/");
+	
+	var sel1 = document.getElementById("aircraft_color_1");
+	for(var i = 0; i < sel1.length; i++) {
+		if(colors[0] == sel1.options[i].value) {
+			sel1.selectedIndex = i;
+			break;
+		}	
+	}
+
+	var sel2 = document.getElementById("aircraft_color_2");
+	for(var i = 0; i < sel2.length; i++) {
+		if(colors[1] == sel2.options[i].value) {
+			sel2.selectedIndex = i;
+			break;
+		}	
+	}
+
+}
+
 // fill a plan page from stored values
 function plan_fill(
 				flight_rule,
@@ -190,7 +213,7 @@ function plan_fill(
 				document.getElementById("fuel_onboard").value = fuel_onboard;
 				document.getElementById("pilot_info").value = pilot_info;
 				document.getElementById("no_onboard").value = no_onboard;
-				document.getElementById("aircraft_color").value = aircraft_color;
+				move_select_color(aircraft_color);
 				document.getElementById("route").value = route;
 				document.getElementById("type_flight").value = type_flight;				
 				document.getElementById("remarks").value = remarks;

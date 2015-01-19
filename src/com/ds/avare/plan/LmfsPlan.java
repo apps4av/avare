@@ -382,7 +382,7 @@ public class LmfsPlan {
 	        	String type = p.getDestination(dest).getType();
 	        	// Only add fixes and navaids
 	        	if(type.equals(Destination.FIX) || type.equals(Destination.NAVAID)) {
-	        		route += p.getDestination(dest).getID();
+	        		route += p.getDestination(dest).getID() + " ";
 	        	}
 	        }
         }
