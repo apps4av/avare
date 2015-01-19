@@ -76,10 +76,14 @@ public class NetworkHelper {
         InputStream is = conn.getInputStream();
         int len = 0;
         int index = 0;
-        while(is.available() > 0) {
-        	len = conn.getInputStream().read(ret, index, ret.length - index);
+        do {
+        	len = is.read(ret, index, ret.length - index);
+        	if(len <= 0) {
+        		break;
+        	}
         	index += len;
-        }
+        } while(true);
+        
         conn.disconnect();
         if(index > 0) {
             return new String(ret);
