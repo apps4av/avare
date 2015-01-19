@@ -14,6 +14,8 @@ package com.ds.avare;
 
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -953,7 +955,7 @@ public class WebAppPlanInterface implements Observer {
             // Read weather template
             String html = Helper.readFromAssetsFile("weather.html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/weather_" + System.currentTimeMillis() + ".html";
+            String fpath = getWeatherStoreFileName();
             Helper.writeFile(html.replace("placeholder", weather), fpath);
             // Send to browser.
     		Intent i = new Intent(Intent.ACTION_VIEW);
@@ -971,6 +973,19 @@ public class WebAppPlanInterface implements Observer {
         	
         	running = false;
         }        
+    }
+    
+    /**
+     * Make a file where weather is put
+     * @return
+     */
+    private String getWeatherStoreFileName() {
+    	String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/avare_weather_";
+
+    	// Get time in format usable as file.
+    	file += NetworkHelper.getVersion("", "weather").replace(":", "_");
+    	
+    	return file + ".html";
     }
     
     /**

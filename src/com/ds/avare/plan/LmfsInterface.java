@@ -248,7 +248,7 @@ public class LmfsInterface {
 	 * Gte briefing
 	 * @param id
 	 */
-	public void getBriefing(LmfsPlan pl) {
+	public void getBriefing(LmfsPlan pl, boolean translated) {
 
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/emailBriefing";
@@ -261,6 +261,9 @@ public class LmfsInterface {
 		params.put("httpMethod", httpMethod);
 		params.put("briefingType", "EMAIL");
 		params.put("briefingEmailAddresses", PossibleEmail.get(mContext));
+		if(translated) {
+			params.put("briefingPreferences", "{\"plainText\":true}");			
+		}
 		String ret = null;
 		try {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);

@@ -205,7 +205,7 @@ public class WebAppInterface {
         	return;
     	}
 
-    	infc.getBriefing(pl);
+    	infc.getBriefing(pl, mPref.isWeatherTranslated());
     	err = infc.getError();
     	if(null == err) {
     		// success
