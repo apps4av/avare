@@ -268,7 +268,7 @@ window.onload = show_help;
 
 
 function activate_plan() {
-	var r = confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate this plan?");
+	var r = confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate the selected plan?");
 	if(r == false) {
 		return;	
 	}
@@ -276,7 +276,7 @@ function activate_plan() {
 }
 
 function close_plan() {
-	var r = confirm("You are about to close a flight plan with the FAA. Are you sure you want to close this plan?");
+	var r = confirm("You are about to close a flight plan with the FAA. Are you sure you want to close the selected plan?");
 	if(r == false) {
 		return;	
 	}
@@ -284,7 +284,7 @@ function close_plan() {
 }
 
 function cancel_plan() {
-	var r = confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel this plan?");
+	var r = confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel the selected plan?");
 	if(r == false) {
 		return;	
 	}
@@ -335,11 +335,50 @@ function get_faa_plans() {
 
 
 function get_briefing() {
-	var r = confirm("Get the Briefing in Email?");
+	var r = confirm("Get the briefing for the selected plan in email?");
 	if(r == false) {
 		return;	
 	}
 	AndroidWeather.getWeather();
+}
+
+
+function load_plan() {
+	var r = confirm("Load the selected plan in the form?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.loadPlan();
+}
+
+function amend_plan() {
+	var r = confirm("Amend the selected plan with information in the form?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.amendPlan(
+				document.getElementById("flight_rule").value,
+				document.getElementById("aircraft_id").value,
+				document.getElementById("departure_point").value,
+				document.getElementById("destination").value,
+				document.getElementById("departure_date").value,
+				document.getElementById("time_enroute").value,
+				document.getElementById("alternate1").value,
+				document.getElementById("alterante2").value,
+				document.getElementById("aircraft_type").value,		
+				document.getElementById("no_of_aircraft").value,
+				document.getElementById("heavy").checked ? "true" : "false",
+				document.getElementById("aircraft_equip").value,		
+				document.getElementById("true_airspeed").value,
+				document.getElementById("altitude").value,
+				document.getElementById("fuel_onboard").value,
+				document.getElementById("pilot_info").value,
+				document.getElementById("no_onboard").value,
+				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
+				document.getElementById("route").value,
+				document.getElementById("type_flight").value,				
+				document.getElementById("remarks").value
+    );
 }
 
 
@@ -437,6 +476,8 @@ function get_briefing() {
 		<label>FAA Plans</label><br>
 		<button onclick="get_faa_plans()">Get Plans</button><br>
 		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
+		<button onclick="load_plan()">Load</button>
+		<button onclick="amend_plan()">Amend</button>
 		<button onclick="cancel_plan()">Cancel</button><br></br>
 		<select id="activate_time" class="fullinput">
 			<option value="0">Departing Now</option>
@@ -466,6 +507,20 @@ To proceed with plans and briefings, you must create an account with <label clas
 <li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots as 110, Altitude in flight level as 45, Origin as BOS, Date Time(Zulu) as 2015-01-31 22:30, Time En route as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
 <li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
 <li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "FAA Plans" list with state PROPOSED.</li>
+</ul>
+<b>To Load a Plan</b>
+<ul>
+<li>Filed plans can be loaded in the filing form in any state.</li>
+<li>Select the plan you want to load in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+</ul>
+<b>To Amend a Plan</b>
+<ul>
+<li>Filed plans can be amended when in PROPOSED state.</li>
+<li>Select the plan you want to amend in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
+<li>Modify the form as needed.</li>
+<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
 </ul>
 <b>To Cancel the Filed Plan</b>
 <ul>

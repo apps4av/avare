@@ -288,6 +288,83 @@ public class WebAppInterface {
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
+    /** 
+     * Amend an FAA plan and save it
+     */
+    @JavascriptInterface
+    public void amendPlan(
+    	String flightRules,
+    	String aircraftIdentifier,
+    	String departure,
+    	String destination,
+    	String departureInstant, 
+    	String flightDuration,
+    	String altDestination1, 
+    	String altDestination2, 
+    	String aircraftType,
+    	String numberOfAircraft,
+    	String heavyWakeTurbulence,
+    	String aircraftEquipment,
+    	String speedKnots, 
+    	String altitudeFL,
+    	String fuelOnBoard, 
+    	String pilotData,
+    	String peopleOnBoard, 
+    	String aircraftColor,
+    	String route,
+    	String type,
+    	String remarks) {
+        
+    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
+    		return;
+    	}
+    	
+    	LmfsPlan pl = mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex);
+    	if(pl.getId() == null) {
+    		return;
+    	}
+    	
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	pl.flightRules = flightRules;
+    	pl.aircraftIdentifier = aircraftIdentifier;
+    	pl.departure = departure;
+    	pl.destination = destination;
+    	pl.departureInstant = LmfsPlan.getInstanceFromTime(departureInstant);
+    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
+    	pl.altDestination1 = altDestination1;
+    	pl.altDestination2 = altDestination2;
+    	pl.aircraftType = aircraftType;
+    	pl.numberOfAircraft = numberOfAircraft;
+    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
+    	pl.aircraftEquipment = aircraftEquipment;
+    	pl.speedKnots = speedKnots; 
+    	pl.altitudeFL = altitudeFL;
+    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
+    	pl.pilotData = pilotData;
+    	pl.peopleOnBoard = peopleOnBoard; 
+    	pl.aircraftColor = aircraftColor;
+    	pl.route = route;
+    	pl.type = type;
+    	pl.remarks = remarks;
+ 
+    	// Save user input for auto fill
+    	mPref.saveLMFSPlan(pl.makeJSON());
+    	
+    	// Now file and show error messages
+    	LmfsInterface infc = new LmfsInterface(mContext);
+    	infc.amendFlightPlan(pl);
+    	String err = infc.getError();
+    	if(null == err) {
+    		// success filing
+    		getPlans();
+    		return;
+    	}
+    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+    	mHandler.sendMessage(m);
+    	
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
     
     /**
      * Close, open plan at FAA
@@ -356,6 +433,60 @@ public class WebAppInterface {
     	
     	mHandler.sendEmptyMessage(MSG_FAA_PLANS);
 
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    }
+
+    
+    /** 
+     * Get an FAA plan, and fill the form
+     */
+    @JavascriptInterface
+    public void loadPlan() {      
+    	
+    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
+    		return;
+    	}
+
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	LmfsInterface infc = new LmfsInterface(mContext);
+
+    	// Get plan in fill in the form
+		LmfsPlan pl = infc.getFlightPlan(mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId());
+    	String err = infc.getError();
+    	if(null != err) {
+    		// failed to get plan
+        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+        	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
+        	mHandler.sendMessage(m);
+        	return;
+    	}
+
+    	// Fill form
+    	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
+    	    	"'" +  checkNull(pl.flightRules)  + "'," +
+    			"'" +  checkNull(pl.aircraftIdentifier) + "'," +
+    			"'" +  checkNull(pl.departure) + "'," +
+    			"'" +  checkNull(pl.destination) + "'," +
+    			"'" +  checkNull(LmfsPlan.getTimeFromInstance(pl.departureInstant)) + "'," + 
+    			"'" +  checkNull(LmfsPlan.durationToTime(pl.flightDuration)) + "'," +
+    			"'" +  checkNull(pl.altDestination1) + "'," + 
+    			"'" +  checkNull(pl.altDestination2) + "'," + 
+    			"'" +  checkNull(pl.aircraftType) + "'," +
+    			"'" +  checkNull(pl.numberOfAircraft) + "'," +
+    			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
+    			"'" +  checkNull(pl.aircraftEquipment) + "'," +
+    			"'" +  checkNull(pl.speedKnots) + "'," + 
+    			"'" +  checkNull(pl.altitudeFL) + "'," +
+    			"'" +  checkNull(LmfsPlan.durationToTime(pl.fuelOnBoard)) + "'," + 
+    			"'" +  checkNull(pl.pilotData) + "'," +
+    			"'" +  checkNull(pl.peopleOnBoard) + "'," + 
+    			"'" +  checkNull(pl.aircraftColor) + "'," +
+    			"'" +  checkNull(pl.route) + "'," +
+    			"'" +  checkNull(pl.type) + "'," +
+    			"'" +  checkNull(pl.remarks) + "'"
+    			));
+    	mHandler.sendMessage(m);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 

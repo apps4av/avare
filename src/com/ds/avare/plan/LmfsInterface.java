@@ -233,6 +233,7 @@ public class LmfsInterface {
 		params.put("webUserName", webUserName);
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
+		params.put("versionStamp", plan.versionStamp);
 		
 		String ret = null;
 		try {
