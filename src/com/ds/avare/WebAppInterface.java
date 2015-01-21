@@ -123,8 +123,10 @@ public class WebAppInterface {
 	        // Fill route
 	        for(int dest = 1; dest < (num - 1); dest++) {
 	        	String type = p.getDestination(dest).getType();
-	        	// Only add fixes and navaids
-	        	if(type.equals(Destination.FIX) || type.equals(Destination.NAVAID)) {
+	        	if(type.equals(Destination.GPS) || type.equals(Destination.MAPS) || type.equals(Destination.UDW)) {
+	        		route += LmfsPlan.convertLocationToGpsCoords(p.getDestination(dest).getLocation()) + " ";
+	        	}
+	        	else {
 	        		route += p.getDestination(dest).getID() + " ";
 	        	}
 	        }

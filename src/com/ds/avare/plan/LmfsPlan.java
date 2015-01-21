@@ -23,6 +23,9 @@ import java.util.TimeZone;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
+
 /**
  * 
  * @author zkhan
@@ -458,4 +461,39 @@ public class LmfsPlan {
 		return "PT" + hours + "H" + min + "M";
 	}
 
+	
+	/**
+	 * Convert Gps coordinates to something liked by LMFS
+	 * @param l
+	 * @return
+	 */
+	public static String convertLocationToGpsCoords(Location p) {
+		//2548N08017W
+		double lat = Math.abs(p.getLatitude());
+		double lon = Math.abs(p.getLongitude());
+		int latd = (int)lat;
+		int latm = (int) ((lat - (double)latd) * 60.0);
+		int lond = (int)lon;
+		int lonm = (int) ((lon - (double)lond) * 60.0);
+		String latgeo;
+		String longeo;
+		
+		if(p.getLatitude() < 0) {
+			latgeo = "S";
+		}
+		else {
+			latgeo = "N";
+		}
+
+		if(p.getLongitude() < 0) {
+			longeo = "W";
+		}
+		else {
+			longeo = "E";
+		}
+		
+		String ret = String.format(Locale.getDefault(), "%02d%02d%s%03d%02d%s", latd, latm, latgeo, lond, lonm, longeo);
+		
+		return ret;
+	}
 }
