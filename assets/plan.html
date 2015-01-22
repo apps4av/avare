@@ -525,7 +525,6 @@ window.onload = show_help;
 		<input id="plan_filter" placeholder="Plan filter spec"></input>
 		<button onclick="plan_filter()">Apply Filter</button>
 		<button onclick="clear_filter()">Clear Filter</button><br>
-<!--		<button onclick="save_hide(true)">Show Plans</button><br> -->
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
 
 		<table style="border:0">
@@ -544,7 +543,7 @@ window.onload = show_help;
 	
 	<button onclick="show_help()">Show Help</button><br>
 	<a id="help">
-The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, and bearing calculated from the current position to the final way point.
+The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, and bearing calculated from the current position to the final way point.<br>
 <br>
 <b>To Create a Flight Plan with Single Line Input</b>
 <ul>
@@ -576,6 +575,17 @@ The Plan screen allows you to create and follow a basic flight plan with multipl
 <li>Press the "Load" or "Load Rev." button to load the plan in the normal or reverse order.</li>
 <li>You can delete a saved plan by pressing the "Delete" button to the right of its name in the Saved Plans list.</li>
 <li>If you have more plans saved than what can be shown in one list, some of them will be hidden. Enter the partial or full name of the hidden plan in the "Saved Plans Filter" box, then press Filter to show it in the list.</li>
+</ul>
+
+<b>Saved Plans List</b><br>
+This section contains a list of flight plans that have been saved. They are listed in groups of 5 at a time.<br>
+<ul>
+<li>Use the "< Prev" button to move to the previous page of plans.</li>
+<li>Use the "Next >" button to advance the list to the next page.</li>
+<li>The "<< First" button will list the plans starting at the beginning.</li>
+<li>The "Last >>" button will show the plans at the end of the list.</li>
+<li>Using the "Apply Filter" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
+<li>Pressing "Clear Filter" will clear the filter and refresh the plan list.</li>
 </ul>
 
 <b>To Create a Flight Plan from Find Screen</b>
