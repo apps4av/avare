@@ -150,7 +150,7 @@ function set_plan_line(row, next, bearing, distance, time) {
 	}
 
 
-	plan_table.rows[row].cells	[CELL_BEARING].innerHTML = bearing;
+	plan_table.rows[row].cells[CELL_BEARING].innerHTML = bearing;
 	plan_table.rows[row].cells[CELL_DISTANCE].innerHTML = distance;
 	plan_table.rows[row].cells[CELL_TIME].innerHTML = time;
 	
@@ -368,6 +368,10 @@ function save_add(name) {
 
 	cell[CELL_SAVE_NAME].innerHTML = name;
 
+	cell[CELL_SAVE_LOAD].style.textAlign="center";
+	cell[CELL_SAVE_LOAD_REV].style.textAlign="center";
+	cell[CELL_SAVE_DELETE].style.textAlign="center";
+
 	set_buttons_save();
 	
 	save_hide(false);
@@ -449,6 +453,44 @@ function plan_get_weather() {
 	AndroidPlan.getWeather();
 }
 
+function next() {
+	AndroidPlan.nextPage();
+}
+
+function last() {
+	AndroidPlan.lastPage();
+}
+
+function disable_next(flag) {
+	var listNext = document.getElementById("list_next");
+	listNext.disabled = flag;
+}
+
+function first() {
+	AndroidPlan.firstPage();
+}
+
+function prev() {
+	AndroidPlan.prevPage();
+}
+
+function disable_prev(flag) {
+	var listPrev = document.getElementById("list_prev");
+	listPrev.disabled = flag;
+}
+
+function set_plan_count(planCount) {
+	var plan_count = document.getElementById("plan_count");
+	plan_count.innerHTML = planCount;
+}
+
+function clear_filter() {
+	var plan_filter = document.getElementById("plan_filter");
+	plan_filter.value = "";
+	AndroidPlan.planFilter("");
+}
+
+
 window.onload = show_help;
 
 </script>
@@ -478,11 +520,24 @@ window.onload = show_help;
 		<label class="sublabel">Create New Plan</label><br>
 		<input id="create_input" placeholder="KBOS LWM KMHT"></input>
 		<button onclick="plan_create()">Create</button><br></br>
+
 		<label class="sublabel">Saved Plans</label><br>
-		<input id="plan_filter" placeholder="Saved Plans Filter"></input>
-		<button onclick="plan_filter()">Filter</button><br>
-		<button onclick="save_hide(true)">Show Plans</button><br>
-		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table><br>
+		<input id="plan_filter" placeholder="Plan filter spec"></input>
+		<button onclick="plan_filter()">Apply Filter</button>
+		<button onclick="clear_filter()">Clear Filter</button><br>
+<!--		<button onclick="save_hide(true)">Show Plans</button><br> -->
+		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
+
+		<table style="border:0">
+		<tr><td style="text-align:center">
+		<button id="list_first" onclick="first()"><< First</button>
+		<button id="list_prev" onclick="prev()">< Prev</button>
+		<button id="list_next" onclick="next()">Next ></button>
+		<button id="list_last" onclick="last()">Last >></button>
+		</td></tr>
+		<tr><td style="text-align:center" colspan="2" id="plan_count"></td></tr>
+		</table><br>
+
 		<label class="sublabel">Plan Weather</label><br>
 		<button onclick="plan_get_weather()">Get Weather</button><br>
 	</p>

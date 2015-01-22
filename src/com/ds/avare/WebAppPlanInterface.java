@@ -14,6 +14,7 @@ package com.ds.avare;
 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -56,7 +57,11 @@ public class WebAppPlanInterface implements Observer {
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
     private Context mContext;
-	
+    private int mPlanIdx;
+    private int mPlanCnt;
+    private String mPlanFilter;
+    private int mFilteredSize;
+    
     private static final int MSG_CLEAR_PLAN = 2;
     private static final int MSG_ADD_PLAN = 3;
     private static final int MSG_ADD_SEARCH = 4;
@@ -69,7 +74,11 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_INACTIVE = 12;
     private static final int MSG_SAVE_HIDE = 14;
     private static final int MSG_ERROR = 15;
-
+    private static final int MSG_PREV_HIDE = 16;
+    private static final int MSG_NEXT_HIDE = 17;
+    private static final int MSG_PLAN_COUNT = 18;
+    		
+    private static final int MAX_PLANS_SHOWN = 5;
     
     /** 
      * Instantiate the interface and set the context
@@ -79,6 +88,9 @@ public class WebAppPlanInterface implements Observer {
         mWebView = ww;
         mCallback = cb;
         mContext = c;
+        mPlanIdx = 0;
+        mPlanCnt = 0;
+        mPlanFilter = "";
     }
 
     /**
@@ -87,7 +99,10 @@ public class WebAppPlanInterface implements Observer {
      */
     public void connect(StorageService s) { 
         mService = s;
-        mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+        
+        // TODO: refactor in abstract plan management
+		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		setFilteredSize();
     }
 
     /**
@@ -144,14 +159,108 @@ public class WebAppPlanInterface implements Observer {
      * New saved plan list when the plan save list changes.
      */
     public void newSavePlan() {
+    	
+    	// Turn on the spinny thing to tell user we are thinking
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+
+    	// Clear out what we are showing
     	clearPlanSave();
-    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
-    	while(it.hasNext()) {
-        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + it.next() + "'"));
+    	
+    	// Get the next clump of plans
+    	ArrayList<String> planNames = getPlanNames(MAX_PLANS_SHOWN);
+    	
+    	// Remember how many were returned for display
+    	mPlanCnt = planNames.size();
+    	
+    	// For each name we were given, add it to the list
+    	for(String planName : planNames) {
+        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + planName + "'"));
         	mHandler.sendMessage(m);
         }
+    	
+    	// Tell the plan list table to show the plans
+    	Message m = mHandler.obtainMessage(MSG_SAVE_HIDE, (Object)("true"));
+    	mHandler.sendMessage(m);
+
+    	// Set the state of the "PREV" list button, hide if we are in the first page
+    	m = mHandler.obtainMessage(MSG_PREV_HIDE, (Object)(mPlanIdx == 0 ? "true" : "false"));
+    	mHandler.sendMessage(m);
+
+    	// Set the state of the "NEXT" list button, hide if we are on the last page
+    	m = mHandler.obtainMessage(MSG_NEXT_HIDE, (Object)(((mPlanIdx + mPlanCnt) == mFilteredSize) ? "true" : "false"));
+    	mHandler.sendMessage(m);
+    	
+    	// A text string showing what plans are being displayed
+    	String planCount = String.format("%d - %d of %d",  mFilteredSize == 0 ? 0 : mPlanIdx + 1, mPlanIdx + mPlanCnt, mFilteredSize);
+    	m = mHandler.obtainMessage(MSG_PLAN_COUNT, (Object)(planCount));
+    	mHandler.sendMessage(m);
+
+    	// We're done updating. Turn off the spinny gizmo
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
+    /***
+     * Build a collection of plans according to a starting
+     * index, quantity and name filter
+     * @param dispQty How many plans to fetch
+     * @return Collection of plans in size zero thur dispQty
+     */
+    public ArrayList<String> getPlanNames(int dispQty) {
+    	
+    	//Init some local variables we will be using
+    	int planIdx = 0;	// Used to count where we are in the plan list
+    	ArrayList<String> planNames = new ArrayList<String>();
+    	Iterator<String> it = mSavedPlans.keySet().iterator();
+
+    	// As long as we have items in the list and need items for display
+    	while(it.hasNext() && dispQty > 0) {
+    		
+    		// Get the plan name from the iterator
+    		String planName = it.next();
+    		
+    		// Does this name qualify for display ?
+    		if(true == containsIgnoreCase(planName, mPlanFilter)) {
+    			
+	    		// Is our walking index passed our current display index ?
+	    		if(++planIdx > mPlanIdx) {
+	    			
+	    			// Add the name to the collection for display
+	    			planNames.add(planName);
+	    			
+	    			// Adjust our displayed item counter
+		        	dispQty--;
+	    		}
+    		}
+        }
+
+    	// Our collection is complete
+    	return planNames;
+    }
+
+    @JavascriptInterface
+    public void nextPage() {
+    	mPlanIdx += MAX_PLANS_SHOWN;
+    	newSavePlan();
+    }
+
+    @JavascriptInterface
+    public void prevPage() {
+    	mPlanIdx -= MAX_PLANS_SHOWN;
+    	newSavePlan();
+    }
+
+    @JavascriptInterface
+    public void firstPage() {
+    	mPlanIdx = 0;
+    	newSavePlan();
+    }
+
+    @JavascriptInterface
+    public void lastPage() {
+    	mPlanIdx = (int)((mFilteredSize - 1) / MAX_PLANS_SHOWN) * MAX_PLANS_SHOWN;
+    	newSavePlan();
+    }
+    
     /**
      * New plan when the plan changes.
      */
@@ -336,10 +445,14 @@ public class WebAppPlanInterface implements Observer {
     		return;
     	}
     	mHandler.sendEmptyMessage(MSG_BUSY);
+    	
+    	// TODO: hook in abstract plan management
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
     	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+    	setFilteredSize();
+    	
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -392,44 +505,40 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void planFilter(String planFilter) {
     	
-    	// Turn on the spinny wheel to indicate we are thinking
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-
-    	// Clear out the list of plans
-    	clearPlanSave();
+    	// Save off what the filter string is 
+    	mPlanFilter = ((planFilter == null) ? "" : planFilter);
+ 
+    	// Set our display index back to the start
+    	mPlanIdx = 0;
     	
-    	// Make the filter string uppercase
-    	planFilter = planFilter.toUpperCase(Locale.getDefault());
+    	// Figure out the filtered plan list size
+    	setFilteredSize();
     	
-    	// Get the starting iterator of our collection of plans
-    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
-    	
-    	// While we have a 'next' plan
-    	while(it.hasNext()) {
-    		
-    		// Get the name of the plan
-    		String planName = it.next();
-    		
-    		//Make an upper case copy
-    		String planNameUC = planName.toUpperCase(Locale.getDefault());
-    		
-    		// If the plan name contains the plan filter string
-    		if(true == planNameUC.contains(planFilter)) {
-    			
-    			// Tell the web page to add this plan name to its list
-	        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + planName + "'"));
-	        	mHandler.sendMessage(m);
-    		}
-        }
-
-    	// Tell the plan list table to show the plans
-    	Message m = mHandler.obtainMessage(MSG_SAVE_HIDE, (Object)("true"));
-    	mHandler.sendMessage(m);
-    	
-    	// Turn off the spinny wheel thingy
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+    	// re-build the display list
+    	newSavePlan();
     }
 
+    /**
+     * Walk the list of known plans and apply the filter to get a count
+     * of how many plans match the filter
+     */
+    private void setFilteredSize() {
+    	// re-calc the size of our plan list based upon the filter
+    	mFilteredSize = 0;
+    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
+    	while(true == it.hasNext()){
+    		String planName = it.next();
+    		if(true == containsIgnoreCase(planName, mPlanFilter)) {
+    			mFilteredSize++;
+    		}
+    	}
+    }
+    
+    private boolean containsIgnoreCase(String str1, String str2) {
+    	str1 = str1.toLowerCase();
+    	str2 = str2.toLowerCase();
+    	return str1.contains(str2);
+    }
     /**
      * 
      * @param num
@@ -443,10 +552,12 @@ public class WebAppPlanInterface implements Observer {
     	// we are attempting to delete, then make it inactive
     	Plan plan = mService.getPlan();
     	if(null != plan) {
-    		if(true == plan.getName().equalsIgnoreCase(name)) {
-        		if(true == plan.isActive()) {
-	    			plan.makeInactive();
-        		}
+    		if(null != plan.getName()) {
+	    		if(true == plan.getName().equalsIgnoreCase(name)) {
+	        		if(true == plan.isActive()) {
+		    			plan.makeInactive();
+	        		}
+	    		}
     		}
     	}
     	
@@ -461,6 +572,7 @@ public class WebAppPlanInterface implements Observer {
 	    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
     	}
     	
+    	setFilteredSize();
 	    newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -789,6 +901,18 @@ public class WebAppPlanInterface implements Observer {
         	}
            	else if(MSG_SAVE_HIDE == msg.what) {	
             	String func = "javascript:save_hide(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+           	else if(MSG_PREV_HIDE == msg.what) {	
+            	String func = "javascript:disable_prev(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+           	else if(MSG_NEXT_HIDE == msg.what) {	
+            	String func = "javascript:disable_next(" + (String)msg.obj + ")";
+            	mWebView.loadUrl(func);
+        	}
+           	else if(MSG_PLAN_COUNT == msg.what) {	
+            	String func = "javascript:set_plan_count(\'" + (String)msg.obj + "\')";
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	

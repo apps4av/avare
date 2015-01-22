@@ -375,14 +375,11 @@ public class Plan implements Observer {
     	// If this is an externally defined plan, then it specifically
     	// needs to be turned on
         if(null != mService) {
-	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
-	       	if(null != mExtPlanMgr) {
-	       		ExternalFlightPlan efp = mExtPlanMgr.get(mName);
-	       		if(null != efp) {
-	       			efp.setActive(true);
-	       			mService.getNavComments().setLeft(efp.getCmt());
-	       		}
-	    	}
+       		ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
+       		if(null != efp) {
+       			efp.setActive(true);
+       			mService.getNavComments().setLeft(efp.getCmt());
+       		}
         }
     	mActive = true;
     }
@@ -394,13 +391,10 @@ public class Plan implements Observer {
     	// If this is an externally defined plan, then it specifically
     	// needs to be turned off
         if(null != mService) {
-	    	ExternalPlanMgr mExtPlanMgr = mService.getExternalPlanMgr(); 
-	       	if(null != mExtPlanMgr) {
-	       		ExternalFlightPlan efp = mExtPlanMgr.get(mName);
-	       		if(null != efp) {
-	       			efp.setActive(false);	// Turn off the plan 
-	       			mService.getNavComments().clear();
-	       		}
+       		ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
+       		if(null != efp) {
+       			efp.setActive(false);	// Turn off the plan 
+       			mService.getNavComments().clear();
 	    	}
         }
         mActive = false;
