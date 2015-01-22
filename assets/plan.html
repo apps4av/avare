@@ -508,8 +508,6 @@ window.onload = show_help;
 		<button onclick="plan_moveup()">Up</button>
 		<button onclick="plan_movedn()">Down</button>
 		<br></br>
-		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
-		<br></br>
 		<label class="sublabel" >Add To Plan</label>
 		<br>
 		<input id="search_input" placeholder="BOS"></input>
@@ -519,28 +517,32 @@ window.onload = show_help;
 		<br>
 		<label class="sublabel">Create New Plan</label><br>
 		<input id="create_input" placeholder="KBOS LWM KMHT"></input>
-		<button onclick="plan_create()">Create</button><br></br>
-
-		<label class="sublabel">Saved Plans</label><br>
+		<button onclick="plan_create()">Create</button>
+		<br></br>
+		<label class="sublabel">Plan Weather</label><br>
+		<button onclick="plan_get_weather()">Get Weather</button>
+		<br></br>
+		<label class="sublabel">Save Plan</label><br>
+		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
+	</p>
+	<p>
+		<label>Saved Plans</label><br>
 		<input id="plan_filter" placeholder="Plan filter spec"></input>
 		<button onclick="plan_filter()">Apply Filter</button>
 		<button onclick="clear_filter()">Clear Filter</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
-
 		<table style="border:0">
-		<tr><td style="text-align:center">
-		<button id="list_first" onclick="first()"><< First</button>
-		<button id="list_prev" onclick="prev()">< Prev</button>
-		<button id="list_next" onclick="next()">Next ></button>
-		<button id="list_last" onclick="last()">Last >></button>
-		</td></tr>
+		<tr>
+			<td style= "text-align:center">
+				<button id="list_first" onclick="first()"><< First</button>
+				<button id="list_prev" onclick="prev()">< Prev</button>
+				<button id="list_next" onclick="next()">Next ></button>
+				<button id="list_last" onclick="last()">Last >></button>
+			</td>
+		</tr>
 		<tr><td style="text-align:center" colspan="2" id="plan_count"></td></tr>
-		</table><br>
-
-		<label class="sublabel">Plan Weather</label><br>
-		<button onclick="plan_get_weather()">Get Weather</button><br>
+		</table>
 	</p>
-	
 	<button onclick="show_help()">Show Help</button><br>
 	<a id="help">
 The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, and bearing calculated from the current position to the final way point.<br>

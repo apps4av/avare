@@ -322,8 +322,6 @@ window.onload = show_help;
 		<button onclick="list_moveup_item()">Up</button>
 		<button onclick="list_movedown_item()">Down</button>
 		<br></br>
-		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
-		<br></br>
 		<label class="sublabel" >Add To List</label>
 		<br>
 		<input id="item_input" placeholder="Mixture Full Rich."></input>
@@ -333,12 +331,15 @@ window.onload = show_help;
 		<input id="import_input" placeholder="/sdcard/list.txt[html]"></input>
 		<button onclick="list_import()">Import</button>
 		<br></br>
-		<label class="sublabel" >Saved Lists</label><br>
+		<label class="sublabel" >Save List</label><br>		
+		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
+		<br>
+	</p>
+	<p>
+		<label>Saved Lists</label><br>
 		<button onclick="save_hide(true)">Show Lists</button><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Delete</th></table>
 	</p>
-	
-	
 	<button onclick="show_help()">Show Help</button><br>
 	<a id="help">
 The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off. 
