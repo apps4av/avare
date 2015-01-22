@@ -476,9 +476,10 @@ function amend_plan() {
 		<label>FAA Plans</label><br>
 		<button onclick="get_faa_plans()">Get Plans</button><br>
 		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
-		<button onclick="load_plan()">Load</button><br>
-		<button onclick="amend_plan()">Amend</button><br>
+		<button onclick="load_plan()">Load</button><br></br>
+		<button onclick="amend_plan()">Amend</button><br></br>
 		<button onclick="cancel_plan()">Cancel</button><br></br>
+		<button onclick="activate_plan()">Activate</button>
 		<select id="activate_time" class="fullinput">
 			<option value="0">Departing Now</option>
 			<option value="5">Departing 5 minutes from now</option>
@@ -488,9 +489,10 @@ function amend_plan() {
 			<option value="25">Departing 25 minutes from now</option>
 			<option value="30">Departing 30 minutes from now</option>
 		</select>
-		<button onclick="activate_plan()">Activate</button><br></br>
+		<br></br>
+		<button onclick="close_plan()">Close</button>
 		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
-		<button onclick="close_plan()">Close</button><br></br>
+		<br></br>
 		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
@@ -513,6 +515,7 @@ To proceed with plans and briefings, you must create an account with <label clas
 <li>Filed plans can be loaded in the filing form in any state.</li>
 <li>Select the plan you want to load in the FAA Plans list by touching on it. The green bar will move to it.</li>
 <li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
 </ul>
 <b>To Amend a Plan</b>
 <ul>
@@ -532,14 +535,14 @@ To proceed with plans and briefings, you must create an account with <label clas
 <ul>
 <li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
 <li>Select the plan you want to activate in the FAA Plans list by touching on it. The green bar will move to it.</li>
-<li>Select the time from now when you will take off from the drop down left of the "Activate" button.</li>
+<li>Select the time from now when you will take off from the drop down next to the "Activate" button.</li>
 <li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
 </ul>
 <b>To Close an Active Plan</b>
 <ul>
 <li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
 <li>Select the plan you want to close in the FAA Plans list by touching on it. The green bar will move to it.</li>
-<li>If you are overdue, enter the location you are at in the box left of the "Close" button.</li>
+<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
 <li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the FAA Plans list.</li>
 <li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
 </ul>
