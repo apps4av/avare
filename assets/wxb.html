@@ -473,7 +473,7 @@ function amend_plan() {
 		<button onclick="plan_file()">File Plan</button><br>
 	</p>
 	<p>
-		<label>FAA Plans</label><br>
+		<label>Filed Plans</label><br>
 		<button onclick="get_faa_plans()">Get Plans</button><br>
 		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
 		<button onclick="load_plan()">Load</button><br></br>
@@ -493,7 +493,7 @@ function amend_plan() {
 		<button onclick="close_plan()">Close</button>
 		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
 		<br></br>
-		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
+		<button onclick="get_briefing()">Get Email Briefing</button>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
 	<br>
@@ -508,19 +508,19 @@ To proceed with plans and briefings, you must create an account with <label clas
 <li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. The app will remember the aircraft and pilot information from the last filing.</li>
 <li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots as 110, Altitude in flight level as 45, Origin as BOS, Date Time(Zulu) as 2015-01-31 22:30, Time En route as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
 <li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
-<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "FAA Plans" list with state PROPOSED.</li>
+<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
 </ul>
 <b>To Load a Plan</b>
 <ul>
 <li>Filed plans can be loaded in the filing form in any state.</li>
-<li>Select the plan you want to load in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
 <li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
 <li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
 </ul>
 <b>To Amend a Plan</b>
 <ul>
 <li>Filed plans can be amended when in PROPOSED state.</li>
-<li>Select the plan you want to amend in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
 <li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
 <li>Modify the form as needed.</li>
 <li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
@@ -528,27 +528,27 @@ To proceed with plans and briefings, you must create an account with <label clas
 <b>To Cancel the Filed Plan</b>
 <ul>
 <li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
-<li>Select the plan you want to cancel in the FAA Plans list by touching on it. The green bar will move to it.</li>
-<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the FAA Plans list.</li>
+<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
 </ul>
 <b>To Activate a Filed Plan</b>
 <ul>
 <li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
-<li>Select the plan you want to activate in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
 <li>Select the time from now when you will take off from the drop down next to the "Activate" button.</li>
 <li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
 </ul>
 <b>To Close an Active Plan</b>
 <ul>
 <li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
-<li>Select the plan you want to close in the FAA Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
 <li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
-<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the FAA Plans list.</li>
+<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
 <li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
 </ul>
 <b>To Get Plan Briefing</b>
 <ul>
-<li>Select the plan you want to get briefing for in the FAA Plans list, by touching on it. The green bar will move to it.</li>
+<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
 <li>Press the "Get Email Briefing" button once.</li>
 <li>The briefing will be emailed to you at the address used for registering with Avare.</li>
 </ul>
