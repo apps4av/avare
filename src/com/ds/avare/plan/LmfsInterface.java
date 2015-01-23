@@ -249,7 +249,7 @@ public class LmfsInterface {
 	 * Gte briefing
 	 * @param id
 	 */
-	public void getBriefing(LmfsPlan pl, boolean translated) {
+	public void getBriefing(LmfsPlan pl, boolean translated, String routeWidth) {
 
 		String webUserName = PossibleEmail.get(mContext);
 		String avareMethod = "FP/emailBriefing";
@@ -262,6 +262,7 @@ public class LmfsInterface {
 		params.put("httpMethod", httpMethod);
 		params.put("briefingType", "EMAIL");
 		params.put("briefingEmailAddresses", PossibleEmail.get(mContext));
+		params.put("routeCorridorWidth", routeWidth);
 		if(translated) {
 			params.put("briefingPreferences", "{\"plainText\":true}");			
 		}

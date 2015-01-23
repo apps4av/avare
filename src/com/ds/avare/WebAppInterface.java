@@ -207,7 +207,7 @@ public class WebAppInterface {
         	return;
     	}
 
-    	infc.getBriefing(pl, mPref.isWeatherTranslated());
+    	infc.getBriefing(pl, mPref.isWeatherTranslated(), LmfsPlan.ROUTE_WIDTH);
     	err = infc.getError();
     	if(null == err) {
     		// success

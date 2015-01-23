@@ -37,6 +37,7 @@ public class LmfsPlan {
 	public static final String DOMESTIC = "DOMESTIC";
 	public static final String PROPOSED = "PROPOSED";
 	public static final String DIRECT = "DCT";
+	public static final String ROUTE_WIDTH = "50"; // nm for briefing
 
 	private boolean mValid;
 	private String mId;
