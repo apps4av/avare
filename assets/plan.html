@@ -71,6 +71,7 @@ th {
 td {
 	background: #111111; /* Lighter grey background */
 	text-align: left; /* Left our text */
+	font-size : 30px;
 }
 
 .halfbutton {
@@ -185,11 +186,11 @@ function plan_add(id, type) {
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_BEARING] = row.insertCell(CELL_BEARING);
 
-	cell[CELL_WP].innerHTML = id;
+	cell[CELL_WP].innerHTML = id.substring(0, 6);
 	cell[CELL_TYPE].innerHTML = type;
 	cell[CELL_DISTANCE].innerHTML = "";
 	cell[CELL_TIME].innerHTML = "";	
-	cell[CELL_BEARING].innerHTML = "";	
+	cell[CELL_BEARING].innerHTML = "";
 
     // clear search input
     document.getElementById("search_input").value = "";
