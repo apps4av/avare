@@ -17,10 +17,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
@@ -694,7 +696,7 @@ public class WebAppPlanInterface implements Observer {
      */
     private class CreateTask extends AsyncTask<Object, Void, Boolean> {
 
-    	String selection[] = null;
+    	LinkedList<String> selection = new LinkedList<String>();
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -713,23 +715,32 @@ public class WebAppPlanInterface implements Observer {
             /*
              * Here we guess types since we do not have user select
              */
-            selection = new String[srch.length];
 
             for(int num = 0; num < srch.length; num++) {
 	            /*
 	             * This is a geo coordinate with &?
 	             */
 	            if(srch[num].contains("&")) {
-	            	selection[num] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
+	            	String found = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
+	            	selection.add(found);
 	            	continue;
 	            }
-	            
+
 	            /*
 	             * Search from database. Make this a simple one off search
 	             */
 	            StringPreference s = mService.getDBResource().searchOne(srch[num]);
 	            if(s != null) {
-	                selection[num] = s.getHashedName();
+	            	String found = s.getHashedName();
+	            	selection.add(found);
+	            }
+	            else if(num > 0 && num < (srch.length - 1)) {
+	            	// Federal airway? Must start and end at some point
+	            	LinkedList<String> ret = Airway.find(mService, srch[num - 1], srch[num], srch[num + 1]);
+	            	if(ret != null) {
+	            		// Found airway, insert. Airway is always a sequence of GPS points.
+	            		selection.addAll(ret);
+	            	}
 	            }
             }
             return true;
@@ -752,11 +763,7 @@ public class WebAppPlanInterface implements Observer {
             /*
              * Add each to the plan search
              */
-            for (int num = 0; num < selection.length; num++) {
-            	String val = selection[num];
-            	if(null == val) {
-            		continue;
-            	}
+            for (String val : selection) {
 	            String id = StringPreference.parseHashedNameId(val);
 	            String type = StringPreference.parseHashedNameDestType(val);
 	            String dbtype = StringPreference.parseHashedNameDbType(val);

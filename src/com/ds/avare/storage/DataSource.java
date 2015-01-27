@@ -328,4 +328,25 @@ public class DataSource {
     public LinkedList<String> findProcedure(String name, String type, String runway) {
         return  dbHelper.findProcedure(name, type, runway);
     }
+    
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<Coordinate> findAirway(String name) {
+        return  dbHelper.findAirway(name);
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Coordinate findNavaid(String name) {
+        return  dbHelper.findNavaid(name);    	
+    }
+
 }

@@ -136,6 +136,7 @@ public class DataBaseHelper  {
     private static final String TABLE_SUA = "saa";
     private static final String TABLE_PROCEDURE = "procedures";
     private static final String TABLE_GEOPLATES = "geoplates";
+    private static final String TABLE_AIRWAYS = "airways";
 
 
     private static final String TILE_NAME = "name";
@@ -517,7 +518,7 @@ public class DataBaseHelper  {
         
         Cursor cursor;
 
-        String qry = "select * from " + table + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+        String qry = "select * from " + table + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
         /*
          * NAV
          */
@@ -675,7 +676,7 @@ public class DataBaseHelper  {
         String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
         if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
 
-            String qry = "select * from " + TABLE_NAV + " where (" + LOCATION_ID_DB + "=='" + chopname + "') and (Type != 'VOT');";
+            String qry = "select * from " + TABLE_NAV + " where (" + LOCATION_ID_DB + "=='" + chopname + "') and Type != 'VOT';";
             cursor = doQuery(qry, getMainDb());
             
             try {
@@ -845,10 +846,10 @@ public class DataBaseHelper  {
          */
         String qend = "";
         if(exact) {
-            qend = " (" + LOCATION_ID_DB + "=='" + name + "'" + ") order by " + LOCATION_ID_DB + " asc";         	
+            qend = " (" + LOCATION_ID_DB + "=='" + name + "'" + ") and Type != 'VOT' order by " + LOCATION_ID_DB + " asc";         	
         }
         else {
-        	qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        	qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") and Type != 'VOT' order by " + LOCATION_ID_DB + " asc";
         }
         qry = qbasic + TABLE_NAV + " where " + qend;
         cursor = doQuery(qry, getMainDb());
@@ -927,7 +928,7 @@ public class DataBaseHelper  {
         }
         // Order by type desc will cause VOR to be ahead of NDB if both are available.
         // This is a bit of a hack, but the user probably wants the VOR more than the NDB
-        qry += " order by " + TYPE_DB + " desc;";
+        qry += " and Type != 'VOT' order by " + TYPE_DB + " desc;";
         
         cursor = doQuery(qry, getMainDb());
 
@@ -2881,5 +2882,88 @@ public class DataBaseHelper  {
         
         return ret;
     }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Coordinate findNavaid(String name) {
+    	Coordinate coord = null;
+	    String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
+	    /*
+	     * NAV
+	     */
+	    Cursor cursor = doQuery(qry, getMainDb());
+	    
+	    try {
+	        if(cursor != null) {
+	            if(cursor.moveToFirst()) {
+	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+	            }
+	        }
+	    }
+	    catch (Exception e) {
+	    }
+
+	    closes(cursor);
+
+	    if(null != coord) {
+	    	return coord;
+	    }
+	    
+	    qry = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+	    /*
+	     * Fix
+	     */
+	    cursor = doQuery(qry, getMainDb());
+	    
+	    try {
+	        if(cursor != null) {
+	            if(cursor.moveToFirst()) {
+	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+	            }
+	        }
+	    }
+	    catch (Exception e) {
+	    }
+
+	    return coord;
+    }
+
+    
+    /**
+     * Find all coordinates of a airway
+     * @param name
+     * @return
+     */
+	public LinkedList<Coordinate> findAirway(String name) {
+        LinkedList<Coordinate> points = new LinkedList<Coordinate>();
+        
+        /*
+         * Limit to airports taken by array airports
+         */
+        String qry = "select * from " + TABLE_AIRWAYS + " where name='" + name + "'" +
+        		" order by cast(sequence as integer)";
+        Cursor cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                    	float latitude = cursor.getFloat(2);
+                    	float longitude = cursor.getFloat(3);
+                    	points.add(new Coordinate(longitude, latitude));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        return points;
+	}
 
 }
