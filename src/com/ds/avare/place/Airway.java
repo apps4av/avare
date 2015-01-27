@@ -24,6 +24,41 @@ import com.ds.avare.utils.Helper;
 
 public class Airway extends Observable {
 
+	// Max segment length is 500NM this is to keep airways in AK/HI separated from US48
+	public static final double MAX_SEGMENT_LENGTH = 500;
+	
+	// If coordinates are same
+	private static boolean isSame(Coordinate c0, Coordinate c1) {
+		return c0.getLatitude() == c1.getLatitude() && c0.getLongitude() == c1.getLongitude();
+	}
+	
+	/**
+	 * Test case BOS V16 V167 V44 CMK DXR
+	 * Find where two airways intersect.
+	 * @param aw1
+	 * @param aw2
+	 * @return
+	 */
+	public static Coordinate findIntersectionOfAirways(StorageService service, String name, LinkedList<Coordinate> coords0) {
+
+		LinkedList<Coordinate> coords1 = service.getDBResource().findAirway(name);
+		if(coords1.size() <= 0) {
+			return null;
+		}
+
+		// Find the point that intersects. This is a complex operation that works on 2 dimension.
+		// XXX need speed improvement
+		for(Coordinate c0 : coords0) {
+			for(Coordinate c1 : coords1) {
+				if(isSame(c0, c1)) {
+					return c0;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Find an airway between two navaids, and return the path in GPS coordinates
 	 * @param service
@@ -34,22 +69,43 @@ public class Airway extends Observable {
 	 */
 	public static LinkedList<String> find(StorageService service, String start, String name, String end) {
 		
+		String match = "[A-Z]\\d+";
+		
 		LinkedList<String> ret = new LinkedList<String>();
 		
-		// Find airway start point
-		Coordinate startCoord = service.getDBResource().findNavaid(start);
-		if(startCoord == null) {
+		if(!name.matches(match)) {
+			// Not an airway
 			return null;
 		}
-		// Find airway end point
-		Coordinate endCoord = service.getDBResource().findNavaid(end);
-		if(endCoord == null) {
-			return null;
-		}
-
+		
 		// Now find airway
 		LinkedList<Coordinate> coords = service.getDBResource().findAirway(name);
 		if(coords.size() <= 0) {
+			return null;
+		}
+
+		Coordinate startCoord;
+		if(start.matches(match)) {
+			startCoord = findIntersectionOfAirways(service, start, coords);
+		}
+		else {
+			// Find airway start point from navaid
+			startCoord = service.getDBResource().findNavaid(start);
+		}
+		if(startCoord == null) {
+			return null;
+		}
+
+		// Find airway end point
+		Coordinate endCoord;
+		if(end.matches(match)) {
+			endCoord = findIntersectionOfAirways(service, end, coords);
+		}
+		else {
+			// Find airway end point from navaid
+			endCoord = service.getDBResource().findNavaid(end);
+		}
+		if(endCoord == null) {
 			return null;
 		}
 		
@@ -64,10 +120,10 @@ public class Airway extends Observable {
 		i = 0;
 		minD = Double.MAX_VALUE;
 		for(Coordinate c : coords) {
-			Projection p = new Projection(c.getLongitude(), c.getLatitude(), startCoord.getLongitude(), startCoord.getLatitude());
-			if(p.getDistance() < minD) {
+			double dist = Projection.getStaticDistance(c.getLongitude(), c.getLatitude(), startCoord.getLongitude(), startCoord.getLatitude());
+			if(dist < minD) {
 				startIndex = i;
-				minD = p.getDistance();
+				minD = dist;
 			}
 			i++;
 		}
@@ -81,10 +137,10 @@ public class Airway extends Observable {
 		i = 0;
 		minD = Double.MAX_VALUE;
 		for(Coordinate c : coords) {
-			Projection p = new Projection(c.getLongitude(), c.getLatitude(), endCoord.getLongitude(), endCoord.getLatitude());
-			if(p.getDistance() < minD) {
+			double dist = Projection.getStaticDistance(c.getLongitude(), c.getLatitude(), endCoord.getLongitude(), endCoord.getLatitude());
+			if(dist < minD) {
 				endIndex = i;
-				minD = p.getDistance();
+				minD = dist;
 			}
 			i++;
 		}
@@ -101,8 +157,14 @@ public class Airway extends Observable {
 
 		// Add all of them on the route
 		if(startIndex < endIndex) {
+			Coordinate lastcoord = coords.get(startIndex);
 			for(i = startIndex; i < endIndex; i++) {
 				Coordinate c = coords.get(i);
+				// Keep far away airways out
+				if(Projection.getStaticDistance(c.getLongitude(), c.getLatitude(), lastcoord.getLongitude(), lastcoord.getLatitude()) > MAX_SEGMENT_LENGTH) {
+					continue;
+				}
+				lastcoord = c;
 				String s = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
 						name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
 				ret.add(s);
@@ -110,8 +172,14 @@ public class Airway extends Observable {
 		}
 		else {
 			// Flying it reverse
+			Coordinate lastcoord = coords.get(startIndex);
 			for(i = startIndex; i >= endIndex; i--) {
 				Coordinate c = coords.get(i);
+				// Keep far away airways out
+				if(Projection.getStaticDistance(c.getLongitude(), c.getLatitude(), lastcoord.getLongitude(), lastcoord.getLatitude()) > MAX_SEGMENT_LENGTH) {
+					continue;
+				}
+				lastcoord = c;
 				String s = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
 						name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
 				ret.add(s);
@@ -119,15 +187,11 @@ public class Airway extends Observable {
 		}
 
 		/*
-		 * At least three points make an airway because starting and end are navaids
+		 * Check for not found
 		 */
-		if(ret.size() < 3) {
+		if(ret.size() <= 0) {
 			return null;
 		}
-		
-		// Remove navaids
-		ret.remove(ret.size() - 1);
-		ret.remove(0);
 		
 		return ret;
 	}

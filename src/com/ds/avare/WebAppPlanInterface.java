@@ -25,6 +25,7 @@ import java.util.Observer;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.GenericCallback;
@@ -276,6 +277,17 @@ public class WebAppPlanInterface implements Observer {
         }
     }
 
+    /*
+     * To discard same location, see if they are close
+     */
+    private boolean isSame(Location l0, Location l1) {
+    	double dist = Projection.getStaticDistance(l0.getLongitude(), l0.getLatitude(), l1.getLongitude(), l1.getLatitude());
+    	if(dist < 0.01) {
+    		return true;
+    	}
+    	return false;
+    }
+    
     /**
      * New dest
      * @param arg0
@@ -287,6 +299,21 @@ public class WebAppPlanInterface implements Observer {
 		 * Add to Plan that we found from add action
 		 */
 		Destination d = (Destination)arg0;
+		int num = mService.getPlan().getDestinationNumber();
+		// Make sure duplicates do not appear. This can happen with airways
+		if(num > 0) {
+			Destination prev = mService.getPlan().getDestination(num - 1);
+			if(isSame(prev.getLocation(), d.getLocation())) {
+				if(prev.getType().equals(Destination.GPS) && (!d.getType().equals(Destination.GPS))) {
+					// Remove last one
+					mService.getPlan().remove(num - 1);
+				}
+				else {
+					// No need to add this
+					return;
+				}
+			}
+		}
 		mService.getPlan().appendDestination(d);
 		addWaypointToPlan(d.getID(), d.getType(), d.getFacilityName());
 	}
