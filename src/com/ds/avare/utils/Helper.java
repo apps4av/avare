@@ -874,6 +874,17 @@ public class Helper {
         catch (Exception e) {
             return false;
         }
-     }    
+    }    
 
+    /**
+     * Avoid ' and " in JS
+     * @param args
+     * @return
+     */
+    public static String formatJsArgs(String args) {
+    	if(args == null) {
+    		return null;
+    	}
+    	return args.replace("'", "&#39;").replace("\"", "&quot;");
+    }
 }

@@ -154,7 +154,7 @@ public class WebAppPlanInterface implements Observer {
      */
     public void addWaypointToPlan(String id, String type, String subtype) {
     	// Add using javascript to show on page, strings require '' around them
-    	Message m = mHandler.obtainMessage(MSG_ADD_PLAN, (Object)("'" + id + "','" + type + "','" + subtype + "'"));
+    	Message m = mHandler.obtainMessage(MSG_ADD_PLAN, (Object)("'" + Helper.formatJsArgs(id) + "','" + Helper.formatJsArgs(type) + "','" + Helper.formatJsArgs(subtype) + "'"));
     	mHandler.sendMessage(m);
     }
 
@@ -177,7 +177,7 @@ public class WebAppPlanInterface implements Observer {
     	
     	// For each name we were given, add it to the list
     	for(String planName : planNames) {
-        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + planName + "'"));
+        	Message m = mHandler.obtainMessage(MSG_ADD_PLAN_SAVE, (Object)("'" + Helper.formatJsArgs(planName) + "'"));
         	mHandler.sendMessage(m);
         }
     	
@@ -195,7 +195,7 @@ public class WebAppPlanInterface implements Observer {
     	
     	// A text string showing what plans are being displayed
     	String planCount = String.format("%d - %d of %d",  mFilteredSize == 0 ? 0 : mPlanIdx + 1, mPlanIdx + mPlanCnt, mFilteredSize);
-    	m = mHandler.obtainMessage(MSG_PLAN_COUNT, (Object)(planCount));
+    	m = mHandler.obtainMessage(MSG_PLAN_COUNT, (Object)("'" + planCount + "'"));
     	mHandler.sendMessage(m);
 
     	// We're done updating. Turn off the spinny gizmo
@@ -839,14 +839,9 @@ public class WebAppPlanInterface implements Observer {
             }
             
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            
-            // Search our list of user defined waypoints first
-            mService.getUDWMgr().search(srch,  params);
-            
-            /*
-             * Search from database. Make this a simple search
-             */
+
             mService.getDBResource().search(srch, params, true);
+            mService.getUDWMgr().search(srch, params);			// From user defined points of interest
             if(params.size() > 0) {
                 selection = new String[params.size()];
                 int iterator = 0;
@@ -883,7 +878,7 @@ public class WebAppPlanInterface implements Observer {
 	            String type = StringPreference.parseHashedNameDestType(val);
 	            String dbtype = StringPreference.parseHashedNameDbType(val);
 
-	        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + id + "','" + name + "','" + type + "','" + dbtype + "'"));
+	        	Message m = mHandler.obtainMessage(MSG_ADD_SEARCH, (Object)("'" + Helper.formatJsArgs(id) + "','" + Helper.formatJsArgs(name) + "','" + Helper.formatJsArgs(type) + "','" + Helper.formatJsArgs(dbtype) + "'"));
 	        	mHandler.sendMessage(m);
             }
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -946,7 +941,7 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
            	else if(MSG_PLAN_COUNT == msg.what) {	
-            	String func = "javascript:set_plan_count(\'" + (String)msg.obj + "\')";
+            	String func = "javascript:set_plan_count(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	

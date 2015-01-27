@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -91,7 +92,7 @@ public class WebAppListInterface {
      */
     public void addItemToList(String item) {
     	// Add using javascript to show on page, strings require '' around them
-    	Message m = mHandler.obtainMessage(MSG_ADD_LIST, (Object)("'" + item + "'"));
+    	Message m = mHandler.obtainMessage(MSG_ADD_LIST, (Object)("'" + Helper.formatJsArgs(item) + "'"));
     	mHandler.sendMessage(m);
     }
 
@@ -107,7 +108,7 @@ public class WebAppListInterface {
         }
 
         for (Checklist cl : lists) {
-        	Message m = mHandler.obtainMessage(MSG_ADD_LIST_SAVE, (Object)("'" + cl.getName() + "'"));
+        	Message m = mHandler.obtainMessage(MSG_ADD_LIST_SAVE, (Object)("'" + Helper.formatJsArgs(cl.getName()) + "'"));
         	mHandler.sendMessage(m);
         }
     }
