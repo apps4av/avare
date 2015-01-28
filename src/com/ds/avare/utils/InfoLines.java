@@ -272,9 +272,11 @@ public class InfoLines {
         	// Split the row string to get each field
             String arFields[] = strRows[rowIdx].split(","); 
 
-            // Now parse the line for the values
+            // Now parse the line for the values. Handle the case of invalid array
+            // bounds just in case the config setting is corrupt due to version/feature change
             for (int idx = 0; idx < arFields.length; idx++) {
-                mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
+            	try { mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
+            	} catch(Exception e) { }
             }
         }
         setRowCount(); // Determine how many rows to use
