@@ -46,7 +46,7 @@ public class Plan implements Observer {
     private boolean[] mPassed;
     
     
-    private static final int MAX_DESTINATIONS = 50;
+    private static final int MAX_DESTINATIONS = 100;
     
     private static final int MILES_PER_SEGMENT = 50;
     
