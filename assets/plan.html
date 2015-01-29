@@ -124,7 +124,7 @@ function loadplan() {
 function plan_setname(name) {
 	var plan = document.getElementById("plan_name");
 
-	plan.innerHTML = "Plan" + "[" + name + "]";
+	plan.innerText = "Plan" + "[" + name + "]";
 }
 
 
@@ -151,9 +151,9 @@ function set_plan_line(row, next, bearing, distance, time) {
 	}
 
 
-	plan_table.rows[row].cells[CELL_BEARING].innerHTML = bearing;
-	plan_table.rows[row].cells[CELL_DISTANCE].innerHTML = distance;
-	plan_table.rows[row].cells[CELL_TIME].innerHTML = time;
+	plan_table.rows[row].cells[CELL_BEARING].innerText = bearing;
+	plan_table.rows[row].cells[CELL_DISTANCE].innerText = distance;
+	plan_table.rows[row].cells[CELL_TIME].innerText = time;
 	
 	plan_table.rows[row].onclick = (function() {
       var currentI = row;
@@ -186,11 +186,11 @@ function plan_add(id, type) {
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_BEARING] = row.insertCell(CELL_BEARING);
 
-	cell[CELL_WP].innerHTML = id.substring(0, 6);
-	cell[CELL_TYPE].innerHTML = type;
-	cell[CELL_DISTANCE].innerHTML = "";
-	cell[CELL_TIME].innerHTML = "";	
-	cell[CELL_BEARING].innerHTML = "";
+	cell[CELL_WP].innerText = id.substring(0, 6);
+	cell[CELL_TYPE].innerText = type;
+	cell[CELL_DISTANCE].innerText = "";
+	cell[CELL_TIME].innerText = "";	
+	cell[CELL_BEARING].innerText = "";
 
     // clear search input
     document.getElementById("search_input").value = "";
@@ -220,9 +220,9 @@ function plan_movedn() {
 function plan_set_total(total) {
 	// plan total is split to show individual values
 	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
-	document.getElementById("plan_total_distance").innerHTML = vals[0];
-	document.getElementById("plan_total_time").innerHTML = vals[1];
-	document.getElementById("plan_total_bearing").innerHTML = vals[2];
+	document.getElementById("plan_total_distance").innerText = vals[0];
+	document.getElementById("plan_total_time").innerText = vals[1];
+	document.getElementById("plan_total_bearing").innerText = vals[2];
 }
 
 // clear the entire plan
@@ -269,19 +269,19 @@ var CELL_SAVE_LAST = 4;
 // load the plan
 function save_load(row) {
 	var plan_save = document.getElementById("save_table");
-	AndroidPlan.loadPlan(plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+	AndroidPlan.loadPlan(plan_save.rows[row].cells[CELL_SAVE_NAME].innerText);
 }
 
 // load the plan reverse
 function save_load_reverse(row) {
 	var plan_save = document.getElementById("save_table");
-	AndroidPlan.loadPlanReverse(plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+	AndroidPlan.loadPlanReverse(plan_save.rows[row].cells[CELL_SAVE_NAME].innerText);
 }
 
 // delete the plan
 function save_delete(row) {
 	var plan_save = document.getElementById("save_table");
-	var plan_name = plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML;
+	var plan_name = plan_save.rows[row].cells[CELL_SAVE_NAME].innerText;
 	var prompt_text = "Delete \"";
 	var prompt = prompt_text.concat(plan_name, "\" ?");
 	
@@ -290,7 +290,7 @@ function save_delete(row) {
 		return;	
 	}
 	
-	AndroidPlan.saveDelete(plan_save.rows[row].cells[CELL_SAVE_NAME].innerHTML);
+	AndroidPlan.saveDelete(plan_save.rows[row].cells[CELL_SAVE_NAME].innerText);
 }
 
 // add the current plan to saved list
@@ -367,7 +367,7 @@ function save_add(name) {
 	cell[CELL_SAVE_LOAD_REV] = row.insertCell(CELL_SAVE_LOAD_REV);
 	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
 
-	cell[CELL_SAVE_NAME].innerHTML = name;
+	cell[CELL_SAVE_NAME].innerText = name;
 
 	cell[CELL_SAVE_LOAD].style.textAlign="center";
 	cell[CELL_SAVE_LOAD_REV].style.textAlign="center";
@@ -428,10 +428,10 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_SUBTYPE] = row.insertCell(CELL_SEARCH_SUBTYPE);
 	cell[CELL_SEARCH_ACTION] = row.insertCell(CELL_SEARCH_ACTION);
 
-	cell[CELL_SEARCH_WP].innerHTML = id;
-	cell[CELL_SEARCH_NAME].innerHTML = name;
-	cell[CELL_SEARCH_TYPE].innerHTML = type;	
-	cell[CELL_SEARCH_SUBTYPE].innerHTML = subtype;	
+	cell[CELL_SEARCH_WP].innerText = id;
+	cell[CELL_SEARCH_NAME].innerText = name;
+	cell[CELL_SEARCH_TYPE].innerText = type;	
+	cell[CELL_SEARCH_SUBTYPE].innerText = subtype;	
 	// this button will add to plan a particular result from search
 	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
 }
@@ -482,7 +482,7 @@ function disable_prev(flag) {
 
 function set_plan_count(planCount) {
 	var plan_count = document.getElementById("plan_count");
-	plan_count.innerHTML = planCount;
+	plan_count.innerText = planCount;
 }
 
 function clear_filter() {

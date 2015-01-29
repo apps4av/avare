@@ -877,7 +877,7 @@ public class Helper {
     }    
 
     /**
-     * Avoid ' and " in JS
+     * Avoid ' in JS function calls
      * @param args
      * @return
      */
@@ -885,6 +885,6 @@ public class Helper {
     	if(args == null) {
     		return null;
     	}
-    	return args.replace("'", "&#39;").replace("\"", "&quot;");
+    	return args.replace("'", "\\'");
     }
 }

@@ -107,8 +107,8 @@ function set_faa_plans(plan) {
 		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
 		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
 		
-		cell[CELL_FAA_NAME].innerHTML = plans[r + 1];
-		cell[CELL_FAA_STATE].innerHTML = plans[r + 2];
+		cell[CELL_FAA_NAME].innerText = plans[r + 1];
+		cell[CELL_FAA_STATE].innerText = plans[r + 2];
 		
 		var next = plans[r];
 		if(next == "1") {
