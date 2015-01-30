@@ -655,11 +655,13 @@ public class WebAppPlanInterface implements Observer {
     	
     	// make a :: separated plan list, then add totals to it
     	for(int num = 0; num < numDest; num++) {
+    		Destination d = plan.getDestination(num);
     		plans += 
     				(passed == num ? 1 : 0) + "," +
-    				Math.round(Helper.getMagneticHeading(plan.getDestination(num).getBearing(), plan.getDestination(num).getDeclination())) + "," + 
-    				Math.round(plan.getDestination(num).getDistance()) + "," +
-    				plan.getDestination(num).getEte() + "::::";
+    				Math.round(Helper.getMagneticHeading(d.getBearing(), d.getDeclination())) + "," + 
+    				Math.round(d.getDistance()) + "," +
+    				d.getEte() +  "," +
+    				d.getID() + "," + d.getType() + "::::";
     	}
     	// add total
     	plans += plan.toString();

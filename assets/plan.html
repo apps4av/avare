@@ -102,7 +102,7 @@ var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second
 function loadplan() {
-	//var str = "myplanname::::1,102,18,--:--::::0,5,23,--:--::::0,317,14,--:--::::0,352,23,--:--::::0,122,3,--:--::::Total  82nm --:-- 102°";
+	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102°";
 	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
@@ -110,7 +110,7 @@ function loadplan() {
 	for(var pl = 1; pl < (plans.length - 1); pl++) {
 		// split plan individual fields
 		var data = plans[pl].split(",");
-		if(!set_plan_line(pl, data[0], data[1], data[2], data[3])) {
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5])) {
 			// mismatch in view and model, sync	
 			AndroidPlan.refreshPlan();
 			return;
@@ -132,9 +132,9 @@ function onclick_row(row) {
 	AndroidPlan.moveTo(row - 1);
 }
 
-// Set plan line
-function set_plan_line(row, next, bearing, distance, time) {
+function set_plan_line(row, next, bearing, distance, time, id, type) {
 	// rows here are 1 indexed
+// Set plan line
 	var plan_table = document.getElementById("plan_table");
 
 	// do not overwrite array
@@ -149,6 +149,8 @@ function set_plan_line(row, next, bearing, distance, time) {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#111111";
 	}
 
+	plan_table.rows[row].cells[CELL_WP].innerText = id.substring(0, 6);
+	plan_table.rows[row].cells[CELL_TYPE].innerText = type;
 
 	plan_table.rows[row].cells[CELL_BEARING].innerText = bearing;
 	plan_table.rows[row].cells[CELL_DISTANCE].innerText = distance;
