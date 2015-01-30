@@ -25,21 +25,21 @@ public class WeatherHelper {
     public static int metarColor(String type) {
         if(type.equals("VFR")) {
         	//green
-            return(0x78e825);
+            return(0xff78e825);
         }
         else if(type.equals("IFR")) {
         	// red
-            return(0xff2a00);                        
+            return(0xffff2a00);                        
         }
         else if(type.equals("MVFR")) {
         	// blue
-            return(0x4884ff);                        
+            return(0xff4884ff);                        
         }
         else if(type.equals("LIFR")) {
         	// magenta
-            return(0xff54f9);                       
+            return(0xffff54f9);                       
         }
-        return(0xffffff);
+        return(0xffffffff);
     }
     
     /**
