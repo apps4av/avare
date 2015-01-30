@@ -318,7 +318,8 @@ public class Plan implements Observer {
              */
             for (int id = (np + 1); id < num; id++) {
                 Location l = mDestination[id - 1].getLocation();
-                l.setSpeed((float)params.getSpeed());
+                l.setSpeed((float)GpsParams.speedConvert(params.getSpeed()));
+                l.setBearing((float)params.getBearing());
                 GpsParams p = new GpsParams(l);
                 mDestination[id].updateTo(p);
                 mDistance += mDestination[id].getDistance();
@@ -356,7 +357,7 @@ public class Plan implements Observer {
                 }
             }
         }
-        mEte = Helper.calculateEte(mPref.useBearingForETEA(), mDistance,
+        mEte = Helper.calculateEte(mPref.useBearingForETEA() && (!isActive()), mDistance,
                 params.getSpeed(), mBearing, params.getBearing());
         mLastLocation = params;
     }

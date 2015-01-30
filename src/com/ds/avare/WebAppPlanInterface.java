@@ -80,7 +80,6 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_PREV_HIDE = 16;
     private static final int MSG_NEXT_HIDE = 17;
     private static final int MSG_PLAN_COUNT = 18;
-    private static final int MSG_PLAN_FLASH = 19;
     		
     private static final int MAX_PLANS_SHOWN = 5;
     
@@ -641,10 +640,6 @@ public class WebAppPlanInterface implements Observer {
     public String getPlanData() {
     	Plan plan = mService.getPlan();
     	
-    	// Warn user that a passage is approaching
-    	if(plan.isEarlyPass()) {
-        	mHandler.sendEmptyMessage(MSG_PLAN_FLASH);
-    	}
         /*
          * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
          * things might have changed.
@@ -948,10 +943,6 @@ public class WebAppPlanInterface implements Observer {
         	}
            	else if(MSG_PLAN_COUNT == msg.what) {	
             	String func = "javascript:set_plan_count(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
-        	}
-           	else if(MSG_PLAN_FLASH == msg.what) {	
-            	String func = "javascript:flash_background()";
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	

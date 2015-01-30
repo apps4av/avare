@@ -136,7 +136,7 @@ public class Helper {
         }
 
         // If hours is non zero then return HH:MM
-        if(eteHr >0) {
+        if(eteHr > 0) {
 	        // Format the hours and minutes en router
 	        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
 	        String min = String.format(Locale.getDefault(), "%02d", eteMin);

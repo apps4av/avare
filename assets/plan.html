@@ -98,15 +98,6 @@ var CELL_TIME = 3;
 var CELL_BEARING = 4;
 var CELL_LAST = 5;
 
-// Flash background color for some alert
-function flash_background() {
-	var color = document.body.style.background;
-	for(var i = 0; i < 10; i++) {
-		setTimeout(function(){ document.body.style.background = "green"; }, i * 1000);
-		setTimeout(function(){ document.body.style.background = color; }, i * 1000 + 500);
-	}
-}
-
 var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second

@@ -117,7 +117,7 @@ function set_list_line(row, next, text) {
 		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#111111";
 	}
 
-	list_table.rows[row].cells[CELL_TEXT].innerHTML = text;
+	list_table.rows[row].cells[CELL_TEXT].innerText = text;
 	// set onclick on row
 	list_table.rows[row].onclick = (function() {
       var currentI = row;
@@ -140,7 +140,7 @@ function list_add(text) {
 	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
 	cell[CELL_TEXT].className = "tdhlong";
 
-	cell[CELL_TEXT].innerHTML = text;
+	cell[CELL_TEXT].innerText = text;
 }
 
 // clear the entire list
@@ -328,7 +328,7 @@ window.onload = show_help;
 		<button onclick="add_list_item()">Add</button>
 		<br></br>
 		<label class="sublabel" >Import A File</label><br>
-		<input id="import_input" placeholder="/sdcard/list.txt[html]"></input>
+		<input id="import_input" placeholder="/sdcard/list.txt"></input>
 		<button onclick="list_import()">Import</button>
 		<br></br>
 		<label class="sublabel" >Save List</label><br>		
@@ -352,7 +352,6 @@ The List screen allows you to sequence check lists for your aircraft. A list's s
 <li>Touch the added item in the list to move the green bar to it.</li>
 <li>Move the item to the desired sequence by pressing the Up or Down button several times.</li>
 <li>If a wrong item is added by mistake, it can be deleted by touching the item to move the green bar to it, then pressing the Delete button.</li>
-<li>Note: You can color and style your list items by entering HTML code in the list items. For example, "Mixture &ltb&gtRich&lt/b&gt" will show as "Mixture <b>Rich</b>".</li>
 </ul>
 
 <b>To Save a List</b>
@@ -371,7 +370,7 @@ The List screen allows you to sequence check lists for your aircraft. A list's s
 <b>To Import a List from a File</b>
 <ul>
 <li>A long list can be entered in a single action by importing it from disk.</li>
-<li>Get the list prepared on the PC in text/HTML format.</li>
+<li>Get the list prepared on the PC in text format.</li>
 <li>Put the list on your device in an every-application-accessible folder like /sdcard/Download, using PC-device USB connection.</li>
 <li>Enter the name/path of the file in "Import a List" box, for example /sdcard/Download/mylist.txt.</li>
 <li>Press the Import button.</li>
