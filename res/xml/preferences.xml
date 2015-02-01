@@ -121,7 +121,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefUseDynamicFields"
             android:summary="@string/UseDynamicFieldsSummary"
             android:title="@string/UseDynamicFieldsLabel" />
-     </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/blinkScreen"
+            android:summary="@string/blinkScreenSummary"
+            android:title="@string/blinkScreenLabel" />
+    </PreferenceScreen>
 
     <PreferenceScreen 
         android:title="@string/Instrumentation" 

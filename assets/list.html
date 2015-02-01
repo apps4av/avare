@@ -94,7 +94,7 @@ var CELL_LAST = 1;
 function list_setname(name) {
 	var list = document.getElementById("list_name");
 
-	list.innerText = "List" + "[" + name + "]";
+	list.textContent = "List" + "[" + name + "]";
 }
 
 
@@ -117,7 +117,7 @@ function set_list_line(row, next, text) {
 		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#111111";
 	}
 
-	list_table.rows[row].cells[CELL_TEXT].innerText = text;
+	list_table.rows[row].cells[CELL_TEXT].textContent = text;
 	// set onclick on row
 	list_table.rows[row].onclick = (function() {
       var currentI = row;
@@ -140,7 +140,7 @@ function list_add(text) {
 	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
 	cell[CELL_TEXT].className = "tdhlong";
 
-	cell[CELL_TEXT].innerText = text;
+	cell[CELL_TEXT].textContent = text;
 }
 
 // clear the entire list
@@ -207,7 +207,7 @@ var CELL_SAVE_LAST = 3;
 // load the list
 function save_load(row) {
 	var list_save = document.getElementById("save_table");
-	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].innerText);
+	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
 }
 
 // delete the list
@@ -217,7 +217,7 @@ function save_delete(row) {
 		return;	
 	}
 	var list_save = document.getElementById("save_table");
-	AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].innerText);
+	AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
 }
 
 // add the current list to saved list
@@ -287,7 +287,7 @@ function save_add(name) {
 	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
 	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
 
-	cell[CELL_SAVE_NAME].innerText = name;
+	cell[CELL_SAVE_NAME].textContent = name;
 
 	set_buttons_save();
 	

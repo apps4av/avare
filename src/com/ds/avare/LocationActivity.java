@@ -39,6 +39,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -185,6 +186,13 @@ public class LocationActivity extends Activity implements Observer {
                 float threshold = Helper.calculateThreshold(params.getAltitude());
                 mBar.setProgress(Math.round(threshold));
                 mLocationView.updateThreshold(threshold);
+                
+                if(mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
+                	/*
+                	 * Check that if we are close to passing a plan passage, blink
+                	 */
+                	blink();
+                }
             }
         }
 
@@ -1166,6 +1174,33 @@ public class LocationActivity extends Activity implements Observer {
                 mToast.setText(getString(R.string.DestinationNF));
                 mToast.show();
             }
+        }
+    }
+    
+    /**
+     * Blink screen for an alert
+     */
+    private void blink() {
+        Runnable r = new Runnable() {
+            public void run() {
+            	/*
+            	 * By making the view invisible, background shows
+            	 */
+                if(mLocationView.getVisibility() == View.VISIBLE) {
+                	mLocationView.setVisibility(View.INVISIBLE);
+                }
+                else {
+                	mLocationView.setVisibility(View.VISIBLE);                        	
+                }
+            }
+        };
+        
+        /*
+         * Schedule 10 times
+         */
+        Handler h = new Handler();
+        for(int ms = 500; ms <= 5000; ms+=500) {
+        	h.postDelayed(r, ms);
         }
     }
 }

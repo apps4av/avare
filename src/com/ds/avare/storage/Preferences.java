@@ -674,7 +674,15 @@ public class Preferences {
     public boolean useDynamicFields() {
         return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), true);
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldBlinkScreen() {
+        return mPref.getBoolean(mContext.getString(R.string.blinkScreen), false);
+    }
+
     /**
      * 
      * @return
