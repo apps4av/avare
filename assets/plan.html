@@ -291,7 +291,7 @@ function save_delete(row) {
 		return;	
 	}
 	
-	AndroidPlan.saveDelete(plan_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	AndroidPlan.saveDelete(plan_name);
 }
 
 // add the current plan to saved list
@@ -369,7 +369,6 @@ function save_add(name) {
 	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
 
 	cell[CELL_SAVE_NAME].textContent = name;
-
 	cell[CELL_SAVE_LOAD].style.textAlign="center";
 	cell[CELL_SAVE_LOAD_REV].style.textAlign="center";
 	cell[CELL_SAVE_DELETE].style.textAlign="center";

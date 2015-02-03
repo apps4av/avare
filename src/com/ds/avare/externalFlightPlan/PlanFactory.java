@@ -14,8 +14,6 @@ package com.ds.avare.externalFlightPlan;
 
 import java.io.FileInputStream;
 
-import com.ds.avare.StorageService;
-
 /***
  * A class that will read flight plans from user created files
  * 
@@ -28,7 +26,7 @@ public class PlanFactory {
      * @param fileName - File to open/read/parse
      * @return A collection(List) of FlightPlans that were found or null
      */
-    public ExternalFlightPlan parse(StorageService service, String fileName) {
+    public ExternalFlightPlan parse(String fileName) {
 
     	FileInputStream  inStream = null;
     	
@@ -47,7 +45,7 @@ public class PlanFactory {
 			// Define a GPX parser and use if appropriate
 			PlanParser parser = new GpxPlanParser();
 			if(parser.getType().equalsIgnoreCase(ext)) {
-				return parser.parse(service, inStream);
+				return parser.parse(inStream);
 			}
 
 			

@@ -16,7 +16,9 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Destination;
+import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
 /***
@@ -28,22 +30,18 @@ import com.ds.avare.userDefinedWaypoints.Waypoint;
 public class ExternalFlightPlan {
 	String mFileName;
 	String mName;
-	String mDesc;
 	String mCmt;
 	String mType;
-	String mCreator;
 	List<Waypoint> mWaypoints;
 	
 	// Get 'ers
 	public List<Waypoint> getWaypoints() { return mWaypoints; }
 	public String getName() { return mName; }
-	public String getDesc() { return mDesc; }
 	public String getType() { return mType; }
 	public String getCmt()  { return mCmt; }
 	public String getFileName() { return mFileName; }
 
 	// Set 'ers
-	void setCreator(String creator) { mCreator = creator; } 
 	void setFileName(String fileName) { mFileName = fileName;
 	
 	}
@@ -55,9 +53,8 @@ public class ExternalFlightPlan {
 	 * @param type GPX/CSV/KML etc
 	 * @param waypoints Collection of waypoints that make up the plan
 	 */
-	public ExternalFlightPlan(String name, String desc, String cmt, String type, List<Waypoint> waypoints) {
+	public ExternalFlightPlan(String name, String cmt, String type, List<Waypoint> waypoints) {
 		mName  = name;
-		mDesc  = desc;
 		mCmt   = cmt;
 		mType  = type;
 		mWaypoints = waypoints;
@@ -99,6 +96,29 @@ public class ExternalFlightPlan {
 	public void setActive(boolean active) {
 		for(Waypoint wp : mWaypoints) {
 			wp.setVisible(active);
+		}
+	}
+
+	/***
+	 * We are being told to load our plan into memory. This involves telling the
+	 * waypoint manager what points are in our path
+	 * @param mService
+	 */
+	public void load(StorageService mService) {
+		UDWMgr UdwMgr = mService.getUDWMgr();
+		for(Waypoint wp : mWaypoints) {
+			UdwMgr.add(wp);
+		}
+	}
+
+	/***
+	 * Time to unload the plan. Remove our waypoints from the manager
+	 * @param mService
+	 */
+	public void unload(StorageService mService) {
+		UDWMgr UdwMgr = mService.getUDWMgr();
+		for(Waypoint wp : mWaypoints) {
+			UdwMgr.remove(wp);
 		}
 	}
 }

@@ -60,7 +60,6 @@ public class KmlUDWParser extends UDWParser {
     private static final String FOLDER = "Folder";
     private static final String POINT = "Point";
     private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
     private static final String COORDINATES = "coordinates";
 
 	@Override
@@ -146,10 +145,8 @@ public class KmlUDWParser extends UDWParser {
     private Waypoint readWaypoint(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, PLACEMARK);
         String name = null;
-        String description = null;
         float lat = 0;
         float lon = 0;
-        float alt = 0;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
         int markerType = Waypoint.MT_CYANDOT;	// Type of marker to use on the chart (metadata again)
         
@@ -160,20 +157,16 @@ public class KmlUDWParser extends UDWParser {
             String nodeName = parser.getName();
             if (nodeName.equals(NAME)) {
                 name = readName(parser);
-            } else if (nodeName.equals(DESCRIPTION)) {
-                description = readDescription(parser);
             } else if (nodeName.equals(POINT)) {
             	String coordinates = readPoint(parser);
             	String[] values = coordinates.split(",");
             	lat = Float.parseFloat(values[1]);
                 lon = Float.parseFloat(values[0]);
-                alt = Float.parseFloat(values[2]);
             } else {
                 skip(parser);
             }
         }
-        return new Waypoint(name, description, 
-        		lon, lat, alt, showDist, markerType);
+        return new Waypoint(name, lon, lat, showDist, markerType, true);
     }
 
     // Inside of the "Point" tag, we only care about the coordinates
@@ -204,15 +197,6 @@ public class KmlUDWParser extends UDWParser {
         return name;
     }
       
-    // Extract the "description"
-    //
-    private String readDescription(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, NS, DESCRIPTION);
-        String name = readText(parser);
-        parser.require(XmlPullParser.END_TAG, NS, DESCRIPTION);
-        return name;
-    }
-
     // Extract the "coordinates"
     //
     private String readCoordinates(XmlPullParser parser) throws IOException, XmlPullParserException {

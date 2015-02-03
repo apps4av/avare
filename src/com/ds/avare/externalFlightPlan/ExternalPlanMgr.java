@@ -212,7 +212,7 @@ public class ExternalPlanMgr {
 			if(null != fileList) {
 				for(File file : fileList) {
 					// Tell the factory to parse the file 
-					ExternalFlightPlan plan = factory.parse(mService, file.getPath());
+					ExternalFlightPlan plan = factory.parse(file.getPath());
 					if(null != plan) {
 						// Only add this new one if we do NOT have one with the same name
 						if (null == get(plan.mName)) {

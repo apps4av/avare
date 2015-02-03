@@ -36,6 +36,7 @@ import android.widget.TextView;
  * @author zkhan
  *
  */
+@SuppressWarnings("deprecation")
 public class MainActivity extends TabActivity {
 
     TabHost mTabHost;

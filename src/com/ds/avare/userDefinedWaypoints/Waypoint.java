@@ -24,44 +24,37 @@ import android.graphics.Paint.Style;
 
 public class Waypoint {
     String 	mName;
-    String 	mDesc;
     String  mCmt;
     float  	mLat;
     float  	mLon;
-    float  	mAlt;
     boolean mShowDist;
     int 	mMarkerType;
     boolean mVisible;
-
-    public Waypoint(String name, String desc, float lon, float lat, float alt, boolean showDist, int markerType) {
+    boolean mLocked;
+    
+    public Waypoint(String name, float lon, float lat, boolean showDist, int markerType, boolean bLocked) {
     	if(null != name) {
     		mName = name;
     	} else {
     		mName = "UNDEF";
     	}
     	
-    	if(null != desc) {
-    		mDesc = desc;
-		} else {
-			mDesc= "UNDEF";
-		}
-
     	mLat = lat;
         mLon = lon;
-        mAlt = alt;
         mShowDist = showDist;
         mMarkerType = markerType;
         mVisible = true;
+        mLocked = bLocked;
     }
     
     // Get'ers
     public String getName() { return mName; }
-    public String getDesc() { return mDesc; }
     public String getCmt()  { return mCmt; }
     public float getLat() { return mLat; }
     public float getLon() { return mLon; }
     public boolean getVisible() { return mVisible; }
-
+    public boolean getLocked() { return mLocked; }
+    
     // Set'ers
     public void setMarkerType(int markerType) { mMarkerType = markerType; }
     public void setVisible(boolean visible) { mVisible = visible; }

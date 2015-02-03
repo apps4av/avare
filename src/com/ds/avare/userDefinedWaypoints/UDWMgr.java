@@ -74,6 +74,10 @@ public class UDWMgr {
     	UDWDESCRIPTION = mContext.getString(R.string.UDWDescription);
 	}
 
+	public int getCount() {
+		return mPoints.size();
+	}
+	
 	/***
 	 * Empty out the collection of points that we have.
 	 */
@@ -150,6 +154,16 @@ public class UDWMgr {
 					mPoints.add(waypoint);
 				}
 			}
+		}
+	}
+	
+	/***
+	 * Remove the specified waypoint from our collection
+	 * @param waypoint what to forget
+	 */
+	public void remove(Waypoint waypoint) {
+		if(false == waypoint.getLocked()) {
+			mPoints.remove(waypoint);
 		}
 	}
 	

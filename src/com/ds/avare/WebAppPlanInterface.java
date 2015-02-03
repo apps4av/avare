@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -497,13 +498,27 @@ public class WebAppPlanInterface implements Observer {
 
     	// If we have an active plan, we need to turn it off now since we are
     	// loading a new one.
-    	if(null != mService.getPlan()) {
-    		mService.getPlan().makeInactive();
+    	Plan plan = mService.getPlan();
+    	if(null != plan) {
+    		plan.makeInactive();
+    		
+    		// If it is an external plan, tell it to unload
+    		ExternalFlightPlan efp = mService.getExternalPlanMgr().get(plan.getName());
+    		if(null != efp) {
+    			efp.unload(mService);
+    		}
     	}
 
     	// Clear out any destination that may have been set.
 		mService.setDestination(null);
 
+		// If this is defined as an external flight plan, then tell it we 
+		// are loading into memory.
+		ExternalFlightPlan efp = mService.getExternalPlanMgr().get(name);
+		if(null != efp) {
+			efp.load(mService);
+		}
+		
     	mService.newPlanFromStorage(mSavedPlans.get(name), false);
     	mService.getPlan().setName(name);
     	newPlan();
