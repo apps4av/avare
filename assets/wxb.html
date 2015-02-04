@@ -342,6 +342,13 @@ function get_briefing() {
 	AndroidWeather.getWeather();
 }
 
+function get_navlog() {
+	var r = confirm("Get the navigation log for the selected plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.getNavlog();
+}
 
 function load_plan() {
 	var r = confirm("Load the selected plan in the form?");
@@ -381,6 +388,19 @@ function amend_plan() {
     );
 }
 
+function set_navlog(log) {
+	var navlog = document.getElementById("nav_log");
+	navlog.innerHTML = log;
+}
+
+function clear_navlog(log) {
+	var r = confirm("Clear the navigation log?");
+	if(r == false) {
+		return;	
+	}
+	var navlog = document.getElementById("nav_log");
+	navlog.innerHTML = '';
+}
 
 </script>
 
@@ -493,7 +513,10 @@ function amend_plan() {
 		<button onclick="close_plan()">Close</button>
 		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
 		<br></br>
-		<button onclick="get_briefing()">Get Email Briefing</button>
+		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
+		<button onclick="get_navlog()">Get Log</button>
+		<button onclick="clear_navlog()">Clear Log</button>
+		<a id="nav_log"></a>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
 	<br>
@@ -552,6 +575,15 @@ To proceed with plans and briefings, you must create an account with <label clas
 <li>Press the "Get Email Briefing" button once.</li>
 <li>The briefing will be emailed to you at the address used for registering with Avare.</li>
 <li>Note: Route corridor width of 50 NM is used.</li>
+</ul>
+</ul>
+<b>To Get Plan Navigation Log</b>
+<ul>
+<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
+<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+<li>Press the "Get Log" button once.</li>
+<li>The navigation log will appear at the bottom of the button.</li>
+<li>To clear the navigation log, press the "Clear Log" button.</li>
 </ul>
 	</a>
 </body>

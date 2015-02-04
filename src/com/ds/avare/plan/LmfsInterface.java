@@ -64,7 +64,7 @@ public class LmfsInterface {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get all flight plans
 	 */
@@ -272,9 +272,36 @@ public class LmfsInterface {
 			mError = parseError(ret);
 		} catch (Exception e) {
 		}
-
 	}
 
+	
+	/**
+	 * Get nav log based on user's aircraft stored online
+	 * @param id
+	 */
+	public LmfsPlanLog getNavlog(LmfsPlan pl) {
+
+		String webUserName = PossibleEmail.get(mContext);
+		String avareMethod = "FP/navLog";
+		String httpMethod = "POST";
+		
+		Map<String, String> params = pl.makeHashMap();
+
+		params.put("webUserName", webUserName);
+		params.put("avareMethod", avareMethod);
+		params.put("httpMethod", httpMethod);
+		String ret = null;
+		try {
+			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
+			mError = parseError(ret);
+		} catch (Exception e) {
+			return null;
+		}
+		
+		return new LmfsPlanLog(ret);
+	}
+
+	
 	/**
 	 * Get error for last xaction
 	 * @return
