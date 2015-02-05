@@ -377,12 +377,14 @@ public class NetworkHelper {
         epoch.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
         cycle++;
         epoch.add(Calendar.DAY_OF_MONTH, 28);
-        while(true) {
-            epoch.add(Calendar.DAY_OF_MONTH, 28);
-            if(epoch.after(now)) {
-            	break;
+        if(!epoch.after(now)) {
+            while(true) {
+                epoch.add(Calendar.DAY_OF_MONTH, 28);
+                cycle++;
+                if(epoch.after(now)) {
+                	break;
+                }
             }
-            cycle++;
         }
 
         return "" + cycle;
