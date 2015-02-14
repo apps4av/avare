@@ -435,11 +435,8 @@ public class StorageService extends Service {
                     // Let the odometer know how far we traveled
                     getOdometer().updateValue(mGpsParams);
                     
-                    // Calculate course line deviation
-                    getCDI().calcDeviation(mGpsParams, getDestination());
-                    
                     // Vertical descent rate calculation
-                    getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                    getVNAV().calcGlideSlope(mGpsParams, mDestination);
                     
                     // Tell the VSI where we are.
                     getVSI().updateValue(mGpsParams);
@@ -456,6 +453,10 @@ public class StorageService extends Service {
                     if(mDestination != null) {
                         mDestination.updateTo(getGpsParams());
                     }
+                    
+                    // Calculate course line deviation - this must be AFTER the destination update
+                    // since the CDI uses the destination in its calculations
+                    getCDI().calcDeviation(mDestination, getPlan());
                 }
             }
 

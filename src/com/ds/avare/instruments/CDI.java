@@ -14,6 +14,7 @@ package com.ds.avare.instruments;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.utils.Helper;
 
@@ -184,34 +185,51 @@ public class CDI {
 	/***
 	 * Calculate the deviation of our current position from
 	 * the plotted course
-	 * @param gpsParams where we are
 	 * @param dest what our destination is
+	 * @param plan the current flight plan (if any)
 	 */
-	public void calcDeviation(GpsParams gpsParams, Destination dest)
+	public void calcDeviation(Destination dest, Plan plan)
 	{
+		// If we have no destination there there is nothing to do
+		if(dest == null) {
+			return;
+		}
+
 		// Assume an on-course display
 		mDspOffset = 0;
 		mBackColor = mColorLeft;
 		
-		// If either of these objects are null, there is nothing
-		// we can do
-		if(dest == null || gpsParams == null) {
-			return;
-		}
+		// If there is no plan, then use a bearing based upon the
+		// destination object only. The "init location" of the destination will
+		// be set with the lat/lon of where we were when this was set as our 
+		// destination.
+		//
+		// If there is an active plan, then the bearing used is from the PREVIOUS
+		// waypoint in the plan to the current destination as long as we are passed
+		// the first waypoint.
+		double brgOrg;
 
-		// Get the bearing from the original source when this destination was
-		// set. THIS DOES NOT WORK SINCE THE BEARING IS NOT SAVED WHEN THE DEST
-		// BEARING WAS CREATED.
-		//float brgOrg = dest.getLocationInit().getBearing();
-		
-		// Use the global Projection class to get the static bearing from the
-		// start to the end point of the course line
-		double brgOrg = Projection.getStaticBearing(
+		// Are we passed the first waypoint on an active plan ?  
+		if ((null != plan) && (true == plan.isActive()) && (plan.findNextNotPassed() > 0)) {
+			// We have an active plan and beyond the first waypoint. 
+			// Calc our deviation using the
+			// previous waypoint and our current destination
+			Destination prevDest = plan.getDestination(plan.findNextNotPassed() - 1);
+			brgOrg = Projection.getStaticBearing(
+					prevDest.getLocation().getLongitude(),
+					prevDest.getLocation().getLatitude(),
+					dest.getLocation().getLongitude(),
+					dest.getLocation().getLatitude());
+		} else {
+			// There is no active plan after the first waypoint, 
+			// so figure out our deviation using
+			// solely the information in the destination
+			brgOrg = Projection.getStaticBearing(
 				dest.getLocationInit().getLongitude(),
 				dest.getLocationInit().getLatitude(),
 				dest.getLocation().getLongitude(),
 				dest.getLocation().getLatitude());
-
+		}
 		
 		// The bearing from our CURRENT location to the target
 		double brgCur = dest.getBearing();
