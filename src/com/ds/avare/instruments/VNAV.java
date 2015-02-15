@@ -122,7 +122,7 @@ public class VNAV {
 	    
         // Draw the background
 	    mVNAVPaint.setColor(mBackColor);// Color
-	    mVNAVPaint.setAlpha(0x5F);		// Make it see-thru
+	    //mVNAVPaint.setAlpha(0x5F);		// Make it see-thru
 	    mVNAVPaint.setStrokeWidth(mInstWidth);	// How tall the inst is
 	    mVNAVPaint.setStyle(Paint.Style.STROKE);	// Type of brush
 	    

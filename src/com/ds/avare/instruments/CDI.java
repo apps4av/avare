@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.instruments;
 
-import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Projection;
@@ -123,7 +122,7 @@ public class CDI {
 	    
         // Draw the background
 	    mCDIPaint.setColor(mBackColor);	// Color
-	    mCDIPaint.setAlpha(0x5F);		// Make it see-thru
+	    //mCDIPaint.setAlpha(0x5F);		// Make it see-thru
 	    mCDIPaint.setStrokeWidth(mInstHeight);	// How tall the inst is
 	    mCDIPaint.setStyle(Paint.Style.STROKE);	// Type of brush
 	    
