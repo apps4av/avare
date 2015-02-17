@@ -78,6 +78,11 @@ public class CDI {
 	 */
 	public void setSize(Paint textPaint, int minSize)
 	{
+		// Ignore an invalid size request
+		if (0 == minSize) {
+			return;
+		}
+		
 		// A total of 9 bars
 		mBarCount = 11;
 		
