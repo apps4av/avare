@@ -1505,8 +1505,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         postInvalidate();
 
         // Tell the CDI the paint that we use for display text
-        mService.getCDI().setSize(mPaint);
-        mService.getVNAV().setSize(mPaint);
+        mService.getCDI().setSize(mPaint, Math.min(getWidth(),  getHeight()));
+        mService.getVNAV().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         
         // Tell the odometer how to access preferences
         mService.getOdometer().setPref(mPref);

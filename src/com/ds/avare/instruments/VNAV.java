@@ -62,13 +62,13 @@ public class VNAV {
 	 * source paint object
 	 * @param textPaint Used to figure out our overall size
 	 */
-	public void setSize(Paint textPaint)
+	public void setSize(Paint textPaint, int minSize)
 	{
 		// A total of 11 bars
 		mBarCount = 11;
 		
 		// The width of each bar is the basis for the entire instrument size
-		mBarWidth = textPaint.getTextSize() * (float) 0.5;
+		mBarWidth = (int) (minSize / 16);
 		
 		// Height is 1/4 of the width
 		mBarHeight = mBarWidth / 4;

@@ -76,13 +76,13 @@ public class CDI {
 	 * source paint object
 	 * @param textPaint Used to figure out our overall size
 	 */
-	public void setSize(Paint textPaint)
+	public void setSize(Paint textPaint, int minSize)
 	{
 		// A total of 9 bars
 		mBarCount = 11;
 		
 		// The height of each bar is the basis for the entire instrument size
-		mBarHeight = textPaint.getTextSize() * (float) 0.5;
+		mBarHeight = (int) (minSize / 16);
 		
 		// Width is 1/4 of the height
 		mBarWidth = mBarHeight / 4;
