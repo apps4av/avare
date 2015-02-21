@@ -238,7 +238,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/ExtendInfoLines"
             android:summary="@string/ExtendInfoLinesSummary"
             android:title="@string/ExtendInfoLinesLabel" />
-		<PreferenceScreen 
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:entries="@array/RunwayLengths"
+            android:entryValues="@array/RunwayLengths"
+            android:key="@string/runwayLengths"
+            android:summary="@string/runwayLengthsSummary"
+            android:title="@string/runwayLengthsLabel" />
+        <PreferenceScreen 
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >

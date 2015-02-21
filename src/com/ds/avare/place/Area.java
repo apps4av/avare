@@ -20,6 +20,7 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 
@@ -38,6 +39,7 @@ public class Area {
     private boolean mFound;
     private long mLastTime;
     private double mAltitude;
+    private Preferences mPref;
     
     private static final int UPDATE_TIME = 10000;
     
@@ -45,12 +47,13 @@ public class Area {
      * 
      * @param dataSource
      */
-    public Area(DataSource dataSource) {
+    public Area(DataSource dataSource, Context ctx) {
         mDataSource = dataSource;
         mLon = mLat = 0;
         mAltitude = 0;
         mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
+        mPref = new Preferences(ctx);
     }
 
     /**
@@ -141,7 +144,7 @@ public class Area {
                 return null;
             }
             
-            airports = mDataSource.findClosestAirports(mLon, mLat);
+            airports = mDataSource.findClosestAirports(mLon, mLat, mPref.getLongestRunway());
             /*
              * Sort on distance because distance found from sqlite is less than perfect
              */

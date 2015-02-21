@@ -83,7 +83,7 @@ public class CDI {
 			return;
 		}
 		
-		// A total of 9 bars
+		// A total of 11 bars
 		mBarCount = 11;
 		
 		// The height of each bar is the basis for the entire instrument size
@@ -127,7 +127,7 @@ public class CDI {
 	    
         // Draw the background
 	    mCDIPaint.setColor(mBackColor);	// Color
-	    //mCDIPaint.setAlpha(0x5F);		// Make it see-thru
+	    mCDIPaint.setAlpha(0x7F);		// Make it see-thru
 	    mCDIPaint.setStrokeWidth(mInstHeight);	// How tall the inst is
 	    mCDIPaint.setStyle(Paint.Style.STROKE);	// Type of brush
 	    

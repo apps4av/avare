@@ -1017,4 +1017,12 @@ public class Preferences {
         return mPref.getString("LMFSPlan", "");
     }
 
+    /**
+     * 
+     * @return
+     */
+	public String getLongestRunway() {
+		return mPref.getString(mContext.getString(R.string.runwayLengths), "2000");
+	}
+
 }

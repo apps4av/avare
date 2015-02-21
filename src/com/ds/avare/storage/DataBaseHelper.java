@@ -397,27 +397,38 @@ public class DataBaseHelper  {
      * @param name
      * @param params
      */
-    public Airport[] findClosestAirports(double lon, double lat) {
+    public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
 
         Airport airports[] = null;
         
         /*
          * Limit to airports taken by array airports
          */
-        String qry = "select * from " + TABLE_AIRPORTS;
+        String qry = "select * from " + TABLE_AIRPORTS + "," + TABLE_AIRPORT_RUNWAYS + " where ";
         if(!mPref.shouldShowAllFacilities()) {
-            qry += " where " + TYPE_DB + "=='AIRPORT' ";
+            qry += TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and ";
         }
+
+        // Find in both tables, find based on distance
+        qry +=  TABLE_AIRPORTS + "." + LOCATION_ID_DB + "=" + 
+        		TABLE_AIRPORT_RUNWAYS + "." + LOCATION_ID_DB;
+        
+        // runway length > certain length
+        qry += " and " + "CAST(" + TABLE_AIRPORT_RUNWAYS + ".Length AS INTEGER) >= " + minRunwayLength;
+        
+        // order by distance then by runway length, and limit by max * 4 (to remove duplicate runways)
         qry += " order by ((" + 
-                lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
-                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + Preferences.MAX_AREA_AIRPORTS + ";";            
+                lon + " - " + TABLE_AIRPORTS + "." + LONGITUDE_DB + ") * (" + lon + "- " + TABLE_AIRPORTS + "." + LONGITUDE_DB +") + (" + 
+                lat + " - " + TABLE_AIRPORTS + "." + LATITUDE_DB + ") * (" + lat + "- " + TABLE_AIRPORTS + "." + LATITUDE_DB + ")) ASC " +
+                ", " + "CAST(" + TABLE_AIRPORT_RUNWAYS + ".Length AS INTEGER) DESC " +
+                " limit " + Preferences.MAX_AREA_AIRPORTS * 2 + ";";
 
         Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             int id = 0;
             if(cursor != null) {
-                airports = new Airport[cursor.getCount()];
+                airports = new Airport[Preferences.MAX_AREA_AIRPORTS];
                 if(cursor.moveToFirst()) {
                     do {
                         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
@@ -430,7 +441,19 @@ public class DataBaseHelper  {
                         String parts[] = cursor.getString(9).trim().split("[.]");
                         params.put(ELEVATION, parts[0] + "ft");
                         airports[id] = new Airport(params, lon, lat);
+                        // runway length / width in combined table
+                        String runway = cursor.getString(24) + "X" + cursor.getString(25);
+                        airports[id].setLongestRunway(runway);
+                        if(id > 0) {
+                        	// eliminate duplicate airports and show longest runway
+                        	if(airports[id].getName().equals(airports[id - 1].getName())) {
+                        		continue;
+                        	}
+                        }
                         id++;
+                        if(id >= Preferences.MAX_AREA_AIRPORTS) {
+                        	break;
+                        }
                     }
                     while(cursor.moveToNext());
                 }
@@ -442,38 +465,6 @@ public class DataBaseHelper  {
         
         if(null == airports) {
             return null;
-        }
-
-        /*
-         * Find longest runway for each airport
-         */
-        for (int i = 0; i < airports.length; i++) {
-            if(airports[i] == null) {
-                continue;
-            }
-             String name = airports[i].getId();
-             if(name == null) {
-                 continue;
-             }
-             qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
-                     + "' or " + LOCATION_ID_DB + "=='K" + name + "' order by CAST(Length AS INTEGER) desc limit 1;";
-             cursor = doQuery(qry, getMainDb());
-             
-             try {
-                 /*
-                  * Add all of them
-                  */
-                 if(cursor != null) {
-                     while(cursor.moveToNext()) {
-                         String runway = cursor.getString(1) + "X" + cursor.getString(2);
-                         airports[i].setLongestRunway(runway);
-                     }
-                 }
-             }
-             catch (Exception e) {
-             }
-
-             closes(cursor);        
         }
 
         return airports;

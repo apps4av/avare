@@ -272,7 +272,7 @@ public class StorageService extends Service {
 
         mImageDataSource = new DataSource(getApplicationContext());
         
-        mArea = new Area(mImageDataSource);
+        mArea = new Area(mImageDataSource, this);
         mPlan = new Plan(this, this);
         mDownloading = false;
         

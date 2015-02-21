@@ -109,8 +109,8 @@ public class DataSource {
      * @param lat
      * @param airports
      */
-    public Airport[] findClosestAirports(double lon, double lat) {
-        return dbHelper.findClosestAirports(lon, lat);        
+    public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
+        return dbHelper.findClosestAirports(lon, lat, minRunwayLength);        
     }
     
     /**
