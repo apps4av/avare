@@ -149,7 +149,17 @@ function set_plan_line(row, next, bearing, distance, time, id, type) {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#111111";
 	}
 
-	plan_table.rows[row].cells[CELL_WP].textContent = id.substring(0, 6);
+	plan_table.rows[row].cells[CELL_WP].textContent = id.substring(0, 20);
+	if(id.length > 12) {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 13;
+	}
+	else if(id.length > 6) {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 22;
+	}
+	else {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 30;
+	}
+
 	plan_table.rows[row].cells[CELL_TYPE].textContent = type;
 
 	plan_table.rows[row].cells[CELL_BEARING].textContent = bearing;
@@ -223,7 +233,7 @@ function plan_set_total(total) {
 	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
 	document.getElementById("plan_total_distance").textContent = vals[0];
 	document.getElementById("plan_total_time").textContent = vals[1];
-	document.getElementById("plan_total_bearing").textContent = vals[2];
+	//document.getElementById("plan_total_bearing").textContent = vals[2];
 }
 
 // clear the entire plan
