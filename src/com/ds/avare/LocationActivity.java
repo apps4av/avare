@@ -744,9 +744,11 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(mTrackButton.getText().equals(getString(R.string.TrackUp))) {
                     mLocationView.setTrackUp(true);
+                    mDrawButton.setEnabled(false);
                 }
                 else {
                     mLocationView.setTrackUp(false);
+                    mDrawButton.setEnabled(true);
                 }                
             }
             
@@ -760,7 +762,6 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                
                 /*
                  * Bring up preferences
                  */

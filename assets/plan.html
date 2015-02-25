@@ -149,9 +149,9 @@ function set_plan_line(row, next, bearing, distance, time, id, type) {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#111111";
 	}
 
-	plan_table.rows[row].cells[CELL_WP].textContent = id.substring(0, 20);
+	plan_table.rows[row].cells[CELL_WP].textContent = id.substr(0, 20);
 	if(id.length > 12) {
-		plan_table.rows[row].cells[CELL_WP].style.fontSize = 13;
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 10;
 	}
 	else if(id.length > 6) {
 		plan_table.rows[row].cells[CELL_WP].style.fontSize = 22;
@@ -257,7 +257,7 @@ function plan_discard() {
 // create the plan
 function plan_create() {
 
-	var name = document.getElementById("create_input").value;
+	var name = document.getElementById("create_input").value.trim();
 
 	if(name == "") {
 		return 
@@ -400,7 +400,7 @@ var CELL_SEARCH_LAST = 5;
 function search_waypoint() {
 
 	// search from input
-	var id = document.getElementById("search_input").value;
+	var id = document.getElementById("search_input").value.trim();
 	var search_table = document.getElementById("search_table");
 
 	if(id == "") {
