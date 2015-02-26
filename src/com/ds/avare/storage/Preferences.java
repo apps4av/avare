@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -724,7 +725,7 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), false);
+        return mPref.getBoolean(mContext.getString(R.string.register), Build.PRODUCT.contains("sdk") ? true : false);
     }
 
     /**

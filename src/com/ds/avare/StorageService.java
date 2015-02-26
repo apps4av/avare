@@ -24,6 +24,7 @@ import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.DistanceRings;
+import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.instruments.VNAV;
@@ -233,6 +234,9 @@ public class StorageService extends Service {
      */
     private Checklist mChecklist;
     
+    // The edge distance tape instrument
+    private EdgeDistanceTape mEdgeDistanceTape;
+    
     /**
      * @author zkhan
      *
@@ -355,6 +359,9 @@ public class StorageService extends Service {
 
         // Allocate the nav comments object
         mNavComments = new NavComments();
+        
+        mEdgeDistanceTape = new EdgeDistanceTape();
+        
         /*
          * Monitor TFR every hour.
          */
@@ -1081,4 +1088,7 @@ public class StorageService extends Service {
     	mChecklist = cl;
     }
 
+    public EdgeDistanceTape getEdgeTape() {
+    	return mEdgeDistanceTape;
+    }
 }

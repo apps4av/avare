@@ -309,7 +309,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mDoCallbackWhenDone = false;
              
         mDipToPix = Helper.getDpiToPix(context);
-        
     }
     
     /**
@@ -1315,13 +1314,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas what to draw them on
      */
     private void drawEdgeMarkers(Canvas canvas) {
-        if(mService != null && mPointProjection == null && mPref.shouldShowEdgeTape()) {
-	        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
-	        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
-	        float pixPerNm = mMovement.getNMPerLatitude(mScale);
-	      	EdgeDistanceTape.draw(canvas, mPaint, mScale, pixPerNm, x, y, 
-	      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
-        }
+    	if(mPref.shouldShowEdgeTape()) {
+	        if(mService != null && mPointProjection == null) {
+		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
+		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
+		        float pixPerNm = mMovement.getNMPerLatitude(mScale);
+		      	mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y, 
+		      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
+	        }
+    	}
     }
     
     // Display all of the user defined waypoints if configured to do so
@@ -1511,6 +1512,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         // Tell the odometer how to access preferences
         mService.getOdometer().setPref(mPref);
 
+        mService.getEdgeTape().setPaint(mPaint);
+        
         // Resize our runway icon based upon the size of the display.
         // We want the icon no more than 1/3 the size of the screen. Since we show 2 images
         // of this icon, that means the total size is no more than 2/3 of the available space. 
