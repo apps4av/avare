@@ -463,10 +463,6 @@ public class DataBaseHelper  {
         }
         closes(cursor);
         
-        if(null == airports) {
-            return null;
-        }
-
         return airports;
     }
 

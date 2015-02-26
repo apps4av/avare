@@ -12,10 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -153,22 +149,27 @@ public class Area {
         
         @Override
         protected void onPostExecute(Object res) {
-            List<Airport> list = null;
             if(airports == null) {
+            	mFound = false;
                 return;
             }
-            /*
-             * Find all airports and assign to mAirports
-             */
-            for(int i = 0; i < airports.length; i++) {
-                if(airports[i] != null) {
-                    list = Arrays.asList(airports);
-                    Collections.sort(list);
-                    mAirports = (Airport[]) list.toArray();
-                    mFound = true;                    
-                }
-            }
             
+            int n = airports.length;
+            // Bubble sort
+            // Removed Collections.sort() because this function has issues with some OS versions 
+            for (int c = 0; c < (n - 1); c++) {
+                for (int d = 0; d < (n - c - 1); d++) {
+                	if(airports[d + 1] == null || airports[d] == null) {
+                		break;
+                	}
+				    if (airports[d].getDistance() > airports[d + 1].getDistance()) { /* For ascending order use < */
+					    Airport swap = airports[d];
+					    airports[d] = airports[d + 1];
+					    airports[d + 1] = swap;
+				    }
+                 }
+            }
+
             /*
              * Now test if all airports are at glide-able distance.
              */
@@ -177,6 +178,9 @@ public class Area {
                     airports[i].setHeight(mAltitude);
                 }
             }
+
+            mAirports = airports;
+            mFound = true;                    
         }
 
     }
