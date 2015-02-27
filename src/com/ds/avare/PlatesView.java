@@ -373,22 +373,24 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 /*
                  * Draw airplane at that location
                  */
-                mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
-                        mAirplaneBitmap.getWidth() / 2,
-                        mAirplaneBitmap.getHeight() / 2);
-                
-                mAirplaneBitmap.getTransform().postTranslate(
-                        pixx * scale
-                        + getWidth() / 2
-                        - mAirplaneBitmap.getWidth() / 2
-                        + mPan.getMoveX() * scale
-                        - mBitmap.getWidth() / 2 * scale,
-                        pixy * scale
-                        + getHeight() / 2
-                        - mAirplaneBitmap.getHeight() / 2
-                        + mPan.getMoveY() * scale 
-                        - mBitmap.getHeight() / 2 * scale);
-                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
+                if(null != mAirplaneBitmap) {
+	                mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
+	                        mAirplaneBitmap.getWidth() / 2,
+	                        mAirplaneBitmap.getHeight() / 2);
+	                
+	                mAirplaneBitmap.getTransform().postTranslate(
+	                        pixx * scale
+	                        + getWidth() / 2
+	                        - mAirplaneBitmap.getWidth() / 2
+	                        + mPan.getMoveX() * scale
+	                        - mBitmap.getWidth() / 2 * scale,
+	                        pixy * scale
+	                        + getHeight() / 2
+	                        - mAirplaneBitmap.getHeight() / 2
+	                        + mPan.getMoveY() * scale 
+	                        - mBitmap.getHeight() / 2 * scale);
+	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
+                }
             }
         }
 

@@ -27,6 +27,8 @@ public class DisplayIcon {
 				return new BitmapHolder(ctx, R.drawable.heli);
 			case 2:
 				return new BitmapHolder(ctx, R.drawable.canard);
+			case 3:
+				return null;
 				
 				// Always return a bitmap to display
 			default:
