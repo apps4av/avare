@@ -204,8 +204,9 @@ public class AirportActivity extends Activity implements Observer {
         LinkedList<Awos> awos = mDestination.getAwos();
         LinkedHashMap <String, String>freq = mDestination.getFrequencies();
         LinkedList<Runway> runways = mDestination.getRunways();
-        String[] views = new String[map.size() + freq.size() + awos.size() + runways.size()];
-        String[] values = new String[map.size() + freq.size() + awos.size() + runways.size()];
+        LinkedList<String> fuel = mDestination.getFuel();
+        String[] views = new String[map.size() + freq.size() + awos.size() + runways.size() + fuel.size()];
+        String[] values = new String[map.size() + freq.size() + awos.size() + runways.size() + fuel.size()];
         int iterator = 0;
         /*
          * Add header. Check below if this is not added twice
@@ -308,6 +309,14 @@ public class AirportActivity extends Activity implements Observer {
             }
             views[iterator] = key;
             values[iterator] = map.get(key);
+            iterator++;
+        }
+
+        
+        for(String fl : fuel) {
+        	// Add all the fuel costs
+            views[iterator] = mService.getString(R.string.FuelCost);
+            values[iterator] = fl;
             iterator++;
         }
 

@@ -317,6 +317,9 @@ public class NetworkHelper {
         else if(file.equals("conus.zip")) {
             return(root + "/" + file);
         }
+        else if(file.equals("fuel.zip")) {
+            return(root + "/" + file);
+        }
         return(root + vers + "/" + file);
     }
 
@@ -458,7 +461,7 @@ public class NetworkHelper {
         /*
          * Expires every so many mins
          */
-        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus")) {
+        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus") || name.equals("fuel")) {
             ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),

@@ -56,6 +56,7 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBaseProcedures; 
     private SQLiteDatabase mDataBasePlates; 
     private SQLiteDatabase mDataBaseGeoPlates; 
+    private SQLiteDatabase mDataBaseFuel; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -84,6 +85,7 @@ public class DataBaseHelper  {
     private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
+    private Integer mUsersFuel;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -137,6 +139,7 @@ public class DataBaseHelper  {
     private static final String TABLE_PROCEDURE = "procedures";
     private static final String TABLE_GEOPLATES = "geoplates";
     private static final String TABLE_AIRWAYS = "airways";
+    private static final String TABLE_FUEL = "fuel";
 
 
     private static final String TILE_NAME = "name";
@@ -155,7 +158,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersFuel = 0;
         mContext = context;
     }
 
@@ -2953,4 +2956,127 @@ public class DataBaseHelper  {
         return points;
 	}
 
+	
+	
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryFuel(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersFuel) {
+            if(mDataBaseFuel == null) {
+                mUsersFuel = 0;
+                try {
+                    
+                    mDataBaseFuel = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseFuel = null;
+                }
+            }
+            if(mDataBaseFuel == null) {
+                return c;
+            }
+            mUsersFuel++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseFuel == null) {
+            return c;
+        }
+        
+        if(!mDataBaseFuel.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseFuel.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesFuel(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersFuel) {
+            mUsersFuel--;
+            if((mDataBaseFuel != null) && (mUsersFuel <= 0)) {
+                try {
+                    mDataBaseFuel.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseFuel = null;
+                mUsersFuel = 0;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFuelCost(String name) {
+
+    	LinkedList<String> ret = new LinkedList<String>();
+    	
+        String qry = "select * from " + TABLE_FUEL + " where airport =='" + name +"'" + 
+        		" order by reported desc limit 6";
+        Cursor cursor = doQueryFuel(qry, "fuel.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+	                    /*
+	                     * Make entries to show
+	                     * 100LL 10.30 @ Chevron 2015-03-07
+	                     */
+	                	String tokens[] = cursor.getString(4).split(" ");
+	                	ret.add(cursor.getString(2) + " $" + cursor.getString(1)	+ " @ " + cursor.getString(3) + " " + tokens[0]);
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesFuel(cursor);
+        return ret;
+    }
 }

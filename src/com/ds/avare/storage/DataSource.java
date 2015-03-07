@@ -349,4 +349,12 @@ public class DataSource {
         return  dbHelper.findNavaid(name);    	
     }
 
+    /**
+     * Fuel cost for an airport
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFuelCost(String name) {
+    	return dbHelper.findFuelCost(name);
+    }
 }
