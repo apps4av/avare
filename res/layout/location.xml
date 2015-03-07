@@ -15,13 +15,13 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-        <com.ds.avare.LocationView
+        <com.ds.avare.Views.LocationView
             android:background="#FF000000"
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <com.ds.avare.VerticalSeekBar
+        <com.ds.avare.utils.VerticalSeekBar
             android:id="@+id/location_seekbar_threshold"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"

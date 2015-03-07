@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.Views.PlatesView;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;

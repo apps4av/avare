@@ -20,10 +20,10 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.ds.avare.Views.PlatesTagView;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.place.Destination;

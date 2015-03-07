@@ -18,6 +18,7 @@ import java.util.TimerTask;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppPlanInterface;
 
 import android.app.Activity;
 import android.app.AlertDialog;

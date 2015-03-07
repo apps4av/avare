@@ -18,6 +18,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.ds.avare.R;
+import com.ds.avare.Views.LocationView;
+import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
@@ -32,6 +34,7 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
 

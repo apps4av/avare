@@ -16,6 +16,7 @@ import com.ds.avare.R;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppInterface;
 
 import android.location.GpsStatus;
 import android.location.Location;

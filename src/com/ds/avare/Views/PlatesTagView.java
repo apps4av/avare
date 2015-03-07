@@ -10,46 +10,50 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare;
+package com.ds.avare.Views;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.MultiTouchController;
 import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
 import com.ds.avare.touch.MultiTouchController.PointInfo;
 import com.ds.avare.touch.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.Helper;
 
 /**
  * 
  * @author zkhan
+ * 
+ * User tags a plate through this view
  *
  */
-public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
+public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
 	
 
-    private Scale                        mScale;
     private Pan                          mPan;
 	private Paint                        mPaint;
     private MultiTouchController<Object> mMultiTouchC;
     private PointInfo                    mCurrTouchPoint;
-    private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
-    private Preferences                  mPref;
-    
-    private static final double MAX_AFD_SCALE = 8;
+    private Scale                        mScale;
+    private int                          mX;
+    private int                          mY;
+    private float                        mAirportX;
+    private float                        mAirportY;
+    private String                        mAirportName;
+
+    private static final double MAX_PLATE_SCALE = 8;
     
     /**
      * 
@@ -57,22 +61,24 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      */
     private void  setup(Context context) {
         mPaint = new Paint();
+        mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
         mPan = new Pan();
-        mScale = new Scale(MAX_AFD_SCALE);
         setOnTouchListener(this);
+        mScale = new Scale(MAX_PLATE_SCALE);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
-        mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mPref = new Preferences(context);
+        mX = mY = 0;
+        mAirportName = "";
+        mAirportX = mAirportY = -1;
     }
     
     /**
      * 
      * @param context
      */
-	public AfdView(Context context) {
+	public PlatesTagView(Context context) {
 		super(context);
 		setup(context);
 	}
@@ -81,7 +87,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      * 
      * @param context
      */
-    public AfdView(Context context, AttributeSet set) {
+    public PlatesTagView(Context context, AttributeSet set) {
         super(context, set);
         setup(context);
     }
@@ -90,7 +96,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      * 
      * @param context
      */
-    public AfdView(Context context, AttributeSet set, int arg) {
+    public PlatesTagView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
     }
@@ -100,7 +106,6 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        mGestureDetector.onTouchEvent(e);
         return mMultiTouchC.onTouchEvent(e);
     }
 
@@ -151,6 +156,13 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
              */
             mScale.setScaleFactor(newObjPosAndScale.getScale());
         }
+
+        /*
+         * Store location
+         */
+        mX = Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
+        mY = Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
+
         invalidate();
         return true;
     }
@@ -161,29 +173,6 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     private void touchPointChanged(PointInfo touchPoint) {
         mCurrTouchPoint.set(touchPoint);
         invalidate();
-    }
-    
-    /**
-     * Center to the location
-     */
-    public void center() {
-        /*
-         * On double tap, move to center
-         */
-        mScale = new Scale(MAX_AFD_SCALE);
-        mPan = new Pan();
-        
-        /*
-         * Fit plate to screen
-         */
-        if(mBitmap != null) {
-            float h = getHeight();
-            float ih = mBitmap.getHeight();
-            float fac = h / ih;
-            mScale.setScaleFactor(fac);
-        }
-
-        postInvalidate();
     }
 
     /* (non-Javadoc)
@@ -198,15 +187,16 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     		return;
     	}
     	
+        mPaint.setStrokeWidth(1);
         float min = Math.min(getWidth(), getHeight()) - 8;
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
         float scale = mScale.getScaleFactorRaw();
-
-    	/*
-    	 * A/FD
-    	 */
+        
+        /*
+         * Plate
+         */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
                 mPan.getMoveX() * scale
@@ -216,26 +206,116 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
-        if(mPref.isNightMode()) {
-            Helper.invertCanvasColors(mPaint);
-        }
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);
-        Helper.restoreCanvasColors(mPaint);
+    	
+    	/*
+    	 * The cross in the middle
+    	 */
+    	mPaint.setColor(Color.RED);
+    	mPaint.setStyle(Style.STROKE);
+        canvas.drawLine(0, getHeight() / 2, getWidth() , getHeight() / 2, mPaint);
+        canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), mPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, 4, mPaint);
+        
+        /*
+         * Draw Airport circle
+         */
+        if(mAirportX > 0 && mAirportY > 0 && mAirportName != null) {
+            mPaint.setStrokeWidth(4);
+            mPaint.setColor(Color.GREEN);
+            float x =
+                    (mAirportX * scale
+                    + getWidth() / 2
+                    + mPan.getMoveX() * scale
+                    - mBitmap.getWidth() / 2 * scale);
+            float y =
+                    (mAirportY * scale
+                    + getHeight() / 2
+                    + mPan.getMoveY() * scale
+                    - mBitmap.getHeight() / 2 * scale);
+            
+            mPaint.setAlpha(127);
+            mPaint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(x, y, 16, mPaint);
+            mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
+            mPaint.setColor(Color.RED);
+            mPaint.setStrokeWidth(1);
+            canvas.drawText(mAirportName, x + 16, y + 16, mPaint);
+            mPaint.setAlpha(255);
+        }
+    }
+    
+    /**
+     * Verify a point at x, y
+     * @param x
+     * @param y
+     */
+    public void verify(double x, double y) {
+        mPan.setMove(
+                (float)-x + mBitmap.getWidth() / 2,
+                (float)-y + mBitmap.getHeight() / 2
+                );
+        invalidate();
+    }
+    
+    /**
+     * Center to the location
+     */
+    public void center() {
+        /*
+         * On double tap, move to center
+         */
+        mPan = new Pan();
+        mScale = new Scale(MAX_PLATE_SCALE);
+        
+        /*
+         * Fit plate to screen
+         */
+        if(mBitmap != null) {
+            float h = getHeight();
+            float ih = mBitmap.getHeight();
+            float fac = h / ih;
+            mScale.setScaleFactor(fac);
+        }
+
+        postInvalidate();
+    }
+    
+    
+    /**
+     * Current X with scale adjusted
+     */
+    public int getx() {
+        return mX;
+    }
+    
+    /**
+     * Current Y with scale adjusted
+     */
+    public int gety() {
+        return mY;
     }
 
     /**
-     * @author zkhan
-     *
+     * 
+     * @param x
+     * @param y
      */
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
-        @Override
-        public void onLongPress(MotionEvent e) {
-            
-        }
+    public void setAirport(String name, float x, float y) {
+        mAirportX = x;
+        mAirportY = y;
+        mAirportName = name;
+        postInvalidate();
     }
-
+    
+    /**
+     * 
+     */
+    public void unsetAirport() {
+        mAirportX = -1;
+        mAirportY = -1;
+        mAirportName = "";        
+        postInvalidate();
+    }
 }
+

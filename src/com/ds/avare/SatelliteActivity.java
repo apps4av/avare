@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.ds.avare.R;
+import com.ds.avare.Views.SatelliteView;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
