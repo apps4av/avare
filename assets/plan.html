@@ -501,6 +501,9 @@ function clear_filter() {
 	AndroidPlan.planFilter("");
 }
 
+function refresh_plan_list() {
+	AndroidPlan.refreshPlanList();
+}
 
 window.onload = show_help;
 
@@ -538,9 +541,17 @@ window.onload = show_help;
 	</p>
 	<p>
 		<label>Saved Plans</label><br>
-		<input id="plan_filter" placeholder="Plan filter spec"></input>
-		<button onclick="plan_filter()">Apply Filter</button>
-		<button onclick="clear_filter()">Clear Filter</button><br>
+		<table>
+			<tr>
+				<td style="border:0;text-align:left;vertical-align:center">
+					<input id="plan_filter" placeholder="Plan filter spec"></input>
+				    <button onclick="plan_filter()">Apply Filter</button>
+				    <button onclick="clear_filter()">Clear Filter</button>
+					<button style="visibility:hidden">Refresh List</button>
+					<button onclick="refresh_plan_list()">Refresh List</button>
+				</td>
+			</tr>
+		</table><br>
 		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
 		<table style="border:0">
 		<tr>
@@ -597,6 +608,7 @@ This section contains a list of flight plans that have been saved. They are list
 <li>The "Last >>" button will show the plans at the end of the list.</li>
 <li>Using the "Apply Filter" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
 <li>Pressing "Clear Filter" will clear the filter and refresh the plan list.</li>
+<li>The "Refresh List" button will syncronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
 </ul>
 
 <b>To Create a Flight Plan from Find Screen</b>
