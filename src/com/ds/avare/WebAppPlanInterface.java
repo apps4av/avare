@@ -34,6 +34,7 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -162,7 +163,8 @@ public class WebAppPlanInterface implements Observer {
     /**
      * New saved plan list when the plan save list changes.
      */
-    public void newSavePlan() {
+    @SuppressLint("DefaultLocale")
+	public void newSavePlan() {
     	
     	// Turn on the spinny thing to tell user we are thinking
     	mHandler.sendEmptyMessage(MSG_BUSY);
@@ -263,6 +265,16 @@ public class WebAppPlanInterface implements Observer {
     public void lastPage() {
     	mPlanIdx = (int)((mFilteredSize - 1) / MAX_PLANS_SHOWN) * MAX_PLANS_SHOWN;
     	newSavePlan();
+    }
+    
+    @JavascriptInterface
+    public void refreshPlanList() {
+    	mHandler.sendEmptyMessage(MSG_BUSY);
+    	mService.getExternalPlanMgr().forceReload();
+		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		setFilteredSize();
+    	newSavePlan();
+    	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
     
     /**
@@ -578,7 +590,8 @@ public class WebAppPlanInterface implements Observer {
     	}
     }
     
-    private boolean containsIgnoreCase(String str1, String str2) {
+    @SuppressLint("DefaultLocale")
+	private boolean containsIgnoreCase(String str1, String str2) {
     	str1 = str1.toLowerCase();
     	str2 = str2.toLowerCase();
     	return str1.contains(str2);
@@ -908,7 +921,8 @@ public class WebAppPlanInterface implements Observer {
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
      */
-    private Handler mHandler = new Handler() {
+    @SuppressLint("HandlerLeak")
+	private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Plan plan = mService.getPlan();
