@@ -57,6 +57,7 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBasePlates; 
     private SQLiteDatabase mDataBaseGeoPlates; 
     private SQLiteDatabase mDataBaseFuel; 
+    private SQLiteDatabase mDataBaseRatings; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -86,6 +87,7 @@ public class DataBaseHelper  {
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
     private Integer mUsersFuel;
+    private Integer mUsersRatings;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -140,6 +142,7 @@ public class DataBaseHelper  {
     private static final String TABLE_GEOPLATES = "geoplates";
     private static final String TABLE_AIRWAYS = "airways";
     private static final String TABLE_FUEL = "fuel";
+    private static final String TABLE_RATINGS = "ratings";
 
 
     private static final String TILE_NAME = "name";
@@ -158,7 +161,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersFuel = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersFuel = mUsersRatings = 0;
         mContext = context;
     }
 
@@ -332,7 +335,12 @@ public class DataBaseHelper  {
         if(name.equals("fuel")) {
             list.add(name + ".db");
             return list;
-        }
+       }
+        
+       if(name.equals("ratings")) {
+           list.add(name + ".db");
+           return list;
+       }
         
         if(name.equals("conus")) {
             list.add("latest.txt");
@@ -3084,4 +3092,128 @@ public class DataBaseHelper  {
         closesFuel(cursor);
         return ret;
     }
+
+    
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryRatings(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersRatings) {
+            if(mDataBaseRatings == null) {
+                mUsersRatings = 0;
+                try {
+                    
+                    mDataBaseRatings = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseRatings = null;
+                }
+            }
+            if(mDataBaseRatings == null) {
+                return c;
+            }
+            mUsersRatings++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseRatings == null) {
+            return c;
+        }
+        
+        if(!mDataBaseRatings.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseRatings.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesRatings(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersRatings) {
+            mUsersRatings--;
+            if((mDataBaseRatings != null) && (mUsersRatings <= 0)) {
+                try {
+                    mDataBaseRatings.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseRatings = null;
+                mUsersRatings = 0;
+            }
+        }
+    }
+
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+	public LinkedList<String> findRatings(String name) {
+    	LinkedList<String> ret = new LinkedList<String>();
+    	
+        String qry = "select * from " + TABLE_RATINGS + " where airport =='" + name +"'" + 
+        		" order by reported desc";
+        Cursor cursor = doQueryRatings(qry, "ratings.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+	                    /*
+	                     * Make entries to show
+	                     * 4 star, userid (2015-03-07): Comments
+	                     */
+	                	String tokens[] = cursor.getString(4).split(" ");
+	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + cursor.getString(3));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesRatings(cursor);
+        return ret;
+	}
+
 }

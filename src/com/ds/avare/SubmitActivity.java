@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
  
@@ -39,8 +40,9 @@ public class SubmitActivity extends Activity {
     // Types of submits
     public static final String SUBMIT = "submit";
     public static final int FUEL = 1;
-    public static final int MAX = 2;
+	public static final int RATINGS = 2;
     public static final String FUEL_AIRPORT = "FUEL_AIRPORT";
+	public static final String RATINGS_AIRPORT = "RATINGS_AIRPORT";
     
     static AsyncTask<Void, Void, Boolean> mSubmitTask = null;
 
@@ -85,6 +87,16 @@ public class SubmitActivity extends Activity {
                 TextView tv = (TextView) findViewById(R.id.fuel_submit_log);
                 TextView airporttv = (TextView) findViewById(R.id.fuel_submit_airport);
                 airporttv.setText(bundle.getString(FUEL_AIRPORT));
+                Logger.setTextView(tv);
+        		break;
+        	case RATINGS:
+        		mView = layoutInflater.inflate(R.layout.comments_submit, null);
+                setContentView(mView);
+                mSubmitButton = (Button) findViewById(R.id.comments_submit_button_submit);
+                mSubmitButton.setText(getString(R.string.Report) + "(" + PossibleEmail.get(this) + ")");
+                tv = (TextView) findViewById(R.id.comments_submit_log);
+                airporttv = (TextView) findViewById(R.id.comments_submit_airport);
+                airporttv.setText(bundle.getString(RATINGS_AIRPORT));
                 Logger.setTextView(tv);
         		break;
         	default:
@@ -194,6 +206,21 @@ public class SubmitActivity extends Activity {
 		                        	return false;		                        	
 		                        }
 		                        params.put("fbo", fbo);
+		                        
+		                        return true;
+							case RATINGS:
+								serverUrl = NetworkHelper.getServer() + "ratings.php";
+		                        params.put("email", PossibleEmail.get(getApplicationContext()));
+		                        params.put("airport", ((TextView)mView.findViewById(R.id.comments_submit_airport)).getText().toString());
+		                        String comments = ((EditText)mView.findViewById(R.id.comments_submit_comments)).getText().toString();
+		                        if(comments.length() < 30) {
+		                        	Logger.Logit(getString(R.string.InvalidComments));
+		                        	return false;		                        	
+		                        }
+		                        params.put("comments", comments);
+		                        
+		                        int stars = (int)((RatingBar)mView.findViewById(R.id.comments_submit_ratingbar)).getRating();
+		                        params.put("stars", stars + "");
 		                        
 		                        return true;
 						}

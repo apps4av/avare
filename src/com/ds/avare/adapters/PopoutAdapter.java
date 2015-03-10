@@ -58,6 +58,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private WindsAloft mWa;
     private Typeface mFace;
     private String mFuel;
+    private String mRatings;
     private String mAirport;
 
     private static final int GROUP_COMM = 0;
@@ -65,13 +66,14 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_FUEL = 2;
     private static final int GROUP_METAR = 3;
     private static final int GROUP_TAF = 4;
-    private static final int GROUP_WA = 5;
-    private static final int GROUP_PIREP = 6;
-    private static final int GROUP_METS = 7;
-    private static final int GROUP_TFR = 8;
-    private static final int GROUP_SUA = 9;
-    private static final int GROUP_RADAR = 10;
-    private static final int GROUP_NUM = 11;
+    private static final int GROUP_RATINGS = 5;
+    private static final int GROUP_WA = 6;
+    private static final int GROUP_PIREP = 7;
+    private static final int GROUP_METS = 8;
+    private static final int GROUP_TFR = 9;
+    private static final int GROUP_SUA = 10;
+    private static final int GROUP_RADAR = 11;
+    private static final int GROUP_NUM = 12;
     
     /**
      * @param context
@@ -96,6 +98,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_FUEL] = new String[1];
         mChildren[GROUP_METAR] = new String[1];
         mChildren[GROUP_TAF] = new String[1];
+        mChildren[GROUP_RATINGS] = new String[1];
         mChildren[GROUP_WA] = new String[1];
         mChildren[GROUP_PIREP] = new String[1];
         mChildren[GROUP_METS] = new String[1];
@@ -120,6 +123,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mPerformance = data.performance;
         mFuel = data.fuel;
         mAirport = data.airport;
+        mRatings = data.ratings;
         
         mChildrenText[GROUP_PERFORMANCE] = mPerformance == null ? "" : mPerformance;
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
@@ -127,6 +131,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
         mChildrenText[GROUP_SUA] = mSua == null ? "" : mSua;
         mChildrenText[GROUP_RADAR] = mRadar == null ? "" : mRadar;
+        mChildrenText[GROUP_RATINGS] = mRatings == null ? "" : mRatings;
         
         if(mMetar == null) {
             mChildrenText[GROUP_METAR] = "";
@@ -236,6 +241,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;
+            case GROUP_RATINGS:
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
+                break;
             case GROUP_METAR:
                 int col = (mMetar == null) ? 0xFFFFFFFF : WeatherHelper.metarColor(mMetar.flightCategory);
                 tv.setText(mGroups[group]);
@@ -313,6 +322,21 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
 	                Intent intent = new Intent(parent.getContext(), SubmitActivity.class);
 	                intent.putExtra(SubmitActivity.FUEL_AIRPORT, mAirport);
 	                intent.putExtra(SubmitActivity.SUBMIT, SubmitActivity.FUEL);
+					parent.getContext().startActivity(intent);
+				}
+	        });
+        }
+        else if(groupPosition == GROUP_RATINGS && (!mChildrenText[groupPosition].equals(""))) {
+        	// report button
+	        but.setText(mContext.getString(R.string.Report));
+	        but.setVisibility(View.VISIBLE);
+	        but.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					// Allow submission of ratings via a new activity
+	                Intent intent = new Intent(parent.getContext(), SubmitActivity.class);
+	                intent.putExtra(SubmitActivity.RATINGS_AIRPORT, mAirport);
+	                intent.putExtra(SubmitActivity.SUBMIT, SubmitActivity.RATINGS);
 					parent.getContext().startActivity(intent);
 				}
 	        });

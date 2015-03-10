@@ -1681,6 +1681,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Metar metar;
         private String elev;
         private String fuel;
+        private String ratings;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1790,6 +1791,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 if(isCancelled())
                     return "";
+                
+                
+                LinkedList<String> cm = mService.getDBResource().findRatings(airport);
+                if(cm.size() == 0) {
+                	// If ratings not available, show its not
+                	ratings = mContext.getString(R.string.NotAvailable);
+                }
+                else {
+                	ratings = "";
+                }
+                // Concat all fuel reports
+                for(String s : cm) {
+                	ratings += s + "\n\n";
+                }
+                if(isCancelled())
+                    return "";
             }
             
             /*
@@ -1865,6 +1882,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.radar = radar;
                 mLongTouchDestination.fuel = fuel;
+                mLongTouchDestination.ratings = ratings;
                 if(metar != null) {
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +

@@ -357,4 +357,13 @@ public class DataSource {
     public LinkedList<String> findFuelCost(String name) {
     	return dbHelper.findFuelCost(name);
     }
+
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+	public LinkedList<String> findRatings(String name) {
+    	return dbHelper.findRatings(name);
+	}
 }

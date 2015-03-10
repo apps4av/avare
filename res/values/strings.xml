@@ -398,4 +398,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="InvalidFBO">Please Specify an FBO</string>    
     <string name="InvalidPrice">Invalid Fuel Price</string>    
     <string name="Email">Email</string>    
+    <string name="Stars">Stars</string>    
+    <string name="Ratings">Ratings</string>
+    <string name="APRatings">Ratings for the airport, and the FBOs</string>
+    <string name="InvalidComments">Your comments must be longer than thirty characters</string>    
 </resources>

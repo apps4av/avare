@@ -17,13 +17,13 @@ package com.ds.avare.touch;
  *           return multiTouchController.onTouchEvent(event);
  *       }
  *     
- *       // ... then implement the MultiTouchObjectCanvas interface here, see details in the comments of that interface.
+ *       // ... then implement the MultiTouchObjectCanvas interface here, see details in the ratings of that interface.
  *   }
  *   </code>
  * 
  * Changelog:
  *   2010-06-09 v1.5.1  Some API changes to make it possible to selectively update or not update scale / rotation.
- *                      Fixed anisotropic zoom.  Cleaned up rotation code.  Added more comments.  Better var names. (LH)
+ *                      Fixed anisotropic zoom.  Cleaned up rotation code.  Added more ratings.  Better var names. (LH)
  *   2010-06-09 v1.4    Added ability to track pinch rotation (Mickael Despesse, author of "Face Frenzy") and anisotropic pinch-zoom (LH)
  *   2010-06-09 v1.3.3  Bugfixes for Android-2.1; added optional debug info (LH)
  *   2010-06-09 v1.3    Ported to Android-2.2 (handle ACTION_POINTER_* actions); fixed several bugs; refactoring; documentation (LH) 
