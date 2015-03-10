@@ -56,18 +56,20 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private String mMets;
     private WindsAloft mWa;
     private Typeface mFace;
+    private String mFuel;
 
     private static final int GROUP_COMM = 0;
     private static final int GROUP_PERFORMANCE = 1;
-    private static final int GROUP_METAR = 2;
-    private static final int GROUP_TAF = 3;
-    private static final int GROUP_WA = 4;
-    private static final int GROUP_PIREP = 5;
-    private static final int GROUP_METS = 6;
-    private static final int GROUP_TFR = 7;
-    private static final int GROUP_SUA = 8;
-    private static final int GROUP_RADAR = 9;
-    private static final int GROUP_NUM = 10;
+    private static final int GROUP_FUEL = 2;
+    private static final int GROUP_METAR = 3;
+    private static final int GROUP_TAF = 4;
+    private static final int GROUP_WA = 5;
+    private static final int GROUP_PIREP = 6;
+    private static final int GROUP_METS = 7;
+    private static final int GROUP_TFR = 8;
+    private static final int GROUP_SUA = 9;
+    private static final int GROUP_RADAR = 10;
+    private static final int GROUP_NUM = 11;
     
     /**
      * @param context
@@ -89,6 +91,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_COMM] = new String[1];
         mChildren[GROUP_PERFORMANCE] = new String[1];
+        mChildren[GROUP_FUEL] = new String[1];
         mChildren[GROUP_METAR] = new String[1];
         mChildren[GROUP_TAF] = new String[1];
         mChildren[GROUP_WA] = new String[1];
@@ -113,9 +116,11 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mSua = data.sua;
         mRadar = data.radar;
         mPerformance = data.performance;
+        mFuel = data.fuel;
         
         mChildrenText[GROUP_PERFORMANCE] = mPerformance == null ? "" : mPerformance;
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
+        mChildrenText[GROUP_FUEL] = mFuel == null ? "" : mFuel;
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
         mChildrenText[GROUP_SUA] = mSua == null ? "" : mSua;
         mChildrenText[GROUP_RADAR] = mRadar == null ? "" : mRadar;
@@ -221,6 +226,10 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 tv.setText(mGroups[group]);
                 break;
             case GROUP_PERFORMANCE:
+                tv.setTextColor(0xFFFFFFFF);
+                tv.setText(mGroups[group]);
+                break;
+            case GROUP_FUEL:
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;

@@ -393,4 +393,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="runwayLengthsLabel">Near Runway Minimum Length</string>
     <string name="runwayLengthsSummary">Show airports in Near with a runway length equal or longer</string>    
     <string name="FuelCost">Fuel Price</string>    
+    <string name="FuelHelp">You can share fuel cost at this airport from A/FD</string>    
 </resources>

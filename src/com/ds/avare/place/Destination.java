@@ -75,8 +75,6 @@ public class Destination extends Observable {
     private String mEte;
     private String mEta;
 
-    private LinkedList<String> mFuel;
-    
     /*
      * Track to dest.
      */
@@ -147,7 +145,6 @@ public class Destination extends Observable {
         mDbType = "";
         mFound = mLooking = false;
         mRunways = new LinkedList<Runway>();
-        mFuel = new LinkedList<String>();
         mService = service;
         mDataSource = mService.getDBResource(); 
         mTrackShape = new TrackShape();
@@ -562,11 +559,6 @@ public class Destination extends Observable {
 
 	        if(mDestType.equals(BASE)) {
 
-	        	/*
-	        	 * Find fuel cost
-	        	 */	        	
-		        mFuel = mDataSource.findFuelCost(mName);
-
                 /*
                  * Find A/FD
                  */
@@ -685,13 +677,6 @@ public class Destination extends Observable {
      */
     public LinkedList<Runway> getRunways() {
         return(mRunways);
-    }
-
-    /**
-     * @return
-     */
-    public LinkedList<String> getFuel() {
-        return(mFuel);
     }
 
     /**

@@ -1680,6 +1680,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private WindsAloft wa;
         private Metar metar;
         private String elev;
+        private String fuel;
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1775,6 +1776,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(isCancelled())
                     return "";
 
+                LinkedList<String> fl = mService.getDBResource().findFuelCost(airport);
+                fuel = mContext.getString(R.string.FuelHelp);
+                for(String s : fl) {
+                	fuel += "\n\n" + s;
+                }
+                if(isCancelled())
+                    return "";
             }
             
             /*
@@ -1849,6 +1857,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.freq = freq;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.radar = radar;
+                mLongTouchDestination.fuel = fuel;
                 if(metar != null) {
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +

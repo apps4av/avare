@@ -39,4 +39,5 @@ public class LongTouchDestination {
     public LinkedList<Airep> airep;
     public LinkedList<String> freq;
     public String performance;
+    public String fuel;
 }
