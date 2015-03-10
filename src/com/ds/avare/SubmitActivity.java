@@ -157,6 +157,7 @@ public class SubmitActivity extends Activity {
 
                     @Override
                     protected void onPostExecute(Boolean result) {
+                        Logger.clear();
                         if(result) {
                             Logger.Logit(code);
                         }

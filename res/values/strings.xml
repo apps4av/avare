@@ -397,4 +397,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FBO">FBO e.g. Chevron</string>    
     <string name="InvalidFBO">Please Specify an FBO</string>    
     <string name="InvalidPrice">Invalid Fuel Price</string>    
+    <string name="Email">Email</string>    
 </resources>

@@ -1026,4 +1026,20 @@ public class Preferences {
 		return mPref.getString(mContext.getString(R.string.runwayLengths), "2000");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public String getRegisteredEmail() {
+		return mPref.getString(mContext.getString(R.string.Email), null);
+	}
+
+	/**
+	 * 
+	 * @param email
+	 */
+	public void setRegisteredEmail(String email) {
+        mPref.edit().putString(mContext.getString(R.string.Email), email).commit();
+	}
+
 }
