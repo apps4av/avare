@@ -15,14 +15,9 @@ package com.ds.avare.Views;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.ds.avare.R.array;
-import com.ds.avare.R.dimen;
-import com.ds.avare.R.drawable;
-import com.ds.avare.R.string;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Obstacle;
@@ -132,12 +127,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private TileDrawTask                mTileDrawTask; 
     private Thread                      mTileDrawThread;
-
     
     /**
      * Task that would draw obstacles
      */
-    private ObstacleTask                mObstacleTask; 
+    private ElevationTask               mElevationTask; 
+    private Thread                      mElevationThread;
+    private long                        mElevationLastRun;
 
     /**
      * Task that finds closets airport.
@@ -295,6 +291,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
+        mElevationTask = new ElevationTask();
+        mElevationThread = new Thread(mElevationTask);
+        mElevationLastRun = System.currentTimeMillis();
+        mElevationThread.start();
 
         setOnTouchListener(this);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
@@ -621,6 +621,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;                
         }
 
+        // Do run run onbstacle task more frequenct than 10 seconds
+        if(((System.currentTimeMillis() - mElevationLastRun) > 1000 * 10) || force) {
+            mElevationLastRun = System.currentTimeMillis();
+	        mElevationTask.lat = mGpsParams.getLatitude();
+	        mElevationTask.lon = mGpsParams.getLongitude();
+	        mElevationTask.alt = mGpsParams.getAltitude();
+	        mElevationThread.interrupt();
+        }
+
+        /*
+         * Find
+         */
         if(!force) {
             double offsets[] = new double[2];
             double p[] = new double[2];
@@ -1463,18 +1475,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * Database query for new location / pan location.
          */
         dbquery(false);
-        
-        if(mObstacleTask != null) {
-            /*
-             * Do not overwhelm
-             */
-            if(mObstacleTask.getStatus() == AsyncTask.Status.RUNNING) {
-                mObstacleTask.cancel(true);
-            }
-        }
-        mObstacleTask = new ObstacleTask();
-        mObstacleTask.execute(mGpsParams);
-    }
+     }
 
     
     /**
@@ -1872,74 +1873,89 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      * Find obstacles
      */
-    private class ObstacleTask extends AsyncTask<Object, Void, Object> {
-        
-        private LinkedList<Obstacle> obs = null;
-        double elev = -1;
-        
-        
+    
+    private class ElevationTask implements Runnable {
+        public boolean running = true;
+        private boolean runAgain = false;
+        public double lon;
+        public double lat;
+        public double alt;
+
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */
         @Override
-        protected Void doInBackground(Object... vals) {
-            Thread.currentThread().setName("Obstacle");
-
-            double lon = ((GpsParams)vals[0]).getLongitude();
-            double lat = ((GpsParams)vals[0]).getLatitude();
-            double alt = ((GpsParams)vals[0]).getAltitude();
+        public void run() {
             
-            if(null != mImageDataSource) {
-                /*
-                 * Find obstacles in background as well
-                 */
-                if(mPref.shouldShowObstacles()) {
-                    obs = mImageDataSource.findObstacles(lon, lat, (int)alt);
+            Thread.currentThread().setName("Elevation");
+
+            while(running) {
+                
+                if(!runAgain) {
+                    try {
+                        Thread.sleep(1000 * 3600);
+                    }
+                    catch(Exception e) {
+                        
+                    }
+                }
+                runAgain = false;
+                
+                if(null == mService) {
+                    continue;
+                }
+                
+                if(mImageDataSource == null) {
+                    continue;
                 }
                 
                 /*
-                 * Find elevation tile in background, and load 
+                 * Find obstacles in background as well
                  */
-                if(mService != null) {
-                    /*
-                     * Elevation tile to find AGL and ground proximity warning
-                     */
-                    double offsets[] = new double[2];
-                    double p[] = new double[2];
-                    Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
-                    mService.setElevationTile(t);
-                    BitmapHolder elevBitmap = mService.getElevationBitmap();
-                    /*
-                     * Load only if needed.
-                     */
-                    if(null != elevBitmap) {
-                        int x = (int)Math.round(offsets[0]);
-                        int y = (int)Math.round(offsets[1]);
-                        if(elevBitmap.getBitmap() != null) {
+                LinkedList<Obstacle> obs = null;
+                if(mPref.shouldShowObstacles()) {
+                    obs = mImageDataSource.findObstacles(lon, lat, (int)alt);
+                }
+
+                /*
+                 * Elevation tile to find AGL and ground proximity warning
+                 */
+                double offsets[] = new double[2];
+                double p[] = new double[2];
+                Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
+
+                mService.setElevationTile(t);
+                BitmapHolder elevBitmap = mService.getElevationBitmap();
+                double elev = -1;
+                /*
+                 * Load only if needed.
+                 */
+                if(null != elevBitmap) {
+                    int x = (int)Math.round(offsets[0]);
+                    int y = (int)Math.round(offsets[1]);
+                    if(elevBitmap.getBitmap() != null) {
+                    
+                        if(x < elevBitmap.getBitmap().getWidth()
+                            && y < elevBitmap.getBitmap().getHeight()
+                            && x >= 0 && y >= 0) {
                         
-                            if(x < elevBitmap.getBitmap().getWidth()
-                                && y < elevBitmap.getBitmap().getHeight()
-                                && x >= 0 && y >= 0) {
-                            
-                                int px = elevBitmap.getBitmap().getPixel(x, y);
-                                elev = Helper.findElevationFromPixel(px);
-                            }
+                            int px = elevBitmap.getBitmap().getPixel(x, y);
+                            elev = Helper.findElevationFromPixel(px);
                         }
                     }
                 }
-            }
-            return null;                
-        }
-        
-        @Override
-        protected void onPostExecute(Object res) {
-            if(mService != null) {
-                mService.setElevation(elev);
-            }
-            mObstacles = obs;
-        }
 
+                ElevationUpdate ou = new ElevationUpdate();
+                ou.elev = elev;
+                ou.obs = obs;
+
+                Message m = mHandler.obtainMessage();
+                m.obj = ou;
+                mHandler.sendMessage(m);
+            }
+        }
     }
+        
 
 
     /**
@@ -2110,6 +2126,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void cleanup() {
         mTileDrawTask.running = false;
         mTileDrawThread.interrupt();
+        mElevationTask.running = false;
+        mElevationThread.interrupt();
     }
 
     
@@ -2128,7 +2146,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Tile centerTile;
         
     }
-    
+
+    /**
+     * Use this with handler to update obstacles in UI thread
+     * @author zkhan
+     *
+     */
+    private class ElevationUpdate {
+        private LinkedList<Obstacle> obs;
+        private double elev;        
+    }
+
     /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
@@ -2136,32 +2164,39 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         @Override
         public void handleMessage(Message msg) {
 
-            TileUpdate t = (TileUpdate)msg.obj;
-            
-            mService.getTiles().flip();
-            
-            /*
-             * Set move with pan after new tiles are finally loaded
-             */
-            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
-
-            mScale.setScaleAt(t.centerTile.getLatitude());
-            mOnChart = t.centerTile.getChart();
-
-            /*
-             * And pan
-             */
-            mPan.setTileMove(t.movex, t.movey);
-            mMovement = new Movement(t.offsets, t.p);
-            mService.setMovement(mMovement);
-            mMacro = mScale.getMacroFactor();
-            mScale.updateMacro();
-            mMultiTouchC.setMacro(mMacro);
-            mPx = (float)t.centerTile.getPx();
-            mPy = (float)t.centerTile.getPy();
-            updateCoordinates();
-
-            invalidate();
+        	if(msg.obj instanceof TileUpdate) {
+	            TileUpdate t = (TileUpdate)msg.obj;
+	            
+	            mService.getTiles().flip();
+	            
+	            /*
+	             * Set move with pan after new tiles are finally loaded
+	             */
+	            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
+	
+	            mScale.setScaleAt(t.centerTile.getLatitude());
+	            mOnChart = t.centerTile.getChart();
+	
+	            /*
+	             * And pan
+	             */
+	            mPan.setTileMove(t.movex, t.movey);
+	            mMovement = new Movement(t.offsets, t.p);
+	            mService.setMovement(mMovement);
+	            mMacro = mScale.getMacroFactor();
+	            mScale.updateMacro();
+	            mMultiTouchC.setMacro(mMacro);
+	            mPx = (float)t.centerTile.getPx();
+	            mPy = (float)t.centerTile.getPy();
+	            updateCoordinates();
+	
+	            invalidate();
+        	}
+        	else if(msg.obj instanceof ElevationUpdate) {
+        		ElevationUpdate o = (ElevationUpdate)msg.obj;
+        		mService.setElevation(o.elev);
+        		mObstacles = o.obs;
+        	}
         }
     };
     
