@@ -262,7 +262,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="no">No</string>
     <string name="failed_register">Failed to register!</string>
     <string name="failed_unregister">Failed to unregister!</string>
-    <string name="registered">You have now registered! Please press the back button to start using the application. You must first download the Databases (Required) from the Download menu. To see the detailed maps, please download the charts for the area you are interested in.</string>
+    <string name="registered">You have now registered! Please press the back button to start using the application.\nYou must first download the Databases (Required) from the Download menu.\nTo see the detailed maps, please download the charts for the area you are interested in.\nIf you are unable to use the app, please email support@apps4av.org.</string>
     <string name="unregistered">You have now unregistered!</string>
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
@@ -393,6 +393,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="runwayLengthsLabel">Near Runway Minimum Length</string>
     <string name="runwayLengthsSummary">Show airports in Near with a runway length equal or longer</string>    
     <string name="FuelCost">Fuel Price</string>    
-    <string name="Trying">Trying</string>    
+    <string name="Trying">Trying. . .</string>    
     <string name="FBO">FBO e.g. Chevron</string>    
+    <string name="InvalidFBO">Please Specify an FBO</string>    
+    <string name="InvalidPrice">Invalid Fuel Price</string>    
 </resources>
