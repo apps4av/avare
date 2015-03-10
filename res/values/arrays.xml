@@ -878,8 +878,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="CyclePrompt">
         <item>Current</item>
-        <item>Previous - may not be available</item>
-        <item>Next - may not be available</item>
+        <item>Previous - Warning! Downloads may fail indefinitely</item>
+        <item>Next - Warning! Downloads may fail indefinitely</item>
     </string-array>
 
     <string-array name="PointType">

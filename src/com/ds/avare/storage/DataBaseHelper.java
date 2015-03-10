@@ -329,6 +329,11 @@ public class DataBaseHelper  {
             return list;
         }
         
+        if(name.equals("fuel")) {
+            list.add(name + ".db");
+            return list;
+        }
+        
         if(name.equals("conus")) {
             list.add("latest.txt");
             list.add("latest_radaronly.png");

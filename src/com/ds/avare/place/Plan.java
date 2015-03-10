@@ -648,8 +648,8 @@ public class Plan implements Observer {
         // The idea is to adjust the passage distance to lower value near the
         // airport to
         // have the approaches work properly.
-        // For enroute 30+ NM, your pass zone is 7 NM
-        private static final double PASSAGE_ENROUTE_DISTANCE_MIN = 7;
+        // For enroute 30+ NM, your pass zone is 4 NM
+        private static final double PASSAGE_ENROUTE_DISTANCE_MIN = 4;
 
         // For terminal (8-30NM), your pass zone is 2 miles
         private static final double PASSAGE_TERMINAL_DISTANCE_MIN = 2;

@@ -25,7 +25,6 @@ import android.view.View.OnTouchListener;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
-import com.ds.avare.R.dimen;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
