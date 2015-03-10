@@ -15,10 +15,8 @@ package com.ds.avare.adapters;
 
 import java.util.LinkedList;
 
+import com.ds.avare.SubmitActivity;
 import com.ds.avare.R;
-import com.ds.avare.R.array;
-import com.ds.avare.R.id;
-import com.ds.avare.R.layout;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.Airep;
@@ -27,11 +25,14 @@ import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
@@ -57,6 +58,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private WindsAloft mWa;
     private Typeface mFace;
     private String mFuel;
+    private String mAirport;
 
     private static final int GROUP_COMM = 0;
     private static final int GROUP_PERFORMANCE = 1;
@@ -117,6 +119,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mRadar = data.radar;
         mPerformance = data.performance;
         mFuel = data.fuel;
+        mAirport = data.airport;
         
         mChildrenText[GROUP_PERFORMANCE] = mPerformance == null ? "" : mPerformance;
         mChildrenText[GROUP_TFR] = mTfr == null ? "" : mTfr;
@@ -287,7 +290,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
      */
     @Override
     public View getChildView(int groupPosition, int childPosition,
-            boolean isLastChild, View convertView, ViewGroup parent) {
+            boolean isLastChild, View convertView, final ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = convertView;
@@ -297,6 +300,27 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         }
 
         TextView tv = (TextView)rowView.findViewById(R.id.textview_textview_wrap);
+        Button but = (Button)rowView.findViewById(R.id.textview_wrap_action);
+        
+        if(groupPosition == GROUP_FUEL && (!mChildrenText[groupPosition].equals(""))) {
+        	// Fuel report button
+	        but.setText(mContext.getString(R.string.Report));
+	        but.setVisibility(View.VISIBLE);
+	        but.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					// Allow submission of fuel cost via a new activity
+	                Intent intent = new Intent(parent.getContext(), SubmitActivity.class);
+	                intent.putExtra(SubmitActivity.FUEL_AIRPORT, mAirport);
+	                intent.putExtra(SubmitActivity.SUBMIT, SubmitActivity.FUEL);
+					parent.getContext().startActivity(intent);
+				}
+	        });
+        }
+        else {
+	        but.setVisibility(View.INVISIBLE);        	
+        }
+        
         tv.setTextColor(0xFFFFFFFF);
         tv.setTypeface(mFace);
         tv.setText(mChildrenText[groupPosition]);

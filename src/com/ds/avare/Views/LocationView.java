@@ -1777,9 +1777,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     return "";
 
                 LinkedList<String> fl = mService.getDBResource().findFuelCost(airport);
-                fuel = mContext.getString(R.string.FuelHelp);
+                if(fl.size() == 0) {
+                	// If fuel not available, show its not
+                	fuel = mContext.getString(R.string.NotAvailable);
+                }
+                else {
+                	fuel = "";
+                }
+                // Concat all fuel reports
                 for(String s : fl) {
-                	fuel += "\n\n" + s;
+                	fuel += s + "\n\n";
                 }
                 if(isCancelled())
                     return "";

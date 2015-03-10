@@ -957,5 +957,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>16</item>
         <item>17</item>
     </string-array>
+
+    <string-array name="FuelType">
+        <item>100LL</item>
+        <item>Jet-A</item>
+        <item>Mogas</item>
+    </string-array>
     
 </resources>

@@ -252,7 +252,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregister">Unregister</string>
     <string name="error">Error</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
-    <string name="error_email">Please register a Gmail account before activating</string>
+    <string name="error_email">Please register a Gmail account before continuing</string>
     <string name="already_registered">You have already registered your account</string>
     <string name="already_unregistered">You have already unregistered</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
@@ -393,5 +393,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="runwayLengthsLabel">Near Runway Minimum Length</string>
     <string name="runwayLengthsSummary">Show airports in Near with a runway length equal or longer</string>    
     <string name="FuelCost">Fuel Price</string>    
-    <string name="FuelHelp">You can share fuel cost at this airport from A/FD</string>    
+    <string name="Trying">Trying</string>    
+    <string name="FBO">FBO e.g. Chevron</string>    
 </resources>
