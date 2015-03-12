@@ -457,46 +457,58 @@ public class NetworkHelper {
      * 
      * @return
      */
-    public static String getVersion(String root, String name) {
+    public static String getVersion(String root, String name, boolean[] networkState) {
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        String ret = "";
+        String netVers = getVersionNetwork(root);
+        
+        if(networkState != null && networkState.length != 0) {
+        	networkState[0] = netVers != null;
+        }
 
         /*
          * Expires every so many mins
          */
         if(name.equals("TFRs") || name.equals("weather") || name.equals("conus") || name.equals("fuel") || name.equals("ratings")) {
-            ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
+            return String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),
                     now.get(Calendar.HOUR_OF_DAY),
                     EXPIRES * (int)(now.get(Calendar.MINUTE) / EXPIRES));
         }
-        else {
-
-            /*
-             * Download version from the internet first, then if not found,
-             * calculate what it should be
-             */
-            try {
-                URL u = new URL(root + "version.php");
-                URLConnection c = u.openConnection();
-                InputStream r = c.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(r));
-                String line = reader.readLine();
-                if(null != line) {
-                    return line;
-                }
-            }
-            catch (Exception e) {
-
-            }
-
-            ret = getCycle();
+        else if(netVers != null) {
+        	return netVers;
         }
-        return ret;
+        return getCycle();
     }
 
-    
+
+    /**
+     * 
+     * @return
+     */
+    private static String getVersionNetwork(String root) {
+
+        /*
+         * Download version from the internet first, then if not found,
+         * calculate what it should be
+         */
+        try {
+            URL u = new URL(root + "version.php");
+            URLConnection c = u.openConnection();
+            InputStream r = c.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(r));
+            String line = reader.readLine();
+            if(null != line) {
+                return line;
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        return null;
+    }
+
     /**
      * Find a range for the FAA cycle
      * @return

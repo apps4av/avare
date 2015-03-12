@@ -1136,7 +1136,7 @@ public class WebAppPlanInterface implements Observer {
                     WeatherHelper.getNamMosLegend() + nam;
             nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
 
-            String time = NetworkHelper.getVersion("", "weather");
+            String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + nam;
             
             // Read weather template
@@ -1170,7 +1170,7 @@ public class WebAppPlanInterface implements Observer {
     	String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/avare_weather_";
 
     	// Get time in format usable as file.
-    	file += NetworkHelper.getVersion("", "weather").replace(":", "_");
+    	file += NetworkHelper.getVersion("", "weather", null).replace(":", "_");
     	
     	return file + ".html";
     }
