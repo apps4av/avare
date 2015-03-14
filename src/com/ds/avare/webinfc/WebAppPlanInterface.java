@@ -25,7 +25,6 @@ import java.util.Observer;
 import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
-import com.ds.avare.R.string;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;

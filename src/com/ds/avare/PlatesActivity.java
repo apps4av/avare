@@ -739,7 +739,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT"};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {

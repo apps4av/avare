@@ -17,10 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import com.ds.avare.R;
-import com.ds.avare.R.array;
-import com.ds.avare.R.drawable;
-import com.ds.avare.R.id;
-import com.ds.avare.R.layout;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.NetworkHelper;
@@ -73,7 +69,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_TOPO = 10;
     private static final int GROUP_HELI = 11;
     private static final int GROUP_IFRA = 12;
-    private static final int GROUP_NUM = 13;
+    private static final int GROUP_VFRA = 13;
+    private static final int GROUP_NUM = 14;
     
     /**
      * @param context
@@ -104,6 +101,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
         mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
+        mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
         
         /*
          * Assign children file names
@@ -122,6 +120,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
+        mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
         /*
          * Allocate space for versions
@@ -141,6 +140,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
+        mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
         /*
          * Allocate space for checked charts
@@ -159,6 +159,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
         mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
+        mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
         
         /*
          * Get various bitmaps
