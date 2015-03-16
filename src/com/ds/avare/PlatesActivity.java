@@ -15,10 +15,12 @@ package com.ds.avare;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TreeMap;
 
 import com.ds.avare.Views.PlatesView;
 import com.ds.avare.animation.TwoButton;
@@ -496,66 +498,46 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Start with the plates in the /plates/ directory
                  */
-                String tmp0[] = null;
-                int len0 = 0;
                 if(null != airport) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
                             return fileName.endsWith(Preferences.IMAGE_EXTENSION);
                         }
                     };
-                    String plates[] = null;
                     
-                    plates = new File(mapFolder + "/plates/" + airport).list(filter);
-                    if(null != plates) {
-                        java.util.Arrays.sort(plates, new PlatesComparable());
-                        len0 = plates.length;
-                        tmp0 = new String[len0];
-                        for(int plate = 0; plate < len0; plate++) {
-                            /*
-                             * Add plates/AD
-                             */
-                            String tokens[] = plates[plate].split(Preferences.IMAGE_EXTENSION);
-                            tmp0[plate] = mapFolder + "/plates/" + airport + "/" +
-                                    tokens[0];
-                        }
+                    /*
+                     * TODO: RAS make this an async request (maybe just move all 
+                     * the loading to the background - especially if we get the last used 
+                     * chart loaded immediately)
+                     */
+
+                    String dplates[] = new File(mapFolder + "/plates/" + airport).list(filter);
+                    String aplates[] = new File(mapFolder + "/area/" + airport).list(filter);
+                    String mins[] = mService.getDBResource().findMinimums(airport);
+
+                    TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
+                    if (dplates != null) {
+                    	for(String plate : dplates) {
+	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+	                    	plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
+                    	}
                     }
-                }
-                
-                /*
-                 * Take off and alternate minimums
-                 */
-                /*
-                 * TODO: RAS make this an async request (maybe just move all 
-                 * the loading to the background - especially if we get the last used 
-                 * chart loaded immediately)
-                 */
-                String tmp2[] = mService.getDBResource().findMinimums(airport);
-                int len2 = 0;
-                if(null != tmp2) {
-                    len2 = tmp2.length;
-                    for(int min = 0; min < len2; min++) {
-                        /*
-                         * Add minimums with path
-                         */
-                        String folder = tmp2[min].substring(0, 1) + "/";
-                        tmp2[min] = mapFolder + "/minimums/" + folder + tmp2[min];
+                    if (aplates != null) {
+	                    for(String plate : aplates) {
+	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+	                    	plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
+	                    }
                     }
-                }
-                
-                /*
-                 * Now combine takeoff and alternate minimums with plates
-                 */
-                if(0 == len0 && 0 != len2) {
-                    mPlateFound = tmp2;
-                }
-                else if(0 != len0 && 0 == len2) {
-                    mPlateFound = tmp0;
-                }
-                else if(0 != len0 && 0 != len2) {
-                    mPlateFound = new String[len0 + len2];
-                    System.arraycopy(tmp0, 0, mPlateFound, 0, len0);
-                    System.arraycopy(tmp2, 0, mPlateFound, len0, len2);
+                    if(mins != null) {
+	                    for(String plate : mins) {
+	                        String folder = plate.substring(0, 1) + "/";
+	                    	plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
+	                    }
+                    }
+                    if(plates.size() > 0) {
+                    	mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
+                        mListPlates = new ArrayList<String>(plates.keySet());                        
+                    }
                 }
             }
 
@@ -564,12 +546,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-                
-                mListPlates.clear();
-                for(int plate = 0; plate < mPlateFound.length; plate++) {
-                    String tokens[] = mPlateFound[plate].split("/");
-                    mListPlates.add(tokens[tokens.length - 1]);
-                }   
                 
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);
@@ -739,7 +715,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {

@@ -204,8 +204,8 @@ public class DataSource {
      * @param name
      * @return
      */
-    public LinkedList<String> findFilesToDelete(String name) {
-        return dbHelper.findFilesToDelete(name);        
+    public LinkedList<String> findFilesToDelete(String name, String path) {
+        return dbHelper.findFilesToDelete(name, path);        
     }
 
     /**

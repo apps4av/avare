@@ -15,6 +15,7 @@ package com.ds.avare.storage;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -297,54 +298,57 @@ public class DataBaseHelper  {
         return ret;
     }
     
+    private String addPath(String name, String path) {
+    	return path + "/" + name;
+    }
+    
     /**
      * 
      * @param name
      * @return
      */
-    public LinkedList<String> findFilesToDelete(String name) {
+    public LinkedList<String> findFilesToDelete(String name, String path) {
         String dbs[] = mContext.getResources().getStringArray(R.array.ChartDbNames);
-
-        /*
-         * Dont delete level 4
-         */
-        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'"
-                + "and level != '4'";
 
         LinkedList<String> list = new LinkedList<String>();
         
         /*
          * This is to delete the main file, partially downloaded zip file
          */
-        list.add(name);
-        list.add(name + ".zip");
+        list.add(addPath(name, path));
+        list.add(addPath(name + ".zip", path));
         
         /*
          * Delete weather
          */
         if(name.equals("weather")) {
-            list.add(name + ".db");
+            list.add(addPath(name + ".db", path));
             return list;
         }
 
         if(name.equals("TFRs")) {
-            list.add("tfr.txt");
+            list.add(addPath("tfr.txt", path));
             return list;
         }
         
         if(name.equals("fuel")) {
-            list.add(name + ".db");
+            list.add(addPath(name + ".db", path));
             return list;
        }
         
        if(name.equals("ratings")) {
-           list.add(name + ".db");
+           list.add(addPath(name + ".db", path));
            return list;
        }
         
         if(name.equals("conus")) {
-            list.add("latest.txt");
-            list.add("latest_radaronly.png");
+            list.add(addPath("latest.txt", path));
+            list.add(addPath("latest_radaronly.png", path));
+            return list;
+        }
+
+        if(name.equals("alternates")) {
+            list.add(addPath("minimums", path));
             return list;
         }
 
@@ -352,7 +356,7 @@ public class DataBaseHelper  {
          * Delete georef
          */
         if(name.equals("geoplates")) {
-            list.add(name + ".db");
+            list.add(addPath(name + ".db", path));
             return list;
         }
 
@@ -361,12 +365,43 @@ public class DataBaseHelper  {
          */
         if(name.startsWith("databases") && dbs != null) {
             for(int i = 0; i < dbs.length; i++) {
-                list.add(dbs[i]);
+                list.add(addPath(dbs[i], path));
             }
-            list.add(getMainDb());
+            list.add(addPath(getMainDb(), path));
             return list;                    
         }
 
+        /*
+         * Delete A/FD
+         */
+        if(name.startsWith("AFD_")) {
+
+        	final String loc = name.split("_")[1].toLowerCase(Locale.US); // AFD names are lower case
+
+        	FilenameFilter filter = new FilenameFilter() {
+        		@Override
+                public boolean accept(File dir, String namef) {
+        			if(namef.startsWith(loc)) {
+                        return true;
+        			}
+        			return false;
+        		}
+            };
+
+        	String files[] = new File(addPath("afd/", path)).list(filter);
+        	for(String file : files) {
+        		list.add(addPath("afd/" + file, path));
+        	}
+
+            return list;                    
+        }
+
+        /*
+         * If none of the above then its tiles
+         * Dont delete level 4
+         */
+        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'"
+                + "and level != '4'";
         /*
          * Delete files from all databases
          */
@@ -376,7 +411,7 @@ public class DataBaseHelper  {
             try {
                 if(cursor != null) {
                     for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                        list.add(cursor.getString(0));
+                        list.add(addPath(cursor.getString(0), path));
                     }
                 }
             }
@@ -387,15 +422,20 @@ public class DataBaseHelper  {
         }
         
         /*
-         * Now plates.
+         * Now plates: d-tpp / area
          */
-        query = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS + " where State=\"" + name + "\";";
+        query = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS + " where State=\"" + name.replace("Area", "") + "\";";
         Cursor cursor = doQuery(query, getMainDb());
 
         try {
             if(cursor != null) {
                 for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                    list.add("plates/" + cursor.getString(0));
+                	if(name.contains("Area")) {
+                        list.add(addPath("area/" + cursor.getString(0), path));
+                	}
+                	else {
+                		list.add(addPath("plates/" + cursor.getString(0), path));
+                	}
                 }
             }
         }
