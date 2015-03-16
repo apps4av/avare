@@ -480,6 +480,14 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the popout
                      */
                 	mAirportPressed = data.airport;
+                	if(mAirportPressed.contains("&")) {
+                		mPlatesButton.setEnabled(false);
+                		mAfdButton.setEnabled(false);
+                	}
+                	else {
+                		mPlatesButton.setEnabled(true);
+                		mAfdButton.setEnabled(true);
+                	}
                     mCrossButton.setText(data.airport + "\n" + data.info);
                     mDestLayout.setVisibility(View.VISIBLE);
 
@@ -603,9 +611,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 if(null != mAirportPressed) {
-                    if(mAirportPressed.contains("&")) {
-                    	return;
-                    }
                     if(mService != null) {
                         mService.setLastPlateAirport(mAirportPressed);
                         mService.setLastPlateIndex(0);
@@ -623,9 +628,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 if(null != mAirportPressed) {                    
-                    if(mAirportPressed.contains("&")) {
-                    	return;
-                    }
                     if(mService != null) {
                         mService.setLastAfdAirport(mAirportPressed);
                         ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
