@@ -63,7 +63,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -115,6 +114,8 @@ public class LocationActivity extends Activity implements Observer {
     private Button mCrossButton;
     private Button mPrefButton;
     private Button mPlanButton;
+    private Button mPlatesButton;
+    private Button mAfdButton;
     private Button mDownloadButton;
     private Button mMenuButton;
     private RelativeLayout mDestLayout;
@@ -127,8 +128,6 @@ public class LocationActivity extends Activity implements Observer {
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
     private boolean mSpinner;
-    private TextView mInfoText;
-    private TextView mChartText;
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
     private AnimateButton mAnimateWeb;
@@ -137,6 +136,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateHelp;
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
+    private String mAirportPressed;
     
     private ExpandableListView mListPopout;
     
@@ -477,20 +477,19 @@ public class LocationActivity extends Activity implements Observer {
 
                 if(GestureInterface.LONG_PRESS == event) {
                     /*
-                     * Show the animation button for dest
+                     * Show the popout
                      */
-                    mInfoText.setText(data.info);
-                    mChartText.setText(data.chart);
+                	mAirportPressed = data.airport;
+                    mCrossButton.setText(data.airport + "\n" + data.info);
+                    mDestLayout.setVisibility(View.VISIBLE);
+
+                    // This allows unsetting the destination that is same as current
                     if(isSameDest(data.airport)) {
-                        mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.remove, 0, 0, 0);
                         mDestButton.setText(getString(R.string.Delete));
                     }
                     else {
-                        mDestButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.direct, 0, 0, 0);
-                        mDestButton.setText(getString(R.string.Destination));
+                        mDestButton.setText(getString(R.string.ShortDestination));
                     }
-                    mCrossButton.setText(data.airport);
-                    mDestLayout.setVisibility(View.VISIBLE);
                     
                     /*
                      * Now populate the pop out weather etc.
@@ -502,11 +501,7 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
-        mInfoText = (TextView)view.findViewById(R.id.location_text_info);
-        mChartText = (TextView)view.findViewById(R.id.location_text_chart);
-
         mListPopout = (ExpandableListView)view.findViewById(R.id.location_list_popout);
-
         mChartSpinner = (Spinner)view.findViewById(R.id.location_spinner_chart);
         mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             
@@ -601,18 +596,60 @@ public class LocationActivity extends Activity implements Observer {
             
         });
 
+        mPlatesButton = (Button)view.findViewById(R.id.location_button_plate);
+        mPlatesButton.getBackground().setAlpha(255);
+        mPlatesButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mAirportPressed) {
+                    if(mAirportPressed.contains("&")) {
+                    	return;
+                    }
+                    if(mService != null) {
+                        mService.setLastPlateAirport(mAirportPressed);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                    }
+                    mAirportPressed = null;
+                }
+            }
+        });        
+
+        mAfdButton = (Button)view.findViewById(R.id.location_button_afd);
+        mAfdButton.getBackground().setAlpha(255);
+        mAfdButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mAirportPressed) {                    
+                    if(mAirportPressed.contains("&")) {
+                    	return;
+                    }
+                    if(mService != null) {
+                        mService.setLastAfdAirport(mAirportPressed);
+                        ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
+                        mAirportPressed = null;
+                    }
+                }
+            }
+        });        
+
+
         mPlanButton = (Button)view.findViewById(R.id.location_button_plan);
         mPlanButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Button b = mCrossButton;
-                
+                if(null == mAirportPressed) {
+                	return;
+                }
                 String type = Destination.BASE;
-                if(b.getText().toString().contains("&")) {
+                if(mAirportPressed.contains("&")) {
                     type = Destination.GPS;
                 }
-                planTo(b.getText().toString(), type);
+                planTo(mAirportPressed, type);
+                mAirportPressed = null;
             }            
         });
 
@@ -680,11 +717,14 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * On click, find destination that was pressed on in view
                  */
-                Button b = mCrossButton;
+                if(null == mAirportPressed) {
+                	return;
+                }
                 /*
                  * If button pressed was a destination go there, otherwise if none, then delete current dest
                  */
-                String dest = b.getText().toString();
+                String dest = mAirportPressed;
+                mAirportPressed = null;
                 if(mDestButton.getText().toString().equals(getString(R.string.Delete))) {
                     mService.setDestination(null);
                     mDestLayout.setVisibility(View.INVISIBLE);

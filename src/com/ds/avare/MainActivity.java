@@ -226,5 +226,11 @@ public class MainActivity extends TabActivity {
         switchTab(tabPlates);
     }
 
+    /**
+     * Show the AFD view 
+     */
+    public void showAfdTab() {
+        switchTab(tabAFD);
+    }
 
 }

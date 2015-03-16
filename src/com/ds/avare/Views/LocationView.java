@@ -758,7 +758,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(empty >= tn) {
                 mMsgPaint.setColor(Color.WHITE);
                 mService.getShadowedText().draw(canvas, mMsgPaint,
-                        mContext.getString(R.string.MissingMaps), 
+                        mContext.getString(R.string.MissingMaps) + "- " + mOnChart, 
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
@@ -1845,7 +1845,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
-                mLongTouchDestination.chart = mOnChart;
 
                 /*
                  * Clear old weather

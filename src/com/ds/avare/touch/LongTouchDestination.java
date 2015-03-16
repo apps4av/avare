@@ -28,7 +28,6 @@ public class LongTouchDestination {
 
     public String airport;
     public String info;
-    public String chart;
     public String tfr;
     public String mets;
     public Taf taf;

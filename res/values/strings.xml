@@ -11,7 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Download charts for this area&quot;</string>
+    <string name="MissingMaps">&quot;Download chart&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
@@ -402,4 +402,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Ratings">Ratings</string>
     <string name="APRatings">Ratings for the airport, and the FBOs</string>
     <string name="InvalidComments">Your comments must be longer than thirty characters</string>    
+    <string name="ShortDestination">Dest.</string>    
 </resources>
