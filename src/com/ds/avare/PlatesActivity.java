@@ -753,7 +753,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
      * @return
      */
     public static boolean doesAirportHavePlates(String mapFolder, String id) {
-        return new File(mapFolder + "/plates/" + id).exists();
+        return new File(mapFolder + "/plates/" + id).exists() || new File(mapFolder + "/area/" + id).exists();
     }
     
     /**
