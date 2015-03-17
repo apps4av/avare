@@ -24,7 +24,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:visibility="invisible"/>   
     
-    <com.ds.avare.Views.PlatesView
+    <com.ds.avare.views.PlatesView
         android:background="#FF000000"
         android:id="@+id/plates"
         android:layout_below="@+id/plates_header"

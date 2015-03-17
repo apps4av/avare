@@ -18,7 +18,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.ds.avare.R;
-import com.ds.avare.Views.LocationView;
 import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
@@ -37,6 +36,7 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.views.LocationView;
 
 import android.location.GpsStatus;
 import android.location.Location;

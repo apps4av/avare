@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.ds.avare.Views.AfdView;
 import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
@@ -29,6 +28,7 @@ import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.AfdView;
 
 import android.app.Activity;
 import android.app.AlertDialog;

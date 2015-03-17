@@ -18,11 +18,11 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.ds.avare.R;
-import com.ds.avare.Views.SatelliteView;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.SatelliteView;
 
 import android.location.GpsStatus;
 import android.location.Location;

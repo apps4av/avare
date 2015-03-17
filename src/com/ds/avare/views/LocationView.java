@@ -9,7 +9,7 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.Views;
+package com.ds.avare.views;
 
 
 import java.util.LinkedList;
@@ -784,7 +784,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(3 * mDipToPix);
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
-                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
+                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), true);
             }
         }
         
@@ -859,7 +859,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 if(met.shape != null && color != 0) {
                     mPaint.setColor(color);
-                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
+                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), true);
                 }
             }
         }
@@ -1027,16 +1027,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         if(mService.getDestination() != null && null == mPointProjection) {
-            if(mPref.isTrackEnabled()) {
-                mPaint.setColor(Color.MAGENTA);
-                mPaint.setStrokeWidth(5 * mDipToPix);
-                mPaint.setAlpha(162);
-                if(mService.getDestination().isFound() && !mService.getPlan().isActive()  && (!mPref.isSimulationMode())) {
-                    mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
-                }
-                else if (mService.getPlan().isActive()) {
-                    mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());                    
-                }
+            mPaint.setColor(Color.MAGENTA);
+            mPaint.setStrokeWidth(5 * mDipToPix);
+            mPaint.setAlpha(162);
+            if(mService.getDestination().isFound() && !mService.getPlan().isActive()  && (!mPref.isSimulationMode())) {
+                mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.isTrackEnabled());
+            }
+            else if (mService.getPlan().isActive()) {
+                mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.isTrackEnabled()); 
             }
             if(!mPref.isSimulationMode()) {
                 /*
@@ -1279,7 +1277,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
+        if(null == mPointProjection) {
                 
             /*
              *  Set the brush color and width
@@ -1288,7 +1286,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
-            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode());
+            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.shouldDrawTracks());
         }
     }
 

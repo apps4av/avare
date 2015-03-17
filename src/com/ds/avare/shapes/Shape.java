@@ -93,7 +93,7 @@ public abstract class Shape {
      * @param movement
      * @param paint
      */
-    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, Typeface face, boolean night) {
+    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, Typeface face, boolean night, boolean drawTrack) {
         
         float x = (float)origin.getOffsetX(mLonMin);
         float y = (float)origin.getOffsetY(mLatMax);
@@ -120,12 +120,14 @@ public abstract class Shape {
                 float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
                 float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
                 float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
-                paint.setStrokeWidth(width + 4);
-                paint.setColor(night? Color.WHITE : Color.BLACK);
-                c.drawLine(x1, y1, x2, y2, paint);
-                paint.setStrokeWidth(width);
-                paint.setColor(color);
-                c.drawLine(x1, y1, x2, y2, paint);
+                if(drawTrack) {
+	                paint.setStrokeWidth(width + 4);
+	                paint.setColor(night? Color.WHITE : Color.BLACK);
+	                c.drawLine(x1, y1, x2, y2, paint);
+	                paint.setStrokeWidth(width);
+	                paint.setColor(color);
+	                c.drawLine(x1, y1, x2, y2, paint);
+                }
                 if(mCoords.get(coord + 1).isSeparate()) {
                     paint.setColor(night? Color.WHITE : Color.BLACK);
                     c.drawCircle(x2, y2, 10, paint);

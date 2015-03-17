@@ -22,7 +22,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeMap;
 
-import com.ds.avare.Views.PlatesView;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
@@ -33,6 +32,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.PlatesView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
