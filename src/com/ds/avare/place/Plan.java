@@ -497,7 +497,7 @@ public class Plan implements Observer {
      * @param lon
      * @param lat
      */
-    public int findClosePointId(double lon, double lat) {
+    public int findClosePointId(double lon, double lat, double factor) {
         if (mActive) {
             int num = getDestinationNumber();
             for (int id = 0; id < num; id++) {
@@ -506,7 +506,7 @@ public class Plan implements Observer {
                 double lat1 = l.getLatitude();
                 double dist = (lon - lon1) * (lon - lon1) + (lat - lat1)
                         * (lat - lat1);
-                if (dist < Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE) {
+                if (dist < (Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE / factor)) {
                     return id;
                 }
             }
