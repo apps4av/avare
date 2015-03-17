@@ -21,16 +21,15 @@ import com.ds.avare.storage.Preferences;
 public class DisplayIcon {
 	public static BitmapHolder getDisplayIcon(Context ctx, Preferences pref) {
 		switch (pref.getDisplayIcon()) {
-			case 0:
-				return new BitmapHolder(ctx, R.drawable.plane);
 			case 1:
 				return new BitmapHolder(ctx, R.drawable.heli);
 			case 2:
 				return new BitmapHolder(ctx, R.drawable.canard);
 			case 3:
+				return new BitmapHolder(ctx, R.drawable.plane_green);
+			case 4:
 				return null;
-				
-				// Always return a bitmap to display
+			case 0:
 			default:
 				return new BitmapHolder(ctx, R.drawable.plane);
 		}
