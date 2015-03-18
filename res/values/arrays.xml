@@ -277,7 +277,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 	</string-array>
     <string-array name="resNameVFRAreaPlate">
-        <item>VFR Area Alabama</item>
+        <item>VFR Area Canada</item>
+    	<item>VFR Area Alabama</item>
         <item>VFR Area Alaska</item>
         <item>VFR Area Arizona</item>
         <item>VFR Area Arkansas</item>
@@ -641,7 +642,8 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesVFRAreaPlate">
-        <item>AreaAL</item>
+        <item>AreaCN</item>
+    	<item>AreaAL</item>
         <item>AreaAK</item>
         <item>AreaAZ</item>
         <item>AreaAR</item>
