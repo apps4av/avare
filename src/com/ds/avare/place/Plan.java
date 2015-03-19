@@ -66,6 +66,7 @@ public class Plan implements Observer {
     private String mName;
     private boolean mEarlyPass;
     private boolean mEarlyPassEvent;
+    private boolean mSuspend = false;
 
     /**
      * 
@@ -344,18 +345,20 @@ public class Plan implements Observer {
             }
         }
 
-        if (num > 0) {
-            mBearing = mDestination[findNextNotPassed()].getBearing();
-            if (mPassage.updateLocation(params,
-                    mDestination[findNextNotPassed()])) {
-                /*
-                 * Passed. Go to next. Only when active
-                 */
-                if (mActive) {
-                    mPassed[findNextNotPassed()] = true;
-                    mDestChanged = true;
-                }
-            }
+        if(false == mSuspend) {
+	        if (num > 0) {
+	            mBearing = mDestination[findNextNotPassed()].getBearing();
+	            if (mPassage.updateLocation(params,
+	                    mDestination[findNextNotPassed()])) {
+	                /*
+	                 * Passed. Go to next. Only when active
+	                 */
+	                if (mActive) {
+	                    mPassed[findNextNotPassed()] = true;
+	                    mDestChanged = true;
+	                }
+	            }
+	        }
         }
         mEte = Helper.calculateEte(mPref.useBearingForETEA() && (!isActive()), mDistance,
                 params.getSpeed(), mBearing, params.getBearing());
@@ -455,6 +458,7 @@ public class Plan implements Observer {
             Coordinate coord[] = p.findPoints(segments);
 
             coord[0].makeSeparate();
+            Coordinate.setLeg(coord, id - 1);
             if (null == c) {
                 c = coord;
             } else {
@@ -641,7 +645,7 @@ public class Plan implements Observer {
         double mCurrentDistance;
         double mCurrentBearing;
         double mSpeed;
-
+        
         // Use this to set early pass flag, meaning we are close to our dest.
         private static final double EARLY_PASS_THRESHOLD = 20; // seconds
 
@@ -718,6 +722,7 @@ public class Plan implements Observer {
          * @param params
          */
         public boolean updateLocation(GpsParams params, Destination nextDest) {
+        	
             Projection p = new Projection(params.getLongitude(),
                     params.getLatitude(),
                     nextDest.getLocation().getLongitude(), nextDest
@@ -748,7 +753,6 @@ public class Plan implements Observer {
             mLastBearing = mCurrentBearing;
             return ret;
         }
-
     }
 
     // Regress to the PREVIOUS waypoint in the plan
@@ -776,6 +780,12 @@ public class Plan implements Observer {
         setPassed(notpassed);
         Destination dest = getDestination(notpassed + 1);
         mService.setDestinationPlanNoChange(dest);
+    }
+    
+    // Suspend the algorithm that determines waypoint passage
+    public boolean suspendResume() {
+    	mSuspend = !mSuspend;
+    	return mSuspend;
     }
 
     /**

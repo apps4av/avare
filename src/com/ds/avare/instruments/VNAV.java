@@ -123,7 +123,7 @@ public class VNAV {
         mInstTop = (screenY - mInstHeight) / 2;
 
         // Now the left side
-        mInstLeft  = screenX - mInstWidth; // Right side of display
+        mInstLeft  = screenX - (int) (mInstWidth * 1.75); // Right side of display
 	    
         // Draw the background
 	    mVNAVPaint.setColor(mBackColor);// Color

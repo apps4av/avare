@@ -226,6 +226,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/Background"
             android:summary="@string/BackgroundSummary"
             android:title="@string/BackgroundLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefPlanControl"
+            android:summary="@string/prefPlanControlSummary"
+            android:title="@string/prefPlanControlLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DisplayIconPrompt"

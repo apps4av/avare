@@ -1042,4 +1042,7 @@ public class Preferences {
         mPref.edit().putString(mContext.getString(R.string.Email), email).commit();
 	}
 
+	public boolean getPlanControl() {
+		return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
+	}
 }

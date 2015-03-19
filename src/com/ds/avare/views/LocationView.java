@@ -429,7 +429,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(mService != null) {
                 /*
                  * Find if this is close to a plan point. Do rubber banding if true
-                 * This is where rubberbanding starts. Adjust rubberband for scale
+                 * This is where rubberbanding starts
                  */
                 if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
                     double lon = mOrigin.getLongitudeOf(e.getX());
@@ -784,7 +784,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(3 * mDipToPix);
             mPaint.setShadowLayer(0, 0, 0, 0);
             for(int shape = 0; shape < shapes.size(); shape++) {
-                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), true);
+                shapes.get(shape).drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), true);
             }
         }
         
@@ -859,7 +859,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 if(met.shape != null && color != 0) {
                     mPaint.setColor(color);
-                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), true);
+                    met.shape.drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), true);
                 }
             }
         }
@@ -1031,11 +1031,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(5 * mDipToPix);
             mPaint.setAlpha(162);
             if(mService.getDestination().isFound() && !mService.getPlan().isActive()  && (!mPref.isSimulationMode())) {
-                mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.isTrackEnabled());
+                mService.getDestination().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), mPref.isTrackEnabled());
+            } else if (mService.getPlan().isActive()) {
+                mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), mPref.isTrackEnabled(), mService.getPlan());                    
             }
-            else if (mService.getPlan().isActive()) {
-                mService.getPlan().getTrackShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.isTrackEnabled()); 
-            }
+
             if(!mPref.isSimulationMode()) {
                 /*
                  * Draw actual track
@@ -1277,7 +1277,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(mService == null) {
             return;
         }
-        if(null == mPointProjection) {
+        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
                 
             /*
              *  Set the brush color and width
@@ -1286,7 +1286,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
-            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mFace, mPref.isNightMode(), mPref.shouldDrawTracks());
+            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), true);
         }
     }
 

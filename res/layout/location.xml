@@ -84,6 +84,36 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/menu"
             android:visibility="visible" />
 
+        <Button
+            android:id="@+id/plan_prev"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/plan_pause"
+            android:drawableLeft="@drawable/prev"
+            android:visibility="invisible" />
+
+        <ImageButton
+            android:id="@+id/plan_pause"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/plan_next"
+            android:src="@drawable/suspend"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/plan_next"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/location_button_tracks"
+            android:drawableLeft="@drawable/next"
+            android:visibility="invisible" />
+
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_tracks"
             android:layout_height="wrap_content"

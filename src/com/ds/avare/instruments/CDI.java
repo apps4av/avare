@@ -26,27 +26,27 @@ import android.graphics.Rect;
  * Implementation of a Course Deviation Indicator
  */
 public class CDI {
-	Paint mCDIPaint;	// Our very own paint object
-	Rect  mTextSize;	// Used to determine text bounds
-	int   mBarCount;	// How many bars to display
-	float mBarWidth;	// Display width of 1 bar
-	float mBarHeight;	// How tall is each bar
-	float mBarSpace;	// Width of the space between bars
-	float mInstWidth;	// Total width of the instrument
-	float mInstHeight;	// Total height of the instrument
-	float mInstTop;		// The top line of the CDI
-	float mInstLeft;	// Left position of the CDI
+	Paint 	mCDIPaint;	// Our very own paint object
+	Rect  	mTextSize;	// Used to determine text bounds
+	int   	mBarCount;	// How many bars to display
+	int   	mBarWidth;	// Display width of 1 bar
+	int		mBarHeight;	// How tall is each bar
+	int		mBarSpace;	// Width of the space between bars
+	int 	mInstWidth;	// Total width of the instrument
+	int 	mInstHeight;	// Total height of the instrument
+	int 	mInstTop;		// The top line of the CDI
+	int 	mInstLeft;	// Left position of the CDI
 	final int mColorLeft   = Color.RED;
 	final int mColorRight  = Color.rgb(0x00,0xa0,0x00);
-	private float mBarDegrees = BAR_DEGREES_VOR;
+	private double mBarDegrees = BAR_DEGREES_VOR;
 
 	// Calc'd instrument values
-	float	mDspOffset;	// Display offset value for deviation
+	int		mDspOffset;	// Display offset value for deviation
 	double 	mDeviation;	// How far off course are we
 	int		mBackColor;	// Background color of inst
 	
-    private static final float BAR_DEGREES_VOR = 2f;
-    private static final float BAR_DEGREES_LOC = 0.5f;
+    private static final double BAR_DEGREES_VOR = 2f;
+    private static final double BAR_DEGREES_LOC = 0.5f;
 
 	/***
 	 * Return the actual course deviation value. It's an absolute
@@ -117,7 +117,7 @@ public class CDI {
 	 * @param screenX Total width of the display canvas
 	 * @param screenY Total height of the display canvas
 	 */
-	public void drawCDI(Canvas canvas, float screenX, float screenY)
+	public void drawCDI(Canvas canvas, int screenX, int screenY)
 	{
 		// Calculate the left position of the instrument
         mInstLeft = (screenX - mInstWidth) / 2;
@@ -133,7 +133,7 @@ public class CDI {
 	    
 	    // Draw the background of the instrument. This is a horo swipe left to right,
 	    // so we need to specify the vertical middle as the source Y, not the top
-	    float instCenterY = mInstTop + mInstHeight / 2;
+	    int instCenterY = mInstTop + mInstHeight / 2;
         canvas.drawLine(mInstLeft, instCenterY, mInstLeft + mInstWidth, instCenterY, mCDIPaint);
 
         // Draw all of the vertical bars
@@ -145,8 +145,8 @@ public class CDI {
         }
 	    mCDIPaint.setStrokeWidth(mBarWidth);	// Width of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
-	        float extend = (idx == (int)(mBarCount / 2)) ? mInstHeight / 3 : 0;
-	    	float barLeft = mInstLeft + mBarWidth * (float) 1.5 + 
+	        int extend = (idx == (int)(mBarCount / 2)) ? mInstHeight / 3 : 0;
+	    	int barLeft = mInstLeft + (int)((float)mBarWidth * 1.5) + 
 	    			idx * (mBarWidth + mBarSpace);
 	        canvas.drawLine(barLeft, mInstTop + mBarWidth, barLeft, 
 	        		mInstTop + mBarHeight + mBarWidth + extend, mCDIPaint);
@@ -162,19 +162,19 @@ public class CDI {
 	 * @param canvas what to draw upon
 	 * @param posX left/right center position of the pointer
 	 */
-	private void drawIndicator(Canvas canvas, float posX)
+	private void drawIndicator(Canvas canvas, int posX)
 	{
 		// Top point
-	    float X1 = posX;
-	    float Y1 = mInstTop + mBarHeight + 2 * mBarWidth;
+	    int X1 = posX;
+	    int Y1 = mInstTop + mBarHeight + 2 * mBarWidth;
 	    
 	    // Bottom right point
-	    float X2 = X1 + mBarHeight / 4;
-	    float Y2 = Y1 + mBarHeight / 2;
+	    int X2 = X1 + mBarHeight / 4;
+	    int Y2 = Y1 + mBarHeight / 2;
 	    
 	    // Bottom left point
-	    float X3 = X1 - mBarHeight / 4;
-	    float Y3 = Y2;
+	    int X3 = X1 - mBarHeight / 4;
+	    int Y3 = Y2;
 
 	    mCDIPaint.setColor(Color.WHITE);	// white
 	    mCDIPaint.setStrokeWidth(5);		// Line width
@@ -212,13 +212,14 @@ public class CDI {
 		// waypoint in the plan to the current destination as long as we are passed
 		// the first waypoint.
 		double brgOrg;
+		int nnp;
 
 		// Are we passed the first waypoint on an active plan ?  
-		if ((null != plan) && (true == plan.isActive()) && (plan.findNextNotPassed() > 0)) {
+		if ((null != plan) && (true == plan.isActive()) && ((nnp = plan.findNextNotPassed()) > 0)) {
 			// We have an active plan and beyond the first waypoint. 
 			// Calc our deviation using the
 			// previous waypoint and our current destination
-			Destination prevDest = plan.getDestination(plan.findNextNotPassed() - 1);
+			Destination prevDest = plan.getDestination(nnp - 1);
 			brgOrg = Projection.getStaticBearing(
 					prevDest.getLocation().getLongitude(),
 					prevDest.getLocation().getLatitude(),
@@ -260,10 +261,11 @@ public class CDI {
 		mDeviation = dstCur * Math.sin(Math.toRadians(brgDif));
 
 		// The amount of display offset varies depending upon how large the deviation is
-		if(brgDif > mBarDegrees * ((float)mBarCount - 1) / 2f) {
-		    brgDif = mBarDegrees * ((float)mBarCount - 1) / 2f;
+		double maxDeflection = mBarDegrees * (double)(mBarCount - 1) / 2f; 
+		if(brgDif > maxDeflection) {
+		    brgDif = maxDeflection;
 		}
-        mDspOffset = (mBarWidth + mBarSpace) * (float) (brgDif / mBarDegrees);
+        mDspOffset = (int) ((mBarWidth + mBarSpace) * (brgDif / mBarDegrees));
 
 		// Assume we are to the RIGHT of the courseline
 		mBackColor = mColorRight;

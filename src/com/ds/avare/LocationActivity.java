@@ -28,6 +28,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
@@ -59,6 +60,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -137,6 +139,11 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
+    
+    private Button mPlanPrev;
+    private ImageButton mPlanPause;
+    private Button mPlanNext;
+
     
     private ExpandableListView mListPopout;
     
@@ -881,6 +888,63 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
+        // The Flight Plan Prev button collection. There are 3, Previous, Pause,
+        // and next. They are only visible when a plan has been loaded and 
+        // activated.
+        
+        // Previous - set next destination to the previous waypoint
+        mPlanPrev = (Button)view.findViewById(R.id.plan_prev);
+        mPlanPrev.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if(null != mService) {
+					Plan activePlan = mService.getPlan();
+					if(true == activePlan.isActive()) {
+						activePlan.regress();
+					}
+				}
+			}
+        	
+        });
+        
+        // Pause - Do no process any waypoint passage logic
+        mPlanPause = (ImageButton)view.findViewById(R.id.plan_pause);
+        mPlanPause.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if(null != mService) {
+					Plan activePlan = mService.getPlan();
+					if(null != activePlan) {
+						if(true == activePlan.suspendResume()) { 
+							mPlanPause.setImageResource(R.drawable.resume);
+						} else {
+							mPlanPause.setImageResource(R.drawable.suspend);
+						}
+					}
+				}
+			}
+        	
+        });
+        
+        // Next - advance the destination to the next waypoint
+        mPlanNext = (Button)view.findViewById(R.id.plan_next);
+        mPlanNext.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if(null != mService) {
+					Plan activePlan = mService.getPlan();
+					if(true == activePlan.isActive()) {
+						activePlan.advance();
+					}
+				}
+			}
+        	
+        });
+        
+
     }    
 
     private void setTrackState(boolean bState)
@@ -1080,6 +1144,24 @@ public class LocationActivity extends Activity implements Observer {
         }
 
         mDestLayout.setVisibility(View.INVISIBLE);
+
+        // Determine if we should be displaying the flight plan control buttons
+        int mPlanButtons = View.INVISIBLE;
+        if (null != mService) {
+	        Plan activePlan = mService.getPlan();
+	        if (null != activePlan) {
+	        	if (true == activePlan.isActive()) {
+	        		if (true == mPref.getPlanControl()) {
+	        			mPlanButtons = View.VISIBLE;
+	        		}
+	        	}
+	        }
+        }
+        
+        // Set the flight plan button visibility
+        mPlanPrev.setVisibility(mPlanButtons);
+        mPlanPause.setVisibility(mPlanButtons);
+        mPlanNext.setVisibility(mPlanButtons);
 
     }
     

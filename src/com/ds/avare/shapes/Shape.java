@@ -13,6 +13,7 @@ package com.ds.avare.shapes;
 
 import java.util.LinkedList;
 
+import com.ds.avare.place.Plan;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
@@ -61,10 +62,16 @@ public abstract class Shape {
      * @param coords
      */
     public void add(double lon, double lat, boolean issep) {
+    	add(lon,lat,issep, 0);
+    }
+    
+    public void add(double lon, double lat, boolean issep, int segment) {
         Coordinate c = new Coordinate(lon, lat);
         if(issep) {
             c.makeSeparate();
         }
+        c.setSegment(segment);
+        
         mCoords.add(c);
         mPolyBuilder.addVertex(new Point((float)lon, (float)lat));
         
@@ -85,6 +92,10 @@ public abstract class Shape {
         }
     }
 
+    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack) {
+    	drawShape(c, origin, scale,movement,paint,night, drawTrack, null);
+    }
+    
     /**
      * This will draw the closed shape in canvas with given screen params
      * @param c
@@ -93,8 +104,7 @@ public abstract class Shape {
      * @param movement
      * @param paint
      */
-    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, Typeface face, boolean night, boolean drawTrack) {
-        
+	public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack, Plan plan) {
         float x = (float)origin.getOffsetX(mLonMin);
         float y = (float)origin.getOffsetY(mLatMax);
         float sx = scale.getScaleFactor();
@@ -110,25 +120,36 @@ public abstract class Shape {
          */
         float width = paint.getStrokeWidth();
         int color = paint.getColor();
+        
+        // TrackShape type is used for a flight plan destination
         if (this instanceof TrackShape) {
             
             /*
              * Draw background on track shapes, so draw twice
              */
-            for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
+        	int cMax = getNumCoords();
+            for(int coord = 0; coord < (cMax - 1); coord++) {
                 float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
                 float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
                 float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
                 float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
+
                 if(drawTrack) {
 	                paint.setStrokeWidth(width + 4);
 	                paint.setColor(night? Color.WHITE : Color.BLACK);
 	                c.drawLine(x1, y1, x2, y2, paint);
 	                paint.setStrokeWidth(width);
-	                paint.setColor(color);
+
+	                if(null == plan) {
+	                	paint.setColor(color);
+	                } else {
+	                	paint.setColor(TrackShape.getLegColor(plan.findNextNotPassed(), mCoords.get(coord).getLeg()));
+	                }
+
 	                c.drawLine(x1, y1, x2, y2, paint);
                 }
-                if(mCoords.get(coord + 1).isSeparate()) {
+
+				if(mCoords.get(coord + 1).isSeparate()) {
                     paint.setColor(night? Color.WHITE : Color.BLACK);
                     c.drawCircle(x2, y2, 10, paint);
                     paint.setColor(Color.GREEN);
@@ -143,8 +164,7 @@ public abstract class Shape {
                     paint.setColor(color);
                 }
             }
-        }
-        else {
+        } else {
             /*
              * Draw the shape segment by segment
              */
