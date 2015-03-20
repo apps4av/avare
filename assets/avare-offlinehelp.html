@@ -36,15 +36,19 @@ then just <b>press the Map, Options, Download and Update buttons</b> in Avare.<b
 
 <h3>Avare Releases</h3>
 
-<b>6.0.4</b> Bug fixes. <br>
-<b>6.0.3</b> Made CDI/VDI instruments bigger. Added runway length selection for Near in Preferences.
-<br>
-<b>6.0.2</b> Fixed donation link, and prepared to run properly with the new IO module.
-<br>
-<b>6.0.1</b> Fixed CDI/VDI in Plan mode.
-<br>
-<b>6.0.0</b> Fixed various bugs. Added navigation logs from 1800wxbrief.com.
-<br>
+<b>6.0.5</b><br>
+
+<li>Added Fuel Tank Change Reminder / Timer</li>
+<li>Fixed rounding issues in CDI</li>
+<li>Added VFR area plates/airport diagrams for US, Canada. See help below</li>
+<li>Fixed some issues with rubberbanding</li>
+<li>Added a green airplane icon</li>
+<li>Layout changes for long press pop out</li>
+<li>Fixed some issues with deleting files, and made download issues more verbose</li>
+<li>User can now share ratings/comments for airports, FBOs</li>
+<li>User can now share fuel prices</li>
+<li>User can now choose the registration account email</li>
+<li>Various optimizations, and bug fixes</li>
 
 <h3>Avare Help Choices</h3>
 
@@ -527,6 +531,23 @@ parse all these files to generate a combined view of your POIs.
 However, the user may only define 100 POIs in all files combined.<br>
 </p>
 
+<p>• <b>Fuel Tank Reminders</b><br>
+The fuel tank reminder is implemented as a display instrument that is selectable in any field of the top two status lines. 
+To enable it, double tap the display field you wish to use for it, and select "Fuel Tank Switch Timer" from the list. 
+The timer starts up at 30 minutes and will count down to zero. It is initially suspended/stopped. 
+Single tap the display field to toggle start/stop the timer value. 
+When the value reaches zero, a dialog is displayed indicating "Switch Fuel Tanks". 
+You must hit the OK button to dismiss it. The timer will self-reset to 30 minutes to begin the cycle all over again.
+<br>
+The long press gesture on the fuel tank field will reset the countdown timer to 30 minutes.
+</p>
+
+<p>• <b>Area Plates</b><br>
+Avare provides plates for the airports (US, Canada) that do not have airport diagrams available. 
+You can download these plates from the Download menu, under the VFR Area Plates category. 
+All these plates are Geo. referenced, but to show your position on these plates, you will need to
+download the Plates Georeference Info. under the Databases category.  
+</p>
 
 <p>
 </p>

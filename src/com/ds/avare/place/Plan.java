@@ -647,19 +647,15 @@ public class Plan implements Observer {
         double mSpeed;
         
         // Use this to set early pass flag, meaning we are close to our dest.
-        private static final double EARLY_PASS_THRESHOLD = 20; // seconds
+        private static final double EARLY_PASS_THRESHOLD = 23; // seconds
 
         // The idea is to adjust the passage distance to lower value near the
         // airport to
         // have the approaches work properly.
-        // For enroute 30+ NM, your pass zone is 4 NM
-        private static final double PASSAGE_ENROUTE_DISTANCE_MIN = 4;
+        // For enroute 8+ NM, your pass zone is 2 NM
+        private static final double PASSAGE_ENROUTE_DISTANCE_MIN = 2;
 
-        // For terminal (8-30NM), your pass zone is 2 miles
-        private static final double PASSAGE_TERMINAL_DISTANCE_MIN = 2;
-        private static final double PASSAGE_TERMINAL_DISTANCE = 30;
-
-        // For approach (<8NM) your pass zone is 0.2 miles
+        // For approach (<8NM) your pass zone is 0.4 miles
         private static final double PASSAGE_APPROACH_MIN = 0.4;
         private static final double PASSAGE_APPROACH_DISTANCE = 8;
 
@@ -677,8 +673,6 @@ public class Plan implements Observer {
             double max;
             if (distanceFromLanding < PASSAGE_APPROACH_DISTANCE) {
                 max = PASSAGE_APPROACH_MIN;
-            } else if (distanceFromLanding < PASSAGE_TERMINAL_DISTANCE) {
-                max = PASSAGE_TERMINAL_DISTANCE_MIN;
             } else {
                 max = PASSAGE_ENROUTE_DISTANCE_MIN;
             }
