@@ -675,7 +675,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 		@Override
 		public void update(Observable observable, Object data) {
 
-			switch ((int)data) {
+			switch ((Integer)data) {
 				case FuelTimer.REFRESH:
 					mPlatesView.postInvalidate();
 					break;

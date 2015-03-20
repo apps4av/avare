@@ -1137,7 +1137,7 @@ public class LocationActivity extends Activity implements Observer {
 
 		@Override
 		public void update(Observable observable, Object data) {
-			switch ((int)data) {
+			switch ((Integer)data) {
 				case FuelTimer.REFRESH:
 					mLocationView.postInvalidate();
 					break;
