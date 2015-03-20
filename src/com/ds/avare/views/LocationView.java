@@ -50,6 +50,7 @@ import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
+import com.ds.avare.LocationActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 
@@ -113,6 +114,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Cache
      */
     private Context                     mContext;
+    
+    private LocationActivity mLocationActivity;
+    
     /**
      * Current movement from center
      */
@@ -233,6 +237,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
 
+    public void setLocationActivity(LocationActivity locationActivity) {
+    	mLocationActivity = locationActivity;
+    }
+    
+    public LocationActivity getLocationActivity() {
+    	return mLocationActivity;
+    }
+    
     /**
      * @param context
      */
@@ -1518,6 +1530,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         mService.getEdgeTape().setPaint(mPaint);
         
+        // Tell the fuel timer how to interact with this view
+        mService.getFuelTimer().setLocationView(mContext, this);
+        
         // Resize our runway icon based upon the size of the display.
         // We want the icon no more than 1/3 the size of the screen. Since we show 2 images
         // of this icon, that means the total size is no more than 2/3 of the available space. 
@@ -2021,6 +2036,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mService.getDraw().addSeparation();
             }
             return true;
+        }
+        
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+        	
+        	// Ignore this gesture if we are not configured to use dynamic fields
+        	if((mPref.useDynamicFields() == false) || (mService == null)) {
+        		return false;
+        	}
+        	
+        	float posX = e.getX();
+        	float posY = e.getY();
+        	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, posX, posY);
+        	if(infoLineFieldLoc != null) {
+            	// We have the row and field. Tell the selection dialog to display
+            	mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, infoLineFieldLoc);
+        	}
+        	return true;
         }
         
         @Override

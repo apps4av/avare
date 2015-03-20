@@ -407,7 +407,8 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-
+        mLocationView.setLocationActivity(this);
+        
         /*
          * To be notified of some action in the view
          */
@@ -429,6 +430,14 @@ public class LocationActivity extends Activity implements Observer {
         		if(GestureInterface.LONG_PRESS == nEvent) {
         		    if(mService != null) {
         		        mService.getInfoLines().longPress(_InfoLineFieldLoc);
+        		        return;
+        		    }
+        		}
+
+        		if(GestureInterface.TOUCH == nEvent) {
+        		    if(mService != null) {
+        		        mService.getInfoLines().touch(_InfoLineFieldLoc);
+        		        return;
         		    }
         		}
         		

@@ -406,4 +406,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefPlanControl">&quot;PlanControl&quot;</string>
     <string name="prefPlanControlLabel">&quot;Show Flight Plan Controls&quot;</string>
     <string name="prefPlanControlSummary">&quot;Select to display flight plan control buttons on chart view&quot;</string>
+    <string name="switchTanks">&quot;Switch Fuel Tanks&quot;</string>
 </resources>
