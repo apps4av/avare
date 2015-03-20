@@ -26,6 +26,7 @@ import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -81,7 +82,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private String mDestString;
     private String nearString;
     private boolean mCounting;
-
+    private TankObserver mTankObserver;
+    
     public static final String AD = "AIRPORT-DIAGRAM";
     
     /*
@@ -402,6 +404,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          * Create toast beforehand so multiple clicks don't throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        
+        // Allocate the watch object for fuel tanks
+        mTankObserver = new TankObserver();
 
         mService = null;
     }
@@ -647,6 +652,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
             int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
             setAirportFromPos(lastIndex);
+            
+            // Tell the fuel tank timer we need to know when it runs out
+            mService.getFuelTimer().addObserver(mTankObserver);
         }
 
         /* (non-Javadoc)
@@ -657,6 +665,39 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         }
     };
 
+    /**
+     * We are interested in events from the fuel tank timer
+     * @author Ron
+     *
+     */
+    private class TankObserver implements Observer {
+
+		@Override
+		public void update(Observable observable, Object data) {
+
+			switch ((int)data) {
+				case FuelTimer.REFRESH:
+					mPlatesView.postInvalidate();
+					break;
+
+				case FuelTimer.SWITCH_TANK:
+					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
+					alertDialog.setTitle(getApplicationContext().getString(R.string.switchTanks));
+					alertDialog.setCancelable(false);
+					alertDialog.setCanceledOnTouchOutside(false);
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
+		
+		                public void onClick(DialogInterface dialog, int which) {
+		                    mService.getFuelTimer().reset();
+		                    dialog.dismiss();
+		                }
+		            });
+					alertDialog.show();
+					break;
+			}
+		}
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -666,6 +707,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
+            mService.getFuelTimer().removeObserver(mTankObserver);
         }
 
         try {
@@ -701,6 +743,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        if(null != mService) {
+            // Tell the fuel tank timer we need to know when it runs out
+            mService.getFuelTimer().addObserver(mTankObserver);
+        }
     }
    
     /**

@@ -1530,8 +1530,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         mService.getEdgeTape().setPaint(mPaint);
         
-        // Tell the fuel timer how to interact with this view
-        mService.getFuelTimer().setLocationView(mContext, this);
         
         // Resize our runway icon based upon the size of the display.
         // We want the icon no more than 1/3 the size of the screen. Since we show 2 images
@@ -1544,7 +1542,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	mRunwayBitmap = new BitmapHolder(newRunway);
         }
     }
-
+    
     /**
      * @param status
      */
@@ -1555,8 +1553,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = status;
         postInvalidate();
     }
-    
-    
 
     /**
      * @author zkhan

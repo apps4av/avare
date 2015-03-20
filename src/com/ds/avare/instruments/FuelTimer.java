@@ -14,15 +14,12 @@ package com.ds.avare.instruments;
 
 import java.util.Locale;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-
-import com.ds.avare.R;
-import com.ds.avare.views.LocationView;
 
 /**
  * Fuel tank timer instrument. Implemented as a display field for the
@@ -35,14 +32,16 @@ import com.ds.avare.views.LocationView;
  * Single press - start/stop the running timer.
  * Long press   - reset the timer to the max value.
  */
-public class FuelTimer {
+public class FuelTimer extends Observable {
 	private int 			mInterval;
 	private int 			mCurrentValue;
 	private Timer 			mTimer;
-	private LocationView 	mLocationView;
-	private Context			mContext;
 	private boolean 		mCounting;
+	private List<Observer> mObservers;
 
+	public static final int REFRESH = 0;
+	public static final int SWITCH_TANK = 1;
+	
 	/**
 	 * ctor 
 	 * @param interval How many minutes to run the timer
@@ -50,9 +49,44 @@ public class FuelTimer {
 	public FuelTimer(int interval) {
 		mInterval = interval;
 		mCounting = false;
+		mObservers = new ArrayList<Observer>();
 		reset();
 	}
 
+	/**
+	 * Add this observer to our collection
+	 * @param observer
+	 */
+	public void addObserver(Observer observer) {
+		synchronized(mObservers) {
+			if(false == mObservers.contains(observer)) {
+				mObservers.add(observer);
+			}
+		}
+	}
+	
+	/**
+	 * Someone is no longer interested in what we have to say
+	 * @param observer
+	 */
+	public void removeObserver(Observer observer) {
+		synchronized(mObservers) {
+			mObservers.remove(observer);
+		}
+	}
+	
+	/**
+	 * Notify all of our observers of an event
+	 * @param event
+	 */
+	public void notifyObservers(int event) {
+		synchronized(mObservers) {
+			for(Observer o : mObservers) {
+				o.update(this, event);
+			}
+		}
+	}
+	
 	/**
 	 * Start the countdown clock. Create a timer that counts 
 	 * once per second.
@@ -73,29 +107,17 @@ public class FuelTimer {
 	}
 
 	/**
-	 * Get the value MM.SS to display. If we detect we are at zero, then build/display
-	 * the SwitchTanks dialog message. When acknowledged, reset the timer to the starting
-	 * value
+	 * Get the value MM.SS to display. If we detect we are at zero, then send out
+	 * a message to all observers that we should switch tanks
 	 * 
 	 * @return How much time left before switching tanks
 	 */
 	public String  getDisplay() {
 		if(0 == mCurrentValue) {
 			mCurrentValue--;
-			AlertDialog alertDialog = new AlertDialog.Builder(mLocationView.getLocationActivity()).create();
-			alertDialog.setTitle(mContext.getString(R.string.switchTanks));
-			alertDialog.setCancelable(false);
-			alertDialog.setCanceledOnTouchOutside(false);
-			alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, mContext.getString(R.string.OK), new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-        			reset();
-                }
-            });
-			alertDialog.show();
+			notifyObservers(SWITCH_TANK);
 		}
-
+		
 		// Account for the value being negative, just display zero
 		if (0 > mCurrentValue) {
 			return "00.00";
@@ -122,23 +144,9 @@ public class FuelTimer {
 		public void run() {
 			if(0 < mCurrentValue) {
 				mCurrentValue--;
-				if(null != mLocationView) {
-					// This will force a redraw on the charts/maps tab
-					mLocationView.postInvalidate();
-				}
+				notifyObservers(REFRESH);
 			}
 		}
-	}
-
-	/**
-	 * We need a reference to the view so we can cause a refresh and display
-	 * the switch tank dialog. Called from the StorageService
-	 * @param context
-	 * @param locationView
-	 */
-	public void setLocationView(Context context, LocationView locationView) {
-		mContext = context;
-		mLocationView = locationView;
 	}
 
 	/**
