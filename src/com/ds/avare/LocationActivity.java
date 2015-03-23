@@ -410,7 +410,6 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-        mLocationView.setLocationActivity(this);
         
         /*
          * To be notified of some action in the view
@@ -930,9 +929,9 @@ public class LocationActivity extends Activity implements Observer {
 					Plan activePlan = mService.getPlan();
 					if(null != activePlan) {
 						if(true == activePlan.suspendResume()) { 
-							mPlanPause.setImageResource(R.drawable.resume);
-						} else {
 							mPlanPause.setImageResource(R.drawable.suspend);
+						} else {
+							mPlanPause.setImageResource(R.drawable.resume);
 						}
 					}
 				}
@@ -1137,6 +1136,7 @@ public class LocationActivity extends Activity implements Observer {
 
 		@Override
 		public void update(Observable observable, Object data) {
+			final FuelTimer fuelTimer = (FuelTimer) observable;
 			switch ((Integer)data) {
 				case FuelTimer.REFRESH:
 					mLocationView.postInvalidate();
@@ -1150,7 +1150,7 @@ public class LocationActivity extends Activity implements Observer {
 					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
 		
 		                public void onClick(DialogInterface dialog, int which) {
-		                    mService.getFuelTimer().reset();
+		                    fuelTimer.reset();
 		                    dialog.dismiss();
 		                }
 		            });
@@ -1197,11 +1197,11 @@ public class LocationActivity extends Activity implements Observer {
 
         // Determine if we should be displaying the flight plan control buttons
         int mPlanButtons = View.INVISIBLE;
-        if (null != mService) {
-	        Plan activePlan = mService.getPlan();
-	        if (null != activePlan) {
-	        	if (true == activePlan.isActive()) {
-	        		if (true == mPref.getPlanControl()) {
+		if (true == mPref.getPlanControl()) {
+	        if (null != mService) {
+		        Plan activePlan = mService.getPlan();
+		        if (null != activePlan) {
+		        	if (true == activePlan.isActive()) {
 	        			mPlanButtons = View.VISIBLE;
 	        		}
 	        	}

@@ -101,7 +101,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_next"
-            android:src="@drawable/suspend"
+            android:src="@drawable/resume"
             android:visibility="invisible" />
 
         <Button

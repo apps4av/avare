@@ -674,7 +674,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
 		@Override
 		public void update(Observable observable, Object data) {
-
+			final FuelTimer fuelTimer = (FuelTimer) observable;
 			switch ((Integer)data) {
 				case FuelTimer.REFRESH:
 					mPlatesView.postInvalidate();
@@ -688,7 +688,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
 		
 		                public void onClick(DialogInterface dialog, int which) {
-		                    mService.getFuelTimer().reset();
+		                	fuelTimer.reset();
 		                    dialog.dismiss();
 		                }
 		            });

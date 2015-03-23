@@ -50,7 +50,6 @@ import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
-import com.ds.avare.LocationActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 
@@ -114,8 +113,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Cache
      */
     private Context                     mContext;
-    
-    private LocationActivity mLocationActivity;
     
     /**
      * Current movement from center
@@ -237,14 +234,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
 
-    public void setLocationActivity(LocationActivity locationActivity) {
-    	mLocationActivity = locationActivity;
-    }
-    
-    public LocationActivity getLocationActivity() {
-    	return mLocationActivity;
-    }
-    
     /**
      * @param context
      */
