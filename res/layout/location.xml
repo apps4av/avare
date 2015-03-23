@@ -110,7 +110,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_above="@+id/location_button_tracks"
+            android:layout_above="@+id/location_button_draw_clear"
             android:drawableLeft="@drawable/next"
             android:visibility="invisible" />
 

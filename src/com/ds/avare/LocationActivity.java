@@ -889,16 +889,6 @@ public class LocationActivity extends Activity implements Observer {
          */
         mExtras = getIntent().getExtras();
  
-        mService = null;
-        mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L);
-        mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
-        mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L);
-        mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L);
-        mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
-        mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
-
         // The Flight Plan Prev button collection. There are 3, Previous, Pause,
         // and next. They are only visible when a plan has been loaded and 
         // activated.
@@ -954,7 +944,17 @@ public class LocationActivity extends Activity implements Observer {
 			}
         	
         });
-        
+
+        mService = null;
+        mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
+        mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
+        mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
+        mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
         // Allocate the object that will get told about the status of the
         // fuel tank
         mTankObserver = new TankObserver();
