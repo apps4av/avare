@@ -33,15 +33,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroupsPopout">
         <item>COMM</item>
         <item>Performance</item>
-        <item>Fuel Cost</item>
         <item>METAR</item>
         <item>TAF</item>
-        <item>User Ratings</item>
         <item>Winds/Temp.</item>
         <item>AIREP/PIREP</item>
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
         <item>SUA</item>
+        <item>Fuel Cost</item>
+        <item>User Ratings</item>
         <item>Radar</item>
     </string-array>
     

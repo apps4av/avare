@@ -35,7 +35,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/plates_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/center"
+        android:drawableLeft="@android:drawable/ic_menu_mylocation"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"/>
     

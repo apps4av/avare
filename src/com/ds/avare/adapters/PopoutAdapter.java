@@ -63,15 +63,15 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
 
     private static final int GROUP_COMM = 0;
     private static final int GROUP_PERFORMANCE = 1;
-    private static final int GROUP_FUEL = 2;
-    private static final int GROUP_METAR = 3;
-    private static final int GROUP_TAF = 4;
-    private static final int GROUP_RATINGS = 5;
-    private static final int GROUP_WA = 6;
-    private static final int GROUP_PIREP = 7;
-    private static final int GROUP_METS = 8;
-    private static final int GROUP_TFR = 9;
-    private static final int GROUP_SUA = 10;
+    private static final int GROUP_METAR = 2;
+    private static final int GROUP_TAF = 3;
+    private static final int GROUP_WA = 4;
+    private static final int GROUP_PIREP = 5;
+    private static final int GROUP_METS = 6;
+    private static final int GROUP_TFR = 7;
+    private static final int GROUP_SUA = 8;
+    private static final int GROUP_FUEL = 9;
+    private static final int GROUP_RATINGS = 10;
     private static final int GROUP_RADAR = 11;
     private static final int GROUP_NUM = 12;
     

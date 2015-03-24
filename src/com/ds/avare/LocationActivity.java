@@ -919,9 +919,9 @@ public class LocationActivity extends Activity implements Observer {
 					Plan activePlan = mService.getPlan();
 					if(null != activePlan) {
 						if(true == activePlan.suspendResume()) { 
-							mPlanPause.setImageResource(R.drawable.suspend);
+							mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
 						} else {
-							mPlanPause.setImageResource(R.drawable.resume);
+							mPlanPause.setImageResource(android.R.drawable.ic_media_play);
 						}
 					}
 				}

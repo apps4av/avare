@@ -81,7 +81,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:drawableLeft="@drawable/menu"
+            android:drawableLeft="@android:drawable/ic_menu_more"
             android:visibility="visible" />
 
         <Button
@@ -91,7 +91,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_pause"
-            android:drawableLeft="@drawable/prev"
+            android:drawableLeft="@android:drawable/ic_media_previous"
             android:visibility="invisible" />
 
         <ImageButton
@@ -101,7 +101,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_next"
-            android:src="@drawable/resume"
+            android:src="@android:drawable/ic_media_play"
             android:visibility="invisible" />
 
         <Button
@@ -111,7 +111,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/location_button_draw_clear"
-            android:drawableLeft="@drawable/next"
+            android:drawableLeft="@android:drawable/ic_media_next"
             android:visibility="invisible" />
 
         <com.ds.avare.animation.TwoButton
@@ -157,7 +157,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:drawableLeft="@drawable/center" />
+            android:drawableLeft="@android:drawable/ic_menu_mylocation" />
 
         <Button
             android:id="@+id/location_button_draw_clear"
@@ -211,7 +211,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:textStyle="bold"
                 android:textSize="15sp"
                 android:minHeight="40dp"
-                android:drawableLeft="@drawable/delete"/>
+                android:drawableLeft="@android:drawable/ic_input_delete"/>
 
 	        <LinearLayout
 	        	android:id="@+id/location_popout_buttons"
