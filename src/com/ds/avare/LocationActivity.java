@@ -1114,6 +1114,9 @@ public class LocationActivity extends Activity implements Observer {
                 }
                 mExtras = null;
             }
+
+            // mService is now valid, set the plan button vis
+            setPlanButtonVis();
             
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
@@ -1160,6 +1163,27 @@ public class LocationActivity extends Activity implements Observer {
 		}
     }
 
+    /**
+     * Set the flight plan buttons visibility 
+     */
+    private void setPlanButtonVis() {
+	    int planButtons = View.INVISIBLE;
+		if (true == mPref.getPlanControl()) {
+	        if (null != mService) {
+		        Plan activePlan = mService.getPlan();
+		        if (null != activePlan) {
+		        	if (true == activePlan.isActive()) {
+	        			planButtons = View.VISIBLE;
+	        		}
+	        	}
+	        }
+	    }
+	    
+	    // Set the flight plan button visibility
+	    mPlanPrev.setVisibility(planButtons);
+	    mPlanPause.setVisibility(planButtons);
+	    mPlanNext.setVisibility(planButtons);
+	}
 
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
@@ -1195,24 +1219,9 @@ public class LocationActivity extends Activity implements Observer {
 
         mDestLayout.setVisibility(View.INVISIBLE);
 
-        // Determine if we should be displaying the flight plan control buttons
-        int mPlanButtons = View.INVISIBLE;
-		if (true == mPref.getPlanControl()) {
-	        if (null != mService) {
-		        Plan activePlan = mService.getPlan();
-		        if (null != activePlan) {
-		        	if (true == activePlan.isActive()) {
-	        			mPlanButtons = View.VISIBLE;
-	        		}
-	        	}
-	        }
-        }
+        // Set visibility of the plan buttons
+        setPlanButtonVis();
         
-        // Set the flight plan button visibility
-        mPlanPrev.setVisibility(mPlanButtons);
-        mPlanPause.setVisibility(mPlanButtons);
-        mPlanNext.setVisibility(mPlanButtons);
-
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
