@@ -745,17 +745,17 @@ public class WeatherHelper {
                             best += "G" + Math.abs((int)head1);
                         }
                         // T = tail, H = head, L = left, R = right
-                        best += (head0 < 0 ? "T KT" : "H KT");
+                        best += (head0 < 0 ? "KT Tail" : "KT Head");
                         best += "\n " + Math.abs((int)cross0);
                         if(spd1 != 0) {
                             best += "G" + Math.abs((int)cross1);
                         }
                         
-                        best += (cross0 < 0 ? "LX KT" : "RX KT");
+                        best += (cross0 < 0 ? "KT Left X" : "KT Right X");
                     }
                 }
                 catch (Exception e) {
-                    return "";
+                    continue;
                 }
                 
             }
