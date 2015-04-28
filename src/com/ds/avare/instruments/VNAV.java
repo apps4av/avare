@@ -105,6 +105,11 @@ public class VNAV {
 	 */
 	public void drawVNAV(Canvas canvas, float screenX, float screenY, Destination dest)
 	{
+		// Ensure we have been initialized before trying to paint
+		if(null == mVNAVPaint) {
+			return;
+		}
+		
 		// If we have no destination set, then do not draw anything
 		if(dest == null || (!mShow)) {
 		    mShow = false;
