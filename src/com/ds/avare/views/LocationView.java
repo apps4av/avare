@@ -1620,10 +1620,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 int i = 0;
                 tileNames = new String[mService.getTiles().getTilesNum()];
-                for(int tiley = -(int)(mService.getTiles().getYTilesNum() / 2) ; 
-                        tiley <= (mService.getTiles().getYTilesNum() / 2); tiley++) {
-                    for(int tilex = -(int)(mService.getTiles().getXTilesNum() / 2); 
-                            tilex <= (mService.getTiles().getXTilesNum() / 2) ; tilex++) {
+                int ty = (int)(mService.getTiles().getYTilesNum() / 2);
+                int tx = (int)(mService.getTiles().getXTilesNum() / 2);
+                for(int tiley = -ty; tiley <= ty; tiley++) {
+                    for(int tilex = -tx; tilex <= tx; tilex++) {
                         tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
                     }
                 }

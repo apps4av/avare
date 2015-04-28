@@ -108,6 +108,7 @@ public class CDI {
 		// Allocate some objects to save time during draw cycle
 		mCDIPaint = new Paint(textPaint);
 		mTextSize = new Rect();
+		
 	}
 
 	/***
@@ -119,6 +120,11 @@ public class CDI {
 	 */
 	public void drawCDI(Canvas canvas, int screenX, int screenY)
 	{
+		if(mCDIPaint == null) {
+			// In case paint is not inited yet
+			return;
+		}
+		
 		// Calculate the left position of the instrument
         mInstLeft = (screenX - mInstWidth) / 2;
 
