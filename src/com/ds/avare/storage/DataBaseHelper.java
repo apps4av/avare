@@ -15,6 +15,7 @@ package com.ds.avare.storage;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -56,6 +57,8 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBaseProcedures; 
     private SQLiteDatabase mDataBasePlates; 
     private SQLiteDatabase mDataBaseGeoPlates; 
+    private SQLiteDatabase mDataBaseFuel; 
+    private SQLiteDatabase mDataBaseRatings; 
     private SQLiteDatabase mDataBaseWeather; 
     
     /*
@@ -84,6 +87,8 @@ public class DataBaseHelper  {
     private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
+    private Integer mUsersFuel;
+    private Integer mUsersRatings;
     
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -136,6 +141,9 @@ public class DataBaseHelper  {
     private static final String TABLE_SUA = "saa";
     private static final String TABLE_PROCEDURE = "procedures";
     private static final String TABLE_GEOPLATES = "geoplates";
+    private static final String TABLE_AIRWAYS = "airways";
+    private static final String TABLE_FUEL = "fuel";
+    private static final String TABLE_RATINGS = "ratings";
 
 
     private static final String TILE_NAME = "name";
@@ -154,7 +162,7 @@ public class DataBaseHelper  {
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
         mCenterTile = null;
-        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = 0;
+        mUsers = mUsersFiles = mUsersWeather = mUsersElev = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersFuel = mUsersRatings = 0;
         mContext = context;
     }
 
@@ -290,44 +298,57 @@ public class DataBaseHelper  {
         return ret;
     }
     
+    private String addPath(String name, String path) {
+    	return path + "/" + name;
+    }
+    
     /**
      * 
      * @param name
      * @return
      */
-    public LinkedList<String> findFilesToDelete(String name) {
+    public LinkedList<String> findFilesToDelete(String name, String path) {
         String dbs[] = mContext.getResources().getStringArray(R.array.ChartDbNames);
-
-        /*
-         * Dont delete level 4
-         */
-        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'"
-                + "and level != '4'";
 
         LinkedList<String> list = new LinkedList<String>();
         
         /*
          * This is to delete the main file, partially downloaded zip file
          */
-        list.add(name);
-        list.add(name + ".zip");
+        list.add(addPath(name, path));
+        list.add(addPath(name + ".zip", path));
         
         /*
          * Delete weather
          */
         if(name.equals("weather")) {
-            list.add(name + ".db");
+            list.add(addPath(name + ".db", path));
             return list;
         }
 
         if(name.equals("TFRs")) {
-            list.add("tfr.txt");
+            list.add(addPath("tfr.txt", path));
             return list;
         }
         
+        if(name.equals("fuel")) {
+            list.add(addPath(name + ".db", path));
+            return list;
+       }
+        
+       if(name.equals("ratings")) {
+           list.add(addPath(name + ".db", path));
+           return list;
+       }
+        
         if(name.equals("conus")) {
-            list.add("latest.txt");
-            list.add("latest_radaronly.png");
+            list.add(addPath("latest.txt", path));
+            list.add(addPath("latest_radaronly.png", path));
+            return list;
+        }
+
+        if(name.equals("alternates")) {
+            list.add(addPath("minimums", path));
             return list;
         }
 
@@ -335,7 +356,7 @@ public class DataBaseHelper  {
          * Delete georef
          */
         if(name.equals("geoplates")) {
-            list.add(name + ".db");
+            list.add(addPath(name + ".db", path));
             return list;
         }
 
@@ -344,12 +365,43 @@ public class DataBaseHelper  {
          */
         if(name.startsWith("databases") && dbs != null) {
             for(int i = 0; i < dbs.length; i++) {
-                list.add(dbs[i]);
+                list.add(addPath(dbs[i], path));
             }
-            list.add(getMainDb());
+            list.add(addPath(getMainDb(), path));
             return list;                    
         }
 
+        /*
+         * Delete A/FD
+         */
+        if(name.startsWith("AFD_")) {
+
+        	final String loc = name.split("_")[1].toLowerCase(Locale.US); // AFD names are lower case
+
+        	FilenameFilter filter = new FilenameFilter() {
+        		@Override
+                public boolean accept(File dir, String namef) {
+        			if(namef.startsWith(loc)) {
+                        return true;
+        			}
+        			return false;
+        		}
+            };
+
+        	String files[] = new File(addPath("afd/", path)).list(filter);
+        	for(String file : files) {
+        		list.add(addPath("afd/" + file, path));
+        	}
+
+            return list;                    
+        }
+
+        /*
+         * If none of the above then its tiles
+         * Dont delete level 4
+         */
+        String query = "select name from " + TABLE_FILES + " where " + INFO_DB + "=='" + name +"'"
+                + "and level != '4'";
         /*
          * Delete files from all databases
          */
@@ -359,7 +411,7 @@ public class DataBaseHelper  {
             try {
                 if(cursor != null) {
                     for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                        list.add(cursor.getString(0));
+                        list.add(addPath(cursor.getString(0), path));
                     }
                 }
             }
@@ -370,15 +422,20 @@ public class DataBaseHelper  {
         }
         
         /*
-         * Now plates.
+         * Now plates: d-tpp / area
          */
-        query = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS + " where State=\"" + name + "\";";
+        query = "select " + LOCATION_ID_DB + " from " + TABLE_AIRPORTS + " where State=\"" + name.replace("Area", "") + "\";";
         Cursor cursor = doQuery(query, getMainDb());
 
         try {
             if(cursor != null) {
                 for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                    list.add("plates/" + cursor.getString(0));
+                	if(name.contains("Area")) {
+                        list.add(addPath("area/" + cursor.getString(0), path));
+                	}
+                	else {
+                		list.add(addPath("plates/" + cursor.getString(0), path));
+                	}
                 }
             }
         }
@@ -396,27 +453,38 @@ public class DataBaseHelper  {
      * @param name
      * @param params
      */
-    public Airport[] findClosestAirports(double lon, double lat) {
+    public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
 
         Airport airports[] = null;
         
         /*
          * Limit to airports taken by array airports
          */
-        String qry = "select * from " + TABLE_AIRPORTS;
+        String qry = "select * from " + TABLE_AIRPORTS + "," + TABLE_AIRPORT_RUNWAYS + " where ";
         if(!mPref.shouldShowAllFacilities()) {
-            qry += " where " + TYPE_DB + "=='AIRPORT' ";
+            qry += TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and ";
         }
+
+        // Find in both tables, find based on distance
+        qry +=  TABLE_AIRPORTS + "." + LOCATION_ID_DB + "=" + 
+        		TABLE_AIRPORT_RUNWAYS + "." + LOCATION_ID_DB;
+        
+        // runway length > certain length
+        qry += " and " + "CAST(" + TABLE_AIRPORT_RUNWAYS + ".Length AS INTEGER) >= " + minRunwayLength;
+        
+        // order by distance then by runway length, and limit by max * 4 (to remove duplicate runways)
         qry += " order by ((" + 
-                lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" + 
-                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC limit " + Preferences.MAX_AREA_AIRPORTS + ";";            
+                lon + " - " + TABLE_AIRPORTS + "." + LONGITUDE_DB + ") * (" + lon + "- " + TABLE_AIRPORTS + "." + LONGITUDE_DB +") + (" + 
+                lat + " - " + TABLE_AIRPORTS + "." + LATITUDE_DB + ") * (" + lat + "- " + TABLE_AIRPORTS + "." + LATITUDE_DB + ")) ASC " +
+                ", " + "CAST(" + TABLE_AIRPORT_RUNWAYS + ".Length AS INTEGER) DESC " +
+                " limit " + Preferences.MAX_AREA_AIRPORTS * 2 + ";";
 
         Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             int id = 0;
             if(cursor != null) {
-                airports = new Airport[cursor.getCount()];
+                airports = new Airport[Preferences.MAX_AREA_AIRPORTS];
                 if(cursor.moveToFirst()) {
                     do {
                         LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
@@ -429,7 +497,19 @@ public class DataBaseHelper  {
                         String parts[] = cursor.getString(9).trim().split("[.]");
                         params.put(ELEVATION, parts[0] + "ft");
                         airports[id] = new Airport(params, lon, lat);
+                        // runway length / width in combined table
+                        String runway = cursor.getString(24) + "X" + cursor.getString(25);
+                        airports[id].setLongestRunway(runway);
+                        if(id > 0) {
+                        	// eliminate duplicate airports and show longest runway
+                        	if(airports[id].getName().equals(airports[id - 1].getName())) {
+                        		continue;
+                        	}
+                        }
                         id++;
+                        if(id >= Preferences.MAX_AREA_AIRPORTS) {
+                        	break;
+                        }
                     }
                     while(cursor.moveToNext());
                 }
@@ -439,42 +519,6 @@ public class DataBaseHelper  {
         }
         closes(cursor);
         
-        if(null == airports) {
-            return null;
-        }
-
-        /*
-         * Find longest runway for each airport
-         */
-        for (int i = 0; i < airports.length; i++) {
-            if(airports[i] == null) {
-                continue;
-            }
-             String name = airports[i].getId();
-             if(name == null) {
-                 continue;
-             }
-             qry = "select * from " + TABLE_AIRPORT_RUNWAYS + " where " + LOCATION_ID_DB + "=='" + name
-                     + "' or " + LOCATION_ID_DB + "=='K" + name + "' order by CAST(Length AS INTEGER) desc limit 1;";
-             cursor = doQuery(qry, getMainDb());
-             
-             try {
-                 /*
-                  * Add all of them
-                  */
-                 if(cursor != null) {
-                     while(cursor.moveToNext()) {
-                         String runway = cursor.getString(1) + "X" + cursor.getString(2);
-                         airports[i].setLongestRunway(runway);
-                     }
-                 }
-             }
-             catch (Exception e) {
-             }
-
-             closes(cursor);        
-        }
-
         return airports;
     }
 
@@ -517,7 +561,7 @@ public class DataBaseHelper  {
         
         Cursor cursor;
 
-        String qry = "select * from " + table + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+        String qry = "select * from " + table + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
         /*
          * NAV
          */
@@ -675,7 +719,7 @@ public class DataBaseHelper  {
         String chopname = name.substring(0, len - 6).toUpperCase(Locale.getDefault());
         if(chop.matches("[0-9][0-9][0-9][0-9][0-9][0-9]")) {
 
-            String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + chopname + "';";
+            String qry = "select * from " + TABLE_NAV + " where (" + LOCATION_ID_DB + "=='" + chopname + "') and Type != 'VOT';";
             cursor = doQuery(qry, getMainDb());
             
             try {
@@ -786,7 +830,7 @@ public class DataBaseHelper  {
      * @param name
      * @param params
      */
-    public void search(String name, LinkedHashMap<String, String> params) {
+    public void search(String name, LinkedHashMap<String, String> params, boolean exact) {
         
         Cursor cursor;
 
@@ -813,7 +857,14 @@ public class DataBaseHelper  {
          * If the user has typed enough, let's start looking for K prefixed airports as well
          */
         if(len > 2 && name.charAt(0) == 'K' || name.charAt(0) == 'k') {
-            String qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        	
+        	String qendK = "";
+        	if(exact) {
+                qendK = " (" + LOCATION_ID_DB + "=='" + name.substring(1) + "'" + ") order by " + LOCATION_ID_DB + " asc";
+        	}
+        	else {
+        		qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
+        	}
             qry = qbasic + TABLE_AIRPORTS + " where ";
             if(!mPref.shouldShowAllFacilities()) {
                 qry += TYPE_DB + "=='AIRPORT' and ";
@@ -836,7 +887,13 @@ public class DataBaseHelper  {
         /*
          * All queries for airports, navaids, fixes
          */
-        String qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") order by " + LOCATION_ID_DB + " asc"; 
+        String qend = "";
+        if(exact) {
+            qend = " (" + LOCATION_ID_DB + "=='" + name + "'" + ") and Type != 'VOT' order by " + LOCATION_ID_DB + " asc";         	
+        }
+        else {
+        	qend = " (" + LOCATION_ID_DB + " like '" + name + "%' " + ") and Type != 'VOT' order by " + LOCATION_ID_DB + " asc";
+        }
         qry = qbasic + TABLE_NAV + " where " + qend;
         cursor = doQuery(qry, getMainDb());
 
@@ -914,7 +971,7 @@ public class DataBaseHelper  {
         }
         // Order by type desc will cause VOR to be ahead of NDB if both are available.
         // This is a bit of a hack, but the user probably wants the VOR more than the NDB
-        qry += " order by " + TYPE_DB + " desc;";
+        qry += " and Type != 'VOT' order by " + TYPE_DB + " desc;";
         
         cursor = doQuery(qry, getMainDb());
 
@@ -2868,5 +2925,335 @@ public class DataBaseHelper  {
         
         return ret;
     }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Coordinate findNavaid(String name) {
+    	Coordinate coord = null;
+	    String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
+	    /*
+	     * NAV
+	     */
+	    Cursor cursor = doQuery(qry, getMainDb());
+	    
+	    try {
+	        if(cursor != null) {
+	            if(cursor.moveToFirst()) {
+	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+	            }
+	        }
+	    }
+	    catch (Exception e) {
+	    }
+
+	    closes(cursor);
+
+	    if(null != coord) {
+	    	return coord;
+	    }
+	    
+	    qry = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+	    /*
+	     * Fix
+	     */
+	    cursor = doQuery(qry, getMainDb());
+	    
+	    try {
+	        if(cursor != null) {
+	            if(cursor.moveToFirst()) {
+	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+	            }
+	        }
+	    }
+	    catch (Exception e) {
+	    }
+
+	    return coord;
+    }
+
+    
+    /**
+     * Find all coordinates of a airway
+     * @param name
+     * @return
+     */
+	public LinkedList<Coordinate> findAirway(String name) {
+        LinkedList<Coordinate> points = new LinkedList<Coordinate>();
+        
+        /*
+         * Limit to airports taken by array airports
+         */
+        String qry = "select * from " + TABLE_AIRWAYS + " where name='" + name + "'" +
+        		" order by cast(sequence as integer)";
+        Cursor cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                    	float latitude = cursor.getFloat(2);
+                    	float longitude = cursor.getFloat(3);
+                    	points.add(new Coordinate(longitude, latitude));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        
+        return points;
+	}
+
+	
+	
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryFuel(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersFuel) {
+            if(mDataBaseFuel == null) {
+                mUsersFuel = 0;
+                try {
+                    
+                    mDataBaseFuel = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseFuel = null;
+                }
+            }
+            if(mDataBaseFuel == null) {
+                return c;
+            }
+            mUsersFuel++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseFuel == null) {
+            return c;
+        }
+        
+        if(!mDataBaseFuel.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseFuel.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesFuel(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersFuel) {
+            mUsersFuel--;
+            if((mDataBaseFuel != null) && (mUsersFuel <= 0)) {
+                try {
+                    mDataBaseFuel.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseFuel = null;
+                mUsersFuel = 0;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFuelCost(String name) {
+
+    	LinkedList<String> ret = new LinkedList<String>();
+    	
+        String qry = "select * from " + TABLE_FUEL + " where airport =='" + name +"'" + 
+        		" order by reported desc limit 6";
+        Cursor cursor = doQueryFuel(qry, "fuel.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+	                    /*
+	                     * Make entries to show
+	                     * 100LL 10.30 @ Chevron 2015-03-07
+	                     */
+	                	String tokens[] = cursor.getString(4).split(" ");
+	                	ret.add(cursor.getString(2) + " $" + cursor.getString(1)	+ " @ " + cursor.getString(3) + " " + tokens[0]);
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesFuel(cursor);
+        return ret;
+    }
+
+    
+    /**
+     * 
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryRatings(String statement, String name) {
+        Cursor c = null;
+        
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         * 
+         */
+        synchronized(mUsersRatings) {
+            if(mDataBaseRatings == null) {
+                mUsersRatings = 0;
+                try {
+                    
+                    mDataBaseRatings = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseRatings = null;
+                }
+            }
+            if(mDataBaseRatings == null) {
+                return c;
+            }
+            mUsersRatings++;
+        }
+        
+        /*
+         * In case we fail
+         */
+        
+        if(mDataBaseRatings == null) {
+            return c;
+        }
+        
+        if(!mDataBaseRatings.isOpen()) {
+            return c;
+        }
+        
+        /*
+         * Find with sqlite query
+         */
+        try {
+               c = mDataBaseRatings.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    
+    /**
+     * Close database
+     */
+    private void closesRatings(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+            
+        }
+
+        synchronized(mUsersRatings) {
+            mUsersRatings--;
+            if((mDataBaseRatings != null) && (mUsersRatings <= 0)) {
+                try {
+                    mDataBaseRatings.close();
+                }
+                
+                
+                catch (Exception e) {
+                }
+                mDataBaseRatings = null;
+                mUsersRatings = 0;
+            }
+        }
+    }
+
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+	public LinkedList<String> findRatings(String name) {
+    	LinkedList<String> ret = new LinkedList<String>();
+    	
+        String qry = "select * from " + TABLE_RATINGS + " where airport =='" + name +"'" + 
+        		" order by reported desc";
+        Cursor cursor = doQueryRatings(qry, "ratings.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+	                    /*
+	                     * Make entries to show
+	                     * 4 star, userid (2015-03-07): Comments
+	                     */
+	                	String tokens[] = cursor.getString(4).split(" ");
+	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + cursor.getString(3));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesRatings(cursor);
+        return ret;
+	}
 
 }

@@ -15,15 +15,12 @@ package com.ds.avare.externalFlightPlan;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.ds.avare.StorageService;
-import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
 import android.util.Xml;
@@ -39,6 +36,7 @@ import android.util.Xml;
 		<rte>
 			<name>NameOfThePlan</name>
 			<desc>Description of the plan</desc>
+			<cmt>comment to display in bottom left of screen</cmt>
 		
 			<rtept lat="43.98431" lon="-88.56628">
 				<name>Point 1</name>
@@ -65,11 +63,7 @@ public class GpxPlanParser  extends PlanParser {
     private static final String LAT = "lat";
     private static final String LON = "lon";
     private static final String NAME = "name";
-    private static final String DESC = "desc";
-    private static final String CREATOR = "creator";
-    private static final String VFRGPSPROCEDURES = "vfrgpsprocedures";
-    
-    private StorageService mService;
+    private static final String CMT  = "cmt";
     
     @Override 
     public String getType() {
@@ -77,8 +71,7 @@ public class GpxPlanParser  extends PlanParser {
     }
     
 	@Override
-	public ExternalFlightPlan parse(StorageService service, FileInputStream inputStream) {
-		mService = service;
+	public ExternalFlightPlan parse(FileInputStream inputStream) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -91,38 +84,15 @@ public class GpxPlanParser  extends PlanParser {
 
 	@Override
 	public void generate(FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan) {
-		PrintStream printStream = new PrintStream(outputStream);
-		printStream.println("<" + GPX + ">");
-		printStream.println("\t<" + RTE + ">");
-		printStream.println("\t\t<" + NAME + ">" + externalFlightPlan.getName() + "</" + NAME + ">");
-		printStream.println("\t\t<" + DESC + ">" + externalFlightPlan.getDesc() + "</" + DESC + ">");
-		for(Waypoint wp : externalFlightPlan.getWaypoints()) {
-			printStream.println("\t\t<" + RTEPT + ">");
-			printStream.println("\t\t\t<" + NAME + ">" + wp.getName() + "</" + NAME + ">");
-			printStream.println("\t\t\t<" + DESC + ">" + wp.getDesc() + "</" + DESC + ">");
-			printStream.println("\t\t</" + RTEPT + ">");
-		}
-		printStream.println("<\t/" + RTE + ">");
-		printStream.println("</" + GPX + ">");
 	}
 	
     // The root tag should be "<gpx>", search for the opening "<rte>" tag
     //
     private ExternalFlightPlan readGPX(XmlPullParser parser) throws XmlPullParserException, IOException {
-    	String creator = null;
     	ExternalFlightPlan plan = null;
     	
         parser.require(XmlPullParser.START_TAG, NS, GPX);	// We must be inside the <gpx> tag now
 
-        // Try and parse who created this plan
-        for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
-        	String attrName = parser.getAttributeName(idx);
-        	String attrValue = parser.getAttributeValue(idx);
-        	if (attrName.equals(CREATOR)) {
-            	creator = attrValue;
-        	}
-        }
-        
         // Now process all the sub-tags
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -136,17 +106,16 @@ public class GpxPlanParser  extends PlanParser {
             }
         }
 
-        plan.setCreator(creator);
         return plan;
     }
 
-    // Found the RTE tag. Read the NAME and DESC from here along with all the RTEPT data
+    // Found the RTE tag. Read the NAME and CMT from here along with all the RTEPT data
     private ExternalFlightPlan readRTE(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, RTE);
 
-        String name = null;
-    	String desc = null;;
-    	List<Waypoint> p = new ArrayList<Waypoint>();
+        String name = gUndef;
+    	String cmt  = "";
+    	List<Waypoint> points = new ArrayList<Waypoint>();
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -155,31 +124,35 @@ public class GpxPlanParser  extends PlanParser {
             String nodeName = parser.getName();
             if (nodeName.equals(NAME)) {
                 name = readNAME(parser);
-            } else if (nodeName.equals(DESC)) {
-                desc = readDESC(parser);
+            } else if (nodeName.equals(CMT)) {
+                cmt = readCMT(parser);
             } else if (nodeName.equals(RTEPT)) {
-                p.add(readRTEPT(parser));
+            	points.add(readRTEPT(parser));
             } else {
                 skip(parser);
             }
         }
         
         // We have all the data for the plan. Create one and return
-        return new ExternalFlightPlan(name, desc, GPX, p);
+        return new ExternalFlightPlan(name, cmt, GPX, points);
     }
         
-    // We are in the RTEPT tag, Get the LAT/LON attributes then search
-    // for NAME or DESC - return that info as a Waypoint
+    /***
+     * We are in the RTEPT tag, Get the LAT/LON attributes then search
+     * for NAME or CMT - return that info as a Waypoint (RoutePoint)
+     * 
+     * @param parser The XML parser
+     * @return the Waypoint object
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private Waypoint readRTEPT(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, RTEPT);
 
-        String name = null;
-        String description = null;
-        float lat = 0;
-        float lon = 0;
-        float alt = 0;
-        boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Waypoint.MT_CROSSHAIRS;	// Type of marker to use on the chart (metadata again)
+        String name = gUndef;	// Waypoint name
+        String cmt  = "";		// Comment about the waypoint
+        float lat = 0;	// latitude
+        float lon = 0;	// longitude
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -192,7 +165,7 @@ public class GpxPlanParser  extends PlanParser {
         	}
         }
         
-        // The NAME and DESCRIPTION are sub tags under here
+        // The NAME, DESC, and CMT are sub tags under here
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -200,27 +173,19 @@ public class GpxPlanParser  extends PlanParser {
             String nodeName = parser.getName();
             if (nodeName.equals(NAME)) {
                 name = readNAME(parser);
-            } else if (nodeName.equals(DESC)) {
-                description = readDESC(parser);
+            } else if (nodeName.equals(CMT)) {
+                cmt = readCMT(parser);
             } else {
                 skip(parser);
             }
         }
         
-        // We have all the data for a new waypoint. Search the list of EXISTING
-        // waypoints for a match. If we find one, then return THAT value and don't 
-        // create a new one.
-        UDWMgr udwMgr = mService.getUDWMgr();
-        Waypoint wp = udwMgr.getWaypoint(name, lon, lat); 
-        if(null != wp) {
-        	return wp;
-        }
-
-        // Create a new waypoint from this data, add it to the global collection
-        // and return it to the caller
-        wp = new Waypoint(name, description, 
-        		lon, lat, alt, showDist, markerType);
-        udwMgr.add(wp);
+        // Create a new waypoint from this data. Set the comment and make sure it's not
+        // visible. It is made visible when the plan is enabled
+        Waypoint wp = new Waypoint(name, lon, lat, false, Waypoint.MT_NONE, false);
+        wp.setCmt(cmt);
+        wp.setVisible(false);
+        
         return wp;
     }
 
@@ -233,30 +198,30 @@ public class GpxPlanParser  extends PlanParser {
         return name;
     }
       
-    // Extract DESC
+    // Extract CMT
     //
-    private String readDESC(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, NS, DESC);
-        String name = readText(parser);
-        parser.require(XmlPullParser.END_TAG, NS, DESC);
-        return name;
+    private String readCMT(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, NS, CMT);
+        String cmt = readText(parser);
+        parser.require(XmlPullParser.END_TAG, NS, CMT);
+        return cmt;
     }
 
     // Read the text from the current tag
     //
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
+        String text = "";
         if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
+            text = parser.getText();
             parser.nextTag();
         }
-        return result;
+        return text;
     }
 
     /***
      * Skip this next entire sub-block of XML tags
      * 
-     * @param parser
+     * @param parser 
      * @throws XmlPullParserException
      * @throws IOException
      */

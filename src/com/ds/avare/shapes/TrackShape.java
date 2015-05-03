@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.shapes;
 
+import android.graphics.Color;
+
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.position.Coordinate;
@@ -24,7 +26,21 @@ import com.ds.avare.position.Projection;
 public class TrackShape extends Shape {
 
     private static final int MILES_PER_SEGMENT = 50;
+    
+    private static final int LEG_PREV = Color.GRAY;
+    private static final int LEG_CURRENT = Color.GREEN;
+    private static final int LEG_NEXT = Color.MAGENTA;
 
+    public static int getLegColor(int dstNxt, int segNum) {
+    	if(dstNxt <= segNum) {
+    		return LEG_NEXT;
+    	} else if(dstNxt - 1 == segNum) {
+    		return LEG_CURRENT;
+    	} else { 
+    		return LEG_PREV;
+    	}
+    }
+    
     /**
      * Set the destination for this track 
      */
@@ -73,18 +89,18 @@ public class TrackShape extends Shape {
     /**
      * Update track as the aircraft moves 
      */
-    public void updateShapeFromPlan(Coordinate[] c) {
+    public void updateShapeFromPlan(Coordinate[] coord) {
     
         super.mCoords.clear();
         
-        if(null == c) {
+        if(null == coord) {
             return;
         }
         /*
          * Now make shape from coordinates with segments
          */
-        for(int i = 0; i < c.length; i++) {
-            super.add(c[i].getLongitude(), c[i].getLatitude(), c[i].isSeparate());
+        for(Coordinate c: coord) {
+            super.add(c.getLongitude(), c.getLatitude(), c.isSeparate(), c.getLeg());
         }
     }
     

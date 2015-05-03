@@ -13,9 +13,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,8 +34,10 @@ import com.ds.avare.storage.Preferences;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.text.format.Time;
 import android.util.TypedValue;
@@ -130,7 +136,7 @@ public class Helper {
         }
 
         // If hours is non zero then return HH:MM
-        if(eteHr >0) {
+        if(eteHr > 0) {
 	        // Format the hours and minutes en router
 	        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
 	        String min = String.format(Locale.getDefault(), "%02d", eteMin);
@@ -528,81 +534,6 @@ public class Helper {
         }
     }
     
-    /**
-     * 
-     * @param date
-     * @return
-     */
-    public static boolean isExpired(String date) {        
-        
-        if(null == date) {
-            return true;
-        }
-        
-        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        GregorianCalendar expires = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-
-        if(date.contains("_")) {
-            int year;
-            int month;
-            int day;
-            int hour;
-            int min;
-            /*
-             * TFR date
-             */
-            String dates[] = date.split("_");
-            if(dates.length < 4) {
-                return true;            
-            }
-
-            month = Integer.parseInt(dates[0]) - 1;
-            day = Integer.parseInt(dates[1]);
-            year = Integer.parseInt(dates[2]);
-
-            String time[] = dates[3].split(":");
-            hour = Integer.parseInt(time[0]);
-            min = Integer.parseInt(time[1]);
-            if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
-                return true;
-            }
-            /*
-             * so many min expiry
-             */
-            expires.set(year, month, day, hour, min);
-            expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
-            if(now.after(expires)) {
-                return true;
-            }
-            
-            return false;
-        }
-
-        /*
-         * Parse the normal charts date designation
-         * like 1400
-         */
-        int cycle = 1400;
-        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        epoch.set(2013, 11, 12, 9, 0, 0);
-
-        while(epoch.before(now)) {
-            epoch.add(Calendar.DAY_OF_MONTH, 28);
-            cycle++;
-        }
-        epoch.add(Calendar.DAY_OF_MONTH, -28);
-        cycle--;
-        try {
-            if(cycle != Integer.parseInt(date)) {
-                return true;
-            }
-        }
-        catch (Exception e) {
-            return true;
-        }
-
-        return false;
-    }
     
     /**
      * 
@@ -821,5 +752,139 @@ public class Helper {
      */
     public static double getSpeedInKnots(double displayedSpeed) {
         return displayedSpeed * Preferences.MS_TO_KT / Preferences.speedConversion; // m/s to knots
+    }
+ 
+    /***
+     * Downsize the bitmap to at most the indicated ratio of the max specified size
+     * @param bm Bitmap to resize
+     * @param maxX pixels of max width
+     * @param maxY pixels of max height
+     * @param maxRatio The max ratio wrt the display size
+     * @return the new bitmap, OR input bitmap if no change needed
+     */
+    public static Bitmap getResizedBitmap(Bitmap bm, int maxX, int maxY, double maxRatio) {
+
+    	// we have an starting bitmap object to work from
+    	if(null == bm) {
+    		return bm;
+    	}
+    	
+    	// Get current size and h:w ratio
+    	int height = bm.getHeight();
+    	int width = bm.getWidth();
+    	
+    	// ensure bitmap size is valid
+    	if(0 == height || 0 == width) {
+    		return bm;
+    	}
+    	
+    	// What is the height to width ratio - will always be > 0 at this point
+    	double ratio = height / width;
+    	
+    	// Figure out new max size
+    	int newHeight = (int) (Math.min(maxX,  maxY) * maxRatio);
+    	int newWidth = (int) (newHeight / ratio);
+    	
+    	// If we don't need to downsize, then return with the original
+    	if(newHeight >= height && newWidth >= width) {
+    		return bm;
+    	}
+
+    	// Calculate the scaling factors in both the x and y direction
+    	float scaleWidth = ((float) newWidth) / width;
+    	float scaleHeight = ((float) newHeight) / height;
+    	 
+    	// create a matrix for the manipulation
+    	Matrix matrix = new Matrix();
+    	 
+    	// resize the bit map
+    	matrix.postScale(scaleWidth, scaleHeight);
+    	 
+    	// recreate the new Bitmap, allowing for failure
+    	try {
+    		Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+    		return resizedBitmap;
+    	} catch (Exception e ) { return bm; }
+	}
+    
+    /**
+     * Read a file, used for reading weather file from assets
+     * @param fileName
+     * @param context
+     * @return
+     */
+    public static String readFromAssetsFile(String fileName, Context context) {
+	    StringBuilder returnString = new StringBuilder();
+	    InputStream fIn = null;
+	    InputStreamReader isr = null;
+	    BufferedReader input = null;
+	    try {
+	        fIn = context.getResources().getAssets()
+	                .open(fileName, Context.MODE_WORLD_READABLE);
+	        isr = new InputStreamReader(fIn);
+	        input = new BufferedReader(isr);
+	        String line = "";
+	        while ((line = input.readLine()) != null) {
+	            returnString.append(line);
+	        }
+	    }
+	    catch (Exception e) {
+	    } 
+	    finally {
+	        try {
+	            if (isr != null) {
+	                isr.close();
+	            }
+	            if (fIn != null) {
+	                fIn.close();
+	            }
+	            if (input != null) {
+	                input.close();
+	            }
+	        } 
+	        catch (Exception e2) {
+	        }
+	    }
+	    return returnString.toString();
+	}
+
+    
+    /**
+     * Write to file in given folder
+     * @param fcontent
+     * @return
+     */
+    public static boolean writeFile(String fcontent, String path){
+    	
+    	/*
+    	 * Write file contents to file path
+    	 */
+        try {
+            File file = new File(path);
+            // If file does not exists, then create it
+            if (!file.exists()) {
+              file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(fcontent);
+            bw.close();
+            return true;
+        } 
+        catch (Exception e) {
+            return false;
+        }
+    }    
+
+    /**
+     * Avoid ' in JS function calls
+     * @param args
+     * @return
+     */
+    public static String formatJsArgs(String args) {
+    	if(args == null) {
+    		return null;
+    	}
+    	return args.replace("'", "\\'");
     }
 }

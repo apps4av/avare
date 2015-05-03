@@ -15,6 +15,7 @@ package com.ds.avare;
 import java.io.File;
 
 import com.ds.avare.R;
+import com.ds.avare.adapters.ChartAdapter;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;

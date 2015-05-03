@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
@@ -27,6 +28,7 @@ import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.AfdView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -43,7 +45,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+
 import java.util.ArrayList;
+
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;

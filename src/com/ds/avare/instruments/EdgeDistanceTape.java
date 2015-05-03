@@ -22,10 +22,54 @@ import android.graphics.Rect;
 import android.graphics.Paint.Align;
 
 /***
- * A static class that handles the drawing of the distance tape 
+ * A class that handles the drawing of the distance tape 
  * markings along the top and left of the display screen
  */
 public class EdgeDistanceTape {
+
+	// Private stuff that we need to do our work
+	private Paint mPaint;
+	private int mBgndWidth;
+	private int mLeftMargin;
+	private int mBgndHeight;
+	private int mBotmMargin;
+	private int mTextWidth;
+	private int mTextHeight;
+	private Rect mTextBounds;
+	
+	/***
+	 * The distance tape object. Allocate objects that we use during the draw cycle in here
+	 * if possible
+	 */
+	public EdgeDistanceTape() {
+	    mTextBounds = new Rect();
+	}
+	
+	/***
+	 * The main display is telling us what paint it is using. Make a copy of it and
+	 * adjust it for what we need it to do. Perform some size calculations here instead
+	 * of at draw time
+	 * @param paint
+	 */
+	public void setPaint(Paint paint) {
+		// Allocate our own paint based upon what is in use
+		mPaint = new Paint(paint); 	
+
+		// Set our desired attributes
+		mPaint.setTextSize(mPaint.getTextSize() / (float) 2.5);
+		mPaint.setTextAlign(Align.LEFT);
+
+	    // Find out how big our shadow needs to be
+	    mPaint.getTextBounds("000", 0, 3, mTextBounds);
+	    
+	    // Determine the margin pixel values
+	    mTextWidth  = mTextBounds.width();
+	    mTextHeight = mTextBounds.height();
+		mBgndWidth  = (int) (mTextWidth  * 1.4);
+		mLeftMargin = (int) (mTextWidth  * 0.2);
+		mBgndHeight = (int) (mTextHeight * 1.4);
+		mBotmMargin = (int) (mTextHeight * 1.2);
+	}
 	
 	/***
 	 * Is the specified X parameter going to show on the screen ? 
@@ -34,9 +78,9 @@ public class EdgeDistanceTape {
 	 * @param right side of the screen
 	 * @return true if it is visible
 	 */
-	static boolean inRangeX(float x, float left, float right) {
+	boolean inRangeX(float x, float left, float right) {
 		if(x < left || x > right) {
-		return false;
+			return false;
 		}
 		return true;
 	}
@@ -48,9 +92,9 @@ public class EdgeDistanceTape {
 	 * @param bottom of screen
 	 * @return true if it is visible
 	 */
-	static boolean inRangeY(float y, float top, float bottom) {
+	boolean inRangeY(float y, float top, float bottom) {
 		if(y < top || y > bottom) {
-		return false;
+			return false;
 		}
 		return true;
 	}
@@ -58,7 +102,6 @@ public class EdgeDistanceTape {
 	/***
 	 * Draw the horizontal and vertical distance tape
 	 * @param canvas what to draw upon
-	 * @param paint to use
 	 * @param scale object for zoom determinations
 	 * @param pixPerUnit how many pixels per mile/km/nm
 	 * @param homeX horizontal position of current location on display
@@ -68,44 +111,30 @@ public class EdgeDistanceTape {
 	 * @param height of the display
 	 */
 	@SuppressLint("DefaultLocale")
-	static public void draw(Canvas canvas, Paint paint, Scale scale, float pixPerUnit, 
+	public void draw(Canvas canvas, Scale scale, float pixPerUnit, 
 			int homeX, int homeY, int top, int width, int height) {
 		
-		// Save current text size and set new one
-	    float oldTextSize = paint.getTextSize();
-	    paint.setTextSize(oldTextSize / (float) 2.5);
-
-	    // Figure out how large our display values can be
-	    Rect textBounds = new Rect();
-	    paint.setTextAlign(Align.LEFT);
-	    paint.getTextBounds("000", 0, 3, textBounds);
-	    
-	    // Determine the margin pixel values
-		int bgndWidth  = (int) (textBounds.width()  * 1.4);
-		int leftMargin = (int) (textBounds.width()  * 0.2);
-		int bgndHeight = (int) (textBounds.height() * 1.4);
-		int botmMargin = (int) (textBounds.height() * 1.2);
-
-	    paint.setColor(Color.BLACK);// shadow color is black
-	    paint.setAlpha(0x7F);		// Make it see-thru
+		// Set color and transparency for the shadow
+	    mPaint.setColor(Color.BLACK);// shadow color is black
+	    mPaint.setAlpha(0x7F);		// Make it see-thru
 
 		// the vertical shadow down the left of the display
-	    paint.setStrokeWidth(bgndWidth);		// Line width
-	    canvas.drawLine(bgndWidth / 2,  top,  bgndWidth / 2, height, paint);
+	    mPaint.setStrokeWidth(mBgndWidth);		// Line width
+	    canvas.drawLine(mBgndWidth / 2,  top,  mBgndWidth / 2, height, mPaint);
 	    
 	    // the horizontal shadow along the top of the display under the display rows
-	    paint.setStrokeWidth(bgndHeight);
-	    canvas.drawLine(bgndWidth - 1,  top + bgndHeight / 2,  width, top + bgndHeight / 2, paint);
+	    mPaint.setStrokeWidth(mBgndHeight);
+	    canvas.drawLine(mBgndWidth - 1,  top + mBgndHeight / 2,  width, top + mBgndHeight / 2, mPaint);
 
 	    // The interval values for the scale indicator
 	    double step = scale.getStep();
 
 	    // text is white in color
-	    paint.setColor(Color.WHITE);
+	    mPaint.setColor(Color.WHITE);
 
 	    // the horizontal values use posX and posY
-	    int posX = homeX - (textBounds.width() / 2);
-	    int posY = top + botmMargin;
+	    int posX = homeX - (mTextWidth / 2);
+	    int posY = top + mBotmMargin;
 
 	    // Display the tape values for 20 distances
 	    for(int idx = 0; idx < 21; idx++) {
@@ -117,19 +146,16 @@ public class EdgeDistanceTape {
 
 	    	// vertical tape on the left side. Show if on the screen
 		    if(inRangeY(homeY - offset, posY, height))
-		    	canvas.drawText(strLabel, leftMargin, homeY - offset,  paint);
+		    	canvas.drawText(strLabel, mLeftMargin, homeY - offset,  mPaint);
 		    if(inRangeY(homeY + offset, posY, height))
-		    	canvas.drawText(strLabel, leftMargin, homeY + offset,  paint);
+		    	canvas.drawText(strLabel, mLeftMargin, homeY + offset,  mPaint);
 
 	    	// Horizontal tape on the top edge. Show if on the screen
-		    if(inRangeX(posX - offset, bgndWidth, width))
-		    	canvas.drawText(strLabel, posX - offset, posY, paint);
-		    if(inRangeX(posX + offset, bgndWidth, width))
-		    	canvas.drawText(strLabel, posX + offset, posY, paint);
+		    if(inRangeX(posX - offset, mBgndWidth, width))
+		    	canvas.drawText(strLabel, posX - offset, posY, mPaint);
+		    if(inRangeX(posX + offset, mBgndWidth, width))
+		    	canvas.drawText(strLabel, posX + offset, posY, mPaint);
 	    }
-
-	    // Restore previous text size
-	    paint.setTextSize(oldTextSize);
 
 	    return;
 	}

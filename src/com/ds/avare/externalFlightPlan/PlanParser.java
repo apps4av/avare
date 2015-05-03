@@ -15,8 +15,6 @@ package com.ds.avare.externalFlightPlan;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import com.ds.avare.StorageService;
-
 /***
  * Base class to implement a parser for Flight Plans
  * All Plan Parsers are to derive from this class
@@ -26,6 +24,8 @@ import com.ds.avare.StorageService;
 public abstract class PlanParser {
 	// Methods that each derived class need to implement
 	public abstract String getType();
-	public abstract ExternalFlightPlan parse(StorageService service, FileInputStream inputStream);
+	public abstract ExternalFlightPlan parse(FileInputStream inputStream);
 	public abstract void generate(FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan);
+	
+	static final String gUndef = "UNDEF";
 }

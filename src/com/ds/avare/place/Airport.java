@@ -25,7 +25,7 @@ import com.ds.avare.utils.Helper;
  * @author zkhan
  *
  */
-public class Airport implements Comparable<Airport> {
+public class Airport {
 
     private String mId;
     private double mLon;
@@ -171,20 +171,4 @@ public class Airport implements Comparable<Airport> {
         return false;
     }
 
-    /**
-     * This is to sort airports for distance
-     */
-    @Override
-    public int compareTo(Airport another) {
-        if(null == another) {
-            return -1;            
-        }
-        if(another.getDistance() < getDistance()) {
-            return 1;
-        }
-        else if(another.getDistance() > getDistance()) {
-            return -1;
-        }
-        return 0;
-    }
 }

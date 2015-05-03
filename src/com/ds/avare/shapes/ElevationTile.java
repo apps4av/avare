@@ -43,6 +43,9 @@ public class ElevationTile {
      * 
      */
     public void recycleBitmaps() {
+    	if(null == mElevBitmap) {
+    		return;
+    	}
         mElevBitmap.recycle();
         mElevBitmap = null;
     }
@@ -51,6 +54,9 @@ public class ElevationTile {
      * 
      */
     public BitmapHolder getElevationBitmap() {
+    	if(null == mElevBitmap) {
+    		return null;
+    	}
         if(mElevBitmap.getName() == null) {
             return null;
         }
@@ -61,6 +67,10 @@ public class ElevationTile {
      * 
      */
     public void setElevationTile(Tile t) {
+    	if(null == mElevBitmap) {
+    		return;
+    	}
+
         if(t == null) {
             return;
         }

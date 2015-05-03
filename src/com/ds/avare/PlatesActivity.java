@@ -15,19 +15,25 @@ package com.ds.avare;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TreeMap;
 
+import com.ds.avare.animation.TwoButton;
+import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.PlatesView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +47,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,7 +73,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
-    private Button mDrawButton;
+    private TwoButton mDrawButton;
     private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
@@ -75,7 +82,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private String mDestString;
     private String nearString;
     private boolean mCounting;
-
+    private TankObserver mTankObserver;
+    
     public static final String AD = "AIRPORT-DIAGRAM";
     
     /*
@@ -171,6 +179,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
                 mPlatesView.updateParams(params); 
+                
+                /*
+                 * Altitude update
+                 */
+                if(mService != null) {
+	                float threshold = Helper.calculateThreshold(params.getAltitude());
+	                mService.setThreshold(threshold);
+                }
             }
         }
 
@@ -292,8 +308,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         /*
          * Draw
          */
-        mDrawButton = (Button)view.findViewById(R.id.plate_button_draw);
-        mDrawButton.setOnClickListener(new OnClickListener() {
+        mDrawButton = (TwoButton)view.findViewById(R.id.plate_button_draw);
+        mDrawButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -388,6 +404,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          * Create toast beforehand so multiple clicks don't throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        
+        // Allocate the watch object for fuel tanks
+        mTankObserver = new TankObserver();
 
         mService = null;
     }
@@ -484,66 +503,46 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Start with the plates in the /plates/ directory
                  */
-                String tmp0[] = null;
-                int len0 = 0;
                 if(null != airport) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
                             return fileName.endsWith(Preferences.IMAGE_EXTENSION);
                         }
                     };
-                    String plates[] = null;
                     
-                    plates = new File(mapFolder + "/plates/" + airport).list(filter);
-                    if(null != plates) {
-                        java.util.Arrays.sort(plates, new PlatesComparable());
-                        len0 = plates.length;
-                        tmp0 = new String[len0];
-                        for(int plate = 0; plate < len0; plate++) {
-                            /*
-                             * Add plates/AD
-                             */
-                            String tokens[] = plates[plate].split(Preferences.IMAGE_EXTENSION);
-                            tmp0[plate] = mapFolder + "/plates/" + airport + "/" +
-                                    tokens[0];
-                        }
+                    /*
+                     * TODO: RAS make this an async request (maybe just move all 
+                     * the loading to the background - especially if we get the last used 
+                     * chart loaded immediately)
+                     */
+
+                    String dplates[] = new File(mapFolder + "/plates/" + airport).list(filter);
+                    String aplates[] = new File(mapFolder + "/area/" + airport).list(filter);
+                    String mins[] = mService.getDBResource().findMinimums(airport);
+
+                    TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
+                    if (dplates != null) {
+                    	for(String plate : dplates) {
+	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+	                    	plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
+                    	}
                     }
-                }
-                
-                /*
-                 * Take off and alternate minimums
-                 */
-                /*
-                 * TODO: RAS make this an async request (maybe just move all 
-                 * the loading to the background - especially if we get the last used 
-                 * chart loaded immediately)
-                 */
-                String tmp2[] = mService.getDBResource().findMinimums(airport);
-                int len2 = 0;
-                if(null != tmp2) {
-                    len2 = tmp2.length;
-                    for(int min = 0; min < len2; min++) {
-                        /*
-                         * Add minimums with path
-                         */
-                        String folder = tmp2[min].substring(0, 1) + "/";
-                        tmp2[min] = mapFolder + "/minimums/" + folder + tmp2[min];
+                    if (aplates != null) {
+	                    for(String plate : aplates) {
+	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+	                    	plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
+	                    }
                     }
-                }
-                
-                /*
-                 * Now combine takeoff and alternate minimums with plates
-                 */
-                if(0 == len0 && 0 != len2) {
-                    mPlateFound = tmp2;
-                }
-                else if(0 != len0 && 0 == len2) {
-                    mPlateFound = tmp0;
-                }
-                else if(0 != len0 && 0 != len2) {
-                    mPlateFound = new String[len0 + len2];
-                    System.arraycopy(tmp0, 0, mPlateFound, 0, len0);
-                    System.arraycopy(tmp2, 0, mPlateFound, len0, len2);
+                    if(mins != null) {
+	                    for(String plate : mins) {
+	                        String folder = plate.substring(0, 1) + "/";
+	                    	plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
+	                    }
+                    }
+                    if(plates.size() > 0) {
+                    	mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
+                        mListPlates = new ArrayList<String>(plates.keySet());                        
+                    }
                 }
             }
 
@@ -552,12 +551,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-                
-                mListPlates.clear();
-                for(int plate = 0; plate < mPlateFound.length; plate++) {
-                    String tokens[] = mPlateFound[plate].split("/");
-                    mListPlates.add(tokens[tokens.length - 1]);
-                }   
                 
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);
@@ -659,6 +652,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
             int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
             setAirportFromPos(lastIndex);
+            
+            // Tell the fuel tank timer we need to know when it runs out
+            mService.getFuelTimer().addObserver(mTankObserver);
         }
 
         /* (non-Javadoc)
@@ -669,6 +665,39 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         }
     };
 
+    /**
+     * We are interested in events from the fuel tank timer
+     * @author Ron
+     *
+     */
+    private class TankObserver implements Observer {
+
+		@Override
+		public void update(Observable observable, Object data) {
+			final FuelTimer fuelTimer = (FuelTimer) observable;
+			switch ((Integer)data) {
+				case FuelTimer.REFRESH:
+					mPlatesView.postInvalidate();
+					break;
+
+				case FuelTimer.SWITCH_TANK:
+					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
+					alertDialog.setTitle(getApplicationContext().getString(R.string.switchTanks));
+					alertDialog.setCancelable(false);
+					alertDialog.setCanceledOnTouchOutside(false);
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
+		
+		                public void onClick(DialogInterface dialog, int which) {
+		                	fuelTimer.reset();
+		                    dialog.dismiss();
+		                }
+		            });
+					alertDialog.show();
+					break;
+			}
+		}
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -678,6 +707,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
+            mService.getFuelTimer().removeObserver(mTankObserver);
         }
 
         try {
@@ -713,6 +743,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        if(null != mService) {
+            // Tell the fuel tank timer we need to know when it runs out
+            mService.getFuelTimer().addObserver(mTankObserver);
+        }
     }
    
     /**
@@ -727,7 +762,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT"};
+            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
             
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
@@ -765,7 +800,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
      * @return
      */
     public static boolean doesAirportHavePlates(String mapFolder, String id) {
-        return new File(mapFolder + "/plates/" + id).exists();
+        return new File(mapFolder + "/plates/" + id).exists() || new File(mapFolder + "/area/" + id).exists();
     }
     
     /**
@@ -793,4 +828,22 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         mPlatesTimerButton.setText(chronometer.getText());
     }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) { 
+    	if (keyCode == KeyEvent.KEYCODE_VOLUME_UP){
+    		mPlatesView.adjustZoom(0.05);
+            return true;
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
+        	mPlatesView.adjustZoom(-0.05);
+            return true;
+        }
+        
+        // We don't handle any other keys
+        return super.onKeyDown(keyCode, event);
+    }
+    
+
 }

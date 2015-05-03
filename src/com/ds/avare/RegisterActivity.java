@@ -26,7 +26,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
  
 /**
@@ -46,6 +48,7 @@ public class RegisterActivity extends Activity {
     private Button mButtonUnregister;
     private AlertDialog mRegisterDialog;
     private AlertDialog mUnregisterDialog;
+    private Spinner mEmailSpinner;
     private WebView mPrivacy;
     private Preferences mPref;
     
@@ -108,6 +111,7 @@ public class RegisterActivity extends Activity {
                         }
                     }
                     
+                    final String email = mEmailSpinner.getSelectedItem().toString();
                     Logger.Logit(getString(R.string.registering_server));
 
                     mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
@@ -119,7 +123,7 @@ public class RegisterActivity extends Activity {
                             String serverUrl = NetworkHelper.getServer() + "register.php";
                             Map<String, String> params = new HashMap<String, String>();
                             params.put("name", "anonoymous");
-                            params.put("email", PossibleEmail.get(getApplicationContext()));
+                            params.put("email", email);
                             params.put("regId", "");
                             Random random = new Random();
                             long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
@@ -158,8 +162,10 @@ public class RegisterActivity extends Activity {
                         protected void onPostExecute(Boolean result) {
                             if(result) {
                                 mPref.setRegistered(true);
+                                mPref.setRegisteredEmail(email);
                                 Logger.clear();
-                                Logger.Logit(getString(R.string.registered));                    
+                                Logger.Logit(getString(R.string.registered));
+                                setChoices();
                             }
                             else {
                                 Logger.Logit(getString(R.string.failed_register));                    
@@ -242,7 +248,9 @@ public class RegisterActivity extends Activity {
                         protected void onPostExecute(Boolean result) {
                             if(result) {
                                 mPref.setRegistered(false);
+                                mPref.setRegisteredEmail(null);
                                 Logger.Logit(getString(R.string.unregistered));
+                                setChoices();
                             }
                             else {
                                 Logger.Logit(getString(R.string.failed_unregister));                    
@@ -259,10 +267,15 @@ public class RegisterActivity extends Activity {
         mUnregisterDialog = alertDialogBuilder.create();
 
         /*
+         * Email select
+         */
+
+        /*
          * Click event on Register button
          *
          */
-        mButtonRegister = (Button) findViewById(R.id.btn_register);        
+        mButtonRegister = (Button) findViewById(R.id.btn_register);   
+        mButtonRegister.setText(getString(R.string.register));
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
              
             @Override
@@ -304,8 +317,34 @@ public class RegisterActivity extends Activity {
                 mUnregisterDialog.show();
            }
         });        
+        
+
+        mEmailSpinner = (Spinner)findViewById(R.id.spinner_register);
+        setChoices();
     }
- 
+
+    
+    /**
+     * Set email choices
+     */
+    private void setChoices() {
+        String emails[];
+        if(mPref.isRegistered()) {
+        	// If already registered, show the registered email
+            emails = new String[1];
+            emails[0] = PossibleEmail.get(this);
+        }
+        else {
+        	// If trying to register, show all possible emails
+        	emails = PossibleEmail.getAll(this);
+        }
+        if(emails != null) {
+	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+	        		android.R.layout.simple_expandable_list_item_1, emails);
+	        mEmailSpinner.setAdapter(adapter);
+        }
+    }
+    
     /**
      * Unregister this account/device pair within the server.
      */

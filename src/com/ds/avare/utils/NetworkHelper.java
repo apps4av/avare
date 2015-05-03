@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -316,62 +317,275 @@ public class NetworkHelper {
         else if(file.equals("conus.zip")) {
             return(root + "/" + file);
         }
+        else if(file.equals("fuel.zip")) {
+            return(root + "/" + file);
+        }
+        else if(file.equals("ratings.zip")) {
+            return(root + "/" + file);
+        }
         return(root + vers + "/" + file);
+    }
+
+    /*
+     * 
+     */
+    private static final int getFirstDate(int year) {
+        // Date for first cycle every year in January starting 2014
+    	switch(year) {
+    		case 2014:
+    			return 9;
+    		case 2015:
+    			return 8;
+    		case 2016:
+    			return 7;
+    		case 2017:
+    			return 5;
+    		case 2018:
+    			return 4;
+    		case 2019:
+    			return 3;
+    		case 2020:
+    			return 2;
+    		default:
+    			return 0;
+    	}
+    }
+    
+    /**
+     * Find the date in January when first cycle begins 
+     * @param year
+     */
+    private static String getCycle() {
+        /*
+         * US locale as this is a folder name not language translation
+         */
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        int year = now.get(Calendar.YEAR);
+        int firstdate = getFirstDate(year);
+        GregorianCalendar now2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        now2.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
+        if (now2.after(now)) {
+        	/*
+        	 * Lets handle the case when year has just turned
+        	 */
+        	year--;
+        }
+    	
+    	// cycle's upper two digit are year
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+    	int cycle = (year - 2000) * 100;
+        
+        if(firstdate < 1) {
+        	return "";
+        }
+        
+        // now find cycle on todays date
+        epoch.set(year, Calendar.JANUARY, firstdate, 9, 0, 0);
+        cycle++;
+        epoch.add(Calendar.DAY_OF_MONTH, 28);
+        if(!epoch.after(now)) {
+            while(true) {
+                epoch.add(Calendar.DAY_OF_MONTH, 28);
+                cycle++;
+                if(epoch.after(now)) {
+                	break;
+                }
+            }
+        }
+
+        return "" + cycle;
     }
     
     /**
      * 
+     * @param date
      * @return
      */
-    public static String getVersion(String root, String name) {
-        int cycle = 1400;
-        String ret = "";
+    public static boolean isExpired(String date) {        
+        
+        if(null == date) {
+            return true;
+        }
+        
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        epoch.set(2013, 11, 12, 9, 0, 0);
+        GregorianCalendar expires = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+
+        if(date.contains("_")) {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int min;
+            /*
+             * TFR date
+             */
+            String dates[] = date.split("_");
+            if(dates.length < 4) {
+                return true;            
+            }
+
+            month = Integer.parseInt(dates[0]) - 1;
+            day = Integer.parseInt(dates[1]);
+            year = Integer.parseInt(dates[2]);
+
+            String time[] = dates[3].split(":");
+            hour = Integer.parseInt(time[0]);
+            min = Integer.parseInt(time[1]);
+            if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
+                return true;
+            }
+            /*
+             * so many min expiry
+             */
+            expires.set(year, month, day, hour, min);
+            expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
+            if(now.after(expires)) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        if(!getCycle().equals(date)) {
+        	return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static String getVersion(String root, String name, boolean[] networkState) {
+        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        String netVers = getVersionNetwork(root);
+        
+        if(networkState != null && networkState.length != 0) {
+        	networkState[0] = netVers != null;
+        }
+
         /*
          * Expires every so many mins
          */
-        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus")) {
-            ret = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
+        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus") || name.equals("fuel") || name.equals("ratings")) {
+            return String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),
                     now.get(Calendar.HOUR_OF_DAY),
                     EXPIRES * (int)(now.get(Calendar.MINUTE) / EXPIRES));
         }
-        else {
-
-            /*
-             * Download version from the internet first, then if not found,
-             * calculate what it should be
-             */
-            try {
-                URL u = new URL(root + "version.php");
-                URLConnection c = u.openConnection();
-                InputStream r = c.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(r));
-                String line = reader.readLine();
-                if(null != line) {
-                    return line;
-                }
-            }
-            catch (Exception e) {
-
-            }
-
-
-            while(epoch.before(now)) {
-                epoch.add(Calendar.DAY_OF_MONTH, 28);
-                cycle++;
-            }
-            epoch.add(Calendar.DAY_OF_MONTH, -28);
-            cycle--;
-            /*
-             * US locale as this is a folder name not language translation
-             */
-            ret = "" + cycle;
+        else if(netVers != null) {
+        	return netVers;
         }
+        return getCycle();
+    }
+
+
+    /**
+     * 
+     * @return
+     */
+    private static String getVersionNetwork(String root) {
+
+        /*
+         * Download version from the internet first, then if not found,
+         * calculate what it should be
+         */
+        try {
+            URL u = new URL(root + "version.php");
+            URLConnection c = u.openConnection();
+            InputStream r = c.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(r));
+            String line = reader.readLine();
+            if(null != line) {
+                return line;
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        return null;
+    }
+
+    /**
+     * Find a range for the FAA cycle
+     * @return
+     */
+    public static String getVersionRange(String cycleName) {
+        int cycle;
+        try {
+        	cycle = Integer.parseInt(cycleName);
+        }
+        catch (Exception e) {
+        	return "";
+        }
+        
+        // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
+        int cycleupper = (int)(cycle / 100);
+        int cyclelower = cycle - (cycleupper * 100);
+        int firstdate = getFirstDate(2000 + cycleupper);
+        if(firstdate < 1) {
+        	return "";
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        String ret = "";
+        GregorianCalendar epoch = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        epoch.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+        epoch.add(Calendar.DAY_OF_MONTH, 28 * (cyclelower - 1));
+        ret = "(" + sdf.format(epoch.getTime());
+        epoch.add(Calendar.DAY_OF_MONTH, 28);
+        ret += "-" + sdf.format(epoch.getTime()) + ")";
         return ret;
     }
+
     
+    /**
+     * Find cycle + or - offset
+     * @param date
+     * @return
+     */
+    public static String findCycleOffset(String cycleName, int offset) {        
+        
+        int cycle;
+        try {
+        	cycle = Integer.parseInt(cycleName);
+        }
+        catch (Exception e) {
+        	return cycleName;
+        }
+        
+        // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
+        int cycleupper = (int)(cycle / 100);
+        int cyclelower = cycle - (cycleupper * 100);
+        int firstdate = getFirstDate(2000 + cycleupper);
+        if(firstdate < 1) {
+        	return cycleName;
+        }
+        
+        // find cycle time with offset
+        GregorianCalendar then = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        then.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+        then.add(Calendar.DAY_OF_MONTH, 28 * (cyclelower - 1 + offset));
+        
+        // find upper two digits of cycle.
+    	cycleupper = (then.get(Calendar.YEAR) - 2000);
+    	
+    	// find cyclelower
+    	firstdate = getFirstDate(2000 + cycleupper);
+        GregorianCalendar first = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        first.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
+
+        cycle = cycleupper * 100 + 1;
+        while(first.before(then)) {
+            first.add(Calendar.DAY_OF_MONTH, 28);
+            cycle++;
+        }
+
+        return "" + cycle;
+    }
+
 }

@@ -15,13 +15,13 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-        <com.ds.avare.LocationView
+        <com.ds.avare.views.LocationView
             android:background="#FF000000"
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <com.ds.avare.VerticalSeekBar
+        <com.ds.avare.utils.VerticalSeekBar
             android:id="@+id/location_seekbar_threshold"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
@@ -81,10 +81,40 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:drawableLeft="@drawable/menu"
+            android:drawableLeft="@android:drawable/ic_menu_more"
             android:visibility="visible" />
 
-        <ToggleButton
+        <Button
+            android:id="@+id/plan_prev"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/plan_pause"
+            android:drawableLeft="@android:drawable/ic_media_previous"
+            android:visibility="invisible" />
+
+        <ImageButton
+            android:id="@+id/plan_pause"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/plan_next"
+            android:src="@android:drawable/ic_media_play"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/plan_next"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/location_button_draw_clear"
+            android:drawableLeft="@android:drawable/ic_media_next"
+            android:visibility="invisible" />
+
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_tracks"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -96,7 +126,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
         
-        <ToggleButton
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_track"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -108,7 +138,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="150dp"
             android:textStyle="bold"/>
         
-        <ToggleButton
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -139,7 +169,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:drawableLeft="@drawable/center" />
+            android:drawableLeft="@android:drawable/ic_menu_mylocation" />
 
         <Button
             android:id="@+id/location_button_draw_clear"
@@ -151,7 +181,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@drawable/erase"
             android:visibility="invisible" />        
         
-        <ToggleButton
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_draw"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -185,79 +215,69 @@ Redistribution and use in source and binary forms, with or without modification,
             
 	        <Button
 	            android:id="@+id/location_button_cross"
-	            android:layout_width="wrap_content"
+	            android:layout_width="fill_parent"
 	            android:layout_height="wrap_content"
 	            android:layout_margin="5dp"
 	            android:background="@drawable/border_red_small"
 	            android:textColor="#FFFFFFFF"
 	            android:textStyle="bold"
-                android:minWidth="160dp"
-                android:minHeight="40dp"
                 android:textSize="15sp"
-                android:gravity="left|center"
-                android:drawableLeft="@drawable/delete"/>
-
-            <TextView
-                android:id="@+id/location_text_chart"
-                android:textStyle="bold"
-                android:textColor="#FFFFFFFF"
-                android:layout_toRightOf="@+id/location_button_cross"
-                android:layout_margin="5dp"
                 android:minHeight="40dp"
-                android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center"
-                android:text="@string/Plan"
-                />
-	        
-	        <TextView
-                android:id="@+id/location_text_info"
-                android:textStyle="bold"
-                android:textColor="#FFFFFFFF"
-                android:layout_below="@+id/location_button_cross"
-                android:layout_margin="5dp"
-                android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left|center"
-                android:text="@string/Plan"
-                />
-	        	        
-	        <Button
-	            android:id="@+id/location_button_dest"
-	            android:textStyle="bold"
-                android:layout_margin="5dp"
-	            android:layout_below="@+id/location_text_info"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left|center"
-	            android:text="@string/Destination"
-	            android:drawableLeft="@drawable/direct"
-	            android:minWidth="150dp"
-	            />
-        
-	         <Button
-	            android:id="@+id/location_button_plan"
-	            android:textStyle="bold"
-                android:layout_below="@+id/location_text_info"
-                android:layout_toRightOf="@+id/location_button_dest"
-                android:layout_margin="5dp"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:gravity="left|center"
-	            android:minWidth="150dp"
-	            android:text="@string/Plan"
-	            android:drawableLeft="@drawable/plan"
-	            />
+                android:drawableLeft="@android:drawable/ic_input_delete"/>
 
+	        <LinearLayout
+	        	android:id="@+id/location_popout_buttons"
+                android:layout_below="@+id/location_button_cross"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"	        	
+	        	>
+		        <Button
+		            android:id="@+id/location_button_dest"
+                    android:textStyle="bold"
+                    android:layout_margin="3dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+		            android:text="@string/ShortDestination"
+		            />
+	        
+		         <Button
+		            android:id="@+id/location_button_plan"
+                    android:textStyle="bold"
+                    android:layout_margin="3dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+		            android:text="@string/Plan"
+		            />
+	
+		         <Button
+	                android:id="@+id/location_button_plate"
+                    android:textStyle="bold"
+                    android:layout_margin="3dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+	                android:text="@string/Plates"
+	                />
+		         
+	             <Button
+	                android:id="@+id/location_button_afd"
+	                android:textStyle="bold"
+	                android:layout_margin="3dp"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+                    android:layout_height="wrap_content"
+	                android:text="@string/AFD"
+	                />
+	        </LinearLayout>       
 	        
             <ExpandableListView
 	            android:id="@+id/location_list_popout"
 	            android:clickable="false"
                 android:layout_margin="5dp"
                 android:cacheColorHint="#00000000"
-                android:layout_below="@+id/location_button_dest"
+                android:layout_below="@+id/location_popout_buttons"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"/>
             

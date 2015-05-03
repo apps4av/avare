@@ -62,13 +62,18 @@ public class VNAV {
 	 * source paint object
 	 * @param textPaint Used to figure out our overall size
 	 */
-	public void setSize(Paint textPaint)
+	public void setSize(Paint textPaint, int minSize)
 	{
+		// Ignore an invalid size request
+		if (0 == minSize) {
+			return;
+		}
+
 		// A total of 11 bars
 		mBarCount = 11;
 		
 		// The width of each bar is the basis for the entire instrument size
-		mBarWidth = textPaint.getTextSize() * (float) 0.5;
+		mBarWidth = (int) (minSize / 16);
 		
 		// Height is 1/4 of the width
 		mBarHeight = mBarWidth / 4;
@@ -100,6 +105,11 @@ public class VNAV {
 	 */
 	public void drawVNAV(Canvas canvas, float screenX, float screenY, Destination dest)
 	{
+		// Ensure we have been initialized before trying to paint
+		if(null == mVNAVPaint) {
+			return;
+		}
+		
 		// If we have no destination set, then do not draw anything
 		if(dest == null || (!mShow)) {
 		    mShow = false;
@@ -118,11 +128,11 @@ public class VNAV {
         mInstTop = (screenY - mInstHeight) / 2;
 
         // Now the left side
-        mInstLeft  = screenX - mInstWidth; // Right side of display
+        mInstLeft  = screenX - (int) (mInstWidth * 1.75); // Right side of display
 	    
         // Draw the background
 	    mVNAVPaint.setColor(mBackColor);// Color
-	    mVNAVPaint.setAlpha(0x5F);		// Make it see-thru
+	    mVNAVPaint.setAlpha(0x7F);		// Make it see-thru
 	    mVNAVPaint.setStrokeWidth(mInstWidth);	// How tall the inst is
 	    mVNAVPaint.setStyle(Paint.Style.STROKE);	// Type of brush
 	    

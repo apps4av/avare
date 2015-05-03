@@ -26,6 +26,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High Enroute Charts</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
+        <item>IFR Area Charts</item>
+        <item>VFR Area Plates</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -38,13 +40,18 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
         <item>SUA</item>
+        <item>Fuel Cost</item>
+        <item>User Ratings</item>
         <item>Radar</item>
     </string-array>
     
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>@string/TFRs</item>
-     </string-array>
+        <item>Plates Georeference Info.</item>
+        <item>@string/FuelCost</item>
+        <item>@string/Ratings</item>
+    </string-array>
      
     <string-array name="resNameWeather">
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
@@ -63,6 +70,23 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>A/FD Pacific</item>
     </string-array>
 
+    <string-array name="resNameIFRArea">
+        <item>IFR Area ATL</item>
+        <item>IFR Area DCA</item>
+        <item>IFR Area DEN</item>
+        <item>IFR Area DET</item>
+        <item>IFR Area DFW</item>
+        <item>IFR Area JAX</item>
+        <item>IFR Area LAX</item>
+        <item>IFR Area MIA</item>
+        <item>IFR Area MKC</item>
+        <item>IFR Area MSP</item>
+        <item>IFR Area ORD</item>
+        <item>IFR Area PHX</item>
+        <item>IFR Area SFO</item>
+        <item>IFR Area STL</item>
+    </string-array>
+    
     <string-array name="resNameIFRHE">
         <item>IFR High Enroute NE</item>
         <item>IFR High Enroute NC</item>
@@ -198,7 +222,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
-        <item>Plates Georeference Info.</item>
         <item>Minimums T/A</item>
         <item>Alabama</item>
 		<item>Alaska</item>
@@ -253,6 +276,60 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wisconsin</item>
 		<item>Wyoming</item>
 	</string-array>
+    <string-array name="resNameVFRAreaPlate">
+        <item>VFR Area Canada</item>
+    	<item>VFR Area Alabama</item>
+        <item>VFR Area Alaska</item>
+        <item>VFR Area Arizona</item>
+        <item>VFR Area Arkansas</item>
+        <item>VFR Area California</item>
+        <item>VFR Area Colorado</item>
+        <item>VFR Area Connecticut</item>
+        <item>VFR Area Delaware</item>
+        <item>VFR Area Florida</item>
+        <item>VFR Area Georgia</item>
+        <item>VFR Area Hawaii</item>
+        <item>VFR Area Idaho</item>
+        <item>VFR Area Illinois</item>
+        <item>VFR Area Indiana</item>
+        <item>VFR Area Iowa</item>
+        <item>VFR Area Kansas</item>
+        <item>VFR Area Kentucky</item>
+        <item>VFR Area Louisiana</item>
+        <item>VFR Area Maine</item>
+        <item>VFR Area Maryland</item>
+        <item>VFR Area Massachusetts</item>
+        <item>VFR Area Michigan</item>
+        <item>VFR Area Minnesota</item>
+        <item>VFR Area Mississippi</item>
+        <item>VFR Area Missouri</item>
+        <item>VFR Area Montana</item>
+        <item>VFR Area Nebraska</item>
+        <item>VFR Area Nevada</item>
+        <item>VFR Area New Hampshire</item>
+        <item>VFR Area New Jersey</item>
+        <item>VFR Area New Mexico</item>
+        <item>VFR Area New York</item>
+        <item>VFR Area North Carolina</item>
+        <item>VFR Area North Dakota</item>
+        <item>VFR Area Ohio</item>
+        <item>VFR Area Oklahoma</item>
+        <item>VFR Area Oregon</item>
+        <item>VFR Area Pennsylvania</item>
+        <item>VFR Area Puerto Rico</item>
+        <item>VFR Area Rhode Island</item>
+        <item>VFR Area South Carolina</item>
+        <item>VFR Area South Dakota</item>
+        <item>VFR Area Tennessee</item>
+        <item>VFR Area Texas</item>
+        <item>VFR Area Utah</item>
+        <item>VFR Area Vermont</item>
+        <item>VFR Area Virginia</item>
+        <item>VFR Area Washington</item>
+        <item>VFR Area West Virginia</item>
+        <item>VFR Area Wisconsin</item>
+        <item>VFR Area Wyoming</item>
+    </string-array>
     <string-array name="resNameTerrain">
         <item>Elevation NE</item>
         <item>Elevation NC</item>
@@ -334,6 +411,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesDatabase">
         <item>databases</item>
         <item>TFRs</item>
+        <item>geoplates</item>
+        <item>fuel</item>
+        <item>ratings</item>
     </string-array>
     
     <string-array name="resFilesWeather">
@@ -359,6 +439,23 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>EHUS_SC</item>
         <item>EHUS_SW</item>
         <item>EHUS_AK</item>
+    </string-array>
+
+    <string-array name="resFilesIFRArea">
+        <item>ENRA_ATL</item>
+        <item>ENRA_DCA</item>
+        <item>ENRA_DEN</item>
+        <item>ENRA_DET</item>
+        <item>ENRA_DFW</item>
+        <item>ENRA_JAX</item>
+        <item>ENRA_LAX</item>
+        <item>ENRA_MIA</item>
+        <item>ENRA_MKC</item>
+        <item>ENRA_MSP</item>
+        <item>ENRA_ORD</item>
+        <item>ENRA_PHX</item>
+        <item>ENRA_SFO</item>
+        <item>ENRA_STL</item>
     </string-array>
     
     <string-array name="resFilesAFD">
@@ -489,7 +586,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
-        <item>geoplates</item>
         <item>alternates</item>
         <item>AL</item>
 		<item>AK</item>
@@ -544,6 +640,62 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>WI</item>
 		<item>WY</item>  
     </string-array>
+    
+    <string-array name="resFilesVFRAreaPlate">
+        <item>AreaCN</item>
+    	<item>AreaAL</item>
+        <item>AreaAK</item>
+        <item>AreaAZ</item>
+        <item>AreaAR</item>
+        <item>AreaCA</item>
+        <item>AreaCO</item>
+        <item>AreaCT</item>
+        <item>AreaDE</item>
+        <item>AreaFL</item>
+        <item>AreaGA</item>
+        <item>AreaHI</item>
+        <item>AreaID</item>
+        <item>AreaIL</item>
+        <item>AreaIN</item>
+        <item>AreaIA</item>
+        <item>AreaKS</item>
+        <item>AreaKY</item>
+        <item>AreaLA</item>
+        <item>AreaME</item>
+        <item>AreaMD</item>
+        <item>AreaMA</item>
+        <item>AreaMI</item>
+        <item>AreaMN</item>
+        <item>AreaMS</item>
+        <item>AreaMO</item>
+        <item>AreaMT</item>
+        <item>AreaNE</item>
+        <item>AreaNV</item>
+        <item>AreaNH</item>
+        <item>AreaNJ</item>
+        <item>AreaNM</item>
+        <item>AreaNY</item>
+        <item>AreaNC</item>
+        <item>AreaND</item>
+        <item>AreaOH</item>
+        <item>AreaOK</item>
+        <item>AreaOR</item>
+        <item>AreaPA</item>
+        <item>AreaPR</item>
+        <item>AreaRI</item>
+        <item>AreaSC</item>
+        <item>AreaSD</item>
+        <item>AreaTN</item>
+        <item>AreaTX</item>
+        <item>AreaUT</item>
+        <item>AreaVT</item>
+        <item>AreaVA</item>
+        <item>AreaWA</item>
+        <item>AreaWV</item>
+        <item>AreaWI</item>
+        <item>AreaWY</item>  
+    </string-array>
+    
     <string-array name="resFilesTerrain">
         <item>ELEV_NE</item>
         <item>ELEV_NC</item>
@@ -632,6 +784,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
+        <item>IFR Area</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
@@ -644,6 +797,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>6</item>
         <item>7</item>
         <item>8</item>
+        <item>9</item>
     </string-array>    
 
     <string-array name="ChartDbNames">
@@ -656,6 +810,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>maps.rel.db</item>
         <item>maps.topo.db</item>
         <item>maps.oth.db</item>
+        <item>maps.ea.db</item>
         <item>procedures.db</item>
     </string-array>    
     
@@ -780,6 +935,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometer</item>
 	    <item>Course Deviation Indicator</item>
 	    <item>Flight Path Required</item>
+	    <item>Fuel Tank Switch Timer</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -808,18 +964,28 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometer</item>
 	    <item>CDI</item>
 	    <item>FPR deg</item>
-   	</string-array>
+	    <item>Fuel Time</item>
+	</string-array>
 
 	<string-array name="DisplayIconValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>
+        <item>3</item>
+	</string-array>
 
+	<string-array name="RunwayLengths">
+        <item>2000</item>
+        <item>4000</item>
+        <item>6000</item>
+    </string-array>
+	
 	<string-array name="DisplayIconPrompt">
         <item>High Wing Aircraft</item>
         <item>Helicopter</item>
         <item>Canard Aircraft</item>
+        <item>Green Aircraft</item>
+        <item>None</item>
     </string-array>
 
 	<string-array name="CycleValues">
@@ -830,8 +996,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="CyclePrompt">
         <item>Current</item>
-        <item>Previous - may not be available</item>
-        <item>Next - may not be available</item>
+        <item>Previous - Warning! Downloads may fail indefinitely</item>
+        <item>Next - Warning! Downloads may fail indefinitely</item>
     </string-array>
 
     <string-array name="PointType">
@@ -848,9 +1014,71 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="GpsPositionValues">
-        <item>0</item>
+    	<item>0</item>
         <item>1</item>
         <item>2</item>
     </string-array>
-    	
+    
+    <string-array name="hotel_max_price">
+        <item>500</item>
+        <item>300</item>
+        <item>200</item>
+        <item>150</item>
+        <item>100</item>
+        <item>75</item>
+        <item>50</item>
+    </string-array>
+    
+    <string-array name="hotel_max_radius">
+        <item>30</item>
+    	<item>20</item>
+        <item>10</item>
+        <item>5</item>
+        <item>1</item>
+    </string-array>
+    
+    
+    <string-array name="hotel_min_stars">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="hotel_count_adults">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="hotel_age_child">
+        <item>-</item>
+    	<item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+    </string-array>
+
+    <string-array name="FuelType">
+        <item>100LL</item>
+        <item>Jet-A</item>
+        <item>Mogas</item>
+    </string-array>
+    
 </resources>

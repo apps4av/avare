@@ -29,6 +29,7 @@ public class AnimateButton {
     private Context mContext;
     private View mView;
     private View mReplaces[];
+    private int mReplacesVis[];
     private int mDir;
     
     public static final int DIRECTION_L_R = 1;
@@ -56,7 +57,9 @@ public class AnimateButton {
             mReplaces = new View[1];
             mReplaces[0] = new View(ctx);
         }
-    }
+
+        mReplacesVis = new int[mReplaces.length];
+}
 
     
     /**
@@ -102,7 +105,7 @@ public class AnimateButton {
                      */
                     mView.setVisibility(Button.INVISIBLE);
                     for(int v = 0; v < mReplaces.length; v++) {
-                        mReplaces[v].setVisibility(Button.VISIBLE);
+                        mReplaces[v].setVisibility(mReplacesVis[v]);
                     }
             }
 
@@ -128,7 +131,7 @@ public class AnimateButton {
 
         mView.setVisibility(Button.INVISIBLE);
         for(int v = 0; v < mReplaces.length; v++) {
-            mReplaces[v].setVisibility(Button.VISIBLE);
+          mReplaces[v].setVisibility(mReplacesVis[v]);
         }
     }
 
@@ -200,7 +203,7 @@ public class AnimateButton {
                      */
                     mView.setVisibility(Button.INVISIBLE);
                     for(int v = 0; v < mReplaces.length; v++) {
-                        mReplaces[v].setVisibility(Button.VISIBLE);
+                        mReplaces[v].setVisibility(mReplacesVis[v]);
                     }
                 }
                 else {
@@ -222,7 +225,7 @@ public class AnimateButton {
                      * Set visible when animating
                      */
                     for(int v = 0; v < mReplaces.length; v++) {
-                        mReplaces[v].setVisibility(Button.INVISIBLE);
+                        mReplaces[v].setVisibility(mReplacesVis[v]);
                     }
                     mView.setVisibility(Button.VISIBLE);
                 }
@@ -286,7 +289,8 @@ public class AnimateButton {
                      * Set visible when animating
                      */
                     for(int v = 0; v < mReplaces.length; v++) {
-                        mReplaces[v].setVisibility(Button.INVISIBLE);
+                    	mReplacesVis[v] = mReplaces[v].getVisibility(); 
+                    	mReplaces[v].setVisibility(Button.INVISIBLE);
                     }
                     mView.setVisibility(Button.VISIBLE);
             }

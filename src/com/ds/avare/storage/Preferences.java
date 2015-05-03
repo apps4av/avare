@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -70,11 +71,11 @@ public class Preferences {
     public static final long MEM_32 = 32 * 1024 * 1024;
     public static final long MEM_16 = 16 * 1024 * 1024;
     
-    public static final int MEM_128_X = 7;
+    public static final int MEM_128_X = 9;
     public static final int MEM_128_Y = 5;
-    public static final int MEM_64_X = 5;
-    public static final int MEM_64_Y = 3;
-    public static final int MEM_32_X = 3;
+    public static final int MEM_64_X = 7;
+    public static final int MEM_64_Y = 5;
+    public static final int MEM_32_X = 5;
     public static final int MEM_32_Y = 3;
     public static final int MEM_16_X = 3;
     public static final int MEM_16_Y = 3;
@@ -252,13 +253,8 @@ public class Preferences {
      * 
      * @return
      */
-    public String[] getPlans() {
-        String plans = mPref.getString(mContext.getString(R.string.Plan), "");
-        if(plans.length() == 0) {
-        	return null;
-        }
-        String[] tokens = plans.split(",");
-        return tokens;
+    public String getPlans() {
+        return mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
     }
 
 
@@ -266,55 +262,8 @@ public class Preferences {
      * 
      * @return
      */
-    public void addToPlans(String name) {
-        String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>();
-        
-        if(null != tokens) {
-	        l = new LinkedList<String>(Arrays.asList(tokens));
-	        for(int id = 0; id < l.size(); id++) {
-	            if(l.get(id).equals(name)) {
-	                l.remove(id);
-	            }
-	        }
-        }
-        l.add(0, name);
-        if(l.size() > MAX_PLANS) {
-            l = l.subList(0, MAX_PLANS - 1);
-        }
-        
-        String plans = "";
-        for(int id = 0; id < l.size(); id++) {
-            plans = plans + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Plan), plans);
-        editor.commit();
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public void deleteAPlan(String name) {
-        String[] tokens = getPlans();
-        List<String> l = new LinkedList<String>();
-        if(null != tokens) {
-        	l = new LinkedList<String>(Arrays.asList(tokens));
-	        for(int id = 0; id < l.size(); id++) {
-	            if(l.get(id).equals(name)) { 
-	                l.remove(id);
-	            }
-	        }
-        }
-        
-        String plans = "";
-        for(int id = 0; id < l.size(); id++) {
-            plans = plans + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Plan), plans);
-        editor.commit();
+    public void putPlans(String name) {
+        mPref.edit().putString(mContext.getString(R.string.Plan) + "v10", name).commit();
     }
 
 
@@ -322,7 +271,7 @@ public class Preferences {
      * 
      * @return
      */
-    public int[] getTilesNumber() {
+    public static int[] getTilesNumber() {
         int[] ret = new int[2];
         
         /*
@@ -726,7 +675,15 @@ public class Preferences {
     public boolean useDynamicFields() {
         return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), true);
     }
-    
+
+    /**
+     * 
+     * @return
+     */
+    public boolean shouldBlinkScreen() {
+        return mPref.getBoolean(mContext.getString(R.string.blinkScreen), false);
+    }
+
     /**
      * 
      * @return
@@ -768,7 +725,7 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), false);
+        return mPref.getBoolean(mContext.getString(R.string.register), Build.PRODUCT.contains("sdk") ? true : false);
     }
 
     /**
@@ -938,7 +895,7 @@ public class Preferences {
     	}
 
     	if(mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-    		mTabs |=  1 << MainActivity.tabWX;
+    		mTabs |=  1 << MainActivity.tabWXB;
     	}
 
     	if(mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
@@ -949,10 +906,143 @@ public class Preferences {
     		mTabs |=  1 << MainActivity.tabChecklist;
     	}
 
-    	if(mPref.getBoolean(mContext.getString(R.string.prefTabGPS), true)) {
-    		mTabs |=  1 << MainActivity.tabGPS;
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
+    		mTabs |=  1 << MainActivity.tabTools;
+    	}
+
+    	if(mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
+    		mTabs |=  1 << MainActivity.tabTrip;
     	}
 
     	return mTabs;
     }
+    
+    /**
+     * Hotel settings save
+     */
+    
+    
+    /**
+     * 
+     * @return
+     */
+    public int getHotelMaxPriceIndex() {
+        return mPref.getInt("HotelMaxPrice", 0);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getHotelMinStarIndex() {
+        return mPref.getInt("HotelMinStar", 0);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getHotelMaxDistanceIndex() {
+        return mPref.getInt("HotelMaxDistance", 0);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getHotelAdultsIndex() {
+        return mPref.getInt("HotelAdults", 0);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public int getHotelChildIndex(String id) {
+        return mPref.getInt("HotelChild" + id, 0);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHotelMaxPriceIndex(int index) {
+        mPref.edit().putInt("HotelMaxPrice", index).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHotelMinStarIndex(int index) {
+        mPref.edit().putInt("HotelMinStar", index).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHotelMaxDistanceIndex(int index) {
+        mPref.edit().putInt("HotelMaxDistance", index).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHotelAdultsIndex(int index) {
+        mPref.edit().putInt("HotelAdults", index).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void setHotelChildIndex(String id, int index) {
+        mPref.edit().putInt("HotelChild" + id, index).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public void saveLMFSPlan(String json) {
+        mPref.edit().putString("LMFSPlan", json).commit();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getLMFSPlan() {
+        return mPref.getString("LMFSPlan", "");
+    }
+
+    /**
+     * 
+     * @return
+     */
+	public String getLongestRunway() {
+		return mPref.getString(mContext.getString(R.string.runwayLengths), "2000");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getRegisteredEmail() {
+		return mPref.getString(mContext.getString(R.string.Email), null);
+	}
+
+	/**
+	 * 
+	 * @param email
+	 */
+	public void setRegisteredEmail(String email) {
+        mPref.edit().putString(mContext.getString(R.string.Email), email).commit();
+	}
+
+	public boolean getPlanControl() {
+		return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
+	}
 }

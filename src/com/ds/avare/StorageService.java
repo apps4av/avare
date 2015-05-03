@@ -24,7 +24,9 @@ import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.*;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.DistanceRings;
+import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.instruments.FlightTimer;
+import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.instruments.VNAV;
 import com.ds.avare.instruments.VSI;
@@ -46,6 +48,7 @@ import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
+import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.ShadowedText;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
@@ -65,7 +68,7 @@ import java.net.URI;
  * Main storage service. It stores all states so when activity dies,
  * we dont start from no state.
  * This is especially important for start up functions that take time,
- * one of which is databse un-zipping.
+ * one of which is database un-zipping.
  * 
  * Also sends intent to display warning, since its too intrusive to show a 
  * warning every time activity starts.
@@ -179,6 +182,9 @@ public class StorageService extends Service {
     // Handler for the top two lines of status information
     private InfoLines mInfoLines;
 
+    // Navigation comments from flight plans
+    private NavComments mNavComments;
+    
     // Handler for drawing text with an oval shadow
     private ShadowedText mShadowedText;
     
@@ -223,6 +229,18 @@ public class StorageService extends Service {
      * Watches GPS to notify of phases of flight
      */
     private FlightStatus mFlightStatus;
+   
+    /*
+     * Current checklist
+     */
+    private Checklist mChecklist;
+    
+    // The edge distance tape instrument
+    private EdgeDistanceTape mEdgeDistanceTape;
+    
+    // Timer for switching fuel tanks
+    private FuelTimer mFuelTimer;
+    
     
     /**
      * @author zkhan
@@ -263,8 +281,8 @@ public class StorageService extends Service {
 
         mImageDataSource = new DataSource(getApplicationContext());
         
-        mArea = new Area(mImageDataSource);
-        mPlan = new Plan(this);
+        mArea = new Area(mImageDataSource, this);
+        mPlan = new Plan(this, this);
         mDownloading = false;
         
         /*
@@ -299,6 +317,8 @@ public class StorageService extends Service {
         
         mElev = -1;
         mThreshold = 0;
+        
+        mChecklist = new Checklist("");
         
         /*
          * Allocate a flight timer object
@@ -341,6 +361,15 @@ public class StorageService extends Service {
         
         // For handling external flight plans
         mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
+
+        // Allocate the nav comments object
+        mNavComments = new NavComments();
+        
+        mEdgeDistanceTape = new EdgeDistanceTape();
+        
+        // Declare a fuel tank switching timer. Default to 30
+        // minutes per tank
+        mFuelTimer = new FuelTimer(30);	
         
         /*
          * Monitor TFR every hour.
@@ -410,8 +439,8 @@ public class StorageService extends Service {
                     setGpsParams(new GpsParams(location));
                     mLocation = location;
                     mLocationSem.unlock();
-                    getArea().updateLocation(getGpsParams());
-                    getPlan().updateLocation(getGpsParams());
+                    mArea.updateLocation(getGpsParams());
+                    mPlan.updateLocation(getGpsParams());
 
                     // Adjust the flight timer
                     getFlightTimer().setSpeed(mGpsParams.getSpeed());
@@ -422,27 +451,28 @@ public class StorageService extends Service {
                     // Let the odometer know how far we traveled
                     getOdometer().updateValue(mGpsParams);
                     
-                    // Calculate course line deviation
-                    getCDI().calcDeviation(mGpsParams, getDestination());
-                    
                     // Vertical descent rate calculation
-                    getVNAV().calcGlideSlope(mGpsParams, getDestination());
+                    getVNAV().calcGlideSlope(mGpsParams, mDestination);
                     
                     // Tell the VSI where we are.
                     getVSI().updateValue(mGpsParams);
                     
                     getFlightStatus().updateLocation(mGpsParams);
                     
-                    if(getPlan().hasDestinationChanged()) {
+                    if(mPlan.hasDestinationChanged()) {
                         /*
                          * If plan active then set destination to next not passed way point
                          */
-                        setDestinationPlanNoChange(getPlan().getDestination(getPlan().findNextNotPassed()));
+                        setDestinationPlanNoChange(mPlan.getDestination(mPlan.findNextNotPassed()));
                     }
 
                     if(mDestination != null) {
                         mDestination.updateTo(getGpsParams());
                     }
+                    
+                    // Calculate course line deviation - this must be AFTER the destination update
+                    // since the CDI uses the destination in its calculations
+                    getCDI().calcDeviation(mDestination, getPlan());
                 }
             }
 
@@ -563,7 +593,12 @@ public class StorageService extends Service {
     public void setDestination(Destination destination) {
         mDestination = destination;
         mAfdIndex = 0;
-        getPlan().makeInactive();
+
+        // A direct destination implies a new plan. Ensure to turn off
+        // the plan
+        if(null != mPlan){
+        	mPlan.makeInactive();
+        }
     }
 
     /**
@@ -572,20 +607,26 @@ public class StorageService extends Service {
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
         mAfdIndex = 0;
+        
+        // Update the right side of the nav comments from the destination
+        // TODO: I don't like this here, it should be pushed into the PLAN itself
+        if(null != destination) {
+        	mNavComments.setRight(destination.getCmt());
+        }
     }
 
     /**
-     * @param destination from plan
+     * 
+     * @return
      */
-    public void setDestinationPlan(Destination destination) {
-        mDestination = destination;
-        mAfdIndex = 0;
-        getPlan().makeActive(mGpsParams);
-    }
-    
     public Destination getLastAfdDestination() {
         return mLastAfdDestination;
     }
+    
+    /**
+     * 
+     * @param destination
+     */
     public void setLastAfdDestination(Destination destination) {
         mLastAfdDestination = destination;
     }    
@@ -675,7 +716,14 @@ public class StorageService extends Service {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan(this);
+        mPlan = new Plan(this, this);
+    }
+
+    /**
+     * @return
+     */
+    public void newPlanFromStorage(String storage, boolean reverse) {
+        mPlan = new Plan(this, this, storage, reverse);
     }
 
     /**
@@ -1035,5 +1083,25 @@ public class StorageService extends Service {
     
     public ExternalPlanMgr getExternalPlanMgr() {
     	return mExternalPlanMgr;
+    }
+    
+    public NavComments getNavComments() {
+    	return mNavComments;
+    }
+    
+    public Checklist getChecklist() {
+    	return mChecklist;
+    }
+    
+    public void setChecklist(Checklist cl) {
+    	mChecklist = cl;
+    }
+
+    public EdgeDistanceTape getEdgeTape() {
+    	return mEdgeDistanceTape;
+    }
+    
+    public FuelTimer getFuelTimer() {
+    	return mFuelTimer;
     }
 }

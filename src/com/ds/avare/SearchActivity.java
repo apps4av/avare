@@ -17,13 +17,13 @@ import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
-
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -633,7 +633,7 @@ public class SearchActivity extends Activity implements Observer {
                 /*
                  * This is not to be done repeatedly with new text input so sync.
                  */
-                mService.getDBResource().search(srch, params);
+                mService.getDBResource().search(srch, params, false);
                 mService.getUDWMgr().search(srch, params);			// From user defined points of interest
                 if(params.size() > 0) {
                     selection = new String[params.size()];

@@ -94,7 +94,7 @@ public class Delete extends Observable {
                 Message m = mHandler.obtainMessage(Download.FAILED, Delete.this);
                 mHandler.sendMessage(m);
             }
-            LinkedList<String> list = data.findFilesToDelete(chart);
+            LinkedList<String> list = data.findFilesToDelete(chart, path);
             
             int fileLength = list.size();
             int total = 0;
@@ -110,9 +110,7 @@ public class Delete extends Observable {
                 }
                 newp = (int) (total * 50 / fileLength);
                 
-                String toDelete = path + "/" + name;
-                
-                Helper.deleteDir(new File(toDelete));
+                Helper.deleteDir(new File(name));
                 
                 if(lastp != newp) {
                     lastp = newp;

@@ -28,9 +28,11 @@ import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -82,7 +84,27 @@ public class WebActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.web, null);
         setContentView(view);
         mWebView = (WebView) view.findViewById(R.id.web_mainpage);
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.loadUrl(getIntent().getStringExtra("url"));
+        
+        // This is need on some old phones to get focus back to webview.
+        mWebView.setOnTouchListener(new View.OnTouchListener() {  
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				arg0.performClick();
+				arg0.requestFocus();
+				return false;
+			}
+        });
+
+        mWebView.setOnLongClickListener(new OnLongClickListener() {
+        	@Override
+        	public boolean onLongClick(View v) {
+        	    return true;
+        	}
+        });
+        mWebView.setLongClickable(false);
+
         /*
          * Progress bar
          */
@@ -157,6 +179,8 @@ public class WebActivity extends Activity  {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+		mWebView.requestFocus();
 
     }
 
