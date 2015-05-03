@@ -17,6 +17,9 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.cap.GridDrawTask;
+import com.ds.avare.cap.GridSection;
+import com.ds.avare.cap.State;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
@@ -196,6 +199,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     private boolean                    mTrackUp;
     
+    private boolean					   mCAPGrids;
+    
     /*
      * Macro of zoom
      */
@@ -233,6 +238,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
+    private GridDrawTask mCapGridDrawTask;
+    private Thread mCapGridDrawThread;
 
     /**
      * @param context
@@ -250,6 +257,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = null;
         mOnChart = null;
         mTrackUp = false;
+        mCAPGrids = false;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -292,6 +300,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
+        
+        mCapGridDrawTask = new GridDrawTask();
+        mCapGridDrawTask.mService = mService;
+        mCapGridDrawThread = new Thread(mCapGridDrawTask);
+        mCapGridDrawThread.start();
+        
         mElevationTask = new ElevationTask();
         mElevationThread = new Thread(mElevationTask);
         mElevationLastRun = System.currentTimeMillis();
@@ -1111,6 +1125,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
     }
+    
+    private void drawCAPGrids(Canvas canvas) {
+    	    	if (mService == null || false == mCAPGrids) {
+    	    		return;
+    	    	}
+    	    	
+    	    	mPaint.setShadowLayer(0, 0, 0, 0);
+    	    	mPaint.setStrokeWidth(2 * mDipToPix);
+    	    	mPaint.setColor(Color.RED);
+    	    	mPaint.setAlpha(162);
+    	    	
+    	    	GridSection section = new GridSection();
+    	    	
+    	    	for (State state : section.getStates()) {
+    				state.drawGrids(canvas, mOrigin, mPaint, mService, mScale, mMovement, mFace, mPref);
+    			}
+    	    }
 
     /**
      * 
@@ -1365,6 +1396,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         		navComments.draw(this, canvas, mMsgPaint,  mService.getShadowedText());
         	}
         }
+    }
+    
+    public void enableCAPGrids(boolean enable) {
+    	mCAPGrids = enable;
+    	invalidate();
     }
     
     /**
@@ -2177,6 +2213,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawThread.interrupt();
         mElevationTask.running = false;
         mElevationThread.interrupt();
+        mCapGridDrawTask.running = false;
+        mCapGridDrawThread.interrupt();
     }
 
     

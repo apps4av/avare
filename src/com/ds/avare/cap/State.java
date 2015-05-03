@@ -75,7 +75,6 @@ public class State {
 		capgrid.add((currentLon + 0.25), (currentLat + 0.25), false);
 		capgrid.add((currentLon + 0.25), currentLat, false);
 		capgrid.add(currentLon, currentLat, false);
-		capgrid.makePolygon();
-		capgrid.drawShape(canvas, origin, scale, movement, paint, face, pref.isNightMode());
+		capgrid.drawShape(canvas, origin, scale, movement, paint, pref.isNightMode(), false);
 	}
 }

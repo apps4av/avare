@@ -123,6 +123,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mMenuButton;
     private RelativeLayout mDestLayout;
     private TwoButton mSimButton;
+    private TwoButton mCAPGridsButton;
     private TwoButton mDrawButton;
     private Button mWebButton;
     private TwoButton mTrackButton;
@@ -135,6 +136,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateSim;
     private AnimateButton mAnimateWeb;
     private AnimateButton mAnimateTrack;
+    private AnimateButton mAnimateCAPGrid;
     private AnimateButton mAnimateChart;
     private AnimateButton mAnimateHelp;
     private AnimateButton mAnimateDownload;
@@ -367,6 +369,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateWeb.animateBack();
         mAnimateSim.animateBack();
         mAnimateTrack.animateBack();
+        mAnimateCAPGrid.animateBack();
         mAnimateChart.animateBack();
         mAnimateHelp.animateBack();
         mAnimateDownload.animateBack();
@@ -381,6 +384,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateWeb.animate();
         mAnimateSim.animate();
         mAnimateTrack.animate();
+        mAnimateCAPGrid.animate();
         mAnimateChart.animate();
         mAnimateHelp.animate();
         mAnimateDownload.animate();
@@ -795,6 +799,19 @@ public class LocationActivity extends Activity implements Observer {
             }
             
         });
+        
+        mCAPGridsButton = (TwoButton)view.findViewById(R.id.cap_grids_toggle);
+        mCAPGridsButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (mCAPGridsButton.getText().equals(getString(R.string.CAPGridsOn))) {
+					mLocationView.enableCAPGrids(true);
+				} else {
+					mLocationView.enableCAPGrids(false);
+				}
+			}
+		});
 
         mTrackButton = (TwoButton)view.findViewById(R.id.location_button_track);
         mTrackButton.setTwoClickListener(new TwoClickListener() {
@@ -950,6 +967,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
         mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateCAPGrid = new AnimateButton(getApplicationContext(), mCAPGridsButton, AnimateButton.DIRECTION_R_L);
         mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
         mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
