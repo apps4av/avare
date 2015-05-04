@@ -9,9 +9,15 @@ All rights reserved.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >   
-      
-    <Button 
+
+	<Spinner
+        android:id="@+id/spinner_register"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+	
+    <Button
         android:id="@+id/btn_register"
+        android:layout_below="@+id/spinner_register"
         android:layout_width="fill_parent"
         android:text="@string/register"
         android:layout_height="wrap_content"/>

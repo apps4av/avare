@@ -15,6 +15,7 @@ package com.ds.avare;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.ds.avare.adapters.NearestAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;

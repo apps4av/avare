@@ -19,7 +19,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <com.ds.avare.AfdView
+        <com.ds.avare.views.AfdView
             android:layout_marginTop="50dp"
             android:id="@+id/airport_afd"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:drawableLeft="@drawable/center" />
+            android:drawableLeft="@android:drawable/ic_menu_mylocation" />
         
     </RelativeLayout>
     

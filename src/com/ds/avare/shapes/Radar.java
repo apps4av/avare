@@ -169,6 +169,9 @@ public class Radar {
      * @return
      */
     public String getDate() {
+    	if(mDate == 0) {
+    		return null;
+    	}
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()); 
         return formatter.format(new Date(mDate)) + "Z";
     }

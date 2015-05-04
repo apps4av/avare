@@ -17,13 +17,13 @@ package com.ds.avare.touch;
  *           return multiTouchController.onTouchEvent(event);
  *       }
  *     
- *       // ... then implement the MultiTouchObjectCanvas interface here, see details in the comments of that interface.
+ *       // ... then implement the MultiTouchObjectCanvas interface here, see details in the ratings of that interface.
  *   }
  *   </code>
  * 
  * Changelog:
  *   2010-06-09 v1.5.1  Some API changes to make it possible to selectively update or not update scale / rotation.
- *                      Fixed anisotropic zoom.  Cleaned up rotation code.  Added more comments.  Better var names. (LH)
+ *                      Fixed anisotropic zoom.  Cleaned up rotation code.  Added more ratings.  Better var names. (LH)
  *   2010-06-09 v1.4    Added ability to track pinch rotation (Mickael Despesse, author of "Face Frenzy") and anisotropic pinch-zoom (LH)
  *   2010-06-09 v1.3.3  Bugfixes for Android-2.1; added optional debug info (LH)
  *   2010-06-09 v1.3    Ported to Android-2.2 (handle ACTION_POINTER_* actions); fixed several bugs; refactoring; documentation (LH) 
@@ -245,11 +245,29 @@ public class MultiTouchController<T> {
 	private static final float[] pressureVals = new float[MAX_TOUCH_POINTS];
 	private static final int[] pointerIds = new int[MAX_TOUCH_POINTS];
 
+	/**
+	 * ZKZK
+	 */
+	private float mMacro = 1.f;
+	public void setMacro(float macro) {
+		mMacro = macro;
+	}
+	
 	/** Process incoming touch events */
 	@SuppressWarnings("unused")
 	public boolean onTouchEvent(MotionEvent event) {
 		try {
 			int pointerCount = multiTouchSupported ? (Integer) m_getPointerCount.invoke(event) : 1;
+
+			//ZKZK
+			float div = 1.f;
+			if(pointerCount == 1) {
+				/*
+				 * Panning, slow with zoom for grab
+				 */
+				div = mCurrXform.getScale() * mMacro;
+			}
+			//ZKZK
 			if (DEBUG)
 				Log.i("MultiTouch", "Got here 1 - " + multiTouchSupported + " " + mMode + " " + handleSingleTouchEvents + " " + pointerCount);
 			if (mMode == MODE_NOTHING && !handleSingleTouchEvents && pointerCount == 1)
@@ -270,8 +288,8 @@ public class MultiTouchController<T> {
 					// an exception if there's only one point down.
 					if (DEBUG)
 						Log.i("MultiTouch", "Got here 3");
-					xVals[0] = processingHist ? event.getHistoricalX(histIdx) : event.getX();
-					yVals[0] = processingHist ? event.getHistoricalY(histIdx) : event.getY();
+					xVals[0] = (processingHist ? event.getHistoricalX(histIdx) : event.getX()) /*ZKZK*/ / div;
+					yVals[0] = (processingHist ? event.getHistoricalY(histIdx) : event.getY()) /*ZKZK*/ / div;
 					pressureVals[0] = processingHist ? event.getHistoricalPressure(histIdx) : event.getPressure();
 				} else {
 					// Read x, y and pressure of each pointer
@@ -286,8 +304,8 @@ public class MultiTouchController<T> {
 						// N.B. if pointerCount == 1, then the following methods throw an array index out of range exception,
 						// and the code above is therefore required not just for Android 1.5/1.6 but also for when there is
 						// only one touch point on the screen -- pointlessly inconsistent :(
-						xVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalX.invoke(event, ptrIdx, histIdx) : m_getX.invoke(event, ptrIdx));
-						yVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalY.invoke(event, ptrIdx, histIdx) : m_getY.invoke(event, ptrIdx));
+						xVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalX.invoke(event, ptrIdx, histIdx) : m_getX.invoke(event, ptrIdx)) /*ZKZK*/ / div;
+						yVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalY.invoke(event, ptrIdx, histIdx) : m_getY.invoke(event, ptrIdx)) /*ZKZK*/ / div;
 						pressureVals[ptrIdx] = (Float) (processingHist ? m_getHistoricalPressure.invoke(event, ptrIdx, histIdx) : m_getPressure
 								.invoke(event, ptrIdx));
 					}

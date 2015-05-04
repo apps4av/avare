@@ -111,7 +111,8 @@ public class InfoLines {
     static final int ID_FLD_ODO = 15;
     static final int ID_FLD_CDI = 16;
     static final int ID_FLD_FPR = 17;
-    static final int ID_FLD_MAX = 18;
+    static final int ID_FLD_FUL = 18;
+    static final int ID_FLD_MAX = 19;
     static final String NOVALUE = "     ";
 
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -272,9 +273,11 @@ public class InfoLines {
         	// Split the row string to get each field
             String arFields[] = strRows[rowIdx].split(","); 
 
-            // Now parse the line for the values
+            // Now parse the line for the values. Handle the case of invalid array
+            // bounds just in case the config setting is corrupt due to version/feature change
             for (int idx = 0; idx < arFields.length; idx++) {
-                mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
+            	try { mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
+            	} catch(Exception e) { }
             }
         }
         setRowCount(); // Determine how many rows to use
@@ -284,7 +287,26 @@ public class InfoLines {
         mFieldTitles = mContext.getResources().getStringArray(R.array.TextFieldOptionTitles);
     }
 
-    /***
+
+    public void touch(InfoLineFieldLoc infoLineFieldLoc) {
+        if (infoLineFieldLoc == null) {
+            return;
+        }
+
+        // Each field processes the gesture differently.
+        switch (mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx]) {
+
+        case ID_FLD_FUL: {
+            if (mService != null) {
+                if(null != mService.getFuelTimer()) {
+                	mService.getFuelTimer().toggleState();
+                }
+            }
+            break;
+        } } }
+    
+        
+     /***
      * A LONG_PRESS gesture over one of the display fields
      * 
      * @param infoLineFieldLoc
@@ -326,7 +348,16 @@ public class InfoLines {
             }
             break;
         }
-
+        
+        case ID_FLD_FUL: {
+        	if(null != mService) {
+        		if(null != mService.getFuelTimer()) {
+        			mService.getFuelTimer().reset();
+        		}
+        	}
+        	break;
+        }
+        
         default:
             break;
         }
@@ -764,6 +795,15 @@ public class InfoLines {
             }
             break;
         }
+
+        case ID_FLD_FUL: {
+            if (null != mService) {
+                if (null != mService.getFuelTimer()) {
+                        return mService.getFuelTimer().getDisplay();
+                    }
+                }
+            }
+            break;
         }
         return NOVALUE;
     }

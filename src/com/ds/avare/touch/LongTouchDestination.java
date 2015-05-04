@@ -28,7 +28,6 @@ public class LongTouchDestination {
 
     public String airport;
     public String info;
-    public String chart;
     public String tfr;
     public String mets;
     public Taf taf;
@@ -39,4 +38,6 @@ public class LongTouchDestination {
     public LinkedList<Airep> airep;
     public LinkedList<String> freq;
     public String performance;
+    public String fuel;
+	public String ratings;
 }

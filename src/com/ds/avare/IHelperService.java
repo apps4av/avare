@@ -131,6 +131,7 @@ public class IHelperService extends Service {
                 double bearing = 0;
                 double lon = 0;
                 double lat = 0;
+                double elev = 0;
                 double idNext = -1;
                 double idOrig = -1;
                 double deviation = 0;
@@ -141,6 +142,7 @@ public class IHelperService extends Service {
                     bearing = d.getBearing();
                     lon = d.getLocation().getLongitude();
                     lat = d.getLocation().getLatitude();
+                    elev = d.getElevation();
                     if(p != null) {
                         idNext = p.findNextNotPassed() + 1;
                         idOrig = idNext - 1;
@@ -159,6 +161,7 @@ public class IHelperService extends Service {
                 object.put("destId", idNext);
                 object.put("destOriginId", idOrig);
                 object.put("destDeviation", deviation);
+                object.put("destElev", elev);
             } catch (JSONException e1) {
                 return null;
             }
@@ -190,7 +193,7 @@ public class IHelperService extends Service {
                     return;
                 }
                 else if(type.equals("traffic")) {
-                    mService.getTrafficCache().putTarric(
+                    mService.getTrafficCache().putTraffic(
                             object.getString("callsign"),
                             object.getInt("address"),
                             (float)object.getDouble("latitude"),

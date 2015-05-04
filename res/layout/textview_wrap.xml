@@ -24,4 +24,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
     </TextView>
     
+    
+    <Button
+        android:id="@+id/textview_wrap_action"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_textview_wrap"
+        />
+    
 </RelativeLayout>

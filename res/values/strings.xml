@@ -11,7 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
     <string name="title_activity_main">&quot;Avare&quot;</string>
-    <string name="MissingMaps">&quot;Download charts for this area&quot;</string>
+    <string name="MissingMaps">&quot;Download chart&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
@@ -124,7 +124,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Plan">&quot;Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
-    <string name="PlanPrompt">&quot;Enter waypoints of plan&quot;</string>
+    <string name="PlanPrompt">&quot;Enter waypoints of plan e.g. KLAX KSBA GVO&quot;</string>
     <string name="StoredPlans">&quot;Stored Plans&quot;</string>
     <string name="GpsOnly">&quot;Only GPS destinations can be labeled&quot;</string>
     <string name="Root">&quot;Root&quot;</string>
@@ -141,17 +141,19 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Draw">&quot;Draw&quot;</string>
     <string name="Pan">&quot;Pan&quot;</string>
     <string name="Clear">&quot;Clear&quot;</string>
-    <string name="WX">&quot;WX&quot;</string>
+    <string name="WXB">&quot;WXB&quot;</string>
     <string name="Left">&quot;Left&quot;</string>
     <string name="Right">&quot;Right&quot;</string>
     <string name="Next">&quot;Next&quot;</string>
     <string name="Last">&quot;Last&quot;</string>
+    <string name="Previous">&quot;Previous&quot;</string>
     <string name="Save">&quot;Save&quot;</string>
     <string name="SavedPlan">&quot;Load/Save Plans&quot;</string>
     <string name="Load">&quot;Load&quot;</string>
     <string name="LoadReverse">&quot;Reverse Load&quot;</string>
     <string name="WeatherError">&quot;Could not download weather data&quot;</string>
-    <string name="WeatherPlan">&quot;Load a plan and press Update to get the latest route weather&quot;</string>
+    <string name="WeatherPlan">&quot;You must create a plan in Plan screen to get the latest Plan weather&quot;</string>
+    <string name="WeatherBrowser">&quot;You do not seem to have a web browser to open the weather data.&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="Understand">&quot;I Understand&quot;</string>
@@ -217,7 +219,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ADSBTrafficSummary">&quot;Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)&quot;</string>
     <string name="prefUseDynamicFields">UseDynamicFields</string>
     <string name="UseDynamicFieldsLabel">&quot;Use Dynamic Fields&quot;</string>
-    <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines can be configured dynamically&quot;</string>
+    <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines to be configured dynamically&quot;</string>
     <string name="prefGetRowFormats">RowFormats</string>
     <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
     <string name="prefOdometer">Odometer</string>
@@ -250,7 +252,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregister">Unregister</string>
     <string name="error">Error</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
-    <string name="error_email">Please register a Gmail account before activating</string>
+    <string name="error_email">Please register a Gmail account before continuing</string>
     <string name="already_registered">You have already registered your account</string>
     <string name="already_unregistered">You have already unregistered</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
@@ -260,7 +262,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="no">No</string>
     <string name="failed_register">Failed to register!</string>
     <string name="failed_unregister">Failed to unregister!</string>
-    <string name="registered">You have now registered! Please press the back button to start using the application. You must first download the Databases (Required) from the Download menu. To see the detailed maps, please download the charts for the area you are interested in.</string>
+    <string name="registered">You have now registered! Please press the back button to start using the application.\nYou must first download the Databases (Required) from the Download menu.\nTo see the detailed maps, please download the charts for the area you are interested in.\nIf you are unable to use the app, please email support@apps4av.org.</string>
     <string name="unregistered">You have now unregistered!</string>
     <string name="DensityAltitude">Density Altitude</string>
     <string name="BestRunway">Best Wind Runway</string>
@@ -343,8 +345,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="WXSummary">&quot;Weather briefing for local, destination or route.&quot;</string>
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
-	<string name="GPSSummary">&quot;Current GPS status/satellite display.&quot;</string>
-				
+    <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
+    <string name="TripSummary">&quot;Travel display.&quot;</string>
+    				
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
 	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
 	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
@@ -352,8 +355,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
-	<string name="prefTabGPS">&quot;prefTabGPS&quot;</string>
-
+    <string name="prefTabTools">&quot;prefTabTools&quot;</string>
+    <string name="prefTabTrip">&quot;prefTabTrip&quot;</string>
+    
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
     <string name="externalGpsSummary">Select the source of GPS position data</string>
@@ -365,5 +369,42 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="lt_sign">&#60;</string>
     <string name="CurrentPlanName">Current plan name</string>
     <string name="CurrentChecklistName">Current check list name</string>
-    		
+    <string name="Tools">Tools</string>
+    <string name="ScreenBrightness">Screen Brightness</string>
+    <string name="InternalGpsStatus">Internal GPS Status</string>
+    <string name="LatitudeLongitude">Latitude,Longitude</string>
+    <string name="Trip">Trip</string>
+    <string name="Provider">Location Povider</string>
+    <string name="Time">Current Time</string>
+    <string name="AltitudeAccuracy">Altitude Accuracy</string>
+    <string name="Back">Back</string>
+    <string name="AvailableMem">Available Memory</string>
+    <string name="ScreenSize">Screen Size</string>
+    <string name="MapSize">Map Size</string>
+    <string name="Hotels">Hotels</string>
+    <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
+    <string name="AddPlan">Add To Plan</string>
+    <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
+    <string name="GetWeather">Get Plan Weather</string>
+    <string name="blinkScreen">BlinkScreen</string>
+    <string name="blinkScreenLabel">Blink Screen</string>
+    <string name="blinkScreenSummary">Select to blink screen when user attention is required</string>    
+    <string name="runwayLengths">RunwayLengths</string>
+    <string name="runwayLengthsLabel">Near Runway Minimum Length</string>
+    <string name="runwayLengthsSummary">Show airports in Near with a runway length equal or longer</string>    
+    <string name="FuelCost">Fuel Price</string>    
+    <string name="Trying">Trying. . .</string>    
+    <string name="FBO">FBO e.g. Chevron</string>    
+    <string name="InvalidFBO">Please Specify an FBO</string>    
+    <string name="InvalidPrice">Invalid Fuel Price</string>    
+    <string name="Email">Email</string>    
+    <string name="Stars">Stars</string>    
+    <string name="Ratings">Ratings</string>
+    <string name="APRatings">Ratings for the airport, and the FBOs</string>
+    <string name="InvalidComments">Your comments must be longer than thirty characters</string>
+    <string name="ShortDestination">Dest.</string>    
+    <string name="prefPlanControl">&quot;PlanControl&quot;</string>
+    <string name="prefPlanControlLabel">&quot;Show Flight Plan Controls&quot;</string>
+    <string name="prefPlanControlSummary">&quot;Select to display flight plan control buttons on chart view&quot;</string>
+    <string name="switchTanks">&quot;Switch Fuel Tanks&quot;</string>
 </resources>

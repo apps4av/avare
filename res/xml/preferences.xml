@@ -121,7 +121,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefUseDynamicFields"
             android:summary="@string/UseDynamicFieldsSummary"
             android:title="@string/UseDynamicFieldsLabel" />
-     </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/blinkScreen"
+            android:summary="@string/blinkScreenSummary"
+            android:title="@string/blinkScreenLabel" />
+    </PreferenceScreen>
 
     <PreferenceScreen 
         android:title="@string/Instrumentation" 
@@ -221,6 +226,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/Background"
             android:summary="@string/BackgroundSummary"
             android:title="@string/BackgroundLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefPlanControl"
+            android:summary="@string/prefPlanControlSummary"
+            android:title="@string/prefPlanControlLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DisplayIconPrompt"
@@ -233,7 +243,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/ExtendInfoLines"
             android:summary="@string/ExtendInfoLinesSummary"
             android:title="@string/ExtendInfoLinesLabel" />
-		<PreferenceScreen 
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:entries="@array/RunwayLengths"
+            android:entryValues="@array/RunwayLengths"
+            android:key="@string/runwayLengths"
+            android:summary="@string/runwayLengthsSummary"
+            android:title="@string/runwayLengthsLabel" />
+        <PreferenceScreen 
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >
@@ -261,7 +277,7 @@ authors: zkhan, jlmcgraw
 		            android:defaultValue="true"
 		            android:key="@string/prefTabWX"
 		            android:summary="@string/WXSummary"
-		            android:title="@string/WX" />
+		            android:title="@string/WXB" />
 				<CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabNear"
@@ -274,9 +290,14 @@ authors: zkhan, jlmcgraw
 		            android:title="@string/List" />
 				<CheckBoxPreference
 		            android:defaultValue="true"
-		            android:key="@string/prefTabGPS"
+		            android:key="@string/prefTabTools"
 		            android:summary="@string/GPSSummary"
-		            android:title="@string/GPS" />
+		            android:title="@string/Tools" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabTrip"
+                    android:summary="@string/TripSummary"
+                    android:title="@string/Trip" />
 			</PreferenceScreen>
         </PreferenceScreen>
 

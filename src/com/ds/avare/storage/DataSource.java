@@ -109,8 +109,8 @@ public class DataSource {
      * @param lat
      * @param airports
      */
-    public Airport[] findClosestAirports(double lon, double lat) {
-        return dbHelper.findClosestAirports(lon, lat);        
+    public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
+        return dbHelper.findClosestAirports(lon, lat, minRunwayLength);        
     }
     
     /**
@@ -156,8 +156,8 @@ public class DataSource {
      * @param params
      * @return
      */
-    public void search(String name, LinkedHashMap<String, String> params) {
-        dbHelper.search(name, params);    
+    public void search(String name, LinkedHashMap<String, String> params, boolean exact) {
+        dbHelper.search(name, params, exact);    
     }
 
     /**
@@ -204,8 +204,8 @@ public class DataSource {
      * @param name
      * @return
      */
-    public LinkedList<String> findFilesToDelete(String name) {
-        return dbHelper.findFilesToDelete(name);        
+    public LinkedList<String> findFilesToDelete(String name, String path) {
+        return dbHelper.findFilesToDelete(name, path);        
     }
 
     /**
@@ -328,4 +328,42 @@ public class DataSource {
     public LinkedList<String> findProcedure(String name, String type, String runway) {
         return  dbHelper.findProcedure(name, type, runway);
     }
+    
+    /**
+     * 
+     * @param name
+     * @param type
+     * @param runway
+     * @return
+     */
+    public LinkedList<Coordinate> findAirway(String name) {
+        return  dbHelper.findAirway(name);
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Coordinate findNavaid(String name) {
+        return  dbHelper.findNavaid(name);    	
+    }
+
+    /**
+     * Fuel cost for an airport
+     * @param name
+     * @return
+     */
+    public LinkedList<String> findFuelCost(String name) {
+    	return dbHelper.findFuelCost(name);
+    }
+
+    /**
+     * 
+     * @param airport
+     * @return
+     */
+	public LinkedList<String> findRatings(String name) {
+    	return dbHelper.findRatings(name);
+	}
 }

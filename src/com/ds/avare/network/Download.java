@@ -154,23 +154,23 @@ public class Download {
             int count;
             byte data[] = new byte[blocksize];
             long fileLength;
+            boolean flags[] = new boolean[1];
 
-            mVersion = NetworkHelper.getVersion(mRoot, mName);
+            mVersion = NetworkHelper.getVersion(mRoot, mName, flags);
 
             /*
              * See if we can adjust the version based on number like 1408.
              * If it is time, then ignore the adjust by catching exception
              */
-            try {
-                int vers = Integer.valueOf(mVersion);
-                vers += mCycleAdjust;
-                mVersion = "" + vers;
-            }
-            catch (Exception e) {
-                
-            }
+            mVersion = NetworkHelper.findCycleOffset(mVersion, mCycleAdjust);
 
             try {
+
+            	if(!flags[0]) {
+            		mCode = "code unable to connect to server ";
+                    sendFailure();
+                    return;
+            	}
 
                 /*
                  * mCode allows debugging from users
@@ -210,7 +210,7 @@ public class Download {
                     // if file exists, resume download
                     connection.setRequestProperty("Range", "bytes=" + (zfile.length()) + "-");
                 }
-                mCode = "code unable to connect to server ";
+                mCode = "code unable to download the file from this cycle ";
                 connection.connect();
                 int code = connection.getResponseCode();
                 if (code != 206 && code != 200) {

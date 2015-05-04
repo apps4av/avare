@@ -48,7 +48,6 @@ public class GpxUDWParser extends UDWParser {
     private static final String LAT = "lat";
     private static final String LON = "lon";
     private static final String NAME = "name";
-    private static final String DESC = "desc";
     private static final String CREATOR = "creator";
     private static final String VFRGPSPROCEDURES = "vfrgpsprocedures";
 
@@ -111,12 +110,8 @@ public class GpxUDWParser extends UDWParser {
         parser.require(XmlPullParser.START_TAG, NS, WPT);
 
         String name = null;
-        String description = null;
         float lat = 0;
         float lon = 0;
-        float alt = 0;
-        boolean showDist = false;	// Future is to pull this from metadata in the point itself
-        int markerType = Waypoint.MT_CYANDOT;	// Type of marker to use on the chart (metadata again)
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -137,16 +132,13 @@ public class GpxUDWParser extends UDWParser {
             String nodeName = parser.getName();
             if (nodeName.equals(NAME)) {
                 name = readNAME(parser);
-            } else if (nodeName.equals(DESC)) {
-                description = readDESC(parser);
             } else {
                 skip(parser);
             }
         }
         
         // We've got all the data we're going to get from this entry
-        return new Waypoint(name, description, 
-        		lon, lat, alt, showDist, markerType);
+        return  new Waypoint(name, lon, lat, false, Waypoint.MT_CYANDOT, true);
     }
 
     // Extract NAME
@@ -158,15 +150,6 @@ public class GpxUDWParser extends UDWParser {
         return name;
     }
       
-    // Extract DESC
-    //
-    private String readDESC(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, NS, DESC);
-        String name = readText(parser);
-        parser.require(XmlPullParser.END_TAG, NS, DESC);
-        return name;
-    }
-
     // Read the text from the current tag
     //
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {

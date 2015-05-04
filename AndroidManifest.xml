@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="204"
-    android:versionName="5.8.4" >
+    android:versionCode="226"
+    android:versionName="6.0.6" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
@@ -25,6 +25,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -58,7 +59,9 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".WeatherActivity" />
         <activity android:name=".ChecklistActivity"/>
+        <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
+        <activity android:name=".SubmitActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

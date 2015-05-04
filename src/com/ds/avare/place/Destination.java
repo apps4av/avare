@@ -107,6 +107,7 @@ public class Destination extends Observable {
     
     private String mDestType;
     private String mDbType;
+    private String mCmt;
     private LinkedList<Runway> mRunways;
     private LinkedHashMap <String, String>mFreq;
     private LinkedList<Awos> mAwos;
@@ -124,6 +125,10 @@ public class Destination extends Observable {
      * Dozens of parameters in a linked map because simple map would rearrange the importance
      */
     private LinkedHashMap <String, String>mParams;
+    
+    public String getCmt() {
+    	return mCmt;
+    }
     
 	/**
 	 * @param name
@@ -253,6 +258,13 @@ public class Destination extends Observable {
 	    StringPreference s = new StringPreference(mDestType, mDbType, getFacilityName(), getID());
 	    return s.getHashedName();
 	}
+
+	// Build up a storage name using the values passed in
+	public static String getStorageName(String destType, String dbType, String facilityName, String id) {
+	    StringPreference s = new StringPreference(destType, dbType, facilityName, id);
+	    return s.getHashedName();
+		
+	}
 	
 	/**
      * Update the current speed, lat, lon, that will update
@@ -290,11 +302,11 @@ public class Destination extends Observable {
     	/*
     	 * ETA when speed != 0
     	 */
-    	mEte = Helper.calculateEte(mPref.useBearingForETEA(), mDistance, speed, mBearing, params.getBearing());
+    	mEte = Helper.calculateEte(mPref.useBearingForETEA() && (!mService.getPlan().isActive()), mDistance, speed, mBearing, params.getBearing());
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(mPref.useBearingForETEA(), Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
+    	mEta = Helper.calculateEta(mPref.useBearingForETEA() && (!mService.getPlan().isActive()), Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
 	}
 
 	/**
@@ -420,10 +432,11 @@ public class Destination extends Observable {
             }
 
 	        if(mDestType.equals(UDW)){
-	        	Waypoint p = mService.getUDWMgr().getWaypoint(mName);
+	        	Waypoint p = mService.getUDWMgr().get(mName);
 	        	if(null != p) {
 	        		mLatd = p.getLat();
 	        		mLond = p.getLon();
+	        		mCmt  = p.getCmt();
 		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
 		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
 		            mParams.put(DataBaseHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
@@ -545,7 +558,7 @@ public class Destination extends Observable {
 	        mDataSource.findDestination(mName, mDestType, dbType, mParams, mRunways, mFreq, mAwos);
 
 	        if(mDestType.equals(BASE)) {
-	            
+
                 /*
                  * Find A/FD
                  */
@@ -835,5 +848,13 @@ public class Destination extends Observable {
             }
         }
 	    return false;
+	}
+
+	/**
+	 * Get declination
+	 * @return
+	 */
+	public double getDeclination() {
+		return mDeclination;
 	}
 }

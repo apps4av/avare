@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -46,6 +47,18 @@ public class MessageActivity extends Activity  {
         View view = layoutInflater.inflate(R.layout.message, null);
         
         mWebView = (WebView) view.findViewById(R.id.message_mainpage);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        
+        // This is need on some old phones to get focus back to webview.
+        mWebView.setOnTouchListener(new View.OnTouchListener() {  
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				arg0.requestFocus();
+				return false;
+			}
+        });
+
+
         mSpinner = (Spinner)view.findViewById(R.id.message_type);
         
         mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -74,5 +87,8 @@ public class MessageActivity extends Activity  {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+        
+		mWebView.requestFocus();
+
     }
 }

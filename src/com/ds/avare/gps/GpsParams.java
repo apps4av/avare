@@ -111,6 +111,15 @@ public class GpsParams {
     }
 
     /**
+     * Speed in location to speed in params
+     * @param locationSpeed
+     * @return
+     */
+    public static double speedConvert(double locationSpeed) {
+    	return locationSpeed / Preferences.speedConversion;
+    }
+    
+    /**
      * @return
      * double Speed in (miles or knots) per hour depending on preference settings
      */

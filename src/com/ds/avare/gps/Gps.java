@@ -131,7 +131,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     /**
      * Must be called to use GPS
      */
-    public void start() {
+    public synchronized void start() {
         
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
@@ -183,7 +183,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     /**
      * 
      */
-    public void stop() {
+    public synchronized void stop() {
         
         /*
          * Stop but dont stop if already stopped

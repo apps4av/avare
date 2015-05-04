@@ -23,6 +23,22 @@ public class Coordinate {
     private double mLon;
    
     private boolean mSeparate;
+    private int mLeg;
+    
+    
+    public static void setLeg(Coordinate[] coord, int leg) {
+    	for (Coordinate c : coord) {
+    		c.mLeg = leg;
+    	}
+    }
+    
+    public int getLeg() {
+    	return mLeg;
+    }
+    
+    public void setSegment(int segment) {
+    	mLeg = segment;
+    }
     
     /**
      * 

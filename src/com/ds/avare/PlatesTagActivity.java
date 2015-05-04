@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -33,6 +32,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.PossibleEmail;
+import com.ds.avare.views.PlatesTagView;
 
 import android.app.Activity;
 import android.app.AlertDialog;

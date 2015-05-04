@@ -5,6 +5,7 @@ All rights reserved.
 
 package com.ds.avare.message;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -71,10 +72,20 @@ public class NetworkHelper {
         }
         
         // Return value
-        byte ret[] = new byte[4096];
-        int len = conn.getInputStream().read(ret);
+        byte ret[] = new byte[32768];
+        InputStream is = conn.getInputStream();
+        int len = 0;
+        int index = 0;
+        do {
+        	len = is.read(ret, index, ret.length - index);
+        	if(len <= 0) {
+        		break;
+        	}
+        	index += len;
+        } while(true);
+        
         conn.disconnect();
-        if(len > 0) {
+        if(index > 0) {
             return new String(ret);
         }
         return "";
