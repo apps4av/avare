@@ -288,7 +288,7 @@ public class RegisterActivity extends Activity {
                     return;
                 }
                 
-                mPrivacy.loadUrl("file:///android_asset/privacy.html");
+                mPrivacy.loadUrl("file:///android_" + getString(R.raw.privacy));
                 mPrivacy.setWebViewClient(new WebViewClient() {
                     // wait for page to load
                     @Override
