@@ -74,6 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     <string-array name="resNameSectional">
         <item>EU VFR Chart</item>
+        <item>EU ADN Chart</item>
     </string-array>
     <string-array name="resNamePlate">
         <item>EU VAC/AD Charts</item>
@@ -118,6 +119,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     <string-array name="resFilesSectional">
         <item>vfr-eu</item>
+        <item>adn-eu</item>
     </string-array>
 
     <string-array name="resFilesPlate">
