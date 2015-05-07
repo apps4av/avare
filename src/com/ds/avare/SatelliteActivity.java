@@ -22,11 +22,13 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.MemView;
 import com.ds.avare.views.SatelliteView;
 
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.IBinder;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -51,14 +53,15 @@ public class SatelliteActivity extends Activity  {
      * Shows satellites
      */
     private SatelliteView mSatelliteView;
+    private MemView mMemView;
+    private TextView mMemText;
+    private TextView mMapAreaText;
     
     private StorageService mService;
     
     private SeekBar mBrightnessBar;
     
     private TextView mGpsText;
-    
-    private TextView mMemoryText;
     
     /*
      * Start GPS
@@ -75,7 +78,6 @@ public class SatelliteActivity extends Activity  {
             if(location != null) {
                 double latitude = Helper.truncGeo(location.getLatitude());
                 double longitude = Helper.truncGeo(location.getLongitude());
-                String name = location.getProvider() == null ? "" : location.getProvider();
                 int accuracy = (int) Math.round(location.getAccuracy() * Preferences.heightConversion);
                 Date dt = new Date(System.currentTimeMillis());
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -84,9 +86,8 @@ public class SatelliteActivity extends Activity  {
                 lastTime += "/" + sdf.format(dt) + "Z";
                 
                 mGpsText.setText(
-                		getString(R.string.LatitudeLongitude) + ": " + latitude + "," + longitude + "\n" +
-                		getString(R.string.Provider) + ": " + name + "\n" + 	
-                		getString(R.string.Time) + ": " + lastTime + "\n" +
+                		latitude + "," + longitude + "\n" +
+                		lastTime + "\n" +
                 		getString(R.string.AltitudeAccuracy) + ": " + accuracy
                 		);
             }
@@ -94,6 +95,9 @@ public class SatelliteActivity extends Activity  {
             	mSatelliteView.updateGpsStatus(null);
                 mGpsText.setText("");
             }
+            
+            updateMem();
+            updateMapArea();
         }
 
         @Override
@@ -111,6 +115,39 @@ public class SatelliteActivity extends Activity  {
         }
     };
     
+    private void updateMem() {
+    	/*
+    	 * Memory numbers
+    	 */
+		Runtime rt = Runtime.getRuntime();
+		long vmAlloc = rt.totalMemory() - rt.freeMemory();
+		long nativeAlloc = Debug.getNativeHeapAllocatedSize();
+		long totalAlloc = (nativeAlloc + vmAlloc) / (1024 * 1024);
+
+		long max = rt.maxMemory() / (1024 * 1024);
+
+		mMemText.setText(totalAlloc + "MB/" + max + "MB");
+        mMemView.updateMemStatus((float)totalAlloc / (float)max);
+    }
+
+    private void updateMapArea() {
+    	/*
+    	 * Map area numbers
+    	 */
+    	
+        /*
+         * Find various metrics for user info
+         */
+        Display display = getWindowManager().getDefaultDisplay(); 
+        int width = display.getWidth();
+        int height = display.getHeight();
+    
+ 	    // Divide map width/height by 2 because of zoom scale from 1 - 2 before zoom macro changes
+		mMapAreaText.setText(
+				getString(R.string.MapSize) + " " + mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH / 2 + "x" + mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT / 2 + "px\n" +
+        		getString(R.string.ScreenSize) + " " + width + "x" + height + "px");
+    }
+
     /*
      * For being on tab this activity discards back to main activity
      * (non-Javadoc)
@@ -137,7 +174,9 @@ public class SatelliteActivity extends Activity  {
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
 
         mGpsText = (TextView)view.findViewById(R.id.satellite_text_gps_details);
-        mMemoryText = (TextView)view.findViewById(R.id.satellite_text_memory);
+        mMemView = (MemView)view.findViewById(R.id.memory);
+        mMemText = (TextView)view.findViewById(R.id.satellite_text_mem_details);
+        mMapAreaText = (TextView)view.findViewById(R.id.satellite_text_map_details);
 
         /*
          * Set brightness bar
@@ -193,22 +232,9 @@ public class SatelliteActivity extends Activity  {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            
-            /*
-             * Find various metrics for user info
-             */
-            Display display = getWindowManager().getDefaultDisplay(); 
-            int width = display.getWidth();
-            int height = display.getHeight();
-        
-            mMemoryText.setText(
-            		getString(R.string.AvailableMem) + " " + Runtime.getRuntime().maxMemory() / (1024 * 1024) + "MB, " +
-            	    // Divide map width/height by 2 because of zoom scale from 1 - 2 before zoom macro changes
-            		getString(R.string.MapSize) + " " + mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH / 2 + "x" + mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT / 2 + "px, " +
-            		getString(R.string.ScreenSize) + " " + width + "x" + height + "px"
-            		);
-            
+            mService.registerGpsListener(mGpsInfc);            
+            updateMem();
+            updateMapArea();
         }    
 
         /* (non-Javadoc)
@@ -218,7 +244,8 @@ public class SatelliteActivity extends Activity  {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
-
+    
+    
     /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
