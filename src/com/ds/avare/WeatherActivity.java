@@ -195,7 +195,7 @@ public class WeatherActivity extends Activity {
         });
         mWebView.setLongClickable(false);
         
-        mWebView.loadUrl("file:///android_asset/wxb.html");
+        mWebView.loadUrl("file:///android_" + getString(R.raw.wxb));
 
         /*
          * Progress bar

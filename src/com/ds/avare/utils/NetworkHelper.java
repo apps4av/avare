@@ -29,6 +29,10 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import android.content.Context;
+
+import com.ds.avare.R;
+
 
 /**
  * 
@@ -296,8 +300,8 @@ public class NetworkHelper {
     /**
      * 
      */
-    public static String getHelpUrl() {
-        return("file:///android_asset/avare-offlinehelp.html");
+    public static String getHelpUrl(Context ctx) {
+        return("file:///android_" + ctx.getString(R.raw.help));
     }
 
     /**

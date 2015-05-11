@@ -620,7 +620,7 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LocationActivity.this, WebActivity.class);
-                intent.putExtra("url", NetworkHelper.getHelpUrl());
+                intent.putExtra("url", NetworkHelper.getHelpUrl(LocationActivity.this));
                 startActivity(intent);
             }
             

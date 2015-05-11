@@ -1023,7 +1023,7 @@ public class Preferences {
      * @return
      */
 	public String getLongestRunway() {
-		return mPref.getString(mContext.getString(R.string.runwayLengths), "2000");
+		return mPref.getString(mContext.getString(R.string.runwayLengths), "0");
 	}
 
 	/**

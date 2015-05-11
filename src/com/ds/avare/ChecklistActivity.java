@@ -212,7 +212,7 @@ public class ChecklistActivity extends Activity {
         });
         mWebView.setLongClickable(false);
 
-        mWebView.loadUrl("file:///android_asset/list.html");
+        mWebView.loadUrl("file:///android_" + getString(R.raw.list));
         /*
          * Progress bar
          */
