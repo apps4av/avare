@@ -772,7 +772,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
     
     private void drawCapGrids(Canvas canvas) {
-    	if (mCAPGrids) {
+    	if (mCAPGrids && mScale.getMacroFactor() < 2) {
 	    	List<Chart> charts = null;
 	    	if (mService != null) {
 	    		// Get charts
