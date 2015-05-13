@@ -2,6 +2,8 @@ package com.ds.avare.cap;
 
 import java.util.LinkedList;
 
+import com.ds.avare.position.Coordinate;
+
 import android.os.AsyncTask;
 
 public class CapChartFetcher {
@@ -35,7 +37,7 @@ public class CapChartFetcher {
 			Thread.currentThread().setName("CAP");
 			
 			mCharts = new LinkedList<Chart>();
-			mCharts.add(new Chart(ChartIdentifier.SEA, new LatLng(49, -125), new LatLng(44.5, -117)));
+			mCharts.add(new Chart(ChartIdentifier.SEA, new Coordinate(-125, 49), new Coordinate(-117, 44.5)));
 			
 			return true;
 		}

@@ -1,5 +1,6 @@
 package com.ds.avare.cap;
 
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
 import com.ds.avare.shapes.CAPGridShape;
 
@@ -9,10 +10,10 @@ public class Grid implements CoordinateAwareInterface {
 	private String number;
 	private Chart chart;
 	
-	private LatLng northWestLimit;
-	private LatLng southEastLimit;
+	private Coordinate northWestLimit;
+	private Coordinate southEastLimit;
 	
-	public Grid(String number, Chart chart, LatLng northWestLimit, LatLng southEastLimit) {
+	public Grid(String number, Chart chart, Coordinate northWestLimit, Coordinate southEastLimit) {
 		super();
 		this.number = number;
 		this.chart = chart;
@@ -38,11 +39,11 @@ public class Grid implements CoordinateAwareInterface {
 		return number;
 	}
 
-	public LatLng getNorthWestLimit() {
+	public Coordinate getNorthWestLimit() {
 		return northWestLimit;
 	}
 
-	public LatLng getSouthEastLimit() {
+	public Coordinate getSouthEastLimit() {
 		return southEastLimit;
 	}
 

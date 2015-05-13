@@ -1,6 +1,8 @@
 package com.ds.avare.cap;
 
+import com.ds.avare.position.Coordinate;
+
 public interface CoordinateAwareInterface {
-	public LatLng getNorthWestLimit();
-	public LatLng getSouthEastLimit();
+	public Coordinate getNorthWestLimit();
+	public Coordinate getSouthEastLimit();
 }

@@ -2,13 +2,15 @@ package com.ds.avare.cap;
 
 import java.util.LinkedList;
 
+import com.ds.avare.position.Coordinate;
+
 public class Chart implements CoordinateAwareInterface {
 	private ChartIdentifier identifier;
-	private LatLng northWestLimit;
-	private LatLng southEastLimit;
+	private Coordinate northWestLimit;
+	private Coordinate southEastLimit;
 	private LinkedList<Grid> mGrids;
 	
-	public Chart(ChartIdentifier identifier, LatLng northWestLimit, LatLng southEastLimit) {
+	public Chart(ChartIdentifier identifier, Coordinate northWestLimit, Coordinate southEastLimit) {
 		this.identifier = identifier;
 		this.northWestLimit = northWestLimit;
 		this.southEastLimit = southEastLimit;
@@ -22,19 +24,19 @@ public class Chart implements CoordinateAwareInterface {
 		this.identifier = identifier;
 	}
 
-	public LatLng getNorthWestLimit() {
+	public Coordinate getNorthWestLimit() {
 		return northWestLimit;
 	}
 
-	public void setNorthWestLimit(LatLng northWestLimit) {
+	public void setNorthWestLimit(Coordinate northWestLimit) {
 		this.northWestLimit = northWestLimit;
 	}
 
-	public LatLng getSouthEastLimit() {
+	public Coordinate getSouthEastLimit() {
 		return southEastLimit;
 	}
 
-	public void setSouthEastLimit(LatLng southEastLimit) {
+	public void setSouthEastLimit(Coordinate southEastLimit) {
 		this.southEastLimit = southEastLimit;
 	}
 
@@ -49,8 +51,8 @@ public class Chart implements CoordinateAwareInterface {
 							new Grid(
 									String.valueOf(gridNumber),
 									this,
-									new LatLng(upperLatitude, leftLongitude),
-									new LatLng(upperLatitude-0.25, leftLongitude+0.25)
+									new Coordinate(leftLongitude, upperLatitude),
+									new Coordinate(leftLongitude+0.25, upperLatitude-0.25)
 							)
 					);
 					gridNumber++;
