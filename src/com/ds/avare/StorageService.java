@@ -297,7 +297,6 @@ public class StorageService extends Service {
         mTiles = new TileMap(getApplicationContext());
         
         mCapChartFetcher = new CapChartFetcher();
-        mCapChartFetcher.fetch();
           
         mInternetWeatherCache = new InternetWeatherCache();
         mInternetWeatherCache.parse(this);

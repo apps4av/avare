@@ -820,6 +820,14 @@ public class Preferences {
     public boolean showGameTFRs() {
         return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean showCAPGrids() {
+        return mPref.getBoolean(mContext.getString(R.string.CAPGrid), false);
+    }
 
     /**
      * 

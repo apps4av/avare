@@ -196,8 +196,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTracksCategoryTitle">Flight Tracking</string>
     <string name="TracksOn">Tracks On</string>
     <string name="TracksOff">Tracks Off</string>
-    <string name="CAPGridsOn">CAP Grids On</string>
-    <string name="CAPGridsOff">CAP Grids Off</string>
+    <string name="CAPGrid">&quot;CAPGrids&quot;</string>
+    <string name="CAPGridSummary">&quot;Select to show the CAP Grids on the map.&quot;</string>
+    <string name="CAPGridLabel">&quot;Show CAP Grids&quot;</string>
     <string name="TrkUpdAllow">TrkUpdAllow</string>
     <string name="TrkUpdAllowLabel">&quot;Enable Tracking&quot;</string>
     <string name="TrkUpdAllowSummary">&quot;Select to allow position tracking to be recorded.&quot;</string>

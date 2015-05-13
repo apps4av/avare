@@ -799,19 +799,6 @@ public class LocationActivity extends Activity implements Observer {
             }
             
         });
-        
-        mCAPGridsButton = (TwoButton)view.findViewById(R.id.cap_grids_toggle);
-        mCAPGridsButton.setTwoClickListener(new TwoClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (mCAPGridsButton.getText().toString().equals(getString(R.string.CAPGridsOn))) {
-					mLocationView.enableCAPGrids(true);
-				} else {
-					mLocationView.enableCAPGrids(false);
-				}
-			}
-		});
 
         mTrackButton = (TwoButton)view.findViewById(R.id.location_button_track);
         mTrackButton.setTwoClickListener(new TwoClickListener() {

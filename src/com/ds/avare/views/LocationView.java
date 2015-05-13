@@ -198,8 +198,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     private boolean                    mTrackUp;
     
-    private boolean					   mCAPGrids;
-    
     /*
      * Macro of zoom
      */
@@ -254,7 +252,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mErrorStatus = null;
         mOnChart = null;
         mTrackUp = false;
-        mCAPGrids = false;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -772,7 +769,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
     
     private void drawCapGrids(Canvas canvas) {
-    	if (mCAPGrids && mScale.getMacroFactor() < 2) {
+    	if (mPref.showCAPGrids() && mScale.getMacroFactor() < 2) {
 	    	List<Chart> charts = null;
 	    	if (mService != null) {
 	    		// Get charts
@@ -1402,11 +1399,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         		navComments.draw(this, canvas, mMsgPaint,  mService.getShadowedText());
         	}
         }
-    }
-    
-    public void enableCAPGrids(boolean enable) {
-    	mCAPGrids = enable;
-    	invalidate();
     }
     
     /**
