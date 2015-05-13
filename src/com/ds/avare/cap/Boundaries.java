@@ -9,22 +9,6 @@ public class Boundaries {
 				origin.getLatitudeUpper() <= subject.getNorthWestLimit().getLatitude() && 
 				origin.getLatitudeLower() >= subject.getSouthEastLimit().getLatitude();
 	}
-	
-	public static boolean longitudeLeftWithinBoundaries(Origin origin, CoordinateAwareInterface subject) {
-		return subject.getNorthWestLimit().getLongitude() >= origin.getLongitudeLeft();
-	}
-
-	public static boolean longitudeRightWithinBoundaries(Origin origin, CoordinateAwareInterface subject) {
-		return origin.getLongitudeRight() >= subject.getSouthEastLimit().getLongitude();
-	}
-
-	public static boolean latitudeUpperWithinBoundaries(Origin origin, CoordinateAwareInterface subject) {
-		return origin.getLatitudeUpper() <= subject.getNorthWestLimit().getLatitude();
-	}
-
-	public static boolean latitudeLowerWithinBoundaries(Origin origin, CoordinateAwareInterface subject) {
-		return origin.getLatitudeLower() >= subject.getSouthEastLimit().getLatitude();
-	}
 
 	public static boolean isSubjectTouchingOrigin(Origin origin, CoordinateAwareInterface subject) {
 		int score = 0;
