@@ -1451,7 +1451,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
       	drawNavComments(canvas);
     }    
 
-	/**
+    /**
      * 
      * @param threshold
      */
