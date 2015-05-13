@@ -801,11 +801,11 @@ public class LocationActivity extends Activity implements Observer {
         });
         
         mCAPGridsButton = (TwoButton)view.findViewById(R.id.cap_grids_toggle);
-        mCAPGridsButton.setOnClickListener(new OnClickListener() {
+        mCAPGridsButton.setTwoClickListener(new TwoClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if (mCAPGridsButton.getText().equals(getString(R.string.CAPGridsOn))) {
+				if (mCAPGridsButton.getText().toString().equals(getString(R.string.CAPGridsOn))) {
 					mLocationView.enableCAPGrids(true);
 				} else {
 					mLocationView.enableCAPGrids(false);

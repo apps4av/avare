@@ -17,9 +17,8 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
-import com.ds.avare.cap.GridDrawTask;
-import com.ds.avare.cap.GridSection;
-import com.ds.avare.cap.State;
+import com.ds.avare.cap.Chart;
+import com.ds.avare.cap.Grid;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
@@ -238,8 +237,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
-    private GridDrawTask mCapGridDrawTask;
-    private Thread mCapGridDrawThread;
 
     /**
      * @param context
@@ -300,11 +297,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
-        
-        mCapGridDrawTask = new GridDrawTask();
-        mCapGridDrawTask.mService = mService;
-        mCapGridDrawThread = new Thread(mCapGridDrawTask);
-        mCapGridDrawThread.start();
         
         mElevationTask = new ElevationTask();
         mElevationThread = new Thread(mElevationTask);
@@ -778,6 +770,37 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
     }
+    
+    private void drawCapGrids(Canvas canvas) {
+    	if (mCAPGrids) {
+	    	List<Chart> charts = null;
+	    	if (mService != null) {
+	    		// Get charts
+	    		charts = mService.getCapCharts(mOrigin);
+	    	}
+	    	
+	    	if (charts != null && charts.size() > 0) {
+	    		List<Grid> grids = null;
+	    		for (Chart chart : charts) {
+	    			grids = chart.getGrids();
+	    			
+	    			if (grids.size() > 0) {
+	    				mPaint.setColor(Color.RED);
+	    		        mPaint.setStrokeWidth(3 * mDipToPix);
+	    		        mPaint.setShadowLayer(0, 0, 0, 0);
+	    			
+		    			for (Grid grid : grids) {
+		    				if (grid.isWithinBoundaries(mOrigin)) {
+		    					mService.getShadowedText().draw(canvas, mPaint, grid.getLabel(), Color.GRAY, grid.getTextX(mOrigin), grid.getTextY(mOrigin));
+		    		    		
+		    		    		grid.getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), false);
+		    				}
+		    			}
+	    			}
+	    		}
+	    	}
+    	}
+	}
 
     /**
      * 
@@ -1125,23 +1148,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
         }
     }
-    
-    private void drawCAPGrids(Canvas canvas) {
-    	    	if (mService == null || false == mCAPGrids) {
-    	    		return;
-    	    	}
-    	    	
-    	    	mPaint.setShadowLayer(0, 0, 0, 0);
-    	    	mPaint.setStrokeWidth(2 * mDipToPix);
-    	    	mPaint.setColor(Color.RED);
-    	    	mPaint.setAlpha(162);
-    	    	
-    	    	GridSection section = new GridSection();
-    	    	
-    	    	for (State state : section.getStates()) {
-    				state.drawGrids(canvas, mOrigin, mPaint, mService, mScale, mMovement, mFace, mPref);
-    			}
-    	    }
 
     /**
      * 
@@ -1429,13 +1435,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawRadar(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
+        drawCapGrids(canvas);
         drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
-        drawRunways(canvas);
         drawAircraft(canvas);
       	drawUserDefinedWaypoints(canvas);
         
@@ -1453,7 +1459,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
       	drawNavComments(canvas);
     }    
 
-    /**
+	/**
      * 
      * @param threshold
      */
@@ -2213,8 +2219,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawThread.interrupt();
         mElevationTask.running = false;
         mElevationThread.interrupt();
-        mCapGridDrawTask.running = false;
-        mCapGridDrawThread.interrupt();
     }
 
     
@@ -2293,5 +2297,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void zoomOut() {
         mScale.zoomOut();
     }
-
 }

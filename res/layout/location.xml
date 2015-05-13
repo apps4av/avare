@@ -150,7 +150,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="150dp"
             android:textStyle="bold"/>
         
-        <ToggleButton
+        <com.ds.avare.animation.TwoButton
             android:id="@+id/cap_grids_toggle"
             android:layout_height="wrap_content"
             android:visibility="invisible"
