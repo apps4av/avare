@@ -1636,22 +1636,7 @@ public class DataBaseHelper  {
                 while(cursor.moveToNext()) {
                     String sua = 
                             cursor.getString(0) + "(" + cursor.getString(1) + ")\n" + 
-                            cursor.getString(3) + " to " + cursor.getString(2) + "\n";
-                    String timefrom = cursor.getString(4);
-                    String timeto = cursor.getString(5);
-                    if(((!timefrom.equals("")) && (!timeto.equals("")))) {
-                        sua += timefrom + " to " + timeto + cursor.getString(6) + "\n";
-                    }
-                    String datefrom = cursor.getString(7);
-                    String dateto = cursor.getString(8);
-                    if(((!datefrom.equals("")) && (!dateto.equals("")))) {
-                        String day = cursor.getString(9);
-                        if(day.equals("")) {
-                            day = "ALL";
-                        }
-                        sua += 
-                                datefrom + " to " + dateto + " DAY " + day + "\n";
-                    }
+                            cursor.getString(3) + " to " + cursor.getString(2) + "\n"; 
                     String freqtx = cursor.getString(10);
                     if(!freqtx.equals("")) {
                         sua += "TX " + freqtx + "\n";
@@ -1660,6 +1645,9 @@ public class DataBaseHelper  {
                     if(!freqrx.equals("")) {
                         sua += "RX " + freqrx + "\n";
                     }
+                    
+                    sua += "NOTE " + cursor.getString(9) + "\n";
+
                     ret += sua + "\n";
                 }
             }
