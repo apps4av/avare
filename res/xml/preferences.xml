@@ -11,12 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-authors: zkhan, jlmcgraw    
+authors: zkhan, jlmcgraw
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceScreen 
-        android:title="@string/prefStorageAndDownloadsCategoryTitle" 
+    <PreferenceScreen
+        android:title="@string/prefStorageAndDownloadsCategoryTitle"
         android:icon="@android:drawable/ic_menu_save" >
         <com.ds.avare.utils.FolderPreference
             android:key="@string/Maps"
@@ -47,8 +47,8 @@ authors: zkhan, jlmcgraw
             android:title="@string/GeoCodeLabel" />
         </PreferenceScreen>
 
-    <PreferenceScreen 
-        android:title="@string/prefGpsCategoryTitle" 
+    <PreferenceScreen
+        android:title="@string/prefGpsCategoryTitle"
         android:icon="@android:drawable/ic_menu_mylocation" >
         <CheckBoxPreference
             android:defaultValue="false"
@@ -68,9 +68,9 @@ authors: zkhan, jlmcgraw
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
     </PreferenceScreen>
-    
-    <PreferenceScreen 
-        android:title="@string/prefWeatherCategoryTitle" 
+
+    <PreferenceScreen
+        android:title="@string/prefWeatherCategoryTitle"
         android:icon="@android:drawable/ic_menu_call" >
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="255"
@@ -98,8 +98,8 @@ authors: zkhan, jlmcgraw
             android:title="@string/XlateWeatherLabel" />
     </PreferenceScreen>
 
-    <PreferenceScreen 
-        android:title="@string/prefAppStateCategoryTitle" 
+    <PreferenceScreen
+        android:title="@string/prefAppStateCategoryTitle"
         android:icon="@android:drawable/ic_menu_mapmode" >
         <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
@@ -128,8 +128,8 @@ authors: zkhan, jlmcgraw
             android:title="@string/blinkScreenLabel" />
     </PreferenceScreen>
 
-    <PreferenceScreen 
-        android:title="@string/Instrumentation" 
+    <PreferenceScreen
+        android:title="@string/Instrumentation"
         android:icon="@android:drawable/ic_menu_preferences" >
         <EditTextPreference
                 android:title="@string/GlideRatioLabel"
@@ -165,9 +165,9 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ETABearingSummary"
             android:title="@string/ETABearingLabel" />
     </PreferenceScreen>
-        
-    <PreferenceScreen 
-        android:title="@string/prefDisplayCategoryTitle" 
+
+    <PreferenceScreen
+        android:title="@string/prefDisplayCategoryTitle"
         android:icon="@android:drawable/ic_menu_gallery" >
         <CheckBoxPreference
             android:defaultValue="true"
@@ -215,7 +215,7 @@ authors: zkhan, jlmcgraw
             android:defaultValue="false"
             android:key="@string/AutoShowAirportDiagram"
             android:summary="@string/AutoShowAirportDiagramSummary"
-            android:title="@string/AutoShowAirportDiagramLabel" />        
+            android:title="@string/AutoShowAirportDiagramLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ShowTrack"
@@ -254,8 +254,8 @@ authors: zkhan, jlmcgraw
             android:key="@string/runwayLengths"
             android:summary="@string/runwayLengthsSummary"
             android:title="@string/runwayLengthsLabel" />
-        <PreferenceScreen 
-	        android:title="@string/TabBarTitle" 
+        <PreferenceScreen
+	        android:title="@string/TabBarTitle"
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >
 		        <CheckBoxPreference
@@ -306,8 +306,8 @@ authors: zkhan, jlmcgraw
 			</PreferenceScreen>
         </PreferenceScreen>
 
-	<PreferenceScreen 
-    	    android:title="@string/prefTracksCategoryTitle" 
+	<PreferenceScreen
+    	    android:title="@string/prefTracksCategoryTitle"
         	android:icon="@android:drawable/ic_menu_myplaces" >
 		<CheckBoxPreference
     	    android:key="@string/TrkUpdAllow"
@@ -325,10 +325,10 @@ authors: zkhan, jlmcgraw
             android:summary="@string/AutoPostTracksSummary"
             android:title="@string/AutoPostTracksLabel" />
         <CheckBoxPreference
-            android:defaultValue="true"            
+            android:defaultValue="true"
             android:key="@string/rubberBand"
             android:title="@string/rubberBandLabel"
             android:summary="@string/rubberBandSummary"/>
         </PreferenceScreen>
-    
+
 </PreferenceScreen>
