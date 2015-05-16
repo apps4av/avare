@@ -58,6 +58,7 @@ import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -862,7 +863,13 @@ public class StorageService extends Service {
             return null;
         }
         else {
-            return mKMLRecorder.stop();
+            URI fileURI = mKMLRecorder.stop();
+
+            // If a file was created, then tell the media scanner about it
+            if(null != fileURI) {
+            	MediaScannerConnection.scanFile(getApplicationContext(), new String[] { fileURI.getPath() }, null, null);
+            }
+			return fileURI;
         }
     }
 
