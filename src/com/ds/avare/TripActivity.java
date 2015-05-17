@@ -189,7 +189,7 @@ public class TripActivity extends Activity {
 				return false;
 			}
         });
-        mWebView.loadUrl("file:///android_" + getString(R.raw.trip));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "trip"));
 
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
@@ -274,7 +274,7 @@ public class TripActivity extends Activity {
                         	}
                         	else {
                       		    mProgress.setVisibility(View.VISIBLE);
-                      	        mWebView.loadUrl("file:///android_" + getString(R.raw.trip));
+                      	        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "trip"));
                         	}
                         	dialog.dismiss();
                         }

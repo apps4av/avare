@@ -212,7 +212,7 @@ public class ChecklistActivity extends Activity {
         });
         mWebView.setLongClickable(false);
 
-        mWebView.loadUrl("file:///android_" + getString(R.raw.list));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "list"));
         /*
          * Progress bar
          */
