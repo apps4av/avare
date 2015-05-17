@@ -913,7 +913,7 @@ public class Preferences {
     	}
 
     	if(mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-    		//EUEU mTabs |=  1 << MainActivity.tabTrip;
+    		mTabs |=  1 << MainActivity.tabTrip;
     	}
 
     	return mTabs;
@@ -1025,7 +1025,7 @@ public class Preferences {
      * @return
      */
 	public String getLongestRunway() {
-		return mPref.getString(mContext.getString(R.string.runwayLengths), "2000");
+		return mPref.getString(mContext.getString(R.string.runwayLengths), "0");
 	}
 
 	/**

@@ -26,6 +26,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High Enroute Charts USA</item>
         <item>Mappe Topografiche USA</item>
         <item>Elicottero/altre Mappe USA</item>
+        <item>IFR Area Charts</item>
+        <item>VFR Area Plates</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -38,12 +40,18 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>AIRMET/SIGMET</item>
         <item>TFR</item>
         <item>SUA</item>
+        <item>Fuel Cost</item>
+        <item>User Ratings</item>
         <item>Radar</item>
     </string-array>
     
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
-     </string-array>
+        <item>@string/TFRs</item>
+        <item>Plates Georeference Info.</item>
+        <item>@string/FuelCost</item>
+        <item>@string/Ratings</item>
+    </string-array>
      
     <string-array name="resNameWeather">
         <item>Weather</item>
@@ -52,6 +60,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameAFD">
     </string-array>
 
+    <string-array name="resNameIFRArea">
+    </string-array>
+    
     <string-array name="resNameIFRHE">
     </string-array>
     
@@ -63,10 +74,13 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     <string-array name="resNameSectional">
         <item>EU VFR Chart</item>
+        <item>EU ADN Chart</item>
     </string-array>
     <string-array name="resNamePlate">
         <item>EU VAC/AD Charts</item>
 	</string-array>
+    <string-array name="resNameVFRAreaPlate">
+    </string-array>
     <string-array name="resNameTerrain">
     </string-array>
     <string-array name="resNameTopo">
@@ -77,9 +91,14 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFilesDatabase">
         <item>databases</item>
+        <item>TFRs</item>
+        <item>geoplates</item>
+        <item>fuel</item>
+        <item>ratings</item>
     </string-array>
     
     <string-array name="resFilesWeather">
+        <item>weather</item>
     </string-array>
         
     <string-array name="resFilesIFRLE">
@@ -88,20 +107,28 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesIFRHE">
     </string-array>
     
+    <string-array name="resFilesIFRArea">
+    </string-array>
+
     <string-array name="resFilesAFD">
     </string-array>
-    
+        
     <string-array name="resFilesWAC">
     </string-array>
     <string-array name="resFilesTAC">
     </string-array>
     <string-array name="resFilesSectional">
         <item>vfr-eu</item>
+        <item>adn-eu</item>
     </string-array>
 
     <string-array name="resFilesPlate">
         <item>vac-ad-eu</item>
     </string-array>
+
+    <string-array name="resFilesVFRAreaPlate">
+    </string-array>
+
     <string-array name="resFilesTerrain">
     </string-array>
     <string-array name="resFilesTopo">
@@ -242,6 +269,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Velocita verticale richiesta</item>
 	    <item>Misuratore di Distanza</item>
 	    <item>Indicatore di Deviazione della Rotta</item>
+	    <item>Flight Path Required</item>
+	    <item>Fuel Tank Switch Timer</item>
 	</string-array>
 	
 	<string-array name="AdsOptions">
@@ -250,7 +279,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Aeroplani a vendersi</item>
         <item>Vari</item>
     </string-array>
-    
+		    
 	<string-array name="TextFieldOptionTitles">
 	    <item></item>
 		<item>Zulu</item>
@@ -270,19 +299,30 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometro</item>
 	    <item>CDI</item>
 	    <item>FPR deg</item>
-   	</string-array>
-
+	    <item>Fuel Time</item>
+	</string-array>
 
 	<string-array name="DisplayIconValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>
+        <item>3</item>
+        <item>4</item>
+	</string-array>
 
+	<string-array name="RunwayLengths">
+        <item>0</item>
+		<item>2000</item>
+        <item>4000</item>
+        <item>6000</item>
+    </string-array>
+	
 	<string-array name="DisplayIconPrompt">
         <item>Ala alta</item>
         <item>Elicotero</item>
         <item>alette canard</item>
+        <item>Green Aircraft</item>
+        <item>None</item>
     </string-array>
 
 	<string-array name="CycleValues">
@@ -311,9 +351,71 @@ Redistribution and use in source and binary forms, with or without modification,
 	</string-array>
      
     <string-array name="GpsPositionValues">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		</string-array>
-		    
+    	<item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+    <string-array name="hotel_max_price">
+        <item>500</item>
+        <item>300</item>
+        <item>200</item>
+        <item>150</item>
+        <item>100</item>
+        <item>75</item>
+        <item>50</item>
+    </string-array>
+    
+    <string-array name="hotel_max_radius">
+        <item>30</item>
+    	<item>20</item>
+        <item>10</item>
+        <item>5</item>
+        <item>1</item>
+    </string-array>
+    
+    
+    <string-array name="hotel_min_stars">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="hotel_count_adults">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="hotel_age_child">
+        <item>-</item>
+    	<item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+    </string-array>
+
+    <string-array name="FuelType">
+        <item>100LL</item>
+        <item>Jet-A</item>
+        <item>Mogas</item>
+    </string-array>
+    
 </resources>
