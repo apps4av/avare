@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 
 <resources>
+	<string name="lang">_it</string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Scarica la mappa per il territorio in cui ti trovi&quot;</string>
     <string name="LoadingMaps">&quot;Scaricamento in corso&quot;</string>

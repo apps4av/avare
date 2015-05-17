@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.ds.avare.R;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
@@ -887,4 +888,14 @@ public class Helper {
     	}
     	return args.replace("'", "\\'");
     }
+    
+    /**
+     * Get HMTL file location for webview
+     * @param args
+     * @return
+     */
+    public static String getWebViewFile(Context context, String name) {
+    	return "file:///android_asset/" + name + context.getString(R.string.lang) + ".html";
+    }
+
 }

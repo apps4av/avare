@@ -301,7 +301,7 @@ public class NetworkHelper {
      * 
      */
     public static String getHelpUrl(Context ctx) {
-        return("file:///android_" + ctx.getString(R.raw.help));
+        return(com.ds.avare.utils.Helper.getWebViewFile(ctx, "help"));
     }
 
     /**

@@ -1139,7 +1139,7 @@ public class WebAppPlanInterface implements Observer {
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + nam;
             
             // Read weather template
-            String html = Helper.readFromAssetsFile("weather.html", mContext);
+            String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
             String fpath = getWeatherStoreFileName();
             Helper.writeFile(html.replace("placeholder", weather), fpath);

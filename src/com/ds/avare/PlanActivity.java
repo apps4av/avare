@@ -198,7 +198,7 @@ public class PlanActivity extends Activity {
 	            return true;
 	        }
 	    });
-        mWebView.loadUrl("file:///android_" + getString(R.raw.plan));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "plan"));
 
         // This is need on some old phones to get focus back to webview.
         mWebView.setFocusable(true);

@@ -195,7 +195,7 @@ public class WeatherActivity extends Activity {
         });
         mWebView.setLongClickable(false);
         
-        mWebView.loadUrl("file:///android_" + getString(R.raw.wxb));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "wxb"));
 
         /*
          * Progress bar

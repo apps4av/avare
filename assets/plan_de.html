@@ -1,0 +1,682 @@
+<html>
+<!--
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan 
+-->
+
+<head>
+
+<style>
+
+body {
+	color : #FFFFFF;
+	width: 800px;
+	background: #000000;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+label {
+	color : #FF0000;
+	font-weight: bold; /* Make sure they're bold */
+	font-size : 20px;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+input {
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width:200px;
+}
+
+p {
+	border: solid green;
+	border-radius: 1em;
+	width: 800px;
+	padding: 5px;
+}
+
+table { 
+	color: #333; /* Lighten up font color */
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width: 800px;
+	border-collapse: collapse; 
+	border-spacing: 0; 
+}
+ 
+button {
+	width: 100px;
+} 
+ 
+td, th { 
+	color : #FFFFFF;
+	border: 1px solid #CCC;
+	height: 30px; 
+	width: 110px;
+	padding: 5px;
+} /* Make cells a bit taller */
+ 
+th {
+	background: #222222; /* Light grey background */
+	font-weight: bold; /* Make sure they're bold */
+}
+ 
+td {
+	background: #111111; /* Lighter grey background */
+	text-align: left; /* Left our text */
+	font-size : 30px;
+}
+
+.halfbutton {
+	width: 50px; // For two buttons in one row
+}
+
+.halfinput {
+	width : 100px;
+}
+
+.sublabel {
+	font-size : 15px;
+	color : #00FF00;
+}
+
+</style>
+
+<script type="text/javascript" >
+
+var CELL_WP = 0;
+var CELL_TYPE = 1;
+var CELL_DISTANCE = 2;
+var CELL_TIME = 3;
+var CELL_BEARING = 4;
+var CELL_LAST = 5;
+
+var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
+
+// load plan from Android then display every second
+function loadplan() {
+	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102°";
+	var str = AndroidPlan.getPlanData();
+	// split plan data encoded in ::
+	var plans = str.split("::::");
+	plan_setname(plans[0]);
+	for(var pl = 1; pl < (plans.length - 1); pl++) {
+		// split plan individual fields
+		var data = plans[pl].split(",");
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5])) {
+			// mismatch in view and model, sync	
+			AndroidPlan.refreshPlan();
+			return;
+		}
+	}
+	plan_set_total(plans[plans.length - 1]);
+}
+
+// set plan name
+function plan_setname(name) {
+	var plan = document.getElementById("plan_name");
+
+	plan.textContent = "Plan" + "[" + name + "]";
+}
+
+
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidPlan.moveTo(row - 1);
+}
+
+function set_plan_line(row, next, bearing, distance, time, id, type) {
+	// rows here are 1 indexed
+// Set plan line
+	var plan_table = document.getElementById("plan_table");
+
+	// do not overwrite array
+	if(row >= plan_table.rows.length) {
+		return false;
+	}
+
+	if(next == "1") {
+		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "green";
+	}
+	else {
+		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#111111";
+	}
+
+	plan_table.rows[row].cells[CELL_WP].textContent = id.substr(0, 20);
+	if(id.length > 12) {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 10;
+	}
+	else if(id.length > 6) {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 22;
+	}
+	else {
+		plan_table.rows[row].cells[CELL_WP].style.fontSize = 30;
+	}
+
+	plan_table.rows[row].cells[CELL_TYPE].textContent = type;
+
+	plan_table.rows[row].cells[CELL_BEARING].textContent = bearing;
+	plan_table.rows[row].cells[CELL_DISTANCE].textContent = distance;
+	plan_table.rows[row].cells[CELL_TIME].textContent = time;
+	
+	plan_table.rows[row].onclick = (function() {
+      var currentI = row;
+      return function() {
+          onclick_row(currentI);
+      }
+   })();
+   
+   return true;
+}
+
+// add a way point to the plan
+function plan_add(id, type) {
+	var plan_table = document.getElementById("plan_table");
+	var search_table = document.getElementById("search_table");
+
+	// clear the search table
+	for(var row = search_table.rows.length - 1; row >= 1; row--) {
+			search_table.deleteRow(row);
+	}
+
+	var row = plan_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_WP] = row.insertCell(CELL_WP);
+	cell[CELL_TYPE] = row.insertCell(CELL_TYPE);
+	cell[CELL_DISTANCE] = row.insertCell(CELL_DISTANCE);
+	cell[CELL_TIME] = row.insertCell(CELL_TIME);
+	cell[CELL_BEARING] = row.insertCell(CELL_BEARING);
+
+	cell[CELL_WP].textContent = id.substring(0, 6);
+	cell[CELL_TYPE].textContent = type;
+	cell[CELL_DISTANCE].textContent = "";
+	cell[CELL_TIME].textContent = "";	
+	cell[CELL_BEARING].textContent = "";
+
+    // clear search input
+    document.getElementById("search_input").value = "";
+}
+
+// Delete a waypoint in Plan
+function plan_delete() {
+	var r = confirm("Delete Selected?");
+	if(r == false) {
+		return;	
+	}
+	AndroidPlan.deleteWaypoint();
+}
+
+// Move up in the list a waypoint
+function plan_moveup() {
+	AndroidPlan.moveUp();
+}
+
+// Move down in the list a waypoint
+function plan_movedn() {
+	AndroidPlan.moveDown();
+}
+
+
+// Set Plan totals
+function plan_set_total(total) {
+	// plan total is split to show individual values
+	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
+	document.getElementById("plan_total_distance").textContent = vals[0];
+	document.getElementById("plan_total_time").textContent = vals[1];
+	//document.getElementById("plan_total_bearing").textContent = vals[2];
+}
+
+// clear the entire plan
+function plan_clear() {
+	// clear the table
+	var plan_table = document.getElementById("plan_table");
+	for(var row = plan_table.rows.length - 1; row >= 1; row--) {
+			plan_table.deleteRow(row);
+	}
+}
+
+// remove the entire plan
+function plan_discard() {
+	// calll Android
+	var r = confirm("Delete Plan?");
+	if(r == true) {
+		AndroidPlan.discardPlan();
+	}
+}
+
+// create the plan
+function plan_create() {
+
+	var name = document.getElementById("create_input").value.trim();
+
+	if(name == "") {
+		return 
+	}	
+
+	// calll Android
+	var r = confirm("Delete Current then Create?");
+	if(r == true) {
+		AndroidPlan.discardPlan();
+		AndroidPlan.createPlan(name);
+	}
+}
+
+var CELL_SAVE_NAME = 0;
+var CELL_SAVE_LOAD = 1;
+var CELL_SAVE_LOAD_REV = 2;
+var CELL_SAVE_DELETE = 3;
+var CELL_SAVE_LAST = 4;
+
+// load the plan
+function save_load(row) {
+	var plan_save = document.getElementById("save_table");
+	AndroidPlan.loadPlan(plan_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+}
+
+// load the plan reverse
+function save_load_reverse(row) {
+	var plan_save = document.getElementById("save_table");
+	AndroidPlan.loadPlanReverse(plan_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+}
+
+// delete the plan
+function save_delete(row) {
+	var plan_save = document.getElementById("save_table");
+	var plan_name = plan_save.rows[row].cells[CELL_SAVE_NAME].textContent;
+	var prompt_text = "Delete \"";
+	var prompt = prompt_text.concat(plan_name, "\" ?");
+	
+	var r = confirm(prompt);
+	if(r == false) {
+		return;	
+	}
+	
+	AndroidPlan.saveDelete(plan_name);
+}
+
+// add the current plan to saved list
+function save_plan_add() {
+	var name = document.getElementById("save_name").value;
+
+	if(name == "") {
+		return 
+	}	
+	AndroidPlan.savePlan(name);
+}
+
+// clear the entire save plan
+function save_clear() {
+	// clear the table
+	var plan_save = document.getElementById("save_table");
+	for(var row = plan_save.rows.length - 1; row >= 1; row--) {
+			plan_save.deleteRow(row);
+	}
+}
+
+// Plan table can be long. Hide it when asked or toggle it to show/hide
+function save_hide(toggle) {
+	var plan_save = document.getElementById("save_table");
+	for(var row = plan_save.rows.length - 1; row >= 1; row--) {
+			if(toggle) {
+				if(plan_save.rows[row].style.display == "none") {
+					plan_save.rows[row].style.display = "";			
+				}
+				else {
+					plan_save.rows[row].style.display = "none";
+				}
+			}
+			else {
+					plan_save.rows[row].style.display = "none";
+			}
+	}
+}
+
+function plan_filter() {
+	var plan_filter = document.getElementById("plan_filter").value;
+	AndroidPlan.planFilter(plan_filter);
+}
+
+// Sets buttons on each row
+function set_buttons_save() {
+
+	// Set buttons for each entry in plan
+	var plan_save = document.getElementById("save_table");
+	for(var i = 1; i < plan_save.rows.length; i++) {
+		plan_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML = 
+			"<button onclick='save_load(" + i.toString() + ")'>Load</button>";
+		plan_save.rows[i].cells[CELL_SAVE_LOAD_REV].innerHTML = 
+			"<button onclick='save_load_reverse(" + i.toString() + ")'>Load Rev.</button>";
+		plan_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML = 
+			"<button onclick='save_delete(" + i.toString() + ")'>Delete</button>";
+	}
+	
+		// clear save input
+	document.getElementById("save_name").value = "";
+}
+
+// add a way point to the plan
+function save_add(name) {
+	var plan_save = document.getElementById("save_table");
+
+	var row = plan_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
+	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
+	cell[CELL_SAVE_LOAD_REV] = row.insertCell(CELL_SAVE_LOAD_REV);
+	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
+
+	cell[CELL_SAVE_NAME].textContent = name;
+	cell[CELL_SAVE_LOAD].style.textAlign="center";
+	cell[CELL_SAVE_LOAD_REV].style.textAlign="center";
+	cell[CELL_SAVE_DELETE].style.textAlign="center";
+
+	set_buttons_save();
+	
+	save_hide(false);
+}
+
+var CELL_SEARCH_WP = 0;
+var CELL_SEARCH_NAME = 1;
+var CELL_SEARCH_TYPE = 2;
+var CELL_SEARCH_SUBTYPE = 3;
+var CELL_SEARCH_ACTION = 4;
+var CELL_SEARCH_LAST = 5;
+
+
+// Search a waypoint specified
+function search_waypoint() {
+
+	// search from input
+	var id = document.getElementById("search_input").value.trim();
+	var search_table = document.getElementById("search_table");
+
+	if(id == "") {
+		return;
+	}
+
+	// clear the table
+	for(var row = search_table.rows.length - 1; row >= 1; row--) {
+			search_table.deleteRow(row);
+	}
+
+	// search
+	AndroidPlan.search(id);	
+}
+
+function plan_add_search(id, type, subtype) {
+	// now call Android for result of add
+	
+	AndroidPlan.addToPlan(id, type, subtype);
+}
+
+// Add the result of a search to search table
+function search_add(id, name, type, subtype) {
+
+	var search_table = document.getElementById("search_table");
+	
+	var row = search_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SEARCH_WP] = row.insertCell(CELL_SEARCH_WP);
+	cell[CELL_SEARCH_NAME] = row.insertCell(CELL_SEARCH_NAME);
+	cell[CELL_SEARCH_TYPE] = row.insertCell(CELL_SEARCH_TYPE);
+	cell[CELL_SEARCH_SUBTYPE] = row.insertCell(CELL_SEARCH_SUBTYPE);
+	cell[CELL_SEARCH_ACTION] = row.insertCell(CELL_SEARCH_ACTION);
+
+	cell[CELL_SEARCH_WP].textContent = id;
+	cell[CELL_SEARCH_NAME].textContent = name;
+	cell[CELL_SEARCH_TYPE].textContent = type;	
+	cell[CELL_SEARCH_SUBTYPE].textContent = subtype;	
+	// this button will add to plan a particular result from search
+	cell[CELL_SEARCH_ACTION].innerHTML = "<button onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";	
+}
+
+function show_help() {
+	var help = document.getElementById("help");	
+	if(help.style.display == "none") {
+		help.style.display = "";
+	}
+	else {
+		help.style.display = "none";
+	}
+}
+
+function plan_get_weather() {
+	var r = confirm("Get Latest Plan Weather from Internet?");
+	if(r == false) {
+		return;	
+	}
+	AndroidPlan.getWeather();
+}
+
+function next() {
+	AndroidPlan.nextPage();
+}
+
+function last() {
+	AndroidPlan.lastPage();
+}
+
+function disable_next(flag) {
+	var listNext = document.getElementById("list_next");
+	listNext.disabled = flag;
+}
+
+function first() {
+	AndroidPlan.firstPage();
+}
+
+function prev() {
+	AndroidPlan.prevPage();
+}
+
+function disable_prev(flag) {
+	var listPrev = document.getElementById("list_prev");
+	listPrev.disabled = flag;
+}
+
+function set_plan_count(planCount) {
+	var plan_count = document.getElementById("plan_count");
+	plan_count.textContent = planCount;
+}
+
+function clear_filter() {
+	var plan_filter = document.getElementById("plan_filter");
+	plan_filter.value = "";
+	AndroidPlan.planFilter("");
+}
+
+function refresh_plan_list() {
+	AndroidPlan.refreshPlanList();
+}
+
+window.onload = show_help;
+
+</script>
+
+</head>
+<body>
+	<p>
+		<label id="plan_name">Plan[]</label><br>
+		<button onclick="plan_discard()">Delete All</button>
+		<button onclick="plan_delete()">Delete</button>
+		<br></br>
+		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Bearing</th></table>
+		<table border="1"><tr><td></td><td><b>Total<b></td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_bearing"></td><tr></table>
+		<br>
+		<button onclick="plan_moveup()">Up</button>
+		<button onclick="plan_movedn()">Down</button>
+		<br></br>
+		<label class="sublabel" >Add To Plan</label>
+		<br>
+		<input id="search_input" placeholder="BOS"></input>
+		<button onclick="search_waypoint()">Search</button>
+		<br></br>
+		<table id="search_table" border="1"><th>Waypoint</th><th>Name</th><th>Type</th><th>Sub Type</th><th>Action</th></table>
+		<br>
+		<label class="sublabel">Create New Plan</label><br>
+		<input id="create_input" placeholder="KBOS BOS V16 CMK KDXR"></input>
+		<button onclick="plan_create()">Create</button>
+		<br></br>
+		<label class="sublabel">Plan Weather</label><br>
+		<button onclick="plan_get_weather()">Get Weather</button>
+		<br></br>
+		<label class="sublabel">Save Plan</label><br>
+		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>
+	</p>
+	<p>
+		<label>Saved Plans</label><br>
+		<table>
+			<tr>
+				<td style="border:0;text-align:left;vertical-align:center">
+					<input id="plan_filter" placeholder="Plan filter spec"></input>
+				    <button onclick="plan_filter()">Apply Filter</button>
+				    <button onclick="clear_filter()">Clear Filter</button>
+					<button style="visibility:hidden">Refresh List</button>
+					<button onclick="refresh_plan_list()">Refresh List</button>
+				</td>
+			</tr>
+		</table><br>
+		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
+		<table style="border:0">
+		<tr>
+			<td style= "text-align:center">
+				<button id="list_first" onclick="first()"><< First</button>
+				<button id="list_prev" onclick="prev()">< Prev</button>
+				<button id="list_next" onclick="next()">Next ></button>
+				<button id="list_last" onclick="last()">Last >></button>
+			</td>
+		</tr>
+		<tr><td style="text-align:center" colspan="2" id="plan_count"></td></tr>
+		</table>
+	</p>
+	<button onclick="show_help()">Show Help</button><br>
+	<a id="help">
+The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, and bearing calculated from the current position to the final way point.<br>
+<br>
+<b>To Create a Flight Plan with Single Line Input</b>
+<ul>
+<li>Clear the current plan by pressing "Delete All"</li>
+<li>Enter a sentence of way points, separated by a single space like "KJFK LWM KBOS" in the "Create New Plan" box.</li>
+<li>Press the "Create" button to load the plan.</li>
+<li>Any way points not recognized, will be omitted.</li>
+</ul>
+
+<b>To Create a Flight Plan One Way Point at a Time</b>
+<ul>
+<li>Clear the current plan by pressing "Delete All"</li>
+<li>Enter a way point name (e.g. BOS) in the "Add To Plan" box, then press Search. If the point is valid, several options will be presented.</li>
+<li>Press Add button to the right of one of the presented options to add it to the end of the plan.</li>
+<li>Touch the added point in the plan to move the green bar to it.</li>
+<li>Move the point to the desired sequence by pressing the Up or Down button several times.</li>
+<li>If a wrong point is added by mistake, it can be deleted by touching the point to move the green bar to it, then pressing the Delete button.</li>
+</ul>
+
+<b>To Save a Plan</b>
+<ul>
+<li>To save a plan, enter the name to the left of "Save" button, and press the "Save" Button. The plan will be added to the plan list. Keep in mind that only 5 at a time are shown and you may have to page ahead to confirm that it was added successfully.</li>
+</ul>
+
+<b>To Load/Delete a Saved Plan</b>
+<ul>
+<li>Press the "Load" or "Load Rev." button to load the plan in the normal or reverse order.</li>
+<li>You can delete a saved plan by pressing the "Delete" button to the right of its name in the Saved Plans list.</li>
+<li>If you have more plans saved than what can be shown in one list, use the "< Prev" or "Next >" until you find it or enter the partial or full name of the desired plan in the "Plan filter spec" box, then press "Apply Filter" to show it in the list.</li>
+</ul>
+
+<b>Saved Plans List</b><br>
+This section contains a list of flight plans that have been saved. They are listed in groups of 5 at a time.<br>
+<ul>
+<li>Use the "< Prev" button to move to the previous page of plans.</li>
+<li>Use the "Next >" button to advance the list to the next page.</li>
+<li>The "<< First" button will list the plans starting at the beginning.</li>
+<li>The "Last >>" button will show the plans at the end of the list.</li>
+<li>Using the "Apply Filter" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
+<li>Pressing "Clear Filter" will clear the filter and refresh the plan list.</li>
+<li>The "Refresh List" button will syncronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
+</ul>
+
+<b>To Create a Flight Plan from Find Screen</b>
+<ul>
+<li>The Find screen can find cities, Geo. coordinates, addresses, and much more</li>
+<li>Go to Find Screen, and enter a location like "JFK" in the Search box</li>
+<li>Several options will be presented that match the word JFK.</li>
+<li>Long Press on the desired option, and some buttons will appear.</li>
+<li>Press the "+Plan" button to add the option to the end of the plan on the Plan screen.</li>
+<li>Follow the procedure -One Way Point at a Time- above to move the added way point to the desired location in the plan.</li>
+</ul>
+
+<b>To Create a Flight Plan from Map Screen</b>
+<ul>
+<li>Go to Map Screen, and long press anywhere on the map.</li>
+<li>A pop out will present "+Plan" button. Press the button to add the touched location in the plan on the Plan screen.</li>
+<li>Follow the procedure -One Way Point at a Time- above to move the added location to the desired location in the plan.</li>
+</ul>
+
+<b>To Simulate a Plan</b>
+<ul>
+<li>You can simulate a plan and show total distance from first way point point to the last way point.</li>
+<li>On the Map screen, press "Navigate" button on the right side slide out buttons to make it "Simulation"</li>
+<li>Go to Plan screen, and press the "Activate" button. Total distance of the plan will be shown in the Total row.</li>
+<li>Move back to the Map screen to see the plan route in magenta.</li>
+<li>Since there is no ground speed detected, ETE time will not be shown.</li>
+</ul>
+
+<b>To Fly a Plan</b>
+<ul>
+<li>On the Map screen, press make sure that the "Navigate"/"Simulation" slide out button is in the "Navigate" state.</li>
+<li>Go to Plan screen, press the "Next"/"Previous" buttons to move the green bar to the second way point in the plan. Note: The first way point should be your departure airport.</li>
+<li>Press the "Inactive" button to make it "Active".</li>
+<li>The distance remaining, bearing to the next way point, and ETE will be shown in the Total row when the plane is moving.</li>
+<li>Move back to the Map screen to see the plan route in magenta.</li>
+</ul>
+ 
+<b>Rubber Banding for Diversion</b>
+<ul>
+<li>Go to the Map screen while the plan is active.</li>
+<li>Grab the magenta by the green dot at the desired way point to be moved, then move the point to the desired location.</li>
+<li>The plan will update automatically.</li>
+</ul>
+
+<b>Sequencing on Flight</b>
+<ul>
+<li>Sequencing is on by default when the plan is active.</li>
+<li>If you pass within a certain distance of a way point that is selected by the green bar, the green bar will move to the next way point.</li>
+<li>If like to skip a way point, press the "Next" button to manually move the green bar to the next way point.</li>
+</ul>
+ 
+<b>De-activating a Flight Plan</b>
+<ul>
+<li>You can de-activate a flight by pressing "Active" button to make it "Inactive".</li>
+<li>Magenta on the map will disappear.</li>
+<li>If you choose to fly direct to a destination by choosing any direct functions from other screens, the plan will auto de-activate.</li>
+</ul>
+
+<b>Getting Plan Weather</b>
+<ul>
+<li>Once a plan is entered, you can get the latest weather for that plan area.</li>
+<li>Enter a plan with at least two points, at least one of which is an airport.</li>
+<li>Make sure you are connected to the Internet.</li>
+<li>Press the "Get Weather" button.</li>
+<li>You may be asked to choose an application. You must choose the browser. After a few seconds, the weather will shown in the browser window.</li>
+</ul>
+
+	</a>
+
+</body>
+</html>
