@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >   
+      
+    <Button 
+        android:id="@+id/btn_register"
+        android:layout_width="fill_parent"
+        android:text="@string/register"
+        android:layout_height="wrap_content"/>
+     
+    <Button 
+        android:id="@+id/btn_unregister"
+        android:layout_below="@+id/btn_register"
+        android:layout_width="fill_parent"
+        android:text="@string/unregister"
+        android:layout_height="wrap_content"/>
+    <ScrollView
+        android:layout_below="@+id/btn_unregister"
+        android:layout_width="fill_parent"
+        android:text="@string/unregister"
+        android:layout_height="wrap_content">
+        
+	    <TextView 
+	        android:id="@+id/log_text"
+	        android:padding="20dp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"/>
+    </ScrollView>
+     
+</RelativeLayout>

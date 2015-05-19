@@ -1,0 +1,1296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/arrays.xml -->
+    <eat-comment />
+
+    <string-array name="AdsOptions">
+        <item>Select a category</item>
+        <item>Aviation apps</item>
+        <item>Aircrafts for sale</item>
+        <item>Miscellaneous</item>
+    </string-array>
+    <string-array name="AirSig">
+        <item>ALL</item>
+        <item>NONE</item>
+        <item>IFR AIRMET</item>
+        <item>ICE AIRMET</item>
+        <item>TURB AIRMET</item>
+        <item>MTN OBSCN AIRMET</item>
+        <item>CONVECTIVE SIGMET</item>
+        <item>CONVECTIVE OUTLOOK</item>
+    </string-array>
+
+    <integer-array name="AirSigColor">
+        <item>0xFFFFFFFF</item>
+        <item>0x00000000</item>
+        <item>0xFF800080</item>
+        <item>0xFF0000FF</item>
+        <item>0xFF00FF00</item>
+        <item>0xFF66FFFF</item>
+        <item>0xFF7F0000</item>
+        <item>0xFFFFA500</item>
+    </integer-array>
+
+    <string-array name="AutoPostTracksPrompts">
+        <item>None</item>
+        <item>Send email</item>
+        <item>Send to all applications</item>
+    </string-array>
+    <string-array name="AutoPostTracksValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="ChartDbNames">
+        <item>maps.sec.db</item>
+        <item>maps.tac.db</item>
+        <item>maps.wac.db</item>
+        <item>maps.el.db</item>
+        <item>maps.eh.db</item>
+        <item>maps.elv.db</item>
+        <item>maps.rel.db</item>
+        <item>maps.topo.db</item>
+        <item>maps.oth.db</item>
+        <item>maps.ea.db</item>
+        <item>procedures.db</item>
+    </string-array>
+    <string-array name="ChartType">
+        <item>Sectional</item>
+        <item>TAC</item>
+        <item>WAC</item>
+        <item>IFR Low</item>
+        <item>IFR High</item>
+        <item>Terrain</item>
+        <item>Shaded Relief</item>
+        <item>Topographic</item>
+        <item>Heli/Other</item>
+        <item>IFR Area</item>
+    </string-array>
+    <string-array name="ChartTypeValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
+    <string-array name="CyclePrompt">
+        <item>Current</item>
+        <item>Previous - may not be available</item>
+        <item>Next - may not be available</item>
+    </string-array>
+    <string-array name="CycleValues">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="DisplayIconPrompt">
+        <item>High Wing Aircraft</item>
+        <item>Helicopter</item>
+        <item>Canard Aircraft</item>
+    </string-array>
+    <string-array name="DisplayIconValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="DistanceRingTypePrompts">
+        <item>None</item>
+        <item>Dynamic</item>
+        <item>Fixed at 2/5/10</item>
+    </string-array>
+    <string-array name="DistanceRingTypeValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="GpsPosition">
+        <item>All Available</item>
+        <item>Internal Only</item>
+        <item>Avare IO Module Only</item>
+    </string-array>
+    <string-array name="GpsPositionValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="Opacity">
+        <item>Transparent</item>
+        <item>50 Percent</item>
+        <item>Opaque</item>
+    </string-array>
+    <string-array name="OpacityValues">
+        <item>0</item>
+        <item>127</item>
+        <item>255</item>
+    </string-array>
+    <string-array name="Orientation">
+        <item>Portrait</item>
+        <item>Landscape</item>
+        <item>Reverse Portrait</item>
+        <item>Reverse Landscape</item>
+        <item>Sensor</item>
+    </string-array>
+    <string-array name="PointType">
+        <item>Fix</item>
+        <item>Navaid</item>
+        <item>Base</item>
+        <item>GPS</item>
+    </string-array>
+    <string-array name="Server">
+        <item>Apps4av.org</item>
+        <item>Kitepilot.org</item>
+    </string-array>
+    <string-array name="ServerValues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="TextFieldOptionTitles">
+        <item/>
+        <item>Zulu</item>
+        <item/>
+        <item>Ground Speed</item>
+        <item>Track</item>
+        <item>Brg Next</item>
+        <item>Next</item>
+        <item>Dist Next</item>
+        <item>ETE Next</item>
+        <item>ETA Next</item>
+        <item>MSL ft</item>
+        <item>AGL ft</item>
+        <item>Flight Time</item>
+        <item>VSI fpm</item>
+        <item>VSR fpm</item>
+        <item>Odometer</item>
+        <item>CDI</item>
+        <item>FPR deg</item>
+    </string-array>
+    <string-array name="TextFieldOptions">
+        <item>None</item>
+        <item>Greenwich Mean Time</item>
+        <item>Local Time</item>
+        <item>Ground Speed</item>
+        <item>Track</item>
+        <item>Bearing</item>
+        <item>Destination Identifier</item>
+        <item>Distance to Destination</item>
+        <item>Estimated Time Enroute</item>
+        <item>Estimated Time of Arrival</item>
+        <item>MSL Altitude</item>
+        <item>AGL Height</item>
+        <item>Hobbs Flight Timer</item>
+        <item>Vertical Speed Indicator</item>
+        <item>Vertical Speed Required</item>
+        <item>Odometer</item>
+        <item>Course Deviation Indicator</item>
+        <item>Flight Path Required</item>
+    </string-array>
+    <string-array name="TimerRingSizePrompt">
+        <item>None</item>
+        <item>2 Minutes</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+    </string-array>
+    <string-array name="TimerRingSizeValues">
+        <item>0</item>
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="UnitsD">
+        <item>Nautical Miles</item>
+        <item>Statute Miles</item>
+        <item>Kilometers</item>
+    </string-array>
+    <string-array name="UnitsDValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="hotel_age_child">
+        <item>-</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+    </string-array>
+    <string-array name="hotel_count_adults">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="hotel_max_price">
+        <item>500</item>
+        <item>300</item>
+        <item>200</item>
+        <item>150</item>
+        <item>100</item>
+        <item>75</item>
+        <item>50</item>
+    </string-array>
+    <string-array name="hotel_max_radius">
+        <item>30</item>
+        <item>20</item>
+        <item>10</item>
+        <item>5</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="hotel_min_stars">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="resFilesAFD">
+        <item>AFD_NE</item>
+        <item>AFD_NC</item>
+        <item>AFD_NW</item>
+        <item>AFD_SE</item>
+        <item>AFD_SC</item>
+        <item>AFD_SW</item>
+        <item>AFD_EC</item>
+        <item>AFD_AK</item>
+        <item>AFD_PAC</item>
+    </string-array>
+    <string-array name="resFilesDatabase">
+        <item>databases</item>
+        <item>TFRs</item>
+    </string-array>
+    <string-array name="resFilesHeli">
+        <item>GrandCanyon</item>
+        <item>BaltimoreWashingtonHeli9Front</item>
+        <item>BostonHeli6Front</item>
+        <item>ChicagoHeli6Front</item>
+        <item>Dallas-FtWorthHeli5Front</item>
+        <item>DetroitHeli1</item>
+        <item>GulfCoastHel-WAC27</item>
+        <item>HoustonHeli7</item>
+        <item>LosAngelesHeli9</item>
+        <item>NewYorkHeli10Front</item>
+    </string-array>
+    <string-array name="resFilesIFRArea">
+        <item>ENRA_ATL</item>
+        <item>ENRA_DCA</item>
+        <item>ENRA_DEN</item>
+        <item>ENRA_DET</item>
+        <item>ENRA_DFW</item>
+        <item>ENRA_JAX</item>
+        <item>ENRA_LAX</item>
+        <item>ENRA_MIA</item>
+        <item>ENRA_MKC</item>
+        <item>ENRA_MSP</item>
+        <item>ENRA_ORD</item>
+        <item>ENRA_PHX</item>
+        <item>ENRA_SFO</item>
+        <item>ENRA_STL</item>
+    </string-array>
+    <string-array name="resFilesIFRHE">
+        <item>EHUS_NE</item>
+        <item>EHUS_NC</item>
+        <item>EHUS_NW</item>
+        <item>EHUS_SE</item>
+        <item>EHUS_SC</item>
+        <item>EHUS_SW</item>
+        <item>EHUS_AK</item>
+    </string-array>
+    <string-array name="resFilesIFRLE">
+        <item>ELUS_NE</item>
+        <item>ELUS_NC</item>
+        <item>ELUS_NW</item>
+        <item>ELUS_SE</item>
+        <item>ELUS_SC</item>
+        <item>ELUS_SW</item>
+        <item>ELUS_AK</item>
+    </string-array>
+    <string-array name="resFilesPlate">
+        <item>geoplates</item>
+        <item>alternates</item>
+        <item>AL</item>
+        <item>AK</item>
+        <item>AZ</item>
+        <item>AR</item>
+        <item>CA</item>
+        <item>CO</item>
+        <item>CT</item>
+        <item>DC</item>
+        <item>DE</item>
+        <item>FL</item>
+        <item>GA</item>
+        <item>HI</item>
+        <item>ID</item>
+        <item>IL</item>
+        <item>IN</item>
+        <item>IA</item>
+        <item>KS</item>
+        <item>KY</item>
+        <item>LA</item>
+        <item>ME</item>
+        <item>MD</item>
+        <item>MA</item>
+        <item>MI</item>
+        <item>MN</item>
+        <item>MS</item>
+        <item>MO</item>
+        <item>MT</item>
+        <item>NE</item>
+        <item>NV</item>
+        <item>NH</item>
+        <item>NJ</item>
+        <item>NM</item>
+        <item>NY</item>
+        <item>NC</item>
+        <item>ND</item>
+        <item>OH</item>
+        <item>OK</item>
+        <item>OR</item>
+        <item>PA</item>
+        <item>PR</item>
+        <item>RI</item>
+        <item>SC</item>
+        <item>SD</item>
+        <item>TN</item>
+        <item>TX</item>
+        <item>UT</item>
+        <item>VT</item>
+        <item>VA</item>
+        <item>WA</item>
+        <item>WV</item>
+        <item>WI</item>
+        <item>WY</item>
+    </string-array>
+    <string-array name="resFilesSectional">
+        <item>Albuquerque</item>
+        <item>Anchorage</item>
+        <item>Atlanta</item>
+        <item>Bethel</item>
+        <item>Billings</item>
+        <item>Brownsville</item>
+        <item>CapeLisburne</item>
+        <item>Charlotte</item>
+        <item>Cheyenne</item>
+        <item>Chicago</item>
+        <item>Cincinnati</item>
+        <item>ColdBay</item>
+        <item>Dallas-FtWorth</item>
+        <item>Dawson</item>
+        <item>Denver</item>
+        <item>Detroit</item>
+        <item>DutchHarbor</item>
+        <item>ElPaso</item>
+        <item>Fairbanks</item>
+        <item>GreatFalls</item>
+        <item>GreenBay</item>
+        <item>Halifax</item>
+        <item>HawaiianIslands</item>
+        <item>Houston</item>
+        <item>Jacksonville</item>
+        <item>Juneau</item>
+        <item>KansasCity</item>
+        <item>Ketchikan</item>
+        <item>KlamathFalls</item>
+        <item>Kodiak</item>
+        <item>LakeHuron</item>
+        <item>LasVegas</item>
+        <item>LosAngeles</item>
+        <item>McGrath</item>
+        <item>Memphis</item>
+        <item>Miami</item>
+        <item>Montreal</item>
+        <item>NewOrleans</item>
+        <item>NewYork</item>
+        <item>Nome</item>
+        <item>Omaha</item>
+        <item>Phoenix</item>
+        <item>PointBarrow</item>
+        <item>SaltLakeCity</item>
+        <item>SanAntonio</item>
+        <item>SanFrancisco</item>
+        <item>Seattle</item>
+        <item>Seward</item>
+        <item>StLouis</item>
+        <item>TwinCities</item>
+        <item>Washington</item>
+        <item>Whitehorse</item>
+        <item>Wichita</item>
+    </string-array>
+    <string-array name="resFilesTAC">
+        <item>AnchorageTAC</item>
+        <item>AtlantaTAC</item>
+        <item>Baltimore-WashingtonTAC</item>
+        <item>BostonTAC</item>
+        <item>CharlotteTAC</item>
+        <item>ChicagoTAC</item>
+        <item>CincinnatiTAC</item>
+        <item>ClevelandTAC</item>
+        <item>ColoradoSpringsTAC</item>
+        <item>Dallas-FtWorthTAC</item>
+        <item>DenverTAC</item>
+        <item>DetroitTAC</item>
+        <item>FairbanksTAC</item>
+        <item>HoustonTAC</item>
+        <item>KansasCityTAC</item>
+        <item>LasVegasTAC</item>
+        <item>LosAngelesTAC</item>
+        <item>MemphisTAC</item>
+        <item>MiamiTAC</item>
+        <item>Minneapolis-StPaulTAC</item>
+        <item>NewOrleansTAC</item>
+        <item>NewYorkTAC</item>
+        <item>OrlandoTAC</item>
+        <item>PhiladelphiaTAC</item>
+        <item>PhoenixTAC</item>
+        <item>PittsburghTAC</item>
+        <item>PuertoRico-VITAC</item>
+        <item>SaltLakeCityTAC</item>
+        <item>SanDiegoTAC</item>
+        <item>SanFranciscoTAC</item>
+        <item>SeattleTAC</item>
+        <item>StLouisTAC</item>
+        <item>TampaTAC</item>
+    </string-array>
+    <string-array name="resFilesTerrain">
+        <item>ELEV_NE</item>
+        <item>ELEV_NC</item>
+        <item>ELEV_NW</item>
+        <item>ELEV_SE</item>
+        <item>ELEV_SC</item>
+        <item>ELEV_SW</item>
+        <item>ELEV_AK</item>
+        <item>ELEV_HI</item>
+        <item>ELEV_PR</item>
+        <item>REL_NE</item>
+        <item>REL_NC</item>
+        <item>REL_NW</item>
+        <item>REL_SE</item>
+        <item>REL_SC</item>
+        <item>REL_SW</item>
+        <item>REL_AK</item>
+        <item>REL_HI</item>
+        <item>REL_PR</item>
+    </string-array>
+    <string-array name="resFilesTopo">
+        <item>CAN_001</item>
+        <item>CAN_002</item>
+        <item>CAN_003</item>
+        <item>CAN_010</item>
+        <item>CAN_011</item>
+        <item>CAN_012</item>
+        <item>CAN_013</item>
+        <item>CAN_014</item>
+        <item>CAN_020</item>
+        <item>CAN_021</item>
+        <item>CAN_022</item>
+        <item>CAN_023</item>
+        <item>CAN_024</item>
+        <item>CAN_030</item>
+        <item>CAN_031</item>
+        <item>CAN_032</item>
+        <item>CAN_033</item>
+        <item>CAN_034</item>
+        <item>CAN_040</item>
+        <item>CAN_041</item>
+        <item>CAN_042</item>
+        <item>CAN_043</item>
+        <item>CAN_044</item>
+        <item>CAN_052</item>
+        <item>CAN_053</item>
+        <item>CAN_054</item>
+        <item>CAN_062</item>
+        <item>CAN_063</item>
+        <item>CAN_064</item>
+        <item>CAN_072</item>
+        <item>CAN_073</item>
+        <item>CAN_074</item>
+        <item>CAN_082</item>
+        <item>CAN_083</item>
+        <item>CAN_084</item>
+        <item>CAN_092</item>
+        <item>CAN_093</item>
+        <item>CAN_094</item>
+        <item>CAN_102</item>
+        <item>CAN_103</item>
+        <item>CAN_104</item>
+        <item>CAN_114</item>
+    </string-array>
+    <string-array name="resFilesWAC">
+        <item>CC-8</item>
+        <item>CC-9</item>
+        <item>CD-10</item>
+        <item>CD-11</item>
+        <item>CD-12</item>
+        <item>CE-12</item>
+        <item>CE-13</item>
+        <item>CE-15</item>
+        <item>CF-16</item>
+        <item>CF-17</item>
+        <item>CF-18</item>
+        <item>CF-19</item>
+        <item>CG-18</item>
+        <item>CG-19</item>
+        <item>CG-20</item>
+        <item>CG-21</item>
+        <item>CH-22</item>
+        <item>CH-23</item>
+        <item>CH-24</item>
+        <item>CH-25</item>
+        <item>CJ-26</item>
+        <item>CJ-27</item>
+    </string-array>
+    <string-array name="resFilesWeather">
+        <item>weather</item>
+        <item>conus</item>
+    </string-array>
+    <string-array name="resGroups">
+        <item>Databases</item>
+        <item>Weather</item>
+        <item>Plates/d-TPP/ADs</item>
+        <item>VFR Sectional Charts</item>
+        <item>TAC Charts</item>
+        <item>WAC Charts</item>
+        <item>IFR Low Enroute Charts</item>
+        <item>A/FD Images</item>
+        <item>Terrain</item>
+        <item>IFR High Enroute Charts</item>
+        <item>Topographic Maps</item>
+        <item>Heli/Other Charts</item>
+        <item>IFR Area Charts</item>
+    </string-array>
+    <string-array name="resGroupsPopout">
+        <item>COMM</item>
+        <item>Performance</item>
+        <item>METAR</item>
+        <item>TAF</item>
+        <item>Winds/Temp.</item>
+        <item>AIREP/PIREP</item>
+        <item>AIRMET/SIGMET</item>
+        <item>TFR</item>
+        <item>SUA</item>
+        <item>Radar</item>
+    </string-array>
+    <string-array name="resNameAFD">
+        <item>A/FD NE</item>
+        <item>A/FD NC</item>
+        <item>A/FD NW</item>
+        <item>A/FD SE</item>
+        <item>A/FD SC</item>
+        <item>A/FD SW</item>
+        <item>A/FD EC</item>
+        <item>A/FD AK</item>
+        <item>A/FD Pacific</item>
+    </string-array>
+    <string-array name="resNameDatabase">
+        <item>@string/databases</item>
+        <item>@string/TFRs</item>
+    </string-array>
+    <string-array name="resNameHeli">
+        <item>Grand Canyon</item>
+        <item>Balt-Washington Heli</item>
+        <item>Boston Heli</item>
+        <item>Chicago Heli</item>
+        <item>Dallas-Ft-Worth Heli</item>
+        <item>Detroit Heli</item>
+        <item>Gulf Coast Heli</item>
+        <item>Houston Heli</item>
+        <item>Los Angeles Heli</item>
+        <item>New York Heli</item>
+    </string-array>
+    <string-array name="resNameIFRArea">
+        <item>IFR Area ATL</item>
+        <item>IFR Area DCA</item>
+        <item>IFR Area DEN</item>
+        <item>IFR Area DET</item>
+        <item>IFR Area DFW</item>
+        <item>IFR Area JAX</item>
+        <item>IFR Area LAX</item>
+        <item>IFR Area MIA</item>
+        <item>IFR Area MKC</item>
+        <item>IFR Area MSP</item>
+        <item>IFR Area ORD</item>
+        <item>IFR Area PHX</item>
+        <item>IFR Area SFO</item>
+        <item>IFR Area STL</item>
+    </string-array>
+    <string-array name="resNameIFRHE">
+        <item>IFR High Enroute NE</item>
+        <item>IFR High Enroute NC</item>
+        <item>IFR High Enroute NW</item>
+        <item>IFR High Enroute SE</item>
+        <item>IFR High Enroute SC</item>
+        <item>IFR High Enroute SW</item>
+        <item>IFR High Enroute AK</item>
+    </string-array>
+    <string-array name="resNameIFRLE">
+        <item>IFR Low Enroute NE</item>
+        <item>IFR Low Enroute NC</item>
+        <item>IFR Low Enroute NW</item>
+        <item>IFR Low Enroute SE</item>
+        <item>IFR Low Enroute SC</item>
+        <item>IFR Low Enroute SW</item>
+        <item>IFR Low Enroute AK</item>
+    </string-array>
+    <string-array name="resNamePlate">
+        <item>Plates Georeference Info.</item>
+        <item>Minimums T/A</item>
+        <item>Alabama</item>
+        <item>Alaska</item>
+        <item>Arizona</item>
+        <item>Arkansas</item>
+        <item>California</item>
+        <item>Colorado</item>
+        <item>Connecticut</item>
+        <item>D.C.</item>
+        <item>Delaware</item>
+        <item>Florida</item>
+        <item>Georgia</item>
+        <item>Hawaii</item>
+        <item>Idaho</item>
+        <item>Illinois</item>
+        <item>Indiana</item>
+        <item>Iowa</item>
+        <item>Kansas</item>
+        <item>Kentucky</item>
+        <item>Louisiana</item>
+        <item>Maine</item>
+        <item>Maryland</item>
+        <item>Massachusetts</item>
+        <item>Michigan</item>
+        <item>Minnesota</item>
+        <item>Mississippi</item>
+        <item>Missouri</item>
+        <item>Montana</item>
+        <item>Nebraska</item>
+        <item>Nevada</item>
+        <item>New Hampshire</item>
+        <item>New Jersey</item>
+        <item>New Mexico</item>
+        <item>New York</item>
+        <item>North Carolina</item>
+        <item>North Dakota</item>
+        <item>Ohio</item>
+        <item>Oklahoma</item>
+        <item>Oregon</item>
+        <item>Pennsylvania</item>
+        <item>Puerto Rico</item>
+        <item>Rhode Island</item>
+        <item>South Carolina</item>
+        <item>South Dakota</item>
+        <item>Tennessee</item>
+        <item>Texas</item>
+        <item>Utah</item>
+        <item>Vermont</item>
+        <item>Virginia</item>
+        <item>Washington</item>
+        <item>West Virginia</item>
+        <item>Wisconsin</item>
+        <item>Wyoming</item>
+    </string-array>
+    <string-array name="resNameSectional">
+        <item>Albuquerque</item>
+        <item>Anchorage</item>
+        <item>Atlanta</item>
+        <item>Bethel</item>
+        <item>Billings</item>
+        <item>Brownsville</item>
+        <item>Cape Lisburne</item>
+        <item>Charlotte</item>
+        <item>Cheyenne</item>
+        <item>Chicago</item>
+        <item>Cincinnati</item>
+        <item>Cold Bay</item>
+        <item>Dallas-FtWorth</item>
+        <item>Dawson</item>
+        <item>Denver</item>
+        <item>Detroit</item>
+        <item>Dutch Harbor</item>
+        <item>El Paso</item>
+        <item>Fairbanks</item>
+        <item>Great Falls</item>
+        <item>Green Bay</item>
+        <item>Halifax</item>
+        <item>Hawaiian Islands</item>
+        <item>Houston</item>
+        <item>Jacksonville</item>
+        <item>Juneau</item>
+        <item>Kansas City</item>
+        <item>Ketchikan</item>
+        <item>Klamath Falls</item>
+        <item>Kodiak</item>
+        <item>Lake Huron</item>
+        <item>Las Vegas</item>
+        <item>Los Angeles</item>
+        <item>McGrath</item>
+        <item>Memphis</item>
+        <item>Miami</item>
+        <item>Montreal</item>
+        <item>New Orleans</item>
+        <item>New York</item>
+        <item>Nome</item>
+        <item>Omaha</item>
+        <item>Phoenix</item>
+        <item>Point Barrow</item>
+        <item>Salt Lake City</item>
+        <item>San Antonio</item>
+        <item>San Francisco</item>
+        <item>Seattle</item>
+        <item>Seward</item>
+        <item>St Louis</item>
+        <item>Twin Cities</item>
+        <item>Washington</item>
+        <item>Whitehorse</item>
+        <item>Wichita</item>
+    </string-array>
+    <string-array name="resNameTAC">
+        <item>Anchorage TAC</item>
+        <item>Atlanta TAC</item>
+        <item>Baltimore-Washington TAC</item>
+        <item>Boston TAC</item>
+        <item>Charlotte TAC</item>
+        <item>Chicago TAC</item>
+        <item>Cincinnati TAC</item>
+        <item>Cleveland TAC</item>
+        <item>Colorado Springs TAC</item>
+        <item>Dallas-FtWorth TAC</item>
+        <item>Denver TAC</item>
+        <item>Detroit TAC</item>
+        <item>Fairbanks TAC</item>
+        <item>Houston TAC</item>
+        <item>Kansas City TAC</item>
+        <item>Las Vegas TAC</item>
+        <item>Los Angeles TAC</item>
+        <item>Memphis TAC</item>
+        <item>Miami TAC</item>
+        <item>Minneapolis-StPaul TAC</item>
+        <item>New Orleans TAC</item>
+        <item>New York TAC</item>
+        <item>Orlando TAC</item>
+        <item>Philadelphia TAC</item>
+        <item>Phoenix TAC</item>
+        <item>Pittsburgh TAC</item>
+        <item>PuertoRico-VI TAC</item>
+        <item>Salt Lake City TAC</item>
+        <item>San Diego TAC</item>
+        <item>San Francisco TAC</item>
+        <item>Seattle TAC</item>
+        <item>St Louis TAC</item>
+        <item>Tampa TAC</item>
+    </string-array>
+    <string-array name="resNameTerrain">
+        <item>Elevation NE</item>
+        <item>Elevation NC</item>
+        <item>Elevation NW</item>
+        <item>Elevation SE</item>
+        <item>Elevation SC</item>
+        <item>Elevation SW</item>
+        <item>Elevation AK</item>
+        <item>Elevation HI</item>
+        <item>Elevation PR</item>
+        <item>Shaded Relief NE</item>
+        <item>Shaded Relief NC</item>
+        <item>Shaded Relief NW</item>
+        <item>Shaded Relief SE</item>
+        <item>Shaded Relief SC</item>
+        <item>Shaded Relief SW</item>
+        <item>Shaded Relief AK</item>
+        <item>Shaded Relief HI</item>
+        <item>Shaded Relief PR</item>
+    </string-array>
+    <string-array name="resNameTopo">
+        <item>Canada Grid 001</item>
+        <item>Canada Grid 002</item>
+        <item>Canada Grid 003</item>
+        <item>Canada Grid 010</item>
+        <item>Canada Grid 011</item>
+        <item>Canada Grid 012</item>
+        <item>Canada Grid 013</item>
+        <item>Canada Grid 014</item>
+        <item>Canada Grid 020</item>
+        <item>Canada Grid 021</item>
+        <item>Canada Grid 022</item>
+        <item>Canada Grid 023</item>
+        <item>Canada Grid 024</item>
+        <item>Canada Grid 030</item>
+        <item>Canada Grid 031</item>
+        <item>Canada Grid 032</item>
+        <item>Canada Grid 033</item>
+        <item>Canada Grid 034</item>
+        <item>Canada Grid 040</item>
+        <item>Canada Grid 041</item>
+        <item>Canada Grid 042</item>
+        <item>Canada Grid 043</item>
+        <item>Canada Grid 044</item>
+        <item>Canada Grid 052</item>
+        <item>Canada Grid 053</item>
+        <item>Canada Grid 054</item>
+        <item>Canada Grid 062</item>
+        <item>Canada Grid 063</item>
+        <item>Canada Grid 064</item>
+        <item>Canada Grid 072</item>
+        <item>Canada Grid 073</item>
+        <item>Canada Grid 074</item>
+        <item>Canada Grid 082</item>
+        <item>Canada Grid 083</item>
+        <item>Canada Grid 084</item>
+        <item>Canada Grid 092</item>
+        <item>Canada Grid 093</item>
+        <item>Canada Grid 094</item>
+        <item>Canada Grid 102</item>
+        <item>Canada Grid 103</item>
+        <item>Canada Grid 104</item>
+        <item>Canada Grid 114</item>
+    </string-array>
+    <string-array name="resNameWAC">
+        <item>CC-8  (Nome AK)</item>
+        <item>CC-9  (Fairbanks AK)</item>
+        <item>CD-10 (Bethel AK)</item>
+        <item>CD-11 (Anchorage AK)</item>
+        <item>CD-12 (Juneau AK)</item>
+        <item>CE-12 (Aleutian Islands AK)</item>
+        <item>CE-13 (Dutch Harbor AK)</item>
+        <item>CE-15 (Ketchikan AK)</item>
+        <item>CF-16 (WA,OR,ID,MT)</item>
+        <item>CF-17 (WY,ND,SD,NE,MN,IA)</item>
+        <item>CF-18 (WI,IL,MI,IN,OH,PA)</item>
+        <item>CF-19 (NY,NJ,VT,NH,RI,MA,CT,ME)</item>
+        <item>CG-18 (CA,NV)</item>
+        <item>CG-19 (UT,AZ,CO,NM)</item>
+        <item>CG-20 (KS,OK,MO,AR,TN,MS,AL)</item>
+        <item>CG-21 (KY,GA,WV,DC,VA,DE,MD,NC,SC)</item>
+        <item>CH-22 (Baja)</item>
+        <item>CH-23 (TX,Mexico)</item>
+        <item>CH-24 (LA)</item>
+        <item>CH-25 (FL,Bahamas)</item>
+        <item>CJ-26 (Cuba,Jamaica)</item>
+        <item>CJ-27 (Caribbean,PR,VI,DR)</item>
+    </string-array>
+    <string-array name="resNameWeather">
+        <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
+        <item>NEXRAD</item>
+    </string-array>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/cwac_touchlist_attrs.xml -->
+    <eat-comment />
+
+    <declare-styleable name="TouchListView">
+        <attr name="normal_height" format="dimension" />
+        <attr name="expanded_height" format="dimension" />
+        <attr name="grabber" format="reference" />
+        <attr name="dragndrop_background" format="color" />
+        <attr name="remove_mode">
+            <enum name="none" value="-1" />
+            <enum name="fling" value="0" />
+            <enum name="slide" value="1" />
+            <enum name="slideRight" value="1" />
+            <enum name="slideLeft" value="2" />
+        </attr>
+    </declare-styleable>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/dimen.xml -->
+    <eat-comment />
+
+    <dimen name="TextSize">30sp</dimen>
+    <dimen name="distanceRingNumberTextSize">16sp</dimen>
+    <dimen name="runwayNumberTextSize">25sp</dimen>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/strings.xml -->
+    <eat-comment />
+
+    <string name="ADS">"Airport Diagrams"</string>
+    <string name="ADSBTraffic">ADSBTraffic</string>
+    <string name="ADSBTrafficLabel">"Show ADSB Traffic"</string>
+    <string name="ADSBTrafficSummary">"Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)"</string>
+    <string name="ADSBWeather">ADSBWeather</string>
+    <string name="ADSBWeatherLabel">"Use ADSB Weather"</string>
+    <string name="ADSBWeatherSummary">"Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather"</string>
+    <string name="AFD">"A/FD"</string>
+    <string name="AFDSummary">"Airport Facilitiy Directory information."</string>
+    <string name="Active">"Active"</string>
+    <string name="Add">Add</string>
+    <string name="AddAction">Add an action item</string>
+    <string name="AddPlan">Add To Plan</string>
+    <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
+    <string name="AddedPoint">"You have successfully tagged a point."</string>
+    <string name="Advertisements">Ads</string>
+    <string name="Agree">"I Agree"</string>
+    <string name="AirDia">"Airport Diagram"</string>
+    <string name="AirSigType">"AIRMET/SIGMET"</string>
+    <string name="AirSigTypeLabel">"AIRMET/SIGMET Type"</string>
+    <string name="AirSigTypeSummary">"Select the type of weather to draw"</string>
+    <string name="AllFacilities">"All Facilities"</string>
+    <string name="AllFacilitiesLabel">"Show All Bases"</string>
+    <string name="AllFacilitiesSummary">"Select to show heliport, ultralight, and sea plane bases in Nearest and Search"</string>
+    <string name="AlreadyTagged">"This plate is already tagged and stored. Press clear to re-tag."</string>
+    <string name="Altitude">"Altitude ft."</string>
+    <string name="AltitudeAccuracy">Altitude Accuracy</string>
+    <string name="AndLoad">"and load"</string>
+    <string name="AreaNF">"Nearest airports shown when GPS locked, and not in simulation"</string>
+    <string name="AutoPostTracksDialogText">"The tracks file %s has been saved"</string>
+    <string name="AutoPostTracksLabel">"Automatic Track Post"</string>
+    <string name="AutoPostTracksSubject">"Avare flight tracking data - "</string>
+    <string name="AutoPostTracksSummary">"Select what to do with the KML tracks file when closed"</string>
+    <string name="AutoPostTracksTitle">"Send tracks file to "</string>
+    <string name="AutoShowAirportDiagram">"Auto Show Airport Diagram"</string>
+    <string name="AutoShowAirportDiagramLabel">"Auto Show Airport Diagram"</string>
+    <string name="AutoShowAirportDiagramSummary">"Select to automatically show airport diagrams on rollout"</string>
+    <string name="AvailableMem">Available Memory</string>
+    <string name="Back">Back</string>
+    <string name="Background">"Background"</string>
+    <string name="BackgroundLabel">"Show Background"</string>
+    <string name="BackgroundSummary">"Select to use a color background on text, to improve readability on smaller screens"</string>
+    <string name="BadCoords">"Unacceptable Longitude/Latitude input\nLongitude Range: 0 to 180 W\nLatitude Range 0 to 90 N"</string>
+    <string name="BestRunway">Best Wind Runway</string>
+    <string name="Calibrate">"GeoTag"</string>
+    <string name="Cancel">"Cancel"</string>
+    <string name="ChartType">"Chart Type"</string>
+    <string name="ChartTypeLabel">"Select Chart Type"</string>
+    <string name="ChartTypeSummary">"Select a chart type for navigation"</string>
+    <string name="ChecklistSummary">"User defined checklists and management."</string>
+    <string name="Clear">"Clear"</string>
+    <string name="Cleared">"Cleared! Your Geo. tagging has been deleted for this plate'."</string>
+    <string name="ClearedPrompt">"Are you sure you want to delete your Geo. tag information for this plate?"</string>
+    <string name="Create">"Create"</string>
+    <string name="CurrentChecklistName">Current check list name</string>
+    <string name="CurrentPlanName">Current plan name</string>
+    <string name="CurrentlySetTo">"\nCurrently: "</string>
+    <string name="Cycle">Cycle</string>
+    <string name="CycleLabel">Chart Download Cycle</string>
+    <string name="CycleSummary">Select which cycle to download the charts from</string>
+    <string name="Delete">"Delete"</string>
+    <string name="DeleteListQuestion">Are you sure you want to delete the check list?</string>
+    <string name="DensityAltitude">Density Altitude</string>
+    <string name="Destination">"Destination"</string>
+    <string name="DestinationNF">"Destination Not Found"</string>
+    <string name="DestinationPrompt">"Enter Destination Code"</string>
+    <string name="DestinationSet">"Destination set to "</string>
+    <string name="DisplayIcon">"DisplayIcon"</string>
+    <string name="DisplayIconLabel">"Location Display Icon"</string>
+    <string name="DisplayIconSummary">"Select the type of icon used to show your location (requires restart)."</string>
+    <string name="DistKilometer">km</string>
+    <string name="DistKnot">nm</string>
+    <string name="DistMile">mi</string>
+    <string name="DistanceRingTypeLabel">"Distance Ring Style"</string>
+    <string name="DistanceRingTypeSummary">"Select the style of distance rings to display"</string>
+    <string name="Done">"Done"</string>
+    <string name="DownloadDB">"The required data file is missing and must be downloaded."</string>
+    <string name="DownloadDBShort">"Download Databases"</string>
+    <string name="DownloadInst">"Touch to select an item, then press Get to download it"</string>
+    <string name="Downloading">"Downloading"</string>
+    <string name="Draw">"Draw"</string>
+    <string name="ETABearing">"ETABearing"</string>
+    <string name="ETABearingLabel">"ETA/ETE Bearing"</string>
+    <string name="ETABearingSummary">"Select to calculate ETA/ETE considering the relative bearing to the destination"</string>
+    <string name="EdgeTape">"EdgeTape"</string>
+    <string name="EdgeTapeLabel">"Edge Tape"</string>
+    <string name="EdgeTapeSummary">"Select to show a distance tape on the edges"</string>
+    <string name="Edit">Edit</string>
+    <string name="EnoughPoints">"You have tagged enough points. Please clear to re-tag."</string>
+    <string name="Exit">"Exit"</string>
+    <string name="ExtendInfoLines">ExtendInfoLines</string>
+    <string name="ExtendInfoLinesLabel">Show Status Area on Plates</string>
+    <string name="ExtendInfoLinesSummary">Select to show the configuable status area on the Plate screen</string>
+    <string name="ExternalFolder">Use the default external folder</string>
+    <string name="Extracting">"Extracting"</string>
+    <string name="Failed">"Failed"</string>
+    <string name="FileStore">Files will be stored in: </string>
+    <string name="FileStoreInvalid">Unable to write to folder:</string>
+    <string name="Find">"Find"</string>
+    <string name="FindSummary">"Search for airports and navaids."</string>
+    <string name="Fuel">"Fuel"</string>
+    <string name="GPS">"GPS"</string>
+    <string name="GPSEnable">"Turn On GPS"</string>
+    <string name="GPSLost">"No GPS Signal"</string>
+    <string name="GPSSummary">"Current settings, GPS status/satellite display."</string>
+    <string name="GameTFR">"GameTFR"</string>
+    <string name="GameTFRLabel">"Show Game TFRs"</string>
+    <string name="GameTFRSummary">"Select to show the location of possible game TFRs"</string>
+    <string name="GeoCode">"GeoPassword"</string>
+    <string name="GeoCodeLabel">"Geo. Reference Password"</string>
+    <string name="GeoCodeSummary">"Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)"</string>
+    <string name="GeoRefPlates">"Geo. Referenced Plates Database"</string>
+    <string name="GeoShareDone">"Geo. tag information submitted, and will be available to everyone after review"</string>
+    <string name="GeoShareFailed">"Geo. tag information could not be submitted."</string>
+    <string name="GeoShareReportFailed">"Could not report issues with Geo. tag information for correction"</string>
+    <string name="GeoShareReportOK">"Reported issues with Geo. tag information for correction"</string>
+    <string name="GeoShareReportPrompt">"Would you like to report that this plate is not correctly showing your position while flying this procedure?"</string>
+    <string name="GeoShareText">"Are you sure you want to submit the plate's Geo. tag information? Have you verified it to be accurate for use by the others?"</string>
+    <string name="GeoShareTextAll">"Are you sure you want to submit all of your Geo. tagged plates info? Have you verified all of them to be accurate for use by the others?"</string>
+    <string name="Geotag">"Geotag"</string>
+    <string name="Get">"Get"</string>
+    <string name="GlideRatio">"GlideRatioAircraft"</string>
+    <string name="GlideRatioLabel">"Glide Ratio"</string>
+    <string name="GlideRatioSummary">"Set the glide ratio of your aircraft"</string>
+    <string name="GoodCoords">"Plate marked and saved"</string>
+    <string name="GpsOffWarn">"GpsOffWarn"</string>
+    <string name="GpsOffWarnLabel">"Warn GPS Disabled"</string>
+    <string name="GpsOffWarnSummary">"Select to warn frequently when GPS is disabled"</string>
+    <string name="GpsOnly">"Only GPS destinations can be labeled"</string>
+    <string name="GpsTime">"GpsTime"</string>
+    <string name="GpsTimeLabel">"Short GPS Update Period"</string>
+    <string name="GpsTimeSummary">"Select for shorter GPS update period"</string>
+    <string name="Help">"Help"</string>
+    <string name="Hotels">Hotels</string>
+    <string name="IconHelicopter">"Helicopter Icon"</string>
+    <string name="IconHelicopterLabel">"Helicopter Icon"</string>
+    <string name="IconHelicopterSummary">"Select to make the location icon a helicopter"</string>
+    <string name="Import">Import</string>
+    <string name="ImportAction">Import a check list from a plain text file</string>
+    <string name="ImportActionFilePath">File path and name</string>
+    <string name="Inactive">"Inactive"</string>
+    <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
+    <string name="Init">"Initializing"</string>
+    <string name="InstallPDF">"To see the diagram, go to Google Play Store, and install a PDF viewer"</string>
+    <string name="Instrumentation">"Instrumentation"</string>
+    <string name="InternalGpsStatus">Internal GPS Status</string>
+    <string name="InvalidPoint">"Invalid Point specified."</string>
+    <string name="InvalidText">Invalid text entered</string>
+    <string name="Label">"Label"</string>
+    <string name="Last">"Last"</string>
+    <string name="Lat">"Lat"</string>
+    <string name="LatitudeLongitude">Latitude,Longitude</string>
+    <string name="LeaveRunning">"Leave Running"</string>
+    <string name="LeaveRunningLabel">"Leave Running"</string>
+    <string name="LeaveRunningSummary">"Select to pause the application on Exit (instead of a complete exit)"</string>
+    <string name="Left">"Left"</string>
+    <string name="List">List</string>
+    <string name="Load">"Load"</string>
+    <string name="LoadReverse">"Reverse Load"</string>
+    <string name="LoadingMaps">"Loading Charts"</string>
+    <string name="Locked">Locked</string>
+    <string name="Lon">"Lon"</string>
+    <string name="Main">"Map"</string>
+    <string name="MapSize">Map Size</string>
+    <string name="Maps">"Maps"</string>
+    <string name="MapsLabel">"Charts Storage Folder"</string>
+    <string name="MapsSummary">"Location where charts are stored"</string>
+    <string name="MissingMaps">"Download charts for this area"</string>
+    <string name="Navigate">"Navigate"</string>
+    <string name="Near">"Near"</string>
+    <string name="NearSummary">"Nearest airport information and navigation data."</string>
+    <string name="Nearest">"Nearest"</string>
+    <string name="Nearest100LL">"Nearest\n100LL"</string>
+    <string name="Nearest2000">"Nearest\n2000'"</string>
+    <string name="Nearest4000">"Nearest\n4000'"</string>
+    <string name="Nearest6000">"Nearest\n6000'"</string>
+    <string name="Next">"Next"</string>
+    <string name="NightMode">"Night Mode"</string>
+    <string name="NightModeLabel">"Night Mode"</string>
+    <string name="NightModeSummary">"Select to reduce white light during night operation (requires restart)"</string>
+    <string name="No">"No"</string>
+    <string name="NorthUp">"North Up"</string>
+    <string name="NotAvailable">"Not available"</string>
+    <string name="NotGlideRange">"Not in glide range"</string>
+    <string name="NotTagged">"The plate is not tagged. Please tag it first."</string>
+    <string name="OK">"OK"</string>
+    <string name="Obstacles">"Obstacles"</string>
+    <string name="ObstaclesLabel">"Show Obstacles"</string>
+    <string name="ObstaclesSummary">"Show obstacles near the aircraft"</string>
+    <string name="OrientationP">"OrientationP"</string>
+    <string name="OrientationPLabel">"Screen Orientation"</string>
+    <string name="OrientationPSummary">"Select a screen orientation"</string>
+    <string name="Pan">"Pan"</string>
+    <string name="Plan">"Plan"</string>
+    <string name="PlanDestinationNF">"Some way points not found."</string>
+    <string name="PlanNoset">" not added to the plan"</string>
+    <string name="PlanPrompt">"Enter waypoints of plan e.g. KLAX KSBA GVO"</string>
+    <string name="PlanSet">" added to the plan"</string>
+    <string name="PlanSummary">"Flight plan creation and management."</string>
+    <string name="PlanWarning">"Clear the current plan "</string>
+    <string name="Plates">"Plate"</string>
+    <string name="PlatesNF">"No plates available for this destination"</string>
+    <string name="PlatesSummary">"Approach/Departure Plates and Airport diagrams."</string>
+    <string name="PointName">"Name of point"</string>
+    <string name="PointNotFound">"The Point is not found, please verify that the point type and its name matches the point on the plate."</string>
+    <string name="PointsTooClose">"Points too close to each other"</string>
+    <string name="PrivateFolder">Use the default folder</string>
+    <string name="Provider">Location Povider</string>
+    <string name="Radar">NEXRADTransparency</string>
+    <string name="RadarLabel">"NEXRAD Transparency"</string>
+    <string name="RadarSummary">"Select how transparent a NEXRAD overlay should be"</string>
+    <string name="Recent">"Recent"</string>
+    <string name="Report">"Report"</string>
+    <string name="Right">"Right"</string>
+    <string name="Root">"Root"</string>
+    <string name="RootLabel">"Charts Download Server"</string>
+    <string name="RootSummary">"Select a server from which to download charts/data"</string>
+    <string name="Runways">"Runway Extensions"</string>
+    <string name="RunwaysLabel">"Runway Extensions"</string>
+    <string name="RunwaysSummary">"Select to show runway extensions"</string>
+    <string name="Save">"Save"</string>
+    <string name="SavedChecklist">Saved! If you remove Avare, you will lose your saved check lists</string>
+    <string name="SavedLists">Load/Save Lists</string>
+    <string name="SavedPlan">"Load/Save Plans"</string>
+    <string name="ScreenBrightness">Screen Brightness</string>
+    <string name="ScreenOn">"Screen Timeout"</string>
+    <string name="ScreenOnLabel">"Keep Screen On"</string>
+    <string name="ScreenOnSummary">"Select to keep screen on while application is running"</string>
+    <string name="ScreenSize">Screen Size</string>
+    <string name="Search">"Search"</string>
+    <string name="Searching">"Searching for"</string>
+    <string name="SelectOtherPoint">"The selected points are not sufficiently apart. Please select another point, or press clear to re-tag."</string>
+    <string name="SelectPlate">"Select A Plate"</string>
+    <string name="SelectTextFieldTitle">"Select field to display"</string>
+    <string name="Set">"Set"</string>
+    <string name="Settings">"Preferences"</string>
+    <string name="Share">"Share"</string>
+    <string name="Sharing">"Sharing the info over the Internet . . ."</string>
+    <string name="SharingReport">"Reporting issues with Geo. tag information over the Internet . . ."</string>
+    <string name="ShowCDILabel">"Show CDI/VDI"</string>
+    <string name="ShowCDISummary">"Display the course/vertical deviation indicators on the screen"</string>
+    <string name="ShowTrack">"ShowTrack"</string>
+    <string name="ShowTrackLabel">"Destination Course Line"</string>
+    <string name="ShowTrackSummary">"Select to show course to destination"</string>
+    <string name="SimulationMode">"Simulation"</string>
+    <string name="SpeedKilometer">kh</string>
+    <string name="SpeedKnot">kt</string>
+    <string name="SpeedMile">mh</string>
+    <string name="StoredPlans">"Stored Plans"</string>
+    <string name="Success">"Success"</string>
+    <string name="TFRReceived">"TFR Received"</string>
+    <string name="TFRs">"TFRs"</string>
+    <string name="TabBarSummary">"Select which tabs to show on the bottom bar. (requires restart)"</string>
+    <string name="TabBarTitle">"Tab Bar Content"</string>
+    <string name="Tag">"Tag"</string>
+    <string name="Tagged">"The plate is now tagged and saved, and should be verified before using."</string>
+    <string name="Time">Current Time</string>
+    <string name="Timer">"Timer"</string>
+    <string name="TimerRingSizeLabel">"Timer Ring Size"</string>
+    <string name="TimerRingSizeSummary">"Select the timer ring size in minutes"</string>
+    <string name="To">"To"</string>
+    <string name="ToTag">"To geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged."</string>
+    <string name="Tools">Tools</string>
+    <string name="Total">"Total"</string>
+    <string name="TrackUp">"Track Up"</string>
+    <string name="TracksOff">Tracks Off</string>
+    <string name="TracksOn">Tracks On</string>
+    <string name="Trip">Trip</string>
+    <string name="TripSummary">"Travel display."</string>
+    <string name="TrkUpdAllow">TrkUpdAllow</string>
+    <string name="TrkUpdAllowLabel">"Enable Tracking"</string>
+    <string name="TrkUpdAllowSummary">"Select to allow position tracking to be recorded."</string>
+    <string name="TrkUpdShowHistory">TrkUpdShowHistory</string>
+    <string name="TrkUpdShowHistoryLabel">"Track History"</string>
+    <string name="TrkUpdShowHistorySummary">"Select to display the flight path track on the active chart"</string>
+    <string name="UDWDescription">"User Defined Waypoint"</string>
+    <string name="UDWLabel">"User Defined Waypoints/Plans"</string>
+    <string name="UDWLocation">"UDWLocation"</string>
+    <string name="UDWSearch">User defined waypoint/plans files are found in: </string>
+    <string name="UDWSummary">"Select the directory where user defined waypoint files/plans are stored."</string>
+    <string name="Understand">"I Understand"</string>
+    <string name="UnitKilometer">km</string>
+    <string name="UnitKnot">kt</string>
+    <string name="UnitMile">mi</string>
+    <string name="Units">"Distance Unit"</string>
+    <string name="UnitsLabel">"Distance Unit"</string>
+    <string name="UnitsSummary">"Select distance unit"</string>
+    <string name="Up">Up</string>
+    <string name="UseDynamicFieldsLabel">"Use Dynamic Fields"</string>
+    <string name="UseDynamicFieldsSummary">"Allow the top two text lines can be configured dynamically"</string>
+    <string name="ValidDest">"Enter a valid destination first"</string>
+    <string name="Verify">"Verify"</string>
+    <string name="VerifyMessage">"If the cross hair appears over the point to verify, the plate is correctly tagged"</string>
+    <string name="VsFpm">fpm</string>
+    <string name="WX">"WX"</string>
+    <string name="WXSummary">"Weather briefing for local, destination or route."</string>
+    <string name="WarningMsg">"USE AT YOUR OWN RISK!"</string>
+    <string name="WeatherError">"Could not download weather data"</string>
+    <string name="WeatherPlan">"Load a plan and press Update to get the latest route weather"</string>
+    <string name="XlateWeather">"XlateWeather"</string>
+    <string name="XlateWeatherLabel">"Translate Weather"</string>
+    <string name="XlateWeatherSummary">"Select to translate weather METAR/TAF/PIREP in the WX brief"</string>
+    <string name="Yes">"Yes"</string>
+    <string name="Zero">"0"</string>
+    <string name="accuracy">"Accuracy ft."</string>
+    <string name="already_registered">You have already registered your account</string>
+    <string name="already_unregistered">You have already unregistered</string>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/strings_appname.xml -->
+    <eat-comment />
+
+    <string name="app_name">"Avare"</string>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/strings.xml -->
+    <eat-comment />
+
+    <string name="calibratethis">"Geo Tag this point"</string>
+    <string name="databases">"Databases (Required)"</string>
+    <string name="degree">"\u00B0"</string>
+    <string name="desc">"Image/Chart"</string>
+    <string name="download">"Download"</string>
+    <string name="error">Error</string>
+    <string name="error_email">Please register a Gmail account before activating</string>
+    <string name="error_internet">Please connect to a working Internet connection</string>
+    <string name="externalGps">GPSExternalOrInternal</string>
+    <string name="externalGpsLabel">GPS Position Source</string>
+    <string name="externalGpsSummary">Select the source of GPS position data</string>
+    <string name="failed_register">Failed to register!</string>
+    <string name="failed_unregister">Failed to unregister!</string>
+    <string name="folderHelp">If this is not the correct SD card folder, then create a folder in root of SD card named Android/data/com.ds.avare, and select it from here</string>
+    <string name="gt_sign">></string>
+    <string name="latitude">"'N"</string>
+    <string name="listitem">Check list action item</string>
+    <string name="longitude">"'W"</string>
+    <string name="lt_sign">&lt;</string>
+    <string name="no">No</string>
+    <string name="noZoomIn">"Cannot zoom in further"</string>
+    <string name="noZoomOut">"Cannot zoom out further"</string>
+    <string name="online">Edit Account</string>
+    <string name="onlineSummary">Register or unregister your Apps4Av account</string>
+    <string name="prefAppStateCategoryTitle">Application State</string>
+    <string name="prefAutoPostTracks">AutoPostTracks</string>
+    <string name="prefDisplayCategoryTitle">Display</string>
+    <string name="prefDistanceRingType">DistanceRingType</string>
+    <string name="prefGetRowFormats">RowFormats</string>
+    <string name="prefGpsCategoryTitle">GPS</string>
+    <string name="prefLastPlateAirport">LastPlateAirport</string>
+    <string name="prefLastPlateIndex">LastPlateIndex</string>
+    <string name="prefOdometer">Odometer</string>
+    <string name="prefShowCDI">ShowCDI</string>
+    <string name="prefStorageAndDownloadsCategoryTitle">Storage and Downloads</string>
+    <string name="prefTabAFD">"prefTabAFD"</string>
+    <string name="prefTabChecklist">"prefTabChecklist"</string>
+    <string name="prefTabFind">"prefTabFind"</string>
+    <string name="prefTabNear">"prefTabNear"</string>
+    <string name="prefTabPlan">"prefTabPlan"</string>
+    <string name="prefTabPlates">"prefTabPlates"</string>
+    <string name="prefTabTools">"prefTabTools"</string>
+    <string name="prefTabTrip">"prefTabTrip"</string>
+    <string name="prefTabWX">"prefTabWX"</string>
+    <string name="prefTimerRingSize">TimerRingSize</string>
+    <string name="prefTracksCategoryTitle">Flight Tracking</string>
+    <string name="prefUseDynamicFields">UseDynamicFields</string>
+    <string name="prefWeatherCategoryTitle">Weather</string>
+    <string name="register">Register</string>
+    <string name="register_msg">Thank you for installing Avare.\nThe development team for the free Avare aviation app is dedicated to empowering pilots with helpful free, open source, ad-free, and safe tools.  To that end we have decided to require anonymous Registration of users in order to:\n\n1. Advise users immediately in the event we discover any errors in the app or in the FAA materials we process and provide to our users at no charge.\n\n2. Begin offering additional features useful to pilots, such as local airport info and attractions provided by pilots.\n\n3. Enable the potential for future features such as direct anonymous but verified communication between users or devices such as sharing Waypoints, Tracks, and Plans.\n\n4. Ensure that you assume all liability for your use of our free tools more conveniently, without the need to click an agreement at every launch of Avare.\n\nThe next screen provides more details on our Privacy Policy, and another opportunity to decline Registration.\nPlease press the Register button to continue.</string>
+    <string name="registered">You have now registered! Please press the back button to start using the application. You must first download the Databases (Required) from the Download menu. To see the detailed maps, please download the charts for the area you are interested in.</string>
+    <string name="registering_server">Registering with the Apps4Av servers</string>
+    <string name="rubberBand">RubberBand</string>
+    <string name="rubberBandLabel">Use Rubber Banding</string>
+    <string name="rubberBandSummary">Select to use rubber banding on flight plan route</string>
+    <string name="title_activity_main">"Avare"</string>
+    <string name="unregister">Unregister</string>
+    <string name="unregistered">You have now unregistered!</string>
+    <string name="unregistering_server">Unregistering from the Apps4Av servers</string>
+    <string name="update">"Update"</string>
+    <string name="weather">"Weather"</string>
+    <string name="yes">Yes</string>
+    <!-- From: file:/Users/elyseturner/GitHub/avare/app/src/main/res/values/styles.xml -->
+    <eat-comment />
+
+    <style name="AppTheme" parent="android:Theme.Light" />
+
+</resources>
