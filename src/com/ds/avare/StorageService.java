@@ -13,10 +13,14 @@ package com.ds.avare;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.cap.Boundaries;
+import com.ds.avare.cap.CapChartFetcher;
+import com.ds.avare.cap.Chart;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
@@ -35,6 +39,7 @@ import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
+import com.ds.avare.position.Origin;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.ElevationTile;
@@ -241,6 +246,7 @@ public class StorageService extends Service {
     
     // Timer for switching fuel tanks
     private FuelTimer mFuelTimer;
+	private CapChartFetcher mCapChartFetcher;
     
     
     /**
@@ -290,6 +296,8 @@ public class StorageService extends Service {
          * All tiles
          */
         mTiles = new TileMap(getApplicationContext());
+        
+        mCapChartFetcher = new CapChartFetcher();
           
         mInternetWeatherCache = new InternetWeatherCache();
         mInternetWeatherCache.parse(this);
@@ -1111,4 +1119,16 @@ public class StorageService extends Service {
     public FuelTimer getFuelTimer() {
     	return mFuelTimer;
     }
+
+	public List<Chart> getCapCharts(Origin origin) {
+		LinkedList<Chart> charts = mCapChartFetcher.getCharts();
+		LinkedList<Chart> returnedCharts = new LinkedList<Chart>();
+		for (Chart chart : charts) {
+			if (Boundaries.isOriginWithinSubject(origin, chart)) {
+				returnedCharts.add(chart);
+			}
+		}
+		
+		return returnedCharts;
+	}
 }

@@ -17,6 +17,8 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.cap.Chart;
+import com.ds.avare.cap.Grid;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
@@ -292,6 +294,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTileDrawTask = new TileDrawTask();
         mTileDrawThread = new Thread(mTileDrawTask);
         mTileDrawThread.start();
+        
         mElevationTask = new ElevationTask();
         mElevationThread = new Thread(mElevationTask);
         mElevationLastRun = System.currentTimeMillis();
@@ -764,6 +767,37 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
     }
+    
+    private void drawCapGrids(Canvas canvas) {
+    	if (mPref.showCAPGrids() && mScale.getMacroFactor() < 2) {
+	    	List<Chart> charts = null;
+	    	if (mService != null) {
+	    		// Get charts
+	    		charts = mService.getCapCharts(mOrigin);
+	    	}
+	    	
+	    	if (charts != null && charts.size() > 0) {
+	    		List<Grid> grids = null;
+	    		for (Chart chart : charts) {
+	    			grids = chart.getGrids();
+	    			
+	    			if (grids.size() > 0) {
+	    				mPaint.setColor(Color.RED);
+	    		        mPaint.setStrokeWidth(3 * mDipToPix);
+	    		        mPaint.setShadowLayer(0, 0, 0, 0);
+	    			
+		    			for (Grid grid : grids) {
+		    				if (grid.isWithinBoundaries(mOrigin)) {
+		    					mService.getShadowedText().draw(canvas, mPaint, grid.getLabel(), Color.GRAY, grid.getTextX(mOrigin), grid.getTextY(mOrigin));
+		    		    		
+		    		    		grid.getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), false);
+		    				}
+		    			}
+	    			}
+	    		}
+	    	}
+    	}
+	}
 
     /**
      * 
@@ -1393,13 +1427,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawRadar(canvas);
         drawDrawing(canvas);
         drawRunways(canvas);
+        drawCapGrids(canvas);
         drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
         drawTracks(canvas);
         drawTrack(canvas);
         drawObstacles(canvas);
-        drawRunways(canvas);
         drawAircraft(canvas);
       	drawUserDefinedWaypoints(canvas);
         
@@ -2255,5 +2289,4 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void zoomOut() {
         mScale.zoomOut();
     }
-
 }
