@@ -88,20 +88,15 @@ public class DrawCapLines {
 
         mPaint.setColor(Color.WHITE);
 
-		if(scale.getMacroFactor() > 3) {
-			// Do not draw text when grid is too small
-			return;
-		}
-
 		// Now draw names of grids
-		for(double lat = latitudeUpper; lat >= latitudeLower; lat -= 0.25) {
-			for(double lon = longitudeLeft; lon <= longitudeRight; lon += 0.25) {
+		for(double lat = latitudeUpper; lat > latitudeLower; lat -= 0.25) {
+			for(double lon = longitudeLeft; lon < longitudeRight; lon += 0.25) {
 				/*
 				 * Along with vertical lines, draw grid name
 				 */
 				String name = CapChartFetcher.getInstance().getMyName(lat, lon);
 		        mService.getShadowedText().draw(canvas, mPaint,
-		        		name, Color.BLACK, (int)origin.getOffsetX(lon), (int)origin.getOffsetY(lat));
+		        		name, Color.BLACK, (int)origin.getOffsetX(lon + 0.125), (int)origin.getOffsetY(lat - 0.125));
 			}
 		}
 	}
@@ -111,7 +106,7 @@ public class DrawCapLines {
 	 * @param in
 	 * @return
 	 */
-	private static double snapToGrid(double in) {
+	private double snapToGrid(double in) {
 		// round to closest 0.25
 		double out = (double)Math.round(in * 4) / 4.0;
 		return (double)Math.round(out * 100) / 100;		

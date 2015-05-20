@@ -17,7 +17,6 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
-import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;

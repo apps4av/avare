@@ -85,6 +85,12 @@ public class CapChartFetcher {
 		return mInstance;
 	}
 
+	/**
+	 * Get the name of CAP grid from the latitude and longitude of top left of the grid
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
 	public String getMyName(double latitude, double longitude) {
 		
 		// Graphics rect increases values in x,y down and to right, but latitude decreases down hence negative sign
