@@ -25,11 +25,8 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Scale;
 import com.ds.avare.utils.Helper;
 
-/***
- * The class that draws cap grid lines, and labels grids 
- */
-
 /**
+ * The class that draws cap grid lines, and labels grids
  * 
  * @author zkhan
  *
@@ -135,7 +132,7 @@ public class DrawCapLines {
 				Chart.makeCapCoordinate(longitude + CapChartFetcher.QUARTER),
 				Chart.makeCapCoordinate(-(latitude - CapChartFetcher.QUARTER)));
 		
-		// Intersect with a chart to find this gird's place
+		// Intersect with a chart to find this grid's place
 		// XXX: Improvement: Instead of intersecting with dozens of charts, make a name, coordinate cache
 		for (Chart chart : mCharts) {
 			Rect ch = chart.getRect();
