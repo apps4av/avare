@@ -17,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.ds.avare.adsb.TrafficCache;
+import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
@@ -223,6 +224,8 @@ public class StorageService extends Service {
     // Distance ring instrument
     private DistanceRings mDistanceRings;
     
+    private DrawCapLines mCap;
+    
 
     private ExternalPlanMgr mExternalPlanMgr;
     
@@ -308,6 +311,8 @@ public class StorageService extends Service {
         mLastPlateIndex = 0;
         mElevTile = new ElevationTile(getApplicationContext());
         mCheckLists = null;
+        
+        mCap = new DrawCapLines(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
         
         mInfoLines = new InfoLines(this);
 
@@ -1111,4 +1116,8 @@ public class StorageService extends Service {
     public FuelTimer getFuelTimer() {
     	return mFuelTimer;
     }
+
+	public DrawCapLines getCap() {
+		return mCap;
+	}
 }

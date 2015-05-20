@@ -202,6 +202,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/GameTFRSummary"
             android:title="@string/GameTFRLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/CAPGrid"
+            android:summary="@string/CAPGridSummary"
+            android:title="@string/CAPGridLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/Runways"
             android:summary="@string/RunwaysSummary"

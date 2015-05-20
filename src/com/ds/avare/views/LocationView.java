@@ -17,6 +17,7 @@ import java.util.List;
 
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
@@ -1348,6 +1349,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
     }
 
+    // Display cap grids
+    private void drawCapGrids(Canvas canvas) {
+        if(mService != null && mPointProjection == null && mPref.showCAPGrids()) {
+        	mService.getCap().draw(canvas, mOrigin, mScale);
+        }
+    }
+
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
         if(mService != null) {
@@ -1392,7 +1400,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawNexrad(canvas);
         drawRadar(canvas);
         drawDrawing(canvas);
-        drawRunways(canvas);
+        drawCapGrids(canvas);
         drawTraffic(canvas);
         drawTFR(canvas);
         drawAirSigMet(canvas);
