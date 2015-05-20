@@ -34,3 +34,4 @@ More Features:
 * Press any two points on chart for approximate distance between them.
 * Location icon can be centered or track from your placement on screen.
 * GPS compass direction, Bearing, and Distance to and FROM any point on the map by long-pressing one finger on that point. Great for your ATC and CTAF radio calls.
+* Built in CAP (Civil Air Patrol) conventional grid system.

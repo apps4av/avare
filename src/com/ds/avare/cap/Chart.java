@@ -11,23 +11,31 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.cap;
 
-
 import android.graphics.Rect;
 
 import com.ds.avare.position.Coordinate;
 
 /**
+ * Represents a model of the CAP grid system for a particular sectional chart.
+ * 
  * @author postalservice14, zkhan
  *
  */
 public class Chart {
 	
+	/**
+	 * Sectional identifier.
+	 */
 	private String mIdentifier;
+	
+	/**
+	 * Rectangular region this chart spans.
+	 */
 	private Rect mRect;
 	
 	/**
 	 * This will init the chart class
-	 * @param identifier
+	 * @param identifier Sectional identifier
 	 * @param northWestLimit
 	 * @param southEastLimit
 	 */
@@ -43,7 +51,7 @@ public class Chart {
 
 	/**
 	 * 
-	 * @return
+	 * @return Sectional identifier
 	 */
 	public String getIdentifier() {
 		return mIdentifier;
@@ -51,7 +59,7 @@ public class Chart {
 
 	/**
 	 * 
-	 * @return
+	 * @return Rectangular region this chart spans
 	 */
 	public Rect getRect() {
 		return mRect;

@@ -16,13 +16,11 @@ import java.util.LinkedList;
 import com.ds.avare.position.Coordinate;
 
 /**
- * @author postalservice14, zkhan
- *
- */
-
-/**
  * Class to fetch CAP Chart data.  Currently, it's hard-coded, but someday, this may be pulled
  * out into a data file.
+ * 
+ * @author postalservice14, zkhan
+ *
  */
 public class CapChartFetcher {
 	
