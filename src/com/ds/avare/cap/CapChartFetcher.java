@@ -26,7 +26,7 @@ import com.ds.avare.position.Coordinate;
  */
 public class CapChartFetcher {
 	
-	// 15 seconds, quarter minute
+	// 15 minute, quarter degree
 	public static final double QUARTER = 0.25;
 	
 	private LinkedList<Chart> mCharts;
