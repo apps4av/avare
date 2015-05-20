@@ -63,6 +63,6 @@ public class Chart {
 	 */
 	public static int makeCapCoordinate(double coord) {
 		// Everything in CAP works in 0.25 or 4 multiples
-		return (int)Math.round(coord * 4);
+		return (int)Math.round(coord / CapChartFetcher.QUARTER);
 	}
 }

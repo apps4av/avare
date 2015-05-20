@@ -13,8 +13,6 @@ package com.ds.avare.cap;
 
 import java.util.LinkedList;
 
-import android.graphics.Rect;
-
 import com.ds.avare.position.Coordinate;
 
 /**
@@ -27,6 +25,9 @@ import com.ds.avare.position.Coordinate;
  * out into a data file.
  */
 public class CapChartFetcher {
+	
+	// 15 seconds, quarter minute
+	public static final double QUARTER = 0.25;
 	
 	private LinkedList<Chart> mCharts;
 	private static CapChartFetcher mInstance;
@@ -86,43 +87,10 @@ public class CapChartFetcher {
 	}
 
 	/**
-	 * Get the name of CAP grid from the latitude and longitude of top left of the grid
-	 * @param latitude
-	 * @param longitude
+	 * Get charts and their boundaries
 	 * @return
 	 */
-	public String getMyName(double latitude, double longitude) {
-		
-		// Graphics rect increases values in x,y down and to right, but latitude decreases down hence negative sign
-		Rect grid = new Rect(
-				Chart.makeCapCoordinate(longitude),
-				Chart.makeCapCoordinate(-latitude),
-				Chart.makeCapCoordinate(longitude + 0.25),
-				Chart.makeCapCoordinate(-(latitude - 0.25)));
-
-		// Intersect with a chart to find this gird's place
-		for (Chart chart : mCharts) {
-			Rect ch = chart.getRect();
-			if(Rect.intersects(grid, ch)) {
-				
-				/*
-				 * Found chart it lies on. Now find the grid
-				 */
-				String name = chart.getIdentifier();
-				
-				/*
-				 * Now find index
-				 */
-				int distx = Math.abs(chart.getRect().left - grid.left);
-				int disty = Math.abs(chart.getRect().top - grid.top);
-
-				// This is how many sections in one row
-				int xdivs = Math.abs(chart.getRect().left - chart.getRect().right);
-				
-				// Join to form the name
-				return name + (disty * xdivs + distx + 1);
-			}
-		}
-		return "";
+	public LinkedList<Chart> getCharts() {
+		return mCharts;
 	}
 }

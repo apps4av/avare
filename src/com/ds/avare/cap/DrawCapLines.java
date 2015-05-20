@@ -11,11 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.cap;
 
+import java.util.LinkedList;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Paint.Style;
 
 import com.ds.avare.StorageService;
@@ -36,6 +39,8 @@ public class DrawCapLines {
 
     private Paint mPaint;
     private StorageService mService;
+	LinkedList<Chart> mCharts;
+
 
     /*
      * Setup paint and styles to draw
@@ -47,7 +52,10 @@ public class DrawCapLines {
         mPaint.setStyle(Style.FILL);
         mPaint.setStrokeWidth(Helper.getDpiToPix(context) * 2);
     	mPaint.setAntiAlias(true);
-    	mPaint.setPathEffect(new DashPathEffect(new float[] {10,20}, 0));
+    	mPaint.setPathEffect(new DashPathEffect(new float[] {10, 20}, 0));
+    	
+    	// Get charts from static list
+    	mCharts = CapChartFetcher.getInstance().getCharts();
 	}
 
 	/*
@@ -57,15 +65,15 @@ public class DrawCapLines {
 		
 		/*
 		 * 
-		 * For speed, draw no more than 16 grid sections
+		 * For speed, draw no more than 16 grid sections 4x4 (2x2 X 2x2)
 		 */
 		double latitudeCenter = origin.getLatitudeCenter();
 		double longitudeCenter = origin.getLongitudeCenter();
 				
-		double latitudeUpper = snapToGrid(latitudeCenter + 0.5);
-		double latitudeLower = snapToGrid(latitudeCenter - 0.5);
-		double longitudeLeft = snapToGrid(longitudeCenter - 0.5);
-		double longitudeRight = snapToGrid(longitudeCenter + 0.5);
+		double latitudeUpper = snapToGrid(latitudeCenter + CapChartFetcher.QUARTER * 2);
+		double latitudeLower = snapToGrid(latitudeCenter - CapChartFetcher.QUARTER * 2);
+		double longitudeLeft = snapToGrid(longitudeCenter - CapChartFetcher.QUARTER * 2);
+		double longitudeRight = snapToGrid(longitudeCenter + CapChartFetcher.QUARTER * 2);
 
 		// dashed line
     	mPaint.setColor(Color.BLUE);
@@ -73,7 +81,7 @@ public class DrawCapLines {
 		// draw horizontal lines along latitude in increments of 0.25
 		int x0 = (int)origin.getOffsetX(longitudeLeft);
 		int x1 = (int)origin.getOffsetX(longitudeRight);
-		for(double lat = latitudeUpper; lat >= latitudeLower; lat -= 0.25) {
+		for(double lat = latitudeUpper; lat >= latitudeLower; lat -= CapChartFetcher.QUARTER) {
 			int y = (int)origin.getOffsetY(lat); 
 			canvas.drawLine(x0, y , x1, y, mPaint);
 		}
@@ -81,7 +89,7 @@ public class DrawCapLines {
 		// draw vertical lines along longitude in increments of 0.25
 		int y0 = (int)origin.getOffsetY(latitudeUpper);
 		int y1 = (int)origin.getOffsetY(latitudeLower);
-		for(double lon = longitudeLeft; lon <= longitudeRight; lon += 0.25) {
+		for(double lon = longitudeLeft; lon <= longitudeRight; lon += CapChartFetcher.QUARTER) {
 			int x = (int)origin.getOffsetX(lon); 
 			canvas.drawLine(x, y0 , x, y1, mPaint);
 		}
@@ -89,14 +97,16 @@ public class DrawCapLines {
         mPaint.setColor(Color.WHITE);
 
 		// Now draw names of grids
-		for(double lat = latitudeUpper; lat > latitudeLower; lat -= 0.25) {
-			for(double lon = longitudeLeft; lon < longitudeRight; lon += 0.25) {
+		for(double lat = latitudeUpper; lat > latitudeLower; lat -= CapChartFetcher.QUARTER) {
+			for(double lon = longitudeLeft; lon < longitudeRight; lon += CapChartFetcher.QUARTER) {
 				/*
 				 * Along with vertical lines, draw grid name
 				 */
-				String name = CapChartFetcher.getInstance().getMyName(lat, lon);
+				String name = getGridName(lat, lon);
 		        mService.getShadowedText().draw(canvas, mPaint,
-		        		name, Color.BLACK, (int)origin.getOffsetX(lon + 0.125), (int)origin.getOffsetY(lat - 0.125));
+		        		name, Color.BLACK, 
+		        		(int)origin.getOffsetX(lon + CapChartFetcher.QUARTER / 2), 
+		        		(int)origin.getOffsetY(lat - CapChartFetcher.QUARTER / 2));
 			}
 		}
 	}
@@ -108,8 +118,49 @@ public class DrawCapLines {
 	 */
 	private double snapToGrid(double in) {
 		// round to closest 0.25
-		double out = (double)Math.round(in * 4) / 4.0;
+		double out = (double)Math.round(in / CapChartFetcher.QUARTER) * CapChartFetcher.QUARTER;
 		return (double)Math.round(out * 100) / 100;		
+	}
+
+	/**
+	 * Get the name of CAP grid from the latitude and longitude of top left of the grid
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
+	public String getGridName(double latitude, double longitude) {
+		
+		// Graphics rect increases values in x,y down and to right, but latitude decreases down hence negative sign
+		Rect grid = new Rect(
+				Chart.makeCapCoordinate(longitude),
+				Chart.makeCapCoordinate(-latitude),
+				Chart.makeCapCoordinate(longitude + CapChartFetcher.QUARTER),
+				Chart.makeCapCoordinate(-(latitude - CapChartFetcher.QUARTER)));
+		
+		// Intersect with a chart to find this gird's place
+		for (Chart chart : mCharts) {
+			Rect ch = chart.getRect();
+			if(Rect.intersects(grid, ch)) {
+				
+				/*
+				 * Found chart it lies on. Now find the grid
+				 */
+				String name = chart.getIdentifier();
+				
+				/*
+				 * Now find index
+				 */
+				int distx = Math.abs(chart.getRect().left - grid.left);
+				int disty = Math.abs(chart.getRect().top - grid.top);
+
+				// This is how many sections in one row
+				int xdivs = Math.abs(chart.getRect().left - chart.getRect().right);
+				
+				// Join to form the name, index of 1
+				return name + (disty * xdivs + distx + 1);
+			}
+		}
+		return "";
 	}
 
 }
