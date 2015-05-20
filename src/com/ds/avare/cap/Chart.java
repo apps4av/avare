@@ -23,9 +23,9 @@ import com.ds.avare.position.Coordinate;
  */
 public class Chart {
 	
-    /**
-     * Sectional identifier.
-     */
+	/**
+	 * Sectional identifier.
+	 */
 	private String mIdentifier;
 	
 	/**
