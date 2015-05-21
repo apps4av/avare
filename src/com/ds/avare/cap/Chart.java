@@ -71,6 +71,6 @@ public class Chart {
 	 */
 	public static int makeCapCoordinate(double coord) {
 		// Everything in CAP works in 0.25 or 4 multiples
-		return (int)Math.round(coord / CapChartFetcher.QUARTER);
+		return (int)Math.round(coord / CapChartFetcher.GRID_SIZE);
 	}
 }
