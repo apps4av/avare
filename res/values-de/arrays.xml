@@ -21,10 +21,10 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>TAC Charts (nur USA)</item>
         <item>WAC Charts (nur USA)</item>
         <item>IFR Low Enroute Charts</item>
-        <item>AD Karten</item>
-        <item>Gelände Karten</item>
-        <item>IFR High Enroute Charts</item>
-        <item>Topographische Karten</item>
+        <item>AD Karten(nur USA)</item>
+        <item>Gelände Karten(nur USA)</item>
+        <item>IFR High Enroute Charts(nur USA)</item>
+        <item>Topographische Karten(nur USA)</item>
         <item>Heli/andere Karten</item>
         <item>IFR Area Charts</item>
         <item>VFR Area Plates</item>
@@ -54,7 +54,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
      
     <string-array name="resNameWeather">
-        <item>Weather</item>
+        <item>Wetter</item>
     </string-array>
         
     <string-array name="resNameAFD">
@@ -98,7 +98,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesWeather">
-        <item>weather</item>
+        <item>Wetter</item>
     </string-array>
         
     <string-array name="resFilesIFRLE">
@@ -139,14 +139,17 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="ChartType">
         <item>Sectional</item>
+        <item>ADN</item>
     </string-array>
 
     <string-array name="ChartTypeValues">
         <item>0</item>
+        <item>1</item>
     </string-array>    
 
     <string-array name="ChartDbNames">
         <item>maps.vfr.db</item>
+        <item>maps.adn.db</item>
     </string-array>    
     
     <string-array name="UnitsD">
@@ -247,7 +250,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 	<string-array name="AutoPostTracksPrompts">
         <item>Keine</item>
-        <item>Sende email</item>
+        <item>Sende e-mail</item>
         <item>Sende an alle Anwendungen</item>
     </string-array>
 
@@ -320,9 +323,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string-array name="DisplayIconPrompt">
         <item>Hochdecker</item>
         <item>Helicopter</item>
-        <item>Entenflügler</item>        
-        <item>Green Aircraft</item>
-        <item>None</item>
+        <item>Entenflügler</item>
+        <item>Ultraleicht</item>
+        <item>Kein</item>
     </string-array>
 	
 	<string-array name="CycleValues">

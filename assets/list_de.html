@@ -84,7 +84,7 @@ td {
 
 </style>
 
-<script type="text/javascript" >
+<script type="text/javascript">
 
 var CELL_TEXT = 0;
 var CELL_LAST = 1;
@@ -313,77 +313,69 @@ window.onload = show_help;
 
 <body>
 	<p>
-		<label id="list_name">List[]</label><br>
-		<button onclick="list_discard()">Delete All</button>
-		<button onclick="list_delete_item()">Delete</button>
+		<label id="list_name">Notizen[]</label><br>
+		<button onclick="list_discard()">Lösche Alles</button>
+		<button onclick="list_delete_item()">Löschen</button>
 		<br></br>
-		<table id="list_table" border="1"><th class="tdhlong">Item</th></table>
+		<table id="list_table" border="1"><th class="tdhlong">Eintrag</th>
+</table>
 		<br>
-		<button onclick="list_moveup_item()">Up</button>
-		<button onclick="list_movedown_item()">Down</button>
+		<button onclick="list_moveup_item()">nach oben</button>
+		<button onclick="list_movedown_item()">nach unten</button>
 		<br></br>
-		<label class="sublabel" >Add To List</label>
+		<label class="sublabel">Zu den Notizen hinzufügen</label>
 		<br>
 		<input id="item_input" placeholder="Mixture Full Rich."></input>
-		<button onclick="add_list_item()">Add</button>
+		<button onclick="add_list_item()">Hinzufügen</button>
 		<br></br>
-		<label class="sublabel" >Import A File</label><br>
+		<label class="sublabel">Eine Datei importieren</label><br>
 		<input id="import_input" placeholder="/sdcard/list.txt"></input>
-		<button onclick="list_import()">Import</button>
+		<button onclick="list_import()">Importieren</button>
 		<br></br>
-		<label class="sublabel" >Save List</label><br>		
-		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
+		<label class="sublabel">Notiz speichern</label><br>		
+		<input id="save_name" placeholder="Current List Name" /></input><button onclick="save_list_add()">Speichern</button>
 		<br>
 	</p>
 	<p>
-		<label>Saved Lists</label><br>
-		<button onclick="save_hide(true)">Show Lists</button><br>
-		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Delete</th></table>
-	</p>
-	<button onclick="show_help()">Show Help</button><br>
-	<a id="help">
-The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off. 
-<br>
-<b>To Create a List Line by Line</b>
+		<label>Gespeicherte Notizen</label><br>
+		<button onclick="save_hide(true)">Zeige Notizen</button><br>
+		<table id="save_table" border="1"><th>Name</th><th>Laden</th><th>Löschen</th>
+</table>
+<button onclick="show_help()">Hilfe  </button><br>
+	
+<a id="help">Dieses Tool ermöglicht die Erstellung von Checklisten. Jeder Eintrag muss einzeln in einer Zeile festgehalten werden. Es können 250 Zeichen pro Zeile und insgesamt 100 Zeilen erstellt werden: alle Zeichen und Zeilen über diese Limit werden verworfen.<br></a><ul>
+
+<b>Eine Checkliste zeilenweise erstellen</b>
 <ul>
-<li>This is not a recommended method for long lists.</li>
-<li>Clear the current list by pressing "Delete All"</li>
-<li>Enter a text item in the "Add To List" box, then press Add. The entered text will appear in the list at the end.</li>
-<li>Touch the added item in the list to move the green bar to it.</li>
-<li>Move the item to the desired sequence by pressing the Up or Down button several times.</li>
-<li>If a wrong item is added by mistake, it can be deleted by touching the item to move the green bar to it, then pressing the Delete button.</li>
+    <li>Diese Methode ist für lange Listen ungeeignet. In diesem Fall empfiehlt es sich diese zu importeiren.</li>
+    <li>Löschen sie die aktuelle Notiz indem sie &quot;Lösche alles&quot; wählen.</li>
+    <li>Erstellen sie einen Eintrag im Feld &quot;Zu den Notizen hinzufügen&quot; und wählen sie anschliesend &quot;Hinzufügen&quot;. Dieser Eintrag wird am Ende der Liste eingefügt.</li>
+    <li>Tippen sie den Eintrag in der Liste an um diesen zu markieren. Ist ein Eintrag markiert wechselt die Farbe zu Grün.</li>
+    <li>Nun kann der markierte Eintrag mit den Button &quot;Nach oben&quot; / &quot;Nach unten&quot; verschoben werden.</li>
+    <li>Möchten sie einen Eintrag löschen, markieren sie diesen und wählen &quot;Löschen&quot;.</li>
+</ul>
+<b>Eine Notiz/Checkliste speichern</b>
+<ul>
+<li>Geben sie im Feld &quot;Liste speichern&quot; einen Dateinamen ein und wählen anschliessend &quot;Speichern&quot; um die Datei abzuspeichern.</li>
+<li>Wählen sie &quot;Zeige Notizen&quot; um zu überprüfen ob&nbsp;die Notiz gespeichert wurde.</li>
 </ul>
 
-<b>To Save a List</b>
+<b>Gespeicherte Notizen öffnen/löschen</b>
 <ul>
-<li>To save a list, enter the name to the left of "Save" button, and press the "Save" Button.</li>
-<li>Press the "Show Lists" button to confirm that the list was saved.</li>
+<li>Wählen sie &quot;Zeige Notizen&quot; um die gespeicherten Notizen anzuzeigen. Ein erneutes tippen auf &quot;Zeige Notizen&quot; blendet die Notizen aus.</li>
+<li>Wählen sie &quot;Laden&quot; um die Notiz zu öffnen.</li>
+<li>Wählne sie &quot;Löschen&quot; um die Notiz zu löschen.</li>
 </ul>
 
-<b>To Load/Delete a Saved List</b>
+<b>Notizen aus eine Datei importieren</b>
 <ul>
-<li>Press the "Show Lists" button to show the saved lists. Note: The same button can be pressed to hide the saved lists.</li>
-<li>Press the "Load" button to load the list.</li>
-<li>You can delete a saved list by pressing the "Delete" button to the right of its name in the Saved Lists list.</li>
+<li>Es empfiehlt sich lange Listen zu importieren.</li>
+<li>Erstellen sie am PC eine Liste im TXT Format.</li>
+<li>Speichern sie die Datei in ihrem Gerät in einem Ordner welcher für alle Anwendungen zugänglich ist, z.B. /sdcard/Download, indem sie ihr Gerät via USB oder BT mit dem Computer verbinden.</li>
+        <li>En Geben sie im Feld &quot;Notiz importieren&quot; den Dateipfad samt Dateiname ein um die Datei zu importieren, z.B. &nbsp;/sdcard/Download/meineliste.txt und wählen anschlissend &quot;Importieren&quot;. Je nach Grösse der zu importierenden Datei kann diese eine Weile dauern. </li>
 </ul>
 
-<b>To Import a List from a File</b>
-<ul>
-<li>A long list can be entered in a single action by importing it from disk.</li>
-<li>Get the list prepared on the PC in text format.</li>
-<li>Put the list on your device in an every-application-accessible folder like /sdcard/Download, using PC-device USB connection.</li>
-<li>Enter the name/path of the file in "Import a List" box, for example /sdcard/Download/mylist.txt.</li>
-<li>Press the Import button.</li>
-<li>Be patient as the import can take up to a minute depending on the file size, and your device's capabilities.</li>
-<li>The imported list is shown after it is imported.</li>
-</ul>
-
-<b>To Use a List</b>
-<ul>
-<li>Simply press "Previous" and "Next" buttons to move the green bar to an item under consideration.</li>
-<li>Touch an item in the list to move the green bar to it. This is useful for skipping steps.</li>
-</ul>
-	</a>
+<b><font color="black">T</font></b>	
 	
 </body>
 </html>

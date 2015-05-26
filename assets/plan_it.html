@@ -89,7 +89,7 @@ td {
 
 </style>
 
-<script type="text/javascript" >
+<script type="text/javascript">
 
 var CELL_WP = 0;
 var CELL_TYPE = 1;
@@ -102,7 +102,7 @@ var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second
 function loadplan() {
-	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102Â°";
+	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102°";
 	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
@@ -522,7 +522,7 @@ window.onload = show_help;
 		<button onclick="plan_moveup()">Up</button>
 		<button onclick="plan_movedn()">Down</button>
 		<br></br>
-		<label class="sublabel" >Add To Plan</label>
+		<label class="sublabel">Add To Plan</label>
 		<br>
 		<input id="search_input" placeholder="BOS"></input>
 		<button onclick="search_waypoint()">Search</button>
@@ -556,10 +556,10 @@ window.onload = show_help;
 		<table style="border:0">
 		<tr>
 			<td style= "text-align:center">
-				<button id="list_first" onclick="first()"><< First</button>
-				<button id="list_prev" onclick="prev()">< Prev</button>
-				<button id="list_next" onclick="next()">Next ></button>
-				<button id="list_last" onclick="last()">Last >></button>
+				<button id="list_first" onclick="first()">&lt;&lt; First</button>
+				<button id="list_prev" onclick="prev()">&lt; Prev</button>
+				<button id="list_next" onclick="next()">Next &gt;</button>
+				<button id="list_last" onclick="last()">Last &gt;&gt;</button>
 			</td>
 		</tr>
 		<tr><td style="text-align:center" colspan="2" id="plan_count"></td></tr>
@@ -571,16 +571,16 @@ The Plan screen allows you to create and follow a basic flight plan with multipl
 <br>
 <b>To Create a Flight Plan with Single Line Input</b>
 <ul>
-<li>Clear the current plan by pressing "Delete All"</li>
-<li>Enter a sentence of way points, separated by a single space like "KJFK LWM KBOS" in the "Create New Plan" box.</li>
-<li>Press the "Create" button to load the plan.</li>
+<li>Clear the current plan by pressing &quot;Delete All&quot;</li>
+<li>Enter a sentence of way points, separated by a single space like &quot;KJFK LWM KBOS&quot; in the &quot;Create New Plan&quot; box.</li>
+<li>Press the &quot;Create&quot; button to load the plan.</li>
 <li>Any way points not recognized, will be omitted.</li>
 </ul>
 
 <b>To Create a Flight Plan One Way Point at a Time</b>
 <ul>
-<li>Clear the current plan by pressing "Delete All"</li>
-<li>Enter a way point name (e.g. BOS) in the "Add To Plan" box, then press Search. If the point is valid, several options will be presented.</li>
+<li>Clear the current plan by pressing &quot;Delete All&quot;</li>
+<li>Enter a way point name (e.g. BOS) in the &quot;Add To Plan&quot; box, then press Search. If the point is valid, several options will be presented.</li>
 <li>Press Add button to the right of one of the presented options to add it to the end of the plan.</li>
 <li>Touch the added point in the plan to move the green bar to it.</li>
 <li>Move the point to the desired sequence by pressing the Up or Down button several times.</li>
@@ -589,59 +589,59 @@ The Plan screen allows you to create and follow a basic flight plan with multipl
 
 <b>To Save a Plan</b>
 <ul>
-<li>To save a plan, enter the name to the left of "Save" button, and press the "Save" Button. The plan will be added to the plan list. Keep in mind that only 5 at a time are shown and you may have to page ahead to confirm that it was added successfully.</li>
+<li>To save a plan, enter the name to the left of &quot;Save&quot; button, and press the &quot;Save&quot; Button. The plan will be added to the plan list. Keep in mind that only 5 at a time are shown and you may have to page ahead to confirm that it was added successfully.</li>
 </ul>
 
 <b>To Load/Delete a Saved Plan</b>
 <ul>
-<li>Press the "Load" or "Load Rev." button to load the plan in the normal or reverse order.</li>
-<li>You can delete a saved plan by pressing the "Delete" button to the right of its name in the Saved Plans list.</li>
-<li>If you have more plans saved than what can be shown in one list, use the "< Prev" or "Next >" until you find it or enter the partial or full name of the desired plan in the "Plan filter spec" box, then press "Apply Filter" to show it in the list.</li>
+<li>Press the &quot;Load&quot; or &quot;Load Rev.&quot; button to load the plan in the normal or reverse order.</li>
+<li>You can delete a saved plan by pressing the &quot;Delete&quot; button to the right of its name in the Saved Plans list.</li>
+<li>If you have more plans saved than what can be shown in one list, use the &quot;&lt; Prev&quot; or &quot;Next &gt;&quot; until you find it or enter the partial or full name of the desired plan in the &quot;Plan filter spec&quot; box, then press &quot;Apply Filter&quot; to show it in the list.</li>
 </ul>
 
 <b>Saved Plans List</b><br>
 This section contains a list of flight plans that have been saved. They are listed in groups of 5 at a time.<br>
 <ul>
-<li>Use the "< Prev" button to move to the previous page of plans.</li>
-<li>Use the "Next >" button to advance the list to the next page.</li>
-<li>The "<< First" button will list the plans starting at the beginning.</li>
-<li>The "Last >>" button will show the plans at the end of the list.</li>
-<li>Using the "Apply Filter" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
-<li>Pressing "Clear Filter" will clear the filter and refresh the plan list.</li>
-<li>The "Refresh List" button will syncronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
+<li>Use the &quot;&lt; Prev&quot; button to move to the previous page of plans.</li>
+<li>Use the &quot;Next &gt;&quot; button to advance the list to the next page.</li>
+<li>The &quot;&lt;&lt; First&quot; button will list the plans starting at the beginning.</li>
+<li>The &quot;Last &gt;&gt;&quot; button will show the plans at the end of the list.</li>
+<li>Using the &quot;Apply Filter&quot; button will use the text entered into the &quot;Plan Filter Spec&quot; area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
+<li>Pressing &quot;Clear Filter&quot; will clear the filter and refresh the plan list.</li>
+<li>The &quot;Refresh List&quot; button will syncronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
 </ul>
 
 <b>To Create a Flight Plan from Find Screen</b>
 <ul>
 <li>The Find screen can find cities, Geo. coordinates, addresses, and much more</li>
-<li>Go to Find Screen, and enter a location like "JFK" in the Search box</li>
+<li>Go to Find Screen, and enter a location like &quot;JFK&quot; in the Search box</li>
 <li>Several options will be presented that match the word JFK.</li>
 <li>Long Press on the desired option, and some buttons will appear.</li>
-<li>Press the "+Plan" button to add the option to the end of the plan on the Plan screen.</li>
+<li>Press the &quot;+Plan&quot; button to add the option to the end of the plan on the Plan screen.</li>
 <li>Follow the procedure -One Way Point at a Time- above to move the added way point to the desired location in the plan.</li>
 </ul>
 
 <b>To Create a Flight Plan from Map Screen</b>
 <ul>
 <li>Go to Map Screen, and long press anywhere on the map.</li>
-<li>A pop out will present "+Plan" button. Press the button to add the touched location in the plan on the Plan screen.</li>
+<li>A pop out will present &quot;+Plan&quot; button. Press the button to add the touched location in the plan on the Plan screen.</li>
 <li>Follow the procedure -One Way Point at a Time- above to move the added location to the desired location in the plan.</li>
 </ul>
 
 <b>To Simulate a Plan</b>
 <ul>
 <li>You can simulate a plan and show total distance from first way point point to the last way point.</li>
-<li>On the Map screen, press "Navigate" button on the right side slide out buttons to make it "Simulation"</li>
-<li>Go to Plan screen, and press the "Activate" button. Total distance of the plan will be shown in the Total row.</li>
+<li>On the Map screen, press &quot;Navigate&quot; button on the right side slide out buttons to make it &quot;Simulation&quot;</li>
+<li>Go to Plan screen, and press the &quot;Activate&quot; button. Total distance of the plan will be shown in the Total row.</li>
 <li>Move back to the Map screen to see the plan route in magenta.</li>
 <li>Since there is no ground speed detected, ETE time will not be shown.</li>
 </ul>
 
 <b>To Fly a Plan</b>
 <ul>
-<li>On the Map screen, press make sure that the "Navigate"/"Simulation" slide out button is in the "Navigate" state.</li>
-<li>Go to Plan screen, press the "Next"/"Previous" buttons to move the green bar to the second way point in the plan. Note: The first way point should be your departure airport.</li>
-<li>Press the "Inactive" button to make it "Active".</li>
+<li>On the Map screen, press make sure that the &quot;Navigate&quot;/&quot;Simulation&quot; slide out button is in the &quot;Navigate&quot; state.</li>
+<li>Go to Plan screen, press the &quot;Next&quot;/&quot;Previous&quot; buttons to move the green bar to the second way point in the plan. Note: The first way point should be your departure airport.</li>
+<li>Press the &quot;Inactive&quot; button to make it &quot;Active&quot;.</li>
 <li>The distance remaining, bearing to the next way point, and ETE will be shown in the Total row when the plane is moving.</li>
 <li>Move back to the Map screen to see the plan route in magenta.</li>
 </ul>
@@ -657,12 +657,12 @@ This section contains a list of flight plans that have been saved. They are list
 <ul>
 <li>Sequencing is on by default when the plan is active.</li>
 <li>If you pass within a certain distance of a way point that is selected by the green bar, the green bar will move to the next way point.</li>
-<li>If like to skip a way point, press the "Next" button to manually move the green bar to the next way point.</li>
+<li>If like to skip a way point, press the &quot;Next&quot; button to manually move the green bar to the next way point.</li>
 </ul>
  
 <b>De-activating a Flight Plan</b>
 <ul>
-<li>You can de-activate a flight by pressing "Active" button to make it "Inactive".</li>
+<li>You can de-activate a flight by pressing &quot;Active&quot; button to make it &quot;Inactive&quot;.</li>
 <li>Magenta on the map will disappear.</li>
 <li>If you choose to fly direct to a destination by choosing any direct functions from other screens, the plan will auto de-activate.</li>
 </ul>
@@ -672,7 +672,7 @@ This section contains a list of flight plans that have been saved. They are list
 <li>Once a plan is entered, you can get the latest weather for that plan area.</li>
 <li>Enter a plan with at least two points, at least one of which is an airport.</li>
 <li>Make sure you are connected to the Internet.</li>
-<li>Press the "Get Weather" button.</li>
+<li>Press the &quot;Get Weather&quot; button.</li>
 <li>You may be asked to choose an application. You must choose the browser. After a few seconds, the weather will shown in the browser window.</li>
 </ul>
 
