@@ -860,7 +860,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
 	<string-array name="TimerRingSizeValues">
         <item>0</item>
-        <item>1</item>
+        <item>2</item>
         <item>5</item>
         <item>10</item>
     </string-array>
