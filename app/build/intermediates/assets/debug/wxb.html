@@ -1,0 +1,591 @@
+<html>
+
+<head>
+
+
+<style>
+
+body {
+	color : #FFFFFF;
+	width: 800px;
+	background: #000000;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+label {
+	color : #FF0000;
+	font-weight: bold; /* Make sure they're bold */
+	font-size : 20px;
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+}
+
+input {
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width:200px;
+}
+
+p {
+	border: solid green;
+	border-radius: 1em;
+	width: 800px;
+	padding: 5px;
+}
+
+table { 
+	color: #333; /* Lighten up font color */
+	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+	width: 800px;
+	border-collapse: collapse; 
+	border-spacing: 0; 
+}
+ 
+button {
+	width: 100px;
+} 
+ 
+td, th { 
+	color : #FFFFFF;
+	border: 1px solid #CCC;
+	height: 30px; 
+	width: 110px;
+	padding: 5px;
+} /* Make cells a bit taller */
+ 
+th {
+	background: #222222; /* Light grey background */
+	font-weight: bold; /* Make sure they're bold */
+}
+ 
+td {
+	background: #111111; /* Lighter grey background */
+	text-align: left; /* Left our text */
+}
+
+.halfbutton {
+	width: 50px; // For two buttons in one row
+}
+
+.halfinput {
+	width : 100px;
+}
+
+.fullinput {
+	width : 200px;
+}
+
+
+.sublabel {
+	font-size : 15px;
+	color : #00FF00;
+}
+
+</style>
+
+<script type='text/javascript' >
+
+// set the table for faa plans
+//>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
+var CELL_FAA_NAME = 0;
+var CELL_FAA_STATE = 1;
+var CELL_FAA_LAST = 2;
+function set_faa_plans(plan) {
+	var plans = plan.split(",");
+	
+	// delete the table
+	var faa_plan_save = document.getElementById("save_table_faa");
+	for(var row = faa_plan_save.rows.length - 1; row >= 1; row--) {
+			faa_plan_save.deleteRow(row);
+	}
+
+	// add all rows
+	var count = 0;
+	for(var r = 0; r < plans.length - 3; r += 3) {
+		var row = faa_plan_save.insertRow(-1);
+		var cell = [];
+
+		// Insert new cells (<td> elements) at the positions of the "new" <tr> element:
+		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
+		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
+		
+		cell[CELL_FAA_NAME].textContent = plans[r + 1];
+		cell[CELL_FAA_STATE].textContent = plans[r + 2];
+		
+		var next = plans[r];
+		if(next == "1") {
+			cell[CELL_FAA_NAME].style.backgroundColor = "green";
+		}
+		else {
+			cell[CELL_FAA_NAME].style.backgroundColor = "#111111";
+		}
+
+		// set onclick on row
+		row.onclick = (function() {
+      	var currentI = count;
+      	return function() {
+         	onclick_row(currentI);
+      	}
+   	})();
+   	
+   	count++;
+	}
+}
+
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidWeather.moveTo(row);
+}
+
+// Set email
+function set_email(email) {
+	document.getElementById("email_id").innerHTML = "<b>" + email + "<b>";
+}
+
+// State change of plan like active
+function plan_state_change(row, action) {
+	var r = confirm("Do you want to " + action + " the plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState(row, action);
+}
+
+
+// Set aircraft color
+function move_select_color(color) {
+	var colors = color.split("/");
+	
+	var sel1 = document.getElementById("aircraft_color_1");
+	for(var i = 0; i < sel1.length; i++) {
+		if(colors[0] == sel1.options[i].value) {
+			sel1.selectedIndex = i;
+			break;
+		}	
+	}
+
+	var sel2 = document.getElementById("aircraft_color_2");
+	for(var i = 0; i < sel2.length; i++) {
+		if(colors[1] == sel2.options[i].value) {
+			sel2.selectedIndex = i;
+			break;
+		}	
+	}
+
+}
+
+// fill a plan page from stored values
+function plan_fill(
+				flight_rule,
+				aircraft_id,
+				departure_point,
+				destination,
+				departure_date,
+				time_enroute,
+				alternate1,
+				alterante2,
+				aircraft_type,		
+				no_of_aircraft,
+				heavy,
+				aircraft_equip,		
+				true_airspeed,
+				altitude,
+				fuel_onboard,
+				pilot_info,
+				no_onboard,
+				aircraft_color,
+				route,
+				type_flight,				
+				remarks) {
+
+            document.getElementById("flight_rule").value = flight_rule;
+				document.getElementById("aircraft_id").value = aircraft_id;
+				document.getElementById("departure_point").value = departure_point;
+				document.getElementById("destination").value = destination;
+				document.getElementById("departure_date").value = departure_date;
+				document.getElementById("time_enroute").value = time_enroute;
+				document.getElementById("alternate1").value = alternate1;
+				document.getElementById("alterante2").value = alterante2;
+				document.getElementById("aircraft_type").value = aircraft_type;		
+				document.getElementById("no_of_aircraft").value = no_of_aircraft;
+				document.getElementById("heavy").checked = (heavy == "true") ? true : false;
+				document.getElementById("aircraft_equip").value = aircraft_equip;
+				document.getElementById("true_airspeed").value = true_airspeed;
+				document.getElementById("altitude").value = altitude;
+				document.getElementById("fuel_onboard").value = fuel_onboard;
+				document.getElementById("pilot_info").value = pilot_info;
+				document.getElementById("no_onboard").value = no_onboard;
+				move_select_color(aircraft_color);
+				document.getElementById("route").value = route;
+				document.getElementById("type_flight").value = type_flight;				
+				document.getElementById("remarks").value = remarks;
+}
+
+// clear all form values
+function clearall() {
+            document.getElementById("flight_rule").value = "";
+				document.getElementById("aircraft_id").value = "";
+				document.getElementById("departure_point").value = "";
+				document.getElementById("destination").value = "";
+				document.getElementById("departure_date").value = "";
+				document.getElementById("time_enroute").value = "";
+				document.getElementById("alternate1").value = "";
+				document.getElementById("alterante2").value = "";
+				document.getElementById("aircraft_type").value = "";		
+				document.getElementById("no_of_aircraft").value = "";
+				document.getElementById("heavy").checked = false;
+				document.getElementById("aircraft_equip").value = "";
+				document.getElementById("true_airspeed").value = "";
+				document.getElementById("altitude").value = "";
+				document.getElementById("fuel_onboard").value = "";
+				document.getElementById("pilot_info").value = "";
+				document.getElementById("no_onboard").value = "";
+				document.getElementById("aircraft_color").value = "";
+				document.getElementById("route").value = "";
+				document.getElementById("type_flight").value = "";				
+				document.getElementById("remarks").value = "";
+}
+
+// function to call plan_fill
+function autofill() {
+	var r = confirm("Do you want to discard all fields, and let the app fill new ones in the form?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.fillPlan();
+}
+
+
+function show_help() {
+	var help = document.getElementById("help");	
+	if(help.style.display == "none") {
+		help.style.display = "";
+	}
+	else {
+		help.style.display = "none";
+	}
+}
+
+window.onload = show_help;
+
+
+function activate_plan() {
+	var r = confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate the selected plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Activate", document.getElementById("activate_time").value);
+}
+
+function close_plan() {
+	var r = confirm("You are about to close a flight plan with the FAA. Are you sure you want to close the selected plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Close", document.getElementById("close_location").value);
+}
+
+function cancel_plan() {
+	var r = confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel the selected plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.planChangeState("Cancel", "");
+}
+
+// file a plan
+function plan_file() {
+
+	var r = confirm("You are about to file a flight plan with the FAA. Are you sure you want to file this plan?");
+	if(r == false) {
+		return;	
+	}
+
+	AndroidWeather.filePlan(
+				document.getElementById("flight_rule").value,
+				document.getElementById("aircraft_id").value,
+				document.getElementById("departure_point").value,
+				document.getElementById("destination").value,
+				document.getElementById("departure_date").value,
+				document.getElementById("time_enroute").value,
+				document.getElementById("alternate1").value,
+				document.getElementById("alterante2").value,
+				document.getElementById("aircraft_type").value,		
+				document.getElementById("no_of_aircraft").value,
+				document.getElementById("heavy").checked ? "true" : "false",
+				document.getElementById("aircraft_equip").value,		
+				document.getElementById("true_airspeed").value,
+				document.getElementById("altitude").value,
+				document.getElementById("fuel_onboard").value,
+				document.getElementById("pilot_info").value,
+				document.getElementById("no_onboard").value,
+				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
+				document.getElementById("route").value,
+				document.getElementById("type_flight").value,				
+				document.getElementById("remarks").value
+    );
+}
+
+// fetch faa plans from internet 
+function get_faa_plans() {
+	var r = confirm("Do you want to fetch or update your list of FAA filed plans from Internet?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.getPlans();
+}
+
+
+function get_briefing() {
+	var r = confirm("Get the briefing for the selected plan in email?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.getWeather();
+}
+
+function get_navlog() {
+	var r = confirm("Get the navigation log for the selected plan?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.getNavlog();
+}
+
+function load_plan() {
+	var r = confirm("Load the selected plan in the form?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.loadPlan();
+}
+
+function amend_plan() {
+	var r = confirm("Amend the selected plan with information in the form?");
+	if(r == false) {
+		return;	
+	}
+	AndroidWeather.amendPlan(
+				document.getElementById("flight_rule").value,
+				document.getElementById("aircraft_id").value,
+				document.getElementById("departure_point").value,
+				document.getElementById("destination").value,
+				document.getElementById("departure_date").value,
+				document.getElementById("time_enroute").value,
+				document.getElementById("alternate1").value,
+				document.getElementById("alterante2").value,
+				document.getElementById("aircraft_type").value,		
+				document.getElementById("no_of_aircraft").value,
+				document.getElementById("heavy").checked ? "true" : "false",
+				document.getElementById("aircraft_equip").value,		
+				document.getElementById("true_airspeed").value,
+				document.getElementById("altitude").value,
+				document.getElementById("fuel_onboard").value,
+				document.getElementById("pilot_info").value,
+				document.getElementById("no_onboard").value,
+				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
+				document.getElementById("route").value,
+				document.getElementById("type_flight").value,				
+				document.getElementById("remarks").value
+    );
+}
+
+function set_navlog(log) {
+	var navlog = document.getElementById("nav_log");
+	navlog.innerHTML = log;
+}
+
+function clear_navlog(log) {
+	var r = confirm("Clear the navigation log?");
+	if(r == false) {
+		return;	
+	}
+	var navlog = document.getElementById("nav_log");
+	navlog.innerHTML = '';
+}
+
+</script>
+
+</head>
+
+<body>
+	<h1>Filing/Briefing</h1>
+	<label class="sublabel">Warning! You MUST read all information under "Show Help" button below before proceeding.</label><br>
+		<p>
+		<label>File</label><br>
+			<table border="1">
+			<tr>
+				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option></select></td>		
+				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
+				<td>Aircraft Type<br><input class="halfinput" id="aircraft_type"/></td>		
+				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
+				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
+				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
+			</tr>	
+			<tr>
+				<td>True Airspeed (Knots)<br><input class="halfinput" id="true_airspeed"/></td>
+				<td>Altitude (FL)<br><input class="halfinput" id="altitude"/></td>
+				<td>Origin<br><input class="halfinput" id="departure_point"/></td>
+				<td>Date Time (Zulu)<br><input class="halfinput" id="departure_date"/></td>
+				<td>Time En route<br><input class="halfinput" id="time_enroute"/></td>
+				<td>Destination<br><input class="halfinput" id="destination"/></td>
+			</tr>
+			<tr>
+				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
+				<td>Alternate 1 (Optional)<br><input class="halfinput" id="alternate1"/></td>
+				<td>Alternate 2 (Optional)<br><input class="halfinput" id="alterante2"/></td>
+				<td>Aircraft Color<br>
+					<select class="halfbutton" id="aircraft_color_1">
+						<option value="A">Amber</option>
+						<option value="B">Blue</option>
+						<option value="BE">Beige</option> 
+						<option value="BK">Black</option> 
+						<option value="BR">Brown</option> 
+						<option value="G">Green</option> 
+						<option value="GD">Gold</option> 
+						<option value="GY">Gray</option> 
+						<option value="M">Maroon</option> 
+						<option value="O">Orange</option> 
+						<option value="P">Purple</option> 
+						<option value="PK">Pink</option> 
+						<option value="R">Red</option> 
+						<option value="S">Silver</option> 
+						<option value="TQ">Turquoise</option> 
+						<option value="T">Tan</option> 
+						<option value="V">Violet</option> 
+						<option value="W">White</option> 
+						<option value="Y">Yellow</option>
+					</select>
+					/
+					<select class="halfbutton" id="aircraft_color_2">
+						<option value="A">Amber</option>
+						<option value="B">Blue</option>
+						<option value="BE">Beige</option> 
+						<option value="BK">Black</option> 
+						<option value="BR">Brown</option> 
+						<option value="G">Green</option> 
+						<option value="GD">Gold</option> 
+						<option value="GY">Gray</option> 
+						<option value="M">Maroon</option> 
+						<option value="O">Orange</option> 
+						<option value="P">Purple</option> 
+						<option value="PK">Pink</option> 
+						<option value="R">Red</option> 
+						<option value="S">Silver</option> 
+						<option value="TQ">Turquoise</option> 
+						<option value="T">Tan</option> 
+						<option value="V">Violet</option> 
+						<option value="W">White</option> 
+						<option value="Y">Yellow</option>
+					</select>
+				</td>
+				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
+				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
+			</tr>
+		<button onclick="autofill()">Prepare</button>
+		<button onclick="clearall()">Clear</button><br></br>
+		<table border="1">
+			<tr>
+				<td>Route (DCT for Direct)<br><input id="route"/></td>
+				<td>Remarks (Optional)<br><input id="remarks"/></td>
+				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
+			</tr>
+		</table>
+		<br>
+		<button onclick="plan_file()">File Plan</button><br>
+	</p>
+	<p>
+		<label>Filed Plans</label><br>
+		<button onclick="get_faa_plans()">Get Plans</button><br>
+		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
+		<button onclick="load_plan()">Load</button><br></br>
+		<button onclick="amend_plan()">Amend</button><br></br>
+		<button onclick="cancel_plan()">Cancel</button><br></br>
+		<button onclick="activate_plan()">Activate</button>
+		<select id="activate_time" class="fullinput">
+			<option value="0">Departing Now</option>
+			<option value="5">Departing 5 minutes from now</option>
+			<option value="10">Departing 10 minutes from now</option>
+			<option value="15">Departing 15 minutes from now</option>
+			<option value="20">Departing 20 minutes from now</option>
+			<option value="25">Departing 25 minutes from now</option>
+			<option value="30">Departing 30 minutes from now</option>
+		</select>
+		<br></br>
+		<button onclick="close_plan()">Close</button>
+		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
+		<br></br>
+		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
+		<button onclick="get_navlog()">Get Log</button>
+		<button onclick="clear_navlog()">Clear Log</button>
+		<a id="nav_log"></a>
+	</p>
+	<button onclick="show_help()">Show Help</button><br>
+	<br>
+
+	<a id="help">
+The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
+<br>
+To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers. 
+<br></br>
+<b>To Fill and File the Flight Plan Form</b>
+<ul>
+<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. The app will remember the aircraft and pilot information from the last filing.</li>
+<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots as 110, Altitude in flight level as 45, Origin as BOS, Date Time(Zulu) as 2015-01-31 22:30, Time En route as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
+<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
+<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
+</ul>
+<b>To Load a Plan</b>
+<ul>
+<li>Filed plans can be loaded in the filing form in any state.</li>
+<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
+</ul>
+<b>To Amend a Plan</b>
+<ul>
+<li>Filed plans can be amended when in PROPOSED state.</li>
+<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
+<li>Modify the form as needed.</li>
+<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
+</ul>
+<b>To Cancel the Filed Plan</b>
+<ul>
+<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
+<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
+</ul>
+<b>To Activate a Filed Plan</b>
+<ul>
+<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
+<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>Select the time from now when you will take off from the drop down next to the "Activate" button.</li>
+<li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+</ul>
+<b>To Close an Active Plan</b>
+<ul>
+<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
+<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
+<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
+<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
+<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
+</ul>
+<b>To Get Plan Briefing</b>
+<ul>
+<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+<li>Press the "Get Email Briefing" button once.</li>
+<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
+<li>Note: Route corridor width of 50 NM is used.</li>
+</ul>
+</ul>
+<b>To Get Plan Navigation Log</b>
+<ul>
+<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
+<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+<li>Press the "Get Log" button once.</li>
+<li>The navigation log will appear at the bottom of the button.</li>
+<li>To clear the navigation log, press the "Clear Log" button.</li>
+</ul>
+	</a>
+</body>
+
+</html>
