@@ -1,0 +1,65 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .gitignore
+* README.md
+* extra/
+* extra/airdiags/
+* extra/airdiags/ReadArptDgmPng.cs
+* extra/airdiags/ReadArptDgmPng_learn
+* extra/airdiags/ReadArptDgmPng_learnt.csv
+* extra/airdiags/aptdiags.csv
+* extra/airdiags/read_aptdiags.sh
+* extra/airdiags/readme.txt
+* extra/art/
+* extra/art/afd.png
+* extra/art/aircraft.png
+* extra/art/books.png
+* extra/art/button.png
+* extra/art/direct.png
+* extra/art/go-down-6.png
+* extra/art/go-home-2.png
+* extra/art/go.png
+* extra/art/help-3.png
+* extra/art/help.png
+* extra/art/home.png
+* extra/art/horizon.png
+* extra/art/line.png
+* extra/art/map-compass.png
+* extra/art/obstacle.png
+* extra/art/plane.png
+* extra/art/prop.png
+* extra/art/settings.png
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app/src/main/AndroidManifest.xml
+* assets/ => app/src/main/assets/
+* lint.xml => app/lint.xml
+* res/ => app/src/main/res/
+* src/ => app/src/main/java/
+* src/com/ds/avare/IHelper.aidl => app/src/main/aidl/com/ds/avare/IHelper.aidl
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
