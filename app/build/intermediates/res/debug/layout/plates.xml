@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <Chronometer
+        android:id="@+id/plates_chronometer"
+        android:format="%s"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>   
+    
+    <com.ds.avare.views.PlatesView
+        android:background="#FF000000"
+        android:id="@+id/plates"
+        android:layout_below="@+id/plates_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/plates_button_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@android:drawable/ic_menu_mylocation"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"/>
+    
+	    <Button
+	        android:id="@+id/plates_button_tag"
+	        android:textStyle="bold"
+	        android:layout_centerVertical="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/Tag"
+	        android:visibility="visible" />        
+
+	    <Button
+            android:id="@+id/plates_button_timer"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Timer"
+            android:visibility="visible" /> 
+                   
+        <Button
+            android:id="@+id/plate_button_draw_clear"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/plate_button_draw"
+            android:drawableLeft="@drawable/erase"
+            android:visibility="invisible" />        
+        
+        <com.ds.avare.animation.TwoButton
+            android:id="@+id/plate_button_draw"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textOff="@string/Pan"
+            android:background="@android:drawable/btn_default"
+            android:layout_width="wrap_content"
+            android:textOn="@string/Draw"
+            android:textStyle="bold" />
+    
+    
+    <LinearLayout
+        android:baselineAligned="true"
+        android:id="@+id/plates_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+        
+        <Button
+            android:id="@+id/plates_button_plates"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"
+            android:layout_weight="1"/>   
+        
+        <Button
+            android:id="@+id/plates_button_airports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minWidth="75dp"/>       
+    </LinearLayout>
+</RelativeLayout>
+
+<!-- From: file:/home/zkhan/git/avare/app/src/main/res/layout/plates.xml -->

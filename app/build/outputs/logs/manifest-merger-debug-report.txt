@@ -1,0 +1,195 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:13:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:13:11
+	package
+		ADDED from AndroidManifest.xml:14:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:versionName
+		ADDED from AndroidManifest.xml:16:5
+	android:versionCode
+		ADDED from AndroidManifest.xml:15:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-sdk
+ADDED from AndroidManifest.xml:17:5
+	android:targetSdkVersion
+		ADDED from AndroidManifest.xml:19:9
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:minSdkVersion
+		ADDED from AndroidManifest.xml:18:9
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-permission#android.permission.GET_ACCOUNTS
+ADDED from AndroidManifest.xml:22:5
+	android:name
+		ADDED from AndroidManifest.xml:22:22
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from AndroidManifest.xml:25:5
+	android:name
+		ADDED from AndroidManifest.xml:25:22
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from AndroidManifest.xml:27:5
+	android:name
+		ADDED from AndroidManifest.xml:27:22
+uses-permission#android.permission.WRITE_SETTINGS
+ADDED from AndroidManifest.xml:28:5
+	android:name
+		ADDED from AndroidManifest.xml:28:22
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from AndroidManifest.xml:29:5
+	android:name
+		ADDED from AndroidManifest.xml:29:22
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from AndroidManifest.xml:30:5
+	android:name
+		ADDED from AndroidManifest.xml:30:22
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:31:5
+	android:name
+		ADDED from AndroidManifest.xml:31:22
+uses-feature#android.hardware.location
+ADDED from AndroidManifest.xml:33:5
+	android:required
+		ADDED from AndroidManifest.xml:33:60
+	android:name
+		ADDED from AndroidManifest.xml:33:19
+uses-feature#android.hardware.location.network
+ADDED from AndroidManifest.xml:34:5
+	android:required
+		ADDED from AndroidManifest.xml:34:68
+	android:name
+		ADDED from AndroidManifest.xml:34:19
+uses-feature#android.hardware.location.gps
+ADDED from AndroidManifest.xml:35:5
+	android:required
+		ADDED from AndroidManifest.xml:35:64
+	android:name
+		ADDED from AndroidManifest.xml:35:19
+application
+ADDED from AndroidManifest.xml:37:5
+	android:label
+		ADDED from AndroidManifest.xml:39:9
+	android:allowBackup
+		ADDED from AndroidManifest.xml:40:9
+	android:icon
+		ADDED from AndroidManifest.xml:38:9
+service#com.ds.avare.StorageService
+ADDED from AndroidManifest.xml:41:9
+	android:name
+		ADDED from AndroidManifest.xml:41:18
+service#com.ds.avare.IHelperService
+ADDED from AndroidManifest.xml:42:9
+	android:exported
+		ADDED from AndroidManifest.xml:44:13
+	android:name
+		ADDED from AndroidManifest.xml:43:13
+intent-filter#com.ds.avare.START_SERVICE
+ADDED from AndroidManifest.xml:45:13
+action#com.ds.avare.START_SERVICE
+ADDED from AndroidManifest.xml:46:17
+	android:name
+		ADDED from AndroidManifest.xml:46:25
+activity#com.ds.avare.PrefActivity
+ADDED from AndroidManifest.xml:49:9
+	android:name
+		ADDED from AndroidManifest.xml:49:19
+activity#com.ds.avare.SearchActivity
+ADDED from AndroidManifest.xml:50:9
+	android:name
+		ADDED from AndroidManifest.xml:50:19
+activity#com.ds.avare.PlanActivity
+ADDED from AndroidManifest.xml:51:9
+	android:name
+		ADDED from AndroidManifest.xml:51:19
+activity#com.ds.avare.AirportActivity
+ADDED from AndroidManifest.xml:52:9
+	android:name
+		ADDED from AndroidManifest.xml:52:19
+activity#com.ds.avare.SatelliteActivity
+ADDED from AndroidManifest.xml:53:9
+	android:name
+		ADDED from AndroidManifest.xml:53:19
+activity#com.ds.avare.WebActivity
+ADDED from AndroidManifest.xml:54:9
+	android:name
+		ADDED from AndroidManifest.xml:54:19
+activity#com.ds.avare.LocationActivity
+ADDED from AndroidManifest.xml:55:9
+	android:name
+		ADDED from AndroidManifest.xml:55:19
+activity#com.ds.avare.NearestActivity
+ADDED from AndroidManifest.xml:56:9
+	android:name
+		ADDED from AndroidManifest.xml:56:19
+activity#com.ds.avare.PlatesActivity
+ADDED from AndroidManifest.xml:57:9
+	android:name
+		ADDED from AndroidManifest.xml:57:19
+activity#com.ds.avare.PlatesTagActivity
+ADDED from AndroidManifest.xml:58:9
+	android:name
+		ADDED from AndroidManifest.xml:58:19
+activity#com.ds.avare.ChartsDownloadActivity
+ADDED from AndroidManifest.xml:59:9
+	android:name
+		ADDED from AndroidManifest.xml:59:19
+activity#com.ds.avare.WeatherActivity
+ADDED from AndroidManifest.xml:60:9
+	android:name
+		ADDED from AndroidManifest.xml:60:19
+activity#com.ds.avare.ChecklistActivity
+ADDED from AndroidManifest.xml:61:9
+	android:name
+		ADDED from AndroidManifest.xml:61:19
+activity#com.ds.avare.TripActivity
+ADDED from AndroidManifest.xml:62:9
+	android:name
+		ADDED from AndroidManifest.xml:62:19
+activity#com.ds.avare.RegisterActivity
+ADDED from AndroidManifest.xml:63:9
+	android:name
+		ADDED from AndroidManifest.xml:63:19
+activity#com.ds.avare.SubmitActivity
+ADDED from AndroidManifest.xml:64:9
+	android:name
+		ADDED from AndroidManifest.xml:64:19
+activity#com.ds.avare.MessageActivity
+ADDED from AndroidManifest.xml:65:9
+	android:name
+		ADDED from AndroidManifest.xml:65:19
+intent-filter#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:66:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:67:17
+	android:name
+		ADDED from AndroidManifest.xml:67:25
+activity#com.ds.avare.MainActivity
+ADDED from AndroidManifest.xml:70:9
+	android:label
+		ADDED from AndroidManifest.xml:72:13
+	android:name
+		ADDED from AndroidManifest.xml:71:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:74:13
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:76:17
+	android:name
+		ADDED from AndroidManifest.xml:76:27
+intent-filter#android.intent.action.SEND+android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:78:13
+action#android.intent.action.SEND
+ADDED from AndroidManifest.xml:79:17
+	android:name
+		ADDED from AndroidManifest.xml:79:25
+category#android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:80:17
+	android:name
+		ADDED from AndroidManifest.xml:80:27
+data
+ADDED from AndroidManifest.xml:81:17
+	android:mimeType
+		ADDED from AndroidManifest.xml:81:23
