@@ -35,3 +35,12 @@ More Features:
 * Location icon can be centered or track from your placement on screen.
 * GPS compass direction, Bearing, and Distance to and FROM any point on the map by long-pressing one finger on that point. Great for your ATC and CTAF radio calls.
 * Built in CAP (Civil Air Patrol) conventional grid system.
+
+
+BUILDING:
+Checkout in Android Studio using File->New->Project From Version Control->GitHub. Give URL as https://github.com/apps4av/avare.git, then press Clone.
+
+After Checkout is complete, press the Android Studio Toolbar button "Sync Project With Gradle Files".
+
+RUNNING:
+Run in Android Studio on Emulator, or an actual device.
