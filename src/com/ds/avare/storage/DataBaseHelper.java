@@ -389,9 +389,11 @@ public class DataBaseHelper  {
             };
 
         	String files[] = new File(addPath("afd/", path)).list(filter);
-        	for(String file : files) {
-        		list.add(addPath("afd/" + file, path));
-        	}
+            if(null != files) {
+	        	for(String file : files) {
+	        		list.add(addPath("afd/" + file, path));
+	        	}
+            }
 
             return list;                    
         }
