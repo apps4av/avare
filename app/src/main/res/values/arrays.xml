@@ -222,6 +222,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
+        <item>Canada ADs</item>
         <item>Minimums T/A</item>
         <item>Alabama</item>
 		<item>Alaska</item>
@@ -586,6 +587,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesPlate">
+        <item>CAN_ADS</item>
         <item>alternates</item>
         <item>AL</item>
 		<item>AK</item>
