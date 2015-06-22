@@ -26,6 +26,9 @@ public class CapChartFetcher {
 	
 	// 15 minute, quarter degree
 	public static final double GRID_SIZE = 0.25;
+
+	// 7.5 minute, quarter grids
+	public static final double QUARTER_GRID_SIZE = 0.125;
 	
 	private LinkedList<Chart> mCharts;
 	private static CapChartFetcher mInstance;
