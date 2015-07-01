@@ -1806,24 +1806,24 @@ public class DataBaseHelper  {
      * @param airportId
      * @return A/FD
      */
-    public String findAFD(String airportId) {
-        
-        String ret = null;
+    public LinkedList<String> findAFD(String airportId) {
+
+        LinkedList<String> ret = new LinkedList<String>();
         String qry = "select File from " + TABLE_AFD + " where " + LOCATION_ID_DB + "==" + "'" + airportId + "'";
         
         Cursor cursor = doQuery(qry, getMainDb());
 
         try {
             if(cursor != null) {
-                if(cursor.moveToNext()) {
-                    ret = cursor.getString(0);
+                while(cursor.moveToNext()) {
+                    ret.add(cursor.getString(0));
                 }
             }
         }
         catch (Exception e) {
         }
         closes(cursor);
-        
+
         return ret;
     }
 

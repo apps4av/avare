@@ -95,8 +95,6 @@ public class Destination extends Observable {
     private boolean mLooking;
     private boolean mInited;
     
-    private String mAfdName;
-    
     private double mDeclination;
 
     /*
@@ -563,12 +561,16 @@ public class Destination extends Observable {
                  * Find A/FD
                  */
                 mAfdFound = null;
-                mAfdName = mDataSource.findAFD(mName);
-                if(null != mAfdName) {
+                final LinkedList<String> afdName = mDataSource.findAFD(mName);
+                if(afdName.size() > 0) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
-                            return (fileName.matches(mAfdName + Preferences.IMAGE_EXTENSION) || 
-                                    fileName.matches(mAfdName + "-[0-9]+" + Preferences.IMAGE_EXTENSION));
+                            boolean match = false;
+                            for(final String name : afdName) {
+                                match |= fileName.matches(name + Preferences.IMAGE_EXTENSION) ||
+                                        fileName.matches(name + "-[0-9]+" + Preferences.IMAGE_EXTENSION);
+                            }
+                            return match;
                         }
                     };
                     String afd[] = null;
@@ -577,12 +579,12 @@ public class Destination extends Observable {
                         java.util.Arrays.sort(afd);
                         int len1 = afd.length;
                         String tmp1[] = new String[len1];
-                        for(int plate = 0; plate < len1; plate++) {
+                        for(int count = 0; count < len1; count++) {
                             /*
                              * Add A/FD
                              */
-                            String tokens[] = afd[plate].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[plate] = mPref.mapsFolder() + "/afd/" +
+                            String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
+                            tmp1[count] = mPref.mapsFolder() + "/afd/" +
                                     tokens[0];             
                         }
                         if(len1 > 0) {
