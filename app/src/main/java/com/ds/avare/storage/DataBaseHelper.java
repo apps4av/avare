@@ -973,7 +973,8 @@ public class DataBaseHelper  {
         }
         // Order by type desc will cause VOR to be ahead of NDB if both are available.
         // This is a bit of a hack, but the user probably wants the VOR more than the NDB
-        qry += " and Type != 'VOT' order by " + TYPE_DB + " desc;";
+        // Put our-ap in last
+        qry += " and Type != 'VOT' order by " + TYPE_DB + "," + TYPE_DB + "='OUR-AP' " + "desc;";
         
         cursor = doQuery(qry, getMainDb());
 
