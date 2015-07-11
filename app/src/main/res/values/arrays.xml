@@ -906,6 +906,13 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Fixed at 2/5/10</item>
     </string-array>
 
+    <string-array name="DistanceRingColors">
+        <item>Default</item>
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Black</item>
+    </string-array>
+
 	<string-array name="AutoPostTracksValues">
         <item>0</item>
         <item>1</item>

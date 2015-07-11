@@ -148,6 +148,13 @@ authors: zkhan, jlmcgraw
             android:summary="@string/DistanceRingTypeSummary"
             android:title="@string/DistanceRingTypeLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="Default"
+            android:entries="@array/DistanceRingColors"
+            android:entryValues="@array/DistanceRingColors"
+            android:key="@string/prefDistanceRingColors"
+            android:summary="@string/DistanceRingColorsSummary"
+            android:title="@string/DistanceRingColorsLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/TimerRingSizePrompt"
             android:entryValues="@array/TimerRingSizeValues"
