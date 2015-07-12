@@ -177,6 +177,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefDistanceRingType">DistanceRingType</string>
     <string name="DistanceRingTypeLabel">&quot;Distance Ring Style&quot;</string>
     <string name="DistanceRingTypeSummary">&quot;Select the style of distance rings to display&quot;</string>
+    <string name="prefDistanceRingColors">DistanceRingColors</string>
+    <string name="DistanceRingColorsLabel">&quot;Distance Ring Colors&quot;</string>
+    <string name="DistanceRingColorsSummary">&quot;Select the color of distance rings&quot;</string>
     <string name="UnitKnot">kt</string>
     <string name="UnitMile">mi</string>
     <string name="VsFpm">fpm</string>

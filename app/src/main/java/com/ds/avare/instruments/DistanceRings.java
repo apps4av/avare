@@ -40,7 +40,6 @@ public class DistanceRings {
     /**
      * Distance ring drawing constants
      */
-    public static final int COLOR_DISTANCE_RING  = Color.rgb(102, 0, 51);
     public static final int COLOR_SPEED_RING     = Color.rgb(178, 255, 102);
     
     public static final int RING_INNER  = 0;
@@ -123,8 +122,8 @@ public class DistanceRings {
          */
     	mPaint.setStrokeWidth(3 * mDipToPix);
     	mPaint.setShadowLayer(0, 0, 0, 0);
-    	mPaint.setColor(DistanceRings.COLOR_DISTANCE_RING);
-    	mPaint.setStyle(Style.STROKE);
+        mPaint.setColor(mPref.getDistanceRingColor());
+        mPaint.setStyle(Style.STROKE);
     	mPaint.setAlpha(0x7F);
 
     	/*

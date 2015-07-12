@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -655,6 +656,29 @@ public class Preferences {
 		} catch (Exception x) {
 			return 0;
 		}
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getDistanceRingColor() {
+        // default color
+        int color = Color.rgb(102, 0, 51);
+
+        // configured color
+        String prefColor = mPref.getString(mContext.getString(R.string.prefDistanceRingColors), "Default");
+        if(prefColor.equals("Red")) {
+            color = Color.RED;
+        }
+        if(prefColor.equals("Blue")) {
+            color = Color.BLUE;
+        }
+        if(prefColor.equals("Black")) {
+            color = Color.BLACK;
+        }
+
+        return color;
     }
 
     /**
