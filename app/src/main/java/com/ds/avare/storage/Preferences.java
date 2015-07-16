@@ -67,11 +67,14 @@ public class Preferences {
     /*
      * Max memory and max screen size it will support
      */
+    public static final long MEM_192 = 192 * 1024 * 1024;
     public static final long MEM_128 = 128 * 1024 * 1024;
     public static final long MEM_64 = 64 * 1024 * 1024;
     public static final long MEM_32 = 32 * 1024 * 1024;
     public static final long MEM_16 = 16 * 1024 * 1024;
     
+    public static final int MEM_192_X = 11;
+    public static final int MEM_192_Y = 9;
     public static final int MEM_128_X = 9;
     public static final int MEM_128_Y = 5;
     public static final int MEM_64_X = 7;
@@ -280,7 +283,11 @@ public class Preferences {
          */
         long mem = Runtime.getRuntime().maxMemory();
 
-        if(mem >= MEM_128) {
+        if(mem >= MEM_192) {
+            ret[0] = MEM_192_X;
+            ret[1] = MEM_192_Y;
+        }
+        else if(mem >= MEM_128) {
             ret[0] = MEM_128_X;
             ret[1] = MEM_128_Y;
         }
