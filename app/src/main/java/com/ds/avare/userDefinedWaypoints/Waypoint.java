@@ -31,14 +31,16 @@ public class Waypoint {
     int 	mMarkerType;
     boolean mVisible;
     boolean mLocked;
-    
-    public Waypoint(String name, float lon, float lat, boolean showDist, int markerType, boolean bLocked) {
+	String	mType;
+
+    public Waypoint(String name, String type, float lon, float lat, boolean showDist, int markerType, boolean bLocked) {
     	if(null != name) {
     		mName = name;
     	} else {
     		mName = "UNDEF";
     	}
-    	
+
+		mType = type;
     	mLat = lat;
         mLon = lon;
         mShowDist = showDist;
@@ -49,6 +51,7 @@ public class Waypoint {
     
     // Get'ers
     public String getName() { return mName; }
+	public String getType() { return mType; }
     public String getCmt()  { return mCmt; }
     public float getLat() { return mLat; }
     public float getLon() { return mLon; }

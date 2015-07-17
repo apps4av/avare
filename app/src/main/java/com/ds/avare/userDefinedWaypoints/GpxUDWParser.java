@@ -22,6 +22,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 
+import com.ds.avare.place.Destination;
+
 /***
  * Class to read user defined waypoints from a GPX formatted file
  * 
@@ -138,7 +140,7 @@ public class GpxUDWParser extends UDWParser {
         }
         
         // We've got all the data we're going to get from this entry
-        return  new Waypoint(name, lon, lat, false, Waypoint.MT_CYANDOT, true);
+        return  new Waypoint(name, Destination.UDW, lon, lat, false, Waypoint.MT_CYANDOT, true);
     }
 
     // Extract NAME

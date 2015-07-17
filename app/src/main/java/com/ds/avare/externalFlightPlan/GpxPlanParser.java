@@ -21,6 +21,7 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.ds.avare.place.Destination;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
 import android.util.Xml;
@@ -71,7 +72,7 @@ public class GpxPlanParser  extends PlanParser {
     }
     
 	@Override
-	public ExternalFlightPlan parse(FileInputStream inputStream) {
+	public ExternalFlightPlan parse(String fileName, FileInputStream inputStream) {
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -83,7 +84,7 @@ public class GpxPlanParser  extends PlanParser {
 	}
 
 	@Override
-	public void generate(FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan) {
+	public void generate(String fileName, FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan) {
 	}
 	
     // The root tag should be "<gpx>", search for the opening "<rte>" tag
@@ -182,7 +183,7 @@ public class GpxPlanParser  extends PlanParser {
         
         // Create a new waypoint from this data. Set the comment and make sure it's not
         // visible. It is made visible when the plan is enabled
-        Waypoint wp = new Waypoint(name, lon, lat, false, Waypoint.MT_NONE, false);
+        Waypoint wp = new Waypoint(name, Destination.UDW, lon, lat, false, Waypoint.MT_NONE, false);
         wp.setCmt(cmt);
         wp.setVisible(false);
         

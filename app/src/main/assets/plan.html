@@ -566,7 +566,8 @@ window.onload = show_help;
 		</table>
 	</p>
 	<button onclick="show_help()">Show Help</button><br>
-	<a id="help">
+
+<a id="help">
 The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, and bearing calculated from the current position to the final way point.<br>
 <br>
 <b>To Create a Flight Plan with Single Line Input</b>
@@ -608,7 +609,7 @@ This section contains a list of flight plans that have been saved. They are list
 <li>The "Last >>" button will show the plans at the end of the list.</li>
 <li>Using the "Apply Filter" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
 <li>Pressing "Clear Filter" will clear the filter and refresh the plan list.</li>
-<li>The "Refresh List" button will syncronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
+<li>The "Refresh List" button will synchronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
 </ul>
 
 <b>To Create a Flight Plan from Find Screen</b>
@@ -626,6 +627,34 @@ This section contains a list of flight plans that have been saved. They are list
 <li>Go to Map Screen, and long press anywhere on the map.</li>
 <li>A pop out will present "+Plan" button. Press the button to add the touched location in the plan on the Plan screen.</li>
 <li>Follow the procedure -One Way Point at a Time- above to move the added location to the desired location in the plan.</li>
+</ul>
+
+<b>To Create a Plan Using SkyVector</b><br>
+<br>
+Avare can import flight plans that are created on your desktop PC or laptop using the web based
+application SkyVector. To start off, open a web browser to the SkyVector site at www.skyvector.com.
+The main interface presents you with a web page mainly made up of VFR sectionals. You can create a
+flight plan by right clicking on an airport, navaid, intersection, or just a generic GPS coordinate.
+You can also type the navaids/airports directly into the plan creator dialog.<br>
+<br>
+Once you have the plan created:
+<ul>
+<li>Click on the "Link" text at the top right. This will open a box with a prompt of "Plain Text Link". </li>
+<li>Copy all of the text from the Plain Text Link box.</li>
+<li>Place this text into a file. This will be your flight plan. Open your favorite text only editor
+	and paste the link text into that file.	If your plan is large, it is probable that this text will
+	scroll quite a bit to the right in the first line. Do not break this line up into smaller lines, it
+	must be pasted without change. Save that file to disk, giving it a name - this will be the name of
+	the flight plan. Ensure that the file name has a ".skv"	extension. This indicates to Avare that the
+	file contains a SkyVector formatted flight plan.</li>
+<li>Copy this file from the local machine hard drive to your Android device. Ensure to copy it to the
+	directory that you have configured for "User Defined Waypoints/Plans". To set or view this setting,
+	within Avare, open the "Preferences", then select "Storage and Downloads", then "User Defined
+	Waypoints/Plans".</li>
+<li>Once copied, head over to the Avare application and select the "Plan" tab, hit the "Refresh" button
+	and you will see your new plan listed amongst the collection. Locate the plan of interest, using
+	the "Next" and "Back" buttons as appropriate, then select "Load" to bring it into Avare.</li>
+<li>Press the "Inactive" button to now set the plan as active, then head back to the map/chart tab.</li>
 </ul>
 
 <b>To Simulate a Plan</b>
@@ -673,10 +702,10 @@ This section contains a list of flight plans that have been saved. They are list
 <li>Enter a plan with at least two points, at least one of which is an airport.</li>
 <li>Make sure you are connected to the Internet.</li>
 <li>Press the "Get Weather" button.</li>
-<li>You may be asked to choose an application. You must choose the browser. After a few seconds, the weather will shown in the browser window.</li>
+<li>You may be asked to choose an application. You must choose a browser. After a few seconds, the weather will br shown in the browser window.</li>
 </ul>
 
-	</a>
+</a>
 
 </body>
 </html>

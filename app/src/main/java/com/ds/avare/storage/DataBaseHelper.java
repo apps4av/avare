@@ -969,7 +969,9 @@ public class DataBaseHelper  {
 
         String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "'";
         if(null != dbType && dbType.length() > 0) {
-            qry += " and " + TYPE_DB + "=='" + dbType + "'";
+            if(false == dbType.equalsIgnoreCase("null")) {
+                qry += " and " + TYPE_DB + "=='" + dbType + "'";
+            }
         }
         // Order by type desc will cause VOR to be ahead of NDB if both are available.
         // This is a bit of a hack, but the user probably wants the VOR more than the NDB

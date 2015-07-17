@@ -22,6 +22,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 
+import com.ds.avare.place.Destination;
+
 //	XML Parser that reads KML formatted files. The Waypoint definitions are extracted
 //	and converted to user defined waypoints. The essential syntax is as follows:
 //
@@ -166,7 +168,7 @@ public class KmlUDWParser extends UDWParser {
                 skip(parser);
             }
         }
-        return new Waypoint(name, lon, lat, showDist, markerType, true);
+        return new Waypoint(name, Destination.UDW, lon, lat, showDist, markerType, true);
     }
 
     // Inside of the "Point" tag, we only care about the coordinates

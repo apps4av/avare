@@ -67,7 +67,7 @@ public class ExternalFlightPlan {
 		String plan = mName + "::";
 		for(int idx = 0; idx < mWaypoints.size(); ) {
 			Waypoint wp = mWaypoints.get(idx);
-			plan += wp.getName() + "(" + Destination.UDW + ")";
+			plan += wp.getName() + "(" + wp.getType() + ")";
 			if(++idx < mWaypoints.size()) {
 				plan += ">";
 			}
@@ -82,7 +82,7 @@ public class ExternalFlightPlan {
 	public String toJSONString() {
         JSONArray jsonArr = new JSONArray();
 		for(Waypoint wp : mWaypoints) {
-			jsonArr.put(Destination.getStorageName(Destination.UDW, null, null, wp.getName()));
+			jsonArr.put(Destination.getStorageName(wp.getType(), null, null, wp.getName()));
         }
         return jsonArr.toString();
 	}

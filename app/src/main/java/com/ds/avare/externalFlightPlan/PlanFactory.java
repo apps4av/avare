@@ -45,10 +45,16 @@ public class PlanFactory {
 			// Define a GPX parser and use if appropriate
 			PlanParser parser = new GpxPlanParser();
 			if(parser.getType().equalsIgnoreCase(ext)) {
-				return parser.parse(inStream);
+				return parser.parse(fileName, inStream);
 			}
 
-			
+			// Define a SKYVECTOR plan object and see if that
+			// can parse the data
+			parser = new SkvPlanParser();
+			if(parser.getType().equalsIgnoreCase(ext)) {
+				return parser.parse(fileName, inStream);
+			}
+
 		// An exception is most likely an error opening the file stream.
 		// we'll just ignore it
     	} catch (Exception e) { return null; }

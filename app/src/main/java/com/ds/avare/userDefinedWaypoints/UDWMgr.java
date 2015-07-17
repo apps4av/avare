@@ -149,10 +149,8 @@ public class UDWMgr {
 	 */
 	public void add(Waypoint waypoint) {
 		if(null != waypoint) {
-			if(null == get(waypoint.mName)) {
-				if(mPoints.size() < MAXUDW) {
-					mPoints.add(waypoint);
-				}
+			if(mPoints.size() < MAXUDW) {
+				mPoints.add(waypoint);
 			}
 		}
 	}

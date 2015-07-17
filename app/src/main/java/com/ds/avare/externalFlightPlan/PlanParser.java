@@ -24,8 +24,8 @@ import java.io.FileOutputStream;
 public abstract class PlanParser {
 	// Methods that each derived class need to implement
 	public abstract String getType();
-	public abstract ExternalFlightPlan parse(FileInputStream inputStream);
-	public abstract void generate(FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan);
+	public abstract ExternalFlightPlan parse(String fileName, FileInputStream inputStream);
+	public abstract void generate(String fileName, FileOutputStream outputStream, ExternalFlightPlan externalFlightPlan);
 	
 	static final String gUndef = "UNDEF";
 }
