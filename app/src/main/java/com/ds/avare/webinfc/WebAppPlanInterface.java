@@ -62,6 +62,8 @@ public class WebAppPlanInterface implements Observer {
     private CreateTask mCreateTask;
     private WeatherTask mWeatherTask;
     private Thread mWeatherThread;
+	private NotamsTask mNotamsTask;
+	private Thread mNotamsThread;
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
     private Context mContext;
@@ -724,7 +726,22 @@ public class WebAppPlanInterface implements Observer {
         mWeatherThread.start();
     }
 
-    /** 
+	/**
+	 * Get NOTAMS form Internet
+	 */
+	@JavascriptInterface
+	public void getNotams() {
+		if(null != mNotamsTask && mNotamsTask.running) {
+			return;
+		}
+
+		mNotamsTask = new NotamsTask();
+		mNotamsTask.running = true;
+		mNotamsThread = new Thread(mNotamsTask);
+		mNotamsThread.start();
+	}
+
+	/**
      * Create a plan, guessing the types
      */
     @JavascriptInterface
@@ -985,6 +1002,87 @@ public class WebAppPlanInterface implements Observer {
         }
     };
 
+	/**
+	 * @author zkhan
+	 *
+	 */
+	private class NotamsTask implements Runnable {
+
+		private boolean running = true;
+
+		/* (non-Javadoc)
+         */
+		@Override
+		public void run() {
+
+			Thread.currentThread().setName("NOTAMs");
+
+			mHandler.sendEmptyMessage(MSG_BUSY);
+
+			if(null == mService) {
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
+				mHandler.sendMessage(m);
+				mHandler.sendEmptyMessage(MSG_NOTBUSY);
+				running = false;
+				return;
+			}
+
+			int num = mService.getPlan().getDestinationNumber();
+			if(num < 2) {
+                /*
+                 * Not a route.
+                 */
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
+				mHandler.sendMessage(m);
+				mHandler.sendEmptyMessage(MSG_NOTBUSY);
+				running = false;
+				return;
+			}
+			String planf = "";
+			for(int i = 0; i < num; i++) {
+				Destination d = mService.getPlan().getDestination(i);
+				if(d.getType().equals(Destination.BASE)) {
+					planf += "K" + d.getID() + ",";
+				}
+			}
+			if(planf.equals("")) {
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
+				mHandler.sendMessage(m);
+				mHandler.sendEmptyMessage(MSG_NOTBUSY);
+				running = false;
+				return;
+			}
+			planf = planf.replaceAll(",$", "");
+
+			String ret = NetworkHelper.getNotams(planf);
+			if(ret == null) {
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsError));
+				mHandler.sendMessage(m);
+				mHandler.sendEmptyMessage(MSG_NOTBUSY);
+				running = false;
+				return;
+			}
+
+			// Write notams to download folder
+			String fpath = getNotamsFileName(planf);
+			Helper.writeFile(ret, fpath);
+			// Send to browser.
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			File file = new File(fpath);
+			Uri uri = Uri.fromFile(file);
+			i.setDataAndType(uri, "*/*");
+			try {
+				mContext.startActivity(i);
+			}
+			catch(Exception e) {
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsBrowser));
+				mHandler.sendMessage(m);
+			}
+			mHandler.sendEmptyMessage(MSG_NOTBUSY);
+
+			running = false;
+		}
+	}
     
     /**
      * @author zkhan
@@ -1173,8 +1271,19 @@ public class WebAppPlanInterface implements Observer {
     	
     	return file + ".html";
     }
-    
-    /**
+
+	/**
+	 * Make a file where NOTAMS is put
+	 * @return
+	 */
+	private String getNotamsFileName(String plan) {
+		String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/avare_notams_";
+
+		// Get time in format usable as file
+		return file + plan.replace(",", "_") + ".html";
+	}
+
+	/**
      * 
      */
     public void cleanup() {

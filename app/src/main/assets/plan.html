@@ -464,6 +464,14 @@ function plan_get_weather() {
 	AndroidPlan.getWeather();
 }
 
+function plan_get_notams() {
+	var r = confirm("Get NOTAMS from Internet?");
+	if(r == false) {
+		return;
+	}
+	AndroidPlan.getNotams();
+}
+
 function next() {
 	AndroidPlan.nextPage();
 }
@@ -535,6 +543,9 @@ window.onload = show_help;
 		<br></br>
 		<label class="sublabel">Plan Weather</label><br>
 		<button onclick="plan_get_weather()">Get Weather</button>
+		<br></br>
+		<label class="sublabel">NOTAMS</label><br>
+		<button onclick="plan_get_notams()">Get NOTAMS</button>
 		<br></br>
 		<label class="sublabel">Save Plan</label><br>
 		<input id="save_name" placeholder="Current Plan Name"/></input><button onclick="save_plan_add()">Save</button>

@@ -19,8 +19,10 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
 
@@ -592,4 +594,26 @@ public class NetworkHelper {
         return "" + cycle;
     }
 
+    /**
+     * Get notams from FAA in the plan form KBOS,BOS,KLWM
+     * @param plan
+     * @return
+     */
+    public static String getNotams(String plan) {
+        String ret = null;
+        try {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("retrieveLocId", plan);
+            params.put("reportType", "Raw");
+            params.put("actionType", "notamRetrievalByICAOs");
+            params.put("submit", "View+NOTAMSs");
+            ret = com.ds.avare.message.NetworkHelper.post("https://www.notams.faa.gov/dinsQueryWeb/queryRetrievalMapAction.do",
+                    params);
+        } catch (Exception e) {
+
+        }
+        return ret;
+    }
 }
+
+
