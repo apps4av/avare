@@ -28,12 +28,14 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import android.content.Context;
 
 import com.ds.avare.R;
+
 
 
 /**
@@ -594,6 +596,7 @@ public class NetworkHelper {
         return "" + cycle;
     }
 
+
     /**
      * Get notams from FAA in the plan form KBOS,BOS,KLWM
      * @param plan
@@ -612,7 +615,21 @@ public class NetworkHelper {
         } catch (Exception e) {
 
         }
-        return ret;
+
+        // NOTAMS are in form <PRE></PRE>. Parse them, and convert \n to BR
+        String notams = "";
+        if(ret != null) {
+            String rets[] = ret.split("\\<PRE\\>");
+            for (String ret1 : rets) {
+                if(ret1.contains("</PRE>")) {
+                    String parsed[] = ret1.split("</PRE>");
+                    notams += parsed[0] + "\n\n";
+                }
+            }
+            notams = notams.replaceAll("(\r\n|\n)", "<br />");
+        }
+
+        return notams;
     }
 }
 
