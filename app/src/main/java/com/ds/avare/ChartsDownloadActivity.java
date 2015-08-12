@@ -325,8 +325,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDelete = new Delete(mHandler);
-        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName,
-                mService.getDBResource());
+        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -445,7 +444,7 @@ public class ChartsDownloadActivity extends Activity {
                      */
                     String code = msg.getData().getString("code");
                     mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
-                    mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed) + ", reason " + code);
+                    mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed) + ": " + code);
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);
                     mAlertDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {

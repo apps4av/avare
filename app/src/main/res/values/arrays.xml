@@ -16,18 +16,18 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroups">
         <item>Databases</item>
         <item>Weather</item>
-        <item>Plates/d-TPP/ADs</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
         <item>IFR Low Enroute Charts</item>
+        <item>IFR High Enroute Charts</item>
+        <item>IFR Area Charts</item>
+        <item>Plates/d-TPP/ADs</item>
+        <item>VFR Area Plates</item>
         <item>A/FD Images</item>
         <item>Terrain</item>
-        <item>IFR High Enroute Charts</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
-        <item>IFR Area Charts</item>
-        <item>VFR Area Plates</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -765,15 +765,15 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFilesHeli">
         <item>GrandCanyon</item>
-        <item>BaltimoreWashingtonHeli9Front</item>
-        <item>BostonHeli6Front</item>
-        <item>ChicagoHeli6Front</item>
-        <item>Dallas-FtWorthHeli5Front</item>
-        <item>DetroitHeli1</item>
+        <item>BaltimoreWashingtonHeli</item>
+        <item>BostonHeli</item>
+        <item>ChicagoHeli</item>
+        <item>Dallas-FtWorthHeli</item>
+        <item>DetroitHeli</item>
         <item>GulfCoastHel-WAC27</item>
-        <item>HoustonHeli7</item>
-        <item>LosAngelesHeli9</item>
-        <item>NewYorkHeli10Front</item>
+        <item>HoustonHeli</item>
+        <item>LosAngelesHeli</item>
+        <item>NewYorkHeli</item>
     </string-array>
     
     <string-array name="ChartType">
@@ -782,13 +782,26 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>WAC</item>
         <item>IFR Low</item>
         <item>IFR High</item>
-    	<item>Terrain</item>
+        <item>IFR Area</item>
+        <item>Terrain</item>
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
-        <item>IFR Area</item>
     </string-array>
 
+    <string-array name="ChartFileExtesion">
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+    </string-array>    
+    
     <string-array name="ChartTypeValues">
         <item>0</item>
         <item>1</item>
@@ -802,18 +815,17 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>9</item>
     </string-array>    
 
-    <string-array name="ChartDbNames">
-        <item>maps.sec.db</item>
-        <item>maps.tac.db</item>
-        <item>maps.wac.db</item>
-        <item>maps.el.db</item>
-        <item>maps.eh.db</item>
-        <item>maps.elv.db</item>
-        <item>maps.rel.db</item>
-        <item>maps.topo.db</item>
-        <item>maps.oth.db</item>
-        <item>maps.ea.db</item>
-        <item>procedures.db</item>
+    <string-array name="ChartMaxZooms">
+        <item>10</item>
+        <item>11</item>
+        <item>9</item>
+        <item>10</item>
+        <item>9</item>
+        <item>11</item>
+        <item>9</item>
+        <item>9</item>
+        <item>11</item>
+        <item>12</item>
     </string-array>    
     
     <string-array name="UnitsD">
@@ -1091,5 +1103,9 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Jet-A</item>
         <item>Mogas</item>
     </string-array>
-    
+
+    <string-array name="Tips">
+        <item>If you upgraded the app from version 6.0.9 or below, you MUST update all your charts and databases even if they show as current.</item>
+    </string-array>
+
 </resources>

@@ -126,6 +126,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/blinkScreen"
             android:summary="@string/blinkScreenSummary"
             android:title="@string/blinkScreenLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefTip"
+            android:summary="@string/prefTipSummary"
+            android:title="@string/prefTipLabel" />
     </PreferenceScreen>
 
     <PreferenceScreen 

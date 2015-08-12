@@ -12,11 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.network;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Observable;
 
-import com.ds.avare.storage.DataSource;
 import com.ds.avare.utils.Helper;
 
 import android.os.Handler;
@@ -37,6 +39,8 @@ public class Delete extends Observable {
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
     
+    static final int blocksize = 4096;
+
        
     /**
      * 
@@ -62,11 +66,10 @@ public class Delete extends Observable {
      * @param dataSource 
      * @param filename
      */
-    public void start(String path, String name, DataSource dataSource) {
+    public void start(String path, String name) {
         mDt = new DeleteTask();
         mDt.path = path;
         mDt.chart = name;
-        mDt.data = dataSource;
         mThread = new Thread(mDt);
         mThread.start();
     }
@@ -80,7 +83,6 @@ public class Delete extends Observable {
 
         public String path;
         public String chart;
-        public DataSource data;
         
         /**
          * 
@@ -90,11 +92,15 @@ public class Delete extends Observable {
             
             Thread.currentThread().setName("Delete");
 
-            if(data == null || path == null || chart == null) {
+            if(path == null || chart == null) {
                 Message m = mHandler.obtainMessage(Download.FAILED, Delete.this);
                 mHandler.sendMessage(m);
             }
-            LinkedList<String> list = data.findFilesToDelete(chart, path);
+            
+            /*
+             * Get files to delete
+             */
+            LinkedList<String> list = getFiles(chart, path);
             
             int fileLength = list.size();
             int total = 0;
@@ -118,9 +124,54 @@ public class Delete extends Observable {
                     mHandler.sendMessage(m);
                 }
             }
-            
+
             Message m = mHandler.obtainMessage(Download.SUCCESS, Delete.this);
             mHandler.sendMessage(m);
         }      
     }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    LinkedList<String> getFiles(String name, String path) {
+    	LinkedList<String> files2Delete = new LinkedList<String>();
+    	/*
+    	 * Read file with that name
+    	 */
+    	String filename = path + "/" + name;
+        File file = new File(filename);
+        if(file.exists()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(file), blocksize);
+                /*
+                 * skip the first line which is date / version
+                 */
+                String line = br.readLine();
+                
+                do {
+                	/*
+                	 * Get list of files in here to delete
+                	 */
+                	line = br.readLine();
+                	if(null != line) {
+                		files2Delete.add(path + "/" + line);
+                	}
+                } while (null != line);
+                
+                br.close();
+            }
+            catch (IOException e) {
+            }
+        }
+        
+        /*
+         * Delete the file and the any partial zip file
+         */
+        files2Delete.add(filename);
+        files2Delete.add(filename + ".zip");
+        return files2Delete;
+    }
+    
 }

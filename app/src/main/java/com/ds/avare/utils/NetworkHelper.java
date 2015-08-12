@@ -28,14 +28,12 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import android.content.Context;
 
 import com.ds.avare.R;
-
 
 
 /**
@@ -331,7 +329,7 @@ public class NetworkHelper {
         else if(file.equals("ratings.zip")) {
             return(root + "/" + file);
         }
-        return(root + vers + "/" + file);
+        return(root + vers + "_newproj/" + file);
     }
 
     /*
@@ -459,6 +457,14 @@ public class NetworkHelper {
         }
         
         return false;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static String getVersion(int offset) {
+    	return findCycleOffset(getVersion("", "", null), offset);
     }
 
     /**
@@ -595,7 +601,6 @@ public class NetworkHelper {
 
         return "" + cycle;
     }
-
 
     /**
      * Get notams from FAA in the plan form KBOS,BOS,KLWM

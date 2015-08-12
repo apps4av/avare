@@ -534,8 +534,7 @@ public class Helper {
             
         }
     }
-    
-    
+
     /**
      * 
      * @param heading
@@ -546,44 +545,7 @@ public class Helper {
         return (heading + variation + 360) % 360;
     }
     
-    /**
-     * 
-     * @param heading
-     * @param variation
-     * @return
-     */
-    public static String incTileName(String name, int rowm, int colm) {
-        
-        /*
-         * This is all magic. Check database specification.
-         * Tiles are stored row/col as:
-         * 0/row/master_row_col where row, col have leading zeros
-         */
 
-        try {
-            /*
-             * This is all magic. Check database specification.
-             * Tiles are stored row/col as:
-             * 0/row/master_row_col where row, col have leading zeros
-             */
-            String [] tokens = name.split("[/_.]");
-    
-            int row = (Integer.parseInt(tokens[7]) + rowm);
-            int col = (Integer.parseInt(tokens[8]) + colm);
-            int lenr = tokens[7].length();
-            int lenc = tokens[8].length();
-            
-            String rformatted = String.format("%0" + lenr + "d", row);
-            String cformatted = String.format("%0" + lenc + "d", col);
-            String pre = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + tokens[4] + "/" + row + "/";
-            String post = tokens[6] + "_" + rformatted + "_" + cformatted + "." + tokens[9];
-            return(pre + post);
-        }
-        catch(Exception e) {
-        }
-        return null;
-    }
-    
     /**
      * 
      * @param data

@@ -172,8 +172,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     
     private Typeface                    mFace;
     
-    private String                      mOnChart;
-    
     /**
      * These are longitude and latitude at top left (0,0)
      */
@@ -201,9 +199,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private int                         mMacro;
 
-    private float                       mPx;
-    private float                       mPy;
-
     private int                mDragPlanPoint;
     private float                mDragStartedX;
     private float                mDragStartedY;
@@ -214,6 +209,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Paint mRunwayPaint;
     private Paint mMsgPaint;
 
+    private Tile mGpsTile;
+    
     /*
      * Text on screen color
      */
@@ -248,7 +245,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mOnChart = null;
         mTrackUp = false;
         mMacro = 1;
         mDragPlanPoint = -1;
@@ -271,9 +267,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(mFace);
         mTextPaint.setTextSize(R.dimen.TextSize);
-        
-        mPx = 1;
-        mPy = 1;
         
         /*
          * Set up the paint for misc messages to display
@@ -321,9 +314,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      */
     private void updateCoordinates() {
-        mOrigin.update(mGpsParams, mScale, mPan,
-                mMovement.getLongitudePerPixel(), mMovement.getLatitudePerPixel(),
-                getWidth(), getHeight()); 
+        mOrigin.update(mGpsTile, getWidth(), getHeight(), mGpsParams, mPan, mScale);
     }
 
     /**
@@ -634,16 +625,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Find
          */
-        if(!force) {
+        if((!force) && (mGpsTile != null)) {
             double offsets[] = new double[2];
-            double p[] = new double[2];
-                                        
-            if(mImageDataSource.isWithin(mGpsParams.getLongitude(), 
-                    mGpsParams.getLatitude(), offsets, p)) {
+
+            if(mGpsTile.within(mGpsParams.getLongitude(), mGpsParams.getLatitude())) {
                 /*
                  * We are within same tile no need for query.
                  */
-                mMovement = new Movement(offsets, p);
+            	offsets[0] = mGpsTile.getOffsetX(mGpsParams.getLongitude());
+            	offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
+                mMovement = new Movement(offsets);
                 postInvalidate();
                 return;
             }
@@ -719,7 +710,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      */
                     Helper.invertCanvasColors(mPaint);
                 }
-                else if(mPref.getChartType().equals("5")) {
+                else if(mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
                     /*
                      * Terrain
                      */
@@ -759,7 +750,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(empty >= tn) {
                 mMsgPaint.setColor(Color.WHITE);
                 mService.getShadowedText().draw(canvas, mMsgPaint,
-                        mContext.getString(R.string.MissingMaps) + "- " + mOnChart, 
+                        mContext.getString(R.string.MissingMaps),
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
@@ -798,12 +789,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mPaint.setShadowLayer(0, 0, 0, 0);
             Style style = mPaint.getStyle();
             mPaint.setStyle(Style.STROKE);
-            float radius = Math.abs((float)((GameTFR.RADIUS_NM * Preferences.NM_TO_LATITUDE) * (1.0 / mMovement.getLatitudePerPixel()) * mScale.getScaleCorrected()));
             for(int shape = 0; shape < GameTFR.GAME_TFR_COORDS.length; shape++) {
                 double lat = GameTFR.GAME_TFR_COORDS[shape][0];
                 double lon = GameTFR.GAME_TFR_COORDS[shape][1];
                 float x = (float)mOrigin.getOffsetX(lon);
                 float y = (float)mOrigin.getOffsetY(lat);
+                float radius = mOrigin.getPixelsInNmAtLatitude(GameTFR.RADIUS_NM, lat);
                 canvas.drawCircle(x, y, radius, mPaint);
             }
             mPaint.setStyle(style);
@@ -890,7 +881,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         mPaint.setAlpha(mPref.showRadar());
-        mService.getRadar().draw(canvas, mPaint, mOrigin, mScale, mPx, mPy);
+        mService.getRadar().draw(canvas, mPaint, mOrigin);
         mPaint.setAlpha(255);
 
     }
@@ -926,27 +917,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
 
+        // Draw all nexrad blocks
         for(int i = 0; i < bitmaps.size(); i++) {
             int key = bitmaps.keyAt(i);
             NexradBitmap b = bitmaps.get(key);
-            BitmapHolder bitmap = b.getBitmap();
-            if(null != bitmap) {          
-                /*
-                 * draw them scaled.
-                 */
-                float scalex = (float)(b.getScaleX() / mPx);
-                float scaley = (float)(b.getScaleY() / mPy);
-                float x = (float)mOrigin.getOffsetX(b.getLonTopLeft());
-                float y = (float)mOrigin.getOffsetY(b.getLatTopLeft());
-                bitmap.getTransform().setScale(scalex * mScale.getScaleFactor(), 
-                        scaley * mScale.getScaleCorrected());
-                bitmap.getTransform().postTranslate(x, y);
-                if(bitmap.getBitmap() != null) {
-                    mPaint.setAlpha(mPref.showRadar());
-                    canvas.drawBitmap(bitmap.getBitmap(), bitmap.getTransform(), mPaint);
-                    mPaint.setAlpha(255);
-                }
-            }
+            b.draw(canvas, mPaint, mOrigin, mPref);
         }
     }
 
@@ -1334,7 +1309,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	        if(mService != null && mPointProjection == null) {
 		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
 		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
-		        float pixPerNm = mMovement.getNMPerLatitude(mScale);
+		        float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
 		      	mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y, 
 		      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
 	        }
@@ -1513,7 +1488,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         else {
             mGpsParams = new GpsParams(null);
         }
-        mScale.setScaleAt(mGpsParams.getLatitude());
         dbquery(true);
         postInvalidate();
 
@@ -1591,20 +1565,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     continue;
                 }
                 
-                if(mImageDataSource == null) {
-                    continue;
-                }
-                
                 /*
                  * Now draw in background
                  */
-                int level = mScale.downSample();
-                gpsTile = mImageDataSource.findClosest(lon, lat, offsets, p, level);
-                
-                if(gpsTile == null) {
-                    continue;
-                }
-                
+                gpsTile = new Tile(mContext, mPref, lon, lat, (double)mScale.downSample());
+
+            	offsets[0] = gpsTile.getOffsetX(lon);
+            	offsets[1] = gpsTile.getOffsetY(lat);
+            	p[0] = gpsTile.getPx();
+            	p[1] = gpsTile.getPy();
+
                 float factor = (float)mMacro / (float)mScale.getMacroFactor();
 
                 /*
@@ -1616,11 +1586,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 movex = pan.getTileMoveXWithoutTear();
                 movey = pan.getTileMoveYWithoutTear();
                 
-                String newt = gpsTile.getNeighbor(movey, movex);
-                centerTile = mImageDataSource.findTile(newt);
-                if(null == centerTile) {
-                    continue;
-                }
+                centerTile = new Tile(mContext, mPref, gpsTile, movex, movey);
     
                 /*
                  * Neighboring tiles with center and pan
@@ -1629,9 +1595,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 tileNames = new String[mService.getTiles().getTilesNum()];
                 int ty = (int)(mService.getTiles().getYTilesNum() / 2);
                 int tx = (int)(mService.getTiles().getXTilesNum() / 2);
-                for(int tiley = -ty; tiley <= ty; tiley++) {
+                for(int tiley = ty; tiley >= -ty; tiley--) {
                     for(int tilex = -tx; tilex <= tx; tilex++) {
-                        tileNames[i++] = centerTile.getNeighbor(tiley, tilex);
+                        tileNames[i++] = centerTile.getTileNeighbor(tilex, tiley);
                     }
                 }
 
@@ -1656,8 +1622,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 t.movex = movex;
                 t.movey = movey;
                 t.centerTile = centerTile;
+                t.gpsTile = gpsTile;
                 t.offsets = offsets;
-                t.p = p;
                 t.factor = factor;
                 
                 Message m = mHandler.obtainMessage();
@@ -1958,19 +1924,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Elevation tile to find AGL and ground proximity warning
                  */
-                double offsets[] = new double[2];
-                double p[] = new double[2];
-                Tile t = mImageDataSource.findElevTile(lon, lat, offsets, p, 0);
+                Tile t = new Tile(mContext, mPref, lon, lat);
 
                 mService.setElevationTile(t);
                 BitmapHolder elevBitmap = mService.getElevationBitmap();
                 double elev = -1;
-                /*
-                 * Load only if needed.
-                 */
+                // Load only if needed.
                 if(null != elevBitmap) {
-                    int x = (int)Math.round(offsets[0]);
-                    int y = (int)Math.round(offsets[1]);
+                    int x = (int)Math.round(t.getOffsetX(lon)) + elevBitmap.getWidth() / 2;
+                    int y = (int)Math.round(t.getOffsetY(lat)) + elevBitmap.getHeight() / 2;
                     if(elevBitmap.getBitmap() != null) {
                     
                         if(x < elevBitmap.getBitmap().getWidth()
@@ -2194,12 +2156,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private class TileUpdate {
         
-        private double offsets[];
-        private double p[];
+        private String chart;
+		private double offsets[];
         private int movex;
         private int movey;
         private float factor;
         private Tile centerTile;
+		protected Tile gpsTile;
         
     }
 
@@ -2229,21 +2192,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	             * Set move with pan after new tiles are finally loaded
 	             */
 	            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
-	
-	            mScale.setScaleAt(t.centerTile.getLatitude());
-	            mOnChart = t.centerTile.getChart();
-	
+
+                mGpsTile = t.gpsTile;
 	            /*
 	             * And pan
 	             */
 	            mPan.setTileMove(t.movex, t.movey);
-	            mMovement = new Movement(t.offsets, t.p);
+	            mMovement = new Movement(t.offsets);
 	            mService.setMovement(mMovement);
 	            mMacro = mScale.getMacroFactor();
 	            mScale.updateMacro();
 	            mMultiTouchC.setMacro(mMacro);
-	            mPx = (float)t.centerTile.getPx();
-	            mPy = (float)t.centerTile.getPy();
 	            updateCoordinates();
 	
 	            invalidate();

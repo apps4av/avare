@@ -40,10 +40,10 @@ public class Radar {
     private static final long EXPIRES = 1000 * 60 * 60 * 2; // 2 hours
     
     private BitmapHolder mBitmap;
-    private float mLon;
-    private float mLat;
-    private float mPx;
-    private float mPy;
+    private float mLonL;
+    private float mLatU;
+    private float mLonR;
+    private float mLatD;
     private long mDate;
 
     private Preferences mPref;
@@ -54,12 +54,11 @@ public class Radar {
     /**
      * 
      * @param ctx
-     * @param pref
      */
     public Radar(Context ctx) {
         mContext = ctx;
         mPref = new Preferences(mContext);
-        mLon = mLat = mPx = mPy = 0;
+        mLonR = mLatU = mLonL = mLatD = 0;
         mDate = 0;
         mBitmap = null;
     }
@@ -81,16 +80,16 @@ public class Radar {
                  * Read lon/lat/px/py/date
                  */
                 String line = br.readLine();
-                mPx = Float.parseFloat(line);
+                double px = Float.parseFloat(line) / 0.4; // image size if 40% of image for which px,py is given
 
                 line = br.readLine();
-                mPy = Float.parseFloat(line);
+                double py = Float.parseFloat(line) / 0.4;
                 
                 line = br.readLine();
-                mLon = Float.parseFloat(line);
+                mLonL = Float.parseFloat(line);
 
                 line = br.readLine();
-                mLat = Float.parseFloat(line);
+                mLatU = Float.parseFloat(line);
 
                 String dateText = br.readLine();
                 br.close();
@@ -105,6 +104,10 @@ public class Radar {
                  */
                 Date date = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.ENGLISH).parse(dateText);
                 mDate = date.getTime();
+
+                // Find Lon/Lat of lower right
+                mLonR = mLonL + (float)px * mBitmap.getWidth();
+                mLatD = mLatU + (float)py * mBitmap.getHeight();
             }
             catch (Exception e) {
                 return;
@@ -119,15 +122,15 @@ public class Radar {
         if(mBitmap != null) {
             mBitmap.recycle();
             mBitmap = null;
-        }        
-        mLon = mLat = mPx = mPy = 0;
+        }
+        mLonR = mLatU = mLonL = mLatD = 0;
         mDate = 0;
     }
     
     /**
      * Draw on map screen
      */
-    public void draw(Canvas canvas, Paint paint, Origin origin, Scale scale, float px, float py) {
+    public void draw(Canvas canvas, Paint paint, Origin origin) {
         
         if(null == mBitmap) {
             return;
@@ -136,17 +139,18 @@ public class Radar {
             return;
         }
         
-        float x = (float)origin.getOffsetX(mLon);
-        float y = (float)origin.getOffsetY(mLat);                        
-   
+        float x0 = (float)origin.getOffsetX(mLonL);
+        float y0 = (float)origin.getOffsetY(mLatU);
+        float x1 = (float)origin.getOffsetX(mLonR);
+        float y1 = (float)origin.getOffsetY(mLatD);
+
         /*
-         * The main image is 40% of the coordinates, hence 0.4
+         * Stretch out the image to fit the projection of US 48
          */
-        float scalex = (float)(mPx * (1 / 0.4) / px);
-        float scaley = (float)(mPy * (1 / 0.4) / py);
-        mBitmap.getTransform().setScale(scalex * scale.getScaleFactor(), 
-                scaley * scale.getScaleCorrected());
-        mBitmap.getTransform().postTranslate(x, y);
+        float scalex = (float)(x1 - x0) / mBitmap.getWidth();
+        float scaley = (float)(y1 - y0) / mBitmap.getHeight();
+        mBitmap.getTransform().setScale(scalex, scaley);
+        mBitmap.getTransform().postTranslate(x0, y0);
 
         canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
     }
