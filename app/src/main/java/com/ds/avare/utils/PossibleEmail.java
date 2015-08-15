@@ -25,7 +25,7 @@ public class PossibleEmail {
      */
     public static String[] getAll(Context ctx) {
         try{
-            Account[] accounts = AccountManager.get(ctx).getAccountsByType("com.google");
+            Account[] accounts = AccountManager.get(ctx).getAccounts();
             String emails[] = new String[accounts.length];
             for(int i = 0; i < emails.length; i++) {
             	emails[i] = accounts[i].name;
