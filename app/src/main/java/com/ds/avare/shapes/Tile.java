@@ -54,7 +54,6 @@ public class Tile {
     private String mExtension;
     private Epsg900913 mProj;
     private String mChartIndex;
-    private String mCycle;
 
     /**
      * Common function for all tile constructors.
@@ -74,7 +73,6 @@ public class Tile {
         mCol = mProj.getTilex();
         mWidth = BitmapHolder.WIDTH;
         mHeight = BitmapHolder.HEIGHT;
-        mCycle = NetworkHelper.getVersion(pref.getCycleAdjust());
     }
     
     /**
@@ -100,7 +98,6 @@ public class Tile {
      * @param pref
      * @param lon
      * @param lat
-     * @param chart
      */
     public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
     	mChartIndex = pref.getChartType();
@@ -127,7 +124,6 @@ public class Tile {
      * @param pref
      * @param lon
      * @param lat
-     * @param chart
      */
     public Tile(Context ctx, Preferences pref, double lon, double lat) {
     	mChartIndex = ELEVATION_INDEX;
@@ -197,7 +193,6 @@ public class Tile {
     
     /**
      * Find offsetY from center of tile
-     * @param lon
      * @param lat
      * @return
      */
@@ -275,8 +270,8 @@ public class Tile {
     public String getTileNeighbor(int col, int row) {
     	int coll = getNeighborCol(col);
     	int rowl = getNeighborRow(row);
-    	// form /tiles/cycle/type/zoom/col/row.jpg
-    	String name = "tiles/" + mCycle + "/" + mChartIndex 
+    	// form /tiles/type/zoom/col/row.jpg
+    	String name = "tiles/" + "/" + mChartIndex
     			+ "/" + (int)mZoom +  "/" + coll + "/" + rowl + mExtension; 
         return(name);
     }
