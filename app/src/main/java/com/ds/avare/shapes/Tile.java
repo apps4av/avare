@@ -286,6 +286,14 @@ public class Tile {
     }
 
     /**
+     *
+     * @return
+     */
+    public String getChartIndex() {
+        return mChartIndex;
+    }
+
+    /**
      * @return Name of the tile
      */
     public String getName() {

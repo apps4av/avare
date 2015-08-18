@@ -39,7 +39,7 @@ public abstract class Shape {
     protected double mLatMin;
     protected double mLatMax;
     
-    private String mText;
+    protected String mText;
     
     private Builder mPolyBuilder;
     private Polygon mPoly;

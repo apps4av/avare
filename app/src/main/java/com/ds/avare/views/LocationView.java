@@ -18,6 +18,7 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Obstacle;
@@ -210,6 +211,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Paint mMsgPaint;
 
     private Tile mGpsTile;
+
+    private String mOnChart = "";
     
     /*
      * Text on screen color
@@ -750,7 +753,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(empty >= tn) {
                 mMsgPaint.setColor(Color.WHITE);
                 mService.getShadowedText().draw(canvas, mMsgPaint,
-                        mContext.getString(R.string.MissingMaps),
+                        mContext.getString(R.string.MissingMaps) + " " + mOnChart,
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
@@ -1604,8 +1607,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
+                String chart = "";
                 try {
-                    mService.getTiles().reload(tileNames);
+                    if(!mService.getTiles().reload(tileNames)) {
+                        // If tiles not found, find name of chart we are on to show to user
+                         chart = Boundaries.getInstance().findChartOn(centerTile.getChartIndex(), centerTile.getLongitude(), centerTile.getLatitude());
+                    }
                 }
                 catch(Exception e) {
                     /*
@@ -1625,6 +1632,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 t.gpsTile = gpsTile;
                 t.offsets = offsets;
                 t.factor = factor;
+                t.chart = chart;
                 
                 Message m = mHandler.obtainMessage();
                 m.obj = t;
@@ -2194,6 +2202,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
 
                 mGpsTile = t.gpsTile;
+                mOnChart = t.chart;
 	            /*
 	             * And pan
 	             */

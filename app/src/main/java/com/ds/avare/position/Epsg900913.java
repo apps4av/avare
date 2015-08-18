@@ -78,8 +78,8 @@ public class Epsg900913 {
         //tile number is knows. Find its bounds
         mTx = tx;
         mTy = ty;
-        
-        findBounds(getResolution(zoom));
+
+        findBounds(zoom);
     }
 
 

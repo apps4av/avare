@@ -103,7 +103,7 @@ public class TileMap {
      * @return
      * @throws InterruptedException 
      */
-    public void reload(String[] tileNames) throws InterruptedException {
+    public boolean reload(String[] tileNames) throws InterruptedException {
     	HashMap<String,BitmapHolder> hm = new HashMap<String,BitmapHolder> ();
     	int freeIndex = 0;
         mapB = new BitmapHolder[numTiles];
@@ -144,21 +144,22 @@ public class TileMap {
         	}
         }
 
+        // tiles missing? if any tiles are showing, do not draw chart shapes
+        boolean showing = false;
+
         /*
          * For all tiles that will be loaded.
          */
         for(int tilen = 0; tilen < numTiles; tilen++) {
-            
-            /*
-             * Move beyond the move? interrupt.
-             */
+
+            // moved beyond view area, do again
             if(Thread.interrupted()) {
                 throw new InterruptedException();
             }
             
             if(null == tileNames[tilen]) {
                 /*
-                 * Map out?
+                 * Move beyond the map? cannot do much
                  */
                 continue;
             }
@@ -167,8 +168,10 @@ public class TileMap {
                 /*
                  * This is reused
                  */
+                showing |= mapB[tilen].getFound();
                 continue;
             }
+
             /*
              * Pull a free bitmap off the list
              */
@@ -178,9 +181,6 @@ public class TileMap {
             	h = mFreeList[freeIndex];
             }
             if(h != null) {
-                /*
-                 * At max scale, down sample by down sampling
-                 */
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
                 if(b.getBitmap() == null) {
                     h.setFound(false);
@@ -193,8 +193,10 @@ public class TileMap {
                 b.recycle();
                 b = null;
                 mapB[tilen] = h;
+                showing |= mapB[tilen].getFound();
             }
         }
+        return showing;
     }
 
     /**
