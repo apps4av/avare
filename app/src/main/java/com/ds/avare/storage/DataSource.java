@@ -317,12 +317,4 @@ public class DataSource {
     	return dbHelper.findRatings(name);
 	}
 
-    /**
-     *
-     * @param name
-     * @return
-     */
-    public String getTileZipName(String name) {
-        return dbHelper.findTileZipName(name);
-    }
 }

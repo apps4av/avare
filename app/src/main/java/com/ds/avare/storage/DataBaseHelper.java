@@ -53,7 +53,6 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBase; 
     private SQLiteDatabase mDataBaseProcedures;
     private SQLiteDatabase mDataBasePlates;
-    private SQLiteDatabase mDataBaseTileName;
     private SQLiteDatabase mDataBaseGeoPlates;
     private SQLiteDatabase mDataBaseFuel; 
     private SQLiteDatabase mDataBaseRatings; 
@@ -75,7 +74,6 @@ public class DataBaseHelper  {
      */
     private Integer mUsers;
     private Integer mUsersPlates;
-    private Integer mUsersTileName;
     private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
@@ -151,7 +149,7 @@ public class DataBaseHelper  {
      */
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
-        mUsers = mUsersWeather = mUsersPlates = mUsersGeoPlates = mUsersTileName = mUsersProcedures = mUsersFuel = mUsersRatings = 0;
+        mUsers = mUsersWeather = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersFuel = mUsersRatings = 0;
         mContext = context;
     }
 
@@ -2709,117 +2707,5 @@ public class DataBaseHelper  {
 	}
 
 
-    /**
-     *
-     * @param statement
-     * @return
-     */
-    private Cursor doQueryTileName(String statement, String name) {
-        Cursor c = null;
-
-        String path = mPref.mapsFolder() + "/" + name;
-        if(!(new File(path).exists())) {
-            return null;
-        }
-
-        /*
-         *
-         */
-        synchronized(mUsersTileName) {
-            if(mDataBaseTileName == null) {
-                mUsersTileName = 0;
-                try {
-
-                    mDataBaseTileName = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
-                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-                }
-                catch(RuntimeException e) {
-                    mDataBaseTileName = null;
-                }
-            }
-            if(mDataBaseTileName == null) {
-                return c;
-            }
-            mUsersTileName++;
-        }
-
-        /*
-         * In case we fail
-         */
-
-        if(mDataBaseTileName == null) {
-            return c;
-        }
-
-        if(!mDataBaseTileName.isOpen()) {
-            return c;
-        }
-
-        /*
-         * Find with sqlite query
-         */
-        try {
-            c = mDataBaseTileName.rawQuery(statement, null);
-        }
-        catch (Exception e) {
-            c = null;
-        }
-
-        return c;
-    }
-
-
-    /**
-     * Close database
-     */
-    private void closesTileName(Cursor c) {
-        try {
-            if(null != c) {
-                c.close();
-            }
-        }
-        catch (Exception e) {
-
-        }
-
-        synchronized(mUsersTileName) {
-            mUsersTileName--;
-            if((mDataBaseTileName != null) && (mUsersTileName <= 0)) {
-                try {
-                    mDataBaseTileName.close();
-                }
-
-
-                catch (Exception e) {
-                }
-                mDataBaseTileName = null;
-                mUsersTileName = 0;
-            }
-        }
-    }
-
-
-    /**
-     *
-     * @param name
-     * @return
-     */
-    public String findTileZipName(String name) {
-
-        String ret = null;
-        String qry = "select zip from tiles where tile =='" + name + "'";
-        Cursor cursor = doQueryTileName(qry, "tiles.db");
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    ret = cursor.getString(0);
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closesTileName(cursor);
-        return ret;
-    }
 
 }
