@@ -1,5 +1,5 @@
-# Copyright (c) 2012, Zubair Khan (governer@gmail.com)
-# Copyright (c) 2013, Peter A. Gustafson (peter.gustafson@wmich.edu)
+# Copyright (c) 2015 Apps4Av Inc.
+# Author Zubair Khan (governer@gmail.com), Peter A. Gustafson (peter.gustafson@wmich.edu)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
