@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
-#Copyright (c) 2012, Zubair Khan (governer@gmail.com)
+#Copyright (c) 2015, Apps4Av Inc.
+#Author Zubair Khan (governer@gmail.com)
 #All rights reserved.
 #
 #Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
