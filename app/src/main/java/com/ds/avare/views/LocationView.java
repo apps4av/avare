@@ -1601,7 +1601,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * destroy our Pan information.
                  */
                 Pan pan = new Pan(mPan);
-                pan.setMove((float)(mPan.getMoveX() * factor), (float)(mPan.getMoveY() * factor));
+                double n_x = mPan.getMoveX();
+                double n_y = mPan.getMoveY();
+
+                if ( mTrackUp) {
+                    double p[] = new double[2];
+                    double thetab = mGpsParams.getBearing();
+                    p = rotateCoord(0.0, 0.0, thetab, n_x, n_y);
+                    pan.setMove((float)(p[0]*factor), (float)(p[1]*factor));
+                }
+                else {
+                    pan.setMove((float) (n_x * factor), (float) (n_y * factor));
+                }
                 movex = pan.getTileMoveXWithoutTear();
                 movey = pan.getTileMoveYWithoutTear();
                 
@@ -2093,10 +2104,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         double prc_x = x - c_x;
         double prc_y = y - c_y;
         double r = Math.sqrt(prc_x * prc_x + prc_y * prc_y);
-        double theta = Math.atan2(prc_y, prc_x) * 180.0 / Math.PI;
-        theta = theta + thetab;
-        double pc_x = r * Math.cos(theta * Math.PI / 180.0);
-        double pc_y = r * Math.sin(theta * Math.PI / 180.0);
+        double theta = Math.atan2(prc_y, prc_x) ;
+        theta = theta + thetab* Math.PI / 180.0;
+        double pc_x = r * Math.cos(theta );
+        double pc_y = r * Math.sin(theta);
         double p[]=new double[2];
         p[0] = pc_x + c_x;
         p[1] = pc_y + c_y;
