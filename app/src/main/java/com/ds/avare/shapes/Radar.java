@@ -11,22 +11,22 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.shapes;
 
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
+import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.Origin;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-
-import com.ds.avare.position.Origin;
-import com.ds.avare.position.Scale;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -62,7 +62,35 @@ public class Radar {
         mDate = 0;
         mBitmap = null;
     }
-    
+
+    /**
+     * Parse lon / lat from line in nexrad
+     * @param line
+     * @return
+     */
+    private Coordinate parseLonLat(String line) {
+
+        //127d37'45.70"W, 50d24'56.20"N
+        double lon, lat;
+        line = line.replaceAll(" ", "");
+        String tokens[] = line.split("[d'\",]");
+        try {
+            lon = Double.parseDouble(tokens[0]) + Double.parseDouble(tokens[1]) / 60.0 + Double.parseDouble(tokens[2]) / 3600.0;
+            if (tokens[3].equals("W")) {
+                lon = -lon;
+            }
+            lat = Double.parseDouble(tokens[4]) + Double.parseDouble(tokens[5]) / 60.0 + Double.parseDouble(tokens[6]) / 3600.0;
+            if (tokens[7].equals("S")) {
+                lat = -lat;
+            }
+        }
+        catch (Exception e) {
+            return null;
+        }
+
+        return new Coordinate(lon, lat);
+    }
+
     /**
      * 
      */
@@ -77,19 +105,24 @@ public class Radar {
                 br = new BufferedReader(new FileReader(mText));
                 
                 /*
-                 * Read lon/lat/px/py/date
+                 * Read lon/lat/date
                  */
                 String line = br.readLine();
-                double px = Float.parseFloat(line) / 0.4; // image size if 40% of image for which px,py is given
-
+                Coordinate c = parseLonLat(line);
+                if(c == null) {
+                    return;
+                }
+                mLatU = (float)c.getLatitude();
+                mLonL = (float)c.getLongitude();
                 line = br.readLine();
-                double py = Float.parseFloat(line) / 0.4;
-                
                 line = br.readLine();
-                mLonL = Float.parseFloat(line);
-
                 line = br.readLine();
-                mLatU = Float.parseFloat(line);
+                c = parseLonLat(line);
+                if(c == null) {
+                    return;
+                }
+                mLatD = (float)c.getLatitude();
+                mLonR = (float)c.getLongitude();
 
                 String dateText = br.readLine();
                 br.close();
@@ -105,9 +138,6 @@ public class Radar {
                 Date date = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.ENGLISH).parse(dateText);
                 mDate = date.getTime();
 
-                // Find Lon/Lat of lower right
-                mLonR = mLonL + (float)px * mBitmap.getWidth();
-                mLatD = mLatU + (float)py * mBitmap.getHeight();
             }
             catch (Exception e) {
                 return;
