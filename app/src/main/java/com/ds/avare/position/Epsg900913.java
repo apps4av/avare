@@ -16,6 +16,8 @@ import com.ds.avare.utils.BitmapHolder;
 
 /**
  * A class that finds tile at a give location and zooms
+ * See gdal2tiles.py.
+ * Optimized to use tables at run time, and avoid divisions
  * @author zkhan
  *
  */
@@ -25,8 +27,63 @@ public class Epsg900913 {
      * To get tile info.
      */
     private static final double SIZE = BitmapHolder.HEIGHT;
+    private static final double SIZE_INV = 1.0 / BitmapHolder.HEIGHT;
 	private static final double ORIGIN_SHIFT = 2 * Math.PI * 6378137.0 / 2.0;
     private static final double INITIAL_RESOLUTION = 2 * Math.PI * 6378137.0 / SIZE;
+    private static final double PI_180 = Math.PI / 180.0;
+    private static final double PI_2 = Math.PI / 2.0;
+    private static final double PI_360 = Math.PI / 360.0;
+    private static final double PI_180INV = 1.0 / PI_180;
+    private static final double ORIGIN_SHIFT_180 = ORIGIN_SHIFT / 180.0;
+    private static final double ORIGIN_SHIFT_180INV = 1.0 / ORIGIN_SHIFT_180;
+
+    // Make a zoom table for resolution so we dont have to compute it often
+    private static double zoomTable[] = {
+            INITIAL_RESOLUTION / Math.pow(2, 0),
+            INITIAL_RESOLUTION / Math.pow(2, 1),
+            INITIAL_RESOLUTION / Math.pow(2, 2),
+            INITIAL_RESOLUTION / Math.pow(2, 3),
+            INITIAL_RESOLUTION / Math.pow(2, 4),
+            INITIAL_RESOLUTION / Math.pow(2, 5),
+            INITIAL_RESOLUTION / Math.pow(2, 6),
+            INITIAL_RESOLUTION / Math.pow(2, 7),
+            INITIAL_RESOLUTION / Math.pow(2, 8),
+            INITIAL_RESOLUTION / Math.pow(2, 9),
+            INITIAL_RESOLUTION / Math.pow(2, 10),
+            INITIAL_RESOLUTION / Math.pow(2, 11),
+            INITIAL_RESOLUTION / Math.pow(2, 12),
+            INITIAL_RESOLUTION / Math.pow(2, 13),
+            INITIAL_RESOLUTION / Math.pow(2, 14),
+            INITIAL_RESOLUTION / Math.pow(2, 15),
+            INITIAL_RESOLUTION / Math.pow(2, 16),
+            INITIAL_RESOLUTION / Math.pow(2, 17),
+            INITIAL_RESOLUTION / Math.pow(2, 18),
+            INITIAL_RESOLUTION / Math.pow(2, 19),
+    };
+
+    // Make a zoom table for resolution so we dont have to compute it often
+    private static double zoomTableInv[] = {
+            1.0 / zoomTable[0],
+            1.0 / zoomTable[1],
+            1.0 / zoomTable[2],
+            1.0 / zoomTable[3],
+            1.0 / zoomTable[4],
+            1.0 / zoomTable[5],
+            1.0 / zoomTable[6],
+            1.0 / zoomTable[7],
+            1.0 / zoomTable[8],
+            1.0 / zoomTable[9],
+            1.0 / zoomTable[10],
+            1.0 / zoomTable[11],
+            1.0 / zoomTable[12],
+            1.0 / zoomTable[13],
+            1.0 / zoomTable[14],
+            1.0 / zoomTable[15],
+            1.0 / zoomTable[16],
+            1.0 / zoomTable[17],
+            1.0 / zoomTable[18],
+            1.0 / zoomTable[19],
+    };
 
     private int mTx;
     private int mTy;
@@ -87,26 +144,30 @@ public class Epsg900913 {
      * Misc. calls
      */
     public static double getResolution(double zoom) {
-        return INITIAL_RESOLUTION / Math.pow(2, zoom);
+        return zoomTable[(int)zoom];
+    }
+
+    public static double getInvResolution(double zoom) {
+        return zoomTableInv[(int)zoom];
     }
 
     public static double latToMeters(double lat) {
-        double my = Math.log(Math.tan((90.0 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0);
-        return my * ORIGIN_SHIFT / 180.0;
+        double my = Math.log(Math.tan((90.0 + lat) * PI_360)) * PI_180INV;
+        return my * ORIGIN_SHIFT_180;
     }
 
     public static double lonToMeters(double lon) {
-        return lon * ORIGIN_SHIFT / 180.0;
+        return lon * ORIGIN_SHIFT_180;
     }
 
     public static double metersToLat(double my) {
-        double lat = (my / ORIGIN_SHIFT) * 180.0;
-        lat = 180.0 / Math.PI * (2.0 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
+        double lat = my * ORIGIN_SHIFT_180INV;
+        lat = PI_180INV * (2.0 * Math.atan(Math.exp(lat * PI_180)) - PI_2);
         return lat;
     }
 
     public static double metersToLon(double mx) {
-        return (mx / ORIGIN_SHIFT) * 180.0;
+        return (mx * ORIGIN_SHIFT_180INV);
     }
 
     public static double xPixelsToMeters(double zoom, double px) {
@@ -118,19 +179,19 @@ public class Epsg900913 {
     }
 
     public static double xMetersToPixels(double zoom, double mx) {
-        return (mx + ORIGIN_SHIFT) / getResolution(zoom);
+        return (mx + ORIGIN_SHIFT) * getInvResolution(zoom);
     }
 
     public static double yMetersToPixels(double zoom, double my) {
-        return (my + ORIGIN_SHIFT) / getResolution(zoom);
+        return (my + ORIGIN_SHIFT) * getInvResolution(zoom);
     }
 
     public static int xPixelsToTile(double px) {
-        return (int)(Math.ceil(px / SIZE) - 1);
+        return (int)(Math.ceil(px * SIZE_INV) - 1);
     }
 
     public static int yPixelsToTile(double py) {
-        return (int)(Math.ceil(py / SIZE) - 1);
+        return (int)(Math.ceil(py * SIZE_INV) - 1);
     }
 
     public static int xMetersToTile(double zoom, double mx) {
