@@ -25,7 +25,6 @@ import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.os.Environment;
-import android.util.Log;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
