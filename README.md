@@ -1,5 +1,4 @@
-avare
-[![Build Status](https://travis-ci.org/annerajb/avare.svg?branch=travis)](https://travis-ci.org/annerajb/avare)
+#avare [![Build Status](https://travis-ci.org/annerajb/avare.svg?branch=travis)](https://travis-ci.org/annerajb/avare)
 =====
 
 
