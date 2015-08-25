@@ -1,5 +1,6 @@
-avare
+#avare [![Build Status](https://travis-ci.org/annerajb/avare.svg?branch=travis)](https://travis-ci.org/annerajb/avare)
 =====
+
 
 Avare Aviation GPS for Android.
 
