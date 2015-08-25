@@ -1,6 +1,5 @@
-//+++2013-01-10
-//    Copyright (C) 2013, Mike Rieker, Beverly, MA USA
-//    Avare, open source moving map aviation GPS (support@apps4av.net)
+//+++2015-07-02
+//    Copyright (C) 2013, 2014, 2015, Mike Rieker, Beverly, MA USA
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -16,23 +15,93 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
+//---2015-07-02
 
 /**
  *  Read an airport diagram .PNG file and find the lat/lon marks and correlate them to pixel number.
  *
- *  yum install libgdiplus
- *  yum install libgdiplus-devel
+ *  yum install ghostscript
+ *  yum install libexif-0.6.21-6.el7.x86_64 giflib-4.1.6-9.el7.x86_64
+ *  rpm -ihv libgdiplus-2.10-9.el7.x86_64.rpm
+ *  ln -s /lib64/libgdiplus.so.0 /lib64/libgdiplus.so
  *  gmcs -debug -out:ReadArptDgmPng.exe -reference:System.Drawing.dll ReadArptDgmPng.cs
  *
  *  Download airport diagram PDF file from http://www.faa.gov/airports/runway_safety/diagrams/
+ *
  *  Convert to png with:
  *    gs -q -dQuiet -dSAFER -dBATCH -dNOPAUSE -dNOPROMT -dMaxBitmap=500000000 -dAlignToPixels=0 -dGridFitTT=2 \
  *        -sDEVICE=pngalpha -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r300x300 -dFirstPage=1 -dLastPage=1 \
  *        -sOutputFile=<pngname> <pdfname>
- *  mono --debug ReadArptDgmPng.exe <pngname> ...
  *
+ *    mono --debug ReadArptDgmPng.exe -verbose aptdiags_300_20150108/BPT.png \
+ *        -csvoutfile BPT.csv -csvoutid BPT
  */
+
+/*
+    Basic algorithm:
+     1) Read png file into bitmap so we have an array of pixels.
+     2) Make a monochromatic (strict black-and-white) version of the bitmap.
+        Any pixel with a>200, r<100, g<100 and b<100 is considered black.
+        This makes the bitmap easy to work with by eliminating all the gray and colored areas.
+     3) Remove margin stuff up to and including border lines.
+        For each of the 4 edges:
+            Scan inward until a full minimum sized row or column of black pixels is found,
+            continuing to scan inward until some white pixels are found.  Then clear up to
+            and including all the black rows or columns found.
+     4) Clear out any large black blobs (ie, anything 4x4 or bigger).
+        This gets rid of most buildings and runways etc.
+        It leaves the tick-marked lat/lon lines intact.
+        Do not clear 3x3 blobs because some lat/lon lines are that thick.
+     5) Clear out any isolated figures 50x50 pixels or smaller.
+        This also gets rid of a lot of edge junk left over by the large black blob filtering.
+     6) Repeat the following using slopesz of 24,26,28,30,32,34,36,38:
+         a) Scan the image for a slopesz x slopesz sized rectangle of pixels that has these characteristics:
+            - a black pixel in the center (so we get our potential line segment nearly centerd in the box for
+              best measurement)
+            - exactly two contiguous black pixel groups around its perimeter
+              (so we have something to measure the slope of)
+            - those two perimeter points must be on exact opposite sides of the rectangle +/- 1 pixel
+                which means we presume it is a line segment going through the center of the rectangle
+            - near the center there is a barb of pixels perpendicular to the presumed line
+              between the two perimeter points (so we know we have a lat/lon line and not just some stray mark)
+            - either every row of the box must be occupied by at least one black pixel or
+              at least one column must be occupied by at least one black pixel (so we know we have a continuous
+              line and not a group of stray marks)
+         b) Measure the slope by using the two points found on the perimeter.  Use average if the line is thicker
+            than one pixel.
+         c) Save the line segment in a list, grouping them by slope.
+        Repeat using different sizes as the barbs cannot penetrate the perimeter of the box (as it would make a
+        third group of black pixels).  By having that restriction, we limit the size of the barbs we accept and so
+        we don't get fooled by lines that are part of stray boxes.
+     7) Look for the most frequently appearing slope and consider it to be the major slope.
+        Find the most popular minor slope by looking at those with a near negative reciprocal.
+        We don't yet know which are lats and which are lons yet though.
+     8) Rotate the original colored image by the major angle so as to make the lat/lon lines strictly vertical and
+        horizontal.  Then monochromaticise it to make scanning for character strings easier.
+     9) Build a list of where the rotated lat/lon lines end up in the rotated image.  Each will need just an
+        X or a Y to describe it.
+    10) Scan rotated image for groups of pixels that fit in a 30 x 30 or smaller rectangle.
+    11) For each box found, try to classify it as one of the characters we care about, ie, 0-9, ^, ', ., N, S, E, W.
+         a) normalize char box size to 13x17 grayscale pixels
+         b) compare normalized char to idealized grayscale 13x17 characters, pixel by pixel,
+            creating a sum of squared differences
+         c) choose the char that has the smallest difference sum as the proper decoding
+        Crude but effective.
+    12) Sort where those chars were found by ascending X-axis value (with Y-axis value as a minor key).
+    13) Build strings of proper lat/lon form from that list, by scanning it left to right, considering only characters
+        that have the same approximate Y value for any given scan.
+        Repeat this step in all 4 orientations of the image as various diagrams have the strings drawn in all ways.
+    14) For each string found, associate it with nearest lat/lon tick marked lines.
+    15) Determine if the rotated image (from step 8) is considered portrait or landscape by looking at the association
+        of lat/lon strings with vertical/horizontal lat/lon tick marked lines.  Note that some lat/lon strings may be
+        near both an horizontal and vertical tick marked line.  We simply use those that have a unique association and
+        then impose that association on the ambiguous ones based on whether they are N/S or E/W.
+        Portrait means lat lines are horizontal, Landscape means lat lines are vertical in the rotated image.
+    16) Validate the result by checking that the resultant pixels are square (lat/lon-wise) and all of the found lat
+        and all of the found lon markers are evenly spaced.  This checks to see that we didn't misread anything.
+    17) Generate resultant latlon<->pixel conversion matrices by using the spacing and tagging of the lat/lon tick
+        marked lines and the angle used to rotate the image.
+*/
 
 using System;
 using System.Collections.Generic;
@@ -324,42 +393,73 @@ public class ReadArptDgmPng {
          * List any here.
          */
         badStrings = new Dictionary<string,string> ();
-        badStrings["29^42'5'N"]  = "29^42.5'N";     // KBAZ
-        badStrings["29^02.5'W"]  = "29^02.5'N";     // KEVB
-        badStrings["29^03.0'W"]  = "29^03.0'N";     // KEVB
-        badStrings["29^03.5'W"]  = "29^03.5'N";     // KEVB
-        badStrings["29^04.0'W"]  = "29^04.0'N";     // KEVB
-        badStrings["73^24.5'"]   = "73^24.5'W";     // KFRG
-        badStrings["73^25.0'"]   = "73^25.0'W";     // KFRG
-        badStrings["44^05'N"]    = "--";            // KGTB
-        badStrings["86^41W"]     = "86^41'W";       // KHRT
-        badStrings["38^58.0N"]   = "38^58.0'N";     // KLXT
-        badStrings["31^41.5'N"]  = "32^41.5'N";     // KMCN
-        badStrings["85^42'30\""] = "85^42'30\"W";   // KOZR
-        badStrings["88^46.0'N"]  = "88^46.0'W";     // KPAH
-        badStrings["88^46.5'N"]  = "88^46.5'W";     // KPAH
-        badStrings["88^47.0'N"]  = "88^47.0'W";     // KPAH
-        badStrings["73^27.0'N"]  = "73^27.0'W";     // KPBG
-        badStrings["73^28.0'N"]  = "73^28.0'W";     // KPBG
-        badStrings["73^29.0'N"]  = "73^29.0'W";     // KPBG
+        badStrings["AVL:86^32.0'W"]  = "82^32.0'W";
+        badStrings["BAZ:29^42'5'N"]  = "29^42.5'N";
+        badStrings["BNA:36^06'W"]    = "36^06'N";
+        badStrings["BNA:36^07'W"]    = "36^07'N";
+        badStrings["BNA:36^08'W"]    = "36^08'N";
+        badStrings["BNA:36^09'W"]    = "36^09'N";
+        badStrings["DVL:48^06.5'W"]  = "48^06.5'N";
+        badStrings["DVL:48^07.0'W"]  = "48^07.0'N";
+        badStrings["DVL:48^07.5'W"]  = "48^07.5'N";
+        badStrings["DVL:98^55.0W"]   = "98^55.0'W";
+        badStrings["EAT:47^23.5'"]   = "47^23.5'N";
+        badStrings["EAT:47^24.0'"]   = "47^24.0'N";
+        badStrings["EAT:47^24.5'"]   = "47^24.5'N";
+        badStrings["EAT:120^12.0'"]  = "120^12.0'W";
+        badStrings["EAT:120^12.5'"]  = "120^12.5'W";
+        badStrings["EAT:120^13.0'"]  = "120^13.0'W";
+        badStrings["EVB:29^02.5'W"]  = "29^02.5'N";
+        badStrings["EVB:29^03.0'W"]  = "29^03.0'N";
+        badStrings["EVB:29^03.5'W"]  = "29^03.5'N";
+        badStrings["EVB:29^04.0'W"]  = "29^04.0'N";
+        badStrings["FRG:73^24.5'"]   = "73^24.5'W";
+        badStrings["FRG:73^25.0'"]   = "73^25.0'W";
+        badStrings["GTB:44^05'N"]    = "--";
+        badStrings["HRT:86^41W"]     = "86^41'W";
+        badStrings["LNS:40^07.0'W"]  = "40^07.0'N";
+        badStrings["LNS:40^07.5'W"]  = "40^07.5'N";
+        badStrings["LXT:38^58.0N"]   = "38^58.0'N";
+        badStrings["MBL:44^16.0\"N"] = "44^16.0'N";
+        badStrings["MCN:31^41.5'N"]  = "32^41.5'N";
+        badStrings["MSY:90^16'W"]    = "90^17'W";
+        badStrings["OZR:85^42'30\""] = "85^42'30\"W";
+        badStrings["PAH:88^46.0'N"]  = "88^46.0'W";
+        badStrings["PAH:88^46.5'N"]  = "88^46.5'W";
+        badStrings["PAH:88^47.0'N"]  = "88^47.0'W";
+        badStrings["PBG:73^27.0'N"]  = "73^27.0'W";
+        badStrings["PBG:73^28.0'N"]  = "73^28.0'W";
+        badStrings["PBG:73^29.0'N"]  = "73^29.0'W";
+        badStrings["SJC:121^55'N"]   = "121^55'W";
+        badStrings["SJC:121^56'N"]   = "121^56'W";
 
         // technically not a broken chart
         // but characters on ends obscured by chart graphics
-        badStrings["31^32.0'"]   = "31^32.0'N";     // KABY
-        badStrings["33^39'"]     = "33^39'N";       // KATL
-        badStrings["0^37.0'N"]   = "30^37.0'N";     // KFHB
-        badStrings["1^40.0'N"]   = "41^40.0'N";     // KFMH
-        badStrings["79^^00'W"]   = "79^00'W";       // KPOB
-        badStrings["8^54.5'N"]   = "38^54.5'N";     // KTVL
-        badStrings["83^36'"]     = "83^36'W";       // KWRB
+        badStrings["ABY:31^32.0'"]   = "31^32.0'N";
+        badStrings["ACK:1^15.0'N"]   = "41^15.0'N";
+        badStrings["ATL:33^39'"]     = "33^39'N";
+        badStrings["FHB:0^37.0'N"]   = "30^37.0'N";
+        badStrings["FMH:1^40.0'N"]   = "41^40.0'N";
+        badStrings["POB:79^^00'W"]   = "79^00'W";
+        badStrings["SAV:2^08'N"]     = "32^08'N";
+        badStrings["SEE:16^58.0'W"]  = "116^58.0'W";
+        badStrings["TVL:8^54.5'N"]   = "38^54.5'N";
+        badStrings["WRB:83^36'"]     = "83^36'W";
+
+        // simply misread strings
+        badStrings["BPT:96^01.0'W"]  = "94^01.0'W";
+        badStrings["NSI:33^1S"]      = "33^15'N";
+        badStrings["NSI:33'^14'N"]   = "33^14'N";
+        badStrings["POB:^10'N"]      = "35^10'N";
+        badStrings["PVD:2112071^26.0'W"] = "71^26.0'W";
+        badStrings["RND:^29^31'N"]   = "29^31'N";
 
         /*
          * Non-square pixels.
-         * Index is the lowestlat,lowestlon for the airport.
          * Value is our computed non-square ratio.
          */
-        notsquare["31^08'N,97^43'W"]   = 1.094;     // KHLR
-        notsquare["38^30'N,77^18.5'W"] = 0.664;     // KNYG
+        notsquare["HLR"] = 1.094;
+        notsquare["NYG"] = 0.664;
 
         /*
          * Some charts just have one latitude or longitude line.
@@ -378,7 +478,7 @@ public class ReadArptDgmPng {
 
         /*
          * Rotate the original image such that the lat/lon lines are
-         * vertical & horizontal, and presumable so the lat/lon strings
+         * vertical & horizontal, and presumably so the lat/lon strings
          * will also be vertical & horizontal.
          */
         CreateRotatedImage ();
@@ -406,9 +506,9 @@ public class ReadArptDgmPng {
 
     usage:
         Console.WriteLine ("usage: mono ReadArptDgmPng.exe <inputpngfile>");
-        Console.WriteLine ("           -csvoutfile <filename>         - append data to given file");
+        Console.WriteLine ("           -csvoutfile <filename>         - write data to given file");
         Console.WriteLine ("           -csvoutid <airportid>          - use this airport id in csvoutfile");
-        Console.WriteLine ("           -givens \"x,y=string\" ...       - learning mode");
+        Console.WriteLine ("           -givens \"x,y=string\" ...     - learning mode");
         Console.WriteLine ("           -markedpng <outputpngfilename> - write out marked-up png file");
         Console.WriteLine ("           -stages                        - create intermediate png files (debugging)");
         Console.WriteLine ("           -verbose                       - output intermediate messages (debugging)");
@@ -475,7 +575,7 @@ public class ReadArptDgmPng {
                     int dx = x2 - x1;
                     int dy = y2 - y1;
                     if (verbose) {
-                        Console.WriteLine ("    line: " + x1 + "," + y1 + " .. " + x2 + "," + y2 + 
+                        Console.WriteLine ("    line: " + x1 + "," + y1 + " .. " + x2 + "," + y2 +
                                            " = " + ((double)dy / (double)dx));
                     }
                     if (stages) {
@@ -513,7 +613,7 @@ public class ReadArptDgmPng {
         bestSlope.GetFineSlope (out latLonSlopeX, out latLonSlopeY);
         double majorangle = Math.Atan2 (latLonSlopeY, latLonSlopeX) * 180.0 / Math.PI;
         if (verbose) {
-            Console.WriteLine ("major slope " + bestdy + "/" + bestdx + " = " + 
+            Console.WriteLine ("major slope " + bestdy + "/" + bestdx + " = " +
                                latLonSlopeY + "/" + latLonSlopeX + " = " + majorangle);
         }
         double llsl = Math.Sqrt (latLonSlopeX * latLonSlopeX + latLonSlopeY * latLonSlopeY);
@@ -561,7 +661,7 @@ public class ReadArptDgmPng {
             latLonSlopeX = tmp;
         }
         if (verbose) {
-            Console.WriteLine ("lat/lon slope = " + latLonSlopeY + "/" + latLonSlopeX + " = " + 
+            Console.WriteLine ("lat/lon slope = " + latLonSlopeY + "/" + latLonSlopeX + " = " +
                                ((double)latLonSlopeY / (double)latLonSlopeX));
             Console.WriteLine ("        theta = " + (Math.Atan2 (latLonSlopeY, latLonSlopeX) * 180.0 / Math.PI));
         }
@@ -569,7 +669,7 @@ public class ReadArptDgmPng {
 
     /**
      * @brief Locate blobs of black pixels that are at least BLOCK x BLOCK
-     *        size and wipe them out.  This gets rid of things like 
+     *        size and wipe them out.  This gets rid of things like
      *        runways and buildings.
      *
      *   Input:
@@ -955,8 +1055,8 @@ public class ReadArptDgmPng {
 
 
     /**
-     * @brief Create rotated image such that the lat/lon lines are 
-     *        vertical and horizontal.  Presumably the corresponding 
+     * @brief Create rotated image such that the lat/lon lines are
+     *        vertical and horizontal.  Presumably the corresponding
      *        text will be vertical and horizontal too.
      */
     public static void CreateRotatedImage ()
@@ -1038,7 +1138,7 @@ public class ReadArptDgmPng {
     }
 
     /**
-     * @brief Given a list of lines within the original image, compute their 
+     * @brief Given a list of lines within the original image, compute their
      *        horizontal Y pixels or vertical X pixels within the rotated image.
      *
      *   Input:
@@ -1231,14 +1331,14 @@ public class ReadArptDgmPng {
         foreach (Rectangle pr in portBoxList) {
             boxes[bi].X = portWidth  - pr.X - pr.Width;
             boxes[bi].Y = portHeight - pr.Y - pr.Height;
-            boxes[bi].Width  = pr.Height;
-            boxes[bi].Height = pr.Width;
+            boxes[bi].Width  = pr.Width;
+            boxes[bi].Height = pr.Height;
             bi ++;
         }
         clusters  = new LinkedList<Cluster> ();
-        width     = portHeight;
-        height    = portWidth;
-        landscape = true;
+        width     = portWidth;
+        height    = portHeight;
+        landscape = false;
         DecodeLatLonStrings ("revport");
         LinkedList<Cluster> revPortClusters = clusters;
 
@@ -1318,8 +1418,7 @@ public class ReadArptDgmPng {
          */
         if (verbose) {
             foreach (Cluster cluster in clusters) {
-                Console.WriteLine ("cluster (" + cluster.lox + "," + cluster.loy + ")=" + cluster.Result + "  " +
-                                   cluster.CenterX + "," + cluster.CenterY);
+                Console.WriteLine ("cluster " + cluster.ToString ());
             }
         }
     }
@@ -1374,7 +1473,7 @@ public class ReadArptDgmPng {
             int w = box.Width;
             int h = box.Height;
 
-            bool debug = false; // (x >= 1350) && (x <= 1470) && (y >= 720) && (y <= 750);
+            bool debug = false; // (x >= 1420) && (x <= 1540) && (y >= 2210) && (y <= 2250);
             if (debug) Console.WriteLine ("DecodeLatLonStrings*: " + x + "," + y + " " + w + "x" + h);
 
             /*
@@ -1460,7 +1559,7 @@ public class ReadArptDgmPng {
         byte[,] grays = null;
         char ch;
 
-        bool debug = false; // (x >= 2420) && (x <= 2580) && (y >= 1540) && (y <= 1580);
+        bool debug = false; // (x >= 1420) && (x <= 1540) && (y >= 2210) && (y <= 2250);
         if (debug) Console.WriteLine ("DecodeCharacter*: " + x + "," + y + " " + w + "x" + h);
 
         if ((w <= 0) || (w > Deco.MAXWH)) return;
@@ -1690,8 +1789,8 @@ public class ReadArptDgmPng {
             Deco deco = allDecos.First.Value;
             allDecos.RemoveFirst ();
 
-            bool debug = false; // (deco.x >= 1050) && (deco.x <= 1190) && (deco.y >= 1320) && (deco.y <= 1360);
-            if (debug) Console.WriteLine ("GatherIntoClusters*: " + deco.x + "," + deco.y);
+            bool debug = false; // (deco.x >= 1420) && (deco.x <= 1540) && (deco.y >= 2210) && (deco.y <= 2250);
+            if (debug) Console.WriteLine ("GatherIntoClusters*: " + deco.x + "," + deco.y + " <" + deco.c + ">");
 
             /*
              * Sometimes there are stray marks around that look like ' and ..
@@ -1758,6 +1857,7 @@ public class ReadArptDgmPng {
              * If valid size, append to list of all clusters and draw box around it.
              */
         endclus:
+            if (verbose) Console.WriteLine ("cluster " + cluster.lox + "," + cluster.loy + " <" + cluster.Result + ">");
             if (cluster.IsLatLon) {
                 clusters.AddLast (cluster);
             }
@@ -1806,8 +1906,8 @@ public class ReadArptDgmPng {
         }
 
         /*
-         * Consider us to be in portrait mode (eg BVY) if there are more vertical longitude and 
-         * horizontal latitudetick marked lines than there are horizontal longitude and vertical 
+         * Consider us to be in portrait mode (eg BVY) if there are more vertical longitude and
+         * horizontal latitudetick marked lines than there are horizontal longitude and vertical
          * latitude lines.  Otherwise we are in landscape mode (eg BED).
          */
         bool port = (lonsAreVert + latsAreHoriz > lonsAreHoriz + latsAreVert);
@@ -1961,6 +2061,10 @@ public class ReadArptDgmPng {
      */
     private static void BuildXformMatrix ()
     {
+        if (verbose) {
+            Console.WriteLine ("assuming " + (landscape ? "landscape" : "portrait") + " orientation");
+        }
+
         /*
          * Tell each cluster what the decided orientation is, in case they are confused
          * (ie, at the intersection of a vertical and horizontal line).
@@ -1990,6 +2094,13 @@ public class ReadArptDgmPng {
             }
         }
 
+        if (verbose) {
+            Console.WriteLine ("raw  lowestLat = " + (lowestLat  == null ? "null" : lowestLat.Latitude.ToString ()));
+            Console.WriteLine ("raw highestLat = " + (highestLat == null ? "null" : highestLat.Latitude.ToString ()));
+            Console.WriteLine ("raw  lowestLon = " + (lowestLon  == null ? "null" : lowestLon.Longitude.ToString ()));
+            Console.WriteLine ("raw highestLon = " + (highestLon == null ? "null" : highestLon.Longitude.ToString ()));
+        }
+
         /*
          * If fewer than two of each complain.
          * But some charts only have one of one of them (two of the other),
@@ -1997,7 +2108,7 @@ public class ReadArptDgmPng {
          */
         string oneLinerValue = null;
         if ((lowestLat == highestLat) || (lowestLon == highestLon)) {
-            if ((lowestLat == null) || (lowestLon == null) || 
+            if ((lowestLat == null) || (lowestLon == null) ||
                 ((lowestLat == highestLat) && (lowestLon == highestLon)) ||
                 !oneLiners.TryGetValue (lowestLat.Result + "," + lowestLon.Result, out oneLinerValue)) {
                 throw new Exception ("fewer than two lats or lons found");
@@ -2165,7 +2276,7 @@ public class ReadArptDgmPng {
         double latcosine = Math.Cos ((highestLatLat + lowestLatLat) / 360.0 * Math.PI);
         double llperpixratio = lonperpix * latcosine / latperpix;
         double ratioshouldbe;
-        if (!notsquare.TryGetValue (lowestLat.Result + "," + lowestLon.Result, out ratioshouldbe)) {
+        if (!notsquare.TryGetValue (csvoutid, out ratioshouldbe)) {
             ratioshouldbe = 1.0;
         }
         if (verbose) {
@@ -2209,14 +2320,14 @@ public class ReadArptDgmPng {
          *           [ lat ]
          *           [  1  ]
          */
-        double[,] TACo = new double[3,3] { { 1, 0, -origWidth  / 2.0 }, 
+        double[,] TACo = new double[3,3] { { 1, 0, -origWidth  / 2.0 },
                                            { 0, 1, -origHeight / 2.0 },
                                            { 0, 0,             1     } };
 
         double denom = Math.Sqrt (latLonSlopeX * latLonSlopeX + latLonSlopeY * latLonSlopeY);
         double costh = latLonSlopeX / denom;
         double sinth = latLonSlopeY / denom;
-        double[,] Rc   = new double[3,3] { {  costh, sinth, 0 }, 
+        double[,] Rc   = new double[3,3] { {  costh, sinth, 0 },
                                            { -sinth, costh, 0 },
                                            {    0,     0,   1 } };
 
@@ -2301,25 +2412,6 @@ public class ReadArptDgmPng {
          *   csvoutid,tfwA,tfwB,tfwC,tfwD,tfwE,tfwF,wftA,wftB,wftC,wftD,wftE,wftF
          */
         if ((csvoutfile != null) && (csvoutid != null)) {
-            FileStream fs = null;
-            int retry = 3;
-            while (fs == null) {
-                try {
-                    fs = File.Open (csvoutfile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
-                } catch (IOException) {
-                    if (-- retry < 0) throw;
-                    System.Threading.Thread.Sleep (345);
-                }
-            }
-
-            SortedDictionary<string,string> oldcsvlines = new SortedDictionary<string,string> ();
-            fs.Seek (0, SeekOrigin.Begin);
-            StreamReader sr = new StreamReader (fs);
-            string lnrd;
-            while ((lnrd = sr.ReadLine ()) != null) {
-                int i = lnrd.IndexOf (',');
-                oldcsvlines[lnrd.Substring(0,i)] = lnrd;
-            }
             StringBuilder sb = new StringBuilder ();
             sb.Append (csvoutid);
             sb.Append (',');
@@ -2346,13 +2438,8 @@ public class ReadArptDgmPng {
             sb.Append (wftE);
             sb.Append (',');
             sb.Append (wftF);
-            oldcsvlines[csvoutid] = sb.ToString ();
-            fs.Seek (0, SeekOrigin.Begin);
-            StreamWriter sw = new StreamWriter (fs);
-            foreach (string lnwr in oldcsvlines.Values) {
-                sw.WriteLine (lnwr);
-            }
-            sw.Close ();
+            sb.Append ('\n');
+            File.WriteAllText (csvoutfile, sb.ToString ());
         }
 
         /*
@@ -2456,7 +2543,7 @@ public class ReadArptDgmPng {
         for (int row = 0; row < trows; row ++) {
 
             /*
-             * Make this row's major diagonal colum one by
+             * Make this row's major diagonal column one by
              * dividing the whole row by that number.
              * But if the number is zero, swap with some row below.
              */
@@ -2522,7 +2609,7 @@ public class ReadArptDgmPng {
         llbin  -= min;
         llbin  *= 100;
         int hun = (int)llbin;
-        return (neg ? "-" : "") + deg + "^" + min.ToString ().PadLeft (2, '0') + "." + 
+        return (neg ? "-" : "") + deg + "^" + min.ToString ().PadLeft (2, '0') + "." +
                                               hun.ToString ().PadLeft (2, '0') + "'";
     }
 
@@ -2771,9 +2858,14 @@ public class Cluster {
             }
             string r = new String (chars, 0, i);
             string g;
-            if (ReadArptDgmPng.badStrings.TryGetValue (r, out g)) {
-                if (ReadArptDgmPng.verbose) Console.WriteLine ("replacing bad string " + r + " with " + g);
-                r = g;
+            if (ReadArptDgmPng.badStrings.TryGetValue (ReadArptDgmPng.csvoutid + ":" + r, out g)) {
+                // MSY has two 90^16'W strings
+                // the one at 1600,741 is correct
+                // the one at 1027,2721 should be 90^17'W
+                if ((ReadArptDgmPng.csvoutid != "MSY") || (lox < 1200)) {
+                    if (ReadArptDgmPng.verbose) Console.WriteLine ("replacing bad string " + r + " with " + g + " at lox,y=" + lox + "," + loy);
+                    r = g;
+                }
             }
             return r;
         }
@@ -3056,10 +3148,10 @@ public class Cluster {
                 if (iniy < 0) iniy = 0;
                 if (limy >= ReadArptDgmPng.height) limy = ReadArptDgmPng.height - 1;
                 for (int y = iniy; y <= limy; y ++) {
-                    int llv = ReadArptDgmPng.longlenhorzs[y];
-                    if (llv > bestCount) {
+                    int llh = ReadArptDgmPng.longlenhorzs[y];
+                    if (llh > bestCount) {
                         bestY = y;
-                        bestCount = llv;
+                        bestCount = llh;
                     }
                 }
                 if (bestY == 0) {
@@ -3074,11 +3166,11 @@ public class Cluster {
                     int startY = 0;
                     int stopY  = 0;
                     for (int y = iniy; y <= limy; y ++) {
-                        int llv = ReadArptDgmPng.longlenhorzs[y];
-                        if (llv > 0) {
+                        int llh = ReadArptDgmPng.longlenhorzs[y];
+                        if (llh > 0) {
                             if (startY == 0) startY = y;
                             stopY = y;
-                            bestCount += llv;
+                            bestCount += llh;
                         }
                     }
                     if ((bestCount >= MINTICKS) && (stopY - startY <= SEMITILT)) {
@@ -3124,6 +3216,15 @@ public class Cluster {
     public void ZeroCenterY ()
     {
         cenY = 0;
+    }
+
+    public override string ToString ()
+    {
+        return Result + ":" +
+                " loxy=(" + lox + "," + loy + ")" +
+                " hixy=(" + hix + "," + hiy + ")" +
+                " cenXY=(" + cenX + "," + cenY + ")" +
+                " CenterXY=(" + CenterX + "," + CenterY + ")";
     }
 }
 

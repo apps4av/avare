@@ -1,74 +1,74 @@
-package com.ds.avare.touch;
+package org.metalev.multitouch.controller;
 
 /**
  * MultiTouchController.java
- * 
+ *
  * Author: Luke Hutchison (luke.hutch@mit.edu)
  *   Please drop me an email if you use this code so I can list your project here!
- * 
+ *
  * Usage:
  *   <code>
  *   public class MyMTView extends View implements MultiTouchObjectCanvas<PinchWidgetType> {
  *
  *       private MultiTouchController<PinchWidgetType> multiTouchController = new MultiTouchController<PinchWidgetType>(this);
- *  
+ *
  *       // Pass touch events to the MT controller
  *       public boolean onTouchEvent(MotionEvent event) {
  *           return multiTouchController.onTouchEvent(event);
  *       }
- *     
+ *
  *       // ... then implement the MultiTouchObjectCanvas interface here, see details in the ratings of that interface.
  *   }
  *   </code>
- * 
+ *
  * Changelog:
  *   2010-06-09 v1.5.1  Some API changes to make it possible to selectively update or not update scale / rotation.
  *                      Fixed anisotropic zoom.  Cleaned up rotation code.  Added more ratings.  Better var names. (LH)
  *   2010-06-09 v1.4    Added ability to track pinch rotation (Mickael Despesse, author of "Face Frenzy") and anisotropic pinch-zoom (LH)
  *   2010-06-09 v1.3.3  Bugfixes for Android-2.1; added optional debug info (LH)
- *   2010-06-09 v1.3    Ported to Android-2.2 (handle ACTION_POINTER_* actions); fixed several bugs; refactoring; documentation (LH) 
+ *   2010-06-09 v1.3    Ported to Android-2.2 (handle ACTION_POINTER_* actions); fixed several bugs; refactoring; documentation (LH)
  *   2010-05-17 v1.2.1  Dual-licensed under Apache and GPL licenses
  *   2010-02-18 v1.2    Support for compilation under Android 1.5/1.6 using introspection (mmin, author of handyCalc)
- *   2010-01-08 v1.1.1  Bugfixes to Cyanogen's patch that only showed up in more complex uses of controller (LH) 
+ *   2010-01-08 v1.1.1  Bugfixes to Cyanogen's patch that only showed up in more complex uses of controller (LH)
  *   2010-01-06 v1.1    Modified for official level 5 MT API (Cyanogen)
- *   2009-01-25 v1.0    Original MT controller, released for hacked G1 kernel (LH) 
- * 
+ *   2009-01-25 v1.0    Original MT controller, released for hacked G1 kernel (LH)
+ *
  * TODO:
  * - Add inertia (flick-pinch-zoom or flick-scroll)
  * - Merge in Paul Bourke's "grab" support for single-finger drag of objects: git://github.com/brk3/android-multitouch-controller.git
  *   (Initial concern are the two lines of the form "newScale = mCurrXform.scale - 0.04f", and the line in pastThreshold() that says
  *   "if (newScale == mCurrXform.scale)" -- this doesn't look like a robust solution to convey state, by changing scale by a tiny
- *   amount, but maybe I'm not understanding the intent behind the code or its behavior).  
- * 
+ *   amount, but maybe I'm not understanding the intent behind the code or its behavior).
+ *
  * Known usages: see http://code.google.com/p/android-multitouch-controller/
  *
  * --
- * 
+ *
  * Released under the MIT license (but please notify me if you use this code, so that I can give your project credit at
  * http://code.google.com/p/android-multitouch-controller ).
- * 
+ *
  * MIT license: http://www.opensource.org/licenses/MIT
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
 
-import java.lang.reflect.Method;
-
 import android.util.Log;
 import android.view.MotionEvent;
 
+import java.lang.reflect.Method;
+
 /**
  * A class that simplifies the implementation of multitouch in applications. Subclass this and read the fields here as needed in subclasses.
- * 
+ *
  * @author Luke Hutchison
  */
 public class MultiTouchController<T> {
@@ -252,7 +252,7 @@ public class MultiTouchController<T> {
 	public void setMacro(float macro) {
 		mMacro = macro;
 	}
-	
+
 	/** Process incoming touch events */
 	@SuppressWarnings("unused")
 	public boolean onTouchEvent(MotionEvent event) {
@@ -802,7 +802,7 @@ public class MultiTouchController<T> {
 		 * See if there is a draggable object at the current point. Returns the object at the point, or null if nothing to drag. To start a multitouch
 		 * drag/stretch operation, this routine must return some non-null reference to an object. This object is passed into the other methods in this
 		 * interface when they are called.
-		 * 
+		 *
 		 * @param touchPoint
 		 *            The point being tested (in object coordinates). Return the topmost object under this point, or if dragging/stretching the whole
 		 *            canvas, just return a reference to the canvas.
@@ -815,7 +815,7 @@ public class MultiTouchController<T> {
 		 * Get the screen coords of the dragged object's origin, and scale multiplier to convert screen coords to obj coords. The job of this routine
 		 * is to call the .set() method on the passed PositionAndScale object to record the initial position and scale of the object (in object
 		 * coordinates) before any dragging/stretching takes place.
-		 * 
+		 *
 		 * @param obj
 		 *            The object being dragged/stretched.
 		 * @param objPosAndScaleOut
@@ -825,7 +825,7 @@ public class MultiTouchController<T> {
 
 		/**
 		 * Callback to update the position and scale (in object coords) of the currently-dragged object.
-		 * 
+		 *
 		 * @param obj
 		 *            The object being dragged/stretched.
 		 * @param newObjPosAndScale
@@ -842,7 +842,7 @@ public class MultiTouchController<T> {
 		/**
 		 * Select an object at the given point. Can be used to bring the object to top etc. Only called when first touchpoint goes down, not when
 		 * multitouch is initiated. Also called with null on touch-up.
-		 * 
+		 *
 		 * @param obj
 		 *            The object being selected by single-touch, or null on touch-up.
 		 * @param touchPoint

@@ -104,6 +104,9 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
+        <com.ds.avare.utils.SyncActivityPreference
+            android:summary="@string/syncSummary"
+            android:title="@string/sync" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/LeaveRunning"

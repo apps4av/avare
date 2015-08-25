@@ -422,4 +422,21 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTip">&quot;Tip&quot;</string>
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
     <string name="prefTipSummary">&quot;Select to display tips when the application starts&quot;</string>
+
+    <string name="sync">Sync Data</string>
+    <string name="syncSummary">Save/Load Avare data on Google Drive</string>
+    <string name="Backup">Backup</string>
+    <string name="Restore">Restore</string>
+    <string name="SyncMessage">Use this screen to backup and restore your Avare preferences, plans, and lists.</string>
+    <string name="BackingUp">Backing up to Google Drive...</string>
+    <string name="BackupFailed">Google Drive backup failed!</string>
+    <string name="Wait">Wait...</string>
+    <string name="RestoringDrive">Restoring from Google Drive...</string>
+    <string name="RestoreFailed">Google Drive restore failed!</string>
+    <string name="SuccessWithReset">Success! Hard restart the app for changes to take effect</string>
+    <string name="ConnectionFailed">Google Drive connection failed!</string>
+    <string name="ConnectingDrive">Connecting to Google Drive...</string>
+    <string name="DisconnectingDrive">Disconnecting from Google Drive...</string>
+    <string name="ConnectedDrive">Connected to Google Drive</string>
+    <string name="DisconnectedDrive">Disconnected from Google Drive</string>
 </resources>

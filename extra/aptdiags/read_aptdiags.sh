@@ -6,7 +6,6 @@
 
 ##+++2013-01-10
 ##    Copyright (C) 2013, Mike Rieker, Beverly, MA USA
-##    Avare, open source moving map aviation GPS (support@apps4av.net)
 ##
 ##    This program is free software; you can redistribute it and/or modify
 ##    it under the terms of the GNU General Public License as published by
@@ -23,6 +22,7 @@
 ##    along with this program; if not, write to the Free Software
 ##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+##    Avare, open source moving map aviation GPS (support@apps4av.net)
 
 set -e
 

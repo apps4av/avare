@@ -18,6 +18,7 @@ import java.util.List;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Obstacle;
@@ -35,10 +36,10 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
-import com.ds.avare.touch.MultiTouchController;
-import com.ds.avare.touch.MultiTouchController.MultiTouchObjectCanvas;
-import com.ds.avare.touch.MultiTouchController.PointInfo;
-import com.ds.avare.touch.MultiTouchController.PositionAndScale;
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
@@ -210,6 +211,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Paint mMsgPaint;
 
     private Tile mGpsTile;
+
+    private String mOnChart = "";
     
     /*
      * Text on screen color
@@ -561,20 +564,36 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * on double touch find distance and bearing between two points.
              */
-            if(!mTrackUp) {
+
                 if(mPointProjection == null) {
                     double x0 = mCurrTouchPoint.getXs()[0];
                     double y0 = mCurrTouchPoint.getYs()[0];
                     double x1 = mCurrTouchPoint.getXs()[1];
                     double y1 = mCurrTouchPoint.getYs()[1];
-    
-                    double lon0 = mOrigin.getLongitudeOf(x0);
-                    double lat0 = mOrigin.getLatitudeOf(y0);
-                    double lon1 = mOrigin.getLongitudeOf(x1);
-                    double lat1 = mOrigin.getLatitudeOf(y1);
+
+                    double lon0,lat0,lon1,lat1;
+                    // convert to origin coord if Trackup
+                    if(mTrackUp) {
+                        double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                        double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                        double thetab = mGpsParams.getBearing();
+                        double p0[],p1[];
+                        p0=rotateCoord(c_x,c_y,thetab,x0,y0);
+                        p1=rotateCoord(c_x,c_y,thetab,x1,y1);
+                        lon0 = mOrigin.getLongitudeOf(p0[0]);
+                        lat0 = mOrigin.getLatitudeOf(p0[1]);
+                        lon1 = mOrigin.getLongitudeOf(p1[0]);
+                        lat1 = mOrigin.getLatitudeOf(p1[1]);
+                    }
+                    else {
+                        lon0 = mOrigin.getLongitudeOf(x0);
+                        lat0 = mOrigin.getLatitudeOf(y0);
+                        lon1 = mOrigin.getLongitudeOf(x1);
+                        lat1 = mOrigin.getLatitudeOf(y1);
+                    }
                     mPointProjection = new Projection(lon0, lat0, lon1, lat1);
                 }
-            }
+
 
             /*
              * Clamp scaling.
@@ -750,7 +769,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(empty >= tn) {
                 mMsgPaint.setColor(Color.WHITE);
                 mService.getShadowedText().draw(canvas, mMsgPaint,
-                        mContext.getString(R.string.MissingMaps),
+                        mContext.getString(R.string.MissingMaps) + " " + mOnChart,
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
@@ -1582,7 +1601,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * destroy our Pan information.
                  */
                 Pan pan = new Pan(mPan);
-                pan.setMove((float)(mPan.getMoveX() * factor), (float)(mPan.getMoveY() * factor));
+                double n_x = mPan.getMoveX();
+                double n_y = mPan.getMoveY();
+
+                if ( mTrackUp) {
+                    double p[] = new double[2];
+                    double thetab = mGpsParams.getBearing();
+                    p = rotateCoord(0.0, 0.0, thetab, n_x, n_y);
+                    pan.setMove((float)(p[0]*factor), (float)(p[1]*factor));
+                }
+                else {
+                    pan.setMove((float) (n_x * factor), (float) (n_y * factor));
+                }
                 movex = pan.getTileMoveXWithoutTear();
                 movey = pan.getTileMoveYWithoutTear();
                 
@@ -1604,8 +1634,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
+                String chart = "";
                 try {
-                    mService.getTiles().reload(tileNames);
+                    if(!mService.getTiles().reload(tileNames)) {
+                        // If tiles not found, find name of chart we are on to show to user
+                         chart = Boundaries.getInstance().findChartOn(centerTile.getChartIndex(), centerTile.getLongitude(), centerTile.getLatitude());
+                    }
                 }
                 catch(Exception e) {
                     /*
@@ -1625,6 +1659,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 t.gpsTile = gpsTile;
                 t.offsets = offsets;
                 t.factor = factor;
+                t.chart = chart;
                 
                 Message m = mHandler.obtainMessage();
                 m.obj = t;
@@ -2048,13 +2083,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             	}
             }
 
-            /*
-             * XXX:
-             * For track up, currently there is no math to find anything with long press.
-             */
-            if(mTrackUp) {
-                return;
-            }
+
 
             /*
              * Notify activity of gesture.
@@ -2070,10 +2099,25 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
         }
     }
-    
+
+    private double[] rotateCoord(double c_x,double c_y,double thetab,double x,double y){
+        double prc_x = x - c_x;
+        double prc_y = y - c_y;
+        double r = Math.sqrt(prc_x * prc_x + prc_y * prc_y);
+        double theta = Math.atan2(prc_y, prc_x) ;
+        theta = theta + thetab* Math.PI / 180.0;
+        double pc_x = r * Math.cos(theta );
+        double pc_y = r * Math.sin(theta);
+        double p[]=new double[2];
+        p[0] = pc_x + c_x;
+        p[1] = pc_y + c_y;
+        return p;
+    }
+
     private void startClosestAirportTask(double x, double y) {
         // We won't be doing the airport long press under certain circumstances
-        if(mDraw || mTrackUp) {
+        if(mDraw ) {
+
             return;
         }
         
@@ -2081,11 +2125,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mClosestTask.cancel(true);
         }
         mLongTouchDestination = null;
-        mClosestTask = new ClosestAirportTask();        
-        
-        double lon2 = mOrigin.getLongitudeOf(x);
-        double lat2 = mOrigin.getLatitudeOf(y);
-        
+        mClosestTask = new ClosestAirportTask();
+
+        double lon2,lat2;
+        if (mTrackUp) {
+            double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+            double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+            double thetab = mGpsParams.getBearing();
+
+            double p[];
+            p=rotateCoord(c_x,c_y,thetab,x,y);
+            lon2 = mOrigin.getLongitudeOf(p[0]);
+            lat2 = mOrigin.getLatitudeOf(p[1]);
+        }
+        else {
+            lon2 = mOrigin.getLongitudeOf(x);
+            lat2 = mOrigin.getLatitudeOf(y);
+        }
         mClosestTask.execute(lon2, lat2);
     }
 
@@ -2194,6 +2250,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 	            mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
 
                 mGpsTile = t.gpsTile;
+                mOnChart = t.chart;
 	            /*
 	             * And pan
 	             */

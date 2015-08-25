@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="230"
-    android:versionName="7.0.0" >
+    android:versionCode="232"
+    android:versionName="7.0.2" >
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
@@ -62,6 +62,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".SubmitActivity"/>
+        <activity android:name=".SyncActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
