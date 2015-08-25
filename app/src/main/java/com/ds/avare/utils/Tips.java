@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2014, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,56 +10,24 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+package com.ds.avare.utils;
 
-package com.ds.avare.position;
+import android.content.Context;
+
+import com.ds.avare.R;
 
 /**
- * @author zkhan
- * A class that holds movement on a tile
+ * Created by zkhan on 8/11/15.
  */
-public class Movement {
+public class Tips {
 
-    /**
-     * Offset of location on a tile - x
-     */
-    private double mOffsetX;
-    /**
-     * Offset of location on a tile - y
-     */
-    private double mOffsetY;
-        
-    /**
-     * @param offset
-     */
-    public Movement(double offset[]) {
-        /*
-         * Store movement
-         */
-        mOffsetX = offset[0];
-        mOffsetY = offset[1];
-    }
+    public static String getTip(Context ctx) {
 
-    /**
-     * This is for no movement
-     */
-    public Movement() {
-        mOffsetX = 0.f;
-        mOffsetY = 0.f;
-    }
-
-
-    /**
-     * @return
-     */
-    public double getOffsetLongitude() {
-        return mOffsetX;
-    }
-    
-    /**
-     * @return
-     */
-    public double getOffsetLatitude() {
-        return mOffsetY;
+        // randomly generate tips
+        String tips[] = ctx.getResources().getStringArray(R.array.Tips);
+        String ret = tips[(int)Math.round(Math.random() * (tips.length - 1))];
+        ret += "\n" + ctx.getString(R.string.DisableTip);
+        return ret;
     }
 
 }

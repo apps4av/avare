@@ -14,10 +14,8 @@ package com.ds.avare.network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -136,7 +134,7 @@ public class Download {
         private void sendFailure() {
             Message m = mHandler.obtainMessage(Download.FAILED, Download.this);
             Bundle b = new Bundle();
-            b.putString("code", mCode);
+            b.putString("code", mName + ", " + mCode);
             m.setData(b);
             mHandler.sendMessage(m);            
         }
@@ -176,7 +174,6 @@ public class Download {
                  * mCode allows debugging from users
                  */
                 mCode = "code invalid path/file name";
-                File file = new File(path + "/" + mName);
                 
                 /*
                  * Path in which to install it
@@ -395,15 +392,6 @@ public class Download {
                     mCode = "code unable to delete downloaded zip file";
                     new File(zipfile).delete();
 
-                    /*
-                     * Now create a version file
-                     */
-                    mCode = "code unable to create version file";
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(file), blocksize);                    
-                    bw.write(mVersion);
-                    bw.flush();
-                    bw.close();
-                    
                     mCode = "";
                     Message m = mHandler.obtainMessage(Download.SUCCESS, Download.this);
                     mHandler.sendMessage(m);

@@ -179,7 +179,7 @@ public class TileMap {
             }
             if(h != null) {
                 /*
-                 * At max scale, down sample by down sampling 
+                 * At max scale, down sample by down sampling
                  */
                 BitmapHolder b = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
                 if(b.getBitmap() == null) {

@@ -49,7 +49,6 @@ public class GpsParams {
         mAltitude = 0;
         mBearing = 0;
         mScale = new Scale();
-        mScale.setScaleAt(mLatitude);
         mDeclination = 0;
         mTime = 0;
     }
@@ -66,7 +65,6 @@ public class GpsParams {
             mAltitude = 0;
             mBearing = 0;
             mScale = new Scale();
-            mScale.setScaleAt(mLatitude);
             mDeclination = 0;
             mTime = 0;
             return;
@@ -87,7 +85,6 @@ public class GpsParams {
         
         mBearing = (location.getBearing() + 360) % 360;
         mScale = new Scale();
-        mScale.setScaleAt(mLatitude);
         
         mTime = location.getTime();
     }

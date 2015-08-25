@@ -11,6 +11,11 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adsb;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
+import com.ds.avare.position.Origin;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
 /**
@@ -22,7 +27,6 @@ public class NexradBitmap {
     private double mCoords[];
     private double mScaleX;
     private double mScaleY;
-    private int mBlock;
     private BitmapHolder mBitmap;
     
     public long timestamp;
@@ -73,7 +77,6 @@ public class NexradBitmap {
     public NexradBitmap(long time, int data[], int block, boolean conus, int cols, int rows) {
        
         timestamp = System.currentTimeMillis();
-        mBlock = block;
         mCoords = new double[2];
         
         /*
@@ -133,29 +136,21 @@ public class NexradBitmap {
     }
 
     /**
-     * 
+     *
      * @return
      */
-    public double getScaleX() {
-        return mScaleX / 60.0;
+    public double getLatBottomRight() {
+        return mCoords[1] - mScaleY * mBitmap.getHeight() / 60.0;
     }
-    
-    /**
-     * 
-     * @return
-     */
-    public double getScaleY() {
-        return mScaleY / 60.0;
-    }    
 
     /**
-     * 
+     *
      * @return
      */
-    public int getBlock() {
-        return mBlock;
+    public double getLonBottomRight() {
+        return mCoords[0] + mScaleX * mBitmap.getWidth() / 60.0;
     }
-    
+
     /**
      * 
      * @return
@@ -163,5 +158,34 @@ public class NexradBitmap {
     public BitmapHolder getBitmap() {
         return mBitmap;
     }
-    
+
+
+    /**
+     * Draw on map screen
+     */
+    public void draw(Canvas canvas, Paint paint, Origin origin, Preferences pref) {
+        if(null == mBitmap) {
+            return;
+        }
+
+        /*
+         * draw them scaled.
+         */
+        float x0 = (float)origin.getOffsetX(getLonTopLeft());
+        float y0 = (float)origin.getOffsetY(getLatTopLeft());
+        float x1 = (float)origin.getOffsetX(getLonBottomRight());
+        float y1 = (float)origin.getOffsetY(getLatBottomRight());
+
+        float scalex = (x1 - x0) / mBitmap.getWidth();
+        float scaley = (y1 - y0) / mBitmap.getHeight();
+
+        mBitmap.getTransform().setScale(scalex, scaley);
+        mBitmap.getTransform().postTranslate(x0, y1);
+        if(mBitmap.getBitmap() != null) {
+            paint.setAlpha(pref.showRadar());
+            canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
+            paint.setAlpha(255);
+        }
+
+    }
 }

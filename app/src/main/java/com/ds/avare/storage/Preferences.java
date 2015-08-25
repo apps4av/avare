@@ -67,15 +67,18 @@ public class Preferences {
     /*
      * Max memory and max screen size it will support
      */
+    public static final long MEM_256 = 256 * 1024 * 1024;
     public static final long MEM_192 = 192 * 1024 * 1024;
     public static final long MEM_128 = 128 * 1024 * 1024;
     public static final long MEM_64 = 64 * 1024 * 1024;
     public static final long MEM_32 = 32 * 1024 * 1024;
-    public static final long MEM_16 = 16 * 1024 * 1024;
-    
-    public static final int MEM_192_X = 11;
-    public static final int MEM_192_Y = 9;
-    public static final int MEM_128_X = 9;
+
+
+    public static final int MEM_256_X = 11;
+    public static final int MEM_256_Y = 9;
+    public static final int MEM_192_X = 9;
+    public static final int MEM_192_Y = 7;
+    public static final int MEM_128_X = 7;
     public static final int MEM_128_Y = 5;
     public static final int MEM_64_X = 7;
     public static final int MEM_64_Y = 5;
@@ -92,7 +95,6 @@ public class Preferences {
 
     public static double NM_TO_MI = 1.15078;
     public static double NM_TO_KM = 1.852;
-    public static double NM_TO_LATITUDE = 1.0 / 60.0;
     public static double MS_TO_KT = 1.94384;
 
     /**
@@ -283,6 +285,10 @@ public class Preferences {
          */
         long mem = Runtime.getRuntime().maxMemory();
 
+        if(mem >= MEM_256) {
+            ret[0] = MEM_256_X;
+            ret[1] = MEM_256_Y;
+        }
         if(mem >= MEM_192) {
             ret[0] = MEM_192_X;
             ret[1] = MEM_192_Y;
@@ -859,7 +865,15 @@ public class Preferences {
     public boolean showCAPGrids() {
         return mPref.getBoolean(mContext.getString(R.string.CAPGrid), false);
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public boolean showTips() {
+        return mPref.getBoolean(mContext.getString(R.string.prefTip), true);
+    }
+
     /**
      * 
      * @return

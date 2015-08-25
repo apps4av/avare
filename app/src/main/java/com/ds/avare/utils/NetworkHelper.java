@@ -19,8 +19,10 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
 
@@ -461,6 +463,14 @@ public class NetworkHelper {
      * 
      * @return
      */
+    public static String getVersion(int offset) {
+    	return findCycleOffset(getVersion("", "", null), offset);
+    }
+
+    /**
+     * 
+     * @return
+     */
     public static String getVersion(String root, String name, boolean[] networkState) {
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         String netVers = getVersionNetwork(root);
@@ -592,4 +602,40 @@ public class NetworkHelper {
         return "" + cycle;
     }
 
+    /**
+     * Get notams from FAA in the plan form KBOS,BOS,KLWM
+     * @param plan
+     * @return
+     */
+    public static String getNotams(String plan) {
+        String ret = null;
+        try {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("retrieveLocId", plan);
+            params.put("reportType", "Raw");
+            params.put("actionType", "notamRetrievalByICAOs");
+            params.put("submit", "View+NOTAMSs");
+            ret = com.ds.avare.message.NetworkHelper.post("https://www.notams.faa.gov/dinsQueryWeb/queryRetrievalMapAction.do",
+                    params);
+        } catch (Exception e) {
+
+        }
+
+        // NOTAMS are in form <PRE></PRE>. Parse them, and convert \n to BR
+        String notams = "";
+        if(ret != null) {
+            String rets[] = ret.split("\\<PRE\\>");
+            for (String ret1 : rets) {
+                if(ret1.contains("</PRE>")) {
+                    String parsed[] = ret1.split("</PRE>");
+                    notams += parsed[0] + "\n\n";
+                }
+            }
+            notams = notams.replaceAll("(\r\n|\n)", "<br />");
+        }
+
+        return notams;
+    }
 }
+
+

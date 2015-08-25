@@ -16,18 +16,18 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroups">
         <item>Databases</item>
         <item>Weather</item>
-        <item>Plates/d-TPP/ADs</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
         <item>IFR Low Enroute Charts</item>
+        <item>IFR High Enroute Charts</item>
+        <item>IFR Area Charts</item>
+        <item>Plates/d-TPP/ADs</item>
+        <item>VFR Area Plates</item>
         <item>A/FD Images</item>
         <item>Terrain</item>
-        <item>IFR High Enroute Charts</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
-        <item>IFR Area Charts</item>
-        <item>VFR Area Plates</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -352,61 +352,107 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief PR</item>
     </string-array>
     <string-array name="resNameTopo">
-		<item>Canada Grid 001</item>
-		<item>Canada Grid 002</item>
-		<item>Canada Grid 003</item>
-		<item>Canada Grid 010</item>
-		<item>Canada Grid 011</item>
-		<item>Canada Grid 012</item>
-		<item>Canada Grid 013</item>
-		<item>Canada Grid 014</item>
-		<item>Canada Grid 020</item>
-		<item>Canada Grid 021</item>
-		<item>Canada Grid 022</item>
-		<item>Canada Grid 023</item>
-		<item>Canada Grid 024</item>
-		<item>Canada Grid 030</item>
-		<item>Canada Grid 031</item>
-		<item>Canada Grid 032</item>
-		<item>Canada Grid 033</item>
-		<item>Canada Grid 034</item>
-		<item>Canada Grid 040</item>
-		<item>Canada Grid 041</item>
-		<item>Canada Grid 042</item>
-		<item>Canada Grid 043</item>
-		<item>Canada Grid 044</item>
-		<item>Canada Grid 052</item>
-		<item>Canada Grid 053</item>
-		<item>Canada Grid 054</item>
-		<item>Canada Grid 062</item>
-		<item>Canada Grid 063</item>
-		<item>Canada Grid 064</item>
-		<item>Canada Grid 072</item>
-		<item>Canada Grid 073</item>
-		<item>Canada Grid 074</item>
-		<item>Canada Grid 082</item>
-		<item>Canada Grid 083</item>
-		<item>Canada Grid 084</item>
-		<item>Canada Grid 092</item>
-		<item>Canada Grid 093</item>
-		<item>Canada Grid 094</item>
-		<item>Canada Grid 102</item>
-		<item>Canada Grid 103</item>
-		<item>Canada Grid 104</item>
-		<item>Canada Grid 114</item>
+        <item>Canada Grid 001</item>
+        <item>Canada Grid 002</item>
+        <item>Canada Grid 011</item>
+        <item>Canada Grid 012</item>
+        <item>Canada Grid 013</item>
+        <item>Canada Grid 014</item>
+        <item>Canada Grid 016</item>
+        <item>Canada Grid 020</item>
+        <item>Canada Grid 021</item>
+        <item>Canada Grid 022</item>
+        <item>Canada Grid 023</item>
+        <item>Canada Grid 024</item>
+        <item>Canada Grid 025</item>
+        <item>Canada Grid 026</item>
+        <item>Canada Grid 027</item>
+        <item>Canada Grid 030</item>
+        <item>Canada Grid 031</item>
+        <item>Canada Grid 032</item>
+        <item>Canada Grid 033</item>
+        <item>Canada Grid 034</item>
+        <item>Canada Grid 035</item>
+        <item>Canada Grid 036</item>
+        <item>Canada Grid 037</item>
+        <item>Canada Grid 038</item>
+        <item>Canada Grid 039</item>
+        <item>Canada Grid 040</item>
+        <item>Canada Grid 041</item>
+        <item>Canada Grid 042</item>
+        <item>Canada Grid 043</item>
+        <item>Canada Grid 044</item>
+        <item>Canada Grid 045</item>
+        <item>Canada Grid 046</item>
+        <item>Canada Grid 047</item>
+        <item>Canada Grid 048</item>
+        <item>Canada Grid 049</item>
+        <item>Canada Grid 052</item>
+        <item>Canada Grid 053</item>
+        <item>Canada Grid 054</item>
+        <item>Canada Grid 055</item>
+        <item>Canada Grid 056</item>
+        <item>Canada Grid 057</item>
+        <item>Canada Grid 058</item>
+        <item>Canada Grid 059</item>
+        <item>Canada Grid 062</item>
+        <item>Canada Grid 063</item>
+        <item>Canada Grid 064</item>
+        <item>Canada Grid 065</item>
+        <item>Canada Grid 066</item>
+        <item>Canada Grid 067</item>
+        <item>Canada Grid 068</item>
+        <item>Canada Grid 069</item>
+        <item>Canada Grid 072</item>
+        <item>Canada Grid 073</item>
+        <item>Canada Grid 074</item>
+        <item>Canada Grid 075</item>
+        <item>Canada Grid 076</item>
+        <item>Canada Grid 077</item>
+        <item>Canada Grid 078</item>
+        <item>Canada Grid 079</item>
+        <item>Canada Grid 082</item>
+        <item>Canada Grid 083</item>
+        <item>Canada Grid 084</item>
+        <item>Canada Grid 085</item>
+        <item>Canada Grid 086</item>
+        <item>Canada Grid 087</item>
+        <item>Canada Grid 088</item>
+        <item>Canada Grid 089</item>
+        <item>Canada Grid 092</item>
+        <item>Canada Grid 093</item>
+        <item>Canada Grid 094</item>
+        <item>Canada Grid 095</item>
+        <item>Canada Grid 096</item>
+        <item>Canada Grid 097</item>
+        <item>Canada Grid 098</item>
+        <item>Canada Grid 099</item>
+        <item>Canada Grid 102</item>
+        <item>Canada Grid 103</item>
+        <item>Canada Grid 104</item>
+        <item>Canada Grid 105</item>
+        <item>Canada Grid 106</item>
+        <item>Canada Grid 107</item>
+        <item>Canada Grid 114</item>
+        <item>Canada Grid 115</item>
+        <item>Canada Grid 116</item>
+        <item>Canada Grid 117</item>
+        <item>Canada Grid 120</item>
+        <item>Canada Grid 340</item>
+        <item>Canada Grid 560</item>
     </string-array>
     
     <string-array name="resNameHeli">
         <item>Grand Canyon</item>
-        <item>Balt-Washington Heli</item>
+        <item>Baltimore Heli</item>
         <item>Boston Heli</item>
         <item>Chicago Heli</item>
         <item>Dallas-Ft-Worth Heli</item>
         <item>Detroit Heli</item>
-        <item>Gulf Coast Heli</item>
         <item>Houston Heli</item>
         <item>Los Angeles Heli</item>
         <item>New York Heli</item>
+        <item>Washington Heli</item>
     </string-array>
     
     <string-array name="resFilesDatabase">
@@ -719,61 +765,107 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>REL_PR</item>
     </string-array>
     <string-array name="resFilesTopo">
-		<item>CAN_001</item>
-		<item>CAN_002</item>
-		<item>CAN_003</item>
-		<item>CAN_010</item>
-		<item>CAN_011</item>
-		<item>CAN_012</item>
-		<item>CAN_013</item>
-		<item>CAN_014</item>
-		<item>CAN_020</item>
-		<item>CAN_021</item>
-		<item>CAN_022</item>
-		<item>CAN_023</item>
-		<item>CAN_024</item>
-		<item>CAN_030</item>
-		<item>CAN_031</item>
-		<item>CAN_032</item>
-		<item>CAN_033</item>
-		<item>CAN_034</item>
-		<item>CAN_040</item>
-		<item>CAN_041</item>
-		<item>CAN_042</item>
-		<item>CAN_043</item>
-		<item>CAN_044</item>
-		<item>CAN_052</item>
-		<item>CAN_053</item>
-		<item>CAN_054</item>
-		<item>CAN_062</item>
-		<item>CAN_063</item>
-		<item>CAN_064</item>
-		<item>CAN_072</item>
-		<item>CAN_073</item>
-		<item>CAN_074</item>
-		<item>CAN_082</item>
-		<item>CAN_083</item>
-		<item>CAN_084</item>
-		<item>CAN_092</item>
-		<item>CAN_093</item>
-		<item>CAN_094</item>
-		<item>CAN_102</item>
-		<item>CAN_103</item>
-		<item>CAN_104</item>
-		<item>CAN_114</item>
+        <item>CAN_001</item>
+        <item>CAN_002</item>
+        <item>CAN_011</item>
+        <item>CAN_012</item>
+        <item>CAN_013</item>
+        <item>CAN_014</item>
+        <item>CAN_016</item>
+        <item>CAN_020</item>
+        <item>CAN_021</item>
+        <item>CAN_022</item>
+        <item>CAN_023</item>
+        <item>CAN_024</item>
+        <item>CAN_025</item>
+        <item>CAN_026</item>
+        <item>CAN_027</item>
+        <item>CAN_030</item>
+        <item>CAN_031</item>
+        <item>CAN_032</item>
+        <item>CAN_033</item>
+        <item>CAN_034</item>
+        <item>CAN_035</item>
+        <item>CAN_036</item>
+        <item>CAN_037</item>
+        <item>CAN_038</item>
+        <item>CAN_039</item>
+        <item>CAN_040</item>
+        <item>CAN_041</item>
+        <item>CAN_042</item>
+        <item>CAN_043</item>
+        <item>CAN_044</item>
+        <item>CAN_045</item>
+        <item>CAN_046</item>
+        <item>CAN_047</item>
+        <item>CAN_048</item>
+        <item>CAN_049</item>
+        <item>CAN_052</item>
+        <item>CAN_053</item>
+        <item>CAN_054</item>
+        <item>CAN_055</item>
+        <item>CAN_056</item>
+        <item>CAN_057</item>
+        <item>CAN_058</item>
+        <item>CAN_059</item>
+        <item>CAN_062</item>
+        <item>CAN_063</item>
+        <item>CAN_064</item>
+        <item>CAN_065</item>
+        <item>CAN_066</item>
+        <item>CAN_067</item>
+        <item>CAN_068</item>
+        <item>CAN_069</item>
+        <item>CAN_072</item>
+        <item>CAN_073</item>
+        <item>CAN_074</item>
+        <item>CAN_075</item>
+        <item>CAN_076</item>
+        <item>CAN_077</item>
+        <item>CAN_078</item>
+        <item>CAN_079</item>
+        <item>CAN_082</item>
+        <item>CAN_083</item>
+        <item>CAN_084</item>
+        <item>CAN_085</item>
+        <item>CAN_086</item>
+        <item>CAN_087</item>
+        <item>CAN_088</item>
+        <item>CAN_089</item>
+        <item>CAN_092</item>
+        <item>CAN_093</item>
+        <item>CAN_094</item>
+        <item>CAN_095</item>
+        <item>CAN_096</item>
+        <item>CAN_097</item>
+        <item>CAN_098</item>
+        <item>CAN_099</item>
+        <item>CAN_102</item>
+        <item>CAN_103</item>
+        <item>CAN_104</item>
+        <item>CAN_105</item>
+        <item>CAN_106</item>
+        <item>CAN_107</item>
+        <item>CAN_114</item>
+        <item>CAN_115</item>
+        <item>CAN_116</item>
+        <item>CAN_117</item>
+        <item>CAN_120</item>
+        <item>CAN_340</item>
+        <item>CAN_560</item>
     </string-array>
     
     <string-array name="resFilesHeli">
         <item>GrandCanyon</item>
-        <item>BaltimoreWashingtonHeli9Front</item>
-        <item>BostonHeli6Front</item>
-        <item>ChicagoHeli6Front</item>
-        <item>Dallas-FtWorthHeli5Front</item>
-        <item>DetroitHeli1</item>
-        <item>GulfCoastHel-WAC27</item>
-        <item>HoustonHeli7</item>
-        <item>LosAngelesHeli9</item>
-        <item>NewYorkHeli10Front</item>
+        <item>BaltimoreHeli</item>
+        <item>BostonHeli</item>
+        <item>ChicagoHeli</item>
+        <item>Dallas-FtWorthHeli</item>
+        <item>DetroitHeli</item>
+        <item>HoustonHeli</item>
+        <item>LosAngelesHeli</item>
+        <item>NewYorkHeli</item>
+        <item>WashingtonHeli</item>
     </string-array>
     
     <string-array name="ChartType">
@@ -782,13 +874,26 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>WAC</item>
         <item>IFR Low</item>
         <item>IFR High</item>
-    	<item>Terrain</item>
+        <item>IFR Area</item>
+        <item>Terrain</item>
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
-        <item>IFR Area</item>
     </string-array>
 
+    <string-array name="ChartFileExtesion">
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+    </string-array>    
+    
     <string-array name="ChartTypeValues">
         <item>0</item>
         <item>1</item>
@@ -802,18 +907,17 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>9</item>
     </string-array>    
 
-    <string-array name="ChartDbNames">
-        <item>maps.sec.db</item>
-        <item>maps.tac.db</item>
-        <item>maps.wac.db</item>
-        <item>maps.el.db</item>
-        <item>maps.eh.db</item>
-        <item>maps.elv.db</item>
-        <item>maps.rel.db</item>
-        <item>maps.topo.db</item>
-        <item>maps.oth.db</item>
-        <item>maps.ea.db</item>
-        <item>procedures.db</item>
+    <string-array name="ChartMaxZooms">
+        <item>10</item>
+        <item>11</item>
+        <item>9</item>
+        <item>10</item>
+        <item>9</item>
+        <item>11</item>
+        <item>9</item>
+        <item>9</item>
+        <item>11</item>
+        <item>12</item>
     </string-array>    
     
     <string-array name="UnitsD">
@@ -1091,5 +1195,9 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Jet-A</item>
         <item>Mogas</item>
     </string-array>
-    
+
+    <string-array name="Tips">
+        <item>If you upgraded the app from version 6.0.9 or below, you MUST update all your charts and databases even if they show as current.</item>
+    </string-array>
+
 </resources>

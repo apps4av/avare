@@ -105,13 +105,7 @@ public abstract class Shape {
      * @param paint
      */
 	public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack, Plan plan) {
-        float x = (float)origin.getOffsetX(mLonMin);
-        float y = (float)origin.getOffsetY(mLatMax);
-        float sx = scale.getScaleFactor();
-        float sy = scale.getScaleCorrected();
-        float facx = sx / (float)movement.getLongitudePerPixel();
-        float facy = sy / (float)movement.getLatitudePerPixel();
-        
+
         /*
          * Do a tab on top of shape
          */
@@ -129,10 +123,10 @@ public abstract class Shape {
              */
         	int cMax = getNumCoords();
             for(int coord = 0; coord < (cMax - 1); coord++) {
-                float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
-                float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
-                float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
-                float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
+                float x1 = (float)origin.getOffsetX(mCoords.get(coord).getLongitude());
+                float x2 = (float)origin.getOffsetX(mCoords.get(coord + 1).getLongitude());
+                float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
+                float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());;
 
                 if(drawTrack) {
 	                paint.setStrokeWidth(width + 4);
@@ -169,10 +163,10 @@ public abstract class Shape {
              * Draw the shape segment by segment
              */
             for(int coord = 0; coord < (getNumCoords() - 1); coord++) {
-                float x1 = x + (float)(mCoords.get(coord).getLongitude() - mLonMin) * facx;
-                float x2 = x + (float)(mCoords.get(coord + 1).getLongitude() - mLonMin) * facx;
-                float y1 = y + (float)(mCoords.get(coord).getLatitude() - mLatMax) * facy;
-                float y2 = y + (float)(mCoords.get(coord + 1).getLatitude() - mLatMax) * facy;
+                float x1 = (float)origin.getOffsetX(mCoords.get(coord).getLongitude());
+                float x2 = (float)origin.getOffsetX(mCoords.get(coord + 1).getLongitude());
+                float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
+                float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());;
                 c.drawLine(x1, y1, x2, y2, paint);
             }
         }

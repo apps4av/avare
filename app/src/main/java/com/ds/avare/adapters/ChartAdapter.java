@@ -58,18 +58,18 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     
     private static final int GROUP_DATABASE = 0;
     private static final int GROUP_WEATHER = 1;
-    private static final int GROUP_PLATE = 2;
-    private static final int GROUP_SECTIONAL = 3;
-    private static final int GROUP_TAC = 4;
-    private static final int GROUP_WAC = 5;
-    private static final int GROUP_IFRLE = 6;
-    private static final int GROUP_AFD = 7;
-    private static final int GROUP_TERRAIN = 8;
-    private static final int GROUP_IFRHE = 9;
-    private static final int GROUP_TOPO = 10;
-    private static final int GROUP_HELI = 11;
-    private static final int GROUP_IFRA = 12;
-    private static final int GROUP_VFRA = 13;
+    private static final int GROUP_SECTIONAL = 2;
+    private static final int GROUP_TAC = 3;
+    private static final int GROUP_WAC = 4;
+    private static final int GROUP_IFRLE = 5;
+    private static final int GROUP_IFRHE = 6;
+    private static final int GROUP_IFRA = 7;
+    private static final int GROUP_PLATE = 8;
+    private static final int GROUP_VFRA = 9;
+    private static final int GROUP_AFD = 10;
+    private static final int GROUP_TERRAIN = 11;
+    private static final int GROUP_TOPO = 12;
+    private static final int GROUP_HELI = 13;
     private static final int GROUP_NUM = 14;
     
     /**

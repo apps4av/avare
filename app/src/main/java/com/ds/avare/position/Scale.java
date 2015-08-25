@@ -80,18 +80,6 @@ public class Scale {
     public void setScaleFactor(float factor) {
         mScaleFactor = (double)factor;
     }
-
-    /**
-     * 
-     * @param latitude
-     */
-    public void setScaleAt(double latitude) {
-        /*
-         * http://mysite.du.edu/~jcalvert/math/mercator.htm
-         */
-        mScaleCorrectY = 1 / Math.cos(Math.toRadians(latitude));
-    }
-
     
     /**
      * 
