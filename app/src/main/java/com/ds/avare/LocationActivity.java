@@ -12,12 +12,34 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Observable;
-import java.util.Observer;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
+import android.widget.Toast;
 
-import com.ds.avare.R;
 import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
@@ -36,39 +58,16 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.Tips;
-import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.Tips;
+import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.views.LocationView;
 
-import android.location.GpsStatus;
-import android.location.Location;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
-import android.widget.Toast;
+import java.io.File;
+import java.net.URI;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author zkhan, jlmcgraw
@@ -1113,7 +1112,7 @@ public class LocationActivity extends Activity implements Observer {
                 mService.setGpsParams(new GpsParams(l));
             }
             else {
-                mService.setGpsParams(new GpsParams());
+                mService.setGpsParams(new GpsParams(mPref.getLastLocation()));
             }
             
             if(null != mService.getGpsParams()) {

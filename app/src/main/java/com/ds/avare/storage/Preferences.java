@@ -12,22 +12,25 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.ds.avare.MainActivity;
-import com.ds.avare.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
+import com.ds.avare.MainActivity;
+import com.ds.avare.R;
+import com.ds.avare.weather.InternetWeatherCache;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Preferences for main activity
@@ -1098,4 +1101,34 @@ public class Preferences {
 	public boolean getPlanControl() {
 		return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
 	}
+
+    // Get last location known
+    public Location getLastLocation() {
+        // Default is middle of USA, Kansas City
+        float lon = mPref.getFloat(mContext.getString(R.string.GPS) + "lon", -94.5f);
+        float lat = mPref.getFloat(mContext.getString(R.string.GPS) + "lat", 39.5f);
+        Location l = new Location(LocationManager.GPS_PROVIDER);
+        l.setLongitude(lon);
+        l.setLatitude(lat);
+        return l;
+    }
+
+    // Set last location we got
+    public void setLastLocation(double lon, double lat) {
+        mPref.edit()
+                .putFloat(mContext.getString(R.string.GPS) + "lon", (float) lon)
+                .putFloat(mContext.getString(R.string.GPS) + "lat", (float) lat)
+                .commit();
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public int getExpiryTime() {
+        String exp = mPref.getString(mContext.getString(R.string.Expires), "30");
+        return Integer.parseInt(exp);
+    }
+
 }

@@ -189,18 +189,39 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
 
         // Send intent to choose a file, result will be sent in onActivityResult method
         print(getString(R.string.RestoringDrive));
-        IntentSender intentSender = Drive.DriveApi
-                .newOpenFileActivityBuilder()
-                .setMimeType(new String[]{"application/zip"})
-                .build(mGoogleApiClient);
-        try {
-            startIntentSenderForResult(
-                    intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0);
-        }
-        catch (SendIntentException e) {
-            print(getString(R.string.Failed));
-            print(e.getMessage());
-        }
+        new Thread() {
+            @Override
+            public void run() {
+                // keep retrying for 5 times
+                int retries = 5;
+                while ((!mConnected) && (retries > 1)) {
+                    mHandler.sendEmptyMessage(CODE_CONNECT);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        print(getString(R.string.RestoreFailed));
+                        print(e.getMessage());
+                    }
+                    retries--;
+                }
+                if (!mConnected) {
+                    // give up
+                    print(getString(R.string.RestoreFailed));
+                    return;
+                }
+                IntentSender intentSender = Drive.DriveApi
+                        .newOpenFileActivityBuilder()
+                        .setMimeType(new String[]{"application/zip"})
+                        .build(mGoogleApiClient);
+                try {
+                    startIntentSenderForResult(
+                            intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0);
+                } catch (SendIntentException e) {
+                    print(getString(R.string.Failed));
+                    print(e.getMessage());
+                }
+            }
+        }.start();
     }
 
     @Override

@@ -11,6 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import android.content.Context;
+
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,13 +34,6 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
-import android.content.Context;
-
-import com.ds.avare.R;
-
 
 /**
  * 
@@ -43,8 +42,7 @@ import com.ds.avare.R;
  */
 public class NetworkHelper {
     
-    public static final int EXPIRES = 10;
-    
+
     /**
      * 
      */
@@ -407,7 +405,7 @@ public class NetworkHelper {
      * @param date
      * @return
      */
-    public static boolean isExpired(String date) {        
+    public static boolean isExpired(String date, int timeout) {
         
         if(null == date) {
             return true;
@@ -444,7 +442,7 @@ public class NetworkHelper {
              * so many min expiry
              */
             expires.set(year, month, day, hour, min);
-            expires.add(Calendar.MINUTE, NetworkHelper.EXPIRES);
+            expires.add(Calendar.MINUTE, timeout);
             if(now.after(expires)) {
                 return true;
             }
@@ -487,7 +485,7 @@ public class NetworkHelper {
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),
                     now.get(Calendar.HOUR_OF_DAY),
-                    EXPIRES * (int)(now.get(Calendar.MINUTE) / EXPIRES));
+                    now.get(Calendar.MINUTE));
         }
         else if(netVers != null) {
         	return netVers;

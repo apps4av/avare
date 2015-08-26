@@ -377,7 +377,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                 if(mVers[group][child] == null) {
                     continue;
                 }
-                if(NetworkHelper.isExpired(mVers[group][child])) {
+                if(NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime())) {
                     mChecked[group][child] = STATE_CHECKED;
                 }
             }
@@ -411,7 +411,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                expired |= NetworkHelper.isExpired(mVers[group][child]);
+                expired |= NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime());
             }
         }
         if(expired) {
@@ -455,7 +455,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             textView2.setText(mVers[groupPosition][childPosition] + " " + NetworkHelper.getVersionRange(mVers[groupPosition][childPosition]));
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             
-            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition])) {
+            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition], mPref.getExpiryTime())) {
                 imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());                    
             }
         }

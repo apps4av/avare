@@ -439,4 +439,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DisconnectingDrive">Disconnecting from Google Drive...</string>
     <string name="ConnectedDrive">Connected to Google Drive</string>
     <string name="DisconnectedDrive">Disconnected from Google Drive</string>
+
+
+    <string name="Expires">&quot;Expires&quot;</string>
+    <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
+    <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads&quot;</string>
+
 </resources>
