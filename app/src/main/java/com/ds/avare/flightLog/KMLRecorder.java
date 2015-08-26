@@ -259,7 +259,7 @@ public class KMLRecorder {
                 30,     /* Max of 30 seconds between position updates */
                 true,   /* use verbose details */
                 Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
-                3);     // Adjust down to 3 knots to capture taxi
+                0);     // Adjust down to 3 knots to capture taxi
         start(config);
 	}
 	
