@@ -124,7 +124,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
                 while((!mConnected) && (retries > 1)) {
                     mHandler.sendEmptyMessage(CODE_CONNECT);
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         print(getString(R.string.BackupFailed));
                         print(e.getMessage());
@@ -197,7 +197,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
                 while ((!mConnected) && (retries > 1)) {
                     mHandler.sendEmptyMessage(CODE_CONNECT);
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         print(getString(R.string.RestoreFailed));
                         print(e.getMessage());
@@ -266,7 +266,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
                             while((!mConnected) && (retries > 1)) {
                                 mHandler.sendEmptyMessage(CODE_CONNECT);
                                 try {
-                                    Thread.sleep(5000);
+                                    Thread.sleep(1000);
                                 } catch (InterruptedException e) {
                                     print(getString(R.string.RestoreFailed));
                                     print(e.getMessage());
@@ -364,7 +364,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
         public void handleMessage(Message msg) {
             if(msg.what == CODE_LOG) {
                 if (msg.obj instanceof String) {
-                    mLogText.setText(mLogText.getText() + "\n" + (String)msg.obj);
+                    mLogText.setText(((String)msg.obj + "\n" + mLogText.getText()));
                 }
             }
             else if(msg.what == CODE_CONNECT) {
