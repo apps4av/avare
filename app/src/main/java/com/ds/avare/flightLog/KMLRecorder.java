@@ -396,8 +396,10 @@ public class KMLRecorder {
 		}
         catch (IOException e)
         {
-		}catch (Exception e)
+            Log.e("KML", e.getStackTrace().toString());
+        }catch (Exception e)
         {
+            Log.e("KML", e.getStackTrace().toString());
         }
 	}
     
