@@ -12,9 +12,28 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.views;
 
 
-import java.util.LinkedList;
-import java.util.List;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Point;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextPaint;
+import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
@@ -36,10 +55,6 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
@@ -51,28 +66,14 @@ import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
-import com.ds.avare.R;
-import com.ds.avare.StorageService;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.Point;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
-import android.text.TextPaint;
-import android.util.AttributeSet;
-import android.util.SparseArray;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewConfiguration;
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author zkhan
@@ -888,7 +889,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Radar is way too old.
          */
-        if(mService.getRadar().isOld()) {
+        if(mService.getRadar().isOld(mPref.getExpiryTime())) {
             return;
         }
         

@@ -37,8 +37,6 @@ import java.util.Locale;
  */
 public class Radar {
 
-    private static final long EXPIRES = 1000 * 60 * 60 * 2; // 2 hours
-    
     private BitmapHolder mBitmap;
     private float mLonL;
     private float mLatU;
@@ -189,10 +187,10 @@ public class Radar {
      * 
      * @return
      */
-    public boolean isOld() {
+    public boolean isOld(int expiry) {
         long diff = Helper.getMillisGMT();
         diff -= mDate; 
-        if(diff > EXPIRES) {
+        if(diff > expiry * 60 * 1000) {
             return true;
         }
         return false;
