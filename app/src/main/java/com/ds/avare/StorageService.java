@@ -11,10 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
+import android.app.Service;
+import android.content.Intent;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.MediaScannerConnection;
+import android.os.Binder;
+import android.os.IBinder;
 
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
@@ -22,7 +26,9 @@ import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
-import com.ds.avare.gps.*;
+import com.ds.avare.gps.Gps;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.DistanceRings;
 import com.ds.avare.instruments.EdgeDistanceTape;
@@ -40,7 +46,7 @@ import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.ElevationTile;
 import com.ds.avare.shapes.PixelDraw;
-import com.ds.avare.shapes.Radar;
+import com.ds.avare.shapes.RadarLayer;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
@@ -54,16 +60,11 @@ import com.ds.avare.utils.ShadowedText;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
 
-import android.app.Service;
-import android.content.Intent;
-import android.location.GpsStatus;
-import android.location.Location;
-import android.location.LocationManager;
-import android.media.MediaScannerConnection;
-import android.os.Binder;
-import android.os.IBinder;
-
 import java.net.URI;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -106,7 +107,7 @@ public class StorageService extends Service {
     
     private TrafficCache mTrafficCache;
     
-    private Radar mRadar;
+    private RadarLayer mRadarLayer;
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
@@ -337,11 +338,11 @@ public class StorageService extends Service {
         mKMLRecorder = new KMLRecorder();
         
         /*
-         * Internet radar
+         * Internet nexrad
          */
-        mRadar = new Radar(getApplicationContext());
+        mRadarLayer = new RadarLayer(getApplicationContext());
 
-        mRadar.parse();
+        mRadarLayer.parse();
 
         /*
          * Start the odometer now
@@ -691,7 +692,7 @@ public class StorageService extends Service {
 
     
     /**
-     * @param m
+     * @param p
      */
     public void setPan(Pan p) {
         mPan = p;
@@ -954,8 +955,8 @@ public class StorageService extends Service {
      * 
      * @return
      */
-    public Radar getRadar() {
-       return mRadar; 
+    public RadarLayer getRadarLayer() {
+       return mRadarLayer;
     }
     
     /**
@@ -970,14 +971,14 @@ public class StorageService extends Service {
      * 
      */
     public void deleteInternetWeatherCache() {
-        mInternetWeatherCache = new InternetWeatherCache();        
+        mInternetWeatherCache.flush();
     }
     
     /**
      * 
      */
     public void deleteRadar() {
-        mRadar.flush();        
+        mRadarLayer.flush();
     }
     
     /**

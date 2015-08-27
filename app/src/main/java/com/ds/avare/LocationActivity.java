@@ -66,6 +66,7 @@ import com.ds.avare.views.LocationView;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -131,8 +132,8 @@ public class LocationActivity extends Activity implements Observer {
     private TwoButton mSimButton;
     private TwoButton mDrawButton;
     private Button mWebButton;
-    private TwoButton mTrackButton;
     private Spinner mChartSpinner;
+    private Spinner mLayerSpinner;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
@@ -421,55 +422,55 @@ public class LocationActivity extends Activity implements Observer {
          * To be notified of some action in the view
          */
         mLocationView.setGestureCallback(new GestureInterface() {
-    		InfoLineFieldLoc _InfoLineFieldLoc;
-        	int _nNewSelection = 0;
-        	
-        	// This is the doubletap gesture that is called when the user desires
-        	// to change the "instrument" text display. We are passed the row and field index
-        	// of what is requested to change.
-        	@Override
+            InfoLineFieldLoc _InfoLineFieldLoc;
+            int _nNewSelection = 0;
+
+            // This is the doubletap gesture that is called when the user desires
+            // to change the "instrument" text display. We are passed the row and field index
+            // of what is requested to change.
+            @Override
             public void gestureCallBack(int nEvent, InfoLineFieldLoc infoLineFieldLoc) {
-        		if(infoLineFieldLoc == null) {
-        			return;
-        		}
-        		
-        		_InfoLineFieldLoc = infoLineFieldLoc;
-        		
-        		if(GestureInterface.LONG_PRESS == nEvent) {
-        		    if(mService != null) {
-        		        mService.getInfoLines().longPress(_InfoLineFieldLoc);
-        		        return;
-        		    }
-        		}
+                if (infoLineFieldLoc == null) {
+                    return;
+                }
 
-        		if(GestureInterface.TOUCH == nEvent) {
-        		    if(mService != null) {
-        		        mService.getInfoLines().touch(_InfoLineFieldLoc);
-        		        return;
-        		    }
-        		}
-        		
-        		if(GestureInterface.DOUBLE_TAP == nEvent) {
+                _InfoLineFieldLoc = infoLineFieldLoc;
 
-                	// Create the alert dialog and add the title.
-                	AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
-                	builder.setTitle(R.string.SelectTextFieldTitle);
+                if (GestureInterface.LONG_PRESS == nEvent) {
+                    if (mService != null) {
+                        mService.getInfoLines().longPress(_InfoLineFieldLoc);
+                        return;
+                    }
+                }
 
-                	// The list of items to chose from. When a selection is made, save it off locally
-                	builder.setSingleChoiceItems(_InfoLineFieldLoc.getOptions(), 
-                			_InfoLineFieldLoc.getSelected(), 
-                    		new DialogInterface.OnClickListener() {
-	                    		@Override
-		                        public void onClick(DialogInterface dialog, int which) {
-		                        	_nNewSelection = which;	
-	                        }
-                    });
-                    
+                if (GestureInterface.TOUCH == nEvent) {
+                    if (mService != null) {
+                        mService.getInfoLines().touch(_InfoLineFieldLoc);
+                        return;
+                    }
+                }
+
+                if (GestureInterface.DOUBLE_TAP == nEvent) {
+
+                    // Create the alert dialog and add the title.
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
+                    builder.setTitle(R.string.SelectTextFieldTitle);
+
+                    // The list of items to chose from. When a selection is made, save it off locally
+                    builder.setSingleChoiceItems(_InfoLineFieldLoc.getOptions(),
+                            _InfoLineFieldLoc.getSelected(),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    _nNewSelection = which;
+                                }
+                            });
+
                     // OK button, copy the new selection to the true array so it will be displayed
                     builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            if(mService != null) {
+                            if (mService != null) {
                                 mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
                             }
                         }
@@ -481,45 +482,43 @@ public class LocationActivity extends Activity implements Observer {
                         public void onClick(DialogInterface dialog, int id) {
                         }
                     });
-                    
-                	// Create and show the dialog now
-                	AlertDialog dialog = builder.create();
-                	dialog.show();
-                }
-        	}
 
-        	/*
+                    // Create and show the dialog now
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            }
+
+            /*
              * (non-Javadoc)
              * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
              */
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
-                
-                if(GestureInterface.TOUCH == event) {
+
+                if (GestureInterface.TOUCH == event) {
                     hideMenu();
                 }
 
-                if(GestureInterface.LONG_PRESS == event) {
+                if (GestureInterface.LONG_PRESS == event) {
                     /*
                      * Show the popout
                      */
-                	mAirportPressed = data.airport;
-                	if(mAirportPressed.contains("&")) {
-                		mPlatesButton.setEnabled(false);
-                		mAfdButton.setEnabled(false);
-                	}
-                	else {
-                		mPlatesButton.setEnabled(true);
-                		mAfdButton.setEnabled(true);
-                	}
+                    mAirportPressed = data.airport;
+                    if (mAirportPressed.contains("&")) {
+                        mPlatesButton.setEnabled(false);
+                        mAfdButton.setEnabled(false);
+                    } else {
+                        mPlatesButton.setEnabled(true);
+                        mAfdButton.setEnabled(true);
+                    }
                     mCrossButton.setText(data.airport + "\n" + data.info);
                     mDestLayout.setVisibility(View.VISIBLE);
 
                     // This allows unsetting the destination that is same as current
-                    if(isSameDest(data.airport)) {
+                    if (isSameDest(data.airport)) {
                         mDestButton.setText(getString(R.string.Delete));
-                    }
-                    else {
+                    } else {
                         mDestButton.setText(getString(R.string.ShortDestination));
                     }
                     
@@ -530,7 +529,7 @@ public class LocationActivity extends Activity implements Observer {
                     mListPopout.setAdapter(p);
                 }
             }
-            
+
         });
 
         mListPopout = (ExpandableListView)view.findViewById(R.id.location_list_popout);
@@ -563,22 +562,50 @@ public class LocationActivity extends Activity implements Observer {
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
-        
+
+        mLayerSpinner = (Spinner)view.findViewById(R.id.location_spinner_layer);
+        mLayerSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                if (mSpinner == false) {
+                    /*
+                     * Shitty spinner calls this when inflated. Send it back on inflation.
+                     */
+                    mSpinner = true;
+                    int index = Arrays.asList(getResources().getStringArray(R.array.LayerType)).indexOf(mPref.getLayerType());
+                    mLayerSpinner.setSelection(index);
+                    mLocationView.setLayerType(mPref.getLayerType());
+                    return;
+                }
+
+                mPref.setLayerType(getResources().getStringArray(R.array.LayerType)[pos]);
+
+                /*
+                 * set proper view
+                 */
+                mLocationView.setLayerType(mPref.getLayerType());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
         mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
-        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {       
+        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
-            @Override       
-            public void onStopTrackingTouch(SeekBar seekBar) {      
-            }       
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
 
-            @Override       
-            public void onStartTrackingTouch(SeekBar seekBar) {     
-            }       
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
-            @Override       
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mLocationView.updateThreshold(progress);
-            }       
+            }
         });
         
         
@@ -625,7 +652,7 @@ public class LocationActivity extends Activity implements Observer {
                 intent.putExtra("url", NetworkHelper.getHelpUrl(LocationActivity.this));
                 startActivity(intent);
             }
-            
+
         });
 
         mPlatesButton = (Button)view.findViewById(R.id.location_button_plate);
@@ -634,8 +661,8 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                if(null != mAirportPressed) {
-                    if(mService != null) {
+                if (null != mAirportPressed) {
+                    if (mService != null) {
                         mService.setLastPlateAirport(mAirportPressed);
                         mService.setLastPlateIndex(0);
                         ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
@@ -743,22 +770,22 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * On click, find destination that was pressed on in view
                  */
-                if(null == mAirportPressed) {
-                	return;
+                if (null == mAirportPressed) {
+                    return;
                 }
                 /*
                  * If button pressed was a destination go there, otherwise if none, then delete current dest
                  */
                 String dest = mAirportPressed;
                 mAirportPressed = null;
-                if(mDestButton.getText().toString().equals(getString(R.string.Delete))) {
+                if (mDestButton.getText().toString().equals(getString(R.string.Delete))) {
                     mService.setDestination(null);
                     mDestLayout.setVisibility(View.INVISIBLE);
                     mLocationView.invalidate();
                     return;
                 }
                 String type = Destination.BASE;
-                if(dest.contains("&")) {
+                if (dest.contains("&")) {
                     type = Destination.GPS;
                 }
                 goTo(dest, type);
@@ -798,27 +825,6 @@ public class LocationActivity extends Activity implements Observer {
                     mPref.setSimMode(false);
                 }
                 
-            }
-            
-        });
-
-        mTrackButton = (TwoButton)view.findViewById(R.id.location_button_track);
-        mTrackButton.setTwoClickListener(new TwoClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                
-                /*
-                 * Bring up preferences
-                 */
-                if(mTrackButton.getText().equals(getString(R.string.TrackUp))) {
-                    mLocationView.setTrackUp(true);
-                    mDrawButton.setEnabled(false);
-                }
-                else {
-                    mLocationView.setTrackUp(false);
-                    mDrawButton.setEnabled(true);
-                }                
             }
             
         });
@@ -975,7 +981,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
         mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(getApplicationContext(), mTrackButton, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateTrack = new AnimateButton(getApplicationContext(), mLayerSpinner, AnimateButton.DIRECTION_R_L, mPlanPause);
         mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
         mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);

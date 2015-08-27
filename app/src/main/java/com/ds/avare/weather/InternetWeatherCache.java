@@ -12,10 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.weather;
 
-import java.util.LinkedList;
-
 import com.ds.avare.StorageService;
 import com.ds.avare.shapes.MetShape;
+import com.ds.avare.shapes.MetarLayer;
+
+import java.util.LinkedList;
 
 
 /**
@@ -32,10 +33,20 @@ public class InternetWeatherCache {
     private Thread                     mWeatherThread;
     private LinkedList<AirSigMet>      mAirSig;
     private StorageService             mService;
-    
+    private MetarLayer                 mMetarLayer;
+
+    public void flush() {
+        if(mMetarLayer != null) {
+            mMetarLayer.flush();
+            mMetarLayer = null;
+        }
+        mAirSig = null;
+        mService = null;
+    }
+
     /**
      * 
-     * @param root
+     * @param service
      */
     public void parse(StorageService service) {
         
@@ -64,6 +75,14 @@ public class InternetWeatherCache {
         return mAirSig;
     }
 
+    /**
+     *
+     * @return
+     */
+    public MetarLayer getMetarLayer() {
+        return mMetarLayer;
+    }
+
     private class WeatherTask implements Runnable {
 
         @Override
@@ -74,7 +93,13 @@ public class InternetWeatherCache {
                  * Create a list of air/sigmets
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
-                
+
+                /*
+                 * Create Metar flight category shape
+                 */
+                mMetarLayer = new MetarLayer(mService);
+                mMetarLayer.parse();
+
                 /*
                  * Convert AIRMET/SIGMETS to shapes compatible coordinates
                  */

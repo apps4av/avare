@@ -42,7 +42,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>SUA</item>
         <item>Fuel Cost</item>
         <item>User Ratings</item>
-        <item>Radar</item>
+        <item>Layer</item>
     </string-array>
     
     <string-array name="resNameDatabase">
@@ -1201,6 +1201,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>30</item>
         <item>60</item>
         <item>1440</item>
+    </string-array>
+
+    <string-array name="LayerType">
+        <item>METAR</item>
+        <item>NEXRAD</item>
     </string-array>
 
     <string-array name="Tips">

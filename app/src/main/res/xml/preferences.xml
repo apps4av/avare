@@ -83,9 +83,9 @@ authors: zkhan, jlmcgraw
             android:defaultValue="255"
             android:entries="@array/Opacity"
             android:entryValues="@array/OpacityValues"
-            android:key="@string/Radar"
-            android:summary="@string/RadarSummary"
-            android:title="@string/RadarLabel" />
+            android:key="@string/Layer"
+            android:summary="@string/LayerSummary"
+            android:title="@string/LayerLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ADSBWeather"
@@ -191,6 +191,11 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefDisplayCategoryTitle" 
         android:icon="@android:drawable/ic_menu_gallery" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/TrackUp"
+            android:summary="@string/TrackUpSummary"
+            android:title="@string/TrackUpLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ScreenOn"

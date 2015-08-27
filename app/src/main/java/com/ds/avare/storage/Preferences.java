@@ -627,13 +627,13 @@ public class Preferences {
     public boolean useAdsbWeather() {
         return(mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
-    
+
     /**
      * 
      * @return
      */
-    public int showRadar() {
-        String val = mPref.getString(mContext.getString(R.string.Radar), "255");
+    public int showLayer() {
+        String val = mPref.getString(mContext.getString(R.string.Layer), "255");
         try {
             return(Integer.parseInt(val));
         }
@@ -1131,4 +1131,21 @@ public class Preferences {
         return Integer.parseInt(exp);
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getLayerType() {
+        return mPref.getString(mContext.getString(R.string.LayerType), "METAR");
+    }
+
+    public boolean isTrackUp() {
+        return mPref.getBoolean(mContext.getString(R.string.TrackUp), false);
+    }
+
+    public void setLayerType(String layerType) {
+        mPref.edit()
+                .putString(mContext.getString(R.string.LayerType), layerType)
+                .commit();
+    }
 }
