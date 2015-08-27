@@ -1143,6 +1143,10 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.TrackUp), false);
     }
 
+    public boolean setTrackUp(boolean trackUp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
+    }
+
     public void setLayerType(String layerType) {
         mPref.edit()
                 .putString(mContext.getString(R.string.LayerType), layerType)

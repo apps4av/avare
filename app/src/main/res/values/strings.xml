@@ -159,6 +159,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherBrowser">&quot;You do not seem to have a web browser to open the weather data.&quot;</string>
     <string name="NotamsBrowser">&quot;You do not seem to have a web browser to open the NOTAMS data.&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
+    <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, otherwise North up&quot;</string>

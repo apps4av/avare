@@ -621,6 +621,17 @@ public class LocationActivity extends Activity implements Observer {
             }
 
         });
+        mCenterButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // long press on center button sets track toggle
+                mPref.setTrackUp(!mPref.isTrackUp());
+                mToast.setText(mPref.isTrackUp() ? getString(R.string.TrackUp) : getString(R.string.NorthUp));
+                mToast.show();
+                mLocationView.invalidate();
+                return true;
+            }
+        });
 
         mCrossButton = (Button)view.findViewById(R.id.location_button_cross);
         mCrossButton.setOnClickListener(new OnClickListener() {
