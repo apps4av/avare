@@ -78,6 +78,7 @@ import java.util.List;
 
 /**
  * @author zkhan
+ * @author plinel
  * 
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
@@ -542,7 +543,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
-                mService.getDraw().addPoint(x, y, mOrigin);
+                if (mPref.isTrackUp()) {
+                    double thetab = mGpsParams.getBearing();
+                    double p[] = new double[2];
+                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                    p = rotateCoord(c_x,c_y , thetab, x, y);
+                    mService.getDraw().addPoint((float)p[0],(float)p[1], mOrigin);
+                }
+                else {
+                    mService.getDraw().addPoint(x, y, mOrigin);
+                }
                 return true;
             }
 
