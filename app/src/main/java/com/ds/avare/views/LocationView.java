@@ -901,6 +901,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mLayer = mService.getInternetWeatherCache().getMetarLayer();
         }
         else {
+            mLayer = null;
             return;
         }
 

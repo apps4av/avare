@@ -1136,7 +1136,7 @@ public class Preferences {
      * @return
      */
     public String getLayerType() {
-        return mPref.getString(mContext.getString(R.string.LayerType), "METAR");
+        return mPref.getString(mContext.getString(R.string.LayerType), "No Layer");
     }
 
     public boolean isTrackUp() {
