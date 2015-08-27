@@ -119,25 +119,23 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_width="150dp"
-            android:layout_above="@+id/location_button_track"
+            android:layout_above="@+id/location_spinner_layer"
             android:visibility="invisible"
             android:textStyle="bold"
             android:background="@android:drawable/btn_default"
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
-        
-        <com.ds.avare.animation.TwoButton
-            android:id="@+id/location_button_track"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:background="@android:drawable/btn_default"
-            android:layout_above="@+id/location_button_sim"
-            android:layout_alignParentRight="true"
-            android:textOff="@string/NorthUp"
-            android:textOn="@string/TrackUp"
+
+        <Spinner
+            android:id="@+id/location_spinner_layer"
             android:layout_width="150dp"
-            android:textStyle="bold"/>
-        
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/location_button_sim"
+            android:visibility="invisible"
+            android:entries="@array/LayerType"
+            android:entryValues="@array/LayerType" />
+
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_sim"
             android:layout_height="wrap_content"

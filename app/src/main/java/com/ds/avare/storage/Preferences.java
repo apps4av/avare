@@ -12,22 +12,25 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.ds.avare.MainActivity;
-import com.ds.avare.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
+import com.ds.avare.MainActivity;
+import com.ds.avare.R;
+import com.ds.avare.weather.InternetWeatherCache;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Preferences for main activity
@@ -624,13 +627,13 @@ public class Preferences {
     public boolean useAdsbWeather() {
         return(mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
-    
+
     /**
      * 
      * @return
      */
-    public int showRadar() {
-        String val = mPref.getString(mContext.getString(R.string.Radar), "255");
+    public int showLayer() {
+        String val = mPref.getString(mContext.getString(R.string.Layer), "255");
         try {
             return(Integer.parseInt(val));
         }
@@ -1098,4 +1101,55 @@ public class Preferences {
 	public boolean getPlanControl() {
 		return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
 	}
+
+    // Get last location known
+    public Location getLastLocation() {
+        // Default is middle of USA, Kansas City
+        float lon = mPref.getFloat(mContext.getString(R.string.GPS) + "lon", -94.5f);
+        float lat = mPref.getFloat(mContext.getString(R.string.GPS) + "lat", 39.5f);
+        Location l = new Location(LocationManager.GPS_PROVIDER);
+        l.setLongitude(lon);
+        l.setLatitude(lat);
+        return l;
+    }
+
+    // Set last location we got
+    public void setLastLocation(double lon, double lat) {
+        mPref.edit()
+                .putFloat(mContext.getString(R.string.GPS) + "lon", (float) lon)
+                .putFloat(mContext.getString(R.string.GPS) + "lat", (float) lat)
+                .commit();
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public int getExpiryTime() {
+        String exp = mPref.getString(mContext.getString(R.string.Expires), "30");
+        return Integer.parseInt(exp);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getLayerType() {
+        return mPref.getString(mContext.getString(R.string.LayerType), "No Layer");
+    }
+
+    public boolean isTrackUp() {
+        return mPref.getBoolean(mContext.getString(R.string.TrackUp), false);
+    }
+
+    public boolean setTrackUp(boolean trackUp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
+    }
+
+    public void setLayerType(String layerType) {
+        mPref.edit()
+                .putString(mContext.getString(R.string.LayerType), layerType)
+                .commit();
+    }
 }

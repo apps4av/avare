@@ -635,6 +635,9 @@ public class Destination extends Observable {
             mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
 			Destination.this.setChanged();
             Destination.this.notifyObservers(Boolean.valueOf(mFound));
+            // Save last known good location
+            mPref.setLastLocation(getLocation().getLongitude(), getLocation().getLatitude());
+
             mLooking = false;
 	    }
     }

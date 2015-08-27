@@ -159,9 +159,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherBrowser">&quot;You do not seem to have a web browser to open the weather data.&quot;</string>
     <string name="NotamsBrowser">&quot;You do not seem to have a web browser to open the NOTAMS data.&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
-    <string name="TrackUp">&quot;Track Up&quot;</string>
-    <string name="Understand">&quot;I Understand&quot;</string>
     <string name="NorthUp">&quot;North Up&quot;</string>
+    <string name="TrackUp">&quot;Track Up&quot;</string>
+    <string name="TrackUpLabel">&quot;Track Up&quot;</string>
+    <string name="TrackUpSummary">&quot;Select to show maps track up, otherwise North up&quot;</string>
+    <string name="Understand">&quot;I Understand&quot;</string>
     <string name="XlateWeather">&quot;XlateWeather&quot;</string>
     <string name="XlateWeatherLabel">&quot;Translate Weather&quot;</string>
     <string name="XlateWeatherSummary">&quot;Select to translate weather METAR/TAF/PIREP in the WX brief&quot;</string>
@@ -231,9 +233,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectTextFieldTitle">&quot;Select field to display&quot;</string>
     <string name="prefOdometer">Odometer</string>
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
-    <string name="Radar">NEXRADTransparency</string>
-    <string name="RadarLabel">&quot;NEXRAD Transparency&quot;</string>
-    <string name="RadarSummary">&quot;Select how transparent a NEXRAD overlay should be&quot;</string>
+    <string name="Layer">LayerTransparency</string>
+    <string name="LayerLabel">&quot;Layer Transparency&quot;</string>
+    <string name="LayerSummary">&quot;Select how transparent a NEXRAD/METAR layer should be&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
     <string name="AndLoad">&quot;and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
@@ -439,4 +441,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DisconnectingDrive">Disconnecting from Google Drive...</string>
     <string name="ConnectedDrive">Connected to Google Drive</string>
     <string name="DisconnectedDrive">Disconnected from Google Drive</string>
+
+    <string name="Expires">&quot;Expires&quot;</string>
+    <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
+    <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads&quot;</string>
+
+    <string name="LayerType">&quot;LayerType&quot;</string>
+
 </resources>

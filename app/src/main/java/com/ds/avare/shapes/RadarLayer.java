@@ -9,35 +9,36 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+package com.ds.avare.shapes;
 
-package com.ds.avare.touch;
+import android.content.Context;
 
-import java.util.LinkedList;
-
-import com.ds.avare.weather.Airep;
-import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
+import com.ds.avare.storage.Preferences;
 
 /**
- * Works with LongTouchGesture
+ * 
  * @author zkhan
  *
+ * Internet nexrad
+ *
  */
-public class LongTouchDestination {
+public class RadarLayer extends Layer {
 
-    public String airport;
-    public String info;
-    public String tfr;
-    public String mets;
-    public Taf taf;
-    public WindsAloft wa;
-    public Metar metar;
-    public String sua;
-    public String layer;
-    public LinkedList<Airep> airep;
-    public LinkedList<String> freq;
-    public String performance;
-    public String fuel;
-	public String ratings;
+    private Preferences mPref;
+
+    /**
+     * @param ctx
+     */
+    public RadarLayer(Context ctx) {
+        mPref = new Preferences(ctx);
+    }
+
+    /**
+     *
+     */
+    public void parse() {
+        super.parse(
+                mPref.mapsFolder() + "/" + "latest_radaronly.png",
+                mPref.mapsFolder() + "/" + "latest.txt");
+     }
 }

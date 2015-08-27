@@ -12,10 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.weather;
 
-import java.util.LinkedList;
-
 import com.ds.avare.StorageService;
 import com.ds.avare.shapes.MetShape;
+
+import java.util.LinkedList;
 
 
 /**
@@ -32,10 +32,17 @@ public class InternetWeatherCache {
     private Thread                     mWeatherThread;
     private LinkedList<AirSigMet>      mAirSig;
     private StorageService             mService;
-    
+
+    public InternetWeatherCache() {
+        mWeatherTask = null;
+        mWeatherThread = null;
+        mAirSig = null;
+        mService = null;
+    }
+
     /**
      * 
-     * @param root
+     * @param service
      */
     public void parse(StorageService service) {
         
@@ -74,7 +81,7 @@ public class InternetWeatherCache {
                  * Create a list of air/sigmets
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
-                
+
                 /*
                  * Convert AIRMET/SIGMETS to shapes compatible coordinates
                  */

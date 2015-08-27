@@ -12,48 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.views;
 
 
-import java.util.LinkedList;
-import java.util.List;
-
-import com.ds.avare.adsb.NexradBitmap;
-import com.ds.avare.adsb.Traffic;
-import com.ds.avare.gps.GpsParams;
-import com.ds.avare.place.Boundaries;
-import com.ds.avare.place.Destination;
-import com.ds.avare.place.GameTFR;
-import com.ds.avare.place.Obstacle;
-import com.ds.avare.place.Runway;
-import com.ds.avare.position.Movement;
-import com.ds.avare.position.Origin;
-import com.ds.avare.position.Pan;
-import com.ds.avare.position.PixelCoordinate;
-import com.ds.avare.position.Projection;
-import com.ds.avare.position.Scale;
-import com.ds.avare.shapes.MetShape;
-import com.ds.avare.shapes.TFRShape;
-import com.ds.avare.shapes.Tile;
-import com.ds.avare.storage.DataSource;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.touch.GestureInterface;
-import com.ds.avare.touch.LongTouchDestination;
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.DisplayIcon;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
-import com.ds.avare.utils.NavComments;
-import com.ds.avare.utils.WeatherHelper;
-import com.ds.avare.weather.AirSigMet;
-import com.ds.avare.weather.Airep;
-import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
-import com.ds.avare.R;
-import com.ds.avare.StorageService;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -73,6 +31,50 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
+
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
+import com.ds.avare.adsb.NexradBitmap;
+import com.ds.avare.adsb.Traffic;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.GameTFR;
+import com.ds.avare.place.Obstacle;
+import com.ds.avare.place.Runway;
+import com.ds.avare.position.Movement;
+import com.ds.avare.position.Origin;
+import com.ds.avare.position.Pan;
+import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.position.Projection;
+import com.ds.avare.position.Scale;
+import com.ds.avare.shapes.Layer;
+import com.ds.avare.shapes.MetShape;
+import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.shapes.Tile;
+import com.ds.avare.storage.DataSource;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.GestureInterface;
+import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DisplayIcon;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
+import com.ds.avare.utils.NavComments;
+import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Airep;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
+
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author zkhan
@@ -129,7 +131,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private TileDrawTask                mTileDrawTask; 
     private Thread                      mTileDrawThread;
-    
+
+    // Which layer to draw
+    private  String                     mLayerType;
+    private Layer                       mLayer;
+
     /**
      * Task that would draw obstacles
      */
@@ -193,8 +199,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private boolean                   mDraw;
 
-    private boolean                    mTrackUp;
-    
     /*
      * Macro of zoom
      */
@@ -248,7 +252,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mTrackUp = false;
         mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
@@ -533,7 +536,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /*
              * Do not move on multitouch
              */
-            if(mDraw && (!mTrackUp) && mService != null) {
+            if(mDraw && mService != null) {
                 float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
                 float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
                 /*
@@ -573,7 +576,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
                     double lon0,lat0,lon1,lat1;
                     // convert to origin coord if Trackup
-                    if(mTrackUp) {
+                    if(mPref.isTrackUp()) {
                         double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
                         double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
                         double thetab = mGpsParams.getBearing();
@@ -723,7 +726,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     empty++;
                 }
 
-                if(mPref.isNightMode() && (mPref.getChartType().equals("3") || mPref.getChartType().equals("4"))) {
+
+                int index = Integer.parseInt(mPref.getChartType());
+
+                String type = getResources().getStringArray(R.array.ChartType)[index];
+                if(mPref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"))) {
                     /*
                      * IFR charts invert color at night
                      */
@@ -880,29 +887,41 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      * @param canvas
      */
-    private void drawRadar(Canvas canvas) {
-        if(mService == null || (0 == mPref.showRadar()) || null != mPointProjection) {
+    private void drawLayers(Canvas canvas) {
+        if(mService == null || mLayerType == null || null != mPointProjection || 0 == mPref.showLayer()) {
             return;
         }
-        
+
+        if(mLayerType.equals("NEXRAD")) {
+            // draw nexrad
+            mLayer = mService.getRadarLayer();
+        }
+        else if(mLayerType.equals("METAR")) {
+            // draw metar flight catergory
+            mLayer = mService.getMetarLayer();
+        }
+        else {
+            mLayer = null;
+            return;
+        }
+
         /*
-         * Radar is way too old.
+         * layer is way too old.
          */
-        if(mService.getRadar().isOld()) {
+        if(mLayer.isOld(mPref.getExpiryTime())) {
             return;
         }
-        
+
         /*
-         * If using ADSB, then dont show
+         * If using ADSB, then dont show internet layers
          */
         if(mPref.useAdsbWeather()) {
             return;
         }
 
-        mPaint.setAlpha(mPref.showRadar());
-        mService.getRadar().draw(canvas, mPaint, mOrigin);
+        mPaint.setAlpha(mPref.showLayer());
+        mLayer.draw(canvas, mPaint, mOrigin);
         mPaint.setAlpha(255);
-
     }
 
     /**
@@ -910,7 +929,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas
      */
     private void drawNexrad(Canvas canvas) {
-        if(mService == null || 0 == mPref.showRadar()) {
+        if(mService == null || 0 == mPref.showLayer()) {
             return;
         }
         
@@ -1215,7 +1234,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      * direction to bearing so they appear upright
                      */
                     boolean bRotated = false;
-                    if (mTrackUp && (mGpsParams != null)) {
+                    if (mPref.isTrackUp() && (mGpsParams != null)) {
                     	bRotated = true;
                         canvas.save();
                         canvas.rotate((int) mGpsParams.getBearing(),
@@ -1255,7 +1274,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         
         // Tell the rings to draw themselves
-        mService.getDistanceRings().draw(canvas, mOrigin, mScale, mMovement, mTrackUp, mGpsParams);
+        mService.getDistanceRings().draw(canvas, mOrigin, mScale, mMovement, mPref.isTrackUp(), mGpsParams);
     }
 
     /**
@@ -1338,7 +1357,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Display all of the user defined waypoints if configured to do so
     private void drawUserDefinedWaypoints(Canvas canvas) {
         if(mService != null && mPointProjection == null) {
-        	mService.getUDWMgr().draw(canvas, mTrackUp, mGpsParams, mFace, mOrigin);
+        	mService.getUDWMgr().draw(canvas, mPref.isTrackUp(), mGpsParams, mFace, mOrigin);
         }
     }
 
@@ -1376,7 +1395,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     	// If our track is supposed to be at the top, save the current
     	// canvas and rotate it based upon our bearing if we have one
     	boolean bRotated = false;
-        if(mTrackUp && (mGpsParams != null)) {
+        if(mPref.isTrackUp() && (mGpsParams != null)) {
         	bRotated = true;
             canvas.save();
             /*
@@ -1391,7 +1410,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         // the chart
         drawTiles(canvas);
         drawNexrad(canvas);
-        drawRadar(canvas);
+        drawLayers(canvas);
         drawDrawing(canvas);
         drawCapGrids(canvas);
         drawTraffic(canvas);
@@ -1604,7 +1623,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 double n_x = mPan.getMoveX();
                 double n_y = mPan.getMoveY();
 
-                if ( mTrackUp) {
+                if (mPref.isTrackUp()) {
                     double p[] = new double[2];
                     double thetab = mGpsParams.getBearing();
                     p = rotateCoord(0.0, 0.0, thetab, n_x, n_y);
@@ -1678,7 +1697,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String text = "";
         private String textMets = "";
         private String sua;
-        private String radar;
+        private String layer;
         private LinkedList<Airep> aireps;
         private LinkedList<String> freq;
         private LinkedList<String> runways;
@@ -1830,8 +1849,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 sua = mService.getDBResource().getSua(lon, lat);
                 if(isCancelled())
                     return "";
-                
-                radar = mService.getRadar().getDate();
+
+                if(mLayer != null) {
+                    layer = mLayer.getDate();
+                }
                 if(isCancelled())
                     return "";
             }    
@@ -1867,7 +1888,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     metar = mService.getAdsbWeather().getMETAR(airport);                    
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
-                    radar = mService.getAdsbWeather().getNexrad().getDate();
+                    layer = mService.getAdsbWeather().getNexrad().getDate();
                 }
                 if(null != aireps) {
                     for(Airep a : aireps) {
@@ -1885,7 +1906,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.wa = wa;
                 mLongTouchDestination.freq = freq;
                 mLongTouchDestination.sua = sua;
-                mLongTouchDestination.radar = radar;
+                mLongTouchDestination.layer = layer;
                 mLongTouchDestination.fuel = fuel;
                 mLongTouchDestination.ratings = ratings;
                 if(metar != null) {
@@ -2128,7 +2149,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mClosestTask = new ClosestAirportTask();
 
         double lon2,lat2;
-        if (mTrackUp) {
+        if (mPref.isTrackUp()) {
             double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
             double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
             double thetab = mGpsParams.getBearing();
@@ -2170,15 +2191,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return mDraw;
     }
     
-    /**
-     * 
-     * @param tu
-     */
-    public void setTrackUp(boolean tu) {
-        mTrackUp = tu;
-        invalidate();
-    }
-
     /**
      * 
      * @return
@@ -2277,6 +2289,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     public void zoomOut() {
         mScale.zoomOut();
+    }
+
+    public void setLayerType(String type) {
+        mLayerType = type;
+        if(mService == null) {
+
+        }
+        else if(mLayerType.equals("NEXRAD")) {
+            mService.getRadarLayer().parse();
+        }
+        else if(mLayerType.equals("METAR")) {
+            mService.getMetarLayer().parse();
+        }
+
+        invalidate();
     }
 
 }

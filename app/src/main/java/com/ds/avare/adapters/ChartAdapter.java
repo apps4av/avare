@@ -58,19 +58,20 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     
     private static final int GROUP_DATABASE = 0;
     private static final int GROUP_WEATHER = 1;
-    private static final int GROUP_SECTIONAL = 2;
-    private static final int GROUP_TAC = 3;
-    private static final int GROUP_WAC = 4;
-    private static final int GROUP_IFRLE = 5;
-    private static final int GROUP_IFRHE = 6;
-    private static final int GROUP_IFRA = 7;
-    private static final int GROUP_PLATE = 8;
-    private static final int GROUP_VFRA = 9;
-    private static final int GROUP_AFD = 10;
-    private static final int GROUP_TERRAIN = 11;
-    private static final int GROUP_TOPO = 12;
-    private static final int GROUP_HELI = 13;
-    private static final int GROUP_NUM = 14;
+    private static final int GROUP_OTHER = 2;
+    private static final int GROUP_SECTIONAL = 3;
+    private static final int GROUP_TAC = 4;
+    private static final int GROUP_WAC = 5;
+    private static final int GROUP_IFRLE = 6;
+    private static final int GROUP_IFRHE = 7;
+    private static final int GROUP_IFRA = 8;
+    private static final int GROUP_PLATE = 9;
+    private static final int GROUP_VFRA = 10;
+    private static final int GROUP_AFD = 11;
+    private static final int GROUP_TERRAIN = 12;
+    private static final int GROUP_TOPO = 13;
+    private static final int GROUP_HELI = 14;
+    private static final int GROUP_NUM = 15;
     
     /**
      * @param context
@@ -90,6 +91,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resNameDatabase);
         mChildren[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resNameWeather);
+        mChildren[GROUP_OTHER] = context.getResources().getStringArray(R.array.resNameOther);
         mChildren[GROUP_PLATE] = context.getResources().getStringArray(R.array.resNamePlate);
         mChildren[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resNameSectional);
         mChildren[GROUP_TAC] = context.getResources().getStringArray(R.array.resNameTAC);
@@ -109,6 +111,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles = new String[GROUP_NUM][];
         mChildrenFiles[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
         mChildrenFiles[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
+        mChildrenFiles[GROUP_OTHER] = context.getResources().getStringArray(R.array.resFilesOther);
         mChildrenFiles[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mChildrenFiles[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
         mChildrenFiles[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
@@ -129,6 +132,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers = new String[GROUP_NUM][];
         mVers[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
         mVers[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
+        mVers[GROUP_OTHER] = context.getResources().getStringArray(R.array.resFilesOther);
         mVers[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mVers[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
         mVers[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
@@ -148,6 +152,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked = new int[GROUP_NUM][];
         mChecked[GROUP_DATABASE] = new int[mVers[GROUP_DATABASE].length];
         mChecked[GROUP_WEATHER] = new int[mVers[GROUP_WEATHER].length];
+        mChecked[GROUP_OTHER] = new int[mVers[GROUP_OTHER].length];
         mChecked[GROUP_PLATE] = new int[mVers[GROUP_PLATE].length];
         mChecked[GROUP_SECTIONAL] = new int[mVers[GROUP_SECTIONAL].length];
         mChecked[GROUP_TAC] = new int[mVers[GROUP_TAC].length];
@@ -377,7 +382,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                 if(mVers[group][child] == null) {
                     continue;
                 }
-                if(NetworkHelper.isExpired(mVers[group][child])) {
+                if(NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime())) {
                     mChecked[group][child] = STATE_CHECKED;
                 }
             }
@@ -411,7 +416,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         for(int child = 0; child < total; child++) {
             if(mVers[group][child] != null) {
-                expired |= NetworkHelper.isExpired(mVers[group][child]);
+                expired |= NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime());
             }
         }
         if(expired) {
@@ -455,7 +460,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             textView2.setText(mVers[groupPosition][childPosition] + " " + NetworkHelper.getVersionRange(mVers[groupPosition][childPosition]));
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             
-            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition])) {
+            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition], mPref.getExpiryTime())) {
                 imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());                    
             }
         }
