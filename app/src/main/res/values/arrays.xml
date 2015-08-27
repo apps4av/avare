@@ -15,7 +15,8 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resGroups">
         <item>Databases</item>
-        <item>Weather/TFRs/Other</item>
+        <item>Weather/TFRs</item>
+        <item>Other</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
@@ -54,10 +55,13 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
         <item>@string/TFRs</item>
+    </string-array>
+
+    <string-array name="resNameOther">
         <item>@string/FuelCost</item>
         <item>@string/Ratings</item>
     </string-array>
-        
+
     <string-array name="resNameAFD">
         <item>A/FD NE</item>
         <item>A/FD NC</item>
@@ -464,10 +468,13 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>weather</item>
         <item>conus</item>
         <item>TFRs</item>
+    </string-array>
+
+    <string-array name="resFilesOther">
         <item>fuel</item>
         <item>ratings</item>
     </string-array>
-        
+
     <string-array name="resFilesIFRLE">
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>

@@ -32,8 +32,8 @@ import java.util.Locale;
  */
 public class Layer {
 
-    // Layers can hog memory, show only one
-    private BitmapHolder mBitmap;
+    // Layers can hog memory, show only one hence static bitmap
+    private static BitmapHolder mBitmap;
     private float mLonL;
     private float mLatU;
     private float mLonR;
@@ -146,6 +146,7 @@ public class Layer {
      *
      */
     public void parse(String imageName, String projName) {
+        flush();
         mImage = imageName;
         mText = projName;
 
@@ -177,9 +178,6 @@ public class Layer {
 
                 String dateText = br.readLine();
                 br.close();
-                if(mBitmap != null) {
-                    mBitmap.recycle();
-                }
 
                 mBitmap = new BitmapHolder(mImage);
 

@@ -45,6 +45,7 @@ import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
 import com.ds.avare.shapes.ElevationTile;
+import com.ds.avare.shapes.MetarLayer;
 import com.ds.avare.shapes.PixelDraw;
 import com.ds.avare.shapes.RadarLayer;
 import com.ds.avare.shapes.TFRShape;
@@ -121,6 +122,8 @@ public class StorageService extends Service {
     private boolean mDownloading;
     
     private LinkedList<Checklist> mCheckLists;
+
+    private MetarLayer mMetarLayer;
     
     /**
      * GPS
@@ -342,7 +345,10 @@ public class StorageService extends Service {
          */
         mRadarLayer = new RadarLayer(getApplicationContext());
 
-        mRadarLayer.parse();
+        /*
+         * Internet metar
+         */
+        mMetarLayer = new MetarLayer(getApplicationContext());
 
         /*
          * Start the odometer now
@@ -750,7 +756,15 @@ public class StorageService extends Service {
             mDiagramBitmap = new BitmapHolder(name);            
         }
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public MetarLayer getMetarLayer() {
+        return mMetarLayer;
+    }
+
     /**
      * 
      * @return
@@ -971,7 +985,7 @@ public class StorageService extends Service {
      * 
      */
     public void deleteInternetWeatherCache() {
-        mInternetWeatherCache.flush();
+        mInternetWeatherCache = new InternetWeatherCache();
     }
     
     /**

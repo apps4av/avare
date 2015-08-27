@@ -898,7 +898,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         else if(mLayerType.equals("METAR")) {
             // draw metar flight catergory
-            mLayer = mService.getInternetWeatherCache().getMetarLayer();
+            mLayer = mService.getMetarLayer();
         }
         else {
             mLayer = null;
@@ -2293,6 +2293,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     public void setLayerType(String type) {
         mLayerType = type;
+        if(mService == null) {
+
+        }
+        else if(mLayerType.equals("NEXRAD")) {
+            mService.getRadarLayer().parse();
+        }
+        else if(mLayerType.equals("METAR")) {
+            mService.getMetarLayer().parse();
+        }
+
         invalidate();
     }
 
