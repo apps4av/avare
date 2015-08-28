@@ -557,10 +557,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return true;
             }
 
-            /*
-             * TODO: track up pan is problematic
-             * 
-             */
+            // Pan
             if(mPan.setMove(
                             newObjPosAndScale.getXOff(),
                             newObjPosAndScale.getYOff())) {
