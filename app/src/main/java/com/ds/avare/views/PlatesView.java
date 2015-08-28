@@ -29,13 +29,14 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DisplayIcon;
+import com.ds.avare.utils.Helper;
+
 import org.metalev.multitouch.controller.MultiTouchController;
 import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.DisplayIcon;
-import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -107,7 +108,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mDipToPix = Helper.getDpiToPix(context);
 
     }
-    
+
+    // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
+    private boolean shouldRotate() {
+        // XXX: Fix rotation
+        //return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
+        return false;
+    }
+
     /**
      * 
      * @param context
@@ -170,7 +178,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     }
 
     /**
-     * @param name
+     * @param holder
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
@@ -190,7 +198,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         float x = mPan.getMoveX();
         float y = mPan.getMoveY();
-        if(mPref.isTrackUp()) {
+        if(shouldRotate()) {
             double p[] = new double[2];
             double thetab = mGpsParams.getBearing();
             p = rotateCoord(0, 0, -thetab, x, y);
@@ -240,7 +248,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
-                if (mPref.isTrackUp()) {
+                if (shouldRotate()) {
                     double thetab = mGpsParams.getBearing();
                     double p[] = new double[2];
                     p = rotateCoord(pixx,pixy , thetab, x, y);
@@ -260,15 +268,15 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             float y = newObjPosAndScale.getYOff();
             float factor = (float)mScale.getMacroFactor();
 
-                if (mPref.isTrackUp()) {
+            if (shouldRotate()) {
 
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = rotateCoord(0, 0, thetab, x, y);
-                    mPan.setMove((float) p[0], (float) p[1]);
-                } else {
-                    mPan.setMove(x, y);
-                }
+                double thetab = mGpsParams.getBearing();
+                double p[] = new double[2];
+                p = rotateCoord(0, 0, thetab, x, y);
+                mPan.setMove((float) p[0], (float) p[1]);
+            } else {
+                mPan.setMove(x, y);
+            }
 
             
         } else {
@@ -322,7 +330,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     @Override
     public void onDraw(Canvas canvas) {
-    	if(mBitmap != null && mBitmap.getBitmap() != null) {
+
+        float angle = 0;
+        if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
             float scale = mScale.getScaleFactorRaw();
@@ -335,8 +345,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             pixy=0;
             float pixAirportx = 0;
             float pixAirporty = 0;
-            float angle = 0;
-            
+
                 
             if(null != mGpsParams && null != mMatrix) {
             
@@ -387,8 +396,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 }
 
             }
-            if(mPref.isTrackUp()) {
-                canvas.rotate(-(int) mGpsParams.getBearing(),pixx,pixy);
+
+            // rotate only when showing AD, or showing geo tagged approach plate.
+            if(shouldRotate()) {
+                canvas.rotate(-(int) mGpsParams.getBearing(), pixx, pixy);
             }
 
             /*
@@ -451,13 +462,19 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
                 }
             }
-        }
 
+        }
     	/*
     	 * Draw drawing
     	 */
     	this.drawDrawing(canvas);
 
+        // rotate back to show info lines
+        if(shouldRotate()) {
+            canvas.rotate((int) mGpsParams.getBearing(), pixx, pixy);
+        }
+
+        // do not rotate info lines
         if(mService != null && mPref.showPlateInfoLines()) {
             mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
                     getWidth(), getHeight(), mErrorStatus, null);
@@ -478,7 +495,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     public void center() {
         /*
-         * On double tap, move to center
+         * On long press, move to center
          */
         mScale = new Scale(MAX_PLATE_SCALE);
         mPan = new Pan();
@@ -542,8 +559,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
     /**
      * 
-     * @param x
-     * @param y
      */
     public void setAirport(String name, double lon, double lat) {
         mAirportLon = lon;
@@ -551,15 +566,4 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         postInvalidate();
     }
 
-    /**
-     * 
-     * @param factor
-     */
-    public void adjustZoom(double factor) {
-    	/**
-    	 * XXX: Disabled till fixed.
-    	mScale.adjustZoom(factor);
-    	postInvalidate();
-    	 */
-    }
 }
