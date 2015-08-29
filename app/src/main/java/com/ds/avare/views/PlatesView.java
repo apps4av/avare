@@ -41,6 +41,7 @@ import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 /**
  * 
  * @author zkhan
+ * @author plinel
  *
  */
 public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
@@ -56,8 +57,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private GpsParams                    mGpsParams;
     private String                       mErrorStatus;
     private Preferences                  mPref;
-    private float                       pixx ;
-    private float                       pixy ;
     private BitmapHolder                 mAirplaneBitmap;
     private float[]                     mMatrix;
     private boolean                    mShowingAD;
@@ -112,8 +111,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
     private boolean shouldRotate() {
         // XXX: Fix rotation
-        //return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
-        return false;
+        return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
     }
 
     /**
@@ -260,8 +258,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 if (shouldRotate()) {
                     double thetab = mGpsParams.getBearing();
                     double p[] = new double[2];
-                    p = rotateCoord(pixx,pixy, thetab, x, y);
-                    mService.getPixelDraw().addPoint((float)p[0], (float)p[1]);
+                    p = rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
+                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
                 }
                 else {
                     mService.getPixelDraw().addPoint(x, y);
@@ -347,10 +345,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
             float lon = (float) mGpsParams.getLongitude();
             float lat = (float) mGpsParams.getLatitude();
-            //float pixx = 0;
-            //float pixy = 0;
-            pixx=0;
-            pixy=0;
+            float pixx = 0;
+            float pixy = 0;
             float pixAirportx = 0;
             float pixAirporty = 0;
 
@@ -407,7 +403,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
             // rotate only when showing AD, or showing geo tagged approach plate.
             if(shouldRotate()) {
-                canvas.rotate(-(int) mGpsParams.getBearing(), pixx, pixy);
+                canvas.save();
+                canvas.rotate(-(int) mGpsParams.getBearing(),getWidth() / 2,getHeight() / 2);
             }
 
             /*
@@ -479,7 +476,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
         // rotate back to show info lines
         if(shouldRotate()) {
-            canvas.rotate((int) mGpsParams.getBearing(), pixx, pixy);
+            canvas.restore();
         }
 
         // do not rotate info lines
