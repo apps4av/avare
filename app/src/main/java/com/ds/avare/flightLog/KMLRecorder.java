@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.os.Environment;
@@ -90,7 +92,7 @@ public class KMLRecorder {
     public static final String KMLFILENAMEEXTENTION = ".KML";
     public static final String KMLFILEPREFIX  = 
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-			"<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+			"<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n" +
 			"	<Document>\n" +
 			"		<name>Flight Data by Avare</name>\n" +
 			"		<Style id=\"AircraftFlight\">\n" +
@@ -115,8 +117,37 @@ public class KMLRecorder {
 			"				</Icon>\n" +
 			"			</IconStyle>\n" +
 			"		</Style>\n";
-
-    
+	public static final String FF_FILE_STYLE  =
+			"<Style id=\"trackStyle\">\n" +
+			"         <LineStyle>\n" +
+			"            <color>ffDB9034</color>\n" +
+			"            <width>4</width>\n" +
+			"         </LineStyle>\n" +
+			"         <PolyStyle>\n" +
+			"            <color>80DB9034</color>\n" +
+			"         </PolyStyle>\n" +
+			"      </Style>\n" +
+			"      <Style id=\"pathStyle\">\n" +
+			"         <LineStyle>\n" +
+			"            <color>f8000080</color>\n" +
+			"            <width>8</width>\n" +
+			"         </LineStyle>\n" +
+			"      </Style>\n";
+    public static final String FF_HEADER =
+			" <Placemark>\n" +
+			"         <name />\n" +
+			"         <styleUrl>#trackStyle</styleUrl>\n" +
+			"         <gx:Track>\n" +
+			"            <altitudeMode>absolute</altitudeMode>\n" +
+			"            <extrude>1</extrude>\n" +
+			"            <altitudeMode>absolute</altitudeMode>\n" +
+			"            <gx:interpolate>1</gx:interpolate>\n";
+	public static final String FF_FOOTER =
+			"		</gx:Track>\n" +
+			"</Placemark>\n";
+    public static final String FF_CORDS =
+            "            <when>%s</when>\n" +
+            "            <gx:coord>%f %f %f</gx:coord>\n";
     public static final String KMLCOORDINATESHEADER =
 			"		<Placemark>\n" +
 			"			<name>Avare Flight Path</name>\n" +
@@ -182,8 +213,9 @@ public class KMLRecorder {
     	if(mTracksFile != null) {
     		// File operations can cause exceptions and we need to account for that
     		try {
-    			mTracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
-    			if(mConfig.mUseDetailedPositionReporting) {
+    			mTracksFile.write(FF_FOOTER);	// Close off the coordinates section
+    			if(mConfig.mUseDetailedPositionReporting)
+                {
 	    			// Write out each track point of this flight as its own entry. This
 	    			// saves out more detail than just lat/long of the point.
 	    			for(int idx = mFlightStartIndex, max = mPositionHistory.size(); idx < max; idx++) {
@@ -267,7 +299,8 @@ public class KMLRecorder {
 
     		// Write out the opening file prefix
     		mTracksFile.write(KMLFILEPREFIX);			// Overall file prelude
-    		mTracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
+			mTracksFile.write(FF_FILE_STYLE);
+    		mTracksFile.write(FF_HEADER);	// Open coordinates data
 
             // If we are supposed to clear the linked list each time
             // we start timing then do so now
@@ -340,10 +373,17 @@ public class KMLRecorder {
 
 		// Write out the position. Convert the altitude from feet to meters for the KML file
 		try {
-			mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
+            SimpleDateFormat fo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            fo.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String trackPoint = String.format(FF_CORDS,fo.format(new Date(gpsParams.getTime())),
+											  gpsParams.getLongitude(), gpsParams.getLatitude(),
+                                              (gpsParams.getAltitude() * .3048)
+            );
+            mTracksFile.write(trackPoint);
+			/*mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," +
 											  gpsParams.getLatitude() + "," + 
 											 (gpsParams.getAltitude() * .3048) + "\n");
-
+*/
 			// Add this position to our linked list for possible display
 			// on the charts
 			mPositionHistory.add(GpsParams.copy(gpsParams));
@@ -352,7 +392,12 @@ public class KMLRecorder {
 			// The data was saved correctly, update our last known position
 			mLastFix = gpsParams;
 
-		} catch (Exception e) { }
+		}
+        catch (IOException e)
+        {
+		}catch (Exception e)
+        {
+        }
 	}
     
     /**
