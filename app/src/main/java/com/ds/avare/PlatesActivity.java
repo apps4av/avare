@@ -19,12 +19,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -368,6 +368,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                
         mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -379,7 +385,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             public boolean onLongClick(View v) {
                 // long press on center button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
-                mToast.setText(mPref.isTrackUp() ? getString(R.string.TrackUp) : getString(R.string.NorthUp));
+                if(mPref.isTrackUp()) {
+                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.TrackUp));
+                }
+                else {
+                    mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.NorthUp));
+                }
                 mToast.show();
                 mPlatesView.invalidate();
                 return true;

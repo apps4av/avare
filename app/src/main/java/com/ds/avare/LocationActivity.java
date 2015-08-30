@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.net.Uri;
@@ -139,7 +140,8 @@ public class LocationActivity extends Activity implements Observer {
     private Bundle mExtras;
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
-    private boolean mSpinner;
+    private boolean mIsChartInited;
+    private boolean mIsLayerInited;
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
     private AnimateButton mAnimateWeb;
@@ -408,7 +410,8 @@ public class LocationActivity extends Activity implements Observer {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
-        mSpinner = false;
+        mIsChartInited = false;
+        mIsLayerInited = false;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -539,11 +542,11 @@ public class LocationActivity extends Activity implements Observer {
         mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
-                if(mSpinner == false) {
+                if(mIsChartInited == false) {
                     /*
                      * Shitty spinner calls this when inflated. Send it back on inflation.
                      */
-                    mSpinner = true;
+                    mIsChartInited = true;
                     mChartSpinner.setSelection(Integer.parseInt(mPref.getChartType()));
                     return;
                 }
@@ -569,11 +572,11 @@ public class LocationActivity extends Activity implements Observer {
         mLayerSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                if (mSpinner == false) {
+                if (mIsLayerInited == false) {
                     /*
                      * Shitty spinner calls this when inflated. Send it back on inflation.
                      */
-                    mSpinner = true;
+                    mIsLayerInited = true;
                     int index = Arrays.asList(getResources().getStringArray(R.array.LayerType)).indexOf(mPref.getLayerType());
                     mLayerSpinner.setSelection(index);
                     mLocationView.setLayerType(mPref.getLayerType());
@@ -613,6 +616,12 @@ public class LocationActivity extends Activity implements Observer {
 
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
         mCenterButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -626,7 +635,14 @@ public class LocationActivity extends Activity implements Observer {
             public boolean onLongClick(View v) {
                 // long press on center button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
-                mToast.setText(mPref.isTrackUp() ? getString(R.string.TrackUp) : getString(R.string.NorthUp));
+                if(mPref.isTrackUp()) {
+                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.TrackUp));
+                }
+                else {
+                    mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.NorthUp));
+                }
                 mToast.show();
                 mLocationView.invalidate();
                 return true;
