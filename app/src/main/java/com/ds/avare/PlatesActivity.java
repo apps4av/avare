@@ -368,12 +368,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                
         mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
-        if(mPref.isTrackUp()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-        }
-        else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-        }
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -772,6 +766,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
+        }
+
+        // Button colors to be synced across activities
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         }
     }
    

@@ -613,15 +613,8 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
-        if(mPref.isTrackUp()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-        }
-        else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-        }
         mCenterButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -1292,6 +1285,15 @@ public class LocationActivity extends Activity implements Observer {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
         }
+
+        // Button colors to be synced across activities
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
+
     }
 
     /* (non-Javadoc)
