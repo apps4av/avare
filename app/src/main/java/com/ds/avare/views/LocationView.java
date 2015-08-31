@@ -571,34 +571,34 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * on double touch find distance and bearing between two points.
              */
 
-                if(mPointProjection == null) {
-                    double x0 = mCurrTouchPoint.getXs()[0];
-                    double y0 = mCurrTouchPoint.getYs()[0];
-                    double x1 = mCurrTouchPoint.getXs()[1];
-                    double y1 = mCurrTouchPoint.getYs()[1];
+            if(mPointProjection == null) {
+                double x0 = mCurrTouchPoint.getXs()[0];
+                double y0 = mCurrTouchPoint.getYs()[0];
+                double x1 = mCurrTouchPoint.getXs()[1];
+                double y1 = mCurrTouchPoint.getYs()[1];
 
-                    double lon0,lat0,lon1,lat1;
-                    // convert to origin coord if Trackup
-                    if(mPref.isTrackUp()) {
-                        double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
-                        double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
-                        double thetab = mGpsParams.getBearing();
-                        double p0[],p1[];
-                        p0=rotateCoord(c_x,c_y,thetab,x0,y0);
-                        p1=rotateCoord(c_x,c_y,thetab,x1,y1);
-                        lon0 = mOrigin.getLongitudeOf(p0[0]);
-                        lat0 = mOrigin.getLatitudeOf(p0[1]);
-                        lon1 = mOrigin.getLongitudeOf(p1[0]);
-                        lat1 = mOrigin.getLatitudeOf(p1[1]);
-                    }
-                    else {
-                        lon0 = mOrigin.getLongitudeOf(x0);
-                        lat0 = mOrigin.getLatitudeOf(y0);
-                        lon1 = mOrigin.getLongitudeOf(x1);
-                        lat1 = mOrigin.getLatitudeOf(y1);
-                    }
-                    mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+                double lon0,lat0,lon1,lat1;
+                // convert to origin coord if Trackup
+                if(mPref.isTrackUp()) {
+                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                    double thetab = mGpsParams.getBearing();
+                    double p0[],p1[];
+                    p0=rotateCoord(c_x,c_y,thetab,x0,y0);
+                    p1=rotateCoord(c_x,c_y,thetab,x1,y1);
+                    lon0 = mOrigin.getLongitudeOf(p0[0]);
+                    lat0 = mOrigin.getLatitudeOf(p0[1]);
+                    lon1 = mOrigin.getLongitudeOf(p1[0]);
+                    lat1 = mOrigin.getLatitudeOf(p1[1]);
                 }
+                else {
+                    lon0 = mOrigin.getLongitudeOf(x0);
+                    lat0 = mOrigin.getLatitudeOf(y0);
+                    lon1 = mOrigin.getLongitudeOf(x1);
+                    lat1 = mOrigin.getLatitudeOf(y1);
+                }
+                mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+            }
 
 
             /*
@@ -1626,16 +1626,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         tileNames[i++] = centerTile.getTileNeighbor(tilex, tiley);
                     }
                 }
-
-                // As tiles are loaded
-                GenericCallback c = new GenericCallback() {
-                    @Override
-                    public Object callback(Object o1, Object o2) {
-                        publishProgress(o1, o2);
-                        return null;
-                    }
-                };
-                mService.getTiles().registerCallback(c);
             }
 
             @Override
@@ -1644,13 +1634,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     return null;
                 }
 
-
-
                 Thread.currentThread().setName("Tile");
                 /*
                  * Load tiles, draw in UI thread
                  */
-                mService.getTiles().reload(tileNames);
+                mService.getTiles().reload(
+                        tileNames,
+                        // As tiles are loaded, callback to notify us
+                        new GenericCallback() {
+                            @Override
+                            public Object callback(Object o1, Object o2) {
+                                publishProgress(o1, o2);
+                                return null;
+                            }
+                        }
+                );
                 if(mService.getTiles().isChartPartial()) {
                     // If tiles not found, find name of chart we are on to show to user
                     chart = Boundaries.getInstance().findChartOn(centerTile.getChartIndex(), centerTile.getLongitude(), centerTile.getLatitude());

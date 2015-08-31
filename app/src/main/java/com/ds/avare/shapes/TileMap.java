@@ -44,9 +44,6 @@ public class TileMap {
 
     private int mNumShowing;
 
-    // This will call back into UI thread to post updates when tile is loaded
-    private GenericCallback mCallback;
-
     LruCache<String, BitmapHolder> mBitmapCache;
 
     private static final int SIZE = BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2; // RGB565 = 2
@@ -118,7 +115,7 @@ public class TileMap {
      * @param tileNames
      * @return
      */
-    public void reload(String[] tileNames) {
+    public void reload(String[] tileNames, GenericCallback c) {
 
         // how many tiles missing?
         int showing = 0;
@@ -133,9 +130,7 @@ public class TileMap {
             if (mapB[tilen] == null) {
                 mapB[tilen] = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
                 if (mapB[tilen].getBitmap() != null) {
-                    if(mCallback != null) {
-                        mCallback.callback(this, mapB[tilen]);
-                    }
+                    c.callback(this, mapB[tilen]);
                     showing++;
                 }
             } else {
@@ -232,10 +227,6 @@ public class TileMap {
 
     // deal with LRU cache in UI thread, this class will call into UI thread through generic callback when a tile is loaded,
     // then the addInCache will be called by UI thread to add tile in cache, and invalidate view
-    public void registerCallback(GenericCallback c) {
-        mCallback = c;
-    }
-
     // deal with LRU cache in UI thread
     public void addInCache(BitmapHolder h) {
         if (mBitmapCache.get(h.getName()) == null) {
