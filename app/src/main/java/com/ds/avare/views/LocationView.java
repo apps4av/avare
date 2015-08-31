@@ -52,12 +52,14 @@ import com.ds.avare.shapes.Layer;
 import com.ds.avare.shapes.MetShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
+import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NavComments;
@@ -753,7 +755,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         - (float)mMovement.getOffsetLatitude() * mScale.getScaleCorrected());
                 
                 Bitmap b = tile.getBitmap();
-                if(null != b) {
+                if(null != b && (!b.isRecycled())) {
                     canvas.drawBitmap(b, tile.getTransform(), mPaint);
                 }
                 
@@ -1562,7 +1564,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mTileTask.cancel(true);
         }
 
-        mTileTask = new AsyncTask<Void, Void, TileUpdate>() {
+        mTileTask = new AsyncTask<Void, Object, TileUpdate>() {
             double offsets[] = new double[2];
             double p[] = new double[2];
             int     movex;
@@ -1576,6 +1578,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             /**
              *
              */
+            @Override
             protected void onPreExecute () {
 
                 /*
@@ -1624,6 +1627,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     }
                 }
 
+                // As tiles are loaded
+                GenericCallback c = new GenericCallback() {
+                    @Override
+                    public Object callback(Object o1, Object o2) {
+                        publishProgress(o1, o2);
+                        return null;
+                    }
+                };
+                mService.getTiles().registerCallback(c);
             }
 
             @Override
@@ -1631,6 +1643,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null == mService) {
                     return null;
                 }
+
+
 
                 Thread.currentThread().setName("Tile");
                 /*
@@ -1653,6 +1667,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return t;
             }
 
+            @Override
+            protected void onProgressUpdate(Object... objs) {
+                // Put in bitmap cache a new loaded tile
+                TileMap t = (TileMap)objs[0];
+                BitmapHolder b = (BitmapHolder)objs[1];
+                t.addInCache(b);
+                // Do we really want to update the location view and show user the tiles being loaded?
+            }
+
+            @Override
             protected void onPostExecute(TileUpdate t) {
                 /*
                  * UI thread
@@ -2222,7 +2246,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      *
      */
     private class TileUpdate {
-        
         private String chart;
 		private double offsets[];
         private int movex;
@@ -2230,7 +2253,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private float factor;
         private Tile centerTile;
 		protected Tile gpsTile;
-        
     }
 
     /**
@@ -2249,9 +2271,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
-
-
         	if(msg.obj instanceof ElevationUpdate) {
         		ElevationUpdate o = (ElevationUpdate)msg.obj;
         		mService.setElevation(o.elev);

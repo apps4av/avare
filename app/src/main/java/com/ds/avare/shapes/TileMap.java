@@ -19,7 +19,7 @@ import android.view.WindowManager;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
-
+import com.ds.avare.utils.GenericCallback;
 
 
 /**
@@ -31,24 +31,27 @@ public class TileMap {
 
     private BitmapHolder[] mapA;
     private BitmapHolder[] mapB;
-    
+
     private Context mContext;
-    
+
     private Preferences mPref;
-    
+
     private int mXtiles;
     private int mYtiles;
-    
+    private int mOverhead;
+
     private int mNumTiles;
 
     private int mNumShowing;
 
+    // This will call back into UI thread to post updates when tile is loaded
+    private GenericCallback mCallback;
+
     LruCache<String, BitmapHolder> mBitmapCache;
 
-    private static final int SIZE =  BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2; // RGB565 = 2
+    private static final int SIZE = BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2; // RGB565 = 2
 
     /**
-     * 
      * @param context
      */
     public TileMap(Context context) {
@@ -62,11 +65,12 @@ public class TileMap {
         int[] tilesdim = mPref.getTilesNumber();
         mXtiles = tilesdim[0];
         mYtiles = tilesdim[1];
+        mOverhead = tilesdim[2];
         mNumShowing = 0;
         mNumTiles = mXtiles * mYtiles;
         mapA = new BitmapHolder[mNumTiles];
         mapB = new BitmapHolder[mNumTiles];
-        mBitmapCache = new LruCache<String, BitmapHolder>(SIZE * (mNumTiles + getOverhead()))  {
+        mBitmapCache = new LruCache<String, BitmapHolder>(SIZE * (mNumTiles + getOverhead())) {
 
             @Override
             protected int sizeOf(String key, BitmapHolder value) {
@@ -74,7 +78,7 @@ public class TileMap {
             }
 
             @Override
-            protected void entryRemoved (boolean evicted, String key, BitmapHolder oldValue, BitmapHolder newValue) {
+            protected void entryRemoved(boolean evicted, String key, BitmapHolder oldValue, BitmapHolder newValue) {
                 oldValue.recycle();
             }
         };
@@ -83,16 +87,16 @@ public class TileMap {
     /**
      * Overhead needed for smooth tile switching, 1x becomes a double buffer.
      * Warning: Liberal overhead could cause OOM exception because we are talking about pictures of size 512x512.
+     *
      * @return
      */
     public int getOverhead() {
-        return (int)(0.2 * (double)mNumTiles); // 20% overhead
+        return mOverhead;
     }
 
     /**
-     * 
      * Clear the cache.
-     * 
+     *
      * @return
      */
     public void clear() {
@@ -108,10 +112,9 @@ public class TileMap {
     }
 
     /**
-     * 
      * When a new string of names are available for a new region, reload
      * will load and reuse older tiles.
-     * 
+     *
      * @param tileNames
      * @return
      */
@@ -123,22 +126,19 @@ public class TileMap {
         /*
          * For all tiles that will be loaded.
          */
-        for(int tilen = 0; tilen < mNumTiles; tilen++) {
+        for (int tilen = 0; tilen < mNumTiles; tilen++) {
 
             mapB[tilen] = mBitmapCache.get(tileNames[tilen]);
 
-            if(mapB[tilen] == null) {
+            if (mapB[tilen] == null) {
                 mapB[tilen] = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
                 if (mapB[tilen].getBitmap() != null) {
-                    synchronized (mBitmapCache) {
-                        if (mBitmapCache.get(tileNames[tilen]) == null) {
-                            mBitmapCache.put(tileNames[tilen], mapB[tilen]);
-                        }
+                    if(mCallback != null) {
+                        mCallback.callback(this, mapB[tilen]);
                     }
                     showing++;
                 }
-            }
-            else {
+            } else {
                 showing++;
             }
         }
@@ -149,74 +149,69 @@ public class TileMap {
      * Call this from UI thread so that tiles can be flipped without tear
      */
     public void flip() {
-        for(int tilen = 0; tilen < mNumTiles; tilen++) {
+        for (int tilen = 0; tilen < mNumTiles; tilen++) {
             mapA[tilen] = mapB[tilen];
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void recycleBitmaps() {
         clear();
     }
-    
+
     /**
-     * 
      * @return
      */
     public int getTilesNum() {
         return mNumTiles;
     }
-    
+
     /**
-     * 
      * @return
      */
     public int getXTilesNum() {
         return mXtiles;
     }
-    
+
     /**
-     * 
      * @return
      */
     public int getYTilesNum() {
         return mYtiles;
     }
-    
+
     /**
-     * 
      * @param tile
      * @return
      */
     public BitmapHolder getTile(int tile) {
         return mapA[tile];
     }
-    
+
     /**
      * Set the correct tile orientation
      */
     public void setOrientation() {
-    	
-    	WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-    	Display display = wm.getDefaultDisplay();
-    	
-        if(display.getHeight() > display.getWidth()) {
+
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        if (display.getHeight() > display.getWidth()) {
             /*
              * Have more tiles in Y on portrait
              */
-            if(mXtiles > mYtiles) {
+            if (mXtiles > mYtiles) {
                 int tmp = mXtiles;
                 mXtiles = mYtiles;
                 mYtiles = tmp;
             }
-        }
-        else {
+        } else {
             /*
              * Have more tiles in X on landscape
              */
-            if(mYtiles > mXtiles) {
+            if (mYtiles > mXtiles) {
                 int tmp = mXtiles;
                 mXtiles = mYtiles;
                 mYtiles = tmp;
@@ -227,10 +222,24 @@ public class TileMap {
 
     /**
      * Lets call chart showing partial when tiles showing are below a threshold
+     *
      * @return
      */
     public boolean isChartPartial() {
         return mNumShowing <= 0;
     }
 
+
+    // deal with LRU cache in UI thread, this class will call into UI thread through generic callback when a tile is loaded,
+    // then the addInCache will be called by UI thread to add tile in cache, and invalidate view
+    public void registerCallback(GenericCallback c) {
+        mCallback = c;
+    }
+
+    // deal with LRU cache in UI thread
+    public void addInCache(BitmapHolder h) {
+        if (mBitmapCache.get(h.getName()) == null) {
+            mBitmapCache.put(h.getName(), h);
+        }
+    }
 }
