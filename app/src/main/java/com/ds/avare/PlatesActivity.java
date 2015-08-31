@@ -12,15 +12,25 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.TreeMap;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.SystemClock;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.Toast;
 
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
@@ -35,25 +45,15 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.SystemClock;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.Toast;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.TreeMap;
 
 /**
  * @author zkhan,rasii
@@ -347,10 +347,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListAirports.size() == 0 || arePopupsShowing()) {
+                if (mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
-                
+
                 DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -358,7 +358,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         setAirportFromPos(which);
                     }
                 };
-                
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
@@ -373,7 +373,26 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             public void onClick(View v) {
                 mPlatesView.center();
             }
-        });      
+        });
+        mCenterButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // long press on center button sets track toggle
+                mPref.setTrackUp(!mPref.isTrackUp());
+                if(mPref.isTrackUp()) {
+                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.TrackUp));
+                }
+                else {
+                    mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.NorthUp));
+                }
+                mToast.show();
+                mPlatesView.invalidate();
+                return true;
+            }
+        });
+
 
         mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
@@ -748,6 +767,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
         }
+
+        // Button colors to be synced across activities
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
     }
    
     /**
@@ -827,22 +854,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          * Set the label of timer button to time
          */
         mPlatesTimerButton.setText(chronometer.getText());
-    }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) { 
-    	if (keyCode == KeyEvent.KEYCODE_VOLUME_UP){
-    		mPlatesView.adjustZoom(0.05);
-            return true;
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
-        	mPlatesView.adjustZoom(-0.05);
-            return true;
-        }
-        
-        // We don't handle any other keys
-        return super.onKeyDown(keyCode, event);
     }
     
 

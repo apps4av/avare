@@ -124,7 +124,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
                 while((!mConnected) && (retries > 1)) {
                     mHandler.sendEmptyMessage(CODE_CONNECT);
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         print(getString(R.string.BackupFailed));
                         print(e.getMessage());
@@ -189,18 +189,39 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
 
         // Send intent to choose a file, result will be sent in onActivityResult method
         print(getString(R.string.RestoringDrive));
-        IntentSender intentSender = Drive.DriveApi
-                .newOpenFileActivityBuilder()
-                .setMimeType(new String[]{"application/zip"})
-                .build(mGoogleApiClient);
-        try {
-            startIntentSenderForResult(
-                    intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0);
-        }
-        catch (SendIntentException e) {
-            print(getString(R.string.Failed));
-            print(e.getMessage());
-        }
+        new Thread() {
+            @Override
+            public void run() {
+                // keep retrying for 5 times
+                int retries = 5;
+                while ((!mConnected) && (retries > 1)) {
+                    mHandler.sendEmptyMessage(CODE_CONNECT);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        print(getString(R.string.RestoreFailed));
+                        print(e.getMessage());
+                    }
+                    retries--;
+                }
+                if (!mConnected) {
+                    // give up
+                    print(getString(R.string.RestoreFailed));
+                    return;
+                }
+                IntentSender intentSender = Drive.DriveApi
+                        .newOpenFileActivityBuilder()
+                        .setMimeType(new String[]{"application/zip"})
+                        .build(mGoogleApiClient);
+                try {
+                    startIntentSenderForResult(
+                            intentSender, REQUEST_CODE_OPENER, null, 0, 0, 0);
+                } catch (SendIntentException e) {
+                    print(getString(R.string.Failed));
+                    print(e.getMessage());
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -245,7 +266,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
                             while((!mConnected) && (retries > 1)) {
                                 mHandler.sendEmptyMessage(CODE_CONNECT);
                                 try {
-                                    Thread.sleep(5000);
+                                    Thread.sleep(1000);
                                 } catch (InterruptedException e) {
                                     print(getString(R.string.RestoreFailed));
                                     print(e.getMessage());
@@ -343,7 +364,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
         public void handleMessage(Message msg) {
             if(msg.what == CODE_LOG) {
                 if (msg.obj instanceof String) {
-                    mLogText.setText(mLogText.getText() + "\n" + (String)msg.obj);
+                    mLogText.setText(((String)msg.obj + "\n" + mLogText.getText()));
                 }
             }
             else if(msg.what == CODE_CONNECT) {

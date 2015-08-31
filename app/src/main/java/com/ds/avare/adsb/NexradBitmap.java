@@ -182,7 +182,7 @@ public class NexradBitmap {
         mBitmap.getTransform().setScale(scalex, scaley);
         mBitmap.getTransform().postTranslate(x0, y1);
         if(mBitmap.getBitmap() != null) {
-            paint.setAlpha(pref.showRadar());
+            paint.setAlpha(pref.showLayer());
             canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
             paint.setAlpha(255);
         }

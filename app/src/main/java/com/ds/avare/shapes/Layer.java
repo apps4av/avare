@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -9,15 +9,14 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 package com.ds.avare.shapes;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
@@ -29,38 +28,24 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 
- * @author zkhan
- *
- * Internet radar
- *
+ * Created by zkhan on 8/26/15.
  */
-public class Radar {
+public class Layer {
 
-    private static final long EXPIRES = 1000 * 60 * 60 * 2; // 2 hours
-    
-    private BitmapHolder mBitmap;
+    // Layers can hog memory, show only one hence static bitmap
+    private static BitmapHolder mBitmap;
     private float mLonL;
     private float mLatU;
     private float mLonR;
     private float mLatD;
     private long mDate;
 
-    private Preferences mPref;
-    private Context mContext;
     private String mImage;
     private String mText;
-    
-    /**
-     * 
-     * @param ctx
-     */
-    public Radar(Context ctx) {
-        mContext = ctx;
-        mPref = new Preferences(mContext);
-        mLonR = mLatU = mLonL = mLatD = 0;
-        mDate = 0;
-        mBitmap = null;
+
+
+    protected Layer() {
+        flush();
     }
 
     /**
@@ -91,19 +76,86 @@ public class Radar {
         return new Coordinate(lon, lat);
     }
 
+
     /**
-     * 
+     *
+     * @return
      */
-    public void parse() {
-        mImage = mPref.mapsFolder() + "/" + "latest_radaronly.png";
-        mText = mPref.mapsFolder() + "/" + "latest.txt";
+    public boolean isOld(int expiry) {
+        long diff = Helper.getMillisGMT();
+        diff -= mDate;
+        if(diff > expiry * 60 * 1000) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getDate() {
+        if(mDate == 0) {
+            return null;
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        return formatter.format(new Date(mDate)) + "Z";
+    }
+
+    /**
+     *
+     */
+    public void flush() {
+        if(mBitmap != null) {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
+        mLonR = mLatU = mLonL = mLatD = 0;
+        mDate = 0;
+    }
+
+    /**
+     * Draw on map screen
+     */
+    public void draw(Canvas canvas, Paint paint, Origin origin) {
+
+        if(null == mBitmap) {
+            return;
+        }
+        if(null == mBitmap.getBitmap()) {
+            return;
+        }
+
+        float x0 = (float)origin.getOffsetX(mLonL);
+        float y0 = (float)origin.getOffsetY(mLatU);
+        float x1 = (float)origin.getOffsetX(mLonR);
+        float y1 = (float)origin.getOffsetY(mLatD);
+
+        /*
+         * Stretch out the image to fit the projection
+         */
+        float scalex = (float)(x1 - x0) / mBitmap.getWidth();
+        float scaley = (float)(y1 - y0) / mBitmap.getHeight();
+        mBitmap.getTransform().setScale(scalex, scaley);
+        mBitmap.getTransform().postTranslate(x0, y0);
+
+        canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
+    }
+
+    /**
+     *
+     */
+    public void parse(String imageName, String projName) {
+        flush();
+        mImage = imageName;
+        mText = projName;
 
         if(new File(mText).exists() && new File(mImage).exists()) {
 
             try {
                 BufferedReader br;
                 br = new BufferedReader(new FileReader(mText));
-                
+
                 /*
                  * Read lon/lat/date
                  */
@@ -126,12 +178,9 @@ public class Radar {
 
                 String dateText = br.readLine();
                 br.close();
-                if(mBitmap != null) {
-                    mBitmap.recycle();                
-                }
-                
+
                 mBitmap = new BitmapHolder(mImage);
-                
+
                 /*
                  * Date format YYYYMMDD_HHmm
                  */
@@ -143,70 +192,5 @@ public class Radar {
                 return;
             }
         }
-    }
-    
-    /**
-     * 
-     */
-    public void flush() {
-        if(mBitmap != null) {
-            mBitmap.recycle();
-            mBitmap = null;
-        }
-        mLonR = mLatU = mLonL = mLatD = 0;
-        mDate = 0;
-    }
-    
-    /**
-     * Draw on map screen
-     */
-    public void draw(Canvas canvas, Paint paint, Origin origin) {
-        
-        if(null == mBitmap) {
-            return;
-        }
-        if(null == mBitmap.getBitmap()) {
-            return;
-        }
-        
-        float x0 = (float)origin.getOffsetX(mLonL);
-        float y0 = (float)origin.getOffsetY(mLatU);
-        float x1 = (float)origin.getOffsetX(mLonR);
-        float y1 = (float)origin.getOffsetY(mLatD);
-
-        /*
-         * Stretch out the image to fit the projection of US 48
-         */
-        float scalex = (float)(x1 - x0) / mBitmap.getWidth();
-        float scaley = (float)(y1 - y0) / mBitmap.getHeight();
-        mBitmap.getTransform().setScale(scalex, scaley);
-        mBitmap.getTransform().postTranslate(x0, y0);
-
-        canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public boolean isOld() {
-        long diff = Helper.getMillisGMT();
-        diff -= mDate; 
-        if(diff > EXPIRES) {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public String getDate() {
-    	if(mDate == 0) {
-    		return null;
-    	}
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()); 
-        return formatter.format(new Date(mDate)) + "Z";
     }
 }

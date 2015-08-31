@@ -13,17 +13,6 @@ package com.ds.avare.adapters;
 
 
 
-import java.util.LinkedList;
-
-import com.ds.avare.SubmitActivity;
-import com.ds.avare.R;
-import com.ds.avare.touch.LongTouchDestination;
-import com.ds.avare.utils.WeatherHelper;
-import com.ds.avare.weather.Airep;
-import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -34,6 +23,17 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.ds.avare.R;
+import com.ds.avare.SubmitActivity;
+import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.Airep;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
+
+import java.util.LinkedList;
 
 /**
  * @author zkhan
@@ -53,7 +53,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private String mTfr;
     private String mSua;
     private String mPerformance;
-    private String mRadar;
+    private String mLayer;
     private String mMets;
     private WindsAloft mWa;
     private Typeface mFace;
@@ -72,12 +72,12 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_SUA = 8;
     private static final int GROUP_FUEL = 9;
     private static final int GROUP_RATINGS = 10;
-    private static final int GROUP_RADAR = 11;
+    private static final int GROUP_LAYER = 11;
     private static final int GROUP_NUM = 12;
     
     /**
      * @param context
-     * @param textViewResourceId
+     * @param data
      */
     public PopoutAdapter(Context context, LongTouchDestination data) {
         
@@ -104,7 +104,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_METS] = new String[1];
         mChildren[GROUP_TFR] = new String[1];
         mChildren[GROUP_SUA] = new String[1];
-        mChildren[GROUP_RADAR] = new String[1];
+        mChildren[GROUP_LAYER] = new String[1];
         
         mChildrenText = new String[GROUP_NUM];
 
@@ -119,7 +119,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mWa = data.wa;
         mFreq = data.freq;
         mSua = data.sua;
-        mRadar = data.radar;
+        mLayer = data.layer;
         mPerformance = data.performance;
         mFuel = data.fuel;
         mAirport = data.airport;
@@ -130,7 +130,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
         mChildrenText[GROUP_FUEL] = mFuel == null ? "" : mFuel;
         mChildrenText[GROUP_METS] = mMets == null ? "" : mMets;
         mChildrenText[GROUP_SUA] = mSua == null ? "" : mSua;
-        mChildrenText[GROUP_RADAR] = mRadar == null ? "" : mRadar;
+        mChildrenText[GROUP_LAYER] = mLayer == null ? "" : mLayer;
         mChildrenText[GROUP_RATINGS] = mRatings == null ? "" : mRatings;
         
         if(mMetar == null) {
@@ -274,7 +274,7 @@ public class PopoutAdapter extends BaseExpandableListAdapter {
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;
-            case GROUP_RADAR:
+            case GROUP_LAYER:
                 tv.setTextColor(0xFFFFFFFF);
                 tv.setText(mGroups[group]);
                 break;

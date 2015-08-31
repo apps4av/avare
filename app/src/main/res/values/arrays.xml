@@ -15,7 +15,8 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resGroups">
         <item>Databases</item>
-        <item>Weather</item>
+        <item>Weather/TFRs</item>
+        <item>Other</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
@@ -42,22 +43,25 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>SUA</item>
         <item>Fuel Cost</item>
         <item>User Ratings</item>
-        <item>Radar</item>
+        <item>Layer</item>
     </string-array>
     
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
-        <item>@string/TFRs</item>
         <item>Plates Georeference Info.</item>
-        <item>@string/FuelCost</item>
-        <item>@string/Ratings</item>
     </string-array>
      
     <string-array name="resNameWeather">
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
+        <item>@string/TFRs</item>
     </string-array>
-        
+
+    <string-array name="resNameOther">
+        <item>@string/FuelCost</item>
+        <item>@string/Ratings</item>
+    </string-array>
+
     <string-array name="resNameAFD">
         <item>A/FD NE</item>
         <item>A/FD NC</item>
@@ -457,17 +461,20 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="resFilesDatabase">
         <item>databases</item>
-        <item>TFRs</item>
         <item>geoplates</item>
-        <item>fuel</item>
-        <item>ratings</item>
     </string-array>
     
     <string-array name="resFilesWeather">
         <item>weather</item>
         <item>conus</item>
+        <item>TFRs</item>
     </string-array>
-        
+
+    <string-array name="resFilesOther">
+        <item>fuel</item>
+        <item>ratings</item>
+    </string-array>
+
     <string-array name="resFilesIFRLE">
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>
@@ -1194,6 +1201,19 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>100LL</item>
         <item>Jet-A</item>
         <item>Mogas</item>
+    </string-array>
+
+    <string-array name="Expires">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>1440</item>
+    </string-array>
+
+    <string-array name="LayerType">
+        <item>No Layer</item>
+        <item>METAR</item>
+        <item>NEXRAD</item>
     </string-array>
 
     <string-array name="Tips">

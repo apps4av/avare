@@ -13,11 +13,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.gps;
 
-import com.ds.avare.position.Scale;
-import com.ds.avare.storage.Preferences;
-
 import android.hardware.GeomagneticField;
 import android.location.Location;
+
+import com.ds.avare.position.Scale;
+import com.ds.avare.storage.Preferences;
 
 /**
  * @author zkhan
@@ -35,23 +35,6 @@ public class GpsParams {
     private long   mTime;
     
 
-    /**
-     * @param location
-     */
-    public GpsParams() {
-        
-        /*
-         * Center of USA?
-         */
-        mSpeed = 0;
-        mLongitude = -94.5;
-        mLatitude = 39.5;
-        mAltitude = 0;
-        mBearing = 0;
-        mScale = new Scale();
-        mDeclination = 0;
-        mTime = 0;
-    }
 
     /**
      * @param location
