@@ -86,7 +86,7 @@ public class TileMap {
      * @return
      */
     public int getOverhead() {
-        return (int)(0.33 * (double)mNumTiles);
+        return (int)(0.2 * (double)mNumTiles); // 20% overhead
     }
 
     /**

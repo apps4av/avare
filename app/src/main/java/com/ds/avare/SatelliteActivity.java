@@ -12,29 +12,16 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import com.ds.avare.R;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.views.MemView;
-import com.ds.avare.views.SatelliteView;
-
-import android.location.GpsStatus;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.Debug;
-import android.os.IBinder;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Debug;
+import android.os.IBinder;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +29,18 @@ import android.view.Window;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.views.MemView;
+import com.ds.avare.views.SatelliteView;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author zkhan
@@ -145,7 +144,7 @@ public class SatelliteActivity extends Activity  {
  	    // Divide map width/height by 2 because of zoom scale from 1 - 2 before zoom macro changes
 		mMapAreaText.setText(
 				getString(R.string.MapSize) + " " + mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH / 2 + "x" + mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT / 2 + "px\n" +
-        		getString(R.string.ScreenSize) + " " + width + "x" + height + "px");
+        		getString(R.string.ScreenSize) + " " + width + "x" + height + "px" + "\n" + getString(R.string.Tiles) + " " + (mService.getTiles().getOverhead() + mService.getTiles().getTilesNum()));
     }
 
     /*

@@ -448,5 +448,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="LayerType">&quot;LayerType&quot;</string>
     <string name="Download">Download</string>
+    <string name="Tiles">Tiles</string>
 
 </resources>
