@@ -199,7 +199,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         if(shouldRotate()) {
             double p[] = new double[2];
             double thetab = mGpsParams.getBearing();
-            p = rotateCoord(0, 0, -thetab, x, y);
+            p = Helper.rotateCoord(0, 0, -thetab, x, y);
             objPosAndScaleOut.set((float)p[0],(float)p[1], true,
                     mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
         }
@@ -215,29 +215,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     public void selectObject(Object obj, PointInfo touchPoint) {
         touchPointChanged(touchPoint);
-    }
-
-    /**
-     *
-     * @param c_x
-     * @param c_y
-     * @param thetab
-     * @param x
-     * @param y
-     * @return
-     */
-    private double[] rotateCoord(double c_x,double c_y,double thetab,double x,double y){
-        double prc_x = x - c_x;
-        double prc_y = y - c_y;
-        double r = Math.sqrt(prc_x * prc_x + prc_y * prc_y);
-        double theta = Math.atan2(prc_y, prc_x) ;
-        theta = theta + thetab * Math.PI / 180.0;
-        double pc_x = r * Math.cos(theta);
-        double pc_y = r * Math.sin(theta);
-        double p[] = new double[2];
-        p[0] = pc_x + c_x;
-        p[1] = pc_y + c_y;
-        return p;
     }
 
     /* (non-Javadoc)
@@ -258,7 +235,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 if (shouldRotate()) {
                     double thetab = mGpsParams.getBearing();
                     double p[] = new double[2];
-                    p = rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
+                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
                     mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
                 }
                 else {
@@ -277,7 +254,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             if (shouldRotate()) {
                 double thetab = mGpsParams.getBearing();
                 double p[] = new double[2];
-                p = rotateCoord(0, 0, thetab, x, y);
+                p = Helper.rotateCoord(0, 0, thetab, x, y);
                 mPan.setMove((float) p[0], (float) p[1]);
             }
             else {

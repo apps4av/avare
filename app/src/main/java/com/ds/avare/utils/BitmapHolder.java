@@ -14,6 +14,7 @@ package com.ds.avare.utils;
 
 import java.io.File;
 
+import com.ds.avare.position.Origin;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
@@ -334,4 +335,25 @@ public class BitmapHolder {
     public Matrix getTransform() {
         return mTransform;
     }
+
+    /**
+     * This function will rotate and move a bitmap to a given lon/lat on screen
+     * @param b
+     * @param angle
+     * @param lon
+     * @param lat
+     * @param div Shift the image half way up so it could be centered on y axis
+     */
+    public static void rotateBitmapIntoPlace(BitmapHolder b, float angle, double lon, double lat, boolean div, Origin origin) {
+        float x = (float)origin.getOffsetX(lon);
+        float y = (float)origin.getOffsetY(lat);
+
+        b.getTransform().setTranslate(
+                x - b.getWidth() / 2,
+                y - (div ? b.getHeight() / 2 : b.getHeight()));
+
+        b.getTransform().postRotate(angle, x, y);
+    }
+
+
 }

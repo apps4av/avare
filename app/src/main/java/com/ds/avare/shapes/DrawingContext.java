@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,42 +13,32 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.View;
 
+import com.ds.avare.StorageService;
+import com.ds.avare.position.Movement;
+import com.ds.avare.position.Origin;
+import com.ds.avare.position.Pan;
+import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.GenericCallback;
-
 
 /**
- * 
- * @author zkhan, SteveAtChartbundle
- * A cache of tiles
+ * Created by zkhan on 9/1/15.
  */
-public class TileMap extends MapBase {
-
-
-    private static final int SIZE = BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2; // RGB565 = 2
-    private int mNumShowing;
-
-    /**
-     * @param context
-     */
-    public TileMap(Context context) {
-        super(context, SIZE, (new Preferences(context)).getTilesNumber());
-        mNumShowing = 0;
-    }
-
-    public void reload(String[] tileNames, GenericCallback c) {
-        mNumShowing = super.reloadMap(tileNames, c);
-    }
-
-    /**
-     * Lets call chart showing partial when tiles showing are below a threshold
-     *
-     * @return
-     */
-    @Override
-    public boolean isChartPartial() {
-        return mNumShowing <= 0;
-    }
+public class DrawingContext {
+    public StorageService service;
+    public Preferences pref;
+    public Context context;
+    public Paint paint;
+    public Paint textPaint;
+    public Paint runwayPaint;
+    public Origin origin;
+    public View view;
+    public Scale scale;
+    public Pan pan;
+    public Movement movement;
+    public Canvas canvas;
+    public float dip2pix;
 }
