@@ -36,7 +36,6 @@ import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -138,8 +137,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private ElevationTask               mElevationTask; 
     private Thread                      mElevationThread;
     private long                        mElevationLastRun;
-
-    private AsyncTask                   mTileTask;
 
     /**
      * Task that finds closets airport.
@@ -1148,155 +1145,43 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      *
      */
     private void loadTiles(final double lon, final double lat) {
-
-        if(mTileTask != null && mTileTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mTileTask.cancel(true);
+        if(mService == null) {
+            return;
         }
 
-        mTileTask = new AsyncTask<Void, Object, TileUpdate>() {
-            double offsets[] = new double[2];
-            double p[] = new double[2];
-            int     movex;
-            int     movey;
-            float factor;
-            String   tileNames[];
-            Tile centerTile;
-            Tile gpsTile;
-            String chart = "";
+        TileMap map = mService.getTiles();
+        map.loadTiles(lon, lat, mPan, mMacro, mScale, mGpsParams.getBearing(),
+                new GenericCallback() {
+                    @Override
+                    public Object callback(Object map, Object tu) {
+                        TileMap.TileUpdate t = (TileMap.TileUpdate)tu;
+                        ((TileMap)map).flip();
 
-            /**
-             *
-             */
-            @Override
-            protected void onPreExecute () {
+                        /*
+                         * Set move with pan after new tiles are finally loaded
+                         */
+                        mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
 
-                /*
-                 * Now draw in background, but first find tiles in foreground
-                 */
-                gpsTile = new Tile(mContext, mPref, lon, lat, (double) mScale.downSample());
+                        int index = Integer.parseInt(mPref.getChartType());
+                        String type = getResources().getStringArray(R.array.ChartType)[index];
 
-                offsets[0] = gpsTile.getOffsetX(lon);
-                offsets[1] = gpsTile.getOffsetY(lat);
-                p[0] = gpsTile.getPx();
-                p[1] = gpsTile.getPy();
+                        mGpsTile = t.gpsTile;
+                        mOnChart = type + "\n" + t.chart;
+                        /*
+                         * And pan
+                         */
+                        mPan.setTileMove(t.movex, t.movey);
+                        mMovement = new Movement(t.offsets);
+                        mService.setMovement(mMovement);
+                        mMacro = mScale.getMacroFactor();
+                        mScale.updateMacro();
+                        mMultiTouchC.setMacro(mMacro);
+                        updateCoordinates();
+                        invalidate();
 
-                factor = (float) mMacro / (float) mScale.getMacroFactor();
-
-                /*
-                 * Make a copy of Pan to find next tile set in case this gets stopped, we do not
-                 * destroy our Pan information.
-                 */
-                Pan pan = new Pan(mPan);
-                double n_x = mPan.getMoveX();
-                double n_y = mPan.getMoveY();
-
-                if (mPref.isTrackUp()) {
-                    double p[] = new double[2];
-                    double thetab = mGpsParams.getBearing();
-                    p = Helper.rotateCoord(0.0, 0.0, thetab, n_x, n_y);
-                    pan.setMove((float) (p[0] * factor), (float) (p[1] * factor));
-                } else {
-                    pan.setMove((float) (n_x * factor), (float) (n_y * factor));
-                }
-                movex = pan.getTileMoveXWithoutTear();
-                movey = pan.getTileMoveYWithoutTear();
-
-                centerTile = new Tile(mContext, mPref, gpsTile, movex, movey);
-
-                /*
-                 * Neighboring tiles with center and pan
-                 */
-                int i = 0;
-                tileNames = new String[mService.getTiles().getTilesNum()];
-                int ty = (int) (mService.getTiles().getYTilesNum() / 2);
-                int tx = (int) (mService.getTiles().getXTilesNum() / 2);
-                for (int tiley = ty; tiley >= -ty; tiley--) {
-                    for (int tilex = -tx; tilex <= tx; tilex++) {
-                        tileNames[i++] = centerTile.getTileNeighbor(tilex, tiley);
+                        return null;
                     }
-                }
-            }
-
-            @Override
-            protected TileUpdate doInBackground(Void... vals) {
-                if(null == mService) {
-                    return null;
-                }
-
-                Thread.currentThread().setName("Tile");
-                /*
-                 * Load tiles, draw in UI thread
-                 */
-                mService.getTiles().reload(
-                        tileNames,
-                        // As tiles are loaded, callback to notify us
-                        new GenericCallback() {
-                            @Override
-                            public Object callback(Object o1, Object o2) {
-                                publishProgress(o1, o2);
-                                return null;
-                            }
-                        }
-                );
-                if(mService.getTiles().isChartPartial()) {
-                    // If tiles not found, find name of chart we are on to show to user
-                    chart = Boundaries.getInstance().findChartOn(centerTile.getChartIndex(), centerTile.getLongitude(), centerTile.getLatitude());
-                }
-                TileUpdate t = new TileUpdate();
-                t.movex = movex;
-                t.movey = movey;
-                t.centerTile = centerTile;
-                t.gpsTile = gpsTile;
-                t.offsets = offsets;
-                t.factor = factor;
-                t.chart = chart;
-
-                return t;
-            }
-
-            @Override
-            protected void onProgressUpdate(Object... objs) {
-                // Put in bitmap cache a new loaded tile
-                TileMap t = (TileMap)objs[0];
-                BitmapHolder b = (BitmapHolder)objs[1];
-                t.addInCache(b);
-                // Do we really want to update the location view and show user the tiles being loaded?
-            }
-
-            @Override
-            protected void onPostExecute(TileUpdate t) {
-                /*
-                 * UI thread
-                 */
-                if(t != null) {
-
-                    mService.getTiles().flip();
-
-                    /*
-                     * Set move with pan after new tiles are finally loaded
-                     */
-                    mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
-
-                    int index = Integer.parseInt(mPref.getChartType());
-                    String type = getResources().getStringArray(R.array.ChartType)[index];
-
-                    mGpsTile = t.gpsTile;
-                    mOnChart = type + "\n" + t.chart;
-                    /*
-                     * And pan
-                     */
-                    mPan.setTileMove(t.movex, t.movey);
-                    mMovement = new Movement(t.offsets);
-                    mService.setMovement(mMovement);
-                    mMacro = mScale.getMacroFactor();
-                    mScale.updateMacro();
-                    mMultiTouchC.setMacro(mMacro);
-                    updateCoordinates();
-                    invalidate();
-                }
-            }
-
-        }.execute(null, null, null);
+                });
     }
 
     /**
@@ -1813,21 +1698,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mElevationThread.interrupt();
     }
 
-    
-    /**
-     * Use this with handler to update tiles in UI thread
-     * @author zkhan
-     *
-     */
-    private class TileUpdate {
-        private String chart;
-		private double offsets[];
-        private int movex;
-        private int movey;
-        private float factor;
-        private Tile centerTile;
-		protected Tile gpsTile;
-    }
 
     /**
      * Use this with handler to update obstacles in UI thread

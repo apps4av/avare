@@ -220,4 +220,7 @@ public class MapBase {
     public boolean isChartPartial() {
         return true;
     }
+
+
+
 }
