@@ -1356,7 +1356,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Display cap grids
     private void drawCapGrids(Canvas canvas) {
         if(mService != null && mPointProjection == null && mPref.showCAPGrids()) {
-        	mService.getCap().draw(canvas, mOrigin, mScale);
+        	mService.getCap().draw(canvas, mOrigin);
         }
     }
 
