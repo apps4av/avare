@@ -701,9 +701,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         if(null != mService) {
             int tn = mService.getTiles().getTilesNum();
 
+            int index = Integer.parseInt(mPref.getChartType());
+
+            String type = getResources().getStringArray(R.array.ChartType)[index];
+            boolean IFRinv = mPref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
+            boolean isTerrain = mPref.getChartType().equals(Tile.ELEVATION_INDEX);
+            float scaleFactor = mScale.getScaleFactor();
+            float scaleCorrected = mScale.getScaleCorrected();
+            TileMap tiles = mService.getTiles();
+
             for(int tilen = 0; tilen < tn; tilen++) {
                 
-                BitmapHolder tile = mService.getTiles().getTile(tilen);
+                BitmapHolder tile = tiles.getTile(tilen);
                 /*
                  * Scale, then move under the plane which is at center
                  */
@@ -719,16 +728,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     continue;
                 }
 
-                int index = Integer.parseInt(mPref.getChartType());
 
-                String type = getResources().getStringArray(R.array.ChartType)[index];
-                if(mPref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"))) {
+                if(IFRinv) {
                     /*
                      * IFR charts invert color at night
                      */
                     Helper.invertCanvasColors(mPaint);
                 }
-                else if(mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
+                else if(isTerrain) {
                     /*
                      * Terrain
                      */
@@ -738,21 +745,22 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Pretty straightforward. Pan and draw individual tiles.
                  */
-                tile.getTransform().setScale(mScale.getScaleFactor(), mScale.getScaleCorrected());
+
+                tile.getTransform().setScale(scaleFactor, scaleCorrected);
                 tile.getTransform().postTranslate(
                         getWidth()  / 2.f
-                        - BitmapHolder.WIDTH  / 2.f * mScale.getScaleFactor() 
-                        + ((tilen % mService.getTiles().getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mService.getTiles().getXTilesNum() / 2)) * mScale.getScaleFactor()
-                        + mPan.getMoveX() * mScale.getScaleFactor()
-                        + mPan.getTileMoveX() * BitmapHolder.WIDTH * mScale.getScaleFactor()
-                        - (float)mMovement.getOffsetLongitude() * mScale.getScaleFactor(),
-                        
+                        + ( - BitmapHolder.WIDTH  / 2.f
+                        + ((tilen % mService.getTiles().getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(mService.getTiles().getXTilesNum() / 2))
+                        + mPan.getMoveX()
+                        + mPan.getTileMoveX() * BitmapHolder.WIDTH
+                        - (float)mMovement.getOffsetLongitude()) * scaleFactor,
+
                         getHeight() / 2.f 
-                        - BitmapHolder.HEIGHT / 2.f * mScale.getScaleCorrected()  
-                        + mPan.getMoveY() * mScale.getScaleCorrected()
-                        + ((tilen / mService.getTiles().getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mService.getTiles().getYTilesNum() / 2)) * mScale.getScaleCorrected() 
-                        + mPan.getTileMoveY() * BitmapHolder.HEIGHT * mScale.getScaleCorrected()
-                        - (float)mMovement.getOffsetLatitude() * mScale.getScaleCorrected());
+                        + ( - BitmapHolder.HEIGHT / 2.f
+                        + mPan.getMoveY()
+                        + ((tilen / mService.getTiles().getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(mService.getTiles().getYTilesNum() / 2))
+                        + mPan.getTileMoveY() * BitmapHolder.HEIGHT
+                        - (float)mMovement.getOffsetLatitude() ) * scaleCorrected);
                 
                 Bitmap b = tile.getBitmap();
                 if(null != b && (!b.isRecycled())) {
