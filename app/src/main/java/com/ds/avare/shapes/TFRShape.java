@@ -52,7 +52,7 @@ public class TFRShape extends Shape {
         }
 
         /*
-         * Draw TFRs
+         * Draw TFRs only if they belong to the screen
          */
         if(null != shapes) {
             ctx.paint.setColor(Color.RED);
@@ -60,16 +60,13 @@ public class TFRShape extends Shape {
             ctx.paint.setShadowLayer(0, 0, 0, 0);
 
             double maxLatScreen =ctx.origin.getLatScreenTop();
-            double minLatScreen =maxLatScreen-(maxLatScreen-ctx.origin.getLatitudeCenter())*2;
+            double minLatScreen =ctx.origin.getLatScreenBot();
             double minLonScreen =ctx.origin.getLonScreenLeft();
-            double maxLonScreen =minLonScreen-(minLonScreen-ctx.origin.getLongitudeCenter())*2;
+            double maxLonScreen =ctx.origin.getLonScreenRight();
 
-            boolean isInLat;
-            boolean isInLon;
+
             for(int shape = 0; shape < shapes.size(); shape++) {
-                isInLat = shapes.get(shape).mLatMin< maxLatScreen && shapes.get(shape).mLatMax>minLatScreen;
-                isInLon = shapes.get(shape).mLonMin< maxLonScreen && shapes.get(shape).mLonMax>minLonScreen;
-                if(isInLat && isInLon ) {
+                if( shapes.get(shape).isOnScreen(maxLatScreen,minLatScreen,maxLonScreen,minLonScreen) ) {
                     shapes.get(shape).drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }

@@ -61,13 +61,11 @@ public class MetShape extends Shape {
         int colorArray[] = ctx.context.getResources().getIntArray(R.array.AirSigColor);
         String storeType = ctx.pref.getAirSigMetType();
 
-        double maxLatScreen =ctx.origin.getLatScreenTop();
-        double minLatScreen =maxLatScreen-(maxLatScreen-ctx.origin.getLatitudeCenter())*2;
-        double minLonScreen =ctx.origin.getLonScreenLeft();
-        double maxLonScreen =minLonScreen-(minLonScreen-ctx.origin.getLongitudeCenter())*2;
+        double maxLatScreen = ctx.origin.getLatScreenTop();
+        double minLatScreen = ctx.origin.getLatScreenBot();
+        double minLonScreen = ctx.origin.getLonScreenLeft();
+        double maxLonScreen = ctx.origin.getLonScreenRight();
 
-        boolean isInLat;
-        boolean isInLon;
 
         for(int i = 0; i < mets.size(); i++) {
             AirSigMet met = mets.get(i);
@@ -94,13 +92,11 @@ public class MetShape extends Shape {
             }
 
             /*
-             * Now draw
+             * Now draw shape only if belong to the screen
              */
             if(met.shape != null && color != 0) {
                 ctx.paint.setColor(color);
-                isInLat = met.shape.mLatMin< maxLatScreen && met.shape.mLatMax>minLatScreen;
-                isInLon = met.shape.mLonMin< maxLonScreen && met.shape.mLonMax>minLonScreen;
-                if(isInLat && isInLon ) {
+                if( met.shape.isOnScreen(maxLatScreen,minLatScreen,maxLonScreen,minLonScreen) ) {
                     met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }

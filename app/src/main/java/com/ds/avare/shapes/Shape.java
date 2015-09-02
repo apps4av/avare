@@ -188,7 +188,17 @@ public abstract class Shape {
             }
         }
     }
-    
+
+    /*
+     * Determine if shape belong to a screen based on Screen longitude and latitude
+     * and shape max/min longitude latitude
+     */
+    public boolean isOnScreen(double maxLatScreen,double minLatScreen,double maxLonScreen,double minLonScreen){
+        boolean isInLat = mLatMin< maxLatScreen && mLatMax>minLatScreen;
+        boolean isInLon = mLonMin< maxLonScreen && mLonMax>minLonScreen;
+        return isInLat && isInLon;
+
+    }
     /**
      * 
      * @return

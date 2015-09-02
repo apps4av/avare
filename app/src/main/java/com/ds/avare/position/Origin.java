@@ -20,6 +20,7 @@ import com.ds.avare.storage.Preferences;
 /**
  * A class that keeps lon/lat pair of what is shown.
  * @author zkhan
+ * @author plinel
  *
  */
 public class Origin {
@@ -61,10 +62,22 @@ public class Origin {
     public double getLonScreenLeft(){
         return mLonScreenLeft;
     }
+
     public double getLatScreenTop(){
         return mLatScreenTop;
     }
-
+    /*
+     * Return bottom screen latitude
+     */
+    public double getLatScreenBot() {
+        return mLatScreenTop - (mLatScreenTop - mLatScreenCenter) * 2;
+    }
+    /*
+     * Return Right screen longitude
+     */
+    public double getLonScreenRight() {
+        return mLonScreenLeft - (mLonScreenLeft - mLonScreenCenter) * 2;
+    }
     /**
      * 
      * @return
