@@ -58,6 +58,13 @@ public class Origin {
         mLonScreenLeft = Epsg900913.getLongitudeOf(-pan.getMoveX() - width / 2 / mScale, params.getLongitude(), mZoom);
     }
 
+    public double getLonScreenLeft(){
+        return mLonScreenLeft;
+    }
+    public double getLatScreenTop(){
+        return mLatScreenTop;
+    }
+
     /**
      * 
      * @return

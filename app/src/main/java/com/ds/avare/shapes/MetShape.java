@@ -21,6 +21,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author zkhan
+ * @author plinel
  *
  */
 public class MetShape extends Shape {
@@ -59,6 +60,15 @@ public class MetShape extends Shape {
         String typeArray[] = ctx.context.getResources().getStringArray(R.array.AirSig);
         int colorArray[] = ctx.context.getResources().getIntArray(R.array.AirSigColor);
         String storeType = ctx.pref.getAirSigMetType();
+
+        double maxLatScreen =ctx.origin.getLatScreenTop();
+        double minLatScreen =maxLatScreen-(maxLatScreen-ctx.origin.getLatitudeCenter())*2;
+        double minLonScreen =ctx.origin.getLonScreenLeft();
+        double maxLonScreen =minLonScreen-(minLonScreen-ctx.origin.getLongitudeCenter())*2;
+
+        boolean isInLat;
+        boolean isInLon;
+
         for(int i = 0; i < mets.size(); i++) {
             AirSigMet met = mets.get(i);
             int color = 0;
@@ -88,7 +98,11 @@ public class MetShape extends Shape {
              */
             if(met.shape != null && color != 0) {
                 ctx.paint.setColor(color);
-                met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                isInLat = met.shape.mLatMin< maxLatScreen && met.shape.mLatMax>minLatScreen;
+                isInLon = met.shape.mLonMin< maxLonScreen && met.shape.mLonMax>minLonScreen;
+                if(isInLat && isInLon ) {
+                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                }
             }
         }
     }
