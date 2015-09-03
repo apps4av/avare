@@ -21,6 +21,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author zkhan
+ * @author plinel
  *
  */
 public class MetShape extends Shape {
@@ -59,6 +60,13 @@ public class MetShape extends Shape {
         String typeArray[] = ctx.context.getResources().getStringArray(R.array.AirSig);
         int colorArray[] = ctx.context.getResources().getIntArray(R.array.AirSigColor);
         String storeType = ctx.pref.getAirSigMetType();
+
+        double maxLatScreen = ctx.origin.getLatScreenTop();
+        double minLatScreen = ctx.origin.getLatScreenBot();
+        double minLonScreen = ctx.origin.getLonScreenLeft();
+        double maxLonScreen = ctx.origin.getLonScreenRight();
+
+
         for(int i = 0; i < mets.size(); i++) {
             AirSigMet met = mets.get(i);
             int color = 0;
@@ -84,11 +92,13 @@ public class MetShape extends Shape {
             }
 
             /*
-             * Now draw
+             * Now draw shape only if belong to the screen
              */
             if(met.shape != null && color != 0) {
                 ctx.paint.setColor(color);
-                met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                if( met.shape.isOnScreen(maxLatScreen,minLatScreen,maxLonScreen,minLonScreen) ) {
+                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                }
             }
         }
     }
