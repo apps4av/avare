@@ -16,6 +16,7 @@ package com.ds.avare.shapes;
 import com.ds.avare.R;
 import com.ds.avare.weather.AirSigMet;
 
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
@@ -29,8 +30,8 @@ public class MetShape extends Shape {
     /**
      * 
      */
-    public MetShape(String text) {
-        super(text);
+    public MetShape(String text, Date date) {
+        super(text, date);
     }
 
 
@@ -54,6 +55,8 @@ public class MetShape extends Shape {
         if(ctx.pref.useAdsbWeather()) {
             return;
         }
+
+        int expiry = ctx.pref.getExpiryTime();
 
         ctx.paint.setStrokeWidth(2 * ctx.dip2pix);
         ctx.paint.setShadowLayer(0, 0, 0, 0);
@@ -90,6 +93,9 @@ public class MetShape extends Shape {
              */
             if(met.shape != null && color != 0) {
                 ctx.paint.setColor(color);
+                if (met.shape.isOld(expiry)) {
+                    continue;
+                }
                 if( met.shape.isOnScreen(ctx.origin) ) {
                     met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }

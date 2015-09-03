@@ -1107,7 +1107,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         dbquery(true);
         postInvalidate();
 
-        // Tell the CDI the paint that we use for display text
+        // Tell the CDI the paint that we use for display tfr
         mService.getCDI().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         mService.getVNAV().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         
@@ -1191,7 +1191,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private class ClosestAirportTask extends AsyncTask<Object, String, String> {
         private Double lon;
         private Double lat;
-        private String text = "";
+        private String tfr = "";
         private String textMets = "";
         private String sua;
         private String layer;
@@ -1231,7 +1231,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 return "";
                        
             /*
-             * Get TFR text if touched on its top
+             * Get TFR tfr if touched on its top
              */
             LinkedList<TFRShape> shapes = null;
             List<AirSigMet> mets = null;
@@ -1245,11 +1245,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 for(int shape = 0; shape < shapes.size(); shape++) {
                     TFRShape cshape = shapes.get(shape);
                     /*
-                     * Set TFR text
+                     * Set TFR tfr
                      */
                     String txt = cshape.getTextIfTouched(lon, lat);
                     if(null != txt) {
-                        text += txt + "\n--\n";
+                        tfr += txt + "\n--\n";
                     }
                 }
             }
@@ -1261,7 +1261,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     MetShape cshape = mets.get(i).shape;
                     if(null != cshape) {
                         /*
-                         * Set MET text
+                         * Set MET tfr
                          */
                         String txt = cshape.getTextIfTouched(lon, lat);
                         if(null != txt) {
@@ -1272,32 +1272,38 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }            
 
             airport = mService.getDBResource().findClosestAirportID(lon, lat);
-            if(isCancelled())
+            if(isCancelled()) {
                 return "";
-            
+            }
+
             if(null == airport) {
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
             else {
                 freq = mService.getDBResource().findFrequencies(airport);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
             
                 taf = mService.getDBResource().getTAF(airport);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
                 
                 metar = mService.getDBResource().getMETAR(airport);   
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
             
                 runways = mService.getDBResource().findRunways(airport);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
                 
                 elev = mService.getDBResource().findElev(airport);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
 
                 LinkedList<String> fl = mService.getDBResource().findFuelCost(airport);
                 if(fl.size() == 0) {
@@ -1336,22 +1342,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              */
             if(!mPref.useAdsbWeather()) {              
                 aireps = mService.getDBResource().getAireps(lon, lat);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
                 
                 wa = mService.getDBResource().getWindsAloft(lon, lat);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
                 
                 sua = mService.getDBResource().getSua(lon, lat);
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
 
                 if(mLayer != null) {
                     layer = mLayer.getDate();
                 }
-                if(isCancelled())
+                if(isCancelled()) {
                     return "";
+                }
             }    
             
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
@@ -1387,6 +1397,17 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
                     layer = mService.getAdsbWeather().getNexrad().getDate();
                 }
+                else {
+                    boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
+                    if(inWeatherOld) { // expired weather and TFR text do not show
+                        taf = null;
+                        metar = null;
+                        aireps = null;
+                        textMets = null;
+                        tfr = null;
+                        wa = null;
+                    }
+                }
                 if(null != aireps) {
                     for(Airep a : aireps) {
                         a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
@@ -1395,7 +1416,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null != wa) {
                     wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
                 }
-                mLongTouchDestination.tfr = text;
+                mLongTouchDestination.tfr = tfr;
                 mLongTouchDestination.taf = taf;
                 mLongTouchDestination.metar = metar;
                 mLongTouchDestination.airep = aireps;

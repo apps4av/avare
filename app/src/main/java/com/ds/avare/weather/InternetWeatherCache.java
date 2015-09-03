@@ -14,8 +14,13 @@ package com.ds.avare.weather;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.shapes.MetShape;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 
 /**
@@ -32,12 +37,31 @@ public class InternetWeatherCache {
     private Thread                     mWeatherThread;
     private LinkedList<AirSigMet>      mAirSig;
     private StorageService             mService;
+    private Date                       mDate;
 
     public InternetWeatherCache() {
         mWeatherTask = null;
         mWeatherThread = null;
         mAirSig = null;
         mService = null;
+        mDate = null;
+    }
+
+    /**
+     *
+     * @param expiry
+     * @return
+     */
+    public boolean isOld(int expiry) {
+        if(mDate == null) {
+            return false;
+        }
+        long diff = Helper.getMillisGMT();
+        diff -= mDate.getTime();
+        if(diff > expiry * 60 * 1000) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -82,6 +106,19 @@ public class InternetWeatherCache {
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
 
+                String filenameManifest = new Preferences(mService).mapsFolder() + "/weather";
+                String dataManifest = Helper.readTimestampFromFile(filenameManifest);
+                if(null != dataManifest) {
+                    // Find date of TFRs of format 09_03_2015_15:30_UTC, first line in manifest
+                    SimpleDateFormat format = new SimpleDateFormat("MM_dd_yyyy_HH:mm", Locale.getDefault());
+
+                    try {
+                        mDate = format.parse(dataManifest.replace("_UTC", ""));
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+
                 /*
                  * Convert AIRMET/SIGMETS to shapes compatible coordinates
                  */
@@ -98,7 +135,7 @@ public class InternetWeatherCache {
                             asm.hazard + "\n" +
                             asm.reportType + "\n" +
                             asm.severity + "\n" +
-                            asm.rawText);
+                            asm.rawText, mDate);
                     String tokens[] = asm.points.split("[;]");
                     for(int j = 0; j < tokens.length; j++) {
                         String point[] = tokens[j].split("[:]");

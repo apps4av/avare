@@ -49,9 +49,9 @@ public class TrackShape extends Shape {
     public TrackShape() {
         
         /*
-         * No label for track line
+         * No label for track line, tracks do not expire hence null
          */
-        super("");
+        super("", null);
     }
 
     /**

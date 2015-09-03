@@ -13,25 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import com.ds.avare.R;
-import com.ds.avare.shapes.TFRShape;
-import com.ds.avare.storage.Preferences;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -43,6 +24,26 @@ import android.graphics.Paint;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
+
+import com.ds.avare.R;
+import com.ds.avare.shapes.TFRShape;
+import com.ds.avare.storage.Preferences;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * 
@@ -570,7 +571,25 @@ public class Helper {
         }
         return null;
     }
-    
+
+    /**
+     *
+     * @param data
+     */
+    public static String readTimestampFromFile(String filename) {
+        File file = new File(filename);
+        try {
+            if(file.exists()) {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                return br.readLine();
+            }
+        }
+        catch (Exception e) {
+            return null;
+        }
+
+        return null;
+    }
 
     /**
      * 
@@ -585,14 +604,27 @@ public class Helper {
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
 
         String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
+        String filenameManifest = new Preferences(ctx).mapsFolder() + "/TFRs";
         String data = readFromFile(filename);
-        if(null != data) {
+        String dataManifest = readTimestampFromFile(filenameManifest);
+        if(null != data && null != dataManifest) {
             /*
              * Find date of last file download
              */
             File file = new File(filename);
-            Date time = new Date(file.lastModified());
-   
+
+            // Find date of TFRs of format 09_03_2015_15:30_UTC, first line in manifest
+            SimpleDateFormat format = new SimpleDateFormat("MM_dd_yyyy_HH:mm", Locale.getDefault());
+
+            Date time;
+            try {
+                time = format.parse(dataManifest.replace("_UTC", "")); // internal times of products in UTC
+            }
+            catch (Exception e) {
+                // nothing to return
+                return shapeList;
+            }
+
             /*
              * Now read from file
              */
@@ -612,7 +644,7 @@ public class Helper {
                             replace("Top", "\n" + "Top      ").
                             replace("Low", "\n" + "Bottom   ").
                             replace("Eff", "\n" + "Effective").
-                            replace("Exp", "\n" + "Expires  "));
+                            replace("Exp", "\n" + "Expires  "), time);
                     continue;
                 }
                 try {
