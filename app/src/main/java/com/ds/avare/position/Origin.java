@@ -30,7 +30,9 @@ public class Origin {
     private double mLatScreenCenter;
     // latitude and longitude of upper left of screen
     private double mLonScreenLeft;
+    private double mLonScreenRight;
     private double mLatScreenTop;
+    private double mLatScreenBot;
     private double mZoom;
     private double mScale;
 
@@ -57,6 +59,8 @@ public class Origin {
         mLonScreenCenter = Epsg900913.getLongitudeOf(-pan.getMoveX(), params.getLongitude(), mZoom);
         mLatScreenTop = Epsg900913.getLatitudeOf(-pan.getMoveY() - height / 2 / mScale, params.getLatitude(), mZoom);
         mLonScreenLeft = Epsg900913.getLongitudeOf(-pan.getMoveX() - width / 2 / mScale, params.getLongitude(), mZoom);
+        mLonScreenRight= mLonScreenLeft - (mLonScreenLeft - mLonScreenCenter) * 2;
+        mLatScreenBot = mLatScreenTop - (mLatScreenTop - mLatScreenCenter) * 2;
     }
 
     public double getLonScreenLeft(){
@@ -70,13 +74,13 @@ public class Origin {
      * Return bottom screen latitude
      */
     public double getLatScreenBot() {
-        return mLatScreenTop - (mLatScreenTop - mLatScreenCenter) * 2;
+        return mLatScreenBot;
     }
     /*
      * Return Right screen longitude
      */
     public double getLonScreenRight() {
-        return mLonScreenLeft - (mLonScreenLeft - mLonScreenCenter) * 2;
+        return mLonScreenRight;
     }
     /**
      * 
