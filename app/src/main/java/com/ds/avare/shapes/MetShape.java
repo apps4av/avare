@@ -61,12 +61,6 @@ public class MetShape extends Shape {
         int colorArray[] = ctx.context.getResources().getIntArray(R.array.AirSigColor);
         String storeType = ctx.pref.getAirSigMetType();
 
-        double maxLatScreen = ctx.origin.getLatScreenTop();
-        double minLatScreen = ctx.origin.getLatScreenBot();
-        double minLonScreen = ctx.origin.getLonScreenLeft();
-        double maxLonScreen = ctx.origin.getLonScreenRight();
-
-
         for(int i = 0; i < mets.size(); i++) {
             AirSigMet met = mets.get(i);
             int color = 0;
@@ -96,7 +90,7 @@ public class MetShape extends Shape {
              */
             if(met.shape != null && color != 0) {
                 ctx.paint.setColor(color);
-                if( met.shape.isOnScreen(maxLatScreen,minLatScreen,maxLonScreen,minLonScreen) ) {
+                if( met.shape.isOnScreen(ctx.origin) ) {
                     met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }

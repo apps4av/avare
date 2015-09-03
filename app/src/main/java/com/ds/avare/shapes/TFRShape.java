@@ -59,14 +59,8 @@ public class TFRShape extends Shape {
             ctx.paint.setStrokeWidth(3 * ctx.dip2pix);
             ctx.paint.setShadowLayer(0, 0, 0, 0);
 
-            double maxLatScreen =ctx.origin.getLatScreenTop();
-            double minLatScreen =ctx.origin.getLatScreenBot();
-            double minLonScreen =ctx.origin.getLonScreenLeft();
-            double maxLonScreen =ctx.origin.getLonScreenRight();
-
-
             for(int shape = 0; shape < shapes.size(); shape++) {
-                if( shapes.get(shape).isOnScreen(maxLatScreen,minLatScreen,maxLonScreen,minLonScreen) ) {
+                if( shapes.get(shape).isOnScreen(ctx.origin) ) {
                     shapes.get(shape).drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }
