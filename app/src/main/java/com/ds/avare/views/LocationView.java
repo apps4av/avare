@@ -697,9 +697,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setShadowLayer(0, 0, 0, 0);
   
         if(null != mService) {
-            int empty = 0;
             int tn = mService.getTiles().getTilesNum();
-            
+
             for(int tilen = 0; tilen < tn; tilen++) {
                 
                 BitmapHolder tile = mService.getTiles().getTile(tilen);
@@ -717,14 +716,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(nochart) {
                     continue;
                 }
-
-                /*
-                 * Find how many empty tiles
-                 */
-                if(!tile.getFound()) {
-                    empty++;
-                }
-
 
                 int index = Integer.parseInt(mPref.getChartType());
 
@@ -770,12 +761,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             
             /*
-             * If nothing on screen, write a not found message
+             * If partial chart on screen, write a not found message
              */
-            if(empty >= tn) {
+            if(mService.getTiles().isChartPartial()) {
                 mMsgPaint.setColor(Color.WHITE);
                 mService.getShadowedText().draw(canvas, mMsgPaint,
-                        mContext.getString(R.string.MissingMaps) + " " + mOnChart,
+                        mContext.getString(R.string.Download) + " " + mOnChart,
                         Color.RED, getWidth() / 2, getHeight() / 2);
             }
         }
@@ -1562,7 +1553,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * @author zkhan
+     * Function that loads new tiles in background
      *
      */
     private void loadTiles(final double lon, final double lat) {
@@ -1645,7 +1636,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Load tiles, draw in UI thread
                  */
-                if(!mService.getTiles().reload(tileNames)) {
+                mService.getTiles().reload(tileNames);
+                if(mService.getTiles().isChartPartial()) {
                     // If tiles not found, find name of chart we are on to show to user
                     chart = Boundaries.getInstance().findChartOn(centerTile.getChartIndex(), centerTile.getLongitude(), centerTile.getLatitude());
                 }
@@ -1674,8 +1666,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                      */
                     mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
 
+                    int index = Integer.parseInt(mPref.getChartType());
+                    String type = getResources().getStringArray(R.array.ChartType)[index];
+
                     mGpsTile = t.gpsTile;
-                    mOnChart = t.chart;
+                    mOnChart = type + "\n" + t.chart;
                     /*
                      * And pan
                      */

@@ -447,5 +447,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads&quot;</string>
 
     <string name="LayerType">&quot;LayerType&quot;</string>
+    <string name="Download">Download</string>
+    <string name="Tiles">Tiles</string>
 
 </resources>

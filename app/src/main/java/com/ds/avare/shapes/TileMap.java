@@ -41,7 +41,11 @@ public class TileMap {
     
     private int mNumTiles;
 
+    private int mNumShowing;
+
     LruCache<String, BitmapHolder> mBitmapCache;
+
+    private static final int SIZE =  BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2; // RGB565 = 2
 
     /**
      * 
@@ -58,14 +62,15 @@ public class TileMap {
         int[] tilesdim = mPref.getTilesNumber();
         mXtiles = tilesdim[0];
         mYtiles = tilesdim[1];
+        mNumShowing = 0;
         mNumTiles = mXtiles * mYtiles;
         mapA = new BitmapHolder[mNumTiles];
         mapB = new BitmapHolder[mNumTiles];
-        mBitmapCache = new LruCache<String, BitmapHolder>(BitmapHolder.HEIGHT * BitmapHolder.WIDTH * 2 * mNumTiles * 4 / 3) {
+        mBitmapCache = new LruCache<String, BitmapHolder>(SIZE * (mNumTiles + getOverhead()))  {
 
             @Override
             protected int sizeOf(String key, BitmapHolder value) {
-                return BitmapHolder.WIDTH * BitmapHolder.HEIGHT * 2;
+                return SIZE;
             }
 
             @Override
@@ -76,19 +81,30 @@ public class TileMap {
     }
 
     /**
+     * Overhead needed for smooth tile switching, 1x becomes a double buffer.
+     * Warning: Liberal overhead could cause OOM exception because we are talking about pictures of size 512x512.
+     * @return
+     */
+    public int getOverhead() {
+        return (int)(0.2 * (double)mNumTiles); // 20% overhead
+    }
+
+    /**
      * 
      * Clear the cache.
      * 
      * @return
      */
     public void clear() {
+        mBitmapCache.evictAll();
+        mNumShowing = 0;
     }
 
     /*
      * Force a reload.
      */
     public void forceReload() {
-        mBitmapCache.evictAll();
+        clear();
     }
 
     /**
@@ -99,10 +115,10 @@ public class TileMap {
      * @param tileNames
      * @return
      */
-    public boolean reload(String[] tileNames) {
+    public void reload(String[] tileNames) {
 
-        // tiles missing? if any tiles are showing, do not draw chart shapes
-        boolean showing = false;
+        // how many tiles missing?
+        int showing = 0;
 
         /*
          * For all tiles that will be loaded.
@@ -114,21 +130,19 @@ public class TileMap {
             if(mapB[tilen] == null) {
                 mapB[tilen] = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
                 if (mapB[tilen].getBitmap() != null) {
-                    mapB[tilen].setFound(true);
                     synchronized (mBitmapCache) {
                         if (mBitmapCache.get(tileNames[tilen]) == null) {
                             mBitmapCache.put(tileNames[tilen], mapB[tilen]);
                         }
                     }
-                    showing |= mapB[tilen].getFound();
-                }
-                else {
-                    mapB[tilen] = null;
-                    showing |= false;
+                    showing++;
                 }
             }
+            else {
+                showing++;
+            }
         }
-        return showing;
+        mNumShowing = showing;
     }
 
     /**
@@ -144,7 +158,7 @@ public class TileMap {
      * 
      */
     public void recycleBitmaps() {
-        mBitmapCache.evictAll();
+        clear();
     }
     
     /**
@@ -206,8 +220,17 @@ public class TileMap {
                 int tmp = mXtiles;
                 mXtiles = mYtiles;
                 mYtiles = tmp;
-            }            
+            }
         }
+    }
+
+
+    /**
+     * Lets call chart showing partial when tiles showing are below a threshold
+     * @return
+     */
+    public boolean isChartPartial() {
+        return mNumShowing <= 0;
     }
 
 }
