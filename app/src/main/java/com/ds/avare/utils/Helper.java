@@ -860,4 +860,27 @@ public class Helper {
     	return "file:///android_asset/" + name + context.getString(R.string.lang) + ".html";
     }
 
+    /**
+     * Rotate a set of coordinates by a given angle
+     * @param c_x
+     * @param c_y
+     * @param thetab
+     * @param x
+     * @param y
+     * @return
+     */
+    public static double[] rotateCoord(double c_x,double c_y,double thetab,double x,double y){
+        double prc_x = x - c_x;
+        double prc_y = y - c_y;
+        double r = Math.sqrt(prc_x * prc_x + prc_y * prc_y);
+        double theta = Math.atan2(prc_y, prc_x) ;
+        theta = theta + thetab* Math.PI / 180.0;
+        double pc_x = r * Math.cos(theta );
+        double pc_y = r * Math.sin(theta);
+        double p[]=new double[2];
+        p[0] = pc_x + c_x;
+        p[1] = pc_y + c_y;
+        return p;
+    }
+
 }

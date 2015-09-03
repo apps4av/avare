@@ -141,9 +141,9 @@ public class SatelliteActivity extends Activity  {
         int width = display.getWidth();
         int height = display.getHeight();
     
- 	    // Divide map width/height by 2 because of zoom scale from 1 - 2 before zoom macro changes
+ 	    // Subtract one tile from map width / height
 		mMapAreaText.setText(
-				getString(R.string.MapSize) + " " + mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH / 2 + "x" + mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT / 2 + "px\n" +
+				getString(R.string.MapSize) + " " + (mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH - BitmapHolder.WIDTH)+ "x" + (mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT) + "px\n" +
         		getString(R.string.ScreenSize) + " " + width + "x" + height + "px" + "\n" + getString(R.string.Tiles) + " " + (mService.getTiles().getOverhead() + mService.getTiles().getTilesNum()));
     }
 

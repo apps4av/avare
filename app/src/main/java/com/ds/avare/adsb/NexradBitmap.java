@@ -13,8 +13,10 @@ package com.ds.avare.adsb;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.SparseArray;
 
 import com.ds.avare.position.Origin;
+import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
@@ -163,7 +165,7 @@ public class NexradBitmap {
     /**
      * Draw on map screen
      */
-    public void draw(Canvas canvas, Paint paint, Origin origin, Preferences pref) {
+    public void drawOne(Canvas canvas, Paint paint, Origin origin, Preferences pref) {
         if(null == mBitmap) {
             return;
         }
@@ -188,4 +190,50 @@ public class NexradBitmap {
         }
 
     }
+
+
+    /**
+     *
+     * @param ctx
+     * @param nexrad
+     * @param conus
+     * @param shouldDraw
+     */
+    public static void draw(DrawingContext ctx, NexradImage nexrad, NexradImageConus conus, boolean shouldDraw) {
+        if(0 == ctx.pref.showLayer() || (!shouldDraw) || (!ctx.pref.useAdsbWeather())) {
+            // This shows only for nexrad layer, and when adsb is used
+            return;
+        }
+
+        /*
+         * Get nexrad bitmaps to draw.
+         */
+        SparseArray<NexradBitmap> bitmaps = null;
+        if(ctx.scale.getMacroFactor() > 4) {
+            if(!conus.isOld()) {
+                /*
+                 * CONUS for larger scales.
+                 */
+                bitmaps = conus.getImages();
+            }
+        }
+        else {
+            if(!nexrad.isOld()) {
+                bitmaps = nexrad.getImages();
+            }
+        }
+
+        if(null == bitmaps) {
+            return;
+        }
+
+        // Draw all nexrad blocks
+        for(int i = 0; i < bitmaps.size(); i++) {
+            int key = bitmaps.keyAt(i);
+            NexradBitmap b = bitmaps.get(key);
+            b.drawOne(ctx.canvas, ctx.paint, ctx.origin, ctx.pref);
+        }
+
+    }
+
 }

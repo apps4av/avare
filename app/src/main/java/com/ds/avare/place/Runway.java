@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,15 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.place;
 
+import android.graphics.Color;
+import android.graphics.Paint;
+
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.shapes.DrawingContext;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+
+import java.util.LinkedList;
 
 /**
  * 
@@ -292,4 +300,137 @@ public class Runway {
         mVGSI = vgsi;
     }
 
+
+    /**
+     *
+     * @param ctx
+     * @param runwayBitmap
+     * @param destination
+     * @param params
+     * @param shouldShow
+     */
+    public static void draw(DrawingContext ctx, BitmapHolder runwayBitmap, Destination destination, GpsParams params, boolean shouldShow) {
+
+        if((!shouldShow) || (!ctx.pref.shouldExtendRunways()) || (null == destination)) {
+            return;
+        }
+
+        LinkedList<Runway> runways = destination.getRunways();
+        if (runways != null) {
+            int xfactor;
+            int yfactor;
+
+            /*
+             * For all runways
+             */
+            for (Runway r : runways) {
+                float heading = r.getTrue();
+                if (INVALID == heading) {
+                    continue;
+                }
+                /*
+                 * Get lat/lon of the runway. If either one is invalid, use
+                 * airport lon/lat
+                 */
+                double lon = r.getLongitude();
+                double lat = r.getLatitude();
+                if (INVALID == lon || INVALID == lat) {
+                    lon = destination.getLocation().getLongitude();
+                    lat = destination.getLocation().getLatitude();
+                }
+                /*
+                 * Rotate and position the runway bitmap
+                 */
+                BitmapHolder.rotateBitmapIntoPlace(runwayBitmap, heading, lon, lat,
+                        false, ctx.origin);
+                /*
+                 * Draw it.
+                 */
+                ctx.canvas.drawBitmap(runwayBitmap.getBitmap(),
+                        runwayBitmap.getTransform(), ctx.runwayPaint);
+                /*
+                 * Get the canvas x/y coordinates of the runway itself
+                 */
+                float x = (float)ctx.origin.getOffsetX(lon);
+                float y = (float)ctx.origin.getOffsetY(lat);
+                /*
+                 * The runway number, i.e. What's painted on the runway
+                 */
+                String num = r.getNumber();
+                /*
+                 * If there are parallel runways, offset their text so it
+                 * does not overlap
+                 */
+                xfactor = yfactor = (int)(runwayBitmap.getHeight() + ctx.runwayPaint.getTextSize() / 2);
+
+                if (num.contains("C")) {
+                    xfactor = yfactor = xfactor * 3 / 4;
+                }
+                else if (num.contains("L")) {
+                    xfactor = yfactor = xfactor / 2;
+                }
+                /*
+                 * Determine canvas coordinates of where to draw the runway
+                 * numbers with simple rotation math.
+                 */
+                float runwayNumberCoordinatesX = x + xfactor
+                        * (float) Math.sin(Math.toRadians(heading - 180));
+                float runwayNumberCoordinatesY = y - yfactor
+                        * (float) Math.cos(Math.toRadians(heading - 180));
+                ctx.runwayPaint.setStyle(Paint.Style.FILL);
+                ctx.runwayPaint.setColor(Color.BLUE);
+                ctx.runwayPaint.setAlpha(162);
+                ctx.runwayPaint.setShadowLayer(0, 0, 0, 0);
+                ctx.runwayPaint.setStrokeWidth(4 * ctx.dip2pix);
+                /*
+                 * Get a vector perpendicular to the vector of the runway
+                 * heading bitmap
+                 */
+                float vXP = -(runwayNumberCoordinatesY - y);
+                float vYP = (runwayNumberCoordinatesX - x);
+                /*
+                 * Reverse the vector of the pattern line if right traffic
+                 * is indicated for this runway
+                 */
+                if (r.getPattern().equalsIgnoreCase("Right")) {
+                    vXP = -(vXP);
+                    vYP = -(vYP);
+                }
+                /*
+                 * Draw the base leg of the pattern
+                 */
+                ctx.canvas.drawLine(runwayNumberCoordinatesX,
+                        runwayNumberCoordinatesY, runwayNumberCoordinatesX
+                                + vXP / 3, runwayNumberCoordinatesY + vYP
+                                / 3, ctx.runwayPaint);
+                /*
+                 * If in track-up mode, rotate canvas around screen x/y of
+                 * where we want to draw runway numbers in opposite
+                 * direction to bearing so they appear upright
+                 */
+                boolean bRotated = false;
+                if (ctx.pref.isTrackUp() && (params != null)) {
+                    bRotated = true;
+                    ctx.canvas.save();
+                    ctx.canvas.rotate((int) params.getBearing(),
+                            runwayNumberCoordinatesX,
+                            runwayNumberCoordinatesY);
+                }
+                /*
+                 * Draw the text so it's centered within the shadow
+                 * rectangle, which is itself centered at the end of the
+                 * extended runway centerline
+                 */
+
+                ctx.runwayPaint.setColor(Color.WHITE);
+                ctx.service.getShadowedText().draw(ctx.canvas, ctx.runwayPaint, num, Color.DKGRAY,
+                        runwayNumberCoordinatesX, runwayNumberCoordinatesY);
+
+                if (true == bRotated) {
+                    ctx.canvas.restore();
+                }
+            }
+        }
+    }
 }
+

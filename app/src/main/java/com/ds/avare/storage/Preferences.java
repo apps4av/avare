@@ -79,17 +79,23 @@ public class Preferences {
 
     public static final int MEM_256_X = 11;
     public static final int MEM_256_Y = 9;
+    public static final int MEM_256_OH = 19;
     public static final int MEM_192_X = 9;
     public static final int MEM_192_Y = 7;
+    public static final int MEM_192_OH = 13;
     public static final int MEM_128_X = 7;
     public static final int MEM_128_Y = 5;
-    public static final int MEM_64_X = 7;
-    public static final int MEM_64_Y = 5;
-    public static final int MEM_32_X = 5;
+    public static final int MEM_128_OH = 7;
+    public static final int MEM_64_X = 5;
+    public static final int MEM_64_Y = 3;
+    public static final int MEM_64_OH = 5;
+    public static final int MEM_32_X = 3;
     public static final int MEM_32_Y = 3;
+    public static final int MEM_32_OH = 3;
     public static final int MEM_16_X = 3;
     public static final int MEM_16_Y = 3;
-    
+    public static final int MEM_16_OH = 3;
+
     /**
      * Preferences
      */
@@ -281,7 +287,7 @@ public class Preferences {
      * @return
      */
     public static int[] getTilesNumber() {
-        int[] ret = new int[2];
+        int[] ret = new int[3];
         
         /*
          * Find max tiles this system can support.
@@ -291,26 +297,32 @@ public class Preferences {
         if(mem >= MEM_256) {
             ret[0] = MEM_256_X;
             ret[1] = MEM_256_Y;
+            ret[2] = MEM_256_OH;
         }
         if(mem >= MEM_192) {
             ret[0] = MEM_192_X;
             ret[1] = MEM_192_Y;
+            ret[2] = MEM_192_OH;
         }
         else if(mem >= MEM_128) {
             ret[0] = MEM_128_X;
             ret[1] = MEM_128_Y;
+            ret[2] = MEM_128_OH;
         }
         else if(mem >= MEM_64) {
             ret[0] = MEM_64_X;
             ret[1] = MEM_64_Y;
+            ret[2] = MEM_64_OH;
         }
         else if(mem >= MEM_32) {
             ret[0] = MEM_32_X;
             ret[1] = MEM_32_Y;
+            ret[2] = MEM_32_OH;
         }
         else {
             ret[0] = MEM_16_X;
             ret[1] = MEM_16_Y;
+            ret[2] = MEM_16_OH;
         }
                 
         return ret;  

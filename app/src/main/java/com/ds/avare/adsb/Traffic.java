@@ -1,7 +1,10 @@
 package com.ds.avare.adsb;
 
 import android.graphics.Color;
+import android.util.SparseArray;
 
+import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.utils.Helper;
 
 public class Traffic {
@@ -99,6 +102,64 @@ public class Traffic {
         }
  
         return color;
+    }
+
+    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, boolean shouldDraw) {
+        /*
+         * Get traffic to draw.
+         */
+        if((!ctx.pref.showAdsbTraffic()) || (null == traffic) || (!shouldDraw)) {
+            return;
+        }
+
+        ctx.paint.setColor(Color.WHITE);
+        for(int i = 0; i < traffic.size(); i++) {
+            int key = traffic.keyAt(i);
+            Traffic t = traffic.get(key);
+            if(t.isOld()) {
+                traffic.delete(key);
+                continue;
+            }
+
+            /*
+             * Make traffic line and info
+             */
+            float x = (float)ctx.origin.getOffsetX(t.mLon);
+            float y = (float)ctx.origin.getOffsetY(t.mLat);
+
+            /*
+             * Find color from altitude
+             */
+            int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
+
+
+            float radius = ctx.dip2pix * 8;
+            String text = t.mAltitude + "'";
+            /*
+             * Draw outline to show it clearly
+             */
+            ctx.paint.setColor((~color) | 0xFF000000);
+            ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
+
+            ctx.paint.setColor(color);
+            ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+            /*
+             * Show a barb for heading with length based on speed
+             * Vel can be 0 to 4096 knots (practically it can be 0 to 500 knots), so set from length 0 to 100 pixels (1/5)
+             */
+            float speedLength = radius + (float)t.mHorizVelocity * (float)ctx.dip2pix / 5.f;
+            /*
+             * Rotation of points to show direction
+             */
+            double xr = x + PixelCoordinate.rotateX(speedLength, t.mHeading);
+            double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
+            ctx.canvas.drawLine(x, y, (float)xr, (float)yr, ctx.paint);
+            ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
+                    text, Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+
+        }
+
+
     }
     
 }

@@ -13,9 +13,15 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 
+import com.ds.avare.R;
+import com.ds.avare.weather.AirSigMet;
+
+import java.util.LinkedList;
+
 /**
  * 
  * @author zkhan
+ * @author plinel
  *
  */
 public class MetShape extends Shape {
@@ -25,5 +31,70 @@ public class MetShape extends Shape {
      */
     public MetShape(String text) {
         super(text);
-    }    
+    }
+
+
+    /**
+     *
+     * @param ctx
+     * @param mets
+     * @param shouldShow
+     */
+    public static void draw(DrawingContext ctx, LinkedList<AirSigMet> mets, boolean shouldShow) {
+
+        ctx.paint.setShadowLayer(0, 0, 0, 0);
+
+        if(!shouldShow) {
+            return;
+        }
+
+        /*
+         * Draw Air/Sigmet
+         */
+        if(ctx.pref.useAdsbWeather()) {
+            return;
+        }
+
+        ctx.paint.setStrokeWidth(2 * ctx.dip2pix);
+        ctx.paint.setShadowLayer(0, 0, 0, 0);
+        String typeArray[] = ctx.context.getResources().getStringArray(R.array.AirSig);
+        int colorArray[] = ctx.context.getResources().getIntArray(R.array.AirSigColor);
+        String storeType = ctx.pref.getAirSigMetType();
+
+        for(int i = 0; i < mets.size(); i++) {
+            AirSigMet met = mets.get(i);
+            int color = 0;
+
+            String type = met.hazard + " " + met.reportType;
+            if(storeType.equals("ALL")) {
+                /*
+                 * All draw all shapes
+                 */
+            }
+            else if(!storeType.equals(type)) {
+                /*
+                 * This should not be drawn.
+                 */
+                continue;
+            }
+
+            for(int j = 0; j < typeArray.length; j++) {
+                if(typeArray[j].equals(type)) {
+                    color = colorArray[j];
+                    break;
+                }
+            }
+
+            /*
+             * Now draw shape only if belong to the screen
+             */
+            if(met.shape != null && color != 0) {
+                ctx.paint.setColor(color);
+                if( met.shape.isOnScreen(ctx.origin) ) {
+                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                }
+            }
+        }
+    }
+
 }

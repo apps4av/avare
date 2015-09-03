@@ -13,12 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import com.ds.avare.R;
 import com.ds.avare.position.Epsg900913;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.Helper;
 
 
 /**
@@ -300,4 +302,94 @@ public class Tile {
     	return getTileNeighbor(0, 0);
     }
 
+    /**
+     * Draw the tiles
+     * @param ctx
+     */
+    public static void draw(DrawingContext ctx, String onChart, TileMap tiles) {
+        ctx.paint.setShadowLayer(0, 0, 0, 0);
+        if(ctx.service == null) {
+            return;
+        }
+
+        int tn = tiles.getTilesNum();
+
+        int index = Integer.parseInt(ctx.pref.getChartType());
+
+        String type = ctx.context.getResources().getStringArray(R.array.ChartType)[index];
+        boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
+        boolean isTerrain = ctx.pref.getChartType().equals(Tile.ELEVATION_INDEX);
+        float scaleFactor = ctx.scale.getScaleFactor();
+        float scaleCorrected = ctx.scale.getScaleCorrected();
+
+        for(int tilen = 0; tilen < tn; tilen++) {
+
+            BitmapHolder tile = tiles.getTile(tilen);
+            /*
+             * Scale, then move under the plane which is at center
+             */
+            boolean nochart = false;
+            if(null == tile) {
+                nochart = true;
+            }
+            else if(null == tile.getBitmap()) {
+                nochart = true;
+            }
+
+            if(nochart) {
+                continue;
+            }
+
+
+            if(IFRinv) {
+                /*
+                 * IFR charts invert color at night
+                 */
+                Helper.invertCanvasColors(ctx.paint);
+            }
+            else if(isTerrain) {
+                /*
+                 * Terrain
+                 */
+                Helper.setThreshold(ctx.paint, (float)ctx.service.getThreshold());
+            }
+
+            /*
+             * Pretty straightforward. Pan and draw individual tiles.
+             */
+
+            tile.getTransform().setScale(scaleFactor, scaleCorrected);
+            tile.getTransform().postTranslate(
+                    ctx.view.getWidth()  / 2.f
+                            + ( - BitmapHolder.WIDTH  / 2.f
+                            + ((tilen % tiles.getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(tiles.getXTilesNum() / 2))
+                            + ctx.pan.getMoveX()
+                            + ctx.pan.getTileMoveX() * BitmapHolder.WIDTH
+                            - (float)ctx.movement.getOffsetLongitude()) * scaleFactor,
+
+                    ctx.view.getHeight() / 2.f
+                            + ( - BitmapHolder.HEIGHT / 2.f
+                            + ctx.pan.getMoveY()
+                            + ((tilen / tiles.getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(tiles.getYTilesNum() / 2))
+                            + ctx.pan.getTileMoveY() * BitmapHolder.HEIGHT
+                            - (float)ctx.movement.getOffsetLatitude() ) * scaleCorrected);
+
+            Bitmap b = tile.getBitmap();
+            if(null != b && (!b.isRecycled())) {
+                ctx.canvas.drawBitmap(b, tile.getTransform(), ctx.paint);
+            }
+
+            Helper.restoreCanvasColors(ctx.paint);
+        }
+
+        /*
+         * If partial chart on screen, write a not found message
+         */
+        if(tiles.isChartPartial()) {
+            ctx.textPaint.setColor(Color.WHITE);
+            ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
+                    ctx.context.getString(R.string.Download) + " " + onChart,
+                    Color.RED, ctx.view.getWidth() / 2, ctx.view.getHeight() / 2);
+        }
+    }
 }
