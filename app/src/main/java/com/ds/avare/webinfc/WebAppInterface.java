@@ -12,7 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.webinfc;
 
-import java.util.Locale;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
@@ -28,11 +32,7 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.PossibleEmail;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
+import java.util.Locale;
 
 /**
  * 
@@ -92,7 +92,7 @@ public class WebAppInterface {
 
     	// Fill in from storage, this is going to be mostly reflecting the user's most 
     	// used settings in the form
-    	LmfsPlan pl = new LmfsPlan(mPref.getLMFSPlan());
+    	LmfsPlan pl = new LmfsPlan(mPref);
     	Plan p = mService.getPlan();
     	String destination = "";
     	String departure = "";
@@ -321,9 +321,6 @@ public class WebAppInterface {
     	pl.type = type.toUpperCase(Locale.getDefault());
     	pl.remarks = remarks.toUpperCase(Locale.getDefault());
  
-    	// Save user input for auto fill
-    	mPref.saveLMFSPlan(pl.makeJSON());
-    	
     	// Now file and show error messages
     	LmfsInterface infc = new LmfsInterface(mContext);
     	infc.fileFlightPlan(pl);
@@ -388,19 +385,16 @@ public class WebAppInterface {
     	pl.numberOfAircraft = numberOfAircraft;
     	pl.heavyWakeTurbulence = heavyWakeTurbulence;
     	pl.aircraftEquipment = aircraftEquipment.toUpperCase(Locale.getDefault());
-    	pl.speedKnots = speedKnots; 
+    	pl.speedKnots = speedKnots;
     	pl.altitudeFL = altitudeFL;
-    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
+    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard);
     	pl.pilotData = pilotData.toUpperCase(Locale.getDefault());
-    	pl.peopleOnBoard = peopleOnBoard; 
+    	pl.peopleOnBoard = peopleOnBoard;
     	pl.aircraftColor = aircraftColor.toUpperCase(Locale.getDefault());
     	pl.route = route.toUpperCase(Locale.getDefault());
     	pl.type = type.toUpperCase(Locale.getDefault());
     	pl.remarks = remarks.toUpperCase(Locale.getDefault());
- 
-    	// Save user input for auto fill
-    	mPref.saveLMFSPlan(pl.makeJSON());
-    	
+
     	// Now file and show error messages
     	LmfsInterface infc = new LmfsInterface(mContext);
     	infc.amendFlightPlan(pl);

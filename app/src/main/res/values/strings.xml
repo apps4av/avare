@@ -447,7 +447,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Download">Download</string>
     <string name="Tiles">Tiles</string>
 
-    <string name="userData">Pilot and Aircraft Information</string>
+    <string name="userData">Pilot and Aircraft</string>
 
     <string name="PilotContact">Pilot Contact</string>
     <string name="PilotContactSummary">Pilot name and phone number used for filing</string>
@@ -458,11 +458,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftType">Aircraft Type</string>
     <string name="AircraftTypeSummary">Aircraft type for filing</string>
 
-    <string name="AircraftColorPrimary">Aircraft Color - Primary</string>
-    <string name="AircraftColorPrimarySummary">Primary aircraft color for filing</string>
+    <string name="AircraftColorPrimary">Aircraft Color - First</string>
+    <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>
 
-    <string name="AircraftColorSecondary">Aircraft Color - Secondary</string>
-    <string name="AircraftColorSecondarySummary">Secondary aircraft color for filing</string>
+    <string name="AircraftColorSecondary">Aircraft Color - Second</string>
+    <string name="AircraftColorSecondarySummary">Second aircraft color for filing</string>
 
     <string name="AircraftEquipment">Aircraft Equipment</string>
     <string name="AircraftEquipmentSummary">Aircraft equipment code for filing</string>
