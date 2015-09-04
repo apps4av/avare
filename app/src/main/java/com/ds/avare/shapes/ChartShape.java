@@ -25,7 +25,7 @@ public class ChartShape extends Shape {
      *
      */
     public ChartShape(String text) {
-        super(text);
+        super(text, null);
     }
 
     /**

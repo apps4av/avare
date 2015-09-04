@@ -11,6 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.plan;
 
+import android.location.Location;
+
+import com.ds.avare.storage.Preferences;
+
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,11 +25,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.location.Location;
 
 
 /**
@@ -37,6 +38,7 @@ public class LmfsPlan {
 	public static final String DOMESTIC = "DOMESTIC";
 	public static final String PROPOSED = "PROPOSED";
 	public static final String DIRECT = "DCT";
+	public static final String RULE_VFR = "VFR";
 	public static final String ROUTE_WIDTH = "50"; // nm for briefing
 
 	private boolean mValid;
@@ -128,6 +130,27 @@ public class LmfsPlan {
 	public void setId(String id) {
 		mId = id;
 	}
+
+	/**
+	 * LMFS plan from Preferences
+	 */
+	public LmfsPlan(Preferences pref) {
+		init();
+
+        flightRules = RULE_VFR;
+        aircraftIdentifier = pref.getAircraftTailNumber();
+        aircraftType = pref.getAircraftType();
+        numberOfAircraft = "1";
+        heavyWakeTurbulence = "false";
+        aircraftEquipment = pref.getAircraftEquipment();
+        speedKnots = String.valueOf(pref.getAircraftTAS());
+        pilotData = pref.getPilotContact();
+        peopleOnBoard = "1";
+        aircraftColor = pref.getAircraftColorPrimary() + "/" + pref.getAircraftColorSecondary();
+
+		mValid = true;
+	}
+
 
 	/**
 	 * LMFS plan from JSON
@@ -232,100 +255,7 @@ public class LmfsPlan {
 		}
 		
 	}
-
 	
-	// JSON safety from null
-	private boolean putJSON(JSONObject obj, String name, String val) throws JSONException {
-		if(null != name && null != val) {
-			if(val.length() != 0) {
-				if(!val.equals("null")) {
-					obj.put(name, val);	
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Make a JSON of the plan. This is for storage only so people's preferred settings are filled in on the File form.
-	 * @return
-	 */
-	public String makeJSON() {
-		String ret = "";
-		// Parse JSON
-		try {
-			/*
-			 * Put all stuff. This is for storage
-			 */
-			JSONObject json = new JSONObject();
-			
-			// Only support NAS
-			JSONObject nas = new JSONObject();
-			
-			putJSON(nas, "flightRules", flightRules);
-			putJSON(nas, "aircraftIdentifier", aircraftIdentifier);
-
-			JSONObject dep = new JSONObject();
-			if(putJSON(dep, "locationIdentifier", departure)) {
-				nas.put("departure", dep);
-			}
-
-			JSONObject des = new JSONObject();
-			if(putJSON(des, "locationIdentifier", destination)) {
-				nas.put("destination", des);
-			}
-			
-			putJSON(nas, "departureInstant", departureInstant); 
-			putJSON(nas, "flightDuration", flightDuration);
-			putJSON(nas, "aircraftType", aircraftType); 
-			putJSON(nas, "numberOfAircraft", numberOfAircraft); 
-			putJSON(nas, "heavyWakeTurbulence", heavyWakeTurbulence); 
-			putJSON(nas, "aircraftEquipment", aircraftEquipment); 
-
-			JSONObject spd = new JSONObject();
-			if(putJSON(spd, "speedKnots", speedKnots)) {
-				nas.put("speed", spd);
-			}
-			
-			JSONObject alt = new JSONObject();
-			if(putJSON(alt, "altitudeFL", altitudeFL)) {
-				nas.put("altitude", alt);
-			}
-			
-			putJSON(nas, "fuelOnBoard", fuelOnBoard); 
-			putJSON(nas, "pilotData", pilotData); 
-			putJSON(nas, "peopleOnBoard", peopleOnBoard);
-			putJSON(nas, "aircraftColor", aircraftColor);
-			putJSON(json, "currentState", currentState);
-
-			// optional stuff
-			JSONObject altd1 = new JSONObject();
-			if(putJSON(altd1, "locationIdentifier", altDestination1)) {
-				nas.put("altDestination1", altd1); 
-			}
-			
-			JSONObject altd2 = new JSONObject();
-			if(putJSON(altd2, "locationIdentifier", altDestination2)) {
-				nas.put("altDestination2", altd2); 
-			}
-
-			putJSON(nas, "route", route);
-			putJSON(nas, "remarks", remarks);
-			
-			json.put("nasFlightPlan", nas);
-			
-			ret = json.toString();
-			
-			mValid = true;
-		}
-		catch(Exception e) {
-			mValid = false;
-		}
-		return ret;
-	}
-	
-
 	// Hashmap safety from null
 	private void put(Map<String, String> params, String name, String val) {
 		if(null != name && null != val) {
@@ -465,7 +395,7 @@ public class LmfsPlan {
 	
 	/**
 	 * Convert Gps coordinates to something liked by LMFS
-	 * @param l
+	 * @param p
 	 * @return
 	 */
 	public static String convertLocationToGpsCoords(Location p) {

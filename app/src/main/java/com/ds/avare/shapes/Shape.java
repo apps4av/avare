@@ -11,21 +11,22 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.shapes;
 
-import java.util.LinkedList;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Scale;
+import com.ds.avare.utils.Helper;
 import com.sromku.polygon.Point;
 import com.sromku.polygon.Polygon;
 import com.sromku.polygon.Polygon.Builder;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * @author zkhan
@@ -44,18 +45,41 @@ public abstract class Shape {
     
     private Builder mPolyBuilder;
     private Polygon mPoly;
+
+    private Date mDate;
     
     /**
      * 
      */
-    public Shape(String label) {
+    public Shape(String label, Date date) {
         mCoords = new LinkedList<Coordinate>();
         mLonMin = 180;
         mLonMax = -180;
         mLatMin = 180;
         mLatMax = -180;
         mText = label;
+        mDate = date;
         mPolyBuilder = Polygon.Builder(); 
+    }
+
+    public Date getDate() {
+        return mDate;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isOld(int expiry) {
+        if(mDate == null) {
+            return false;
+        }
+        long diff = Helper.getMillisGMT();
+        diff -= mDate.getTime();
+        if(diff > expiry * 60 * 1000) {
+            return true;
+        }
+        return false;
     }
 
     /**

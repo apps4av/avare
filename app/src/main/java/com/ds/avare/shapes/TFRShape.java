@@ -18,6 +18,7 @@ import android.graphics.Paint;
 
 import com.ds.avare.place.GameTFR;
 
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
@@ -32,8 +33,8 @@ public class TFRShape extends Shape {
     /**
      * 
      */
-    public TFRShape(String text) {
-        super(text);
+    public TFRShape(String text, Date date) {
+        super(text, date);
     }
 
     /**
@@ -51,6 +52,8 @@ public class TFRShape extends Shape {
             return;
         }
 
+        int expiry = ctx.pref.getExpiryTime();
+
         /*
          * Draw TFRs only if they belong to the screen
          */
@@ -60,7 +63,10 @@ public class TFRShape extends Shape {
             ctx.paint.setShadowLayer(0, 0, 0, 0);
 
             for(int shape = 0; shape < shapes.size(); shape++) {
-                if( shapes.get(shape).isOnScreen(ctx.origin) ) {
+                if (shapes.get(shape).isOld(expiry)) {
+                    continue;
+                }
+                if(shapes.get(shape).isOnScreen(ctx.origin) ) {
                     shapes.get(shape).drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }

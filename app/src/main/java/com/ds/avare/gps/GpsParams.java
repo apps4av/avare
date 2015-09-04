@@ -196,4 +196,12 @@ public class GpsParams {
 		// Place all those values into a string and return
 		return String.format("%02.0f\u00B0 %02.0f\' %02.2f\"", deg, min, sec);
     }
+
+    /**
+     *
+     * @param speed
+     */
+    public void setSpeed(int speed) {
+         mSpeed = speed;
+    }
 }

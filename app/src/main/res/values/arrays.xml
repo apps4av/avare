@@ -1220,4 +1220,72 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>If you upgraded the app from version 6.0.9 or below, you MUST update all your charts and databases even if they show as current.</item>
     </string-array>
 
+
+    <string-array name="ACColor">
+        <item>Amber</item>
+        <item>Blue</item>
+        <item>Beige</item>
+        <item>Black</item>
+        <item>Brown</item>
+        <item>Green</item>
+        <item>Gold</item>
+        <item>Gray</item>
+        <item>Maroon</item>
+        <item>Orange</item>
+        <item>Purple</item>
+        <item>Pink</item>
+        <item>Red</item>
+        <item>Silver</item>
+        <item>Turquoise</item>
+        <item>Tan</item>
+        <item>Violet</item>
+        <item>White</item>
+        <item>Yellow</item>
+    </string-array>
+
+
+    <string-array name="ACColorValue">
+        <item>A</item>
+        <item>B</item>
+        <item>BE</item>
+        <item>BK</item>
+        <item>BR</item>
+        <item>G</item>
+        <item>GD</item>
+        <item>GY</item>
+        <item>M</item>
+        <item>O</item>
+        <item>P</item>
+        <item>PK</item>
+        <item>R</item>
+        <item>S</item>
+        <item>TQ</item>
+        <item>T</item>
+        <item>V</item>
+        <item>W</item>
+        <item>Y</item>
+    </string-array>
+
+    <string-array name="ACEquipment">
+        <item>A</item>
+        <item>B</item>
+        <item>D</item>
+        <item>T</item>
+        <item>U</item>
+        <item>X</item>
+        <item>M</item>
+        <item>N</item>
+        <item>P</item>
+        <item>G</item>
+        <item>S</item>
+        <item>V</item>
+        <item>C</item>
+        <item>I</item>
+        <item>Y</item>
+        <item>H</item>
+        <item>L</item>
+        <item>W</item>
+        <item>Z</item>
+    </string-array>
+
 </resources>

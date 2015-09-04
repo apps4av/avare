@@ -229,6 +229,8 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
         // Connect when we come in.
         // This is used to get user to choose which account they need to store data with
         super.onResume();
+        Helper.setOrientationAndOn(this);
+
         mHandler.sendEmptyMessage(CODE_CONNECT);
     }
 

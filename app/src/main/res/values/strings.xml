@@ -247,9 +247,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
     <string name="GlideRatio">&quot;GlideRatioAircraft&quot;</string>
-    <string name="GlideRatioLabel">&quot;Glide Ratio&quot;</string>
-    <string name="GlideRatioSummary">&quot;Set the glide ratio of your aircraft&quot;</string>
-    <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
     <string name="prefLastPlateIndex">LastPlateIndex</string>
     <string name="prefLastPlateAirport">LastPlateAirport</string>
@@ -444,10 +441,40 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="Expires">&quot;Expires&quot;</string>
     <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
-    <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads&quot;</string>
+    <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads, and disappear from Map screen&quot;</string>
 
     <string name="LayerType">&quot;LayerType&quot;</string>
     <string name="Download">Download</string>
     <string name="Tiles">Tiles</string>
+
+    <string name="userData">Pilot and Aircraft</string>
+
+    <string name="PilotContact">Pilot Contact</string>
+    <string name="PilotContactSummary">Pilot name and phone number used for filing</string>
+
+    <string name="AircraftTailNumber">Aircraft Tail Number</string>
+    <string name="AircraftTailNumberSummary">Aircraft tail number used for filing</string>
+
+    <string name="AircraftType">Aircraft Type</string>
+    <string name="AircraftTypeSummary">Aircraft type for filing</string>
+
+    <string name="AircraftColorPrimary">Aircraft Color - First</string>
+    <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>
+
+    <string name="AircraftColorSecondary">Aircraft Color - Second</string>
+    <string name="AircraftColorSecondarySummary">Second aircraft color for filing</string>
+
+    <string name="AircraftEquipment">Aircraft Equipment</string>
+    <string name="AircraftEquipmentSummary">Aircraft equipment code for filing</string>
+
+    <string name="AircraftTAS">Aircraft TAS</string>
+    <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
+
+    <string name="AircraftHomeBase">Aircraft/Pilot Home Base</string>
+    <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
+
+    <string name="GlideRatioLabel">&quot;Aircraft Glide Ratio&quot;</string>
+    <string name="GlideRatioSummary">&quot;Aircraft glide ratio in miles per thousand feet&quot;</string>
+    <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
 
 </resources>

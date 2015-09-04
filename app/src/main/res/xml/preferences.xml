@@ -145,11 +145,7 @@ authors: zkhan, jlmcgraw
 
     <PreferenceScreen 
         android:title="@string/Instrumentation" 
-        android:icon="@android:drawable/ic_menu_preferences" >
-        <EditTextPreference
-                android:title="@string/GlideRatioLabel"
-                android:summary="@string/GlideRatioSummary"
-                android:key="@string/GlideRatio"/>
+        android:icon="@android:drawable/ic_menu_compass" >
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/EdgeTape"
@@ -356,6 +352,63 @@ authors: zkhan, jlmcgraw
             android:key="@string/rubberBand"
             android:title="@string/rubberBandLabel"
             android:summary="@string/rubberBandSummary"/>
-        </PreferenceScreen>
-    
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:title="@string/userData"
+        android:icon="@android:drawable/ic_menu_manage" >
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/PilotContact"
+            android:summary="@string/PilotContactSummary"
+            android:key="@string/PilotContact"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftHomeBase"
+            android:summary="@string/AircraftHomeBaseSummary"
+            android:key="@string/AircraftHomeBase"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftTailNumber"
+            android:summary="@string/AircraftTailNumberSummary"
+            android:key="@string/AircraftTailNumber"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftType"
+            android:summary="@string/AircraftTypeSummary"
+            android:key="@string/AircraftType"/>
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:entries="@array/ACColor"
+            android:entryValues="@array/ACColorValue"
+            android:key="@string/AircraftColorPrimary"
+            android:summary="@string/AircraftColorPrimarySummary"
+            android:title="@string/AircraftColorPrimary" />
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:entries="@array/ACColor"
+            android:entryValues="@array/ACColorValue"
+            android:key="@string/AircraftColorSecondary"
+            android:summary="@string/AircraftColorSecondarySummary"
+            android:title="@string/AircraftColorSecondary" />
+
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:entries="@array/ACEquipment"
+            android:entryValues="@array/ACEquipment"
+            android:key="@string/AircraftEquipment"
+            android:summary="@string/AircraftEquipmentSummary"
+            android:title="@string/AircraftEquipment" />
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftTAS"
+            android:summary="@string/AircraftTASSummary"
+            android:key="@string/AircraftTAS"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/GlideRatioLabel"
+            android:summary="@string/GlideRatioSummary"
+            android:key="@string/GlideRatio"/>
+
+    </PreferenceScreen>
+
 </PreferenceScreen>

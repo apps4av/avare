@@ -490,8 +490,11 @@ public class Plan implements Observer {
             // Now if we have at least one destination, set GPS coords
             // to the next not passed to simulate we are there.
             // This gives accurate plan total from start of plan
-            updateLocation(new GpsParams(
-                    mDestination[findNextNotPassed()].getLocation()));
+            GpsParams params = new GpsParams(
+                    mDestination[findNextNotPassed()].getLocation());
+            // Set speed to the aircraft TAS in simulation mode
+            params.setSpeed(mPref.getAircraftTAS());
+            updateLocation(params);
         }
     }
 

@@ -26,9 +26,9 @@ public class CrumbsShape extends Shape {
     public CrumbsShape() {
         
         /*
-         * No label for bread crumb line
+         * No label for bread crumb line, crumbs do not expire hence null
          */
-        super("");
+        super("", null);
     }
 
     /**
