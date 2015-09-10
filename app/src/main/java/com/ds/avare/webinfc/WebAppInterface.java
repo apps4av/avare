@@ -157,9 +157,9 @@ public class WebAppInterface {
     			"'" +  checkNull(pl.numberOfAircraft) + "'," +
     			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
     			"'" +  checkNull(pl.aircraftEquipment) + "'," +
-    			"'" +  checkNull(pl.speedKnots) + "'," + 
-    			"'" +  checkNull(pl.altitudeFL) + "'," +
-    			"'" +  checkNull(LmfsPlan.durationToTime(fuelOnBoard)) + "'," + 
+    			"'" +  checkNull(pl.speedKnots) + "'," +
+                "'" +  checkNull(String.format(Locale.US, "%03d", p.getAltitude() / 100)) + "'," +
+    			"'" +  checkNull(LmfsPlan.durationToTime(fuelOnBoard)) + "'," +
     			"'" +  checkNull(pl.pilotData) + "'," +
     			"'" +  checkNull(pl.peopleOnBoard) + "'," + 
     			"'" +  checkNull(pl.aircraftColor) + "'," +
@@ -513,7 +513,7 @@ public class WebAppInterface {
     			"'" +  checkNull(pl.aircraftIdentifier) + "'," +
     			"'" +  checkNull(pl.departure) + "'," +
     			"'" +  checkNull(pl.destination) + "'," +
-    			"'" +  checkNull(LmfsPlan.getTimeFromInstance(pl.departureInstant)) + "'," + 
+                        "'" + checkNull(LmfsPlan.getTimeFromInstance(pl.departureInstant)) + "'," +
     			"'" +  checkNull(LmfsPlan.durationToTime(pl.flightDuration)) + "'," +
     			"'" +  checkNull(pl.altDestination1) + "'," + 
     			"'" +  checkNull(pl.altDestination2) + "'," + 
@@ -521,7 +521,7 @@ public class WebAppInterface {
     			"'" +  checkNull(pl.numberOfAircraft) + "'," +
     			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
     			"'" +  checkNull(pl.aircraftEquipment) + "'," +
-    			"'" +  checkNull(pl.speedKnots) + "'," + 
+    			"'" +  checkNull(pl.speedKnots) + "'," +
     			"'" +  checkNull(pl.altitudeFL) + "'," +
     			"'" +  checkNull(LmfsPlan.durationToTime(pl.fuelOnBoard)) + "'," + 
     			"'" +  Helper.formatJsArgs(checkNull(pl.pilotData)) + "'," +

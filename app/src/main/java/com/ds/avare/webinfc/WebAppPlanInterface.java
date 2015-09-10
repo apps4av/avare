@@ -557,12 +557,21 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
-    /**
-     * Called from the javascript page when we need to build a new
-     * list of flight plans that are screened by the indicated filter
-     * 
-     * @param planFilter flight plan must contain this string
-     */
+	/**
+	 * Set altitude of plan from HTML
+	 * @param altitude
+	 */
+	@JavascriptInterface
+	public void setAltitude(String altitude) {
+        mService.getPlan().setAltitude(Integer.parseInt(altitude) * 100);
+	}
+
+	/**
+	 * Called from the javascript page when we need to build a new
+	 * list of flight plans that are screened by the indicated filter
+	 *
+	 * @param planFilter flight plan must contain this string
+	 */
     @JavascriptInterface
     public void planFilter(String planFilter) {
     	

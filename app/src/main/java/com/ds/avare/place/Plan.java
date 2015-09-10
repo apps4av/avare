@@ -68,6 +68,7 @@ public class Plan implements Observer {
     private boolean mEarlyPass;
     private boolean mEarlyPassEvent;
     private boolean mSuspend = false;
+    private int mAltitude = 0;
 
     /**
      *
@@ -324,6 +325,7 @@ public class Plan implements Observer {
             for (int id = (np + 1); id < num; id++) {
                 Location l = mDestination[id - 1].getLocation();
                 l.setSpeed((float)GpsParams.speedConvert(params.getSpeed()));
+                l.setAltitude((float)GpsParams.altitudeConvert(params.getAltitude()));
                 l.setBearing((float)params.getBearing());
                 GpsParams p = new GpsParams(l);
                 mDestination[id].updateTo(p);
@@ -501,6 +503,7 @@ public class Plan implements Observer {
                     mDestination[findNextNotPassed()].getLocation());
             // Set speed to the aircraft TAS in simulation mode
             params.setSpeed(mPref.getAircraftTAS());
+            params.setAltitude(mAltitude);
             updateLocation(params);
         }
     }
@@ -640,6 +643,14 @@ public class Plan implements Observer {
         }
 
         mTrackShape.updateShapeFromPlan(getCoordinates());
+    }
+
+    public void setAltitude(int altitude) {
+        mAltitude = altitude;
+    }
+
+    public int getAltitude() {
+        return mAltitude;
     }
 
     /**

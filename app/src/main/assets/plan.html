@@ -247,6 +247,7 @@ function plan_clear() {
 	for(var row = plan_table.rows.length - 1; row >= 1; row--) {
 			plan_table.deleteRow(row);
 	}
+    document.getElementById('plan_altitude').selectedIndex = 0;
 }
 
 // remove the entire plan
@@ -476,6 +477,11 @@ function plan_get_notams() {
 	AndroidPlan.getNotams();
 }
 
+function plan_set_altitude() {
+    var elt = document.getElementById('plan_altitude');
+    AndroidPlan.setAltitude(elt.options[elt.selectedIndex].text);
+}
+
 function next() {
 	AndroidPlan.nextPage();
 }
@@ -523,8 +529,63 @@ window.onload = show_help;
 
 </head>
 <body>
-	<p>
+	<br>
 		<label id="plan_name">Plan[]</label><br>
+		<select id="plan_altitude" onchange="plan_set_altitude()">
+            <option>000</option>
+			<option>030</option>
+			<option>035</option>
+			<option>040</option>
+			<option>045</option>
+			<option>050</option>
+			<option>055</option>
+			<option>060</option>
+			<option>065</option>
+			<option>070</option>
+			<option>075</option>
+			<option>080</option>
+			<option>085</option>
+			<option>090</option>
+			<option>095</option>
+			<option>100</option>
+			<option>105</option>
+			<option>110</option>
+			<option>115</option>
+			<option>120</option>
+			<option>125</option>
+			<option>130</option>
+			<option>135</option>
+			<option>140</option>
+			<option>145</option>
+			<option>150</option>
+			<option>155</option>
+			<option>160</option>
+			<option>165</option>
+			<option>170</option>
+			<option>175</option>
+			<option>180</option>
+			<option>190</option>
+			<option>200</option>
+			<option>210</option>
+			<option>220</option>
+			<option>230</option>
+			<option>240</option>
+			<option>250</option>
+			<option>260</option>
+			<option>270</option>
+			<option>280</option>
+			<option>290</option>
+			<option>300</option>
+			<option>310</option>
+			<option>320</option>
+			<option>330</option>
+			<option>340</option>
+			<option>350</option>
+			<option>360</option>
+			<option>370</option>
+			<option>380</option>
+			<option>390</option>
+		</select>ftx100 or FL<br></br>
 		<button onclick="plan_discard()">Delete All</button>
 		<button onclick="plan_delete()">Delete</button>
 		<br></br>
@@ -676,9 +737,10 @@ Once you have the plan created:
 
 <b>To Simulate a Plan</b>
 <ul>
-<li>You can simulate a plan and show total distance and time from first way point point to the last way point.</li>
+<li>You can simulate a plan and show total distance and time from first way point point to the last way point with wind factored into the calculation.</li>
 <li>On the Map screen, press "Navigate" button on the right side slide out buttons to make it "Simulation"</li>
-<li>Go to Plan screen, and press the "Activate" button. Total distance and time of the plan will be shown in the Total row. Time is calculated from TAS specified in Pilot and Aircraft under Preferences. Heading is calculated from wind speeds at the given altitude. User will need to download weather to see heading.</li>
+<li>Go to Plan screen, and press the "Activate" button. Total distance and time of the plan will be shown in the Total row. Time is calculated from TAS specified in Pilot and Aircraft under Preferences. Heading is calculated from wind speeds at the given altitude. User will need to download weather to see the heading.</li>
+<li>Change the altitude from drop down at the top of the Plan to use wind at that altitude.</li>
 <li>Move back to the Map screen to see the plan route in magenta.</li>
 </ul>
 

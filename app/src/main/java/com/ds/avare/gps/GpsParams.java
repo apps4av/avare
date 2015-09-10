@@ -98,7 +98,16 @@ public class GpsParams {
     public static double speedConvert(double locationSpeed) {
     	return locationSpeed / Preferences.speedConversion;
     }
-    
+
+    /**
+     * Altitude in location to altitude in params
+     * @param locationAltitude
+     * @return
+     */
+    public static double altitudeConvert(double locationAltitude) {
+        return locationAltitude / Preferences.heightConversion;
+    }
+
     /**
      * @return
      * double Speed in (miles or knots) per hour depending on preference settings
