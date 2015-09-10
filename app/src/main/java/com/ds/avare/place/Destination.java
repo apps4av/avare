@@ -13,14 +13,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Observable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
@@ -35,11 +31,16 @@ import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
+import com.ds.avare.weather.WindsAloft;
 
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.os.AsyncTask;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Observable;
 
 /**
  * @author zkhan, jlmcgraw
@@ -60,10 +61,14 @@ public class Destination extends Observable {
      * 
      */
     private double mDistance;
+    private double mGroundSpeed;
     /**
      * 
      */
     private double mBearing;
+    private double mWca;
+    private double mCrs;
+
     /**
      * If a destination is found?
      */
@@ -73,7 +78,10 @@ public class Destination extends Observable {
      * ETA at destination
      */
     private String mEte;
+    private Long mEteSec;
     private String mEta;
+
+    private WindsAloft mWinds;
 
     /*
      * Track to dest.
@@ -127,11 +135,14 @@ public class Destination extends Observable {
     public String getCmt() {
     	return mCmt;
     }
-    
-	/**
-	 * @param name
-	 * @param DataSource
-	 */
+
+    /**
+     *
+     * @param name
+     * @param type
+     * @param pref
+     * @param service
+     */
 	public Destination(String name, String type, Preferences pref, StorageService service) {
 	    GpsParams params = service.getGpsParams();
 	    mInited = false;
@@ -149,6 +160,7 @@ public class Destination extends Observable {
         mPref = pref;
         mEte = new String("--:--");
         mEta = new String("--:--");
+        mEteSec = Long.MAX_VALUE;
         mParams = new LinkedHashMap<String, String>();
         mFreq = new LinkedHashMap<String, String>();
         mAwos = new LinkedList<Awos> ();
@@ -296,15 +308,60 @@ public class Destination extends Observable {
     	mDistance = p.getDistance();
 
     	mBearing = p.getBearing();
-    	
+
+
+        // in flying mode, calculate time based on ground speed from GPS
+        mGroundSpeed = speed;
+        mWca = 0;
+        mCrs = mBearing;
+        if(mPref.isSimulationMode()) {
+            double ws = 0;
+            double wd = 0;
+            if(mWinds != null) {
+                double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
+                ws = winds[0];
+                wd = winds[1];
+            }
+
+            // in sim mode, do planning with winds
+            speed = mPref.getAircraftTAS(); // in sim mode, use preferred TAS
+            // from aviation formulary
+            double hd = mBearing;
+            mGroundSpeed = Math.sqrt(ws * ws + speed * speed - 2 * ws * speed * Math.cos((hd - wd) * Math.PI / 180.0));
+            mWca = -Math.toDegrees(Math.atan2(ws * Math.sin((hd - wd) * Math.PI / 180.0), speed - ws * Math.cos((hd - wd) * Math.PI / 180.0)));
+            mCrs = (hd + mWca + 360) % 360;
+        }
+        else if(mPref.useBearingForETEA() && (!mService.getPlan().isActive())) {
+            // This is just when we have a destination set and no plan is active
+            // We can't assume that we are heading DIRECTLY for the destination, so
+            // we need to figure out the multiply factor by taking the COS of the difference
+            // between the bearing and the heading.
+            double angDif = Helper.angularDifference(params.getBearing(), mBearing);
+            double xFactor = 1;
+
+            // If the difference is 90 or greater, then ETE means nothing as we are not
+            // closing on the target
+            if(angDif < 90) {
+                // Calculate the actual relative speed closing on the target
+                xFactor = Math.cos(angDif * Math.PI / 180);
+            }
+            mGroundSpeed *= xFactor;
+        }
+
     	/*
     	 * ETA when speed != 0
     	 */
-    	mEte = Helper.calculateEte(mPref.useBearingForETEA() && (!mService.getPlan().isActive()), mDistance, speed, mBearing, params.getBearing());
+    	mEte = Helper.calculateEte(mDistance, mGroundSpeed, 0, true);
+        if(mGroundSpeed == 0) {
+            mEteSec = Long.MAX_VALUE;
+        }
+        else {
+            mEteSec = (long)(mDistance / mGroundSpeed * 3600);
+        }
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(mPref.useBearingForETEA() && (!mService.getPlan().isActive()), Calendar.getInstance().getTimeZone(), mDistance, speed, mBearing, params.getBearing());
+    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, mGroundSpeed);
 	}
 
 	/**
@@ -315,7 +372,27 @@ public class Destination extends Observable {
 		return mEte;
 	}
 
-	/**
+    public String getCourse() {
+        return String.valueOf(mCrs);
+    }
+
+    public double getWCA() {
+        return mWca;
+    }
+
+    public double getGroundSpeed() {
+        return mGroundSpeed;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Long getEteSec() {
+        return mEteSec;
+    }
+
+    /**
 	 * 
 	 * @return
 	 */
@@ -428,6 +505,8 @@ public class Destination extends Observable {
             if(mName.contains("&")) {
                 parseGps(mName, mDestType);
             }
+
+            mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
 
 	        if(mDestType.equals(UDW)){
 	        	Waypoint p = mService.getUDWMgr().get(mName);

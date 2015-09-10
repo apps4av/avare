@@ -554,7 +554,43 @@ public class WeatherHelper {
 
         return "";
     }
-    
+
+    /**
+     * See decodeWind
+     * @param wind
+     * @return
+     */
+    public static int decodeWindSpeed(String wind) {
+        String windsd = decodeWind(wind);
+        String w[] = windsd.split("°");
+        int speed = 0;
+        try {
+            speed = Integer.parseInt(w[1].split("kt")[0]);
+        }
+        catch (Exception e) {
+
+        }
+        return speed;
+    }
+
+    /**
+     * See decodeWind
+     * @param wind
+     * @return
+     */
+    public static int decodeWindDir(String wind) {
+        String windsd = decodeWind(wind);
+        String w[] = windsd.split("°");
+        int dir = 0;
+        try {
+            dir = Integer.parseInt(w[0]);
+        }
+        catch (Exception e) {
+
+        }
+        return dir;
+    }
+
     /**
      * 
      * @return

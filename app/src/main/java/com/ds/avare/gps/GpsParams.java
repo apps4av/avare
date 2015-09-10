@@ -204,4 +204,13 @@ public class GpsParams {
     public void setSpeed(int speed) {
          mSpeed = speed;
     }
+
+    /**
+     *
+     * @param altitude
+     */
+    public void setAltitude(int altitude) {
+        mAltitude = altitude;
+    }
+
 }

@@ -13,6 +13,7 @@ package com.ds.avare.weather;
 
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.WeatherHelper;
 
 /**
  * 
@@ -77,5 +78,78 @@ public class WindsAloft {
                 Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " + 
                 p.getGeneralDirectionFrom(variation)+ ")";
 
+    }
+
+    /**
+     * Find winds aloft at given altitude. Use interpolation
+     * @return
+     */
+    public double[] getWindAtAltitude(double altitude) {
+
+        String wstring1 = "";
+        String wstring2 = "";
+        double wind[] = new double[2]; // speed, direction
+        double fac = 0;
+        if(altitude < 3000) {
+            wstring1 = w3k;
+            wstring2 = w3k;
+            fac = 0;
+        }
+        else if(altitude >= 3000 && altitude < 6000) {
+            wstring1 = w3k;
+            wstring2 = w6k;
+            fac = ((double)altitude - 3000) / altitude;
+        }
+        else if(altitude >= 6000 && altitude < 9000) {
+            wstring1 = w6k;
+            wstring2 = w9k;
+            fac = ((double)altitude - 6000) / altitude;
+        }
+        else if(altitude >= 9000 && altitude < 12000) {
+            wstring1 = w9k;
+            wstring2 = w12k;
+            fac = ((double)altitude - 9000) / altitude;
+        }
+        else if(altitude >= 12000 && altitude < 18000) {
+            wstring1 = w12k;
+            wstring2 = w18k;
+            fac = ((double)altitude - 12000) / altitude;
+        }
+        else if(altitude >= 18000 && altitude < 24000) {
+            wstring1 = w18k;
+            wstring2 = w24k;
+            fac = ((double)altitude - 18000) / altitude;
+        }
+        else if(altitude >= 24000 && altitude < 30000) {
+            wstring1 = w24k;
+            wstring2 = w30k;
+            fac = ((double)altitude - 24000) / altitude;
+        }
+        else if(altitude >= 30000 && altitude < 34000) {
+            wstring1 = w30k;
+            wstring2 = w34k;
+            fac = ((double)altitude - 30000) / altitude;
+        }
+        else if(altitude >= 34000 && altitude <= 39000) {
+            wstring1 = w34k;
+            wstring2 = w39k;
+            fac = ((double)altitude - 34000) / altitude;
+        }
+        else {
+            wstring1 = w39k;
+            wstring2 = w39k;
+            fac = 0;
+        }
+
+        // interpolate wind
+        int d1 = WeatherHelper.decodeWindDir(wstring1);
+        int s1 = WeatherHelper.decodeWindSpeed(wstring1);
+        int d2 = WeatherHelper.decodeWindDir(wstring2);
+        int s2 = WeatherHelper.decodeWindSpeed(wstring2);
+
+        wind[0] = ((double)s2 - (double)s1) * fac + s1;
+        wind[1] = (((double)d2 - (double)d1) * fac + d1) % 360;
+
+        return wind;
     }
 }

@@ -56,29 +56,17 @@ public class Helper {
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
-	 * @param bearing - direction to target
-	 * @param heading - direction of movement
+     * @param calculated - already calculated value
+     * @param calc - or should I calculate?
 	 * @return int value of HR * 100 + MIN for the ete, -1 if not applicable
 	 */
-	private static Time fetchRawEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
-	    double xFactor = 1;
-	    if(useBearing) {
-            // We can't assume that we are heading DIRECTLY for the destination, so 
-            // we need to figure out the multiply factor by taking the COS of the difference
-            // between the bearing and the heading.
-    		double angDif = angularDifference(heading, bearing);
-    		
-    		// If the difference is 90 or greater, then ETE means nothing as we are not
-    		// closing on the target
-    		if(angDif >= 90)
-    			return null;
-    
-    		// Calculate the actual relative speed closing on the target
-            xFactor  = Math.cos(angDif * Math.PI / 180);
-	    }
-	    
-	    // Calculate the travel time in seconds
-	    double eteTotal = (distance / (speed * xFactor)) * 3600;
+	private static Time fetchRawEte(double distance, double speed, long calculated, boolean calc) {
+
+        double eteTotal = calculated;
+        if(calc) {
+            // Calculate the travel time in seconds
+            eteTotal = (distance / speed) * 3600;
+        }
 
 	    // Allocate an empty time object
 	    Time ete = new Time();
@@ -108,19 +96,19 @@ public class Helper {
 	 * Fetch the estimate travel time to the indicated target
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
-	 * @param bearing - direction to target
-	 * @param heading - direction of movement
+     * @param calculated - already calculated value
+     * @param calc - or should I calculate?
 	 * @return String - "HH:MM" or "MM.SS" time to the target
 	 */
-    public static String calculateEte(boolean useBearing, double distance, double speed, double bearing, double heading) {
+    public static String calculateEte(double distance, double speed, long calculated, boolean calc) {
 
     	// If no speed, then return the empty display value
-        if(0 == speed){
+        if(0 == speed && calc){
             return "--:--";
         }
 
         // Fetch the eteRaw value
-    	Time eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+    	Time eteRaw = fetchRawEte(distance, speed, calculated, calc);
 
     	// If an invalid eteRaw, then return the empty display value
         if(null == eteRaw){
@@ -161,11 +149,9 @@ public class Helper {
 	 * @param timeZone - The timezone at the destination
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
-	 * @param bearing - direction to target
-	 * @param heading - direction of movement
 	 * @return String - "HH:MM" current time at the target
      */
-    public static String calculateEta(boolean useBearing, TimeZone timeZone, double distance, double speed, double bearing, double heading) {
+    public static String calculateEta(TimeZone timeZone, double distance, double speed) {
 
         // If no speed, then return an empty display string
         if(0 == speed ){
@@ -173,7 +159,7 @@ public class Helper {
         }
 
     	// fetch the raw ETE
-        Time eteRaw = fetchRawEte(useBearing, distance, speed, bearing, heading);
+        Time eteRaw = fetchRawEte(distance, speed, 0, true);
 
         // If the eteRaw is meaningless, then return an empty display string
         if(null == eteRaw){
@@ -251,7 +237,7 @@ public class Helper {
 
     /**
      * See the explanation in the function setThreshold. 
-     * @param altitude in FL for printing
+     * @param threshold
      * @return
      */
     public static String calculateAltitudeFromThreshold(float threshold) {
@@ -261,7 +247,8 @@ public class Helper {
 
     /**
      * See the explanation in the function setThreshold. 
-     * @param altitude in FL for printing
+     * @param threshold
+     * @param elevation
      * @return
      */
     public static String calculateAGLFromThreshold(float threshold, float elevation) {
@@ -363,9 +350,6 @@ public class Helper {
     
     /**
      * 
-     * @param distance
-     * @param eta
-     * @param heading
      * @return
      */
     public static String makeLine(double value, String unit, String eta, double heading, double variation) {
@@ -549,7 +533,7 @@ public class Helper {
 
     /**
      * 
-     * @param data
+     * @param filename
      */
     private static String readFromFile(String filename) {
         File file = new File(filename);
@@ -574,7 +558,7 @@ public class Helper {
 
     /**
      *
-     * @param data
+     * @param filename
      */
     public static String readTimestampFromFile(String filename) {
         File file = new File(filename);
@@ -593,7 +577,7 @@ public class Helper {
 
     /**
      * 
-     * @param airport
+     * @param ctx
      * @return
      */
     public static LinkedList<TFRShape> getShapesInTFR(Context ctx) {
@@ -885,7 +869,8 @@ public class Helper {
     
     /**
      * Get HMTL file location for webview
-     * @param args
+     * @param context
+     * @param name
      * @return
      */
     public static String getWebViewFile(Context context, String name) {
