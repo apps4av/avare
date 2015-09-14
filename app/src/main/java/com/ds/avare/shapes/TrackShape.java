@@ -30,8 +30,8 @@ public class TrackShape extends Shape {
     private static final int MILES_PER_SEGMENT = 50;
 
     private static final int LEG_PREV = Color.GRAY;
-    private static final int LEG_CURRENT = Color.GREEN;
-    private static final int LEG_NEXT = Color.MAGENTA;
+    private static final int LEG_CURRENT = Color.MAGENTA;
+    private static final int LEG_NEXT = Color.WHITE;
 
     public static int getLegColor(int dstNxt, int segNum) {
         if (dstNxt <= segNum) {
