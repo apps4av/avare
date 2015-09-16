@@ -407,6 +407,7 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/GlideRatioLabel"
             android:summary="@string/GlideRatioSummary"
+            android:defaultValue="7.0"
             android:key="@string/GlideRatio"/>
 
     </PreferenceScreen>

@@ -439,7 +439,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ConnectedDrive">Connected to Google Drive</string>
     <string name="DisconnectedDrive">Disconnected from Google Drive</string>
 
-    <string name="Expires">&quot;Expires&quot;</string>
+    <string name="Expires">&quot;DataExpiry&quot;</string>
     <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
     <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads, and disappear from Map screen&quot;</string>
 
@@ -474,7 +474,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
 
     <string name="GlideRatioLabel">&quot;Aircraft Glide Ratio&quot;</string>
-    <string name="GlideRatioSummary">&quot;Aircraft glide ratio in miles per thousand feet&quot;</string>
+    <string name="GlideRatioSummary">&quot;Aircraft glide ratio (glide distance in feet for every foot of altitude)&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
 
 </resources>
