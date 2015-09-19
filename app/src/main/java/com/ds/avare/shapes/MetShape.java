@@ -49,6 +49,10 @@ public class MetShape extends Shape {
             return;
         }
 
+        if(mets == null) {
+            return;
+        }
+
         /*
          * Draw Air/Sigmet
          */
