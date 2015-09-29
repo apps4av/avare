@@ -63,11 +63,15 @@ public class TFRShape extends Shape {
             ctx.paint.setShadowLayer(0, 0, 0, 0);
 
             for(int shape = 0; shape < shapes.size(); shape++) {
-                if (shapes.get(shape).isOld(expiry)) {
+                Shape todraw = shapes.get(shape);
+                if(null == todraw) {
                     continue;
                 }
-                if(shapes.get(shape).isOnScreen(ctx.origin) ) {
-                    shapes.get(shape).drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                if (todraw.isOld(expiry)) {
+                    continue;
+                }
+                if(todraw.isOnScreen(ctx.origin) ) {
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }
         }

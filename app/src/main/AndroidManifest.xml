@@ -12,12 +12,9 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="236"
-    android:versionName="7.0.6" >
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="21" />
-    
+    android:versionCode="237"
+    android:versionName="7.0.7" >
+
     <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
  
