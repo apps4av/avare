@@ -180,7 +180,15 @@ public class Scale {
     public void zoomOut() {
        mScaleFactor = MIN_SCALE; 
     }
-    
+
+    public double getMaxScale() {
+        return mMaxScale;
+    }
+
+    public double getMinScale() {
+        return MIN_SCALE;
+    }
+
     public void adjustZoom(double factor) {
     	mScaleFactor += factor;
     	

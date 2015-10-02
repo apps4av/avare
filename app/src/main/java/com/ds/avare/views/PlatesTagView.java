@@ -106,7 +106,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        return mMultiTouchC.onTouchEvent(e);
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
     }
 
     /**

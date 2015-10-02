@@ -245,17 +245,9 @@ public class MultiTouchController<T> {
 	private static final float[] pressureVals = new float[MAX_TOUCH_POINTS];
 	private static final int[] pointerIds = new int[MAX_TOUCH_POINTS];
 
-	/**
-	 * ZKZK
-	 */
-	private float mMacro = 1.f;
-	public void setMacro(float macro) {
-		mMacro = macro;
-	}
-
 	/** Process incoming touch events */
 	@SuppressWarnings("unused")
-	public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouchEvent(MotionEvent event, /*zkzk*/ double maxScale, double minScale, double macro/*zkzk*/) {
 		try {
 			int pointerCount = multiTouchSupported ? (Integer) m_getPointerCount.invoke(event) : 1;
 
@@ -265,7 +257,14 @@ public class MultiTouchController<T> {
 				/*
 				 * Panning, slow with zoom for grab
 				 */
-				div = mCurrXform.getScale() * mMacro;
+				double s = mCurrXform.getScale();
+				if(s > maxScale) {
+					s = maxScale;
+				}
+				if(s < minScale) {
+					s = minScale;
+				}
+				div = (float)(s * macro);
 			}
 			//ZKZK
 			if (DEBUG)

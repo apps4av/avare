@@ -463,7 +463,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             mGestureDetector.onTouchEvent(e);
         }
-        return mMultiTouchC.onTouchEvent(e);
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), mMacro);
     }
     
     /**
@@ -1175,7 +1175,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         mService.setMovement(mMovement);
                         mMacro = mScale.getMacroFactor();
                         mScale.updateMacro();
-                        mMultiTouchC.setMacro(mMacro);
                         updateCoordinates();
                         invalidate();
 

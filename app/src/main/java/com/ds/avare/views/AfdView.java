@@ -101,7 +101,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         mGestureDetector.onTouchEvent(e);
-        return mMultiTouchC.onTouchEvent(e);
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
     }
 
     /**
@@ -170,20 +170,9 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         /*
          * On double tap, move to center
          */
-        mScale = new Scale(MAX_AFD_SCALE);
         mPan = new Pan();
-        
-        /*
-         * Fit plate to screen
-         */
-        if(mBitmap != null) {
-            float h = getHeight();
-            float ih = mBitmap.getHeight();
-            float fac = h / ih;
-            mScale.setScaleFactor(fac);
-        }
 
-        postInvalidate();
+        invalidate();
     }
 
     /* (non-Javadoc)

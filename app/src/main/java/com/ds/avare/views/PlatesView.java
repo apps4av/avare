@@ -172,7 +172,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         mGestureDetector.onTouchEvent(e);
-        return mMultiTouchC.onTouchEvent(e);
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
     }
 
     /**
@@ -480,7 +480,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
          * On long press, move to center
          */
         mPan = new Pan();
-        
+
         invalidate();
     }
 
