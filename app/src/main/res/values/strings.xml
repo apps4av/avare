@@ -258,7 +258,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregister">Unregister</string>
     <string name="error">Error</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
-    <string name="error_email">Please register a Gmail account before continuing</string>
+    <string name="error_email">Please register a Gmail account before continuing!\nOn Android 6.0+, you must also go to Android Settings->Apps->Avare->Permissions then grant Avare all permissions it needs - Location for navigation, Storage and Network for charts, and Accounts for registration.</string>
     <string name="already_registered">You have already registered your account</string>
     <string name="already_unregistered">You have already unregistered</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>

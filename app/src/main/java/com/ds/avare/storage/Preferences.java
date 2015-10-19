@@ -721,7 +721,7 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), Build.PRODUCT.contains("sdk") ? true : false);
+        return mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
@@ -819,7 +819,7 @@ public class Preferences {
      * @return
      */
     public boolean showTips() {
-        return mPref.getBoolean(mContext.getString(R.string.prefTip), true);
+        return mPref.getBoolean(mContext.getString(R.string.prefTip), false);
     }
 
     /**
