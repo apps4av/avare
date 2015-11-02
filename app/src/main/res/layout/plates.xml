@@ -49,16 +49,44 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:text="@string/Tag"
 	        android:visibility="visible" />
 
-	    <Button
-            android:id="@+id/plates_button_timer"
-            android:textStyle="bold"
+    <!-- Button
+        android:id="@+id/plates_button_dme"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/DME"
+        android:visibility="visible"
+        android:textSize="24dp" / -->
+
+        <LinearLayout
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Timer"
-            android:visibility="visible"
-            android:textSize="24dp" />
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/plates_button_dme"
+                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DME"
+                android:visibility="visible"
+                android:textSize="24dp" />
+
+            <Button
+                android:id="@+id/plates_button_timer"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Timer"
+                android:visibility="visible"
+                android:textSize="24dp" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/plate_button_draw_clear"

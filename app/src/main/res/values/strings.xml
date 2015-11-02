@@ -340,7 +340,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
-    <string name="Timer">&quot;Timer&quot;</string>
+    <string name="Timer">Timer</string>
+    <string name="DME">DME</string>
 
     <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>

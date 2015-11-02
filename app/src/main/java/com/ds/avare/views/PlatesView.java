@@ -96,22 +96,33 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
-        mPref = new Preferences(context);
+        try {
+            mPref = new Preferences(context);
+        } catch (NullPointerException npe) {
+            // editing plates.xml
+        }
         mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
-        mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
+        try {
+            mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
+        } catch (NullPointerException npe) {
+            // editing plates.xml
+        }
         mDipToPix = Helper.getDpiToPix(context);
-
     }
 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
     private boolean shouldRotate() {
         // XXX: Fix rotation
-        return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
+        try {
+            return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
+        } catch (NullPointerException npe) {
+            return false; // editing plates.xml
+        }
     }
 
     /**

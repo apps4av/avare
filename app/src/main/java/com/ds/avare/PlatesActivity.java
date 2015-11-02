@@ -43,6 +43,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.PlateDME;
 import com.ds.avare.views.PlatesView;
 
 import java.io.File;
@@ -67,9 +68,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private Button mCenterButton;
     private Button mAirportButton;
     private Button mPlatesButton;
+    private Button mPlatesDMEButton;
     private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private Chronometer mChronometer;
+    private PlateDME mPlateDME;
     private AlertDialog mPlatesPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
@@ -178,7 +181,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
-                mPlatesView.updateParams(params); 
+                mPlatesView.updateParams(params);
+
+                /*
+                 * Maybe update DME strings.
+                 */
+                mPlateDME.updateParams (params);
                 
                 /*
                  * Altitude update
@@ -306,6 +314,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         });
 
         /*
+         * DME, manage DME display.
+         */
+        mPlatesDMEButton = (Button)view.findViewById (R.id.plates_button_dme);
+        mPlateDME = new PlateDME (this, mPlatesDMEButton);
+
+        /*
          * Draw
          */
         mDrawButton = (TwoButton)view.findViewById(R.id.plate_button_draw);
@@ -407,9 +421,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         /*
                          * Limit geo tagging to taggable plates.
                          */
-                        if(aname.startsWith("ILS-") || aname.startsWith("HI-ILS-") || aname.startsWith("HI-TACAN-") || aname.startsWith("HI-VOR-") || aname.startsWith("VOR-") || aname.startsWith("LDA-") || aname.startsWith("RNAV-")
-                                || aname.startsWith("NDB-") || aname.startsWith("LOC-") || aname.startsWith("HI-LOC-") || aname.startsWith("SDA-") || aname.startsWith("GPS-")
-                                || aname.startsWith("TACAN-") || aname.startsWith("COPTER-") || aname.startsWith("CUSTOM-")) {
+                        if (isTaggable (aname)) {
                             Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
                             startActivity(intent);
                         }
@@ -448,6 +460,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
+
+            mPlateDME.Select (mDest.getID (), isTaggable (name) ? name : "");
+            mPlatesDMEButton.setVisibility (isTaggable (name) ? View.VISIBLE : View.INVISIBLE);
         }
         else {
             mPlatesButton.setText("");
@@ -856,5 +871,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mPlatesTimerButton.setText(chronometer.getText());
     }
     
-
+    public static boolean isTaggable (String aname)
+    {
+        return aname.startsWith("ILS-") || aname.startsWith("HI-ILS-") || aname.startsWith("HI-TACAN-") || aname.startsWith("HI-VOR-") || aname.startsWith("VOR-") || aname.startsWith("LDA-") || aname.startsWith("RNAV-")
+                || aname.startsWith("NDB-") || aname.startsWith("LOC-") || aname.startsWith("HI-LOC-") || aname.startsWith("SDA-") || aname.startsWith("GPS-")
+                || aname.startsWith("TACAN-") || aname.startsWith("COPTER-") || aname.startsWith("CUSTOM-");
+    }
 }
