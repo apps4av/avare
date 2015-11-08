@@ -90,19 +90,27 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentTop="true">
 
         <Button
+            android:id="@+id/plates_button_approach"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:text="AP"
+            android:textSize="16sp"
+            android:layout_weight="4"/>
+
+        <Button
             android:id="@+id/plates_button_plates"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:minWidth="75dp"
-            android:layout_weight="1"/>
+            android:layout_weight="20"/>
 
         <Button
             android:id="@+id/plates_button_airports"
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:minWidth="75dp"/>       
+            android:layout_weight="6"/>
     </LinearLayout>
+
 </RelativeLayout>
 

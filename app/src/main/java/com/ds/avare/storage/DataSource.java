@@ -13,15 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import android.content.Context;
 
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -29,7 +28,9 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
-import android.content.Context;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * @author zkhan, jlmcgraw
@@ -275,8 +276,8 @@ public class DataSource {
      * @param runway
      * @return
      */
-    public LinkedList<String> findProcedure(String name, String type, String runway) {
-        return  dbHelper.findProcedure(name, type, runway);
+    public LinkedList<Cifp> findProcedure(String name, String approach) {
+        return  dbHelper.findProcedure(name, approach);
     }
     
     /**
@@ -317,4 +318,12 @@ public class DataSource {
     	return dbHelper.findRatings(name);
 	}
 
+    /**
+     *
+     * @param name
+     * @param airport
+     */
+    public Coordinate findRunwayCoordinates(String name, String airport) {
+        return dbHelper.findRunwayCoordinates(name, airport);
+    }
 }

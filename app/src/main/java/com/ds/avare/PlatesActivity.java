@@ -40,6 +40,7 @@ import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
@@ -67,21 +68,25 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private Button mCenterButton;
     private Button mAirportButton;
     private Button mPlatesButton;
+    private Button mApproachButton;
     private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
+    private AlertDialog mApproachPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
     private TwoButton mDrawButton;
     private Destination mDest;
     private Toast mToast;
     private ArrayList<String> mListPlates;
+    private ArrayList<String> mListApproaches;
     private ArrayList<String> mListAirports;
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
     private boolean mCounting;
+    private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     
     public static final String AD = "AIRPORT-DIAGRAM";
@@ -227,7 +232,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     
     private boolean arePopupsShowing() {
         return (null != mPlatesPopup && mPlatesPopup.isShowing()) || 
-                (null != mAirportPopup && mAirportPopup.isShowing());
+                (null != mAirportPopup && mAirportPopup.isShowing()) ||
+                (null != mApproachPopup && mApproachPopup.isShowing());
     }
 
     /**
@@ -256,10 +262,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mPlatesButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListPlates.size() == 0 || arePopupsShowing()) {
+                if (mListPlates.size() == 0 || arePopupsShowing()) {
                     return;
                 }
-                
+
                 DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -267,17 +273,48 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         setPlateFromPos(which);
                     }
                 };
-                
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
                 int index = mService.getLastPlateIndex();
-                if(index >= mListPlates.size()) {
+                if (index >= mListPlates.size()) {
                     index = 0;
                 }
+                builder.setTitle(getString(R.string.SelectPlateToShow));
                 mPlatesPopup = builder.setSingleChoiceItems(mListPlates.toArray(new String[mListPlates.size()]), index, onClickListener).create();
                 mPlatesPopup.show();
             }
-        });         
-        
+        });
+
+        mApproachButton = (Button)view.findViewById(R.id.plates_button_approach);
+        mApproachButton.getBackground().setAlpha(255);
+        mApproachButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListApproaches.size() == 0 || arePopupsShowing()) {
+                    return;
+                }
+
+                DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if(mCifp == null || which >= mCifp.size()) {
+                            return;
+                        }
+                        Cifp cifp = mCifp.get(which);
+                        cifp.setApproach(mService, mPref);
+                        ((MainActivity)PlatesActivity.this.getParent()).showPlanTab();
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                builder.setTitle(getString(R.string.SelectApproachToShow));
+                mApproachPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), 0, onClickListener).create();
+                mApproachPopup.show();
+            }
+        });
+
+
         /*
          * Timer, make chronometer invisible. Just use button to show time
          */
@@ -361,6 +398,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
+                builder.setTitle(getString(R.string.SelectAirportToShow));
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
             }
@@ -379,11 +417,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             public boolean onLongClick(View v) {
                 // long press on center button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
-                if(mPref.isTrackUp()) {
+                if (mPref.isTrackUp()) {
                     mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.TrackUp));
-                }
-                else {
+                } else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.NorthUp));
                 }
@@ -396,6 +433,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
         mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
+        // Only show tagging option when georef password is set
+        mPlatesTagButton.setVisibility(mPref.getGeoCode().equals("") ? View.INVISIBLE : View.VISIBLE);
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -453,6 +492,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mPlatesButton.setText("");
             mToast.setText(getString(R.string.PlatesNF));
             mToast.show();
+        }
+
+        // Get flight procedures set up for this plate
+        // Note: Move to BG task
+        mListApproaches = new ArrayList<>();
+        mCifp = mService.getDBResource().findProcedure(mAirportButton.getText().toString(), mPlatesButton.getText().toString());
+        for(Cifp cifp : mCifp) {
+            mListApproaches.add(cifp.getInitialCourse());
         }
     } 
     
@@ -609,9 +656,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);         
             mPlatesView.setService(mService);
-            
+
             mListPlates = new ArrayList<String>();
-            
+            mListApproaches = new ArrayList<String>();
+
             mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
             mListAirports.add(nearString);
@@ -734,6 +782,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         }
         catch(Exception e) {
             
+        }
+        try {
+            mApproachPopup.dismiss();
+        }
+        catch(Exception e) {
+
         }
         try {
             mAirportPopup.dismiss();

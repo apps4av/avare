@@ -13,9 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
-
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +27,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
  
 /**
  * 
@@ -211,12 +211,19 @@ public class MainActivity extends TabActivity {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
     }
-    
+
     /**
      * Display the main/maps tab
      */
     public void showMapTab() {
         switchTab(tabMain);
+    }
+
+    /**
+     * Display the Plan tab
+     */
+    public void showPlanTab() {
+        switchTab(tabPlan);
     }
 
     /**
