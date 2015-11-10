@@ -163,7 +163,7 @@ public class Preferences {
              */
             return "http://208.113.226.170/new/";
         } else if (val.equals("1")) {
-            return "http://avare.kitepilot.org/new/";
+            return "http://avare.kitepilot.net/new/";
         }
         return ("");
     }
