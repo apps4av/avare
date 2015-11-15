@@ -11,16 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adapters;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
-import com.ds.avare.R;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.NetworkHelper;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -30,6 +20,16 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.ds.avare.R;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.NetworkHelper;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * @author zkhan
@@ -71,7 +71,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_TERRAIN = 12;
     private static final int GROUP_TOPO = 13;
     private static final int GROUP_HELI = 14;
-    private static final int GROUP_NUM = 15;
+    private static final int GROUP_ONC = 15;
+    private static final int GROUP_NUM = 16;
     
     /**
      * @param context
@@ -102,6 +103,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resNameIFRHE);
         mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
         mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
+        mChildren[GROUP_ONC] = context.getResources().getStringArray(R.array.resNameONC);
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
         mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
         
@@ -122,6 +124,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
+        mChildrenFiles[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
@@ -143,6 +146,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
         mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
+        mVers[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
@@ -163,6 +167,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_IFRHE] = new int[mVers[GROUP_IFRHE].length];
         mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
         mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
+        mChecked[GROUP_ONC] = new int[mVers[GROUP_ONC].length];
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
         mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
         

@@ -29,6 +29,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Terrain</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
+        <item>ONC Charts</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -458,7 +459,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>New York Heli</item>
         <item>Washington Heli</item>
     </string-array>
-    
+
+    <string-array name="resNameONC">
+        <item>Europe</item>
+        <item>South Asia</item>
+    </string-array>
+
     <string-array name="resFilesDatabase">
         <item>databases</item>
         <item>geoplates</item>
@@ -874,7 +880,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>NewYorkHeli</item>
         <item>WashingtonHeli</item>
     </string-array>
-    
+
+    <string-array name="resFilesONC">
+        <item>ONCEurope</item>
+        <item>ONCSouthAsia</item>
+    </string-array>
+
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -886,6 +897,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
+        <item>ONC</item>
     </string-array>
 
     <string-array name="ChartFileExtesion">
@@ -899,7 +911,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>.jpg</item>
         <item>.jpg</item>
         <item>.png</item>
-    </string-array>    
+        <item>.jpg</item>
+    </string-array>
     
     <string-array name="ChartTypeValues">
         <item>0</item>
@@ -912,7 +925,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>7</item>
         <item>8</item>
         <item>9</item>
-    </string-array>    
+        <item>10</item>
+    </string-array>
 
     <string-array name="ChartMaxZooms">
         <item>10</item>
@@ -925,7 +939,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>9</item>
         <item>10</item>
         <item>12</item>
-    </string-array>    
+        <item>9</item>
+    </string-array>
     
     <string-array name="UnitsD">
         <item>Nautical Miles</item>
