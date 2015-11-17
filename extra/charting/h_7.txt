@@ -1,0 +1,13 @@
+filename=h_7.jpg
+lat1=25.33
+lat2=30.66
+xy0=1593 175
+lonlat0=53 32
+xy1=5169 3060
+lonlat1=59 28
+xy2=8989 5761
+lonlat2=65 24
+xy3=3909 4456
+lonlat3=57 26
+dims=53 32 65 24
+

@@ -1,0 +1,13 @@
+filename=h_8.jpg
+lat1=25.33
+lat2=30.66
+xy0=1573 167
+lonlat0=65 32
+xy1=5135 3064
+lonlat1=71 28
+xy2=8959 5770
+lonlat2=77 24 
+xy3=3243 4443
+lonlat3=68 26
+dims=65 32 77 24
+

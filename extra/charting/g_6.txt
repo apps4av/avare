@@ -1,0 +1,13 @@
+filename=g_6.jpg
+lat1=33.33
+lat2=38.66
+xy0=1214 161
+lonlat0=60 40
+xy1=4970 3112
+lonlat1=67 36
+xy2=9107 5777
+lonlat2=74 32
+xy3=1976 5841
+lonlat3=62 32
+dims=60 40 74 32
+

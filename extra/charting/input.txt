@@ -1,0 +1,4 @@
+g_6.txt
+g_7.txt
+h_7.txt
+h_8.txt

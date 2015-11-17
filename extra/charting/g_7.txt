@@ -1,0 +1,13 @@
+filename=g_7.jpg
+lat1=33.33
+lat2=38.66
+xy0=1217 168
+lonlat0=74 40
+xy1=4975 3114
+lonlat1=81 36
+xy2=9113 5777
+lonlat2=88 32
+xy3=2031 5146
+lonlat3=76 33
+dims=74 40 88 32
+
