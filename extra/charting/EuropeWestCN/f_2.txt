@@ -1,0 +1,13 @@
+filename=f_2.jpg
+lat1=41.33
+lat2=46.66
+xy0=9182 5787
+lonlat0=19 40
+xy1=2024 961
+lonlat1=5 47
+xy2=4370 4586
+lonlat2=10 42
+xy3=6888 2422
+lonlat3=15 45
+dims=19 40 3 48
+
