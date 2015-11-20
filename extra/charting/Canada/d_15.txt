@@ -1,0 +1,13 @@
+filename=d_15.jpg
+lat1=57.33
+lat2=62.66
+lonlat0=-76 64
+xy0=1546 119
+lonlat1=-66 60
+xy1=4570 3205
+lonlat2=-60 58
+xy2=6758 4537
+lonlat3=-54 56
+xy3=9185 5651
+dims=-76 64 -54 56
+

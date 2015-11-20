@@ -1,0 +1,13 @@
+filename=e_19.jpg
+lat1=49.33
+lat2=54.66
+lonlat0=-68 56
+xy0=2214 172
+lonlat1=-60 52
+xy1=5358 3154
+lonlat2=-52 48
+xy2=9088 5748
+lonlat3=-56 54
+xy3=7014 1697
+dims=-68 56 -52 48
+

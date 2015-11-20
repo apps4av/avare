@@ -1,0 +1,13 @@
+filename=f_19.jpg
+lat1=46.33
+lat2=41.66
+lonlat0=-77 48
+xy0=1164 165
+lonlat1=-68 45
+xy1=5414 2453
+lonlat2=-61 40
+xy2=9191 5756
+lonlat3=-62 44
+xy3=8439 3002
+dims=-77 48 -61 40
+

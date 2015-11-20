@@ -1,0 +1,12 @@
+filename=f_18.jpg
+lat1=46.33
+lat2=41.66
+lonlat0=-93 48
+xy0=1138 156
+lonlat1=-85 44
+xy1=4896 3142
+lonlat2=-77 40
+xy2=9173 5733
+lonlat3=-78 42
+xy3=8532 4383
+dims=-93 48 -77 40

@@ -1,0 +1,13 @@
+filename=e_18.jpg
+lat1=49.33
+lat2=54.66
+lonlat0=-84 56
+xy0=2265 353
+lonlat1=-78 52
+xy1=4509 3269
+lonlat2=-68 48
+xy2=9028 5844
+lonlat3=-71 50
+xy3=7564 4589
+dims=-84 56 -68 48
+
