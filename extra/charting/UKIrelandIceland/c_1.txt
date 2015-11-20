@@ -1,0 +1,13 @@
+filename=c_1.jpg
+lat1=65.33
+lat2=70.66
+xy0=9040 5587
+lonlat0=0 64
+xy1=1234 578
+lonlat1=-30 71
+xy2=2829 2348
+lonlat2=-22 69
+xy3=6772 1713
+lonlat3=-6 70
+dims=-26 72 0 64
+

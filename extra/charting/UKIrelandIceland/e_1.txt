@@ -1,0 +1,13 @@
+filename=e_1.jpg
+lat1=49.33
+lat2=54.66
+xy0=881 651
+lonlat0=-12 60
+xy1=4199 6739
+lonlat1=-5 54
+xy2=8647 12477
+lonlat2=2 48
+xy3=2252 10552
+lonlat3=-8 50
+dims=-10 60 2 48
+
