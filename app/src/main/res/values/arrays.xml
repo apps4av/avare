@@ -29,7 +29,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Terrain</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
-        <item>World ONC Charts</item>
+        <item>World-Large Files</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -461,14 +461,16 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resNameONC">
-        <item>Canada</item>
+        <item>Canada East</item>
+        <item>Canada West</item>
         <item>Europe</item>
         <item>New Zealand</item>
         <item>South Asia</item>
     </string-array>
 
     <string-array name="resFilesONC">
-        <item>ONCCanada</item>
+        <item>ONCCanadaE</item>
+        <item>ONCCanadaW</item>
         <item>ONCEurope</item>
         <item>ONCNewZealand</item>
         <item>ONCSouthAsia</item>
@@ -901,7 +903,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief</item>
         <item>Topographic</item>
         <item>Heli/Other</item>
-        <item>ONC</item>
+        <item>ONC World</item>
     </string-array>
 
     <string-array name="ChartFileExtesion">

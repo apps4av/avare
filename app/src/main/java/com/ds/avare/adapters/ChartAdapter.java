@@ -387,11 +387,20 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                 if(mVers[group][child] == null) {
                     continue;
                 }
-                if(NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime())) {
+                if(NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime()) && doesChartExpire(group)) {
                     mChecked[group][child] = STATE_CHECKED;
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @param group
+     * @return
+     */
+    private boolean doesChartExpire(int group) {
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN);
     }
 
     /**
@@ -424,7 +433,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                 expired |= NetworkHelper.isExpired(mVers[group][child], mPref.getExpiryTime());
             }
         }
-        if(expired) {
+        if(expired && doesChartExpire(group)) {
             tv.setTextColor(0xFF7F0000);
         }
         else {
@@ -465,7 +474,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
             textView2.setText(mVers[groupPosition][childPosition] + " " + NetworkHelper.getVersionRange(mVers[groupPosition][childPosition]));
             imgView.setImageBitmap(mOkBitmapHolder.getBitmap());
             
-            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition], mPref.getExpiryTime())) {
+            if(NetworkHelper.isExpired(mVers[groupPosition][childPosition], mPref.getExpiryTime()) && doesChartExpire(groupPosition)) {
                 imgView.setImageBitmap(mUpdateBitmapHolder.getBitmap());                    
             }
         }

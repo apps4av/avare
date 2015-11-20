@@ -162,7 +162,7 @@ def zipit():
 		for f in files:
 			path = os.path.join(dir, f)
 			if path.endswith(".png"):
-				os.system("mogrify -unsharp 3x3 -format jpg -quality 75 " + path)
+				os.system("mogrify -format jpg -quality 90 " + path)
 				zipf.write(path.replace(".png", ".jpg"))
 				print path
 
