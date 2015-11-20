@@ -1,0 +1,13 @@
+filename=g_2.jpg
+lat1=33.33
+lat2=38.66
+xy0=9101 5789
+lonlat0=18 32
+xy1=1721 905
+lonlat1=5 39
+xy2=3824 3807
+lonlat2=9 35
+xy3=7198 1671
+lonlat3=15 38
+dims=18 32 4 40
+

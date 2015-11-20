@@ -1,0 +1,12 @@
+filename=c_2.jpg
+lat1=65.33
+lat2=70.66
+xy0=8992 5735
+lonlat0=36 64
+xy1=1134 897
+lonlat1=5 71
+xy2=3081 3356
+lonlat2=15 68
+xy3=6045 2056
+lonlat3=27 70
+dims=9 72 36 64
