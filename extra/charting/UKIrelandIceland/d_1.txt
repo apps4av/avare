@@ -1,0 +1,13 @@
+filename=d_1.jpg
+lat1=57.33
+lat2=62.66
+xy0=9191 5665
+lonlat0=0 56
+xy1=4899 3232
+lonlat1=-11 60
+xy2=914 60
+lonlat2=-24 64
+xy3=7348 3097
+lonlat3=-4 60
+dims=-22 64 0 56
+
