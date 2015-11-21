@@ -461,11 +461,11 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resNameONC">
-        <item>Canada East</item>
-        <item>Canada West</item>
-        <item>Western Europe</item>
-        <item>New Zealand</item>
-        <item>South Asia</item>
+        <item>ONC Canada East</item>
+        <item>ONC Canada West</item>
+        <item>ONC Western Europe</item>
+        <item>ONC New Zealand</item>
+        <item>ONC South Asia</item>
     </string-array>
 
     <string-array name="resFilesONC">
