@@ -1,13 +1,13 @@
 filename=f_1.jpg
 lat1=41.33
 lat2=46.66
-xy0=8102 4781
+xy0=9160 5781
 lonlat0=3 40
 xy1=1599 963
 lonlat1=-12 47
 xy2=3892 3877
 lonlat2=-7 43
-xy3=6898 2455
+xy3=8864 2313
 lonlat3=3 45
-dims=3 40 13 48
+dims=-13 48 3 40
 
