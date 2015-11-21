@@ -463,7 +463,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameONC">
         <item>Canada East</item>
         <item>Canada West</item>
-        <item>Europe</item>
+        <item>Western Europe</item>
         <item>New Zealand</item>
         <item>South Asia</item>
     </string-array>
@@ -471,7 +471,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesONC">
         <item>ONCCanadaE</item>
         <item>ONCCanadaW</item>
-        <item>ONCEurope</item>
+        <item>ONCEuropeW</item>
         <item>ONCNewZealand</item>
         <item>ONCSouthAsia</item>
     </string-array>

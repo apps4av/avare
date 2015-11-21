@@ -59,6 +59,7 @@
 # Open the file tiles/10/openlayers.html in an Internet browser to see the result on google maps overlay. 
 
 import os
+import filecmp 
 import zipfile 
 from pyproj import Proj, transform
 
@@ -162,9 +163,13 @@ def zipit():
 		for f in files:
 			path = os.path.join(dir, f)
 			if path.endswith(".png"):
+				print path
+				# skip black files
+				if filecmp.cmp(path, 'black.png'):
+					continue
+				# JPEG others
 				os.system("mogrify -format jpg -quality 90 " + path)
 				zipf.write(path.replace(".png", ".jpg"))
-				print path
 
 
 # main
