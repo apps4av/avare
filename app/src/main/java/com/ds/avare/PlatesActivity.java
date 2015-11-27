@@ -290,7 +290,13 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mApproachButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListApproaches.size() == 0 || arePopupsShowing()) {
+                if (arePopupsShowing()) {
+                    return;
+                }
+
+                if (mListApproaches.size() == 0) {
+                    mToast.setText(getString(R.string.NoApproachToShow));
+                    mToast.show();
                     return;
                 }
 
@@ -298,12 +304,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if(mCifp == null || which >= mCifp.size()) {
+                        if (mCifp == null || which >= mCifp.size()) {
                             return;
                         }
                         Cifp cifp = mCifp.get(which);
                         cifp.setApproach(mService, mPref);
-                        ((MainActivity)PlatesActivity.this.getParent()).showPlanTab();
+                        ((MainActivity) PlatesActivity.this.getParent()).showPlanTab();
                     }
                 };
 

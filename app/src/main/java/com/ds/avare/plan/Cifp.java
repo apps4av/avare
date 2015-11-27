@@ -78,13 +78,36 @@ public class Cifp {
             ret[0] = "RNAV-RNP";
             procedure = procedure.replace("RNAV-RNP-", "");
         }
+        else if(procedure.startsWith("ILS-OR-LOC-")) {
+            ret[0] = "ILS";
+            procedure = procedure.replace("ILS-OR-LOC-", "");
+        }
+        else if(procedure.startsWith("ILS-")) {
+            ret[0] = "ILS";
+            procedure = procedure.replace("ILS-", "");
+        }
+        else if(procedure.startsWith("LOC-")) {
+            ret[0] = "LOC";
+            procedure = procedure.replace("LOC-", "");
+        }
 
         String tokens[] = procedure.split("-");
-        if(tokens.length == 3 && tokens[1].equals("RWY")) {
-            ret[1] = tokens[2] + "-" + tokens[0];
-        }
-        else if(tokens.length == 2 && tokens[0].equals("RWY")) {
-            ret[1] = tokens[1];
+        // Find RWY
+        int len = tokens.length;
+        for (int tkn = 0; tkn < tokens.length; tkn++) {
+            if(tokens[tkn].equals("RWY")) {
+                String runway = "";
+                if((tkn + 1) < len) {
+                    runway = tokens[tkn + 1];
+                    if(tkn > 0) {
+                        if(tokens[tkn - 1].matches("[A-Z]")) {
+                            runway = runway + "-" + tokens[tkn - 1];
+                        }
+                    }
+                }
+                ret[1] = runway;
+                break;
+            }
         }
 
         return ret;
