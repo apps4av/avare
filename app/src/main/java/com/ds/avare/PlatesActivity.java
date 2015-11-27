@@ -504,6 +504,13 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         // Note: Move to BG task
         mListApproaches = new ArrayList<>();
         mCifp = mService.getDBResource().findProcedure(mAirportButton.getText().toString(), mPlatesButton.getText().toString());
+        if(mCifp.size() != 0) {
+            // Show which plates have approaches
+            mApproachButton.setTextColor(0xFF007F00);
+        }
+        else {
+            mApproachButton.setTextColor(0xFFFF0000);
+        }
         for(Cifp cifp : mCifp) {
             mListApproaches.add(cifp.getInitialCourse());
         }

@@ -480,6 +480,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectAirportToShow">&quot;Select an Airport&quot;</string>
     <string name="SelectPlateToShow">&quot;Select a Plate&quot;</string>
     <string name="SelectApproachToShow">&quot;Load an approach to Plan (Experimental)&quot;</string>
-    <string name="NoApproachToShow">&quot;No approaches available this plate&quot;</string>
+    <string name="NoApproachToShow">&quot;No approaches available for this plate&quot;</string>
 
 </resources>

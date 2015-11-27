@@ -2099,10 +2099,10 @@ public class DataBaseHelper  {
      */
     public LinkedList<Cifp> findProcedure(String name, String approach) {
 
-        LinkedList<Cifp> ret = new LinkedList<Cifp>();
+        HashMap<String, Cifp> map = new HashMap<String, Cifp>();
         String params[] = Cifp.getParams(approach);
         if(params[0] == null || params[1] == null) {
-            return ret;
+            return new LinkedList<Cifp>();
         }
 
         // get runway matched to CIFP database
@@ -2121,8 +2121,9 @@ public class DataBaseHelper  {
                         /*
                          * Add as inital course, initial alts, final course, final alts, missed course, missed alts
                          */
-                        ret.add(new Cifp(name, cursor.getString(4), cursor.getString(5), cursor.getString(6),
-                                cursor.getString(7), cursor.getString(8), cursor.getString(9)));
+                        Cifp cifp = new Cifp(name, cursor.getString(4), cursor.getString(5), cursor.getString(6),
+                                cursor.getString(7), cursor.getString(8), cursor.getString(9));
+                        map.put(cifp.getInitialCourse(), cifp);
                     } while(cursor.moveToNext());
                 }
             }
@@ -2132,11 +2133,7 @@ public class DataBaseHelper  {
         
         closesProcedures(cursor);
         
-        if(ret.size() > 0) {
-            return ret;      
-        }
-        
-        return ret;
+        return new LinkedList<Cifp>(map.values());
     }
     
     /**
