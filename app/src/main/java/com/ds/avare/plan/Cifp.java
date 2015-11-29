@@ -86,9 +86,29 @@ public class Cifp {
             ret[0] = "ILS";
             procedure = procedure.replace("ILS-", "");
         }
+        else if(procedure.startsWith("LOC-BC-")) {
+            ret[0] = "LOC/BC";
+            procedure = procedure.replace("LOC-BC-", "");
+        }
         else if(procedure.startsWith("LOC-")) {
             ret[0] = "LOC";
             procedure = procedure.replace("LOC-", "");
+        }
+        else if(procedure.startsWith("GPS-")) {
+            ret[0] = "IGS";
+            procedure = procedure.replace("GPS-", "");
+        }
+        else if(procedure.startsWith("NDB-")) {
+            ret[0] = "NDB";
+            procedure = procedure.replace("NDB-", "");
+        }
+        else if(procedure.startsWith("VOR-DME-")) {
+            ret[0] = "VOR/DME";
+            procedure = procedure.replace("VOR-DME-", "");
+        }
+        else if(procedure.startsWith("VOR-")) {
+            ret[0] = "VOR";
+            procedure = procedure.replace("VOR-", "");
         }
 
         String tokens[] = procedure.split("-");

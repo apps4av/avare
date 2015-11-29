@@ -14,12 +14,10 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.storage;
 
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Locale;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.hardware.GeomagneticField;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -37,10 +35,13 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.hardware.GeomagneticField;
+import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author zkhan, jlmcgraw
@@ -2099,7 +2100,7 @@ public class DataBaseHelper  {
      */
     public LinkedList<Cifp> findProcedure(String name, String approach) {
 
-        HashMap<String, Cifp> map = new HashMap<String, Cifp>();
+        TreeMap<String, Cifp> map = new TreeMap<String, Cifp>();
         String params[] = Cifp.getParams(approach);
         if(params[0] == null || params[1] == null) {
             return new LinkedList<Cifp>();
