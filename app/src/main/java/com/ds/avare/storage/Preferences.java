@@ -584,13 +584,6 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean shouldSaveTracks() {
-        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdAllow), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean useAdsbWeather() {
         return (mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }

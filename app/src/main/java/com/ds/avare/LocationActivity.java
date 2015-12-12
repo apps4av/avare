@@ -50,6 +50,7 @@ import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
+import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -160,6 +161,7 @@ public class LocationActivity extends Activity implements Observer {
     private ExpandableListView mListPopout;
 
     private TankObserver mTankObserver;
+    private TimerObserver mTimerObserver;
 
     private FlightStatusInterface mFSInfc = new FlightStatusInterface() {
         @Override
@@ -883,7 +885,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-	            if(null != mService && mPref.shouldSaveTracks()) {
+	            if(null != mService) {
 	                setTrackState(!mService.getTracks());
 	            }
             }
@@ -1012,6 +1014,7 @@ public class LocationActivity extends Activity implements Observer {
         // Allocate the object that will get told about the status of the
         // fuel tank
         mTankObserver = new TankObserver();
+        mTimerObserver = new TimerObserver();
 
 
         mInitLocation = Gps.getLastLocation(getApplicationContext());
@@ -1179,6 +1182,7 @@ public class LocationActivity extends Activity implements Observer {
 
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
+            mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         /* (non-Javadoc)
@@ -1220,6 +1224,24 @@ public class LocationActivity extends Activity implements Observer {
 					break;
 			}
 		}
+    }
+
+    /**
+     * We are interested in events from the timer
+     * @author Ron
+     *
+     */
+    private class TimerObserver implements Observer {
+
+        @Override
+        public void update(Observable observable, Object data) {
+            final UpTimer upTimer = (UpTimer) observable;
+            switch ((Integer)data) {
+                case UpTimer.REFRESH:
+                    mLocationView.postInvalidate();
+                    break;
+            }
+        }
     }
 
     /**
@@ -1284,6 +1306,7 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
+            mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         // Button colors to be synced across activities
@@ -1307,6 +1330,7 @@ public class LocationActivity extends Activity implements Observer {
             mService.unregisterGpsListener(mGpsInfc);
             mService.getFlightStatus().unregisterListener(mFSInfc);
             mService.getFuelTimer().removeObserver(mTankObserver);
+            mService.getUpTimer().removeObserver(mTimerObserver);
         }
 
         /*

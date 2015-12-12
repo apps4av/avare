@@ -1076,7 +1076,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometer</item>
 	    <item>Course Deviation Indicator</item>
 	    <item>Flight Path Required</item>
-	    <item>Fuel Tank Switch Timer</item>
+        <item>Fuel Tank Switch Timer</item>
+        <item>Count Up Timer</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -1105,7 +1106,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Odometer</item>
 	    <item>CDI</item>
 	    <item>FPR deg</item>
-	    <item>Fuel Time</item>
+        <item>Fuel Time</item>
+        <item>Timer</item>
 	</string-array>
 
 	<string-array name="DisplayIconValues">

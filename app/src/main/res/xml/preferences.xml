@@ -332,10 +332,6 @@ authors: zkhan, jlmcgraw
 	<PreferenceScreen 
     	    android:title="@string/prefTracksCategoryTitle" 
         	android:icon="@android:drawable/ic_menu_myplaces" >
-		<CheckBoxPreference
-    	    android:key="@string/TrkUpdAllow"
-    	    android:title="@string/TrkUpdAllowLabel"
-    	    android:summary="@string/TrkUpdAllowSummary"/>
         <CheckBoxPreference
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"

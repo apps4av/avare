@@ -37,6 +37,7 @@ import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
+import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -88,7 +89,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private boolean mCounting;
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
-    
+    private TimerObserver mTimerObserver;
+
     public static final String AD = "AIRPORT-DIAGRAM";
     
     /*
@@ -471,6 +473,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         
         // Allocate the watch object for fuel tanks
         mTankObserver = new TankObserver();
+        mTimerObserver = new TimerObserver();
 
         mService = null;
     }
@@ -735,6 +738,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
+            mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         /* (non-Javadoc)
@@ -778,6 +782,25 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 		}
     }
 
+    /**
+     * We are interested in events from the timer
+     * @author Ron
+     *
+     */
+    private class TimerObserver implements Observer {
+
+        @Override
+        public void update(Observable observable, Object data) {
+            final UpTimer upTimer = (UpTimer) observable;
+            switch ((Integer)data) {
+                case UpTimer.REFRESH:
+                    mPlatesView.postInvalidate();
+                    break;
+
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -788,6 +811,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
             mService.getFuelTimer().removeObserver(mTankObserver);
+            mService.getUpTimer().removeObserver(mTimerObserver);
         }
 
         try {
@@ -833,6 +857,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
+            mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         // Button colors to be synced across activities

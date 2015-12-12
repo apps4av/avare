@@ -35,6 +35,7 @@ import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.Odometer;
+import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.instruments.VNAV;
 import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.TFRFetcher;
@@ -245,10 +246,13 @@ public class StorageService extends Service {
     
     // The edge distance tape instrument
     private EdgeDistanceTape mEdgeDistanceTape;
-    
+
     // Timer for switching fuel tanks
     private FuelTimer mFuelTimer;
-    
+
+    // Timer for count up
+    private UpTimer mUpTimer;
+
     
     /**
      * @author zkhan
@@ -382,8 +386,9 @@ public class StorageService extends Service {
         
         // Declare a fuel tank switching timer. Default to 30
         // minutes per tank
-        mFuelTimer = new FuelTimer(30);	
-        
+        mFuelTimer = new FuelTimer(30);
+        mUpTimer = new UpTimer();
+
         /*
          * Monitor TFR every hour.
          */
@@ -1127,9 +1132,12 @@ public class StorageService extends Service {
     public EdgeDistanceTape getEdgeTape() {
     	return mEdgeDistanceTape;
     }
-    
+
     public FuelTimer getFuelTimer() {
-    	return mFuelTimer;
+        return mFuelTimer;
+    }
+    public UpTimer getUpTimer() {
+        return mUpTimer;
     }
 
 	public DrawCapLines getCap() {

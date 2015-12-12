@@ -112,7 +112,8 @@ public class InfoLines {
     static final int ID_FLD_CDI = 16;
     static final int ID_FLD_FPR = 17;
     static final int ID_FLD_FUL = 18;
-    static final int ID_FLD_MAX = 19;
+    static final int ID_FLD_TMR = 19;
+    static final int ID_FLD_MAX = 20;
     static final String NOVALUE = "     ";
 
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -303,8 +304,17 @@ public class InfoLines {
                 }
             }
             break;
-        } } }
-    
+        }
+        case ID_FLD_TMR: {
+            if (mService != null) {
+                if(null != mService.getUpTimer()) {
+                    mService.getUpTimer().toggleState();
+                }
+            }
+            break;
+        }
+        } }
+
         
      /***
      * A LONG_PRESS gesture over one of the display fields
@@ -357,8 +367,18 @@ public class InfoLines {
         	}
         	break;
         }
-        
-        default:
+
+        case ID_FLD_TMR: {
+            if(null != mService) {
+                if(null != mService.getUpTimer()) {
+                    mService.getUpTimer().reset();
+                }
+            }
+            break;
+        }
+
+
+            default:
             break;
         }
         return;
@@ -804,13 +824,23 @@ public class InfoLines {
                 }
             }
             break;
+        case ID_FLD_TMR: {
+            if (null != mService) {
+                if (null != mService.getUpTimer()) {
+                    return mService.getUpTimer().getDisplay();
+                }
+            }
         }
+        break;
+        }
+
+
         return NOVALUE;
     }
 
     /***
      * Return a format string for the value passed in
-     * 
+     *
      * @param value
      * @return
      */
