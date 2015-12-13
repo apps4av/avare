@@ -11,13 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.weather;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import android.content.Context;
 import android.util.SparseArray;
 
@@ -27,6 +20,13 @@ import com.ds.avare.adsb.NexradImageConus;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class AdsbWeatherCache {
      * @param location
      * @param data
      */
-    public void putMetar(long time, String location, String data) {
+    public void putMetar(long time, String location, String data, String flightCategory) {
         if(!mPref.useAdsbWeather()) {
             return;
         }    
@@ -93,7 +93,7 @@ public class AdsbWeatherCache {
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
         m.time = sdf.format(dt) + "Z";
-        m.flightCategory = "Unknown";
+        m.flightCategory = flightCategory;
         m.timestamp = System.currentTimeMillis();
         mMetar.put(location, m);
     }

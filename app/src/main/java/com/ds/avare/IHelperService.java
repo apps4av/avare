@@ -268,7 +268,7 @@ public class IHelperService extends Service {
                      * Put METAR
                      */
                     mService.getAdsbWeather().putMetar(object.getLong("time"), 
-                            object.getString("location"), object.getString("data"));
+                            object.getString("location"), object.getString("data"), object.getString("flight_category"));
                 }
                 else if(type.equals("TAF") || type.equals("TAF.AMD")) {
                     mService.getAdsbWeather().putTaf(object.getLong("time"), 

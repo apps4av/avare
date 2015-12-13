@@ -702,43 +702,43 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param ctx
      */
     private void drawLayers(Canvas canvas, DrawingContext ctx) {
-        if(mLayerType == null || null != mPointProjection || 0 == mPref.showLayer() || ctx.pref.useAdsbWeather()) {
+        if(mLayerType == null || null != mPointProjection || 0 == mPref.showLayer()) {
             return;
         }
 
-        if(mLayerType.equals("NEXRAD")) {
-            // draw nexrad
-            mLayer = mService.getRadarLayer();
-        }
-        else if(mLayerType.equals("METAR")) {
-            // draw metar flight catergory
-            mLayer = ctx.service.getMetarLayer();
+        if(ctx.pref.useAdsbWeather()) {
+            if (mLayerType.equals("NEXRAD")) {
+                NexradBitmap.draw(ctx, mService.getAdsbWeather().getNexrad(),
+                        mService.getAdsbWeather().getNexradConus(), null == mPointProjection);
+            }
+            else if (mLayerType.equals("METAR")) {
+                // Todo: Create METAR map from flight category.
+            }
         }
         else {
-            mLayer = null;
-            return;
+
+            if (mLayerType.equals("NEXRAD")) {
+                // draw nexrad
+                mLayer = mService.getRadarLayer();
+            } else if (mLayerType.equals("METAR")) {
+                // draw metar flight catergory
+                mLayer = ctx.service.getMetarLayer();
+            } else {
+                mLayer = null;
+                return;
+            }
+
+            /*
+             * layer is way too old.
+             */
+            if (mLayer.isOld(ctx.pref.getExpiryTime())) {
+                return;
+            }
+
+            mPaint.setAlpha(mPref.showLayer());
+            mLayer.draw(canvas, mPaint, mOrigin);
+            mPaint.setAlpha(255);
         }
-
-        /*
-         * layer is way too old.
-         */
-        if(mLayer.isOld(ctx.pref.getExpiryTime())) {
-            return;
-        }
-
-        mPaint.setAlpha(mPref.showLayer());
-        mLayer.draw(canvas, mPaint, mOrigin);
-        mPaint.setAlpha(255);
-    }
-
-    /**
-     *
-     * @param canvas
-     * @param ctx
-     */
-    private void drawNexrad(Canvas canvas, DrawingContext ctx) {
-        NexradBitmap.draw(ctx, mService.getAdsbWeather().getNexrad(),
-                mService.getAdsbWeather().getNexradConus(), null == mPointProjection);
     }
 
     /**
@@ -987,7 +987,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         // Call the draw routines for the items that rotate with
         // the chart
         drawTiles(canvas, ctx);
-        drawNexrad(canvas, ctx);
         drawLayers(canvas, ctx);
         drawDrawing(canvas, ctx);
         drawCapGrids(canvas, ctx);
