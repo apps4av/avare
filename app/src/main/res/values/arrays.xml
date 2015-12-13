@@ -1234,6 +1234,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>1440</item>
     </string-array>
 
+    <string-array name="ADSBTrafficFilterAltitude">
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
+        <item>5000</item>
+        <item>10000</item>
+        <item>100000</item>
+    </string-array>
+
     <string-array name="LayerType">
         <item>No Layer</item>
         <item>METAR</item>

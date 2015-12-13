@@ -223,9 +223,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ADSBWeatherLabel">&quot;Use ADSB Weather&quot;</string>
     <string name="ADSBWeatherSummary">&quot;Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather&quot;</string>
     <string name="GeoRefPlates">&quot;Geo. Referenced Plates Database&quot;</string>
-    <string name="ADSBTraffic">ADSBTraffic</string>
-    <string name="ADSBTrafficLabel">&quot;Show ADSB Traffic&quot;</string>
-    <string name="ADSBTrafficSummary">&quot;Select to show the traffic from an ADSB receiver (requires the Avare External IO module app.)&quot;</string>
+    <string name="ADSBTrafficFilter">ADSBTrafficFilter</string>
+    <string name="ADSBTrafficFilterLabel">&quot;Filter ADSB Traffic&quot;</string>
+    <string name="ADSBTrafficFilterSummary">&quot;Show ADSB traffic within given feet of the aircraft&quot;</string>
     <string name="prefUseDynamicFields">UseDynamicFields</string>
     <string name="UseDynamicFieldsLabel">&quot;Use Dynamic Fields&quot;</string>
     <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines to be configured dynamically&quot;</string>

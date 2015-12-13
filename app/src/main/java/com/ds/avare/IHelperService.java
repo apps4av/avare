@@ -12,15 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.ds.avare.instruments.CDI;
-import com.ds.avare.place.Destination;
-import com.ds.avare.place.Plan;
-import com.ds.avare.utils.Helper;
-
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,6 +23,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
+import com.ds.avare.instruments.CDI;
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
+import com.ds.avare.utils.Helper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * This class exposes the remote service to the client.
  * The client will be the Avare Helper, sending data to Avare
@@ -40,6 +40,7 @@ import android.os.Message;
 public class IHelperService extends Service {
 
     private StorageService mService;
+    private JSONObject mGeoAltitude;
     
     /**
      * We need to bind to storage service to do anything useful 
@@ -57,6 +58,7 @@ public class IHelperService extends Service {
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
+            mGeoAltitude = null;
         }    
 
         /* (non-Javadoc)
@@ -204,15 +206,31 @@ public class IHelperService extends Service {
                             Helper.getMillisGMT()
                             /*XXX:object.getLong("time")*/);
                 }
+                else if(type.equals("geoaltitude")) {
+                    mGeoAltitude = object;
+                }
                 else if(type.equals("ownship")) {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
                     l.setLongitude(object.getDouble("longitude"));
                     l.setLatitude(object.getDouble("latitude"));
                     l.setSpeed((float)object.getDouble("speed"));
-                    l.setBearing((float)object.getDouble("bearing"));
+                    l.setBearing((float) object.getDouble("bearing"));
+
+                    // This comes from geometric altitude as this needs to be GPS report
                     l.setAltitude(object.getDouble("altitude"));
+                    //do not use old geo altitude
+                    if(mGeoAltitude != null) {
+                        long t1 = object.getLong("time");
+                        long t2 = mGeoAltitude.getLong("time");
+                        if((t1 - t2) < 10000) { // 10 seconds
+                            l.setAltitude(mGeoAltitude.getDouble("altitude"));
+                        }
+                    }
+
                     l.setTime(object.getLong("time"));
                     mService.getGps().onLocationChanged(l, type);
+                    // set pressure altitude for traffic alerts
+                    mService.getTrafficCache().setOwnAltitude((int) object.getDouble("altitude"));
                 }
                 else if(type.equals("nexrad")) {
                     

@@ -603,8 +603,12 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean showAdsbTraffic() {
-        return (mPref.getBoolean(mContext.getString(R.string.ADSBTraffic), true));
+    public int showAdsbTrafficWithin() {
+        try {
+            return (Integer.parseInt(mPref.getString(mContext.getString(R.string.ADSBTrafficFilter), "100000")));
+        } catch (Exception x) {
+            return 100000;
+        }
     }
 
     /**

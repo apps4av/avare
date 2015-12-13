@@ -214,11 +214,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/Obstacles"
             android:summary="@string/ObstaclesSummary"
             android:title="@string/ObstaclesLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/ADSBTraffic"
-            android:summary="@string/ADSBTrafficSummary"
-            android:title="@string/ADSBTrafficLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="100000"
+            android:entries="@array/ADSBTrafficFilterAltitude"
+            android:entryValues="@array/ADSBTrafficFilterAltitude"
+            android:key="@string/ADSBTrafficFilter"
+            android:summary="@string/ADSBTrafficFilterSummary"
+            android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/GameTFR"

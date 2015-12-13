@@ -22,14 +22,16 @@ import android.util.SparseArray;
 public class TrafficCache {
     private static final int MAX_ENTRIES = 100;
     private SparseArray<Traffic> mTraffic;
+    private int mOwnAltitude;
     
     public TrafficCache() { 
         mTraffic = new SparseArray<Traffic>();
+        mOwnAltitude = 0;
     }
     
     /**
      * 
-     * @param product
+     * @param
      */
     public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
@@ -46,7 +48,14 @@ public class TrafficCache {
         mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude, 
                 heading, speed, time));
     }
-    
+
+    public void setOwnAltitude(int altitude) {
+        mOwnAltitude = altitude;
+    }
+
+    public int getOwnAltitude() {
+        return mOwnAltitude;
+    }
     
     /**
      * 

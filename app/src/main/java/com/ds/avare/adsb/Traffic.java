@@ -105,10 +105,13 @@ public class Traffic {
     }
 
     public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, boolean shouldDraw) {
+
+        int filterAltitude = ctx.pref.showAdsbTrafficWithin();
+
         /*
          * Get traffic to draw.
          */
-        if((!ctx.pref.showAdsbTraffic()) || (null == traffic) || (!shouldDraw)) {
+        if((null == traffic) || (!shouldDraw)) {
             return;
         }
 
@@ -132,9 +135,14 @@ public class Traffic {
              */
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
+            // filter
+            double diff = t.mAltitude - altitude;
+            if(Math.abs(diff) > filterAltitude) {
+                continue;
+            }
+
 
             float radius = ctx.dip2pix * 8;
-            String text = t.mAltitude + "'";
             /*
              * Draw outline to show it clearly
              */
@@ -155,7 +163,7 @@ public class Traffic {
             double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
             ctx.canvas.drawLine(x, y, (float)xr, (float)yr, ctx.paint);
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    text, Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+                    diff + "", Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
 
         }
 
