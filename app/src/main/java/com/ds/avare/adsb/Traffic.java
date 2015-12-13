@@ -136,10 +136,12 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             // filter
-            double diff = t.mAltitude - altitude;
+            int diff = (int)(t.mAltitude - altitude);
             if(Math.abs(diff) > filterAltitude) {
                 continue;
             }
+
+            String text = (diff > 0 ? "+" : "") + diff + "'";
 
 
             float radius = ctx.dip2pix * 8;
@@ -163,7 +165,7 @@ public class Traffic {
             double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
             ctx.canvas.drawLine(x, y, (float)xr, (float)yr, ctx.paint);
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    diff + "", Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+                    text, Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
 
         }
 
