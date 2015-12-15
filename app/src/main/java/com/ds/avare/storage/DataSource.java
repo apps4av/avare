@@ -180,6 +180,15 @@ public class DataSource {
     }
 
     /**
+     *
+     * @param name
+     * @return
+     */
+    public Coordinate findLonLatMetar(String name) {
+        return dbHelper.findLonLatMetar(name);
+    }
+
+    /**
      * 
      * @param name
      * @param type

@@ -3,6 +3,7 @@ package com.ds.avare.adsb;
 import android.graphics.Color;
 import android.util.SparseArray;
 
+import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.utils.Helper;
@@ -124,6 +125,10 @@ public class Traffic {
                 continue;
             }
 
+            if(!isOnScreen(ctx.origin, t.mLat, t.mLon)) {
+                continue;
+            }
+
             /*
              * Make traffic line and info
              */
@@ -171,5 +176,22 @@ public class Traffic {
 
 
     }
-    
+
+    /*
+     * Determine if shape belong to a screen based on Screen longitude and latitude
+     * and shape max/min longitude latitude
+     */
+    public static boolean isOnScreen(Origin origin, double lat, double lon) {
+
+        double maxLatScreen = origin.getLatScreenTop();
+        double minLatScreen = origin.getLatScreenBot();
+        double minLonScreen = origin.getLonScreenLeft();
+        double maxLonScreen = origin.getLonScreenRight();
+
+        boolean isInLat = lat < maxLatScreen && lat > minLatScreen;
+        boolean isInLon = lon < maxLonScreen && lon > minLonScreen;
+        return isInLat && isInLon;
+    }
+
+
 }

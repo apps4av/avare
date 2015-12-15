@@ -1592,6 +1592,35 @@ public class DataBaseHelper  {
     }
 
     /**
+     * Find the lat/lon of an airport
+     * @param name
+     * @return
+     */
+    public Coordinate findLonLatMetar(String name) {
+
+        name = name.replaceAll("^K", ""); // FAA database does not have K in it
+        /*
+         * Find with sqlite query
+         */
+        String qry = "select * from " + TABLE_AIRPORTS +
+                " where " + LOCATION_ID_DB + "=='" + name + "';";
+        Cursor cursor = doQuery(qry, getMainDb());
+        Coordinate ret = null;
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    ret = new Coordinate(cursor.getDouble(LONGITUDE_COL), cursor.getDouble(LATITUDE_COL));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closes(cursor);
+        return ret;
+    }
+
+    /**
      * Search Minimums plates for this airport
      * @param airportId
      * @return Minimums

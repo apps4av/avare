@@ -14,18 +14,24 @@ package com.ds.avare.weather;
 import android.content.Context;
 import android.util.SparseArray;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.NexradImage;
 import com.ds.avare.adsb.NexradImageConus;
 import com.ds.avare.place.Destination;
+import com.ds.avare.position.Origin;
+import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.RateLimitedBackgroundQueue;
+import com.ds.avare.utils.WeatherHelper;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -45,17 +51,19 @@ public class AdsbWeatherCache {
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
     private Preferences mPref;
+    private RateLimitedBackgroundQueue mMetarQueue;
 
     /**
      * 
      */
-    public AdsbWeatherCache(Context context) {
+    public AdsbWeatherCache(Context context, StorageService service) {
         mPref = new Preferences(context);
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();
         mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
+        mMetarQueue = new RateLimitedBackgroundQueue(service);
         mNexradConus = new NexradImageConus();
     }
 
@@ -85,7 +93,8 @@ public class AdsbWeatherCache {
     public void putMetar(long time, String location, String data, String flightCategory) {
         if(!mPref.useAdsbWeather()) {
             return;
-        }    
+        }
+
         Metar m = new Metar();
         m.rawText = location + " " + data;
         m.stationId = location;
@@ -96,7 +105,61 @@ public class AdsbWeatherCache {
         m.flightCategory = flightCategory;
         m.timestamp = System.currentTimeMillis();
         mMetar.put(location, m);
+        mMetarQueue.insertInQueue(m); // This will slowly make a metar map
     }
+
+
+    /*
+ * Determine if shape belong to a screen based on Screen longitude and latitude
+ * and shape max/min longitude latitude
+ */
+    public static boolean isOnScreen(Origin origin, double lat, double lon) {
+
+        double maxLatScreen = origin.getLatScreenTop();
+        double minLatScreen = origin.getLatScreenBot();
+        double minLonScreen = origin.getLonScreenLeft();
+        double maxLonScreen = origin.getLonScreenRight();
+
+        boolean isInLat = lat < maxLatScreen && lat > minLatScreen;
+        boolean isInLon = lon < maxLonScreen && lon > minLonScreen;
+        return isInLat && isInLon;
+    }
+
+    /**
+     * Draw metar map from ADSB
+     * @param ctx
+     * @param map
+     * @param shouldDraw
+     */
+    public static void drawMetars(DrawingContext ctx, HashMap<String, Metar> map, boolean shouldDraw) {
+        if(0 == ctx.pref.showLayer() || (!shouldDraw) || (!ctx.pref.useAdsbWeather())) {
+            // This shows only for metar layer, and when adsb is used
+            return;
+        }
+
+        Set<String> keys = map.keySet();
+        for(String key : keys) {
+            Metar m = map.get(key);
+            if(!isOnScreen(ctx.origin, m.lat, m.lon)) {
+                continue;
+            }
+            float x = (float)ctx.origin.getOffsetX(m.lon);
+            float y = (float)ctx.origin.getOffsetY(m.lat);
+            ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
+            ctx.paint.setAlpha(ctx.pref.showLayer());
+            ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
+            ctx.paint.setAlpha(255);
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public HashMap<String, Metar> getAllMetars() {
+        return mMetar;
+    }
+
 
     /**
      * 

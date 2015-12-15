@@ -62,6 +62,7 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -712,7 +713,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         mService.getAdsbWeather().getNexradConus(), null == mPointProjection);
             }
             else if (mLayerType.equals("METAR")) {
-                // Todo: Create METAR map from flight category.
+                AdsbWeatherCache.drawMetars(ctx, mService.getAdsbWeather().getAllMetars(), null == mPointProjection);
             }
         }
         else {

@@ -314,7 +314,7 @@ public class StorageService extends Service {
         mAfdIndex = 0;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
-        mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext());
+        mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mElevTile = new ElevationTile(getApplicationContext());
