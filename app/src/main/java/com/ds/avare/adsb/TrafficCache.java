@@ -26,7 +26,7 @@ public class TrafficCache {
     
     public TrafficCache() { 
         mTraffic = new SparseArray<Traffic>();
-        mOwnAltitude = 0;
+        mOwnAltitude = -Integer.MAX_VALUE;
     }
     
     /**

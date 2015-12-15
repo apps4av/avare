@@ -140,13 +140,24 @@ public class Traffic {
              */
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
-            // filter
-            int diff = (int)(t.mAltitude - altitude);
-            if(Math.abs(diff) > filterAltitude) {
-                continue;
-            }
+            int diff;
+            String text;
 
-            String text = (diff > 0 ? "+" : "") + diff + "'";
+            if(altitude == -Integer.MAX_VALUE) {
+                // This is when we do not have our own altitude set with ownship
+                diff = (int)t.mAltitude;
+                text = diff + "PA'"; // show that this is pressure altitude
+                // do not filter when own PA is not known
+            }
+            else {
+                // Own PA is known, show height difference
+                diff = (int)(t.mAltitude - altitude);
+                text = (diff > 0 ? "+" : "") + diff + "'";
+                // filter
+                if(Math.abs(diff) > filterAltitude) {
+                    continue;
+                }
+            }
 
 
             float radius = ctx.dip2pix * 8;
