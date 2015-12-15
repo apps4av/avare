@@ -42,8 +42,6 @@ import java.util.TimeZone;
  */
 public class AdsbWeatherCache {
 
-    private static final long EXPIRY_PERIOD = 1000L * 60L * 60L;
-    
     private HashMap<String, Taf> mTaf;
     private HashMap<String, Metar> mMetar;
     private HashMap<String, Airep> mAirep;
@@ -67,7 +65,6 @@ public class AdsbWeatherCache {
         mNexradConus = new NexradImageConus();
     }
 
-    
     /**
      * 
      * @return
@@ -159,7 +156,6 @@ public class AdsbWeatherCache {
     public HashMap<String, Metar> getAllMetars() {
         return mMetar;
     }
-
 
     /**
      * 
@@ -374,10 +370,11 @@ public class AdsbWeatherCache {
     }
 
     /*
-     * ALL ADSB weather should be kaput after 1 hour / timeout of timestamp 
+     * ALL ADSB weather should be kaput after expiry
      */
     public void sweep() {
         long now = System.currentTimeMillis();
+        int expiry = mPref.getExpiryTime() * 60 * 1000;
 
         /*
          * Go at them one by one
@@ -391,7 +388,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mWinds.keySet()) {
             WindsAloft w = mWinds.get(key);
-            long diff = (now - w.timestamp) - (EXPIRY_PERIOD);
+            long diff = (now - w.timestamp) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -406,7 +403,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mTaf.keySet()) {
             Taf f = mTaf.get(key);
-            long diff = (now - f.timestamp) - (EXPIRY_PERIOD);
+            long diff = (now - f.timestamp) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -421,7 +418,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mMetar.keySet()) {
             Metar m = mMetar.get(key);
-            long diff = (now - m.timestamp) - (EXPIRY_PERIOD);
+            long diff = (now - m.timestamp) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -436,7 +433,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mAirep.keySet()) {
             Airep a = mAirep.get(key);
-            long diff = (now - a.timestamp) - (EXPIRY_PERIOD);
+            long diff = (now - a.timestamp) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -452,7 +449,7 @@ public class AdsbWeatherCache {
         SparseArray<NexradBitmap> img = mNexrad.getImages();
         for(int i = 0; i < img.size(); i++) {
             NexradBitmap n = img.valueAt(i);
-            long diff = (now - n.timestamp) - (EXPIRY_PERIOD);
+            long diff = (now - n.timestamp) - expiry;
             if(diff > 0) {
                 keyi.add(img.keyAt(i));
             }
