@@ -1097,4 +1097,14 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.PilotContact), "TEST PILOT 1-800-WX-BRIEF");
     }
 
+    public int getFuelTimerInterval() {
+        String interval = mPref.getString(mContext.getString(R.string.FuelTimerInterval), "30");
+        int intervalInt = 30;
+        try {
+            intervalInt = Integer.parseInt(interval);
+        } catch (Exception e) {
+
+        }
+        return intervalInt;
+    }
 }

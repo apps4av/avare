@@ -12,10 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.instruments;
 
-import java.util.Locale;
+import android.content.Context;
+
+import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -44,10 +47,9 @@ public class FuelTimer extends Observable {
 	
 	/**
 	 * ctor 
-	 * @param interval How many minutes to run the timer
 	 */
-	public FuelTimer(int interval) {
-		mInterval = interval;
+	public FuelTimer(Context ctx) {
+		mInterval = new Preferences(ctx).getFuelTimerInterval();
 		mCounting = false;
 		mObservers = new ArrayList<Observer>();
 		reset();

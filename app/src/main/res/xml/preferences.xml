@@ -172,6 +172,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="30"
+            android:entries="@array/FuelTimerValues"
+            android:entryValues="@array/FuelTimerValues"
+            android:key="@string/FuelTimerInterval"
+            android:summary="@string/FuelTimerSummary"
+            android:title="@string/FuelTimerLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefShowCDI"

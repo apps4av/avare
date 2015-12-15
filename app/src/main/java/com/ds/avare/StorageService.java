@@ -386,7 +386,7 @@ public class StorageService extends Service {
         
         // Declare a fuel tank switching timer. Default to 30
         // minutes per tank
-        mFuelTimer = new FuelTimer(30);
+        mFuelTimer = new FuelTimer(getApplicationContext());
         mUpTimer = new UpTimer();
 
         /*
