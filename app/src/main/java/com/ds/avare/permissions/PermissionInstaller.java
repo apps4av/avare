@@ -16,8 +16,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.ds.avare.R;
@@ -82,7 +84,18 @@ public class PermissionInstaller {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         // Request them from user
-                                                        act.requestPermissions(new String[]{permission}, REQUEST_CODE_ASK_PERMISSIONS);
+                                                        if(permission == Manifest.permission.WRITE_SETTINGS) {
+                                                            // This needs special handling
+                                                            if(!Settings.System.canWrite(act)) {
+                                                                Intent i = new Intent();
+                                                                i.setAction(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                                                                act.startActivity(i);
+                                                            }
+                                                        }
+                                                        else {
+                                                            // This is regular handling
+                                                            act.requestPermissions(new String[]{permission}, REQUEST_CODE_ASK_PERMISSIONS);
+                                                        }
                                                     }
                                                 })
                                         .setNegativeButton(act.getString(R.string.no),
