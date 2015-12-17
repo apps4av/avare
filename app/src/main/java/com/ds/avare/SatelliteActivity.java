@@ -31,6 +31,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.permissions.PermissionInstaller;
+import com.ds.avare.permissions.RequestPermission;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -160,6 +162,7 @@ public class SatelliteActivity extends Activity  {
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
+    @RequestPermission(permission = PermissionInstaller.PERMISSION_SETTINGS)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);
@@ -253,7 +256,7 @@ public class SatelliteActivity extends Activity  {
         super.onResume();
      
         Helper.setOrientationAndOn(this);
-        
+
         /*
          * Registering our receiver
          * Bind now.

@@ -30,6 +30,8 @@ import android.widget.TextView;
 import com.ds.avare.message.Helper;
 import com.ds.avare.message.Logger;
 import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.permissions.PermissionInstaller;
+import com.ds.avare.permissions.RequestPermission;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.PossibleEmail;
 
@@ -57,18 +59,19 @@ public class RegisterActivity extends Activity {
     private Spinner mEmailSpinner;
     private WebView mPrivacy;
     private Preferences mPref;
-    
-    
+
+
     /**
      * 
      */
+    @RequestPermission(permission = PermissionInstaller.PERMISSION_ACCOUNT)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         com.ds.avare.utils.Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
+
         setContentView(R.layout.activity_register);
-        
+
         mPref = new Preferences(this);
         
         // Check if Internet present

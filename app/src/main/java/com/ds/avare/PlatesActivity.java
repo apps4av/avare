@@ -38,6 +38,8 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
+import com.ds.avare.permissions.PermissionInstaller;
+import com.ds.avare.permissions.RequestPermission;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -241,6 +243,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     /**
      * 
      */
+    @RequestPermission(permission = PermissionInstaller.PERMISSION_LOCATION)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);

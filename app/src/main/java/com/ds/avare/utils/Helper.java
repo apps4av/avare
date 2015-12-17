@@ -26,6 +26,7 @@ import android.util.TypedValue;
 import android.view.WindowManager;
 
 import com.ds.avare.R;
+import com.ds.avare.permissions.PermissionInstaller;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
@@ -465,6 +466,9 @@ public class Helper {
         else {
             act.setTheme(android.R.style.Theme_Light);            
         }
+
+        // Check permissions
+        PermissionInstaller.processAnnotations(act);
     }
     
     /**
@@ -499,8 +503,7 @@ public class Helper {
          * Do not open keyboard automatically.
          */
         act.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-    }    
+    }
     
     /**
      * 
