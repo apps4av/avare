@@ -308,41 +308,41 @@ public class Download {
                          */
                         mCode = "code invalid overwrite folder";
                         File dir = new File(fn.substring(0, fn.lastIndexOf("/")));
-                        if(!folder.equals(lastName)) {
-                            
-                            if(dir.exists()) {
-                                /*
-                                 * Delete older plates
-                                 */
-                                if(folder.equals("plates")) {
-                                    mCode = "code unable to delete/replace plates";
-                                    Helper.deleteDir(dir);
-                                }
 
-                                /*
-                                 * Delete older minimums
-                                 */
-                                else if(folder.equals("minimums")) {
-                                    mCode = "code unable to delete/replace minimums";
-                                    Helper.deleteDir(dir);
-                                }
+                        if(!lastName.equals(dir.getCanonicalPath())) {
+                            /*
+                             * Delete older plates
+                             */
+                            if(folder.equals("plates") && dir.exists()) {
+                                mCode = "code unable to delete/replace plates";
+                                Helper.deleteDir(dir);
+                            }
 
-                                /*
-                                 * Delete older A/FD
-                                 */
-                                else if(folder.equals("afd")) {
-                                    mCode = "code unable to delete/replace A/FD";
-                                    String newRegion = (tokens[1].split("_"))[0];
-                                    String[] info = dir.list();
-                                    for(int i = 0; i < info.length; i++) {
-                                        if(info[i].startsWith(newRegion)) {
-                                            (new File(path + "/afd/" + info[i])).delete();
-                                        }
+                            /*
+                             * Delete older minimums
+                             */
+                            else if(folder.equals("minimums") && dir.exists()) {
+                                mCode = "code unable to delete/replace minimums";
+                                Helper.deleteDir(dir);
+                            }
+
+                            /*
+                             * Delete older A/FD
+                             */
+                            else if(folder.equals("afd") && dir.exists()) {
+                                mCode = "code unable to delete/replace A/FD";
+                                String newRegion = (tokens[1].split("_"))[0];
+                                String[] info = dir.list();
+                                for(int i = 0; i < info.length; i++) {
+                                    if(info[i].startsWith(newRegion)) {
+                                        (new File(path + "/afd/" + info[i])).delete();
                                     }
                                 }
                             }
-                            lastName = folder;
+
+                            lastName = dir.getCanonicalPath();
                         }
+
                         dir.mkdirs();
                         
                         
@@ -373,7 +373,7 @@ public class Download {
                         
                         mCode = "code unable to unzip file, disk full";
                         copyInputStream(zipFile.getInputStream(entry),
-                            new BufferedOutputStream(new FileOutputStream(path + "/" + entry.getName()), blocksize));
+                                new BufferedOutputStream(new FileOutputStream(path + "/" + entry.getName()), blocksize));
                         totalnum++;
                         newp = (int)(50 + totalnum * 50 / filenum);
                         if(lastp != newp) {
