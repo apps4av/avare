@@ -37,8 +37,6 @@ import com.ds.avare.adapters.ChartAdapter;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
-import com.ds.avare.permissions.PermissionInstaller;
-import com.ds.avare.permissions.RequestPermission;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
@@ -245,7 +243,6 @@ public class ChartsDownloadActivity extends Activity {
     public void onResume() {
         super.onResume();        
         Helper.setOrientationAndOn(this);
-        PermissionInstaller.processAnnotations(this);
 
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
