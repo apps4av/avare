@@ -19,9 +19,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +33,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.permissions.PermissionInstaller;
-import com.ds.avare.permissions.RequestPermission;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -162,7 +162,6 @@ public class SatelliteActivity extends Activity  {
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
-    @RequestPermission(permission = PermissionInstaller.PERMISSION_SETTINGS)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);
@@ -190,7 +189,17 @@ public class SatelliteActivity extends Activity  {
 			@Override
 			public void onStartTrackingTouch(SeekBar arg0) {
 				// TODO Auto-generated method stub
-			}
+                if (Build.VERSION.SDK_INT >= 23) {
+                    // Need special permission
+                    if (!Settings.System.canWrite(SatelliteActivity.this)) {
+                        Intent i = new Intent();
+                        i.setAction(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                        startActivity(i);
+                        return;
+                    }
+                }
+
+            }
 
 			@Override
 			public void onStopTrackingTouch(SeekBar arg0) {
@@ -200,7 +209,14 @@ public class SatelliteActivity extends Activity  {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 				boolean fromUser) {
-				if(fromUser) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (!Settings.System.canWrite(SatelliteActivity.this)) {
+                        return;
+                    }
+                }
+
+                if(fromUser) {
+
 					/*
 					 * Manually set brightness
 					 */

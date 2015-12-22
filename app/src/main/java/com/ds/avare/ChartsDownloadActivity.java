@@ -94,7 +94,6 @@ public class ChartsDownloadActivity extends Activity {
     /**
      * 
      */
-    @RequestPermission(permission = PermissionInstaller.PERMISSION_EXTERNAL_STORAGE)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);
