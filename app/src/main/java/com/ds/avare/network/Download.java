@@ -92,10 +92,11 @@ public class Download {
      * @param path
      * @param filename
      */
-    public void start(String path, String filename) {
+    public void start(String path, String filename, boolean isStatic) {
         mDt = new DownloadTask();
         mDt.path = path;
         mDt.mName = filename;
+        mDt.mStatic = isStatic;
         mThread = new Thread(mDt);
         mThread.start();
     }
@@ -109,7 +110,8 @@ public class Download {
 
         String path;
         String mName;
-        
+        boolean mStatic;
+
         /**
          * 
          * @param in
@@ -193,7 +195,7 @@ public class Download {
                 mCode = "code unable to get zipped file name";
                 String zipfile = path + "/" + mName + ".zip";
                 mCode = "code unable to get network file name ";
-                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot);
+                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot, mStatic);
 
                 /* 
                  * Download the file

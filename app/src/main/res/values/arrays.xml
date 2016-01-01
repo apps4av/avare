@@ -29,7 +29,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Terrain</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
-        <item>World-Large Files</item>
+        <item>ONC Large Files</item>
+        <item>TPC Large Files</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -468,12 +469,1012 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ONC South Asia</item>
     </string-array>
 
+    <string-array name="resNameTPC">
+        <item>TPC b01d</item>
+        <item>TPC b02c</item>
+        <item>TPC b02d</item>
+        <item>TPC b03c</item>
+        <item>TPC b03d</item>
+        <item>TPC b04c</item>
+        <item>TPC b04d</item>
+        <item>TPC c01a</item>
+        <item>TPC c01b</item>
+        <item>TPC c01d</item>
+        <item>TPC c03a</item>
+        <item>TPC c03b</item>
+        <item>TPC c03c</item>
+        <item>TPC c04a</item>
+        <item>TPC c04b</item>
+        <item>TPC c04c</item>
+        <item>TPC c04d</item>
+        <item>TPC c05a</item>
+        <item>TPC c05b</item>
+        <item>TPC c05c</item>
+        <item>TPC c05d</item>
+        <item>TPC c06a</item>
+        <item>TPC c06b</item>
+        <item>TPC c06c</item>
+        <item>TPC c06d</item>
+        <item>TPC c07a</item>
+        <item>TPC c07b</item>
+        <item>TPC c07c</item>
+        <item>TPC c07d</item>
+        <item>TPC c08a</item>
+        <item>TPC c08b</item>
+        <item>TPC c08c</item>
+        <item>TPC c08d</item>
+        <item>TPC c09a</item>
+        <item>TPC c09d</item>
+        <item>TPC c13a</item>
+        <item>TPC c13d</item>
+        <item>TPC d02d</item>
+        <item>TPC d04a</item>
+        <item>TPC d04b</item>
+        <item>TPC d04c</item>
+        <item>TPC d04d</item>
+        <item>TPC d05a</item>
+        <item>TPC d05b</item>
+        <item>TPC d05c</item>
+        <item>TPC d05d</item>
+        <item>TPC d06a</item>
+        <item>TPC d06b</item>
+        <item>TPC d06c</item>
+        <item>TPC d06d</item>
+        <item>TPC d07a</item>
+        <item>TPC d07b</item>
+        <item>TPC d07c</item>
+        <item>TPC d07d</item>
+        <item>TPC d08a</item>
+        <item>TPC d08b</item>
+        <item>TPC d08c</item>
+        <item>TPC d08d</item>
+        <item>TPC d09a</item>
+        <item>TPC d09b</item>
+        <item>TPC d09d</item>
+        <item>TPC d10a</item>
+        <item>TPC d10b</item>
+        <item>TPC d11a</item>
+        <item>TPC d11b</item>
+        <item>TPC d11c</item>
+        <item>TPC d11d</item>
+        <item>TPC e02d</item>
+        <item>TPC e04a</item>
+        <item>TPC e04b</item>
+        <item>TPC e04c</item>
+        <item>TPC e04d</item>
+        <item>TPC e05a</item>
+        <item>TPC e05b</item>
+        <item>TPC e05c</item>
+        <item>TPC e05d</item>
+        <item>TPC e06a</item>
+        <item>TPC e06b</item>
+        <item>TPC e06c</item>
+        <item>TPC e06d</item>
+        <item>TPC e07a</item>
+        <item>TPC e07b</item>
+        <item>TPC e07c</item>
+        <item>TPC e07d</item>
+        <item>TPC e08a</item>
+        <item>TPC e08b</item>
+        <item>TPC e08c</item>
+        <item>TPC e08d</item>
+        <item>TPC e09a</item>
+        <item>TPC e09b</item>
+        <item>TPC e09c</item>
+        <item>TPC e09d</item>
+        <item>TPC e10a</item>
+        <item>TPC e10b</item>
+        <item>TPC e10c</item>
+        <item>TPC e10d</item>
+        <item>TPC e11a</item>
+        <item>TPC e11b</item>
+        <item>TPC e12a</item>
+        <item>TPC f01b</item>
+        <item>TPC f01d</item>
+        <item>TPC f02a</item>
+        <item>TPC f02b</item>
+        <item>TPC f02c</item>
+        <item>TPC f04a</item>
+        <item>TPC f04b</item>
+        <item>TPC f04c</item>
+        <item>TPC f04d</item>
+        <item>TPC f05a</item>
+        <item>TPC f05b</item>
+        <item>TPC f05c</item>
+        <item>TPC f05d</item>
+        <item>TPC f06a</item>
+        <item>TPC f06b</item>
+        <item>TPC f06c</item>
+        <item>TPC f06d</item>
+        <item>TPC f07a</item>
+        <item>TPC f07b</item>
+        <item>TPC f07c</item>
+        <item>TPC f07d</item>
+        <item>TPC f08a</item>
+        <item>TPC f08b</item>
+        <item>TPC f08c</item>
+        <item>TPC f08d</item>
+        <item>TPC f10d</item>
+        <item>TPC f11a</item>
+        <item>TPC f16a</item>
+        <item>TPC f16b</item>
+        <item>TPC f16c</item>
+        <item>TPC f16d</item>
+        <item>TPC f17a</item>
+        <item>TPC f17b</item>
+        <item>TPC f17c</item>
+        <item>TPC f17d</item>
+        <item>TPC f18a</item>
+        <item>TPC f18b</item>
+        <item>TPC f18c</item>
+        <item>TPC f18d</item>
+        <item>TPC f19a</item>
+        <item>TPC f19b</item>
+        <item>TPC f19c</item>
+        <item>TPC f19d</item>
+        <item>TPC g01a</item>
+        <item>TPC g01b</item>
+        <item>TPC g01c</item>
+        <item>TPC g01d</item>
+        <item>TPC g02a</item>
+        <item>TPC g02b</item>
+        <item>TPC g02c</item>
+        <item>TPC g02d</item>
+        <item>TPC g03a</item>
+        <item>TPC g03b</item>
+        <item>TPC g03c</item>
+        <item>TPC g03d</item>
+        <item>TPC g04a</item>
+        <item>TPC g04b</item>
+        <item>TPC g05a</item>
+        <item>TPC g05b</item>
+        <item>TPC g05c</item>
+        <item>TPC g05d</item>
+        <item>TPC g06a</item>
+        <item>TPC g06b</item>
+        <item>TPC g06c</item>
+        <item>TPC g06d</item>
+        <item>TPC g07a</item>
+        <item>TPC g07b</item>
+        <item>TPC g07c</item>
+        <item>TPC g07d</item>
+        <item>TPC g08a</item>
+        <item>TPC g08b</item>
+        <item>TPC g08c</item>
+        <item>TPC g08d</item>
+        <item>TPC g09a</item>
+        <item>TPC g09b</item>
+        <item>TPC g09c</item>
+        <item>TPC g09d</item>
+        <item>TPC g10a</item>
+        <item>TPC g10b</item>
+        <item>TPC g10c</item>
+        <item>TPC g10d</item>
+        <item>TPC g11a</item>
+        <item>TPC g11b</item>
+        <item>TPC g11c</item>
+        <item>TPC g11d</item>
+        <item>TPC g18a</item>
+        <item>TPC g18b</item>
+        <item>TPC g18c</item>
+        <item>TPC g18r</item>
+        <item>TPC g19a</item>
+        <item>TPC g19b</item>
+        <item>TPC g19c</item>
+        <item>TPC g19d</item>
+        <item>TPC g20a</item>
+        <item>TPC g20b</item>
+        <item>TPC g20c</item>
+        <item>TPC g21a</item>
+        <item>TPC g21b</item>
+        <item>TPC g21c</item>
+        <item>TPC g21d</item>
+        <item>TPC g22c</item>
+        <item>TPC g24b</item>
+        <item>TPC g25c</item>
+        <item>TPC h01a</item>
+        <item>TPC h01b</item>
+        <item>TPC h01c</item>
+        <item>TPC h01d</item>
+        <item>TPC h02a</item>
+        <item>TPC h02b</item>
+        <item>TPC h02c</item>
+        <item>TPC h02d</item>
+        <item>TPC h03a</item>
+        <item>TPC h03b</item>
+        <item>TPC h03c</item>
+        <item>TPC h03d</item>
+        <item>TPC h04a</item>
+        <item>TPC h04b</item>
+        <item>TPC h04c</item>
+        <item>TPC h04d</item>
+        <item>TPC h07a</item>
+        <item>TPC h07b</item>
+        <item>TPC h07c</item>
+        <item>TPC h07d</item>
+        <item>TPC h08a</item>
+        <item>TPC h08b</item>
+        <item>TPC h08c</item>
+        <item>TPC h08d</item>
+        <item>TPC h09a</item>
+        <item>TPC h09b</item>
+        <item>TPC h09c</item>
+        <item>TPC h09d</item>
+        <item>TPC h10a</item>
+        <item>TPC h10b</item>
+        <item>TPC h10c</item>
+        <item>TPC h10d</item>
+        <item>TPC h11a</item>
+        <item>TPC h11b</item>
+        <item>TPC h11c</item>
+        <item>TPC h11d</item>
+        <item>TPC h12a</item>
+        <item>TPC h12b</item>
+        <item>TPC h12c</item>
+        <item>TPC h12d</item>
+        <item>TPC h14a</item>
+        <item>TPC h14d</item>
+        <item>TPC h15d</item>
+        <item>TPC h22a</item>
+        <item>TPC h22b</item>
+        <item>TPC h22c</item>
+        <item>TPC h23a</item>
+        <item>TPC h23b</item>
+        <item>TPC h23d</item>
+        <item>TPC h24a</item>
+        <item>TPC h24b</item>
+        <item>TPC h25a</item>
+        <item>TPC h25c</item>
+        <item>TPC h25d</item>
+        <item>TPC j01b</item>
+        <item>TPC j01c</item>
+        <item>TPC j03a</item>
+        <item>TPC j03b</item>
+        <item>TPC j03c</item>
+        <item>TPC j03d</item>
+        <item>TPC j04a</item>
+        <item>TPC j04b</item>
+        <item>TPC j04c</item>
+        <item>TPC j04d</item>
+        <item>TPC j05a</item>
+        <item>TPC j05b</item>
+        <item>TPC j05c</item>
+        <item>TPC j05d</item>
+        <item>TPC j08a</item>
+        <item>TPC j08b</item>
+        <item>TPC j08c</item>
+        <item>TPC j09a</item>
+        <item>TPC j09b</item>
+        <item>TPC j09c</item>
+        <item>TPC j09d</item>
+        <item>TPC j10a</item>
+        <item>TPC j10b</item>
+        <item>TPC j10c</item>
+        <item>TPC j10d</item>
+        <item>TPC j11a</item>
+        <item>TPC j11b</item>
+        <item>TPC j11c</item>
+        <item>TPC j11d</item>
+        <item>TPC j12a</item>
+        <item>TPC j12b</item>
+        <item>TPC j12c</item>
+        <item>TPC j14a</item>
+        <item>TPC j14b</item>
+        <item>TPC j14c</item>
+        <item>TPC j19c</item>
+        <item>TPC j24a</item>
+        <item>TPC j24b</item>
+        <item>TPC j24c</item>
+        <item>TPC j24d</item>
+        <item>TPC j25a</item>
+        <item>TPC j25b</item>
+        <item>TPC j25d</item>
+        <item>TPC j26a</item>
+        <item>TPC j26b</item>
+        <item>TPC j26c</item>
+        <item>TPC j26d</item>
+        <item>TPC j27a</item>
+        <item>TPC j27c</item>
+        <item>TPC j27d</item>
+        <item>TPC k00a</item>
+        <item>TPC k00b</item>
+        <item>TPC k00c</item>
+        <item>TPC k01a</item>
+        <item>TPC k01b</item>
+        <item>TPC k01c</item>
+        <item>TPC k01d</item>
+        <item>TPC k02a</item>
+        <item>TPC k02b</item>
+        <item>TPC k02c</item>
+        <item>TPC k02d</item>
+        <item>TPC k03a</item>
+        <item>TPC k03b</item>
+        <item>TPC k03c</item>
+        <item>TPC k03d</item>
+        <item>TPC k04a</item>
+        <item>TPC k04b</item>
+        <item>TPC k04c</item>
+        <item>TPC k04d</item>
+        <item>TPC k05a</item>
+        <item>TPC k05b</item>
+        <item>TPC k05c</item>
+        <item>TPC k05d</item>
+        <item>TPC k08a</item>
+        <item>TPC k08b</item>
+        <item>TPC k08c</item>
+        <item>TPC k08d</item>
+        <item>TPC k09a</item>
+        <item>TPC k09b</item>
+        <item>TPC k09c</item>
+        <item>TPC k09d</item>
+        <item>TPC k10a</item>
+        <item>TPC k10b</item>
+        <item>TPC k10c</item>
+        <item>TPC k11b</item>
+        <item>TPC k11c</item>
+        <item>TPC k11d</item>
+        <item>TPC k13b</item>
+        <item>TPC k13d</item>
+        <item>TPC k14d</item>
+        <item>TPC k15c</item>
+        <item>TPC k15d</item>
+        <item>TPC k25a</item>
+        <item>TPC k25b</item>
+        <item>TPC k25c</item>
+        <item>TPC k26a</item>
+        <item>TPC k26b</item>
+        <item>TPC k26c</item>
+        <item>TPC k26d</item>
+        <item>TPC k27a</item>
+        <item>TPC k27b</item>
+        <item>TPC k27c</item>
+        <item>TPC k27d</item>
+        <item>TPC l01a</item>
+        <item>TPC l01b</item>
+        <item>TPC l02b</item>
+        <item>TPC l03a</item>
+        <item>TPC l03b</item>
+        <item>TPC l04b</item>
+        <item>TPC l04c</item>
+        <item>TPC l05a</item>
+        <item>TPC l05b</item>
+        <item>TPC l05c</item>
+        <item>TPC l06a</item>
+        <item>TPC l06d</item>
+        <item>TPC l08a</item>
+        <item>TPC l08b</item>
+        <item>TPC l08d</item>
+        <item>TPC l10a</item>
+        <item>TPC l12a</item>
+        <item>TPC l12b</item>
+        <item>TPC l12c</item>
+        <item>TPC l12d</item>
+        <item>TPC l13a</item>
+        <item>TPC l14b</item>
+        <item>TPC l15a</item>
+        <item>TPC l16a</item>
+        <item>TPC l16d</item>
+        <item>TPC l25b</item>
+        <item>TPC l26a</item>
+        <item>TPC l26b</item>
+        <item>TPC l26c</item>
+        <item>TPC l26d</item>
+        <item>TPC l27a</item>
+        <item>TPC l27b</item>
+        <item>TPC l27c</item>
+        <item>TPC l28b</item>
+        <item>TPC l28c</item>
+        <item>TPC l28d</item>
+        <item>TPC m02b</item>
+        <item>TPC m03b</item>
+        <item>TPC m03c</item>
+        <item>TPC m05a</item>
+        <item>TPC m06c</item>
+        <item>TPC m07a</item>
+        <item>TPC m07d</item>
+        <item>TPC m08d</item>
+        <item>TPC m16a</item>
+        <item>TPC m16b</item>
+        <item>TPC m16c</item>
+        <item>TPC m25a</item>
+        <item>TPC m25b</item>
+        <item>TPC m25c</item>
+        <item>TPC m25d</item>
+        <item>TPC m26a</item>
+        <item>TPC m26b</item>
+        <item>TPC m27c</item>
+        <item>TPC m28a</item>
+        <item>TPC m28b</item>
+        <item>TPC m28c</item>
+        <item>TPC m28d</item>
+        <item>TPC n01a</item>
+        <item>TPC n01c</item>
+        <item>TPC n03b</item>
+        <item>TPC n03c</item>
+        <item>TPC n04a</item>
+        <item>TPC n04d</item>
+        <item>TPC n06a</item>
+        <item>TPC n06b</item>
+        <item>TPC n06c</item>
+        <item>TPC n06d</item>
+        <item>TPC n07a</item>
+        <item>TPC n07d</item>
+        <item>TPC n17b</item>
+        <item>TPC n17c</item>
+        <item>TPC n25a</item>
+        <item>TPC n25b</item>
+        <item>TPC n25c</item>
+        <item>TPC n25d</item>
+        <item>TPC n26a</item>
+        <item>TPC n26c</item>
+        <item>TPC n26d</item>
+        <item>TPC n27a</item>
+        <item>TPC n27c</item>
+        <item>TPC n28a</item>
+        <item>TPC n28b</item>
+        <item>TPC n28c</item>
+        <item>TPC n28d</item>
+        <item>TPC p03b</item>
+        <item>TPC p06a</item>
+        <item>TPC p06b</item>
+        <item>TPC p06c</item>
+        <item>TPC p06d</item>
+        <item>TPC p07b</item>
+        <item>TPC p07d</item>
+        <item>TPC p16a</item>
+        <item>TPC p16b</item>
+        <item>TPC p16c</item>
+        <item>TPC p16d</item>
+        <item>TPC p17b</item>
+        <item>TPC p26a</item>
+        <item>TPC p26b</item>
+        <item>TPC p26c</item>
+        <item>TPC p26d</item>
+        <item>TPC p27a</item>
+        <item>TPC p27b</item>
+        <item>TPC p27c</item>
+        <item>TPC p27d</item>
+        <item>TPC p28a</item>
+        <item>TPC p28b</item>
+        <item>TPC p28c</item>
+        <item>TPC p28d</item>
+        <item>TPC p29c</item>
+        <item>TPC q04a</item>
+        <item>TPC q04b</item>
+        <item>TPC q04c</item>
+        <item>TPC q04d</item>
+        <item>TPC q05a</item>
+        <item>TPC q05b</item>
+        <item>TPC q05c</item>
+        <item>TPC q05d</item>
+        <item>TPC q06b</item>
+        <item>TPC q17c</item>
+        <item>TPC q26b</item>
+        <item>TPC q26c</item>
+        <item>TPC q27a</item>
+        <item>TPC q27b</item>
+        <item>TPC q27c</item>
+        <item>TPC q28a</item>
+        <item>TPC q28b</item>
+        <item>TPC q28c</item>
+        <item>TPC q28d</item>
+        <item>TPC r04a</item>
+        <item>TPC r04b</item>
+        <item>TPC r15a</item>
+        <item>TPC r15c</item>
+        <item>TPC r15d</item>
+        <item>TPC s13a</item>
+        <item>TPC s13b</item>
+        <item>TPC s13d</item>
+        <item>TPC t18a</item>
+    </string-array>
+
     <string-array name="resFilesONC">
         <item>ONCCanadaE</item>
         <item>ONCCanadaW</item>
         <item>ONCEuropeW</item>
         <item>ONCNewZealand</item>
         <item>ONCSouthAsia</item>
+    </string-array>
+
+    <string-array name="resFilesTPC">
+        <item>TPC_b01d</item>
+        <item>TPC_b02c</item>
+        <item>TPC_b02d</item>
+        <item>TPC_b03c</item>
+        <item>TPC_b03d</item>
+        <item>TPC_b04c</item>
+        <item>TPC_b04d</item>
+        <item>TPC_c01a</item>
+        <item>TPC_c01b</item>
+        <item>TPC_c01d</item>
+        <item>TPC_c03a</item>
+        <item>TPC_c03b</item>
+        <item>TPC_c03c</item>
+        <item>TPC_c04a</item>
+        <item>TPC_c04b</item>
+        <item>TPC_c04c</item>
+        <item>TPC_c04d</item>
+        <item>TPC_c05a</item>
+        <item>TPC_c05b</item>
+        <item>TPC_c05c</item>
+        <item>TPC_c05d</item>
+        <item>TPC_c06a</item>
+        <item>TPC_c06b</item>
+        <item>TPC_c06c</item>
+        <item>TPC_c06d</item>
+        <item>TPC_c07a</item>
+        <item>TPC_c07b</item>
+        <item>TPC_c07c</item>
+        <item>TPC_c07d</item>
+        <item>TPC_c08a</item>
+        <item>TPC_c08b</item>
+        <item>TPC_c08c</item>
+        <item>TPC_c08d</item>
+        <item>TPC_c09a</item>
+        <item>TPC_c09d</item>
+        <item>TPC_c13a</item>
+        <item>TPC_c13d</item>
+        <item>TPC_d02d</item>
+        <item>TPC_d04a</item>
+        <item>TPC_d04b</item>
+        <item>TPC_d04c</item>
+        <item>TPC_d04d</item>
+        <item>TPC_d05a</item>
+        <item>TPC_d05b</item>
+        <item>TPC_d05c</item>
+        <item>TPC_d05d</item>
+        <item>TPC_d06a</item>
+        <item>TPC_d06b</item>
+        <item>TPC_d06c</item>
+        <item>TPC_d06d</item>
+        <item>TPC_d07a</item>
+        <item>TPC_d07b</item>
+        <item>TPC_d07c</item>
+        <item>TPC_d07d</item>
+        <item>TPC_d08a</item>
+        <item>TPC_d08b</item>
+        <item>TPC_d08c</item>
+        <item>TPC_d08d</item>
+        <item>TPC_d09a</item>
+        <item>TPC_d09b</item>
+        <item>TPC_d09d</item>
+        <item>TPC_d10a</item>
+        <item>TPC_d10b</item>
+        <item>TPC_d11a</item>
+        <item>TPC_d11b</item>
+        <item>TPC_d11c</item>
+        <item>TPC_d11d</item>
+        <item>TPC_e02d</item>
+        <item>TPC_e04a</item>
+        <item>TPC_e04b</item>
+        <item>TPC_e04c</item>
+        <item>TPC_e04d</item>
+        <item>TPC_e05a</item>
+        <item>TPC_e05b</item>
+        <item>TPC_e05c</item>
+        <item>TPC_e05d</item>
+        <item>TPC_e06a</item>
+        <item>TPC_e06b</item>
+        <item>TPC_e06c</item>
+        <item>TPC_e06d</item>
+        <item>TPC_e07a</item>
+        <item>TPC_e07b</item>
+        <item>TPC_e07c</item>
+        <item>TPC_e07d</item>
+        <item>TPC_e08a</item>
+        <item>TPC_e08b</item>
+        <item>TPC_e08c</item>
+        <item>TPC_e08d</item>
+        <item>TPC_e09a</item>
+        <item>TPC_e09b</item>
+        <item>TPC_e09c</item>
+        <item>TPC_e09d</item>
+        <item>TPC_e10a</item>
+        <item>TPC_e10b</item>
+        <item>TPC_e10c</item>
+        <item>TPC_e10d</item>
+        <item>TPC_e11a</item>
+        <item>TPC_e11b</item>
+        <item>TPC_e12a</item>
+        <item>TPC_f01b</item>
+        <item>TPC_f01d</item>
+        <item>TPC_f02a</item>
+        <item>TPC_f02b</item>
+        <item>TPC_f02c</item>
+        <item>TPC_f04a</item>
+        <item>TPC_f04b</item>
+        <item>TPC_f04c</item>
+        <item>TPC_f04d</item>
+        <item>TPC_f05a</item>
+        <item>TPC_f05b</item>
+        <item>TPC_f05c</item>
+        <item>TPC_f05d</item>
+        <item>TPC_f06a</item>
+        <item>TPC_f06b</item>
+        <item>TPC_f06c</item>
+        <item>TPC_f06d</item>
+        <item>TPC_f07a</item>
+        <item>TPC_f07b</item>
+        <item>TPC_f07c</item>
+        <item>TPC_f07d</item>
+        <item>TPC_f08a</item>
+        <item>TPC_f08b</item>
+        <item>TPC_f08c</item>
+        <item>TPC_f08d</item>
+        <item>TPC_f10d</item>
+        <item>TPC_f11a</item>
+        <item>TPC_f16a</item>
+        <item>TPC_f16b</item>
+        <item>TPC_f16c</item>
+        <item>TPC_f16d</item>
+        <item>TPC_f17a</item>
+        <item>TPC_f17b</item>
+        <item>TPC_f17c</item>
+        <item>TPC_f17d</item>
+        <item>TPC_f18a</item>
+        <item>TPC_f18b</item>
+        <item>TPC_f18c</item>
+        <item>TPC_f18d</item>
+        <item>TPC_f19a</item>
+        <item>TPC_f19b</item>
+        <item>TPC_f19c</item>
+        <item>TPC_f19d</item>
+        <item>TPC_g01a</item>
+        <item>TPC_g01b</item>
+        <item>TPC_g01c</item>
+        <item>TPC_g01d</item>
+        <item>TPC_g02a</item>
+        <item>TPC_g02b</item>
+        <item>TPC_g02c</item>
+        <item>TPC_g02d</item>
+        <item>TPC_g03a</item>
+        <item>TPC_g03b</item>
+        <item>TPC_g03c</item>
+        <item>TPC_g03d</item>
+        <item>TPC_g04a</item>
+        <item>TPC_g04b</item>
+        <item>TPC_g05a</item>
+        <item>TPC_g05b</item>
+        <item>TPC_g05c</item>
+        <item>TPC_g05d</item>
+        <item>TPC_g06a</item>
+        <item>TPC_g06b</item>
+        <item>TPC_g06c</item>
+        <item>TPC_g06d</item>
+        <item>TPC_g07a</item>
+        <item>TPC_g07b</item>
+        <item>TPC_g07c</item>
+        <item>TPC_g07d</item>
+        <item>TPC_g08a</item>
+        <item>TPC_g08b</item>
+        <item>TPC_g08c</item>
+        <item>TPC_g08d</item>
+        <item>TPC_g09a</item>
+        <item>TPC_g09b</item>
+        <item>TPC_g09c</item>
+        <item>TPC_g09d</item>
+        <item>TPC_g10a</item>
+        <item>TPC_g10b</item>
+        <item>TPC_g10c</item>
+        <item>TPC_g10d</item>
+        <item>TPC_g11a</item>
+        <item>TPC_g11b</item>
+        <item>TPC_g11c</item>
+        <item>TPC_g11d</item>
+        <item>TPC_g18a</item>
+        <item>TPC_g18b</item>
+        <item>TPC_g18c</item>
+        <item>TPC_g18r</item>
+        <item>TPC_g19a</item>
+        <item>TPC_g19b</item>
+        <item>TPC_g19c</item>
+        <item>TPC_g19d</item>
+        <item>TPC_g20a</item>
+        <item>TPC_g20b</item>
+        <item>TPC_g20c</item>
+        <item>TPC_g21a</item>
+        <item>TPC_g21b</item>
+        <item>TPC_g21c</item>
+        <item>TPC_g21d</item>
+        <item>TPC_g22c</item>
+        <item>TPC_g24b</item>
+        <item>TPC_g25c</item>
+        <item>TPC_h01a</item>
+        <item>TPC_h01b</item>
+        <item>TPC_h01c</item>
+        <item>TPC_h01d</item>
+        <item>TPC_h02a</item>
+        <item>TPC_h02b</item>
+        <item>TPC_h02c</item>
+        <item>TPC_h02d</item>
+        <item>TPC_h03a</item>
+        <item>TPC_h03b</item>
+        <item>TPC_h03c</item>
+        <item>TPC_h03d</item>
+        <item>TPC_h04a</item>
+        <item>TPC_h04b</item>
+        <item>TPC_h04c</item>
+        <item>TPC_h04d</item>
+        <item>TPC_h07a</item>
+        <item>TPC_h07b</item>
+        <item>TPC_h07c</item>
+        <item>TPC_h07d</item>
+        <item>TPC_h08a</item>
+        <item>TPC_h08b</item>
+        <item>TPC_h08c</item>
+        <item>TPC_h08d</item>
+        <item>TPC_h09a</item>
+        <item>TPC_h09b</item>
+        <item>TPC_h09c</item>
+        <item>TPC_h09d</item>
+        <item>TPC_h10a</item>
+        <item>TPC_h10b</item>
+        <item>TPC_h10c</item>
+        <item>TPC_h10d</item>
+        <item>TPC_h11a</item>
+        <item>TPC_h11b</item>
+        <item>TPC_h11c</item>
+        <item>TPC_h11d</item>
+        <item>TPC_h12a</item>
+        <item>TPC_h12b</item>
+        <item>TPC_h12c</item>
+        <item>TPC_h12d</item>
+        <item>TPC_h14a</item>
+        <item>TPC_h14d</item>
+        <item>TPC_h15d</item>
+        <item>TPC_h22a</item>
+        <item>TPC_h22b</item>
+        <item>TPC_h22c</item>
+        <item>TPC_h23a</item>
+        <item>TPC_h23b</item>
+        <item>TPC_h23d</item>
+        <item>TPC_h24a</item>
+        <item>TPC_h24b</item>
+        <item>TPC_h25a</item>
+        <item>TPC_h25c</item>
+        <item>TPC_h25d</item>
+        <item>TPC_j01b</item>
+        <item>TPC_j01c</item>
+        <item>TPC_j03a</item>
+        <item>TPC_j03b</item>
+        <item>TPC_j03c</item>
+        <item>TPC_j03d</item>
+        <item>TPC_j04a</item>
+        <item>TPC_j04b</item>
+        <item>TPC_j04c</item>
+        <item>TPC_j04d</item>
+        <item>TPC_j05a</item>
+        <item>TPC_j05b</item>
+        <item>TPC_j05c</item>
+        <item>TPC_j05d</item>
+        <item>TPC_j08a</item>
+        <item>TPC_j08b</item>
+        <item>TPC_j08c</item>
+        <item>TPC_j09a</item>
+        <item>TPC_j09b</item>
+        <item>TPC_j09c</item>
+        <item>TPC_j09d</item>
+        <item>TPC_j10a</item>
+        <item>TPC_j10b</item>
+        <item>TPC_j10c</item>
+        <item>TPC_j10d</item>
+        <item>TPC_j11a</item>
+        <item>TPC_j11b</item>
+        <item>TPC_j11c</item>
+        <item>TPC_j11d</item>
+        <item>TPC_j12a</item>
+        <item>TPC_j12b</item>
+        <item>TPC_j12c</item>
+        <item>TPC_j14a</item>
+        <item>TPC_j14b</item>
+        <item>TPC_j14c</item>
+        <item>TPC_j19c</item>
+        <item>TPC_j24a</item>
+        <item>TPC_j24b</item>
+        <item>TPC_j24c</item>
+        <item>TPC_j24d</item>
+        <item>TPC_j25a</item>
+        <item>TPC_j25b</item>
+        <item>TPC_j25d</item>
+        <item>TPC_j26a</item>
+        <item>TPC_j26b</item>
+        <item>TPC_j26c</item>
+        <item>TPC_j26d</item>
+        <item>TPC_j27a</item>
+        <item>TPC_j27c</item>
+        <item>TPC_j27d</item>
+        <item>TPC_k00a</item>
+        <item>TPC_k00b</item>
+        <item>TPC_k00c</item>
+        <item>TPC_k01a</item>
+        <item>TPC_k01b</item>
+        <item>TPC_k01c</item>
+        <item>TPC_k01d</item>
+        <item>TPC_k02a</item>
+        <item>TPC_k02b</item>
+        <item>TPC_k02c</item>
+        <item>TPC_k02d</item>
+        <item>TPC_k03a</item>
+        <item>TPC_k03b</item>
+        <item>TPC_k03c</item>
+        <item>TPC_k03d</item>
+        <item>TPC_k04a</item>
+        <item>TPC_k04b</item>
+        <item>TPC_k04c</item>
+        <item>TPC_k04d</item>
+        <item>TPC_k05a</item>
+        <item>TPC_k05b</item>
+        <item>TPC_k05c</item>
+        <item>TPC_k05d</item>
+        <item>TPC_k08a</item>
+        <item>TPC_k08b</item>
+        <item>TPC_k08c</item>
+        <item>TPC_k08d</item>
+        <item>TPC_k09a</item>
+        <item>TPC_k09b</item>
+        <item>TPC_k09c</item>
+        <item>TPC_k09d</item>
+        <item>TPC_k10a</item>
+        <item>TPC_k10b</item>
+        <item>TPC_k10c</item>
+        <item>TPC_k11b</item>
+        <item>TPC_k11c</item>
+        <item>TPC_k11d</item>
+        <item>TPC_k13b</item>
+        <item>TPC_k13d</item>
+        <item>TPC_k14d</item>
+        <item>TPC_k15c</item>
+        <item>TPC_k15d</item>
+        <item>TPC_k25a</item>
+        <item>TPC_k25b</item>
+        <item>TPC_k25c</item>
+        <item>TPC_k26a</item>
+        <item>TPC_k26b</item>
+        <item>TPC_k26c</item>
+        <item>TPC_k26d</item>
+        <item>TPC_k27a</item>
+        <item>TPC_k27b</item>
+        <item>TPC_k27c</item>
+        <item>TPC_k27d</item>
+        <item>TPC_l01a</item>
+        <item>TPC_l01b</item>
+        <item>TPC_l02b</item>
+        <item>TPC_l03a</item>
+        <item>TPC_l03b</item>
+        <item>TPC_l04b</item>
+        <item>TPC_l04c</item>
+        <item>TPC_l05a</item>
+        <item>TPC_l05b</item>
+        <item>TPC_l05c</item>
+        <item>TPC_l06a</item>
+        <item>TPC_l06d</item>
+        <item>TPC_l08a</item>
+        <item>TPC_l08b</item>
+        <item>TPC_l08d</item>
+        <item>TPC_l10a</item>
+        <item>TPC_l12a</item>
+        <item>TPC_l12b</item>
+        <item>TPC_l12c</item>
+        <item>TPC_l12d</item>
+        <item>TPC_l13a</item>
+        <item>TPC_l14b</item>
+        <item>TPC_l15a</item>
+        <item>TPC_l16a</item>
+        <item>TPC_l16d</item>
+        <item>TPC_l25b</item>
+        <item>TPC_l26a</item>
+        <item>TPC_l26b</item>
+        <item>TPC_l26c</item>
+        <item>TPC_l26d</item>
+        <item>TPC_l27a</item>
+        <item>TPC_l27b</item>
+        <item>TPC_l27c</item>
+        <item>TPC_l28b</item>
+        <item>TPC_l28c</item>
+        <item>TPC_l28d</item>
+        <item>TPC_m02b</item>
+        <item>TPC_m03b</item>
+        <item>TPC_m03c</item>
+        <item>TPC_m05a</item>
+        <item>TPC_m06c</item>
+        <item>TPC_m07a</item>
+        <item>TPC_m07d</item>
+        <item>TPC_m08d</item>
+        <item>TPC_m16a</item>
+        <item>TPC_m16b</item>
+        <item>TPC_m16c</item>
+        <item>TPC_m25a</item>
+        <item>TPC_m25b</item>
+        <item>TPC_m25c</item>
+        <item>TPC_m25d</item>
+        <item>TPC_m26a</item>
+        <item>TPC_m26b</item>
+        <item>TPC_m27c</item>
+        <item>TPC_m28a</item>
+        <item>TPC_m28b</item>
+        <item>TPC_m28c</item>
+        <item>TPC_m28d</item>
+        <item>TPC_n01a</item>
+        <item>TPC_n01c</item>
+        <item>TPC_n03b</item>
+        <item>TPC_n03c</item>
+        <item>TPC_n04a</item>
+        <item>TPC_n04d</item>
+        <item>TPC_n06a</item>
+        <item>TPC_n06b</item>
+        <item>TPC_n06c</item>
+        <item>TPC_n06d</item>
+        <item>TPC_n07a</item>
+        <item>TPC_n07d</item>
+        <item>TPC_n17b</item>
+        <item>TPC_n17c</item>
+        <item>TPC_n25a</item>
+        <item>TPC_n25b</item>
+        <item>TPC_n25c</item>
+        <item>TPC_n25d</item>
+        <item>TPC_n26a</item>
+        <item>TPC_n26c</item>
+        <item>TPC_n26d</item>
+        <item>TPC_n27a</item>
+        <item>TPC_n27c</item>
+        <item>TPC_n28a</item>
+        <item>TPC_n28b</item>
+        <item>TPC_n28c</item>
+        <item>TPC_n28d</item>
+        <item>TPC_p03b</item>
+        <item>TPC_p06a</item>
+        <item>TPC_p06b</item>
+        <item>TPC_p06c</item>
+        <item>TPC_p06d</item>
+        <item>TPC_p07b</item>
+        <item>TPC_p07d</item>
+        <item>TPC_p16a</item>
+        <item>TPC_p16b</item>
+        <item>TPC_p16c</item>
+        <item>TPC_p16d</item>
+        <item>TPC_p17b</item>
+        <item>TPC_p26a</item>
+        <item>TPC_p26b</item>
+        <item>TPC_p26c</item>
+        <item>TPC_p26d</item>
+        <item>TPC_p27a</item>
+        <item>TPC_p27b</item>
+        <item>TPC_p27c</item>
+        <item>TPC_p27d</item>
+        <item>TPC_p28a</item>
+        <item>TPC_p28b</item>
+        <item>TPC_p28c</item>
+        <item>TPC_p28d</item>
+        <item>TPC_p29c</item>
+        <item>TPC_q04a</item>
+        <item>TPC_q04b</item>
+        <item>TPC_q04c</item>
+        <item>TPC_q04d</item>
+        <item>TPC_q05a</item>
+        <item>TPC_q05b</item>
+        <item>TPC_q05c</item>
+        <item>TPC_q05d</item>
+        <item>TPC_q06b</item>
+        <item>TPC_q17c</item>
+        <item>TPC_q26b</item>
+        <item>TPC_q26c</item>
+        <item>TPC_q27a</item>
+        <item>TPC_q27b</item>
+        <item>TPC_q27c</item>
+        <item>TPC_q28a</item>
+        <item>TPC_q28b</item>
+        <item>TPC_q28c</item>
+        <item>TPC_q28d</item>
+        <item>TPC_r04a</item>
+        <item>TPC_r04b</item>
+        <item>TPC_r15a</item>
+        <item>TPC_r15c</item>
+        <item>TPC_r15d</item>
+        <item>TPC_s13a</item>
+        <item>TPC_s13b</item>
+        <item>TPC_s13d</item>
+        <item>TPC_t18a</item>
     </string-array>
 
     <string-array name="resFilesDatabase">
@@ -904,6 +1905,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Topographic</item>
         <item>Heli/Other</item>
         <item>ONC World</item>
+        <item>TPC World</item>
     </string-array>
 
     <string-array name="ChartFileExtesion">
@@ -917,6 +1919,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>.jpg</item>
         <item>.jpg</item>
         <item>.png</item>
+        <item>.jpg</item>
         <item>.jpg</item>
     </string-array>
     
@@ -932,6 +1935,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>8</item>
         <item>9</item>
         <item>10</item>
+        <item>11</item>
     </string-array>
 
     <string-array name="ChartMaxZooms">
@@ -946,6 +1950,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>10</item>
         <item>12</item>
         <item>9</item>
+        <item>10</item>
     </string-array>
     
     <string-array name="UnitsD">
