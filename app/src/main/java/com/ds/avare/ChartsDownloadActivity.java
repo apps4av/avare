@@ -487,7 +487,14 @@ public class ChartsDownloadActivity extends Activity {
                     if(mName.equals(getString(R.string.TFRs))) {
                         mService.getTFRFetcher().parse();
                     }
-    
+
+                    /*
+                     * If shape file fetched, parse it.
+                     */
+                    if(mName.startsWith("Shape")) {
+                        mService.getShapeFetcher().parse();
+                    }
+
                     if(mName.equals("weather")) {
                         mService.getInternetWeatherCache().parse(mService);
                         if(mPref.getLayerType().equals("METAR")) {
@@ -560,7 +567,11 @@ public class ChartsDownloadActivity extends Activity {
                     if(mName.equals(getString(R.string.TFRs))) {
                         mService.deleteTFRFetcher();
                     }
-    
+
+                    if(mName.startsWith("Shape")) {
+                        mService.deleteShapeFetcher();
+                    }
+
                     if(mName.equals("weather")) {
                         mService.deleteInternetWeatherCache();
                     }
