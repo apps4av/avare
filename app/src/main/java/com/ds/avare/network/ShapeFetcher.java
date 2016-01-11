@@ -83,7 +83,8 @@ public class ShapeFetcher {
             Thread.currentThread().setName("Shapes");
 
             try {
-                mShapes = ShapeFileShape.readFiles(new Preferences(mContext).mapsFolder());
+                Preferences pref = new Preferences(mContext);
+                mShapes = ShapeFileShape.readFile(pref.mapsFolder() + "/" + pref.getShapeFileName());
             }
             catch (Exception e) {
 

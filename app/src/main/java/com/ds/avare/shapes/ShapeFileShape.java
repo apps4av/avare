@@ -18,7 +18,9 @@ import org.nocrala.tools.gis.data.esri.shapefile.ShapeFileReader;
 import org.nocrala.tools.gis.data.esri.shapefile.exception.InvalidShapeFileException;
 import org.nocrala.tools.gis.data.esri.shapefile.shape.AbstractShape;
 import org.nocrala.tools.gis.data.esri.shapefile.shape.PointData;
+import org.nocrala.tools.gis.data.esri.shapefile.shape.shapes.AbstractPolyPlainShape;
 import org.nocrala.tools.gis.data.esri.shapefile.shape.shapes.PolygonShape;
+import org.nocrala.tools.gis.data.esri.shapefile.shape.shapes.PolylineShape;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,49 +46,50 @@ public class ShapeFileShape extends Shape {
 
     /**
      * Function to parse shape files
-     * @param path
+     * @param file
      * @return
      * @throws IOException
      * @throws InvalidShapeFileException
      */
-    public static LinkedList<ShapeFileShape> readFiles(String path) throws IOException,
+    public static LinkedList<ShapeFileShape> readFile(String file) throws IOException,
             InvalidShapeFileException {
 
         LinkedList<ShapeFileShape> ret = new LinkedList<ShapeFileShape>();
-        // List here shape files to be parsed
-        String files[] = {path + "/class_b.shp", path + "/class_c.shp", path + "/class_d.shp"};
 
-        for (String file : files) {
+        // for all shape files
+        FileInputStream is = new FileInputStream(file);
+        ShapeFileReader r = new ShapeFileReader(is);
 
-            // for all shape files
-            FileInputStream is = new FileInputStream(file);
-            ShapeFileReader r = new ShapeFileReader(is);
+        AbstractShape s;
+        while ((s = r.next()) != null) {
 
-            AbstractShape s;
-            while ((s = r.next()) != null) {
+            // make internal shape from shape file .shp
+            AbstractPolyPlainShape aShape = null;
+            switch (s.getShapeType()) {
+                // deal with polygons only at this time
+                case POLYGON:
+                    aShape = (PolygonShape)s;
+                    break;
+                case POLYLINE:
+                    aShape = (PolylineShape)s;
+                    break;
 
-                switch (s.getShapeType()) {
-                    // deal with polygons only at this time
-                    case POLYGON:
-                        // make internal shape from shape file .shp
-                        ShapeFileShape shape = new ShapeFileShape(file, new Date());
-
-                        PolygonShape aPolygon = (PolygonShape) s;
-                        for (int i = 0; i < aPolygon.getNumberOfParts(); i++) {
-                            PointData[] points = aPolygon.getPointsOfPart(i);
-                            for (PointData po : points) {
-                                shape.add(po.getX(), po.getY(), false);
-                            }
-                        }
-                        ret.add(shape);
-                        break;
-                    default:
-                        break;
+                default:
+                    break;
+            }
+            if(aShape != null) {
+                for (int i = 0; i < aShape.getNumberOfParts(); i++) {
+                    PointData[] points = aShape.getPointsOfPart(i);
+                    ShapeFileShape shape = new ShapeFileShape(file, new Date());
+                    for (PointData po : points) {
+                        shape.add(po.getX(), po.getY(), false);
+                    }
+                    ret.add(shape);
                 }
             }
-
-            is.close();
         }
+
+        is.close();
         return ret;
     }
 
@@ -104,12 +107,6 @@ public class ShapeFileShape extends Shape {
             return;
         }
 
-        // Shape files can overwhelm drawing. Only support couple of macro levels to include
-        // only a few shapes to draw
-        if(ctx.scale.getMacroFactor() > 1) {
-            return;
-        }
-
         /*
          * Draw all shapes. Choose color based on hash of name
          */
@@ -122,15 +119,7 @@ public class ShapeFileShape extends Shape {
                 if (null == todraw) {
                     continue;
                 }
-                if(todraw.getLabel().endsWith("class_b.shp")) {
-                    ctx.paint.setColor(Color.BLUE);
-                }
-                else if(todraw.getLabel().endsWith("class_c.shp")) {
-                    ctx.paint.setColor(Color.MAGENTA);
-                }
-                else if(todraw.getLabel().endsWith("class_d.shp")) {
-                    ctx.paint.setColor(Color.CYAN);
-                }
+                ctx.paint.setColor(Color.BLUE);
                 if (todraw.isOnScreen(ctx.origin)) {
                     todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }

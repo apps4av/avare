@@ -286,6 +286,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/runwayLengths"
             android:summary="@string/runwayLengthsSummary"
             android:title="@string/runwayLengthsLabel" />
+        <EditTextPreference
+            android:defaultValue="custom.shp"
+            android:key="@string/ShapeFile"
+            android:summary="@string/ShapeFileSummary"
+            android:title="@string/ShapeFileLabel" />
         <PreferenceScreen 
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"

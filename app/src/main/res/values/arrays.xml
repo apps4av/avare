@@ -51,7 +51,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>Plates Georeference Info.</item>
-        <item>Airspace Shapes.</item>
     </string-array>
      
     <string-array name="resNameWeather">
@@ -1481,7 +1480,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesDatabase">
         <item>databases</item>
         <item>geoplates</item>
-        <item>ShapeAirspace</item>
     </string-array>
     
     <string-array name="resFilesWeather">
