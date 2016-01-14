@@ -41,7 +41,7 @@ public class IHelperService extends Service {
 
     private StorageService mService;
     private JSONObject mGeoAltitude;
-    
+
     /**
      * We need to bind to storage service to do anything useful 
      */
@@ -59,7 +59,7 @@ public class IHelperService extends Service {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mGeoAltitude = null;
-        }    
+        }
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -213,24 +213,52 @@ public class IHelperService extends Service {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
                     l.setLongitude(object.getDouble("longitude"));
                     l.setLatitude(object.getDouble("latitude"));
-                    l.setSpeed((float)object.getDouble("speed"));
+                    l.setSpeed((float) object.getDouble("speed"));
                     l.setBearing((float) object.getDouble("bearing"));
+                    l.setTime(object.getLong("time"));
 
-                    // This comes from geometric altitude as this needs to be GPS report
-                    l.setAltitude(object.getDouble("altitude"));
-                    //do not use old geo altitude
+                    // Choose most appropriate altitude. This is because people fly all sorts
+                    // of equipment with or without altitudes
+                    double pressureAltitude = object.getDouble("altitude");
+                    double deviceAltitude = -1000;
+                    double geoAltitude = -1000;
+                    // If geo altitude from adsb available, use it if not too old
                     if(mGeoAltitude != null) {
                         long t1 = object.getLong("time");
                         long t2 = mGeoAltitude.getLong("time");
                         if((t1 - t2) < 10000) { // 10 seconds
-                            l.setAltitude(mGeoAltitude.getDouble("altitude"));
+                            geoAltitude = mGeoAltitude.getDouble("altitude");
                         }
                     }
+                    // If geo altitude from device available, use it if not too old
+                    long t1 = System.currentTimeMillis();
+                    long t2 = mService.getGpsParams().getTime();
+                    if((t1 - t2) < 10000) { // 10 seconds
+                        deviceAltitude = mService.getGpsParams().getAltitude();
+                    }
 
-                    l.setTime(object.getLong("time"));
-                    mService.getGps().onLocationChanged(l, type);
+                    // choose best altitude. give preference to pressure altitude because that is
+                    // the most correct for traffic purpose.
+                    double alt = pressureAltitude;
+                    if(alt <= -1000) {
+                        alt = geoAltitude;
+                    }
+                    if(alt <= -1000) {
+                        alt = deviceAltitude;
+                    }
                     // set pressure altitude for traffic alerts
-                    mService.getTrafficCache().setOwnAltitude((int) object.getDouble("altitude"));
+                    mService.getTrafficCache().setOwnAltitude((int) alt);
+
+                    // For own height, do not use pressure altitude
+                    alt = geoAltitude;
+                    if(alt <= -1000) {
+                        alt = deviceAltitude;
+                    }
+                    if(alt <= -1000) {
+                        alt = pressureAltitude;
+                    }
+                    l.setAltitude(alt);
+                    mService.getGps().onLocationChanged(l, type);
                 }
                 else if(type.equals("nexrad")) {
                     

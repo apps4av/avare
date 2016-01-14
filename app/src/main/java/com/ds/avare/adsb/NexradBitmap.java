@@ -208,18 +208,21 @@ public class NexradBitmap {
         /*
          * Get nexrad bitmaps to draw.
          */
-        if(!conus.isOld()) {
-            /*
-             * CONUS for larger scales.
-             */
-            drawImage(conus.getImages(), ctx);
+        if(ctx.scale.getMacroFactor() > 4) {
+            if (!conus.isOld()) {
+                /*
+                 * CONUS for larger scales.
+                 */
+                drawImage(conus.getImages(), ctx);
+            }
         }
-
-        if(!nexrad.isOld()) {
-            /*
-             * Draw high res over low res
-             */
-            drawImage(nexrad.getImages(), ctx);
+        else {
+            if (!nexrad.isOld()) {
+                /*
+                 * Draw high res over low res
+                 */
+                drawImage(nexrad.getImages(), ctx);
+            }
         }
     }
 
