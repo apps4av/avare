@@ -11,13 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-
-import com.ds.avare.R;
-import com.ds.avare.storage.Preferences;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Environment;
@@ -25,8 +18,8 @@ import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -35,6 +28,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ds.avare.R;
+import com.ds.avare.storage.Preferences;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 
 
 /**
@@ -55,7 +55,8 @@ public class FolderPreference extends DialogPreference {
     private Boolean mFirstLevel;
     private TextView mPathView;
     private Button mButton;
-    private Button mButtonSD;
+    private Button mButtonSDCard;
+    private Button mButtonExternal;
     private Preferences mPref;
     
     /**
@@ -155,7 +156,8 @@ public class FolderPreference extends DialogPreference {
         mListView = (ListView)view.findViewById(R.id.folder_list);
         mPathView = (TextView)view.findViewById(R.id.folder_text_path);
         mButton = (Button)view.findViewById(R.id.folder_button_internal);
-        mButtonSD = (Button)view.findViewById(R.id.folder_button_external);
+        mButtonSDCard = (Button)view.findViewById(R.id.folder_button_sdcard);
+        mButtonExternal = (Button)view.findViewById(R.id.folder_button_external);
 
         mButton.setOnClickListener(new OnClickListener() {
 
@@ -173,7 +175,7 @@ public class FolderPreference extends DialogPreference {
             
         });
 
-        mButtonSD.setOnClickListener(new OnClickListener() {
+        mButtonExternal.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -192,6 +194,27 @@ public class FolderPreference extends DialogPreference {
                 
             }
             
+        });
+
+        mButtonSDCard.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                /*
+                 * Bring up preferences
+                 */
+                String path = "/" + "sdcard" + "/Android/data/" + "com.ds.avare";
+                new File(path).mkdirs();
+                init(path);
+                loadFileList();
+                mListView.setAdapter(mAdapter);
+                // Show help for kitkat+ users
+                Toast.makeText(mContext, mContext.getString(R.string.folderHelp),
+                        Toast.LENGTH_LONG).show();
+
+            }
+
         });
 
         /*
