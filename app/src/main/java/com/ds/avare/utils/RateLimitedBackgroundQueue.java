@@ -54,7 +54,9 @@ public class RateLimitedBackgroundQueue {
                         if (mQueue.size() > 0) {
                             service.getDBResource().findLonLatMetar(mQueue);
                             // Done, queue cleared
-                            mQueue.clear();
+                            synchronized (mQueue) {
+                                mQueue.clear();
+                            }
                         }
                         return null;
                     }
@@ -74,7 +76,9 @@ public class RateLimitedBackgroundQueue {
         if(obj instanceof Metar) {
             Metar m = (Metar)obj;
             // FAA database does not have K in it
-            mQueue.put(m.stationId.replaceAll("^K", ""), (Metar)obj);
+            synchronized (mQueue) {
+                mQueue.put(m.stationId.replaceAll("^K", ""), (Metar) obj);
+            }
         }
     }
 }
