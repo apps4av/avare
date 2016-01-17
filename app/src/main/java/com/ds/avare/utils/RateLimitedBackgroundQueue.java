@@ -15,10 +15,9 @@ package com.ds.avare.utils;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.weather.Metar;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,7 +26,7 @@ import java.util.TimerTask;
  */
 public class RateLimitedBackgroundQueue {
 
-    private LinkedList<Object> mQueue;
+    private HashMap<String, Object> mQueue;
     private AsyncTask<Void, Void, Void> mProcessTask;
 
     // Fire every few seconds
@@ -35,7 +34,7 @@ public class RateLimitedBackgroundQueue {
 
     public RateLimitedBackgroundQueue(final StorageService service) {
 
-        mQueue = new LinkedList<Object>();
+        mQueue = new HashMap<String, Object>();
 
         TimerTask timer= new TimerTask() {
             @Override
@@ -52,20 +51,10 @@ public class RateLimitedBackgroundQueue {
 
                     @Override
                     protected Void doInBackground(Void... vals) {
-                        while (mQueue.size() > 0) {
-                            Object o = mQueue.removeFirst();
-                            // find what to do based on object type
-                            if(o instanceof Metar) {
-                                // Calculate metar map in background by finding lon/lat of airport
-
-                                Metar m = (Metar)o;
-                                Coordinate c = service.getDBResource().findLonLatMetar(m.stationId);
-                                if(null != c) {
-                                    // update lon/lat in object, catch parse exception (airport not found)
-                                    m.lon = c.getLongitude();
-                                    m.lat = c.getLatitude();
-                                }
-                            }
+                        if (mQueue.size() > 0) {
+                            service.getDBResource().findLonLatMetar(mQueue);
+                            // Done, queue cleared
+                            mQueue.clear();
                         }
                         return null;
                     }
@@ -82,6 +71,10 @@ public class RateLimitedBackgroundQueue {
      * @param obj
      */
     public void insertInQueue(Object obj) {
-        mQueue.add(obj);
+        if(obj instanceof Metar) {
+            Metar m = (Metar)obj;
+            // FAA database does not have K in it
+            mQueue.put(m.stationId.replaceAll("^K", ""), (Metar)obj);
+        }
     }
 }

@@ -28,6 +28,7 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -181,11 +182,11 @@ public class DataSource {
 
     /**
      *
-     * @param name
+     * @param metars
      * @return
      */
-    public Coordinate findLonLatMetar(String name) {
-        return dbHelper.findLonLatMetar(name);
+    public void findLonLatMetar(HashMap<String, Object> metars) {
+        dbHelper.findLonLatMetar(metars);
     }
 
     /**

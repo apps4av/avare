@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -1592,32 +1592,45 @@ public class DataBaseHelper  {
     }
 
     /**
-     * Find the lat/lon of an airport
-     * @param name
+     * Find the lat/lon of an array of airports, and update in the objects
+     * @param metars
      * @return
      */
-    public Coordinate findLonLatMetar(String name) {
+    public void findLonLatMetar(HashMap<String, Object> metars) {
 
-        name = name.replaceAll("^K", ""); // FAA database does not have K in it
+        String name = "";
+        Set<String> keys = metars.keySet();
+        for (String k : keys) {
+            // Make a long query instead of several long queries
+            name += LOCATION_ID_DB + "=='" + k + "' or ";
+        }
+        name += LOCATION_ID_DB + "=='BOS';"; // Dummy
+
         /*
          * Find with sqlite query
          */
         String qry = "select * from " + TABLE_AIRPORTS +
-                " where " + LOCATION_ID_DB + "=='" + name + "';";
+                " where " + name + "';";
         Cursor cursor = doQuery(qry, getMainDb());
-        Coordinate ret = null;
 
         try {
             if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    ret = new Coordinate(cursor.getDouble(LONGITUDE_COL), cursor.getDouble(LATITUDE_COL));
+                while(cursor.moveToNext()) {
+                    // populate the metar objects with lon/lat
+                    double lon = cursor.getDouble(LONGITUDE_COL);
+                    double lat = cursor.getDouble(LATITUDE_COL);
+                    String id = cursor.getString(LOCATION_ID_COL);
+                    Metar m = (Metar)metars.get(id);
+                    if(m != null) {
+                        m.lat = lat;
+                        m.lon = lon;
+                    }
                 }
             }
         }
         catch (Exception e) {
         }
         closes(cursor);
-        return ret;
     }
 
     /**
