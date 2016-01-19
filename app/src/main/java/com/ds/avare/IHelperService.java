@@ -42,6 +42,8 @@ public class IHelperService extends Service {
     private StorageService mService;
     private JSONObject mGeoAltitude;
 
+    public static final int MIN_ALTITUDE = -1000;
+
     /**
      * We need to bind to storage service to do anything useful 
      */
@@ -220,42 +222,56 @@ public class IHelperService extends Service {
                     // Choose most appropriate altitude. This is because people fly all sorts
                     // of equipment with or without altitudes
                     double pressureAltitude = object.getDouble("altitude");
-                    double deviceAltitude = -1000;
-                    double geoAltitude = -1000;
+                    double deviceAltitude = MIN_ALTITUDE;
+                    double geoAltitude = MIN_ALTITUDE;
                     // If geo altitude from adsb available, use it if not too old
                     if(mGeoAltitude != null) {
                         long t1 = object.getLong("time");
                         long t2 = mGeoAltitude.getLong("time");
                         if((t1 - t2) < 10000) { // 10 seconds
                             geoAltitude = mGeoAltitude.getDouble("altitude");
+                            if(geoAltitude < MIN_ALTITUDE) {
+                                geoAltitude = MIN_ALTITUDE;
+                            }
                         }
                     }
                     // If geo altitude from device available, use it if not too old
-                    long t1 = System.currentTimeMillis();
-                    long t2 = mService.getGpsParams().getTime();
-                    if((t1 - t2) < 10000) { // 10 seconds
-                        deviceAltitude = mService.getGpsParams().getAltitude();
+                    if(mService.getGpsParams() != null) {
+                        long t1 = System.currentTimeMillis();
+                        long t2 = mService.getGpsParams().getTime();
+                        if ((t1 - t2) < 10000) { // 10 seconds
+                            deviceAltitude = mService.getGpsParams().getAltitude();
+                            if(deviceAltitude < MIN_ALTITUDE) {
+                                deviceAltitude = MIN_ALTITUDE;
+                            }
+                        }
                     }
 
                     // choose best altitude. give preference to pressure altitude because that is
                     // the most correct for traffic purpose.
                     double alt = pressureAltitude;
-                    if(alt <= -1000) {
+                    if(alt <= MIN_ALTITUDE) {
                         alt = geoAltitude;
                     }
-                    if(alt <= -1000) {
+                    if(alt <= MIN_ALTITUDE) {
                         alt = deviceAltitude;
+                    }
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = MIN_ALTITUDE;
                     }
                     // set pressure altitude for traffic alerts
                     mService.getTrafficCache().setOwnAltitude((int) alt);
 
                     // For own height, do not use pressure altitude
                     alt = geoAltitude;
-                    if(alt <= -1000) {
+                    if(alt <= MIN_ALTITUDE) {
                         alt = deviceAltitude;
                     }
-                    if(alt <= -1000) {
+                    if(alt <= MIN_ALTITUDE) {
                         alt = pressureAltitude;
+                    }
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = MIN_ALTITUDE;
                     }
                     l.setAltitude(alt);
                     mService.getGps().onLocationChanged(l, type);

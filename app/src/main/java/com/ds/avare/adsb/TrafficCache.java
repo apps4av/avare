@@ -14,6 +14,8 @@ package com.ds.avare.adsb;
 
 import android.util.SparseArray;
 
+import com.ds.avare.IHelperService;
+
 /**
  * 
  * @author zkhan
@@ -26,7 +28,7 @@ public class TrafficCache {
     
     public TrafficCache() { 
         mTraffic = new SparseArray<Traffic>();
-        mOwnAltitude = -Integer.MAX_VALUE;
+        mOwnAltitude = IHelperService.MIN_ALTITUDE;
     }
     
     /**
