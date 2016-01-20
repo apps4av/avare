@@ -262,11 +262,9 @@ public class IHelperService extends Service {
                     // set pressure altitude for traffic alerts
                     mService.getTrafficCache().setOwnAltitude((int) alt);
 
-                    // For own height, do not use pressure altitude
+                    // For own height prefer geo altitude, do not use deviceAltitude here because
+                    // we could get into rising altitude condition through feedback
                     alt = geoAltitude;
-                    if(alt <= MIN_ALTITUDE) {
-                        alt = deviceAltitude;
-                    }
                     if(alt <= MIN_ALTITUDE) {
                         alt = pressureAltitude;
                     }
