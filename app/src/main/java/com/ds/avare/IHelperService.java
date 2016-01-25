@@ -26,6 +26,7 @@ import android.os.Message;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
@@ -221,7 +222,8 @@ public class IHelperService extends Service {
 
                     // Choose most appropriate altitude. This is because people fly all sorts
                     // of equipment with or without altitudes
-                    double pressureAltitude = object.getDouble("altitude");
+                    // convert all altitudes in feet
+                    double pressureAltitude = object.getDouble("altitude") * Preferences.heightConversion;
                     double deviceAltitude = MIN_ALTITUDE;
                     double geoAltitude = MIN_ALTITUDE;
                     // If geo altitude from adsb available, use it if not too old
@@ -229,7 +231,7 @@ public class IHelperService extends Service {
                         long t1 = object.getLong("time");
                         long t2 = mGeoAltitude.getLong("time");
                         if((t1 - t2) < 10000) { // 10 seconds
-                            geoAltitude = mGeoAltitude.getDouble("altitude");
+                            geoAltitude = mGeoAltitude.getDouble("altitude") * Preferences.heightConversion;
                             if(geoAltitude < MIN_ALTITUDE) {
                                 geoAltitude = MIN_ALTITUDE;
                             }
@@ -259,6 +261,7 @@ public class IHelperService extends Service {
                     if(alt <= MIN_ALTITUDE) {
                         alt = MIN_ALTITUDE;
                     }
+
                     // set pressure altitude for traffic alerts
                     mService.getTrafficCache().setOwnAltitude((int) alt);
 
@@ -271,7 +274,7 @@ public class IHelperService extends Service {
                     if(alt <= MIN_ALTITUDE) {
                         alt = MIN_ALTITUDE;
                     }
-                    l.setAltitude(alt);
+                    l.setAltitude(alt / Preferences.heightConversion);
                     mService.getGps().onLocationChanged(l, type);
                 }
                 else if(type.equals("nexrad")) {

@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -223,7 +224,7 @@ public class SubmitActivity extends Activity {
 		                        	Logger.Logit(getString(R.string.InvalidComments));
 		                        	return false;		                        	
 		                        }
-		                        params.put("comments", comments);
+		                        params.put("comments", Base64.encodeToString(comments.getBytes(), Base64.URL_SAFE));
 		                        
 		                        int stars = (int)((RatingBar)mView.findViewById(R.id.comments_submit_ratingbar)).getRating();
 		                        params.put("stars", stars + "");

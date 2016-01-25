@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="245"
-    android:versionName="7.1.5" >
+    android:versionCode="246"
+    android:versionName="7.1.6" >
 
     <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -34,7 +34,16 @@ Redistribution and use in source and binary forms, with or without modification,
     <application
         android:icon="@drawable/aircraft"
         android:label="@string/app_name"
+        android:name="AvareApplication"
         android:allowBackup="true">
+
+        <activity android:name="org.acra.CrashReportDialog"
+            android:theme="@style/Theme.Dialog"
+            android:process=":error_report"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true" />
+
         <service android:name=".StorageService"/>
         <service
             android:name="com.ds.avare.IHelperService"

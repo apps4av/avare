@@ -18,6 +18,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.GeomagneticField;
+import android.util.Base64;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -2774,7 +2775,8 @@ public class DataBaseHelper  {
 	                     * 4 star, userid (2015-03-07): Comments
 	                     */
 	                	String tokens[] = cursor.getString(4).split(" ");
-	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + cursor.getString(3));
+                        byte[] comments = Base64.decode(cursor.getString(3), Base64.URL_SAFE);
+	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + new String(comments, "US-ASCII"));
                     }
                     while(cursor.moveToNext());
                 }
@@ -2785,7 +2787,4 @@ public class DataBaseHelper  {
         closesRatings(cursor);
         return ret;
 	}
-
-
-
 }
