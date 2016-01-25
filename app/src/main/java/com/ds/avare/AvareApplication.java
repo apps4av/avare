@@ -23,7 +23,7 @@ import org.acra.annotation.ReportsCrashes;
  * Created by zkhan on 1/25/16.
  */
 @ReportsCrashes(mailTo = "apps4av@gmail.com",
-        customReportContent = { ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME, ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE, ReportField.LOGCAT },
+        customReportContent = { ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME, ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE},
         mode = ReportingInteractionMode.DIALOG,
         resDialogIcon = R.drawable.file_icon,
         resDialogTitle = R.string.CrashLabel,

@@ -497,7 +497,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShapeFile">ShapeFile</string>
     <string name="ShapeFileLabel">Shape File Name</string>
     <string name="ShapeFileSummary">Load Esri shape file of specified name from the download folder (change requires app restart)</string>
-    <string name="CrashText">To help us continue improving the app, we request that you submit a report to us via email.</string>
+    <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
     <string name="CrashLabel">Avare has stopped unexpectedly!</string>
 
 
