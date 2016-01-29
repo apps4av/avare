@@ -77,20 +77,26 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resNameIFRArea">
+        <item>IFR Area ANC</item>
         <item>IFR Area ATL</item>
         <item>IFR Area DCA</item>
         <item>IFR Area DEN</item>
         <item>IFR Area DET</item>
         <item>IFR Area DFW</item>
+        <item>IFR Area FAI</item>
+        <item>IFR Area GUA</item>
         <item>IFR Area JAX</item>
+        <item>IFR Area JNU</item>
         <item>IFR Area LAX</item>
         <item>IFR Area MIA</item>
         <item>IFR Area MKC</item>
         <item>IFR Area MSP</item>
+        <item>IFR Area OME</item>
         <item>IFR Area ORD</item>
         <item>IFR Area PHX</item>
         <item>IFR Area SFO</item>
         <item>IFR Area STL</item>
+        <item>IFR Area VR</item>
     </string-array>
     
     <string-array name="resNameIFRHE">
@@ -1514,20 +1520,26 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesIFRArea">
+        <item>ENRA_ANC</item>
         <item>ENRA_ATL</item>
         <item>ENRA_DCA</item>
         <item>ENRA_DEN</item>
         <item>ENRA_DET</item>
         <item>ENRA_DFW</item>
+        <item>ENRA_FAI</item>
+        <item>ENRA_GUA</item>
         <item>ENRA_JAX</item>
+        <item>ENRA_JNU</item>
         <item>ENRA_LAX</item>
         <item>ENRA_MIA</item>
         <item>ENRA_MKC</item>
         <item>ENRA_MSP</item>
+        <item>ENRA_OME</item>
         <item>ENRA_ORD</item>
         <item>ENRA_PHX</item>
         <item>ENRA_SFO</item>
         <item>ENRA_STL</item>
+        <item>ENRA_VR</item>
     </string-array>
     
     <string-array name="resFilesAFD">
