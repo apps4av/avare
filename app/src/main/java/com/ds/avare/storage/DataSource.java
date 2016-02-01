@@ -185,7 +185,7 @@ public class DataSource {
      * @param metars
      * @return
      */
-    public void findLonLatMetar(HashMap<String, Object> metars) {
+    public void findLonLatMetar(HashMap<String, Metar> metars) {
         dbHelper.findLonLatMetar(metars);
     }
 

@@ -102,7 +102,7 @@ public class AdsbWeatherCache {
         m.flightCategory = flightCategory;
         m.timestamp = System.currentTimeMillis();
         mMetar.put(location, m);
-        mMetarQueue.insertInQueue(m); // This will slowly make a metar map
+        mMetarQueue.insertMetarInQueue(m); // This will slowly make a metar map
     }
 
 

@@ -1597,7 +1597,7 @@ public class DataBaseHelper  {
      * @param metars
      * @return
      */
-    public void findLonLatMetar(HashMap<String, Object> metars) {
+    public void findLonLatMetar(HashMap<String, Metar> metars) {
 
         String name = "";
         Set<String> keys = metars.keySet();
@@ -1621,7 +1621,7 @@ public class DataBaseHelper  {
                     double lon = cursor.getDouble(LONGITUDE_COL);
                     double lat = cursor.getDouble(LATITUDE_COL);
                     String id = cursor.getString(LOCATION_ID_COL);
-                    Metar m = (Metar)metars.get(id);
+                    Metar m = metars.get(id);
                     if(m != null) {
                         m.lat = lat;
                         m.lon = lon;

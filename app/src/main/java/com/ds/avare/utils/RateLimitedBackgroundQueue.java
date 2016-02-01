@@ -23,10 +23,12 @@ import java.util.TimerTask;
 
 /**
  * Created by zkhan on 12/15/15.
+ * This class collects a bunch of objects before processing them. Data is not required to be processed ASAP.
+ * This helps in minimizing async task creation, and helps in combining SQL queries into one query.
  */
 public class RateLimitedBackgroundQueue {
 
-    private HashMap<String, Object> mQueue;
+    private HashMap<String, Metar> mQueueMetar;
     private AsyncTask<Void, Void, Void> mProcessTask;
 
     // Fire every few seconds
@@ -34,12 +36,12 @@ public class RateLimitedBackgroundQueue {
 
     public RateLimitedBackgroundQueue(final StorageService service) {
 
-        mQueue = new HashMap<String, Object>();
+        mQueueMetar = new HashMap<String, Metar>();
 
         TimerTask timer= new TimerTask() {
             @Override
             public void run() {
-                if(mQueue.size() == 0) {
+                if(mQueueMetar.size() == 0) {
                     return;
                 }
                 if(mProcessTask != null && mProcessTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -51,11 +53,14 @@ public class RateLimitedBackgroundQueue {
 
                     @Override
                     protected Void doInBackground(Void... vals) {
-                        if (mQueue.size() > 0) {
-                            service.getDBResource().findLonLatMetar(mQueue);
-                            // Done, queue cleared
-                            synchronized (mQueue) {
-                                mQueue.clear();
+                        if (mQueueMetar.size() > 0) {
+
+                            // copy queue to avoid concurrent modification
+                            HashMap<String, Metar> metars = removeMetarsFromQueue();
+
+                            // process all metars, find their lon/lat
+                            if(metars.size() > 0) {
+                                service.getDBResource().findLonLatMetar(metars);
                             }
                         }
                         return null;
@@ -68,17 +73,25 @@ public class RateLimitedBackgroundQueue {
         t.scheduleAtFixedRate(timer, 0, RUN_TIME);
     }
 
+    // Get all metars
+    private HashMap<String, Metar> removeMetarsFromQueue() {
+        HashMap<String, Metar> metars;
+        synchronized (mQueueMetar) {
+            metars = (HashMap<String, Metar>)mQueueMetar.clone();
+            // Done, queue cleared
+            mQueueMetar.clear();
+        }
+        return metars;
+    }
+
     /**
      * Something needs to be done
-     * @param obj
+     * @param metar
      */
-    public void insertInQueue(Object obj) {
-        if(obj instanceof Metar) {
-            Metar m = (Metar)obj;
+    public void insertMetarInQueue(Metar metar) {
+        synchronized (mQueueMetar) {
             // FAA database does not have K in it
-            synchronized (mQueue) {
-                mQueue.put(m.stationId.replaceAll("^K", ""), (Metar) obj);
-            }
+            mQueueMetar.put(metar.stationId.replaceAll("^K", ""), metar);
         }
     }
 }
