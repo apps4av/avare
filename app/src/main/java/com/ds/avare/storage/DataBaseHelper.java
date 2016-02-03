@@ -1605,13 +1605,13 @@ public class DataBaseHelper  {
             // Make a long query instead of several long queries
             name += LOCATION_ID_DB + "=='" + k + "' or ";
         }
-        name += LOCATION_ID_DB + "=='BOS';"; // Dummy
+        name += LOCATION_ID_DB + "=='BOS'"; // Dummy
 
         /*
          * Find with sqlite query
          */
         String qry = "select * from " + TABLE_AIRPORTS +
-                " where " + name + "';";
+                " where " + TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and (" + name + ");";
         Cursor cursor = doQuery(qry, getMainDb());
 
         try {
