@@ -64,6 +64,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private double                     mAirportLon;
     private double                     mAirportLat;
 
+    private Context                   mContext;
     /*
      * Is it drawing?
      */
@@ -90,6 +91,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 
+        mContext = context;
         mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
@@ -387,14 +389,20 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             /*
         	 * Plate
         	 */
+            float x = mPan.getMoveX() * scale
+                    + getWidth() / 2
+                    - mBitmap.getWidth() / 2 * scale;
+            float y = mPan.getMoveY() * scale
+                    + getHeight() / 2
+                    - mBitmap.getHeight() / 2 * scale;
             mBitmap.getTransform().setScale(scale, scale);
-            mBitmap.getTransform().postTranslate(
-                    mPan.getMoveX() * scale
-                            + getWidth() / 2
-                            - mBitmap.getWidth() / 2 * scale ,
-                    mPan.getMoveY() * scale
-                            + getHeight() / 2
-                            - mBitmap.getHeight() / 2 * scale);
+            mBitmap.getTransform().postTranslate(x, y);
+
+            // Add plates tag PG's website
+            mPaint.setColor(0x007F00);
+            mPaint.setAlpha(127);
+            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, getHeight() / 2, mPaint);
+            mPaint.setAlpha(255);
 
             if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);

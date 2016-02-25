@@ -499,6 +499,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShapeFileSummary">Load Esri shape file of specified name from the download folder (change requires app restart)</string>
     <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
     <string name="CrashLabel">Avare has stopped unexpectedly!</string>
+    <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
 
 
 </resources>

@@ -442,7 +442,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
         // Only show tagging option when georef password is set
-        mPlatesTagButton.setVisibility(mPref.getGeoCode().equals("") ? View.INVISIBLE : View.VISIBLE);
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
