@@ -22,12 +22,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ds.avare.message.Helper;
 import com.ds.avare.message.Logger;
 import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.PossibleEmail;
 
 import java.util.HashMap;
@@ -205,7 +205,7 @@ public class SubmitActivity extends Activity {
 		                        }
 		                        params.put("price", price);
 		                        
-		                        params.put("fueltype", ((Spinner)mView.findViewById(R.id.fuel_submit_fueltype)).getSelectedItem().toString());
+		                        params.put("fueltype", (((OptionButton) mView.findViewById(R.id.fuel_submit_fueltype)).getCurrentValue()));
 		                        
 		                        String fbo = ((EditText)mView.findViewById(R.id.fuel_submit_fbo)).getText().toString();
 		                        if(fbo.equals("")) {

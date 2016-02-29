@@ -30,15 +30,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.PopoutAdapter;
@@ -59,16 +56,17 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
 import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.views.LocationView;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -136,13 +134,11 @@ public class LocationActivity extends Activity implements Observer {
     private TwoButton mSimButton;
     private TwoButton mDrawButton;
     private Button mWebButton;
-    private Spinner mChartSpinner;
-    private Spinner mLayerSpinner;
+    private OptionButton mChartOption;
+    private OptionButton mLayerOption;
     private Bundle mExtras;
     private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
-    private boolean mIsChartInited;
-    private boolean mIsLayerInited;
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
     private AnimateButton mAnimateWeb;
@@ -412,8 +408,6 @@ public class LocationActivity extends Activity implements Observer {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
-        mIsChartInited = false;
-        mIsLayerInited = false;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -539,64 +533,45 @@ public class LocationActivity extends Activity implements Observer {
 
         });
 
+        /*
+         * black pop out
+         */
         mListPopout = (ExpandableListView)view.findViewById(R.id.location_list_popout);
-        mChartSpinner = (Spinner)view.findViewById(R.id.location_spinner_chart);
-        mChartSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-            public void onItemSelected(AdapterView<?> parent, View view, int pos,long id) {
-                if(mIsChartInited == false) {
-                    /*
-                     * Shitty spinner calls this when inflated. Send it back on inflation.
-                     */
-                    mIsChartInited = true;
-                    mChartSpinner.setSelection(Integer.parseInt(mPref.getChartType()));
-                    return;
-                }
-                mPref.setChartType("" + id);
+
+        mChartOption = (OptionButton)view.findViewById(R.id.location_spinner_chart);
+        mChartOption.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                mPref.setChartType("" + (int) o1);
                 /*
                  * Contrast bars only in terrain view
                  */
-                if(mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
+                if (mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
                     mBar.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     mBar.setVisibility(View.INVISIBLE);
                 }
                 mLocationView.forceReload();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
+                return null;
             }
         });
+        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
+        mLocationView.forceReload();
 
-        mLayerSpinner = (Spinner)view.findViewById(R.id.location_spinner_layer);
-        mLayerSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                if (mIsLayerInited == false) {
-                    /*
-                     * Shitty spinner calls this when inflated. Send it back on inflation.
-                     */
-                    mIsLayerInited = true;
-                    int index = Arrays.asList(getResources().getStringArray(R.array.LayerType)).indexOf(mPref.getLayerType());
-                    mLayerSpinner.setSelection(index);
-                    mLocationView.setLayerType(mPref.getLayerType());
-                    return;
-                }
-
-                mPref.setLayerType(getResources().getStringArray(R.array.LayerType)[pos]);
-
-                /*
-                 * set proper view
-                 */
+        mLayerOption = (OptionButton)view.findViewById(R.id.location_spinner_layer);
+        mLayerOption.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                mPref.setLayerType(mLayerOption.getCurrentValue());
                 mLocationView.setLayerType(mPref.getLayerType());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
+                return null;
+            };
         });
+        mLayerOption.setSelectedValue(mPref.getLayerType());
+        mLocationView.setLayerType(mPref.getLayerType());
+
 
         mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
         mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -1005,8 +980,8 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
         mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(getApplicationContext(), mLayerSpinner, AnimateButton.DIRECTION_R_L, mPlanPause);
-        mAnimateChart = new AnimateButton(getApplicationContext(), mChartSpinner, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateTrack = new AnimateButton(getApplicationContext(), mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateChart = new AnimateButton(getApplicationContext(), mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
         mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);

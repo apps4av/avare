@@ -1072,7 +1072,15 @@ public class StorageService extends Service {
     public BitmapHolder getElevationBitmap() {
         return mElevTile.getElevationBitmap();
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public ElevationTile getElevationTile() {
+        return mElevTile;
+    }
+
     /**
      * 
      */

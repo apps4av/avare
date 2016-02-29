@@ -381,8 +381,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             }
 
             // rotate only when showing AD, or showing geo tagged approach plate.
+            canvas.save();
             if(shouldRotate()) {
-                canvas.save();
                 canvas.rotate(-(int) mGpsParams.getBearing(),getWidth() / 2,getHeight() / 2);
             }
 
@@ -400,9 +400,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
             // Add plates tag PG's website
             mPaint.setColor(0x007F00);
-            mPaint.setAlpha(127);
-            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, getHeight() / 2, mPaint);
             mPaint.setAlpha(255);
+            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top, mPaint);
 
             if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);
@@ -459,10 +458,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	 */
     	this.drawDrawing(canvas);
 
-        // rotate back to show info lines
-        if(shouldRotate()) {
-            canvas.restore();
-        }
+        /*
+         * restore
+         */
+        canvas.restore();
 
         // do not rotate info lines
         if(mService != null && mPref.showPlateInfoLines()) {

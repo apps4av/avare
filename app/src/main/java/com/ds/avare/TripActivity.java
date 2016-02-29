@@ -13,21 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
-import com.ds.avare.R;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
-
-import android.location.GpsStatus;
-import android.location.Location;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -35,20 +20,33 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.OptionButton;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * @author zkhan trip / hotel / car etc. activity
@@ -213,27 +211,27 @@ public class TripActivity extends Activity {
                     // arrival and departure date obtain from today and tomorrow
                 	final EditText from = (EditText)findView.findViewById(R.id.hotel_datefrom_text);
                 	final EditText to = (EditText)findView.findViewById(R.id.hotel_dateto_text);
-                	final Spinner price = (Spinner)findView.findViewById(R.id.hotel_price);
-                	final Spinner stars = (Spinner)findView.findViewById(R.id.hotel_stars);
-                	final Spinner distance = (Spinner)findView.findViewById(R.id.hotel_radius);
-                	final Spinner adults = (Spinner)findView.findViewById(R.id.hotel_adults);
-                	final Spinner child1 = (Spinner)findView.findViewById(R.id.hotel_child_1);
-                	final Spinner child2 = (Spinner)findView.findViewById(R.id.hotel_child_2);
-                	final Spinner child3 = (Spinner)findView.findViewById(R.id.hotel_child_3);
-                	final Spinner child4 = (Spinner)findView.findViewById(R.id.hotel_child_4);
-                	final Spinner child5 = (Spinner)findView.findViewById(R.id.hotel_child_5);
+                	final OptionButton price = (OptionButton)findView.findViewById(R.id.hotel_price);
+                	final OptionButton stars = (OptionButton)findView.findViewById(R.id.hotel_stars);
+                	final OptionButton distance = (OptionButton)findView.findViewById(R.id.hotel_radius);
+                	final OptionButton adults = (OptionButton)findView.findViewById(R.id.hotel_adults);
+                	final OptionButton child1 = (OptionButton)findView.findViewById(R.id.hotel_child_1);
+                	final OptionButton child2 = (OptionButton)findView.findViewById(R.id.hotel_child_2);
+                	final OptionButton child3 = (OptionButton)findView.findViewById(R.id.hotel_child_3);
+                	final OptionButton child4 = (OptionButton)findView.findViewById(R.id.hotel_child_4);
+                	final OptionButton child5 = (OptionButton)findView.findViewById(R.id.hotel_child_5);
                 	/*
                 	 * Others obtain from preferences
                 	 */
-                	price.setSelection(mPref.getHotelMaxPriceIndex());
-                	stars.setSelection(mPref.getHotelMinStarIndex());
-                	distance.setSelection(mPref.getHotelMaxDistanceIndex());
-                	adults.setSelection(mPref.getHotelAdultsIndex());
-                	child1.setSelection(mPref.getHotelChildIndex("1"));
-                	child2.setSelection(mPref.getHotelChildIndex("2"));
-                	child3.setSelection(mPref.getHotelChildIndex("3"));
-                	child4.setSelection(mPref.getHotelChildIndex("4"));
-                	child5.setSelection(mPref.getHotelChildIndex("5"));
+                	price.setCurrentSelectionIndex(mPref.getHotelMaxPriceIndex());
+                	stars.setCurrentSelectionIndex(mPref.getHotelMinStarIndex());
+                	distance.setCurrentSelectionIndex(mPref.getHotelMaxDistanceIndex());
+                	adults.setCurrentSelectionIndex(mPref.getHotelAdultsIndex());
+                	child1.setCurrentSelectionIndex(mPref.getHotelChildIndex("1"));
+                	child2.setCurrentSelectionIndex(mPref.getHotelChildIndex("2"));
+                	child3.setCurrentSelectionIndex(mPref.getHotelChildIndex("3"));
+                	child4.setCurrentSelectionIndex(mPref.getHotelChildIndex("4"));
+                	child5.setCurrentSelectionIndex(mPref.getHotelChildIndex("5"));
 
                 	Calendar now = Calendar.getInstance(); // Current time
                 	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
@@ -363,8 +361,8 @@ public class TripActivity extends Activity {
     /**
      * Make a URL from view
      */
-    private String makeURL(EditText from, EditText to, Spinner price, Spinner stars, Spinner distance, 
-    		Spinner adults, Spinner child1, Spinner child2, Spinner child3, Spinner child4, Spinner child5) {
+    private String makeURL(EditText from, EditText to, OptionButton price, OptionButton stars, OptionButton distance,
+    		OptionButton adults, OptionButton child1, OptionButton child2, OptionButton child3, OptionButton child4, OptionButton child5) {
     	/*
     	 * Get all the user input and make a URL
     	 */
@@ -399,11 +397,11 @@ public class TripActivity extends Activity {
     		 * Children are comma separated
     		 */
     		String children = "";
-    		children +=	child1.getSelectedItemPosition() == 0 ? "" : child1.getSelectedItem().toString() + ",";
-    		children += child2.getSelectedItemPosition() == 0 ? "" : child2.getSelectedItem().toString() + ",";
-    		children += child3.getSelectedItemPosition() == 0 ? "" : child3.getSelectedItem().toString() + ",";
-    		children += child4.getSelectedItemPosition() == 0 ? "" : child4.getSelectedItem().toString() + ",";
-    		children += child5.getSelectedItemPosition() == 0 ? "" : child5.getSelectedItem().toString() + ",";
+    		children +=	child1.getCurrentIndex() == 0 ? "" : child1.getCurrentValue() + ",";
+    		children += child2.getCurrentIndex() == 0 ? "" : child2.getCurrentValue().toString() + ",";
+    		children += child3.getCurrentIndex() == 0 ? "" : child3.getCurrentValue().toString() + ",";
+    		children += child4.getCurrentIndex() == 0 ? "" : child4.getCurrentValue().toString() + ",";
+    		children += child5.getCurrentIndex() == 0 ? "" : child5.getCurrentValue().toString() + ",";
     		children = children.replaceAll(",$", "");
     		if(children.length() > 0) {
     			children = "&children=" + children;
@@ -415,10 +413,10 @@ public class TripActivity extends Activity {
     		String url = "https://apps4av.net/expedia.php?" 
     				+ "latitude=" + mService.getDestination().getLocation().getLatitude() + "&"
     				+ "longitude=" + mService.getDestination().getLocation().getLongitude() + "&"
-    				+ "radius=" + distance.getSelectedItem().toString() + "&"
-    				+ "minstar=" + stars.getSelectedItem().toString() + "&"
-    				+ "maxrate=" + price.getSelectedItem().toString() + "&"
-    				+ "adults=" + adults.getSelectedItem().toString() + "&"
+    				+ "radius=" + distance.getCurrentValue() + "&"
+    				+ "minstar=" + stars.getCurrentValue() + "&"
+    				+ "maxrate=" + price.getCurrentValue() + "&"
+    				+ "adults=" + adults.getCurrentValue() + "&"
     				+ "arrival=" + fromtext + "&"
     				+ "departure=" + totext +
     				children;
@@ -427,15 +425,15 @@ public class TripActivity extends Activity {
     		/*
     		 * Save user preferences
     		 */
-    		mPref.setHotelMaxPriceIndex(price.getSelectedItemPosition());
-    		mPref.setHotelMinStarIndex(stars.getSelectedItemPosition());
-    		mPref.setHotelMaxDistanceIndex(distance.getSelectedItemPosition());
-    		mPref.setHotelAdultsIndex(adults.getSelectedItemPosition());
-    		mPref.setHotelChildIndex("1", child1.getSelectedItemPosition());
-    		mPref.setHotelChildIndex("2", child2.getSelectedItemPosition());
-    		mPref.setHotelChildIndex("3", child3.getSelectedItemPosition());
-    		mPref.setHotelChildIndex("4", child4.getSelectedItemPosition());
-    		mPref.setHotelChildIndex("5", child5.getSelectedItemPosition());
+    		mPref.setHotelMaxPriceIndex(price.getCurrentIndex());
+    		mPref.setHotelMinStarIndex(stars.getCurrentIndex());
+    		mPref.setHotelMaxDistanceIndex(distance.getCurrentIndex());
+    		mPref.setHotelAdultsIndex(adults.getCurrentIndex());
+    		mPref.setHotelChildIndex("1", child1.getCurrentIndex());
+    		mPref.setHotelChildIndex("2", child2.getCurrentIndex());
+    		mPref.setHotelChildIndex("3", child3.getCurrentIndex());
+    		mPref.setHotelChildIndex("4", child4.getCurrentIndex());
+    		mPref.setHotelChildIndex("5", child5.getCurrentIndex());
     		return url;
     	}
     	

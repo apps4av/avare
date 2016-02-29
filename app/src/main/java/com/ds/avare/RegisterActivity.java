@@ -25,9 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +33,7 @@ import com.ds.avare.message.Helper;
 import com.ds.avare.message.Logger;
 import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.PossibleEmail;
 
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ public class RegisterActivity extends Activity {
     private Button mButtonUnregister;
     private AlertDialog mRegisterDialog;
     private AlertDialog mUnregisterDialog;
-    private Spinner mEmailSpinner;
+    private OptionButton mEmailOption;
     private WebView mPrivacy;
     private Preferences mPref;
 
@@ -243,7 +242,7 @@ public class RegisterActivity extends Activity {
                         }
                     }
                     
-                    final String email = mEmailSpinner.getSelectedItem().toString();
+                    final String email = mEmailOption.getCurrentValue();
                     Logger.Logit(getString(R.string.registering_server));
 
                     mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
@@ -451,7 +450,7 @@ public class RegisterActivity extends Activity {
         });        
         
 
-        mEmailSpinner = (Spinner)findViewById(R.id.spinner_register);
+        mEmailOption = (OptionButton)findViewById(R.id.spinner_register);
         setChoices();
     }
 
@@ -471,9 +470,11 @@ public class RegisterActivity extends Activity {
         	emails = PossibleEmail.getAll(this);
         }
         if(emails != null) {
-	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-	        		android.R.layout.simple_expandable_list_item_1, emails);
-	        mEmailSpinner.setAdapter(adapter);
+            ArrayList<String> list = new ArrayList<String>();
+            for(String em : emails) {
+                list.add(em);
+            }
+	        mEmailOption.setOptions(list);
         }
     }
     
