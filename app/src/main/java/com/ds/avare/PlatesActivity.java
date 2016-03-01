@@ -248,8 +248,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
         mPref = new Preferences(getApplicationContext());
         
-        mDestString = "<" + getApplicationContext().getString(R.string.Destination) + ">";
-        nearString = "<" + getApplicationContext().getString(R.string.Nearest) + ">";    
+        mDestString = "<" + getString(R.string.Destination) + ">";
+        nearString = "<" + getString(R.string.Nearest) + ">";
         
         /*
          * Get views from XML
@@ -765,10 +765,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
 				case FuelTimer.SWITCH_TANK:
 					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
-					alertDialog.setTitle(getApplicationContext().getString(R.string.switchTanks));
+					alertDialog.setTitle(PlatesActivity.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);
-					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, PlatesActivity.this.getString(R.string.OK), new DialogInterface.OnClickListener() {
 		
 		                public void onClick(DialogInterface dialog, int which) {
 		                	fuelTimer.reset();

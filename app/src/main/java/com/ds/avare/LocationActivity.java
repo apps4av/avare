@@ -227,7 +227,7 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
-            else if(!(new File(mPref.mapsFolder() + "/" + getApplicationContext().getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
+            else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
                 mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
             else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
@@ -526,7 +526,7 @@ public class LocationActivity extends Activity implements Observer {
                     /*
                      * Now populate the pop out weather etc.
                      */
-                    PopoutAdapter p = new PopoutAdapter(getApplicationContext(), data);
+                    PopoutAdapter p = new PopoutAdapter(LocationActivity.this, data);
                     mListPopout.setAdapter(p);
                 }
             }
@@ -901,7 +901,7 @@ public class LocationActivity extends Activity implements Observer {
         if(mPref.showTips()) {
             mWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
             mWarnDialog.setTitle(getString(R.string.Tip));
-            mWarnDialog.setMessage(Tips.getTip(getApplicationContext()));
+            mWarnDialog.setMessage(Tips.getTip(LocationActivity.this));
             mWarnDialog.setCancelable(false);
             mWarnDialog.setCanceledOnTouchOutside(false);
             mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
@@ -977,14 +977,14 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mService = null;
-        mAnimateTracks = new AnimateButton(getApplicationContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
-        mAnimateWeb = new AnimateButton(getApplicationContext(), mWebButton, AnimateButton.DIRECTION_L_R);
-        mAnimateSim = new AnimateButton(getApplicationContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(getApplicationContext(), mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
-        mAnimateChart = new AnimateButton(getApplicationContext(), mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getApplicationContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
-        mAnimateDownload = new AnimateButton(getApplicationContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePref = new AnimateButton(getApplicationContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
+        mAnimateWeb = new AnimateButton(LocationActivity.this, mWebButton, AnimateButton.DIRECTION_L_R);
+        mAnimateSim = new AnimateButton(LocationActivity.this, mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
+        mAnimateTrack = new AnimateButton(LocationActivity.this, mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateChart = new AnimateButton(LocationActivity.this, mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateHelp = new AnimateButton(LocationActivity.this, mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateDownload = new AnimateButton(LocationActivity.this, mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePref = new AnimateButton(LocationActivity.this, mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
         // Allocate the object that will get told about the status of the
         // fuel tank
@@ -1009,7 +1009,7 @@ public class LocationActivity extends Activity implements Observer {
                 case 0:
 		    	    			/* Just display a toast message to the user that the file was saved
 		    	    			 */
-                    Toast.makeText(getApplicationContext(),
+                    Toast.makeText(LocationActivity.this,
                             String.format(getString(R.string.AutoPostTracksDialogText), fileName),
                             Toast.LENGTH_LONG).show();
                     break;
@@ -1185,10 +1185,10 @@ public class LocationActivity extends Activity implements Observer {
 
 				case FuelTimer.SWITCH_TANK:
 					AlertDialog alertDialog = new AlertDialog.Builder(LocationActivity.this).create();
-					alertDialog.setTitle(getApplicationContext().getString(R.string.switchTanks));
+					alertDialog.setTitle(LocationActivity.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);
-					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getApplicationContext().getString(R.string.OK), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, LocationActivity.this.getString(R.string.OK), new DialogInterface.OnClickListener() {
 
 		                public void onClick(DialogInterface dialog, int which) {
 		                    fuelTimer.reset();
