@@ -317,6 +317,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public void onDraw(Canvas canvas) {
 
         float angle = 0;
+        boolean bRotated = false;
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
@@ -381,8 +382,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             }
 
             // rotate only when showing AD, or showing geo tagged approach plate.
-            canvas.save();
             if(shouldRotate()) {
+                canvas.save();
+                bRotated = true;
                 canvas.rotate(-(int) mGpsParams.getBearing(),getWidth() / 2,getHeight() / 2);
             }
 
@@ -461,7 +463,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         /*
          * restore
          */
-        canvas.restore();
+        if(bRotated) {
+            canvas.restore();
+        }
 
         // do not rotate info lines
         if(mService != null && mPref.showPlateInfoLines()) {
