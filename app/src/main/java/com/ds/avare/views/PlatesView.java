@@ -20,6 +20,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
@@ -33,25 +34,18 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
 
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
-
 /**
  * 
  * @author zkhan
  * @author plinel
  *
  */
-public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
+public class PlatesView extends View implements OnTouchListener {
 	
 
     private Scale                        mScale;
     private Pan                          mPan;
 	private Paint                        mPaint;
-    private MultiTouchController<Object> mMultiTouchC;
-    private PointInfo                    mCurrTouchPoint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private GpsParams                    mGpsParams;
@@ -75,11 +69,15 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     private float                      mDipToPix;
 
-    private static final double MAX_PLATE_SCALE = 8;
-    
+    private static final float MAX_PLATE_SCALE = 8;
+    private float mScaleFactor = 1.f;
+    private boolean                     mScaling;
+
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     private static final int SHADOW = 4;
+
+    private ScaleGestureDetector mScaleDetector;
 
     /**
      * 
@@ -101,8 +99,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPref = new Preferences(context);
         mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
@@ -121,8 +117,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * @param context
      */
 	public PlatesView(Context context) {
-		super(context);
-		setup(context);
+		this(context, null, 0);
 	}
 
     /**
@@ -130,8 +125,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * @param context
      */
     public PlatesView(Context context, AttributeSet set) {
-        super(context, set);
-        setup(context);
+        this(context, set, 0);
     }
 
     /**
@@ -141,6 +135,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public PlatesView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
     
@@ -173,8 +168,9 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        mGestureDetector.onTouchEvent(e);
-        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
+        boolean retVal = mGestureDetector.onTouchEvent(e);
+        retVal = mScaleDetector.onTouchEvent(e) || retVal;
+        return retVal;
     }
 
     /**
@@ -184,96 +180,96 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mBitmap = holder;
         postInvalidate();
     }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return mBitmap;
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
-     */
-    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
-        float x = mPan.getMoveX();
-        float y = mPan.getMoveY();
-        if(shouldRotate()) {
-            double p[] = new double[2];
-            double thetab = mGpsParams.getBearing();
-            p = Helper.rotateCoord(0, 0, -thetab, x, y);
-            objPosAndScaleOut.set((float)p[0],(float)p[1], true,
-                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
-        }
-        else {
-            objPosAndScaleOut.set(x, y, true,
-                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public void selectObject(Object obj, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Do not move on multitouch
-             */
-            if(mDraw && mService != null) {
-                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
-                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
-                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
-                }
-                else {
-                    mService.getPixelDraw().addPoint(x, y);
-                }
-
-                return true;
-            }
-
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
-            float x = newObjPosAndScale.getXOff();
-            float y = newObjPosAndScale.getYOff();
-
-            if (shouldRotate()) {
-                double thetab = mGpsParams.getBearing();
-                double p[] = new double[2];
-                p = Helper.rotateCoord(0, 0, thetab, x, y);
-                mPan.setMove((float) p[0], (float) p[1]);
-            }
-            else {
-                mPan.setMove(x, y);
-            }
-
-            
-        } else {
-            /*
-             * Clamp scaling.
-             */
-            mScale.setScaleFactor(newObjPosAndScale.getScale());
-        }
-        
-        invalidate();
-        return true;
-    }
+//
+//    /* (non-Javadoc)
+//     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
+//     */
+//    public Object getDraggableObjectAtPoint(PointInfo pt) {
+//        return mBitmap;
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
+//     */
+//    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
+//        float x = mPan.getMoveX();
+//        float y = mPan.getMoveY();
+//        if(shouldRotate()) {
+//            double p[] = new double[2];
+//            double thetab = mGpsParams.getBearing();
+//            p = Helper.rotateCoord(0, 0, -thetab, x, y);
+//            objPosAndScaleOut.set((float)p[0],(float)p[1], true,
+//                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+//        }
+//        else {
+//            objPosAndScaleOut.set(x, y, true,
+//                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+//        }
+//
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
+//     */
+//    public void selectObject(Object obj, PointInfo touchPoint) {
+//        touchPointChanged(touchPoint);
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
+//     */
+//    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
+//        touchPointChanged(touchPoint);
+//        if(false == mCurrTouchPoint.isMultiTouch()) {
+//            /*
+//             * Do not move on multitouch
+//             */
+//            if(mDraw && mService != null) {
+//                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
+//                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
+//                /*
+//                 * Threshold the drawing so we do not generate too many points
+//                 */
+//                if (shouldRotate()) {
+//                    double thetab = mGpsParams.getBearing();
+//                    double p[] = new double[2];
+//                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
+//                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
+//                }
+//                else {
+//                    mService.getPixelDraw().addPoint(x, y);
+//                }
+//
+//                return true;
+//            }
+//
+//            /*
+//             * Multi-touch is zoom, single touch is pan
+//             */
+//            float x = newObjPosAndScale.getXOff();
+//            float y = newObjPosAndScale.getYOff();
+//
+//            if (shouldRotate()) {
+//                double thetab = mGpsParams.getBearing();
+//                double p[] = new double[2];
+//                p = Helper.rotateCoord(0, 0, thetab, x, y);
+//                mPan.setMove((float) p[0], (float) p[1]);
+//            }
+//            else {
+//                mPan.setMove(x, y);
+//            }
+//
+//
+//        } else {
+//            /*
+//             * Clamp scaling.
+//             */
+//            mScale.setScaleFactor(newObjPosAndScale.getScale());
+//        }
+//
+//        invalidate();
+//        return true;
+//    }
 
     /**
      * 
@@ -300,14 +296,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	mMatrix = params;
     	mShowingAD = ad;
     	postInvalidate();
-    }
-    
-    /**
-     * @param touchPoint
-     */
-    private void touchPointChanged(PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        invalidate();
     }
 
     /* (non-Javadoc)
@@ -508,6 +496,20 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         public void onLongPress(MotionEvent e) {
         	
         }
+
+        public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                float distanceX, float distanceY) {
+
+            // Don't pan if multi-touch scaling is under way
+            if( mScaling ) return false;
+
+            float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
+            float moveY = mPan.getMoveY() - (distanceY) / mScale.getScaleFactor();
+
+            mPan.setMove(moveX, moveY);
+            invalidate();
+            return true;
+        }
         
         @Override
         public boolean onDown(MotionEvent e) {
@@ -521,8 +523,56 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         }
 
     }
-    
-    
+
+    private class ScaleListener
+            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        /**
+         * This is the active focal point in terms of the viewport. Could be a local
+         * variable but kept here to minimize per-frame allocations.
+         */
+        private float lastFocusX;
+        private float lastFocusY;
+
+        // Detects that new pointers are going down.
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            mScaling = true;
+
+            lastFocusX = scaleGestureDetector.getFocusX();
+            lastFocusY = scaleGestureDetector.getFocusY();
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            mScaling = false;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+
+            float scaleFactor = detector.getScaleFactor();
+            mScaleFactor *= scaleFactor;
+            mScaleFactor = Math.min(mScaleFactor, MAX_PLATE_SCALE);
+            mScale.setScaleFactor(mScaleFactor);
+
+            float focusX = detector.getFocusX();
+            float focusY = detector.getFocusY();
+
+            float moveX = mPan.getMoveX() + ((focusX - lastFocusX) / mScaleFactor);
+            float moveY = mPan.getMoveY() + ((focusY - lastFocusY) / mScaleFactor);
+            lastFocusX = focusX;
+            lastFocusY = focusY;
+
+            mPan.setMove(moveX, moveY);
+
+            invalidate();
+
+            return true;
+        }
+    }
+
     /**
      * 
      * @param b
