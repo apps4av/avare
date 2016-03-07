@@ -13,18 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import java.util.LinkedHashMap;
-import java.util.Observable;
-import java.util.Observer;
-
-import com.ds.avare.adapters.SearchAdapter;
-import com.ds.avare.animation.AnimateButton;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.place.Destination;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.Helper;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -41,8 +29,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -50,6 +38,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.ds.avare.adapters.SearchAdapter;
+import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.Helper;
+
+import java.util.LinkedHashMap;
+import java.util.Observable;
+import java.util.Observer;
  
 /**
  * 
@@ -431,10 +431,10 @@ public class SearchActivity extends Activity implements Observer {
             }
         });
         
-        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePlan = new AnimateButton(getApplicationContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateSelect = new AnimateButton(getApplicationContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateEdit = new AnimateButton(getApplicationContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlan = new AnimateButton(SearchActivity.this, mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateSelect = new AnimateButton(SearchActivity.this, mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
     }
         

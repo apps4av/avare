@@ -13,27 +13,6 @@ package com.ds.avare;
 
 
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.message.NetworkHelper;
-import com.ds.avare.place.Destination;
-import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.PixelCoordinate;
-import com.ds.avare.position.Projection;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.PossibleEmail;
-import com.ds.avare.views.PlatesTagView;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -48,12 +27,33 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.place.Destination;
+import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.position.Projection;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.OptionButton;
+import com.ds.avare.utils.PossibleEmail;
+import com.ds.avare.views.PlatesTagView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author zkhan
@@ -70,7 +70,7 @@ public class PlatesTagActivity extends Activity implements Observer {
     private Button                       mReportButton;
     private Button                       mShareButton;
     private EditText                     mText;
-    private Spinner                      mSpinner;
+    private OptionButton                 mOptions;
     private Toast                        mToast;
     private Preferences                  mPref;
     private LinkedList<String>           mTags;
@@ -240,10 +240,10 @@ public class PlatesTagActivity extends Activity implements Observer {
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         
         /*
-         * Spinner for type of point
+         * Options for type of point
          */
-        mSpinner = (Spinner)view.findViewById(R.id.platestag_spinner);
-        mSpinner.setSelection(0);
+        mOptions = (OptionButton)view.findViewById(R.id.platestag_spinner);
+        mOptions.setCurrentSelectionIndex(0);
 
         /*
          * The button that adds a point
@@ -267,7 +267,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                  * What to find.
                  */
                 String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mSpinner.getSelectedItem().toString();
+                String item = mOptions.getCurrentValue();
                 
                 /*
                  * Cannot be null
@@ -406,7 +406,7 @@ public class PlatesTagActivity extends Activity implements Observer {
                 drawAirport();
                 
                 String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mSpinner.getSelectedItem().toString();
+                String item = mOptions.getCurrentValue();
                 if(null == item || mService == null) {
                     mToast.setText(getString(R.string.InvalidPoint));
                     mToast.show();

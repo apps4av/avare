@@ -12,24 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
-
-import com.ds.avare.adapters.TypeValueAdapter;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.place.Airport;
-import com.ds.avare.place.Awos;
-import com.ds.avare.place.Destination;
-import com.ds.avare.place.Plan;
-import com.ds.avare.place.Runway;
-import com.ds.avare.storage.DataBaseHelper;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.views.AfdView;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -45,12 +27,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-
-import java.util.ArrayList;
-
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.ds.avare.adapters.TypeValueAdapter;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Airport;
+import com.ds.avare.place.Awos;
+import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
+import com.ds.avare.place.Runway;
+import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.views.AfdView;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author zkhan,rasii
@@ -116,8 +114,8 @@ public class AirportActivity extends Activity implements Observer {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         
-        mDestString = "<" + getApplicationContext().getString(R.string.Destination) + ">";
-        mNearString = "<" + getApplicationContext().getString(R.string.Nearest) + ">";    
+        mDestString = "<" + getString(R.string.Destination) + ">";
+        mNearString = "<" + getString(R.string.Nearest) + ">";
         
         /*
          * Get views from XML
@@ -199,7 +197,7 @@ public class AirportActivity extends Activity implements Observer {
     
     private void setupViewInfo() {
         mListViews.clear();
-        mListViews.add(getApplicationContext().getString(R.string.AFD));
+        mListViews.add(getString(R.string.AFD));
         
         /*
          * Get Text A/FD
@@ -493,8 +491,8 @@ public class AirportActivity extends Activity implements Observer {
              * Initialize the lists
              */
             mListViews = new ArrayList<String>();
-            mListViews.add(getApplicationContext().getString(R.string.AFD));
-            
+            mListViews.add(AirportActivity.this.getString(R.string.AFD));
+
             mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
             mListAirports.add(mNearString);

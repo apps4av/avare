@@ -311,7 +311,7 @@ public class NetworkHelper {
      * @param root
      * @return
      */
-    public static String getUrl(String file, String vers, String root) {
+    public static String getUrl(String file, String vers, String root, boolean isStatic) {
         if(file.equals("TFRs.zip")) {
             return(root + "/" + file);
         }
@@ -327,7 +327,14 @@ public class NetworkHelper {
         else if(file.equals("ratings.zip")) {
             return(root + "/" + file);
         }
-        return(root + vers + "/" + file);
+
+        // See if it is a static chart (not updated every 28 days)
+        if(!isStatic) {
+            return (root + vers + "/" + file);
+        }
+        else {
+            return (root + "static" + "/" + file);
+        }
     }
 
     /*

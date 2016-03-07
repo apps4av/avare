@@ -1,31 +1,38 @@
 /*
-Copyright (c) 2014, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 package com.ds.avare;
-
-import com.ds.avare.R;
-import com.ds.avare.message.Helper;
-import com.ds.avare.message.Logger;
-import com.ds.avare.message.NetworkHelper;
-import com.ds.avare.utils.PossibleEmail;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.ds.avare.message.Helper;
+import com.ds.avare.message.Logger;
+import com.ds.avare.message.NetworkHelper;
+import com.ds.avare.utils.OptionButton;
+import com.ds.avare.utils.PossibleEmail;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
  
 /**
  * 
@@ -198,7 +205,7 @@ public class SubmitActivity extends Activity {
 		                        }
 		                        params.put("price", price);
 		                        
-		                        params.put("fueltype", ((Spinner)mView.findViewById(R.id.fuel_submit_fueltype)).getSelectedItem().toString());
+		                        params.put("fueltype", (((OptionButton) mView.findViewById(R.id.fuel_submit_fueltype)).getCurrentValue()));
 		                        
 		                        String fbo = ((EditText)mView.findViewById(R.id.fuel_submit_fbo)).getText().toString();
 		                        if(fbo.equals("")) {
@@ -217,7 +224,7 @@ public class SubmitActivity extends Activity {
 		                        	Logger.Logit(getString(R.string.InvalidComments));
 		                        	return false;		                        	
 		                        }
-		                        params.put("comments", comments);
+		                        params.put("comments", Base64.encodeToString(comments.getBytes(), Base64.URL_SAFE));
 		                        
 		                        int stars = (int)((RatingBar)mView.findViewById(R.id.comments_submit_ratingbar)).getRating();
 		                        params.put("stars", stars + "");

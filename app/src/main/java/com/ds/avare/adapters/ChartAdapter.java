@@ -72,7 +72,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_TOPO = 13;
     private static final int GROUP_HELI = 14;
     private static final int GROUP_ONC = 15;
-    private static final int GROUP_NUM = 16;
+    private static final int GROUP_TPC = 16;
+    private static final int GROUP_NUM = 17;
     
     /**
      * @param context
@@ -104,6 +105,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
         mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
         mChildren[GROUP_ONC] = context.getResources().getStringArray(R.array.resNameONC);
+        mChildren[GROUP_TPC] = context.getResources().getStringArray(R.array.resNameTPC);
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
         mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
         
@@ -125,6 +127,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         mChildrenFiles[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
+        mChildrenFiles[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
@@ -147,6 +150,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
         mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
         mVers[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
+        mVers[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         
@@ -168,6 +172,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
         mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
         mChecked[GROUP_ONC] = new int[mVers[GROUP_ONC].length];
+        mChecked[GROUP_TPC] = new int[mVers[GROUP_TPC].length];
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
         mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
         
@@ -295,6 +300,21 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    /*
+     * if chart is static
+     * @param name
+     */
+    public boolean isStatic(String name) {
+        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
+            for(int child = 0; child < mVers[group].length; child++) {
+                if(mChildrenFiles[group][child].equals(name)) {
+                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO);
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * checked state of a chart
      * @param name
@@ -400,7 +420,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN);
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC);
     }
 
     /**

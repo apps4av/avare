@@ -15,19 +15,20 @@ package com.ds.avare.utils;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.position.Coordinate;
 import com.ds.avare.weather.Metar;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * Created by zkhan on 12/15/15.
+ * This class collects a bunch of objects before processing them. Data is not required to be processed ASAP.
+ * This helps in minimizing async task creation, and helps in combining SQL queries into one query.
  */
 public class RateLimitedBackgroundQueue {
 
-    private LinkedList<Object> mQueue;
+    private HashMap<String, Metar> mQueueMetar;
     private AsyncTask<Void, Void, Void> mProcessTask;
 
     // Fire every few seconds
@@ -35,12 +36,12 @@ public class RateLimitedBackgroundQueue {
 
     public RateLimitedBackgroundQueue(final StorageService service) {
 
-        mQueue = new LinkedList<Object>();
+        mQueueMetar = new HashMap<String, Metar>();
 
         TimerTask timer= new TimerTask() {
             @Override
             public void run() {
-                if(mQueue.size() == 0) {
+                if(mQueueMetar.size() == 0) {
                     return;
                 }
                 if(mProcessTask != null && mProcessTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -52,19 +53,14 @@ public class RateLimitedBackgroundQueue {
 
                     @Override
                     protected Void doInBackground(Void... vals) {
-                        while (mQueue.size() > 0) {
-                            Object o = mQueue.removeFirst();
-                            // find what to do based on object type
-                            if(o instanceof Metar) {
-                                // Calculate metar map in background by finding lon/lat of airport
+                        if (mQueueMetar.size() > 0) {
 
-                                Metar m = (Metar)o;
-                                Coordinate c = service.getDBResource().findLonLatMetar(m.stationId);
-                                if(null != c) {
-                                    // update lon/lat in object, catch parse exception (airport not found)
-                                    m.lon = c.getLongitude();
-                                    m.lat = c.getLatitude();
-                                }
+                            // copy queue to avoid concurrent modification
+                            HashMap<String, Metar> metars = removeMetarsFromQueue();
+
+                            // process all metars, find their lon/lat
+                            if(metars.size() > 0) {
+                                service.getDBResource().findLonLatMetar(metars);
                             }
                         }
                         return null;
@@ -77,11 +73,25 @@ public class RateLimitedBackgroundQueue {
         t.scheduleAtFixedRate(timer, 0, RUN_TIME);
     }
 
+    // Get all metars
+    private HashMap<String, Metar> removeMetarsFromQueue() {
+        HashMap<String, Metar> metars;
+        synchronized (mQueueMetar) {
+            metars = (HashMap<String, Metar>)mQueueMetar.clone();
+            // Done, queue cleared
+            mQueueMetar.clear();
+        }
+        return metars;
+    }
+
     /**
      * Something needs to be done
-     * @param obj
+     * @param metar
      */
-    public void insertInQueue(Object obj) {
-        mQueue.add(obj);
+    public void insertMetarInQueue(Metar metar) {
+        synchronized (mQueueMetar) {
+            // FAA database does not have K in it
+            mQueueMetar.put(metar.stationId.replaceAll("^K", ""), metar);
+        }
     }
 }

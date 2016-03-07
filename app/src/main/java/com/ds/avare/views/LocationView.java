@@ -50,6 +50,7 @@ import com.ds.avare.position.Scale;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.shapes.Layer;
 import com.ds.avare.shapes.MetShape;
+import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
@@ -690,6 +691,15 @@ public class LocationView extends View implements OnTouchListener {
      * @param canvas
      * @param ctx
      */
+    private void drawShapes(Canvas canvas, DrawingContext ctx) {
+        ShapeFileShape.draw(ctx, mService.getShapeShapes(), null == mPointProjection);
+    }
+
+    /**
+     *
+     * @param canvas
+     * @param ctx
+     */
     private void drawAirSigMet(Canvas canvas, DrawingContext ctx) {
         MetShape.draw(ctx, mService.getInternetWeatherCache().getAirSigMet(), null == mPointProjection);
     }
@@ -990,6 +1000,7 @@ public class LocationView extends View implements OnTouchListener {
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
         drawTFR(canvas, ctx);
+        drawShapes(canvas, ctx);
         drawAirSigMet(canvas, ctx);
         drawTracks(canvas, ctx);
         drawTrack(canvas, ctx);

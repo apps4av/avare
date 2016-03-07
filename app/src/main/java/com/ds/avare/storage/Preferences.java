@@ -158,11 +158,12 @@ public class Preferences {
             val = "0";
         }
         if (val.equals("0")) {
-            /*
-             * I hope Android comes up with a better resource solution some time soon.
-             */
-            return "http://208.113.226.170/new/";
-        } else if (val.equals("1")) {
+            return "http://69.163.195.165/new/";
+        }
+        else if (val.equals("1")) {
+            return "http://www.apps4av.org/new/";
+        }
+        else if (val.equals("2")) {
             return "http://avare.kitepilot.net/new/";
         }
         return ("");
@@ -1095,6 +1096,10 @@ public class Preferences {
 
     public String getPilotContact() {
         return mPref.getString(mContext.getString(R.string.PilotContact), "TEST PILOT 1-800-WX-BRIEF");
+    }
+
+    public String getShapeFileName() {
+        return mPref.getString(mContext.getString(R.string.ShapeFile), "custom.shp");
     }
 
     public int getFuelTimerInterval() {

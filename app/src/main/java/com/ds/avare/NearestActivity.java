@@ -12,18 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import java.util.Observable;
-import java.util.Observer;
-
-import com.ds.avare.adapters.NearestAdapter;
-import com.ds.avare.animation.AnimateButton;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.gps.GpsParams;
-import com.ds.avare.place.Airport;
-import com.ds.avare.place.Destination;
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.Helper;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,10 +25,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.ds.avare.adapters.NearestAdapter;
+import com.ds.avare.animation.AnimateButton;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author zkhan
@@ -289,8 +289,8 @@ public class NearestActivity extends Activity  implements Observer {
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
-        mAnimatePlates = new AnimateButton(getApplicationContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateDest = new AnimateButton(getApplicationContext(), mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlates = new AnimateButton(this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateDest = new AnimateButton(this, mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mService = null;
     }
 

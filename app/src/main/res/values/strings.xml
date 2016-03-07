@@ -234,7 +234,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefOdometer">Odometer</string>
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
     <string name="Layer">LayerTransparency</string>
-    <string name="LayerLabel">&quot;Layer Transparency&quot;</string>
+    <string name="LayerSelect">&quot;Select Layer Type&quot;</string>
     <string name="LayerSummary">&quot;Select how transparent a NEXRAD/METAR layer should be&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
     <string name="AndLoad">&quot;and load&quot;</string>
@@ -258,7 +258,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="unregister">Unregister</string>
     <string name="error">Error</string>
     <string name="error_internet">Please connect to a working Internet connection</string>
-    <string name="error_email">Please register a Gmail account before continuing!\nOn Android 6.0+, you must also go to Android Settings->Apps->Avare->Permissions then grant Avare all permissions it needs - Location for navigation, Storage and Network for charts, and Accounts for registration.</string>
+    <string name="error_email">Please register a Gmail account before continuing!</string>
     <string name="already_registered">You have already registered your account</string>
     <string name="already_unregistered">You have already unregistered</string>
     <string name="registering_server">Registering with the Apps4Av servers</string>
@@ -286,7 +286,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Advertisements">Ads</string>
     <string name="Locked">Locked</string>
     <string name="Edit">Edit</string>
-    <string name="ExternalFolder">Use the default external folder</string>
+    <string name="ExternalFolder">Try using external folder</string>
+    <string name="SDFolder">Try using SD card folder</string>
     <string name="online">Edit Account</string>
     <string name="onlineSummary">Register or unregister your Apps4Av account</string>
     <string name="folderHelp">If this is not the correct SD card folder, then create a folder in root of SD card named Android/data/com.ds.avare, and select it from here</string>
@@ -444,6 +445,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads, and disappear from Map screen&quot;</string>
 
     <string name="LayerType">&quot;LayerType&quot;</string>
+    <string name="LayerLabel">&quot;Select Layer Type&quot;</string>
     <string name="Download">Download</string>
     <string name="Tiles">Tiles</string>
 
@@ -484,5 +486,21 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FuelTimerInterval">FuelTimerInterval</string>
     <string name="FuelTimerLabel">Fuel Timer Interval</string>
     <string name="FuelTimerSummary">Select fuel timer reset interval (change requires app restart)</string>
+
+    <string name="Proceed">Proceed</string>
+    <string name="GrantPermissions">Grant Permissions</string>
+    <string name="RationaleAccount">Let this app read your accounts? Email address from one account is needed to confirm that you have signed the privacy policy.</string>
+    <string name="RationaleLocation">Let this app use your GPS? GPS is needed for showing your location on the map.</string>
+    <string name="RationaleExternalStorage">Let this app use your SD Card? SD card access is needed to store large maps.</string>
+    <string name="RationaleSettings">Let this app change your device settings? Settings are modified for screen brightness.</string>
+    <string name="NoRationale">Disallowing a permission may cause the app to misbehave or crash.</string>
+
+    <string name="ShapeFile">ShapeFile</string>
+    <string name="ShapeFileLabel">Shape File Name</string>
+    <string name="ShapeFileSummary">Load Esri shape file of specified name from the download folder (change requires app restart)</string>
+    <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
+    <string name="CrashLabel">Avare has stopped unexpectedly!</string>
+    <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
+
 
 </resources>

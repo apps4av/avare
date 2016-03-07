@@ -112,29 +112,29 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/hotel_layout_type"
         android:layout_height="wrap_content" >
             	   	
-	   	   <Spinner
+	   	   <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_price"
                 android:layout_width="0dp"
                 android:layout_weight="1"
 		        android:layout_height="wrap_content"
 		        android:entries="@array/hotel_max_price">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		
-		   <Spinner
+		   <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_stars"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_min_stars">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		   
-			<Spinner
+			<com.ds.avare.utils.OptionButton
 			     android:id="@+id/hotel_radius"
 			     android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 			     android:entries="@array/hotel_max_radius">
-			</Spinner>
+			</com.ds.avare.utils.OptionButton>
 		
       </LinearLayout>
 
@@ -183,29 +183,29 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
     		
-			<Spinner
+			<com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_adults"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_count_adults">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		
-	       <Spinner
+	       <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_child_1"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		
-		   <Spinner
+		   <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_child_2"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 	
 	   </LinearLayout>
 	   
@@ -253,29 +253,29 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
         
-	       <Spinner
+	       <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_child_3"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		   
-		   <Spinner
+		   <com.ds.avare.utils.OptionButton
 		        android:id="@+id/hotel_child_4"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
-		   </Spinner>
+		   </com.ds.avare.utils.OptionButton>
 		   
-           <Spinner
+           <com.ds.avare.utils.OptionButton
                 android:id="@+id/hotel_child_5"
                 android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
                 android:entries="@array/hotel_age_child">
-           </Spinner>
+           </com.ds.avare.utils.OptionButton>
 	   
     </LinearLayout>
             	

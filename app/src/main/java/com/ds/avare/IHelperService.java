@@ -26,6 +26,7 @@ import android.os.Message;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
@@ -41,7 +42,9 @@ public class IHelperService extends Service {
 
     private StorageService mService;
     private JSONObject mGeoAltitude;
-    
+
+    public static final int MIN_ALTITUDE = -1000;
+
     /**
      * We need to bind to storage service to do anything useful 
      */
@@ -59,7 +62,7 @@ public class IHelperService extends Service {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mGeoAltitude = null;
-        }    
+        }
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -213,24 +216,66 @@ public class IHelperService extends Service {
                     Location l = new Location(LocationManager.GPS_PROVIDER);
                     l.setLongitude(object.getDouble("longitude"));
                     l.setLatitude(object.getDouble("latitude"));
-                    l.setSpeed((float)object.getDouble("speed"));
+                    l.setSpeed((float) object.getDouble("speed"));
                     l.setBearing((float) object.getDouble("bearing"));
+                    l.setTime(object.getLong("time"));
 
-                    // This comes from geometric altitude as this needs to be GPS report
-                    l.setAltitude(object.getDouble("altitude"));
-                    //do not use old geo altitude
+                    // Choose most appropriate altitude. This is because people fly all sorts
+                    // of equipment with or without altitudes
+                    // convert all altitudes in feet
+                    double pressureAltitude = object.getDouble("altitude") * Preferences.heightConversion;
+                    double deviceAltitude = MIN_ALTITUDE;
+                    double geoAltitude = MIN_ALTITUDE;
+                    // If geo altitude from adsb available, use it if not too old
                     if(mGeoAltitude != null) {
                         long t1 = object.getLong("time");
                         long t2 = mGeoAltitude.getLong("time");
                         if((t1 - t2) < 10000) { // 10 seconds
-                            l.setAltitude(mGeoAltitude.getDouble("altitude"));
+                            geoAltitude = mGeoAltitude.getDouble("altitude") * Preferences.heightConversion;
+                            if(geoAltitude < MIN_ALTITUDE) {
+                                geoAltitude = MIN_ALTITUDE;
+                            }
+                        }
+                    }
+                    // If geo altitude from device available, use it if not too old
+                    if(mService.getGpsParams() != null) {
+                        long t1 = System.currentTimeMillis();
+                        long t2 = mService.getGpsParams().getTime();
+                        if ((t1 - t2) < 10000) { // 10 seconds
+                            deviceAltitude = mService.getGpsParams().getAltitude();
+                            if(deviceAltitude < MIN_ALTITUDE) {
+                                deviceAltitude = MIN_ALTITUDE;
+                            }
                         }
                     }
 
-                    l.setTime(object.getLong("time"));
-                    mService.getGps().onLocationChanged(l, type);
+                    // choose best altitude. give preference to pressure altitude because that is
+                    // the most correct for traffic purpose.
+                    double alt = pressureAltitude;
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = geoAltitude;
+                    }
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = deviceAltitude;
+                    }
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = MIN_ALTITUDE;
+                    }
+
                     // set pressure altitude for traffic alerts
-                    mService.getTrafficCache().setOwnAltitude((int) object.getDouble("altitude"));
+                    mService.getTrafficCache().setOwnAltitude((int) alt);
+
+                    // For own height prefer geo altitude, do not use deviceAltitude here because
+                    // we could get into rising altitude condition through feedback
+                    alt = geoAltitude;
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = pressureAltitude;
+                    }
+                    if(alt <= MIN_ALTITUDE) {
+                        alt = MIN_ALTITUDE;
+                    }
+                    l.setAltitude(alt / Preferences.heightConversion);
+                    mService.getGps().onLocationChanged(l, type);
                 }
                 else if(type.equals("nexrad")) {
                     

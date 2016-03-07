@@ -13,8 +13,6 @@ package com.ds.avare;
 
 
 
-import com.ds.avare.utils.Helper;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -22,9 +20,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.OptionButton;
 
 /**
  * @author zkhan
@@ -33,7 +32,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class MessageActivity extends Activity  {
     
     private WebView mWebView;
-    private Spinner mSpinner;
+    private OptionButton mOptions;
 
     /*
      * Show views from web
@@ -59,23 +58,21 @@ public class MessageActivity extends Activity  {
         });
 
 
-        mSpinner = (Spinner)view.findViewById(R.id.message_type);
+        mOptions = (OptionButton)view.findViewById(R.id.message_type);
         
-        mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                if(0 == pos) {
+        mOptions.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object obj1, Object obj2) {
+                int pos = (int)obj2;
+                if (0 == pos) {
                     mWebView.clearView();
-                }
-                else {
+                } else {
                     mWebView.loadUrl("https://apps4av.net/ads/" + pos + ".php");
                 }
-            }
-           
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
+                return null;
             }
         });
+
         setContentView(view);
     }
 

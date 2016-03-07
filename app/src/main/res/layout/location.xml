@@ -126,15 +126,15 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
 
-        <Spinner
+        <com.ds.avare.utils.OptionButton
             android:id="@+id/location_spinner_layer"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/location_button_sim"
             android:visibility="invisible"
-            android:entries="@array/LayerType"
-            android:entryValues="@array/LayerType" />
+            android:labelFor="@string/LayerSelect"
+            android:entries="@array/LayerType"/>
 
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_sim"
@@ -178,15 +178,15 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOn="@string/Draw"
             android:textStyle="bold" />
 
-        <Spinner
+        <com.ds.avare.utils.OptionButton
             android:id="@+id/location_spinner_chart"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:visibility="invisible"
-            android:entries="@array/ChartType"
-            android:entryValues="@array/ChartTypeValues" />
+            android:labelFor="@string/ChartTypeLabel"
+            android:entries="@array/ChartType" />
         
         <RelativeLayout
             android:layout_margin="5dp"

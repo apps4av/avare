@@ -18,6 +18,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.GeomagneticField;
+import android.util.Base64;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -1592,32 +1593,45 @@ public class DataBaseHelper  {
     }
 
     /**
-     * Find the lat/lon of an airport
-     * @param name
+     * Find the lat/lon of an array of airports, and update in the objects
+     * @param metars
      * @return
      */
-    public Coordinate findLonLatMetar(String name) {
+    public void findLonLatMetar(HashMap<String, Metar> metars) {
 
-        name = name.replaceAll("^K", ""); // FAA database does not have K in it
+        String name = "";
+        Set<String> keys = metars.keySet();
+        for (String k : keys) {
+            // Make a long query instead of several long queries
+            name += LOCATION_ID_DB + "=='" + k + "' or ";
+        }
+        name += LOCATION_ID_DB + "=='BOS'"; // Dummy
+
         /*
          * Find with sqlite query
          */
         String qry = "select * from " + TABLE_AIRPORTS +
-                " where " + LOCATION_ID_DB + "=='" + name + "';";
+                " where " + TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and (" + name + ");";
         Cursor cursor = doQuery(qry, getMainDb());
-        Coordinate ret = null;
 
         try {
             if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    ret = new Coordinate(cursor.getDouble(LONGITUDE_COL), cursor.getDouble(LATITUDE_COL));
+                while(cursor.moveToNext()) {
+                    // populate the metar objects with lon/lat
+                    double lon = cursor.getDouble(LONGITUDE_COL);
+                    double lat = cursor.getDouble(LATITUDE_COL);
+                    String id = cursor.getString(LOCATION_ID_COL);
+                    Metar m = metars.get(id);
+                    if(m != null) {
+                        m.lat = lat;
+                        m.lon = lon;
+                    }
                 }
             }
         }
         catch (Exception e) {
         }
         closes(cursor);
-        return ret;
     }
 
     /**
@@ -2761,7 +2775,8 @@ public class DataBaseHelper  {
 	                     * 4 star, userid (2015-03-07): Comments
 	                     */
 	                	String tokens[] = cursor.getString(4).split(" ");
-	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + cursor.getString(3));
+                        byte[] comments = Base64.decode(cursor.getString(3), Base64.URL_SAFE);
+	                	ret.add(cursor.getString(2) + " " + mContext.getString(R.string.Stars) + ", " + cursor.getString(0) + " (" + tokens[0] + "): " + new String(comments, "US-ASCII"));
                     }
                     while(cursor.moveToNext());
                 }
@@ -2772,7 +2787,4 @@ public class DataBaseHelper  {
         closesRatings(cursor);
         return ret;
 	}
-
-
-
 }

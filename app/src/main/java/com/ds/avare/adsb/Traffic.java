@@ -3,6 +3,7 @@ package com.ds.avare.adsb;
 import android.graphics.Color;
 import android.util.SparseArray;
 
+import com.ds.avare.IHelperService;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
@@ -143,10 +144,10 @@ public class Traffic {
             int diff;
             String text;
 
-            if(altitude == -Integer.MAX_VALUE) {
+            if(altitude <= IHelperService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
                 diff = (int)t.mAltitude;
-                text = diff + "PA'"; // show that this is pressure altitude
+                text = diff + "Pr'"; // show that this is pressure altitude
                 // do not filter when own PA is not known
             }
             else {

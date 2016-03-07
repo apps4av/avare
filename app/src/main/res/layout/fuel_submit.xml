@@ -32,13 +32,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:hint="@string/FBO"
             />
  	    
-	    <Spinner
+	    <com.ds.avare.utils.OptionButton
             android:id="@+id/fuel_submit_fueltype"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/fuel_submit_fbo"
-            android:entries="@array/FuelType"
-            android:entryValues="@array/FuelType" />
+            android:entries="@array/FuelType" />
 
 	    <EditText
             android:id="@+id/fuel_submit_price"

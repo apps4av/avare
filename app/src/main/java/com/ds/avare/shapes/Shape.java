@@ -187,7 +187,7 @@ public abstract class Shape {
             /*
              * Draw the shape segment by segment
              */
-            if(getNumCoords()>0) {
+            if(getNumCoords() > 0) {
                 float pts[] = new float[(getNumCoords()) * 4];
                 int i = 0;
                 int coord = 0;
@@ -260,6 +260,13 @@ public abstract class Shape {
             return mText;
         }
         return null;
+    }
+
+    /**
+     *
+     */
+    public String getLabel() {
+        return mText;
     }
     
     /**

@@ -64,6 +64,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private double                     mAirportLon;
     private double                     mAirportLat;
 
+    private Context                   mContext;
     /*
      * Is it drawing?
      */
@@ -90,6 +91,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 
+        mContext = context;
         mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
@@ -315,6 +317,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public void onDraw(Canvas canvas) {
 
         float angle = 0;
+        boolean bRotated = false;
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
@@ -381,20 +384,26 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             // rotate only when showing AD, or showing geo tagged approach plate.
             if(shouldRotate()) {
                 canvas.save();
+                bRotated = true;
                 canvas.rotate(-(int) mGpsParams.getBearing(),getWidth() / 2,getHeight() / 2);
             }
 
             /*
         	 * Plate
         	 */
+            float x = mPan.getMoveX() * scale
+                    + getWidth() / 2
+                    - mBitmap.getWidth() / 2 * scale;
+            float y = mPan.getMoveY() * scale
+                    + getHeight() / 2
+                    - mBitmap.getHeight() / 2 * scale;
             mBitmap.getTransform().setScale(scale, scale);
-            mBitmap.getTransform().postTranslate(
-                    mPan.getMoveX() * scale
-                            + getWidth() / 2
-                            - mBitmap.getWidth() / 2 * scale ,
-                    mPan.getMoveY() * scale
-                            + getHeight() / 2
-                            - mBitmap.getHeight() / 2 * scale);
+            mBitmap.getTransform().postTranslate(x, y);
+
+            // Add plates tag PG's website
+            mPaint.setColor(0x007F00);
+            mPaint.setAlpha(255);
+            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top, mPaint);
 
             if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);
@@ -451,8 +460,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	 */
     	this.drawDrawing(canvas);
 
-        // rotate back to show info lines
-        if(shouldRotate()) {
+        /*
+         * restore
+         */
+        if(bRotated) {
             canvas.restore();
         }
 

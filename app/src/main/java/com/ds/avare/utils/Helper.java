@@ -499,8 +499,7 @@ public class Helper {
          * Do not open keyboard automatically.
          */
         act.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-    }    
+    }
     
     /**
      * 
