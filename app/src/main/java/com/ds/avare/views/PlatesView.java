@@ -117,7 +117,7 @@ public class PlatesView extends View implements OnTouchListener {
      * @param context
      */
 	public PlatesView(Context context) {
-		this(context, null, 0);
+        this(context, null, 0);
 	}
 
     /**
@@ -398,23 +398,13 @@ public class PlatesView extends View implements OnTouchListener {
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
         @Override
-        public void onLongPress(MotionEvent e) {
-        	
-        }
-
-        public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                float distanceX, float distanceY) {
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
             if( mScaling ) return false;
 
-            /*
-             * Do not move on multitouch
-             */
+            // If user is drawing
             if(mDraw && mService != null) {
                 float x = e2.getX() ;
                 float y = e2.getY() ;
@@ -434,6 +424,7 @@ public class PlatesView extends View implements OnTouchListener {
 
             }
 
+            // If user is panning
             if( !mDraw ) {
 
                 float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
@@ -459,6 +450,7 @@ public class PlatesView extends View implements OnTouchListener {
 
     }
 
+    // Class to handle multi-touch scale gestures
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
@@ -473,7 +465,6 @@ public class PlatesView extends View implements OnTouchListener {
         @Override
         public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
             mScaling = true;
-
             lastFocusX = scaleGestureDetector.getFocusX();
             lastFocusY = scaleGestureDetector.getFocusY();
             return true;
