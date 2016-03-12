@@ -18,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -413,7 +412,6 @@ public class PlatesView extends View implements OnTouchListener {
             // Don't pan/draw if multi-touch scaling is under way
             if( mScaling ) return false;
 
-            Log.i("PlatesView::GestureList", "mDraw: " + mDraw);
             /*
              * Do not move on multitouch
              */
