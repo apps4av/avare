@@ -120,7 +120,7 @@ public class Preferences {
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             speedConversion = 1.944; // m/s to kt/hr
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 6076.12;
             earthRadiusConversion = 3440.069;
             distanceConversionUnit = mContext.getString(R.string.DistKnot);
@@ -128,7 +128,7 @@ public class Preferences {
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         } else if (getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
             speedConversion = 2.2396; // m/s to mi/hr
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 5280;
             earthRadiusConversion = 3963.1676;
             distanceConversionUnit = mContext.getString(R.string.DistMile);
@@ -136,7 +136,7 @@ public class Preferences {
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         } else if (getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
             speedConversion = 3.6; // m/s to kph
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 3280.84;
             earthRadiusConversion = 6378.09999805;
             distanceConversionUnit = mContext.getString(R.string.DistKilometer);
