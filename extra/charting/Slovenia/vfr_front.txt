@@ -1,14 +1,14 @@
 #http://www.sloveniacontrol.si/en/information/vfr-chart-2015, use gtag_tmerc.py
-# Convert PDF to JPG at 125 dpi
+# Convert PDF to JPG at 250 dpi
 filename=VFR2015_layers.jpg
 lon0=15
 lonlat0=13.5 46.75
-xy0=256 289
+xy0=512 578
 lonlat1=14 46.5
-xy1=1000 849
+xy1=2000 1698
 lonlat2=15.25 46
-xy2=2894 1952
+xy2=5787 3904
 lonlat3=16.5 45.5
-xy3=4820 3024
+xy3=9640 6048
 dims=13.38 46.87 16.58 45.32
 

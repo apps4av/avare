@@ -123,8 +123,8 @@ def projectIt(inputf):
 	os.system(string)
 
 	# clean up 
-	#delFile("temp")
-	#delFile("temp2")
+	delFile("temp")
+	delFile("temp2")
 
 # tile and etc.
 def final(all):

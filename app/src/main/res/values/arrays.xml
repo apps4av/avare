@@ -31,6 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Heli/Other Charts</item>
         <item>ONC Large Files</item>
         <item>TPC Large Files</item>
+        <item>Misc. Charts</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -1483,6 +1484,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>TPC_t18a</item>
     </string-array>
 
+
+    <string-array name="resNameMisc">
+        <item>VFR Israel</item>
+        <item>VFR Slovenia</item>
+    </string-array>
+
     <string-array name="resFilesDatabase">
         <item>databases</item>
         <item>geoplates</item>
@@ -1905,6 +1912,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>WashingtonHeli</item>
     </string-array>
 
+    <string-array name="resFilesMisc">
+        <item>VFRIsrael</item>
+        <item>VFRSlovenia</item>
+    </string-array>
+
+
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -1918,6 +1931,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Heli/Other</item>
         <item>ONC World</item>
         <item>TPC World</item>
+        <item>Misc.</item>
     </string-array>
 
     <string-array name="ChartFileExtesion">
@@ -1931,6 +1945,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>.jpg</item>
         <item>.jpg</item>
         <item>.png</item>
+        <item>.jpg</item>
         <item>.jpg</item>
         <item>.jpg</item>
     </string-array>
@@ -1948,6 +1963,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>9</item>
         <item>10</item>
         <item>11</item>
+        <item>12</item>
     </string-array>
 
     <string-array name="ChartMaxZooms">
@@ -1963,6 +1979,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>12</item>
         <item>9</item>
         <item>10</item>
+        <item>12</item>
     </string-array>
     
     <string-array name="UnitsD">
