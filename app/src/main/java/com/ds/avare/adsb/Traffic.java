@@ -142,18 +142,18 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
-            String text;
+            String text = t.mCallSign;
 
             if(altitude <= IHelperService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
                 diff = (int)t.mAltitude;
-                text = diff + "Pr'"; // show that this is pressure altitude
+                text += diff + "Pr'"; // show that this is pressure altitude
                 // do not filter when own PA is not known
             }
             else {
                 // Own PA is known, show height difference
                 diff = (int)(t.mAltitude - altitude);
-                text = (diff > 0 ? "+" : "") + diff + "'";
+                text += (diff > 0 ? "+" : "") + diff + "'";
                 // filter
                 if(Math.abs(diff) > filterAltitude) {
                     continue;

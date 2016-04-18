@@ -435,13 +435,18 @@ public class NetworkHelper {
                 return true;            
             }
 
-            month = Integer.parseInt(dates[0]) - 1;
-            day = Integer.parseInt(dates[1]);
-            year = Integer.parseInt(dates[2]);
+            try {
+                month = Integer.parseInt(dates[0]) - 1;
+                day = Integer.parseInt(dates[1]);
+                year = Integer.parseInt(dates[2]);
 
-            String time[] = dates[3].split(":");
-            hour = Integer.parseInt(time[0]);
-            min = Integer.parseInt(time[1]);
+                String time[] = dates[3].split(":");
+                hour = Integer.parseInt(time[0]);
+                min = Integer.parseInt(time[1]);
+            }
+            catch (Exception e) {
+                return true;
+            }
             if(year < 1 || month < 0 || day < 1 || hour < 0 || min < 0) {
                 return true;
             }
