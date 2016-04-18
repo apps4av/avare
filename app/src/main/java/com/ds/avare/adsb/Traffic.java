@@ -106,7 +106,7 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, boolean shouldDraw) {
+    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, int ownIcao, boolean shouldDraw) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
 
@@ -123,6 +123,11 @@ public class Traffic {
             Traffic t = traffic.get(key);
             if(t.isOld()) {
                 traffic.delete(key);
+                continue;
+            }
+
+            if(t.mIcaoAddress == ownIcao) {
+                // Do not draw shadow of own
                 continue;
             }
 

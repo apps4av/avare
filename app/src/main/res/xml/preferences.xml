@@ -388,6 +388,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/AircraftTypeSummary"
             android:key="@string/AircraftType"/>
 
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftICAOCode"
+            android:summary="@string/AircraftICAOCodeSummary"
+            android:key="@string/AircraftICAOCode"/>
+
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:entries="@array/ACColor"
             android:entryValues="@array/ACColorValue"

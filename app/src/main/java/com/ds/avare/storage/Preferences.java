@@ -1090,6 +1090,17 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
     }
 
+    public int getAircraftICAOCode() {
+        int code = 0;
+        try {
+            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
+        }
+        catch (Exception e) {
+
+        }
+        return code;
+    }
+
     public String getAircraftTailNumber() {
         return mPref.getString(mContext.getString(R.string.AircraftTailNumber), "N1TEST");
     }
