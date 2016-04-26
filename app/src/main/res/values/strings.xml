@@ -80,6 +80,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Main">&quot;Map&quot;</string>
     <string name="Plates">&quot;Plate&quot;</string>
     <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="ThreeD">&quot;3D&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
@@ -347,7 +348,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>
     <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>
 	<string name="AFDSummary">&quot;Airport Facilitiy Directory information.&quot;</string>
-	<string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
+    <string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
+    <string name="ThreeDSummary">&quot;See around in 3D.&quot;</string>
 	<string name="PlanSummary">&quot;Flight plan creation and management.&quot;</string>
 	<string name="WXSummary">&quot;Weather briefing for local, destination or route.&quot;</string>
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
@@ -356,7 +358,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TripSummary">&quot;Travel display.&quot;</string>
     				
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
-	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+    <string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+    <string name="prefTabThreeD">&quot;prefTabThreeD&quot;</string>
 	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
 	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>

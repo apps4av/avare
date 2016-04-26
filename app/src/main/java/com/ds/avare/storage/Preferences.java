@@ -883,6 +883,10 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabFind;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
+            mTabs |= 1 << MainActivity.tabThreeD;
+        }
+
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
             mTabs |= 1 << MainActivity.tabPlan;
         }

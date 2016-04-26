@@ -51,13 +51,14 @@ public class MainActivity extends TabActivity {
     public static final int tabMain = 0; 
     public static final int tabPlates = 1;
     public static final int tabAFD = 2;
-    public static final int tabFind = 3;
-    public static final int tabPlan = 4;
-    public static final int tabWXB = 5;
-    public static final int tabNear = 6;
-    public static final int tabChecklist = 7;
-    public static final int tabTrip = 8;	
-    public static final int tabTools = 9;	
+    public static final int tabThreeD = 3;
+    public static final int tabFind = 4;
+    public static final int tabPlan = 5;
+    public static final int tabWXB = 6;
+    public static final int tabNear = 7;
+    public static final int tabChecklist = 8;
+    public static final int tabTrip = 9;
+    public static final int tabTools = 10;
     
     @Override
     /**
@@ -111,7 +112,11 @@ public class MainActivity extends TabActivity {
         if(0 != (tabItems & (1 << tabAFD))) {
         	setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
         }
-        
+
+        if(0 != (tabItems & (1 << tabThreeD))) {
+            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
+        }
+
         if(0 != (tabItems & (1 << tabFind))) {
         	setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
         }

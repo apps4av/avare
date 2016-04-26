@@ -307,8 +307,8 @@ authors: zkhan, jlmcgraw
 		            android:title="@string/AFD" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
-		            android:key="@string/prefTabFind"
-		            android:summary="@string/FindSummary"
+		            android:key="@string/prefTabThreeD"
+		            android:summary="@string/ThreeDSummary"
 		            android:title="@string/Find" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
