@@ -1,31 +1,34 @@
+/*
+Copyright (c) 2016, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package com.ds.avare.threed;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 
 import com.ds.avare.R;
-import com.ds.avare.utils.BitmapHolder;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import com.ds.avare.threed.objects.Map;
+import com.ds.avare.threed.objects.Ship;
+import com.ds.avare.threed.programs.ColorShaderProgram;
+import com.ds.avare.threed.programs.TextureShaderProgram;
+import com.ds.avare.threed.util.MatrixHelper;
+import com.ds.avare.threed.util.TextureHelper;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
-import static android.opengl.GLES20.glDrawArrays;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
-import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glUseProgram;
-import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.rotateM;
@@ -37,105 +40,37 @@ import static android.opengl.Matrix.translateM;
  */
 public class TerrainRenderer implements GLSurfaceView.Renderer {
 
-
-    private static final String U_MATRIX = "u_Matrix";
-
-    private static final String A_POSITION = "a_Position";
-    private static final String A_COLOR = "a_Color";
-
-    private static final int POSITION_COMPONENT_COUNT = 4;
-    private static final int COLOR_COMPONENT_COUNT = 4;
-    private static final int BYTES_PER_FLOAT = 4;
-
-    private static final int STRIDE =
-            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
-
-    int uMatrixLocation;
-    int aPositionLocation;
-    int aColorLocation;
-
-    private static final int ROWS = 128;
-    private static final int COLS = 128;
-
-    private final FloatBuffer mVertexData;
     private final Context mContext;
 
-    private float[] mVertices;
-
     private final float[] mProjectionMatrix = new float[16];
-
     private final float[] mModelMatrix = new float[16];
+
+    private Map mMap;
+    private Ship mShip;
+
+    private TextureShaderProgram mTextureProgram;
+    private ColorShaderProgram mColorProgram;
+
+    private int mTexture;
 
     public TerrainRenderer(Context mContext) {
         this.mContext = mContext;
-
-        mVertices = genTerrainFromBitmap(new BitmapHolder(mContext, R.drawable.test).getBitmap());
-
-        mVertexData = ByteBuffer
-                .allocateDirect(mVertices.length * BYTES_PER_FLOAT)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-
-        mVertexData.put(mVertices);
     }
 
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
 
-        int program;
-
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        String vertexShaderSource =
-                "uniform mat4 u_Matrix;\n" +
-                        "attribute vec4 a_Position;\n" +
-                        "attribute vec4 a_Color;\n" +
-                        "varying vec4 v_Color;\n" +
-                        "void main()\n" +
-                        "{" +
-                        "    v_Color = a_Color;\n" +
-                        "    gl_Position = u_Matrix * a_Position;\n" +
-                        "    gl_PointSize = 10.0;\n" +
-                        "}";
+        mMap = new Map(mContext);
+        mShip = new Ship();
 
-        String fragmentShaderSource =
-                "precision mediump float; \n" +
-                        "varying vec4 v_Color;\n" +
-                        "void main()\n" +
-                        "{\n" +
-                        "    gl_FragColor = v_Color;\n" +
-                        "}";
+        mTextureProgram = new TextureShaderProgram(mContext);
+        mColorProgram = new ColorShaderProgram(mContext);
 
-        int vertexShader = ShaderHelper.compileVertexShader(vertexShaderSource);
-        int fragmentShader = ShaderHelper
-                .compileFragmentShader(fragmentShaderSource);
+        mTexture = TextureHelper.loadTexture(mContext, R.drawable.sec_9_98_314);
 
-        program = ShaderHelper.linkProgram(vertexShader, fragmentShader);
-
-        ShaderHelper.validateProgram(program);
-
-        glUseProgram(program);
-
-        uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
-
-        aPositionLocation = glGetAttribLocation(program, A_POSITION);
-        aColorLocation = glGetAttribLocation(program, A_COLOR);
-
-        // Bind our data, specified by the variable mVertexData, to the vertex
-        // attribute at location A_POSITION_LOCATION.
-        mVertexData.position(0);
-        glVertexAttribPointer(aPositionLocation,
-                POSITION_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, mVertexData);
-
-        glEnableVertexAttribArray(aPositionLocation);
-
-        // Bind our data, specified by the variable mVertexData, to the vertex
-        // attribute at location A_COLOR_LOCATION.
-        mVertexData.position(POSITION_COMPONENT_COUNT);
-        glVertexAttribPointer(aColorLocation,
-                COLOR_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, mVertexData);
-
-        glEnableVertexAttribArray(aColorLocation);
     }
 
     /**
@@ -156,7 +91,6 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
                 / (float) height, 1f, 10f);
 
         setIdentityM(mModelMatrix, 0);
-
         translateM(mModelMatrix, 0, 0f, 0f, -2.5f);
         rotateM(mModelMatrix, 0, 150f, 1f, 0f, 0f);
 
@@ -174,91 +108,18 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Assign the matrix
-        glUniformMatrix4fv(uMatrixLocation, 1, false, mProjectionMatrix, 0);
+        // Draw the map.
+        mTextureProgram.useProgram();
+        mTextureProgram.setUniforms(mProjectionMatrix, mTexture);
+        mMap.bindData(mTextureProgram);
+        mMap.draw();
 
-        // Draw the table.
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices());
-
+        // Draw the ships
+        mColorProgram.useProgram();
+        mColorProgram.setUniforms(mProjectionMatrix);
+        mShip.bindData(mColorProgram);
+        mShip.draw();
     }
-
-    /**
-     *
-     * @return
-     */
-    private static int numVertices() {
-        return (ROWS - 1) * (COLS * 4) / 2 + (ROWS - 1) * 2;
-    }
-
-    /**
-     * rows, cols must be even
-     * @param vertices
-     * @param count
-     * @param row
-     * @param col
-     * @param b
-     * @return
-     */
-    private static int makeVertix(float vertices[], int count, int row, int col, Bitmap b) {
-
-        int px;
-        float pxf;
-        px = b.getPixel(col, row);
-        px = px & 255;
-        pxf = ((float)px) * 0.003921569f;
-
-
-        vertices[count++] = (float)(col - COLS / 2) / (float)COLS; //x
-        vertices[count++] = (float)(row - ROWS / 2) / (float)ROWS; //y
-        vertices[count++] = -pxf; //z
-        vertices[count++] = 1.f; //w
-
-        vertices[count++] = pxf; //r
-        vertices[count++] = pxf; //g
-        vertices[count++] = pxf; //b
-        vertices[count++] = 1.f; //a
-
-
-        return count;
-    }
-
-    //http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/ibo_with_degenerate_triangles/
-
-    /**
-     * Make terrain index buffer from bitmap
-     * @param b
-     * @return
-     */
-    private static float[] genTerrainFromBitmap(Bitmap b) {
-        float vertices[] = new float[numVertices() * (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT)];
-
-        int count = 0;
-        float pxf;
-        int px;
-        int col;
-        int row;
-        for (row = 0; row < (ROWS - 1); row++) {
-            for (col = 0; col < (COLS - 1); col += 2) {
-
-                // 1
-                count = makeVertix(vertices, count, row + 0, col + 0, b);
-                // 6
-                count = makeVertix(vertices, count, row + 1, col + 0, b);
-                // 2
-                count = makeVertix(vertices, count, row + 0, col + 1, b);
-                // 7
-                count = makeVertix(vertices, count, row + 1, col + 1, b);
-            }
-
-            // degenerate 10
-            count = makeVertix(vertices, count, row + 1, col - 1, b);
-
-            // degenerate 6
-            count = makeVertix(vertices, count, row + 1, 0, b);
-        }
-        return vertices;
-    }
-
 }
 
 
