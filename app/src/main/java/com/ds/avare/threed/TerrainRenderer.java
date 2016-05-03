@@ -44,6 +44,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mModelMatrix = new float[16];
+    private final float[] mViewMatrix = new float[16];
+    private int mWidth;
+    private int mHeight;
 
     private Map mMap;
     private Ship mShip;
@@ -86,17 +89,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
-
-        MatrixHelper.perspectiveM(mProjectionMatrix, 45, (float) width
-                / (float) height, 1f, 10f);
-
-        setIdentityM(mModelMatrix, 0);
-        translateM(mModelMatrix, 0, 0f, 0f, -2.5f);
-        rotateM(mModelMatrix, 0, 150f, 1f, 0f, 0f);
-
-        final float[] temp = new float[16];
-        multiplyMM(temp, 0, mProjectionMatrix, 0, mModelMatrix, 0);
-        System.arraycopy(temp, 0, mProjectionMatrix, 0, temp.length);
+        mWidth = width;
+        mHeight = height;
     }
 
     /**
@@ -107,6 +101,18 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 glUnused) {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
+
+        MatrixHelper.perspectiveM(mProjectionMatrix, 45, (float) mWidth
+                / (float) mHeight, 1f, 10f);
+
+        setIdentityM(mModelMatrix, 0);
+        translateM(mModelMatrix, 0, 0f, 0f, -4.0f);
+        rotateM(mModelMatrix, 0, -60f, 1f, 0f, 0f);
+
+        final float[] temp = new float[16];
+        multiplyMM(temp, 0, mProjectionMatrix, 0, mModelMatrix, 0);
+        System.arraycopy(temp, 0, mProjectionMatrix, 0, temp.length);
+
 
         // Draw the map.
         mTextureProgram.useProgram();

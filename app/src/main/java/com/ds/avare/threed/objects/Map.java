@@ -31,24 +31,24 @@ public class Map {
         + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTES_PER_FLOAT;
 
 
-    private final VertexArray vertexArray;
-    
+    private VertexArray mVertexArray;
+
     public Map(Context ctx) {
-        vertexArray = new VertexArray(genTerrainFromBitmap(new BitmapHolder(ctx, R.drawable.elev_9_98_314).getBitmap()));
+        mVertexArray = new VertexArray(genTerrainFromBitmap(new BitmapHolder(ctx, R.drawable.elev_9_98_314).getBitmap()));
     }
     
     public void bindData(TextureShaderProgram textureProgram) {
-        vertexArray.setVertexAttribPointer(
-            0, 
-            textureProgram.getPositionAttributeLocation(), 
-            POSITION_COMPONENT_COUNT,
-            STRIDE);
+        mVertexArray.setVertexAttribPointer(
+                0,
+                textureProgram.getPositionAttributeLocation(),
+                POSITION_COMPONENT_COUNT,
+                STRIDE);
         
-        vertexArray.setVertexAttribPointer(
-            POSITION_COMPONENT_COUNT, 
-            textureProgram.getTextureCoordinatesAttributeLocation(),
-            TEXTURE_COORDINATES_COMPONENT_COUNT, 
-            STRIDE);
+        mVertexArray.setVertexAttribPointer(
+                POSITION_COMPONENT_COUNT,
+                textureProgram.getTextureCoordinatesAttributeLocation(),
+                TEXTURE_COORDINATES_COMPONENT_COUNT,
+                STRIDE);
     }
     
     public void draw() {                                
@@ -75,7 +75,7 @@ public class Map {
      */
     private static int makeVertix(float vertices[], int count, int row, int col, Bitmap b) {
 
-        float metersInz = 25.0f / 58.79f; // zoom level 9
+        float metersInz = 75.0f / 58.79f; // zoom level 9
 
 
         int px;
@@ -83,13 +83,14 @@ public class Map {
         px = b.getPixel(col, row);
         px = px & 255;
         pxf = ((float)px) * 0.003921569f * metersInz;
-
-        vertices[count++] = (float)(col - COLS / 2) / (float)COLS; //x
-        vertices[count++] = (float)(row - ROWS / 2) / (float)ROWS; //y
-        vertices[count++] = -pxf; //z
+        //-1,1    1,1
+        //-1,-1   1,-1
+        vertices[count++] = (float)((float)col * 2.0f - (float)COLS) / (float)COLS; //x
+        vertices[count++] = (float)(-(float)row * 2.0f + (float)ROWS) / (float)ROWS; //y
+        vertices[count++] = pxf; //z
         vertices[count++] = 1.f; //w
-        vertices[count++] = (float)(col) / (float)COLS; //s
-        vertices[count++] = (float)(row) / (float)ROWS; //t
+        vertices[count++] = ((float)col) / ((float)COLS); //s
+        vertices[count++] = ((float)row) / ((float)ROWS); //t
 
         return count;
     }
@@ -105,8 +106,6 @@ public class Map {
         float vertices[] = new float[numVertices() * ((POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT))];
 
         int count = 0;
-        float pxf;
-        int px;
         int col;
         int row;
         for (row = 0; row < (ROWS - 1); row++) {
