@@ -152,13 +152,12 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setCameraPos(Vector3d pos) {
-        mCameraPos.set(new Vector3d(0, -2f, 1f));
+        mCameraPos.set(pos);
     }
 
     public void setCameraLookAt(Vector3d look) {
-        mCameraLook.set(new Vector3d(0f, 0f, 0f));
+        mCameraLook.set(look);
     }
-
 
     public void setTexture(BitmapHolder b) {
         mTexture = TextureHelper.loadTexture(b);
