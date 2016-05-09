@@ -51,6 +51,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private int mWidth;
     private int mHeight;
     private Camera mCamera;
+    private float mRotation;
 
     private Map mMap;
     private Ship mShip;
@@ -120,7 +121,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
-        //Matrix.rotateM(mModelMatrix, 0, 60, 0.0f, 0.0f, 1.0f);
+        Matrix.rotateM(mModelMatrix, 0, mRotation, 0.0f, 0.0f, 1.0f);
 
 
         // View matrix from cam
@@ -162,6 +163,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMap.loadTerrain(b);
     }
 
+    public void setRotation(float rot) {
+        mRotation = rot;
+    }
 }
 
 
