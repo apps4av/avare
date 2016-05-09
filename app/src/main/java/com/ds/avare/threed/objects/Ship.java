@@ -29,7 +29,7 @@ public class Ship {
         float[] VERTEX_DATA = {
                 // Order of coordinates: X, Y, Z, W, R, G, B, A
                 -1.0f, 1.0f, 0.5f, 1f, 1f, 0f, 0f, 1f,
-                0.0f, 0.0f, 0.5f, 1f, 0f, 1f, 0f, 1f,
+                0.0f, 0.0f, 1.0f, 1f, 0f, 1f, 0f, 1f,
                 1.0f, 1.0f, 0.5f, 1f, 0f, 0f, 1f, 1f };
         mVertexArray = new VertexArray(VERTEX_DATA);
     }

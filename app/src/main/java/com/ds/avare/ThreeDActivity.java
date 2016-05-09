@@ -32,7 +32,6 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.TerrainRenderer;
-import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -53,8 +52,6 @@ public class ThreeDActivity extends Activity {
     private Preferences mPref;
 
     private Toast mToast;
-
-    private boolean mReady;
 
     /**
      * Hold a reference to our GLSurfaceView
@@ -100,6 +97,7 @@ public class ThreeDActivity extends Activity {
         ((MainActivity) this.getParent()).showMapTab();
     }
 
+    float count = 0;
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
@@ -117,7 +115,6 @@ public class ThreeDActivity extends Activity {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-        mReady = false;
 
         mGlSurfaceView = new GLSurfaceView(this);
 
@@ -150,13 +147,16 @@ public class ThreeDActivity extends Activity {
             mRenderer = new TerrainRenderer(this, new GenericCallback() {
                 @Override
                 public Object callback(Object o, Object o1) {
-                    if(mRenderer != null && ((String)o1).equals(TerrainRenderer.SURFACE_CREATED)) {
+                    if(((String)o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
                         mRenderer.setTexture(new BitmapHolder(ThreeDActivity.this, R.drawable.sec_9_98_314));
                         mRenderer.setTerrain(new BitmapHolder(ThreeDActivity.this, R.drawable.elev_9_98_314));
-                        mRenderer.setCameraPos(new Vector3d(0, -2f, 1f));
-                        mRenderer.setCameraLookAt(new Vector3d(0f, 0f, 0f));
-                        mReady = true;
+                    }
+                    else if(((String)o1).equals(TerrainRenderer.DRAW_FRAME)) {
+                        count = count + 1f;
+                        mRenderer.setCamera(
+                                0f, -1.5f + count / 100.f, 1f,
+                                0f,  1.0f + count / 100.f, 1f - 0.1f);
                     }
                     return null;
                 }
@@ -231,6 +231,7 @@ public class ThreeDActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        count = 0;
         Helper.setOrientationAndOn(this);
 
         /*
