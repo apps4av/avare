@@ -14,14 +14,16 @@ package com.ds.avare.threed;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 
-import com.ds.avare.R;
+import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.threed.objects.Map;
 import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.programs.TextureShaderProgram;
-import com.ds.avare.threed.util.MatrixHelper;
 import com.ds.avare.threed.util.TextureHelper;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.GenericCallback;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,50 +32,52 @@ import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
-import static android.opengl.Matrix.multiplyMM;
-import static android.opengl.Matrix.rotateM;
-import static android.opengl.Matrix.setIdentityM;
-import static android.opengl.Matrix.translateM;
 
 /**
  * Created by zkhan on 4/28/16.
  */
 public class TerrainRenderer implements GLSurfaceView.Renderer {
 
-    private final Context mContext;
+    public static final String SURFACE_CHANGED = "SurfaceChanged";
+    public static final String SURFACE_CREATED = "SurfaceCreated";
+
+    private Context mContext;
 
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mModelMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
+    private final float[] mMVPMatrix = new float[16];
     private int mWidth;
     private int mHeight;
+    private Vector3d mCameraPos;
+    private Vector3d mCameraLook;
 
     private Map mMap;
     private Ship mShip;
 
     private TextureShaderProgram mTextureProgram;
     private ColorShaderProgram mColorProgram;
+    private GenericCallback mCallback;
 
     private int mTexture;
 
-    public TerrainRenderer(Context mContext) {
-        this.mContext = mContext;
+    public TerrainRenderer(Context ctx, GenericCallback cb) {
+        mContext = ctx;
+        mCallback = cb;
     }
 
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
-
-
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        mMap = new Map(mContext);
+        mMap = new Map();
         mShip = new Ship();
+        mCameraPos = new Vector3d(0, 0, 0);
+        mCameraLook = new Vector3d(0, 0, 0);
 
         mTextureProgram = new TextureShaderProgram(mContext);
         mColorProgram = new ColorShaderProgram(mContext);
-
-        mTexture = TextureHelper.loadTexture(mContext, R.drawable.sec_9_98_314);
-
+        mCallback.callback(this, SURFACE_CREATED);
     }
 
     /**
@@ -91,6 +95,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         glViewport(0, 0, width, height);
         mWidth = width;
         mHeight = height;
+        mCallback.callback(this, SURFACE_CHANGED);
     }
 
     /**
@@ -102,30 +107,67 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        MatrixHelper.perspectiveM(mProjectionMatrix, 45, (float) mWidth
-                / (float) mHeight, 1f, 10f);
 
-        setIdentityM(mModelMatrix, 0);
-        translateM(mModelMatrix, 0, 0f, 0f, -4.0f);
-        rotateM(mModelMatrix, 0, -60f, 1f, 0f, 0f);
+        // Create a new perspective projection matrix. The height will stay the same
+        // while the width will vary as per aspect ratio.
+        final float ratio = (float) mWidth / mHeight;
+        final float left = -ratio;
+        final float right = ratio;
+        final float bottom = -1.0f;
+        final float top = 1.0f;
+        final float near =  1.0f;
+        final float far = 10.0f;
 
-        final float[] temp = new float[16];
-        multiplyMM(temp, 0, mProjectionMatrix, 0, mModelMatrix, 0);
-        System.arraycopy(temp, 0, mProjectionMatrix, 0, temp.length);
+        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+
+        Matrix.setIdentityM(mModelMatrix, 0);
+        //Matrix.rotateM(mModelMatrix, 0, 60, 0.0f, 0.0f, 1.0f);
+
+        Matrix.setLookAtM(mViewMatrix, 0,
+                mCameraPos.getX(), mCameraPos.getY(), mCameraPos.getZ(),
+                mCameraLook.getX(), mCameraLook.getY(), mCameraLook.getZ(),
+                0, 1, 0); // camera always looks belly down
+
+
+        // This multiplies the view matrix by the model matrix, and stores the result in the MVP matrix
+        // (which currently contains model * view).
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
+
+        // This multiplies the modelview matrix by the projection matrix, and stores the result in the MVP matrix
+        // (which now contains model * view * projection).
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
 
         // Draw the map.
         mTextureProgram.useProgram();
-        mTextureProgram.setUniforms(mProjectionMatrix, mTexture);
+        mTextureProgram.setUniforms(mMVPMatrix, mTexture);
         mMap.bindData(mTextureProgram);
         mMap.draw();
 
         // Draw the ships
         mColorProgram.useProgram();
-        mColorProgram.setUniforms(mProjectionMatrix);
+        mColorProgram.setUniforms(mMVPMatrix);
         mShip.bindData(mColorProgram);
         mShip.draw();
     }
+
+    public void setCameraPos(Vector3d pos) {
+        mCameraPos.set(new Vector3d(0, -2f, 1f));
+    }
+
+    public void setCameraLookAt(Vector3d look) {
+        mCameraLook.set(new Vector3d(0f, 0f, 0f));
+    }
+
+
+    public void setTexture(BitmapHolder b) {
+        mTexture = TextureHelper.loadTexture(b);
+    }
+
+    public void setTerrain(BitmapHolder b) {
+        mMap.loadTerrain(b);
+    }
+
 }
 
 

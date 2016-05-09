@@ -8,13 +8,12 @@
 ***/
 package com.ds.avare.threed.objects;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.ds.avare.R;
 import com.ds.avare.threed.Constants;
 import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.TextureShaderProgram;
+import com.ds.avare.threed.util.LoggerConfig;
 import com.ds.avare.utils.BitmapHolder;
 
 import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
@@ -33,10 +32,20 @@ public class Map {
 
     private VertexArray mVertexArray;
 
-    public Map(Context ctx) {
-        mVertexArray = new VertexArray(genTerrainFromBitmap(new BitmapHolder(ctx, R.drawable.elev_9_98_314).getBitmap()));
+    public Map() {
     }
-    
+
+    public void loadTerrain(BitmapHolder b) {
+        Bitmap bitmap = b.getBitmap();
+        if (bitmap == null) {
+            if (LoggerConfig.ON) {
+            }
+            return;
+        }
+
+        mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap));
+    }
+
     public void bindData(TextureShaderProgram textureProgram) {
         mVertexArray.setVertexAttribPointer(
                 0,

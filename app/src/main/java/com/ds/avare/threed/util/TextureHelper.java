@@ -8,6 +8,12 @@
 ***/
 package com.ds.avare.threed.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.ds.avare.utils.BitmapHolder;
+
 import static android.opengl.GLES20.GL_LINEAR;
 import static android.opengl.GLES20.GL_LINEAR_MIPMAP_LINEAR;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
@@ -19,10 +25,6 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glGenerateMipmap;
 import static android.opengl.GLES20.glTexParameteri;
 import static android.opengl.GLUtils.texImage2D;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 public class TextureHelper {
     private static final String TAG = "TextureHelper";
@@ -31,11 +33,10 @@ public class TextureHelper {
      * Loads a texture from a resource ID, returning the OpenGL ID for that
      * texture. Returns 0 if the load failed.
      * 
-     * @param context
-     * @param resourceId
+     * @param b
      * @return
      */
-    public static int loadTexture(Context context, int resourceId) {
+    public static int loadTexture(BitmapHolder b) {
         final int[] textureObjectIds = new int[1];
         glGenTextures(1, textureObjectIds, 0);
 
@@ -50,12 +51,10 @@ public class TextureHelper {
         options.inScaled = false;
 
         // Read in the resource
-        final Bitmap bitmap = BitmapFactory.decodeResource(
-            context.getResources(), resourceId, options);
+        final Bitmap bitmap = b.getBitmap();
 
         if (bitmap == null) {
             if (LoggerConfig.ON) {
-                Log.w(TAG, "Resource ID " + resourceId + " could not be decoded.");
             }
 
             glDeleteTextures(1, textureObjectIds, 0);

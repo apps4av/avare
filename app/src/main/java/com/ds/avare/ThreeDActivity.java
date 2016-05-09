@@ -32,6 +32,9 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.TerrainRenderer;
+import com.ds.avare.threed.data.Vector3d;
+import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -51,11 +54,13 @@ public class ThreeDActivity extends Activity {
 
     private Toast mToast;
 
+    private boolean mReady;
+
     /**
      * Hold a reference to our GLSurfaceView
      */
     private GLSurfaceView mGlSurfaceView;
-    private boolean mRendererSet = false;
+    private TerrainRenderer mRenderer = null;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -112,6 +117,7 @@ public class ThreeDActivity extends Activity {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
+        mReady = false;
 
         mGlSurfaceView = new GLSurfaceView(this);
 
@@ -141,8 +147,21 @@ public class ThreeDActivity extends Activity {
             mGlSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
             // Assign our renderer.
-            mGlSurfaceView.setRenderer(new TerrainRenderer(this));
-            mRendererSet = true;
+            mRenderer = new TerrainRenderer(this, new GenericCallback() {
+                @Override
+                public Object callback(Object o, Object o1) {
+                    if(mRenderer != null && ((String)o1).equals(TerrainRenderer.SURFACE_CREATED)) {
+                        // When ready, do stuff
+                        mRenderer.setTexture(new BitmapHolder(ThreeDActivity.this, R.drawable.sec_9_98_314));
+                        mRenderer.setTerrain(new BitmapHolder(ThreeDActivity.this, R.drawable.elev_9_98_314));
+                        mRenderer.setCameraPos(new Vector3d(0, -2f, 1f));
+                        mRenderer.setCameraLookAt(new Vector3d(0f, 0f, 0f));
+                        mReady = true;
+                    }
+                    return null;
+                }
+            });
+            mGlSurfaceView.setRenderer(mRenderer);
         }
         else {
             /*
@@ -164,6 +183,8 @@ public class ThreeDActivity extends Activity {
         }
 
         setContentView(mGlSurfaceView);
+
+
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -219,7 +240,7 @@ public class ThreeDActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if (mRendererSet) {
+        if (mRenderer != null) {
             mGlSurfaceView.onResume();
         }
     }
@@ -240,7 +261,7 @@ public class ThreeDActivity extends Activity {
          */
         getApplicationContext().unbindService(mConnection);
 
-        if (mRendererSet) {
+        if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
     }
