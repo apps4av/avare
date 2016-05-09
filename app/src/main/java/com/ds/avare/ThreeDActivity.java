@@ -156,7 +156,7 @@ public class ThreeDActivity extends Activity {
                         count = count + 1f;
                         mRenderer.setCamera(
                                 0f, -1.5f + count / 100.f, 1f,
-                                0f,  1.0f + count / 100.f, 1f - 0.1f);
+                                0f,  1.0f + count / 100.f, 1f - 0.01f);
                     }
                     return null;
                 }
