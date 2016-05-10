@@ -84,14 +84,17 @@ public class Map {
      */
     private static int makeVertix(float vertices[], int count, int row, int col, Bitmap b) {
 
-        float metersInz = 75.0f / 58.79f; // zoom level 9
-
+        // tilesize = 512
+        // resolution = (2 * math.pi * 6378137) / (self.tileSize * 2**zoom)
+        // zoom = 9
+        // resolution = 152.8 meters per pixel, or 78233.6 (152.8 * 512) for -y to +y
+        // 6375 meters is max z (255 * 25 meters per pixel), or 12750 for -z to +z
 
         int px;
         float pxf;
         px = b.getPixel(col, row);
         px = px & 255;
-        pxf = ((float)px) * 0.003921569f * metersInz;
+        pxf = ((float)px) * 0.003921569f;
         //-1,1    1,1
         //-1,-1   1,-1
         vertices[count++] = (float)((float)col * 2.0f - (float)COLS) / (float)COLS; //x

@@ -31,7 +31,7 @@ public class Camera {
     public Camera() {
         mCameraPos = new Vector3d(0, 0, 0);
         mCameraLook = new Vector3d(0, 0, 0);
-        mCameraUp = new Vector3d(0, 1, 0);
+        mCameraUp = new Vector3d(0, 0, 0);
     }
 
     /**
@@ -47,8 +47,10 @@ public class Camera {
 
         Vector3d pos = new Vector3d(x, y, z);
         Vector3d look = new Vector3d(x0, y0, z0);
+        Vector3d up = new Vector3d(x0, y0, 1000f);
         mCameraPos.set(pos);
         mCameraLook.set(look);
+        mCameraUp.set(up); // do not rotate up vector, assume no bank
     }
 
     /**

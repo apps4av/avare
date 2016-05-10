@@ -155,9 +155,8 @@ public class ThreeDActivity extends Activity {
                     else if(((String)o1).equals(TerrainRenderer.DRAW_FRAME)) {
                         count = count + 1f;
                         mRenderer.setCamera(
-                                0.0f, -1.5f, 1f,
-                                0.0f,  1.0f, 1f - 0.01f);
-                        mRenderer.setRotation(count);
+                                0.0f, -2.1f + count / 100.f, 0.8f,
+                                0.0f, -2.0f + count / 100.f, 0.8f);
                     }
                     return null;
                 }
