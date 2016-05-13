@@ -79,6 +79,9 @@ public class Ship {
     }
     
     public void bindData(ColorShaderProgram colorProgram) {
+        if(mVertexArray == null) {
+            return;
+        }
 
         mVertexArray.setVertexAttribPointer(
                 0,
@@ -92,7 +95,10 @@ public class Ship {
                 STRIDE);
     }
 
-    public void draw() {        
+    public void draw() {
+        if(mVertexArray == null) {
+            return;
+        }
         glDrawArrays(GL_TRIANGLES, 0, SHIPS * 3);
     }
 

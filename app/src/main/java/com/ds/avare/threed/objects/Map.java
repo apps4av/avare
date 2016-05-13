@@ -44,9 +44,14 @@ public class Map {
         }
 
         mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap));
+        // It has been loaded. Recycle.
+        b.recycle();
     }
 
     public void bindData(TextureShaderProgram textureProgram) {
+        if(mVertexArray == null) {
+            return;
+        }
         mVertexArray.setVertexAttribPointer(
                 0,
                 textureProgram.getPositionAttributeLocation(),
@@ -60,7 +65,11 @@ public class Map {
                 STRIDE);
     }
     
-    public void draw() {                                
+    public void draw() {
+        if(mVertexArray == null) {
+            return;
+        }
+
         glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices());
     }
 

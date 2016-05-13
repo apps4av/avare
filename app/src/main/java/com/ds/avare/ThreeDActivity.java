@@ -30,8 +30,11 @@ import android.widget.Toast;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
+import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -53,6 +56,15 @@ public class ThreeDActivity extends Activity {
 
     private Toast mToast;
 
+    private Context mContext;
+
+    private AreaMapper mAreaMapper;
+
+    private boolean mReady;
+
+    private boolean mNewMap;
+    private boolean mNewTexture;
+
     /**
      * Hold a reference to our GLSurfaceView
      */
@@ -67,13 +79,20 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            if (location != null && mService != null) {
+            if (location != null && mService != null && mReady) {
 
                 /*
                  * Called by GPS. Update everything driven by GPS.
                  */
-                GpsParams params = new GpsParams(location);
+                mAreaMapper.setGpsParams(new GpsParams(location));
 
+                /*
+                 * Elevation tile
+                 */
+                Tile t = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude());
+                Tile t2 = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), true);
+                mAreaMapper.setElevationTile(t);
+                mAreaMapper.setMapTile(t2);
             }
         }
 
@@ -97,7 +116,6 @@ public class ThreeDActivity extends Activity {
         ((MainActivity) this.getParent()).showMapTab();
     }
 
-    float count = 0;
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
@@ -109,6 +127,10 @@ public class ThreeDActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
+
+        mContext = this;
+
+        mReady = false;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -149,14 +171,21 @@ public class ThreeDActivity extends Activity {
                 public Object callback(Object o, Object o1) {
                     if(((String)o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
-                        mRenderer.setTexture(new BitmapHolder(ThreeDActivity.this, R.drawable.sec_9_98_314));
-                        mRenderer.setTerrain(new BitmapHolder(ThreeDActivity.this, R.drawable.elev_9_98_314));
+                        mReady = true;
                     }
                     else if(((String)o1).equals(TerrainRenderer.DRAW_FRAME)) {
-                        count = count + 1f;
-                        mRenderer.setCamera(
-                                0.0f, -2.1f + count / 100.f, 0.8f,
-                                0.0f, -2.0f + count / 100.f, 0.8f);
+
+                        if(mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
+                            Tile tout = mAreaMapper.getMapTile();
+                            mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
+                            tout = mAreaMapper.getElevationTile();
+                            mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
+                        }
+
+                        Vector3d look = mAreaMapper.getCameraVectorLookAt();
+                        Vector3d pos  = mAreaMapper.getCameraVectorPosition();
+                        mRenderer.setCamera(pos, look);
+
                     }
                     return null;
                 }
@@ -182,6 +211,8 @@ public class ThreeDActivity extends Activity {
             return;
         }
 
+        mAreaMapper = new AreaMapper();
+
         setContentView(mGlSurfaceView);
 
 
@@ -206,6 +237,13 @@ public class ThreeDActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            // Initial tiles
+            Tile t = new Tile(mContext, mPref, mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude());
+            Tile t2 = new Tile(mContext, mPref, mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude(), true);
+            mAreaMapper = new AreaMapper();
+            mAreaMapper.setElevationTile(t);
+            mAreaMapper.setMapTile(t2);
+
         }
 
         /* (non-Javadoc)
@@ -231,7 +269,6 @@ public class ThreeDActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        count = 0;
         Helper.setOrientationAndOn(this);
 
         /*

@@ -9,7 +9,6 @@
 package com.ds.avare.threed.util;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.ds.avare.utils.BitmapHolder;
@@ -28,6 +27,7 @@ import static android.opengl.GLUtils.texImage2D;
 
 public class TextureHelper {
     private static final String TAG = "TextureHelper";
+    private static int[] textureObjectIds = new int[1];
 
     /**
      * Loads a texture from a resource ID, returning the OpenGL ID for that
@@ -37,7 +37,9 @@ public class TextureHelper {
      * @return
      */
     public static int loadTexture(BitmapHolder b) {
-        final int[] textureObjectIds = new int[1];
+        if(textureObjectIds[0] != 0) {
+            glDeleteTextures(1, textureObjectIds, 0);
+        }
         glGenTextures(1, textureObjectIds, 0);
 
         if (textureObjectIds[0] == 0) {
@@ -46,9 +48,6 @@ public class TextureHelper {
             }
             return 0;
         } 
-        
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
 
         // Read in the resource
         final Bitmap bitmap = b.getBitmap();
@@ -82,7 +81,7 @@ public class TextureHelper {
 
         // Recycle the bitmap, since its data has been loaded into
         // OpenGL.
-        bitmap.recycle();
+        b.recycle();
 
         // Unbind from the texture.
         glBindTexture(GL_TEXTURE_2D, 0);

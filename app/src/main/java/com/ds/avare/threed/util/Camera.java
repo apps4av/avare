@@ -43,11 +43,9 @@ public class Camera {
      * @param y0
      * @param z0
      */
-    public void set(float x, float y, float z, float x0, float y0, float z0) {
+    public void set(Vector3d pos, Vector3d look) {
 
-        Vector3d pos = new Vector3d(x, y, z);
-        Vector3d look = new Vector3d(x0, y0, z0);
-        Vector3d up = new Vector3d(x0, y0, 1000f);
+        Vector3d up = new Vector3d(look.getX(), look.getY(), 1000f);
         mCameraPos.set(pos);
         mCameraLook.set(look);
         mCameraUp.set(up); // do not rotate up vector, assume no bank

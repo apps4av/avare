@@ -16,6 +16,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
+import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.threed.objects.Map;
 import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
@@ -55,6 +56,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private Map mMap;
     private Ship mShip;
 
+    private boolean mMapSet;
+    private boolean mTextureSet;
+
     private TextureShaderProgram mTextureProgram;
     private ColorShaderProgram mColorProgram;
     private GenericCallback mCallback;
@@ -73,6 +77,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMap = new Map();
         mShip = new Ship();
         mCamera = new Camera();
+        mTextureSet = false;
+        mMapSet = false;
 
         mTextureProgram = new TextureShaderProgram(mContext);
         mColorProgram = new ColorShaderProgram(mContext);
@@ -134,32 +140,37 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // (which now contains model * view * projection).
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
+        if(mTextureSet && mMapSet) {
+            // Draw the map.
+            mTextureProgram.useProgram();
+            mTextureProgram.setUniforms(mMVPMatrix, mTexture);
+            mMap.bindData(mTextureProgram);
+            mMap.draw();
 
-        // Draw the map.
-        mTextureProgram.useProgram();
-        mTextureProgram.setUniforms(mMVPMatrix, mTexture);
-        mMap.bindData(mTextureProgram);
-        mMap.draw();
+            // Draw the ships
+            mColorProgram.useProgram();
+            mColorProgram.setUniforms(mMVPMatrix);
+            mShip.bindData(mColorProgram);
+            mShip.draw();
+        }
 
-        // Draw the ships
-        mColorProgram.useProgram();
-        mColorProgram.setUniforms(mMVPMatrix);
-        mShip.bindData(mColorProgram);
-        mShip.draw();
+
         mCallback.callback(this, DRAW_FRAME);
     }
 
     // Make camera from current position and target
-    public void setCamera(float x, float y, float z, float x0, float y0, float z0) {
-        mCamera.set(x, y, z, x0, y0, z0);
+    public void setCamera(Vector3d pos, Vector3d look) {
+        mCamera.set(pos, look);
     }
 
     public void setTexture(BitmapHolder b) {
         mTexture = TextureHelper.loadTexture(b);
+        mTextureSet = true;
     }
 
     public void setTerrain(BitmapHolder b) {
         mMap.loadTerrain(b);
+        mMapSet = true;
     }
 }
 

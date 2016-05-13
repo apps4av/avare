@@ -120,9 +120,36 @@ public class Tile {
     	mProj = new Epsg900913(lat, lon, mZoom);
     	setup(pref);
     }
-    
+
     /**
-     * Get a tile for a particular position for elevation. Use this function for elevation only for AGL
+     * Get a tile for a particular position, with zoom equal to max elevation. Used for 3D
+     * @param pref
+     * @param lon
+     * @param lat
+     * @param elevation
+     */
+    public Tile(Context ctx, Preferences pref, double lon, double lat, boolean elevation) {
+        if(!elevation) {
+            return;
+        }
+        mChartIndex = pref.getChartType();
+    	/*
+    	 * Fixed zoom
+    	 */
+        mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
+                [Integer.valueOf(ELEVATION_INDEX)]);
+        /*
+         * Extension varies for chart types because some chart have better compression with
+         * one or other type of standard
+         */
+        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
+                [Integer.valueOf(mChartIndex)];
+        mProj = new Epsg900913(lat, lon, mZoom);
+        setup(pref);
+    }
+
+    /**
+     * Get a tile for a particular position for elevation. Use this function for elevation only for AGL,3D
      * @param pref
      * @param lon
      * @param lat
