@@ -172,6 +172,21 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMap.loadTerrain(b);
         mMapSet = true;
     }
+
+    public void setShips(Vector3d traffic[], Vector3d self) {
+
+        if(traffic != null) {
+            mShip.initShips(traffic.length + 1); // +1 for self
+            for (Vector3d t : traffic) {
+                mShip.addShip(t.getX(), t.getY(), t.getZ(), 0xFF00FF00);
+            }
+        }
+        else {
+            mShip.initShips(1);
+        }
+        mShip.addShip(self.getX(), self.getY(), self.getZ(), 0XFFFF0000);
+        mShip.doneShips();
+    }
 }
 
 

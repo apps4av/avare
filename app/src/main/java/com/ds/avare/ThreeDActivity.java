@@ -25,9 +25,11 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.SparseArray;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.Tile;
@@ -62,8 +64,8 @@ public class ThreeDActivity extends Activity {
 
     private boolean mReady;
 
-    private boolean mNewMap;
-    private boolean mNewTexture;
+
+    private int mFrames;
 
     /**
      * Hold a reference to our GLSurfaceView
@@ -131,6 +133,7 @@ public class ThreeDActivity extends Activity {
         mContext = this;
 
         mReady = false;
+        mFrames = 0; // drawn frames
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -185,6 +188,18 @@ public class ThreeDActivity extends Activity {
                         Vector3d look = mAreaMapper.getCameraVectorLookAt();
                         Vector3d pos  = mAreaMapper.getCameraVectorPosition();
                         mRenderer.setCamera(pos, look);
+
+                        // Draw traffic every so many frames
+                        if(mFrames++ % 60 == 0) {
+
+                            SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
+                            Vector3d ships[] = new Vector3d[t.size()];
+                            for (int count = 0; count < t.size(); count++) {
+                                Traffic tr = t.valueAt(count);
+                                ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude);
+                            }
+                            mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
+                        }
 
                     }
                     return null;

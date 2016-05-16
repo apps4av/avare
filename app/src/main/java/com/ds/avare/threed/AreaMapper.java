@@ -14,8 +14,12 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.Tile;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector3d;
+import com.ds.avare.utils.BitmapHolder;
 
 /**
  * Created by zkhan on 5/11/16.
@@ -23,7 +27,6 @@ import com.ds.avare.threed.data.Vector3d;
 public class AreaMapper {
 
     private GpsParams mGpsParams;
-    private GpsParams mGpsParamsLast;
 
     private Tile mElevationTile;
     private Tile mMapTile;
@@ -36,7 +39,6 @@ public class AreaMapper {
 
     public AreaMapper() {
         mGpsParams = new GpsParams(null);
-        mGpsParamsLast = new GpsParams(null);
         mNewMapTile = false;
         mNewElevationTile = false;
         mElevationTile = null;
@@ -44,18 +46,57 @@ public class AreaMapper {
         count = 0;
     }
 
+    /**
+     * Convert a location to a vector3d
+     * @return
+     */
+    public Vector3d gpsToAxis(double longitude, double latitude, double altitude) {
+        if(mMapTile == null || mElevationTile == null) {
+            return new Vector3d(-10, -10, -10); // off screen
+        }
+
+        double latc = mMapTile.getLatitude();
+        double lonc = mMapTile.getLongitude();
+        double lat = latitude;
+        double lon = longitude;
+        double px = mMapTile.getPx(); //lon per pixel
+        double py = mMapTile.getPy(); //lat per pixel
+        double dlat = latc - lat;
+        double dlon = -(lonc - lon);
+        double y = (dlat / py); // pixels from center
+        double x = (dlon / px); // pixels from center
+        float ynorm = (float)y / BitmapHolder.HEIGHT * 2;
+        float xnorm = (float)x / BitmapHolder.WIDTH * 2;
+
+        double alt = altitude / (255 * 25 * Preferences.heightConversion); // altitude in feet 25 meters per pixel
+
+        Vector3d ret = new Vector3d(xnorm, ynorm, (float)alt);
+        return ret;
+    }
 
     /**
-     * Got from GPS, set
-     * @param gpsParams
+     * 10 mile offset to current postion in current track degrees
+     * @param mGpsParams
+     * @return
      */
+    private Vector3d gpsToAxisNext(GpsParams mGpsParams) {
+
+        Coordinate c = Projection.findStaticPoint(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getBearing(), 10);
+
+        return gpsToAxis(c.getLongitude(), c.getLatitude(), mGpsParams.getAltitude());
+    }
+
+
+    /**
+         * Got from GPS, set
+         * @param gpsParams
+         */
     public void setGpsParams(GpsParams gpsParams) {
         if(gpsParams.getLatitude() != mGpsParams.getLatitude() ||
                 gpsParams.getLongitude() != mGpsParams.getLongitude() ||
                 gpsParams.getAltitude() != mGpsParams.getAltitude() ||
                 gpsParams.getBearing() != mGpsParams.getBearing()
                 ) {
-            mGpsParamsLast = mGpsParams;
             mGpsParams = gpsParams;
         }
     }
@@ -101,6 +142,10 @@ public class AreaMapper {
         return t;
     }
 
+    public  Vector3d getSelfLocation() {
+        return gpsToAxis(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+    }
+
     public boolean isMapTileNew() {
         return mNewMapTile;
     }
@@ -110,16 +155,12 @@ public class AreaMapper {
     }
 
     public Vector3d getCameraVectorLookAt() {
-        Vector3d cameraVectorLookAt  = new Vector3d(0.0f, -2.0f + count / 100.f, 1.0f);
-        count += 1;
-        if(count == 200) {
-            count = 0;
-        }
+        Vector3d cameraVectorLookAt = new Vector3d(0f, 1.0f, 1.f);//gpsToAxisNext(mGpsParams);
         return cameraVectorLookAt;
     }
 
     public Vector3d getCameraVectorPosition() {
-        Vector3d cameraVectorPosition = new Vector3d(0.0f, -2.1f + count / 100.f, 1.0f);
+        Vector3d cameraVectorPosition = new Vector3d(0f, -2.0f, 1.f);// = gpsToAxis(mGpsParams);
         return cameraVectorPosition;
     }
 

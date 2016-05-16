@@ -222,4 +222,11 @@ public class GpsParams {
         mAltitude = altitude;
     }
 
+    public void setLongitude(double lon) {
+        mLongitude = lon;
+    }
+
+    public void setLatitude(double lat) {
+        mLatitude = lat;
+    }
 }

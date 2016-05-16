@@ -26,6 +26,8 @@ public class Ship {
         * BYTES_PER_FLOAT;
 
     private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 3;
+    private float[] mShips;
+    private int mShipCount;
 
     private VertexArray mVertexArray;
 
@@ -68,14 +70,20 @@ public class Ship {
         return tr;
     }
 
-    private static final int SHIPS = 3;
-    public Ship() {
-        float ships[] = new float[ELEMS * SHIPS];
-        getTriangle(ships, 0, -1.0f,  1.0f,  0.5f, 0xFFFF0000);
-        getTriangle(ships, 2,  1.0f,  1.0f,  0.5f, 0xFF0000FF);
-        getTriangle(ships, 1,  -0.0703125f * 2,  -0.0703125f * 2,  0.547f, 0xFF00FF00);
 
-        mVertexArray = new VertexArray(ships);
+    public void initShips(int shipNum) {
+        mVertexArray = null;
+        mShips = new float[ELEMS * shipNum];
+        mShipCount = 0;
+    }
+
+    public void addShip(float x, float y, float z, int color) {
+        getTriangle(mShips, 0, x, y, z, color);
+        mShipCount++;
+    }
+
+    public void doneShips() {
+        mVertexArray = new VertexArray(mShips);
     }
     
     public void bindData(ColorShaderProgram colorProgram) {
@@ -99,7 +107,7 @@ public class Ship {
         if(mVertexArray == null) {
             return;
         }
-        glDrawArrays(GL_TRIANGLES, 0, SHIPS * 3);
+        glDrawArrays(GL_TRIANGLES, 0, mShipCount * 3);
     }
 
 }
