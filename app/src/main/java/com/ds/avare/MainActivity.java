@@ -51,12 +51,12 @@ public class MainActivity extends TabActivity {
     public static final int tabMain = 0; 
     public static final int tabPlates = 1;
     public static final int tabAFD = 2;
-    public static final int tabThreeD = 3;
-    public static final int tabFind = 4;
-    public static final int tabPlan = 5;
-    public static final int tabWXB = 6;
-    public static final int tabNear = 7;
-    public static final int tabChecklist = 8;
+    public static final int tabFind = 3;
+    public static final int tabPlan = 4;
+    public static final int tabNear = 5;
+    public static final int tabThreeD = 6;
+    public static final int tabChecklist = 7;
+    public static final int tabWXB = 8;
     public static final int tabTrip = 9;
     public static final int tabTools = 10;
     
@@ -113,10 +113,6 @@ public class MainActivity extends TabActivity {
         	setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
         }
 
-        if(0 != (tabItems & (1 << tabThreeD))) {
-            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
-        }
-
         if(0 != (tabItems & (1 << tabFind))) {
         	setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
         }
@@ -124,19 +120,23 @@ public class MainActivity extends TabActivity {
         if(0 != (tabItems & (1 << tabPlan))) {
         	setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
         }
-        
-        if(0 != (tabItems & (1 << tabWXB))) {
-        	setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, WeatherActivity.class), getIntent());
-        }
-        
+
         if(0 != (tabItems & (1 << tabNear))) {
         	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
         }
-        
+
+        if(0 != (tabItems & (1 << tabThreeD))) {
+            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
+        }
+
         if(0 != (tabItems & (1 << tabChecklist))) {
         	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
         }
-        
+
+        if(0 != (tabItems & (1 << tabWXB))) {
+            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, WeatherActivity.class), getIntent());
+        }
+
         if(0 != (tabItems & (1 << tabTrip))) {
         	setupTab(new TextView(this), getString(R.string.Trip), new Intent(this, TripActivity.class), getIntent());
         }

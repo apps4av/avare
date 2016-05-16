@@ -155,7 +155,7 @@ public class AreaMapper {
     }
 
     public Vector3d getCameraVectorLookAt() {
-        Vector3d cameraVectorLookAt = new Vector3d(0f, 1.0f, 1.f);//gpsToAxisNext(mGpsParams);
+        Vector3d cameraVectorLookAt = new Vector3d(0f, 1.0f, 1.f);// = gpsToAxisNext(mGpsParams);
         return cameraVectorLookAt;
     }
 

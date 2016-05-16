@@ -56,6 +56,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private Map mMap;
     private Ship mShip;
 
+    private float mAngle;
+
     private boolean mMapSet;
     private boolean mTextureSet;
 
@@ -64,6 +66,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private GenericCallback mCallback;
 
     private int mTexture;
+    private float mDisplacement;
 
     public TerrainRenderer(Context ctx, GenericCallback cb) {
         mContext = ctx;
@@ -79,6 +82,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mCamera = new Camera();
         mTextureSet = false;
         mMapSet = false;
+        mAngle = 0;
+        mDisplacement = 0;
 
         mTextureProgram = new TextureShaderProgram(mContext);
         mColorProgram = new ColorShaderProgram(mContext);
@@ -126,7 +131,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
-        //Matrix.rotateM(mModelMatrix, 0, mRotation, 0.0f, 0.0f, 1.0f);
+        Matrix.translateM(mModelMatrix, 0, 0f, mDisplacement, 0.0f);
+        Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 0.0f, 1.0f);
 
 
         // View matrix from cam
@@ -178,14 +184,19 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         if(traffic != null) {
             mShip.initShips(traffic.length + 1); // +1 for self
             for (Vector3d t : traffic) {
-                mShip.addShip(t.getX(), t.getY(), t.getZ(), 0xFF00FF00);
+                mShip.addShip(t.getX(), t.getY(), t.getZ(), 0xFF00FF00); // green other
             }
         }
         else {
             mShip.initShips(1);
         }
-        mShip.addShip(self.getX(), self.getY(), self.getZ(), 0XFFFF0000);
+        mShip.addShip(self.getX(), self.getY(), self.getZ(), 0XFFFF0000); // red self
         mShip.doneShips();
+    }
+
+    public void setOrientation(float angle, float displacement) {
+        mAngle = angle;
+        mDisplacement = displacement;
     }
 }
 

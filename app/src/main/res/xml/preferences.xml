@@ -307,29 +307,34 @@ authors: zkhan, jlmcgraw
 		            android:title="@string/AFD" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
-		            android:key="@string/prefTabThreeD"
-		            android:summary="@string/ThreeDSummary"
+		            android:key="@string/prefTabFind"
+		            android:summary="@string/FindSummary"
 		            android:title="@string/Find" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabPlan"
 		            android:summary="@string/PlanSummary"
 		            android:title="@string/Plan" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabNear"
+                    android:summary="@string/NearSummary"
+                    android:title="@string/Near" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabThreeD"
+                    android:summary="@string/ThreeDSummary"
+                    android:title="@string/ThreeD" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabChecklist"
+                    android:summary="@string/ChecklistSummary"
+                    android:title="@string/List" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabWX"
 		            android:summary="@string/WXSummary"
 		            android:title="@string/WXB" />
-				<CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabNear"
-		            android:summary="@string/NearSummary"
-		            android:title="@string/Near" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabChecklist"
-		            android:summary="@string/ChecklistSummary"
-		            android:title="@string/List" />
 				<CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabTools"

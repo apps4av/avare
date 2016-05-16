@@ -21,12 +21,14 @@ import android.content.ServiceConnection;
 import android.content.pm.ConfigurationInfo;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.ds.avare.adsb.Traffic;
@@ -40,6 +42,7 @@ import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.views.ThreeDSurfaceView;
 
 /**
  * @author zkhan
@@ -70,8 +73,20 @@ public class ThreeDActivity extends Activity {
     /**
      * Hold a reference to our GLSurfaceView
      */
-    private GLSurfaceView mGlSurfaceView;
+    private ThreeDSurfaceView mGlSurfaceView;
     private TerrainRenderer mRenderer = null;
+
+    private void setLocation(Location location) {
+        mAreaMapper.setGpsParams(new GpsParams(location));
+
+                /*
+                 * Elevation tile
+                 */
+        Tile t = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude());
+        Tile t2 = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), true);
+        mAreaMapper.setElevationTile(t);
+        mAreaMapper.setMapTile(t2);
+    }
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -86,15 +101,7 @@ public class ThreeDActivity extends Activity {
                 /*
                  * Called by GPS. Update everything driven by GPS.
                  */
-                mAreaMapper.setGpsParams(new GpsParams(location));
-
-                /*
-                 * Elevation tile
-                 */
-                Tile t = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude());
-                Tile t2 = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), true);
-                mAreaMapper.setElevationTile(t);
-                mAreaMapper.setMapTile(t2);
+                setLocation(location);
             }
         }
 
@@ -140,8 +147,11 @@ public class ThreeDActivity extends Activity {
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.threed, null);
+        setContentView(view);
 
-        mGlSurfaceView = new GLSurfaceView(this);
+        mGlSurfaceView = (ThreeDSurfaceView)view.findViewById(R.id.threed_surface);
 
         // Check if the system supports OpenGL ES 2.0.
         ActivityManager activityManager =
@@ -192,6 +202,11 @@ public class ThreeDActivity extends Activity {
                         // Draw traffic every so many frames
                         if(mFrames++ % 60 == 0) {
 
+                            if(mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
+                                setLocation(mService.getDestination().getLocationWithAltitude());
+                                // Simulate destination in sim mode
+                            }
+
                             SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
                             Vector3d ships[] = new Vector3d[t.size()];
                             for (int count = 0; count < t.size(); count++) {
@@ -200,6 +215,9 @@ public class ThreeDActivity extends Activity {
                             }
                             mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
                         }
+
+                        // Orientation from mouse event
+                        mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacement());
 
                     }
                     return null;
@@ -228,7 +246,19 @@ public class ThreeDActivity extends Activity {
 
         mAreaMapper = new AreaMapper();
 
-        setContentView(mGlSurfaceView);
+        Button center = (Button)view.findViewById(R.id.threed_button_center);
+        center.getBackground().setAlpha(255);
+        center.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (mRenderer != null) {
+                    // Orientation init
+                    mGlSurfaceView.init();
+                }
+            }
+
+        });
 
 
     }
