@@ -32,8 +32,8 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
     private MultiTouchController<Object> mMultiTouchC;
     private MultiTouchController.PointInfo mCurrTouchPoint;
 
-    private static final float MAX_SCALE = 10f;
-    private static final float MIN_SCALE = 1f;
+    private static final float MAX_SCALE = 2f;
+    private static final float MIN_SCALE = 0.5f;
 
     public ThreeDSurfaceView(Context context) {
         super(context);
@@ -55,11 +55,11 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
     }
 
     public float getDisplacementY() {
-        return -(mY  * mScale * 10) / getHeight() / 2;
+        return -mY * MAX_SCALE / getHeight() / mScale;
     }
 
     public float getDisplacementX() {
-        return (mX * mScale * 10) / getWidth() / 2;
+        return  mX * MAX_SCALE / getWidth() / mScale;
     }
 
     public float getScale() {
@@ -70,7 +70,7 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
         mX = 0;
         mY = 0;
         mAngle = 0;
-        mScale = MIN_SCALE;
+        mScale = 1.0f;
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new MultiTouchController.PointInfo();
     }
@@ -82,7 +82,7 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
 
     @Override
     public void getPositionAndScale(Object obj, MultiTouchController.PositionAndScale objPosAndScaleOut) {
-        objPosAndScaleOut.set(mX, mY, true, mScale, false, 0, 0, true, mAngle);
+        objPosAndScaleOut.set(mX, mY, true, mScale, true, mScale, mScale, true, mAngle);
     }
 
     @Override
@@ -100,6 +100,12 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
              * Clamp scaling.
              */
             mScale = newObjPosAndScale.getScale();
+            if(mScale > MAX_SCALE) {
+                mScale = MAX_SCALE;
+            }
+            if(mScale < MIN_SCALE) {
+                mScale = MIN_SCALE;
+            }
             mAngle = newObjPosAndScale.getAngle();
         }
 

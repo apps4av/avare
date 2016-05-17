@@ -22,6 +22,7 @@ import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.programs.TextureShaderProgram;
 import com.ds.avare.threed.util.Camera;
+import com.ds.avare.threed.util.MatrixHelper;
 import com.ds.avare.threed.util.TextureHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
@@ -29,13 +30,9 @@ import com.ds.avare.utils.GenericCallback;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
-import static android.opengl.GLES20.glCullFace;
-import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glViewport;
 
 /**
@@ -47,6 +44,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public static final String SURFACE_CREATED = "SurfaceCreated";
     public static final String DRAW_FRAME = "DrawFrame";
 
+    private static final float MAX_CAM_ANGLE = 45;
     private Context mContext;
 
     private final float[] mProjectionMatrix = new float[16];
@@ -61,6 +59,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private Ship mShip;
 
     private float mAngle;
+    private float mCamAngle;
 
     private boolean mMapSet;
     private boolean mTextureSet;
@@ -88,6 +87,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mTextureSet = false;
         mMapSet = false;
         mAngle = 0;
+        mCamAngle = MAX_CAM_ANGLE;
         mDisplacementX = 0;
         mDisplacementY = 0;
 
@@ -109,7 +109,6 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
-        glEnable(GL_CULL_FACE);
 
         mWidth = width;
         mHeight = height;
@@ -125,19 +124,12 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glCullFace(GL_BACK);
-
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
-        final float ratio = (float) mWidth / mHeight;
-        final float left = -ratio;
-        final float right = ratio;
-        final float bottom = -1.0f;
-        final float top = 1.0f;
-        final float near =  1f;
-        final float far = 10.0f;
+        MatrixHelper.perspectiveM(mProjectionMatrix, mCamAngle, (float) mWidth
+                / (float) mHeight, 1f, 10f);
 
-        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+        //Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
         Matrix.translateM(mModelMatrix, 0, mDisplacementX, mDisplacementY, 0.0f);
@@ -203,10 +195,11 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mShip.doneShips();
     }
 
-    public void setOrientation(float angle, float displacementX, float displacementY) {
+    public void setOrientation(float angle, float displacementX, float displacementY, float scale) {
         mAngle = angle;
         mDisplacementX = displacementX;
         mDisplacementY = displacementY;
+        mCamAngle = MAX_CAM_ANGLE / scale;
     }
 }
 
