@@ -195,8 +195,8 @@ public class ThreeDActivity extends Activity {
                             mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                         }
 
-                        Vector3d look = mAreaMapper.getCameraVectorLookAt();
-                        Vector3d pos  = mAreaMapper.getCameraVectorPosition();
+                        Vector3d look = mAreaMapper.getCameraVectorLookAt(mGlSurfaceView.getScale());
+                        Vector3d pos  = mAreaMapper.getCameraVectorPosition(mGlSurfaceView.getScale());
                         mRenderer.setCamera(pos, look);
 
                         // Draw traffic every so many frames
@@ -219,10 +219,9 @@ public class ThreeDActivity extends Activity {
                             else {
                                 mRenderer.setShips(null, mAreaMapper.getSelfLocation());
                             }
-
-                            // Orientation from mouse event
-                            mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacement());
                         }
+                        // Orientation from mouse event
+                        mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacementX(), mGlSurfaceView.getDisplacementY());
                     }
                     return null;
                 }

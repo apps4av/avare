@@ -15,20 +15,25 @@ package com.ds.avare.views;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+
+import org.metalev.multitouch.controller.MultiTouchController;
 
 /**
  * Created by zkhan on 5/16/16.
  */
-public class ThreeDSurfaceView extends GLSurfaceView {
+public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchController.MultiTouchObjectCanvas<Object> {
 
-    private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
-    private final float TOUCH_SCALE_FACTOR_DISPLACEMENT = 1/100.0f;
-    private float mPreviousX;
-    private float mPreviousY;
+    private float mX;
+    private float mY;
+    private float mScale;
     private float mAngle;
-    private float mDisplacement;
+    private MultiTouchController<Object> mMultiTouchC;
+    private MultiTouchController.PointInfo mCurrTouchPoint;
 
+    private static final float MAX_SCALE = 10f;
+    private static final float MIN_SCALE = 1f;
 
     public ThreeDSurfaceView(Context context) {
         super(context);
@@ -42,50 +47,68 @@ public class ThreeDSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        // MotionEvent reports input details from the touch screen
-        // and other input controls. In this case, you are only
-        // interested in events where the touch position changed.
-
-        float x = e.getX();
-        float y = e.getY();
-
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-
-                float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
-
-                // reverse direction of rotation above the mid-line
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
-
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-
-                mAngle = mAngle + (dx * TOUCH_SCALE_FACTOR);
-                mDisplacement = mDisplacement - (dy * TOUCH_SCALE_FACTOR_DISPLACEMENT);
-        }
-
-        mPreviousX = x;
-        mPreviousY = y;
-        return true;
+        return mMultiTouchC.onTouchEvent(e, MAX_SCALE, MIN_SCALE, 1);
     }
 
     public float getAngle() {
-        return mAngle;
+        return -(float)Math.toDegrees(mAngle);
     }
-    public float getDisplacement() {
-        return mDisplacement;
+
+    public float getDisplacementY() {
+        return -(mY  * mScale * 10) / getHeight() / 2;
+    }
+
+    public float getDisplacementX() {
+        return (mX * mScale * 10) / getWidth() / 2;
+    }
+
+    public float getScale() {
+        return mScale;
     }
 
     public void init() {
-        mPreviousX = 0;
-        mPreviousY = 0;
+        mX = 0;
+        mY = 0;
         mAngle = 0;
-        mDisplacement = 0;
+        mScale = MIN_SCALE;
+        mMultiTouchC = new MultiTouchController<Object>(this);
+        mCurrTouchPoint = new MultiTouchController.PointInfo();
+    }
 
+    @Override
+    public Object getDraggableObjectAtPoint(MultiTouchController.PointInfo touchPoint) {
+        return this;
+    }
+
+    @Override
+    public void getPositionAndScale(Object obj, MultiTouchController.PositionAndScale objPosAndScaleOut) {
+        objPosAndScaleOut.set(mX, mY, true, mScale, false, 0, 0, true, mAngle);
+    }
+
+    @Override
+    public boolean setPositionAndScale(Object obj, MultiTouchController.PositionAndScale newObjPosAndScale, MultiTouchController.PointInfo touchPoint) {
+        mCurrTouchPoint.set(touchPoint);
+        if(false == mCurrTouchPoint.isMultiTouch()) {
+            /*
+             * Multi-touch is zoom, single touch is pan
+             */
+            mX = newObjPosAndScale.getXOff();
+            mY = newObjPosAndScale.getYOff();
+        }
+        else {
+            /*
+             * Clamp scaling.
+             */
+            mScale = newObjPosAndScale.getScale();
+            mAngle = newObjPosAndScale.getAngle();
+        }
+        Log.d("============", "X=" + mX + "Y=" + mY + "Zoom=" + mScale);
+
+        return true;
+    }
+
+    @Override
+    public void selectObject(Object obj, MultiTouchController.PointInfo touchPoint) {
+        mCurrTouchPoint.set(touchPoint);
     }
 }

@@ -154,13 +154,13 @@ public class AreaMapper {
         return mNewElevationTile;
     }
 
-    public Vector3d getCameraVectorLookAt() {
-        Vector3d cameraVectorLookAt = new Vector3d(0f, 1.0f, 1.f);// = gpsToAxisNext(mGpsParams);
+    public Vector3d getCameraVectorLookAt(float scale) {
+        Vector3d cameraVectorLookAt = new Vector3d(0f, 1.0f, scale);// = gpsToAxisNext(mGpsParams);
         return cameraVectorLookAt;
     }
 
-    public Vector3d getCameraVectorPosition() {
-        Vector3d cameraVectorPosition = new Vector3d(0f, -2.0f, 1.f);// = gpsToAxis(mGpsParams);
+    public Vector3d getCameraVectorPosition(float scale) {
+        Vector3d cameraVectorPosition = new Vector3d(0f, -2.0f, scale);// = gpsToAxis(mGpsParams);
         return cameraVectorPosition;
     }
 

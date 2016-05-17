@@ -66,7 +66,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private GenericCallback mCallback;
 
     private int mTexture;
-    private float mDisplacement;
+    private float mDisplacementX;
+    private float mDisplacementY;
 
     public TerrainRenderer(Context ctx, GenericCallback cb) {
         mContext = ctx;
@@ -83,7 +84,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mTextureSet = false;
         mMapSet = false;
         mAngle = 0;
-        mDisplacement = 0;
+        mDisplacementX = 0;
+        mDisplacementY = 0;
 
         mTextureProgram = new TextureShaderProgram(mContext);
         mColorProgram = new ColorShaderProgram(mContext);
@@ -131,7 +133,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, 0f, mDisplacement, 0.0f);
+        Matrix.translateM(mModelMatrix, 0, mDisplacementX, mDisplacementY, 0.0f);
         Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 0.0f, 1.0f);
 
 
@@ -194,9 +196,10 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mShip.doneShips();
     }
 
-    public void setOrientation(float angle, float displacement) {
+    public void setOrientation(float angle, float displacementX, float displacementY) {
         mAngle = angle;
-        mDisplacement = displacement;
+        mDisplacementX = displacementX;
+        mDisplacementY = displacementY;
     }
 }
 
