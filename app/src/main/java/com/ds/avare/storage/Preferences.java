@@ -719,12 +719,12 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return true;
+        return  mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
      * @return
-     */
+         */
     public String getExternalGpsSource() {
         return mPref.getString(mContext.getString(R.string.externalGps), "0");
     }

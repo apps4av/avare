@@ -78,7 +78,7 @@ public class Ship {
     }
 
     public void addShip(float x, float y, float z, int color) {
-        getTriangle(mShips, 0, x, y, z, color);
+        getTriangle(mShips, mShipCount, x, y, z, color);
         mShipCount++;
     }
 

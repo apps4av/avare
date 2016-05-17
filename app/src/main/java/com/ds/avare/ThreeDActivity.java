@@ -79,9 +79,9 @@ public class ThreeDActivity extends Activity {
     private void setLocation(Location location) {
         mAreaMapper.setGpsParams(new GpsParams(location));
 
-                /*
-                 * Elevation tile
-                 */
+        /*
+         * Elevation tile
+         */
         Tile t = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude());
         Tile t2 = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), true);
         mAreaMapper.setElevationTile(t);
@@ -207,18 +207,22 @@ public class ThreeDActivity extends Activity {
                                 // Simulate destination in sim mode
                             }
 
-                            SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
-                            Vector3d ships[] = new Vector3d[t.size()];
-                            for (int count = 0; count < t.size(); count++) {
-                                Traffic tr = t.valueAt(count);
-                                ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude);
+                            if (mService != null) {
+                                SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
+                                Vector3d ships[] = new Vector3d[t.size()];
+                                for (int count = 0; count < t.size(); count++) {
+                                    Traffic tr = t.valueAt(count);
+                                    ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude);
+                                }
+                                mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
                             }
-                            mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
+                            else {
+                                mRenderer.setShips(null, mAreaMapper.getSelfLocation());
+                            }
+
+                            // Orientation from mouse event
+                            mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacement());
                         }
-
-                        // Orientation from mouse event
-                        mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacement());
-
                     }
                     return null;
                 }
