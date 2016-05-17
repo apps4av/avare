@@ -29,9 +29,13 @@ import com.ds.avare.utils.GenericCallback;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glCullFace;
+import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glViewport;
 
 /**
@@ -105,6 +109,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
+        glEnable(GL_CULL_FACE);
+
         mWidth = width;
         mHeight = height;
         mCallback.callback(this, SURFACE_CHANGED);
@@ -119,6 +125,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glCullFace(GL_BACK);
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.

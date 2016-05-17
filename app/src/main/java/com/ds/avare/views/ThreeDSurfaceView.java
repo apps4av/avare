@@ -102,7 +102,6 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
             mScale = newObjPosAndScale.getScale();
             mAngle = newObjPosAndScale.getAngle();
         }
-        Log.d("============", "X=" + mX + "Y=" + mY + "Zoom=" + mScale);
 
         return true;
     }
