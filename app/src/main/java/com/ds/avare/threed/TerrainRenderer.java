@@ -31,9 +31,14 @@ import com.ds.avare.utils.GenericCallback;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
+import static android.opengl.GLES20.GL_DEPTH_TEST;
+import static android.opengl.GLES20.GL_LEQUAL;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glDepthFunc;
+import static android.opengl.GLES20.glEnable;
+import static android.opengl.GLES20.glLineWidth;
 import static android.opengl.GLES20.glViewport;
 
 /**
@@ -82,6 +87,13 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+        // Set line to be thick
+        glLineWidth(4);
+
+        // hide surfaces
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);//less or equal, use with DEPTH_BUFFER_BIT
+
         mMap = new Map();
         mShip = new Ship();
         mCamera = new Camera();
@@ -123,7 +135,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 glUnused) {
         // Clear the rendering surface.
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
@@ -184,15 +196,13 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void setShips(Vector4d traffic[], Vector4d self) {
 
         if(traffic != null) {
-            mShip.initShips(traffic.length + 1); // +1 for self
-            mShip.addShip(self.getX(), self.getY(), self.getZ(), self.getAngle()); // self
+            mShip.initShips(traffic.length + 1, self.getX(), self.getY(), self.getZ(), self.getAngle()); // +1 for self
             for (Vector4d t : traffic) {
                 mShip.addShip(t.getX(), t.getY(), t.getZ(), t.getAngle()); // others
             }
         }
         else {
-            mShip.initShips(1);
-            mShip.addShip(self.getX(), self.getY(), self.getZ(), self.getAngle()); // self
+            mShip.initShips(1, self.getX(), self.getY(), self.getZ(), self.getAngle()); // +1 for self
         }
         mShip.doneShips();
     }
