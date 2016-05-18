@@ -34,15 +34,12 @@ public class AreaMapper {
     private boolean mNewMapTile;
     private boolean mNewElevationTile;
 
-    private float count = 0;
-
     public AreaMapper() {
         mGpsParams = new GpsParams(null);
         mNewMapTile = false;
         mNewElevationTile = false;
         mElevationTile = null;
         mMapTile = null;
-        count = 0;
     }
 
     /**
