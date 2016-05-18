@@ -8,6 +8,8 @@
 ***/
 package com.ds.avare.threed.util;
 
+import android.opengl.Matrix;
+
 public class MatrixHelper {
     public static void perspectiveM(float[] m, float yFovInDegrees, float aspect,
         float n, float f) {
@@ -34,4 +36,23 @@ public class MatrixHelper {
         m[14] = -((2f * f * n) / (f - n));
         m[15] = 0f;        
     }
+
+
+    /**
+     * Rotate a point of vector around x,y,z of angle
+     * @param x
+     * @param y
+     * @param z
+     * @param angle
+     */
+    public static void rotatePoint(float x, float y, float z, float angle, float vector[], float resultVector[], int offset) {
+        float[] modelView = new float[16];
+
+        Matrix.setIdentityM(modelView, 0);
+        Matrix.translateM(modelView, 0, x, y, z);
+        Matrix.rotateM(modelView, 0, angle, 0.0f, 0.0f, 1.0f);
+        Matrix.multiplyMV(resultVector, offset, modelView, 0, vector, 0);
+
+    }
+
 }

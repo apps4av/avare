@@ -8,10 +8,9 @@
 ***/
 package com.ds.avare.threed.objects;
 
-import android.graphics.Color;
-
 import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.ColorShaderProgram;
+import com.ds.avare.threed.util.MatrixHelper;
 
 import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glDrawArrays;
@@ -25,47 +24,85 @@ public class Ship {
         (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) 
         * BYTES_PER_FLOAT;
 
-    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 3;
+    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 6;
     private float[] mShips;
     private int mShipCount;
 
     private VertexArray mVertexArray;
 
-    // Make a triangle representing the ship
-    private static float[] getTriangle(float tr[], int offset, float x, float y, float z, int color) {
 
+    // Make a triangle representing the ship, rotate in ship's heading
+    private static float[] getShip(float tr[], int offset, float x, float y, float z, float angle) {
+
+        // make a paper bird with two sides
         final float disp = 0.05f;
-        float r = Color.red(color);
-        float g = Color.green(color);
-        float b = Color.blue(color);
+        final float intensity = 0.9f;
+        final float blue = offset == 0 ? 1.0f : 0; // first ship is ownship, show its left wing as magenta
 
-        // center base is location of ship triangle
-        tr[0  + offset * ELEMS] = x;
-        tr[1  + offset * ELEMS] = y;
-        tr[2  + offset * ELEMS] = z + disp; // top
-        tr[3  + offset * ELEMS] = 1f;
-        tr[4  + offset * ELEMS] = r;
-        tr[5  + offset * ELEMS] = g;
-        tr[6  + offset * ELEMS] = b;
+        float vector[] = new float[4];
+
+
+        // center base is location of ship triangle, left side wing
+        vector[0] = 0;
+        vector[1] = -disp / 2;
+        vector[2] = 0;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 0 + offset * ELEMS);
+        tr[4  + offset * ELEMS] = intensity;
+        tr[5  + offset * ELEMS] = 0;
+        tr[6  + offset * ELEMS] = blue;
         tr[7  + offset * ELEMS] = 1f;
 
-        tr[8  + offset * ELEMS] = x - disp; // left
-        tr[9  + offset * ELEMS] = y;
-        tr[10 + offset * ELEMS] = z;
-        tr[11 + offset * ELEMS] = 1f;
-        tr[12 + offset * ELEMS] = r;
-        tr[13 + offset * ELEMS] = g;
-        tr[14 + offset * ELEMS] = b;
+        vector[0] = -disp / 2;
+        vector[1] = 0;
+        vector[2] = disp / 2;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS);
+        tr[12 + offset * ELEMS] = intensity;
+        tr[13 + offset * ELEMS] = 0;
+        tr[14 + offset * ELEMS] = blue;
         tr[15 + offset * ELEMS] = 1f;
 
-        tr[16 + offset * ELEMS] = x + disp; //right
-        tr[17 + offset * ELEMS] = y;
-        tr[18 + offset * ELEMS] = z;
-        tr[19 + offset * ELEMS] = 1f;
-        tr[20 + offset * ELEMS] = r;
-        tr[21 + offset * ELEMS] = g;
-        tr[22 + offset * ELEMS] = b;
+        vector[0] = 0;
+        vector[1] = disp / 2;
+        vector[2] = 0;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 16 + offset * ELEMS);
+        tr[20 + offset * ELEMS] = intensity;
+        tr[21 + offset * ELEMS] = 0;
+        tr[22 + offset * ELEMS] = blue;
         tr[23 + offset * ELEMS] = 1f;
+
+        // center base is location of ship triangle, right side wing
+        vector[0] = 0;
+        vector[1] = disp / 2;
+        vector[2] = 0;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS);
+        tr[28 + offset * ELEMS] = 0;
+        tr[29 + offset * ELEMS] = intensity;
+        tr[30 + offset * ELEMS] = 0;
+        tr[31 + offset * ELEMS] = 1f;
+
+        vector[0] = disp / 2;
+        vector[1] = 0;
+        vector[2] = disp / 2;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 32 + offset * ELEMS);
+        tr[36 + offset * ELEMS] = 0;
+        tr[37 + offset * ELEMS] = intensity;
+        tr[38 + offset * ELEMS] = 0;
+        tr[39 + offset * ELEMS] = 1f;
+
+        vector[0] = 0;
+        vector[1] = -disp / 2;
+        vector[2] = 0;
+        vector[3] = 1f;
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS);
+        tr[44 + offset * ELEMS] = 0;
+        tr[45 + offset * ELEMS] = intensity;
+        tr[46 + offset * ELEMS] = 0;
+        tr[47 + offset * ELEMS] = 1f;
 
         return tr;
     }
@@ -77,8 +114,8 @@ public class Ship {
         mShipCount = 0;
     }
 
-    public void addShip(float x, float y, float z, int color) {
-        getTriangle(mShips, mShipCount, x, y, z, color);
+    public void addShip(float x, float y, float z, float angle) {
+        getShip(mShips, mShipCount, x, y, z, angle);
         mShipCount++;
     }
 
@@ -107,7 +144,7 @@ public class Ship {
         if(mVertexArray == null) {
             return;
         }
-        glDrawArrays(GL_TRIANGLES, 0, mShipCount * 3);
+        glDrawArrays(GL_TRIANGLES, 0, mShipCount * 6);
     }
 
 }

@@ -17,9 +17,9 @@ package com.ds.avare.threed.data;
  * Created by zkhan on 5/9/16.
  */
 public class Vector3d {
-    private float mX;
-    private float mY;
-    private float mZ;
+    protected float mX;
+    protected float mY;
+    protected float mZ;
 
     public Vector3d(float x, float y, float z) {
         mX = x;

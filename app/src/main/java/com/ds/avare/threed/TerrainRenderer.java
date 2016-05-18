@@ -17,6 +17,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
 import com.ds.avare.threed.data.Vector3d;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.threed.objects.Map;
 import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
@@ -180,18 +181,19 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMapSet = true;
     }
 
-    public void setShips(Vector3d traffic[], Vector3d self) {
+    public void setShips(Vector4d traffic[], Vector4d self) {
 
         if(traffic != null) {
             mShip.initShips(traffic.length + 1); // +1 for self
-            for (Vector3d t : traffic) {
-                mShip.addShip(t.getX(), t.getY(), t.getZ(), 0xFF00FF00); // green other
+            mShip.addShip(self.getX(), self.getY(), self.getZ(), self.getAngle()); // self
+            for (Vector4d t : traffic) {
+                mShip.addShip(t.getX(), t.getY(), t.getZ(), t.getAngle()); // others
             }
         }
         else {
             mShip.initShips(1);
+            mShip.addShip(self.getX(), self.getY(), self.getZ(), self.getAngle()); // self
         }
-        mShip.addShip(self.getX(), self.getY(), self.getZ(), 0XFFFF0000); // red self
         mShip.doneShips();
     }
 

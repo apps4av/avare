@@ -39,6 +39,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.threed.data.Vector3d;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -209,10 +210,10 @@ public class ThreeDActivity extends Activity {
 
                             if (mService != null) {
                                 SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
-                                Vector3d ships[] = new Vector3d[t.size()];
+                                Vector4d ships[] = new Vector4d[t.size()];
                                 for (int count = 0; count < t.size(); count++) {
                                     Traffic tr = t.valueAt(count);
-                                    ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude);
+                                    ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
                                 }
                                 mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
                             }

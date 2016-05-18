@@ -14,11 +14,10 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector3d;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 
 /**
@@ -50,9 +49,9 @@ public class AreaMapper {
      * Convert a location to a vector3d
      * @return
      */
-    public Vector3d gpsToAxis(double longitude, double latitude, double altitude) {
+    public Vector4d gpsToAxis(double longitude, double latitude, double altitude, double angle) {
         if(mMapTile == null || mElevationTile == null) {
-            return new Vector3d(-10, -10, -10); // off screen
+            return new Vector4d(-10, -10, -10, 0); // off screen
         }
 
         double latc = mMapTile.getLatitude();
@@ -70,22 +69,9 @@ public class AreaMapper {
 
         double alt = altitude / (255 * 25 * Preferences.heightConversion); // altitude in feet 25 meters per pixel
 
-        Vector3d ret = new Vector3d(xnorm, ynorm, (float)alt);
+        Vector4d ret = new Vector4d(xnorm, ynorm, (float)alt, (float)angle);
         return ret;
     }
-
-    /**
-     * 10 mile offset to current postion in current track degrees
-     * @param mGpsParams
-     * @return
-     */
-    private Vector3d gpsToAxisNext(GpsParams mGpsParams) {
-
-        Coordinate c = Projection.findStaticPoint(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getBearing(), 10);
-
-        return gpsToAxis(c.getLongitude(), c.getLatitude(), mGpsParams.getAltitude());
-    }
-
 
     /**
          * Got from GPS, set
@@ -142,8 +128,8 @@ public class AreaMapper {
         return t;
     }
 
-    public  Vector3d getSelfLocation() {
-        return gpsToAxis(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+    public  Vector4d getSelfLocation() {
+        return gpsToAxis(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude(), mGpsParams.getBearing());
     }
 
     public boolean isMapTileNew() {
