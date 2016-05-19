@@ -88,7 +88,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         // Set line to be thick
-        glLineWidth(4);
+        glLineWidth(6);
 
         // hide surfaces
         glEnable(GL_DEPTH_TEST);

@@ -177,6 +177,15 @@ public class Projection {
     }
 
     /**
+     * Distance to horizon in NM for altitude feet
+     * @param altitudeft
+     * @return
+     */
+    public static double horizonDistance(double altitudeft) {
+        return 1.06 * Math.sqrt(altitudeft);
+    }
+
+    /**
      * @return
      */
     public double getBearing() {

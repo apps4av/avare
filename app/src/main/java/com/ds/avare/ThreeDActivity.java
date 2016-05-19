@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ConfigurationInfo;
+import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
@@ -68,8 +69,11 @@ public class ThreeDActivity extends Activity {
 
     private boolean mReady;
 
+    private boolean mFirstPerson;
 
     private int mFrames;
+
+    private Button mCenterButton;
 
     /**
      * Hold a reference to our GLSurfaceView
@@ -143,16 +147,18 @@ public class ThreeDActivity extends Activity {
         mReady = false;
         mFrames = 0; // drawn frames
 
+        mFirstPerson = true;
+
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.threed, null);
         setContentView(view);
 
-        mGlSurfaceView = (ThreeDSurfaceView)view.findViewById(R.id.threed_surface);
+        mGlSurfaceView = (ThreeDSurfaceView) view.findViewById(R.id.threed_surface);
 
         // Check if the system supports OpenGL ES 2.0.
         ActivityManager activityManager =
@@ -183,27 +189,32 @@ public class ThreeDActivity extends Activity {
             mRenderer = new TerrainRenderer(this, new GenericCallback() {
                 @Override
                 public Object callback(Object o, Object o1) {
-                    if(((String)o1).equals(TerrainRenderer.SURFACE_CREATED)) {
+                    if (((String) o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
                         mReady = true;
-                    }
-                    else if(((String)o1).equals(TerrainRenderer.DRAW_FRAME)) {
+                    } else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
-                        if(mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
+                        if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                             Tile tout = mAreaMapper.getMapTile();
                             mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                             tout = mAreaMapper.getElevationTile();
                             mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                         }
 
-                        Vector3d look = mAreaMapper.getCameraVectorLookAt();
-                        Vector3d pos  = mAreaMapper.getCameraVectorPosition();
+                        Vector3d pos, look;
+                        if (mFirstPerson) {
+                            look = mAreaMapper.getCameraVectorLookAtFirstPerson();
+                            pos = mAreaMapper.getCameraVectorPositionFirstPerson();
+                        } else {
+                            look = mAreaMapper.getCameraVectorLookAt();
+                            pos = mAreaMapper.getCameraVectorPosition();
+                        }
                         mRenderer.setCamera(pos, look);
 
                         // Draw traffic every so many frames
-                        if(mFrames++ % 60 == 0) {
+                        if (mFrames++ % 60 == 0) {
 
-                            if(mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
+                            if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 setLocation(mService.getDestination().getLocationWithAltitude());
                                 // Simulate destination in sim mode
                             }
@@ -216,20 +227,23 @@ public class ThreeDActivity extends Activity {
                                     ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
                                 }
                                 mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
-                            }
-                            else {
+                            } else {
                                 mRenderer.setShips(null, mAreaMapper.getSelfLocation());
                             }
                         }
-                        // Orientation from mouse event
-                        mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacementX(), mGlSurfaceView.getDisplacementY(), mGlSurfaceView.getScale());
+                        if (mFirstPerson) {
+                            // Orientation from mouse event but only allow zooming in first person mode
+                            mRenderer.setOrientation(0, 0, 0, mGlSurfaceView.getScale());
+                        } else {
+                            // Orientation from mouse event
+                            mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacementX(), mGlSurfaceView.getDisplacementY(), mGlSurfaceView.getScale());
+                        }
                     }
                     return null;
                 }
             });
             mGlSurfaceView.setRenderer(mRenderer);
-        }
-        else {
+        } else {
             /*
              * This is where you could create an OpenGL ES 1.x compatible
              * renderer if you wanted to support both ES 1 and ES 2. Since
@@ -250,9 +264,9 @@ public class ThreeDActivity extends Activity {
 
         mAreaMapper = new AreaMapper();
 
-        Button center = (Button)view.findViewById(R.id.threed_button_center);
-        center.getBackground().setAlpha(255);
-        center.setOnClickListener(new View.OnClickListener() {
+        mCenterButton = (Button) view.findViewById(R.id.threed_button_center);
+        mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -264,7 +278,24 @@ public class ThreeDActivity extends Activity {
 
         });
 
-
+        mCenterButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // long press on mCenterButton button sets track toggle
+                mPref.setTrackUp(!mPref.isTrackUp());
+                if (mPref.isTrackUp()) {
+                    v.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.FirstPerson));
+                    mFirstPerson = true;
+                } else {
+                    v.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+                    mToast.setText(getString(R.string.BirdEye));
+                    mFirstPerson = false;
+                }
+                mToast.show();
+                return true;
+            }
+        });
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -280,9 +311,9 @@ public class ThreeDActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
 
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
+        /*
+         * We've bound to LocalService, cast the IBinder and get LocalService instance
+         */
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
@@ -320,16 +351,29 @@ public class ThreeDActivity extends Activity {
         super.onResume();
         Helper.setOrientationAndOn(this);
 
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
+
+
+    /*
+     * Registering our receiver
+     * Bind now.
+     */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (mRenderer != null) {
             mGlSurfaceView.onResume();
         }
+
+        // Button colors to be synced across activities
+        if(mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+            mFirstPerson = true;
+        }
+        else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+            mFirstPerson = false;
+        }
+
     }
 
     /* (non-Javadoc)
@@ -343,9 +387,9 @@ public class ThreeDActivity extends Activity {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
+    /*
+     * Clean up on pause that was started in on resume
+     */
         getApplicationContext().unbindService(mConnection);
 
         if (mRenderer != null) {

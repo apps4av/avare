@@ -20,11 +20,19 @@ public class Vector3d {
     protected float mX;
     protected float mY;
     protected float mZ;
+    private float[] mV;
+    private float[] mS;
 
     public Vector3d(float x, float y, float z) {
         mX = x;
         mY = y;
         mZ = z;
+        mV = new float[4];
+        mS = new float[4];
+        mV[0] = x;
+        mV[1] = y;
+        mV[2] = z;
+        mV[3] = 1.0f;
     }
 
     public void set(Vector3d in) {
@@ -42,4 +50,13 @@ public class Vector3d {
     public float getZ() {
         return mZ;
     }
+    public float[] getVectorArray() {
+        return mV;
+    }
+    // Mostly used for rotation
+    public float[] getVectorArrayScratch() {
+        return mS;
+    }
+
+
 }
