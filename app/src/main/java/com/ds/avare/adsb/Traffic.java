@@ -4,9 +4,13 @@ import android.graphics.Color;
 import android.util.SparseArray;
 
 import com.ds.avare.IHelperService;
+import com.ds.avare.StorageService;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
+import com.ds.avare.threed.AreaMapper;
+import com.ds.avare.threed.TerrainRenderer;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.Helper;
 
 public class Traffic {
@@ -193,6 +197,29 @@ public class Traffic {
 
 
     }
+
+
+    /**
+     * Draw for 3D
+     * @param service
+     * @param mapper
+     * @param renderer
+     */
+    public static void draw(StorageService service, AreaMapper mapper, TerrainRenderer renderer) {
+        if (service != null) {
+            SparseArray<Traffic> t = service.getTrafficCache().getTraffic();
+            Vector4d ships[] = new Vector4d[t.size()];
+            for (int count = 0; count < t.size(); count++) {
+                Traffic tr = t.valueAt(count);
+                ships[count] = mapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
+            }
+            renderer.setShips(ships, mapper.getSelfLocation());
+        } else {
+            renderer.setShips(null, mapper.getSelfLocation());
+        }
+
+    }
+
 
     /*
      * Determine if shape belong to a screen based on Screen longitude and latitude

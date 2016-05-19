@@ -51,6 +51,7 @@ public class MatrixHelper {
         Matrix.setIdentityM(modelView, 0);
         Matrix.translateM(modelView, 0, x, y, z);
         Matrix.rotateM(modelView, 0, angle, 0.0f, 0.0f, 1.0f);
+        Matrix.translateM(modelView, 0, -x, -y, -z);
         Matrix.multiplyMV(resultVector, offset, modelView, 0, vector, 0);
 
     }

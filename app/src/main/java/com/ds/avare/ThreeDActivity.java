@@ -25,7 +25,6 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -40,7 +39,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.threed.data.Vector3d;
-import com.ds.avare.threed.data.Vector4d;
+import com.ds.avare.threed.util.MatrixHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -192,7 +191,8 @@ public class ThreeDActivity extends Activity {
                     if (((String) o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
                         mReady = true;
-                    } else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
+                    }
+                    else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
                         if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                             Tile tout = mAreaMapper.getMapTile();
@@ -203,11 +203,18 @@ public class ThreeDActivity extends Activity {
 
                         Vector3d pos, look;
                         if (mFirstPerson) {
-                            look = mAreaMapper.getCameraVectorLookAtFirstPerson();
                             pos = mAreaMapper.getCameraVectorPositionFirstPerson();
-                        } else {
-                            look = mAreaMapper.getCameraVectorLookAt();
+                            look = mAreaMapper.getCameraVectorLookAtFirstPerson();
+                            // let user rotate around ownship to see whats there
+                            // angle is reverse of satellite view because this is first person
+                            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
+                                    mGlSurfaceView.getAngle(), look.getVectorArray(), look.getVectorArrayScratch(), 0);
+                            float out[] = look.getVectorArrayScratch();
+                            look = new Vector3d(out[0], out[1], out[2]);
+                        }
+                        else {
                             pos = mAreaMapper.getCameraVectorPosition();
+                            look = mAreaMapper.getCameraVectorLookAt();
                         }
                         mRenderer.setCamera(pos, look);
 
@@ -219,22 +226,13 @@ public class ThreeDActivity extends Activity {
                                 // Simulate destination in sim mode
                             }
 
-                            if (mService != null) {
-                                SparseArray<Traffic> t = mService.getTrafficCache().getTraffic();
-                                Vector4d ships[] = new Vector4d[t.size()];
-                                for (int count = 0; count < t.size(); count++) {
-                                    Traffic tr = t.valueAt(count);
-                                    ships[count] = mAreaMapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
-                                }
-                                mRenderer.setShips(ships, mAreaMapper.getSelfLocation());
-                            } else {
-                                mRenderer.setShips(null, mAreaMapper.getSelfLocation());
-                            }
+                            Traffic.draw(mService, mAreaMapper, mRenderer);
                         }
                         if (mFirstPerson) {
                             // Orientation from mouse event but only allow zooming in first person mode
                             mRenderer.setOrientation(0, 0, 0, mGlSurfaceView.getScale());
-                        } else {
+                        }
+                        else {
                             // Orientation from mouse event
                             mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacementX(), mGlSurfaceView.getDisplacementY(), mGlSurfaceView.getScale());
                         }
@@ -287,10 +285,12 @@ public class ThreeDActivity extends Activity {
                     v.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.FirstPerson));
                     mFirstPerson = true;
+                    mGlSurfaceView.init();
                 } else {
                     v.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.BirdEye));
                     mFirstPerson = false;
+                    mGlSurfaceView.init();
                 }
                 mToast.show();
                 return true;
