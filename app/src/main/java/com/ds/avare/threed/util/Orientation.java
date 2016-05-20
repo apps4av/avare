@@ -23,7 +23,7 @@ public class Orientation {
 
     ThreeDSurfaceView mView;
 
-    private static final float MAX_VIEW_ANGLE = 45;
+    private static final float MAX_VIEW_ANGLE = 90;
 
     private float mAngle;
     private float mViewAngle;

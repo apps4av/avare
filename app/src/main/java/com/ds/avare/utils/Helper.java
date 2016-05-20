@@ -236,24 +236,19 @@ public class Helper {
     }
 
     /**
-     * See the explanation in the function setThreshold. 
-     * @param threshold
      * @return
      */
-    public static String calculateAltitudeFromThreshold(float threshold) {
-        double altitude = (threshold) * Preferences.heightConversion * 50.0;
+    public static String calculateAltitudeFromMSL(float msl) {
+        double altitude = msl;
         return(String.format(Locale.getDefault(), "%d", (int)altitude));
     }
 
     /**
-     * See the explanation in the function setThreshold. 
-     * @param threshold
-     * @param elevation
      * @return
      */
-    public static String calculateAGLFromThreshold(float threshold, float elevation) {
+    public static String calculateAGLFromMSL(float msl, float elevation) {
         boolean valid = (elevation < 0) ? false : true;
-        double altitude = (threshold) * Preferences.heightConversion * 50.0;
+        double altitude = msl;
         altitude -= elevation * Preferences.heightConversion;
         if(altitude < 0) {
             altitude = 0;
@@ -262,52 +257,6 @@ public class Helper {
             return(String.format(Locale.getDefault(), "%d", (int)altitude));
         }
         return("");
-    }
-
-    /**
-     * See the explanation in the function setThreshold. 
-     * @param altitude
-     * @return
-     */
-    public static float calculateThreshold(double altitude) {
-        float threshold = (float)(altitude / Preferences.heightConversion / 50.0); 
-        return(threshold);
-    }
-
-    /**
-     * 
-     * @param paint
-     */
-    public static void setThreshold(Paint paint, float threshold) {
-        /*
-         * Elevation matrix. This will threshold the elevation with GPS altitude.
-         * The factor is used to increase the brightness for a given elevation map.
-         * Elevation map is prepared so that altitudes from 0-5000 meter are encoded with 0-200 pixel values.
-         * Each pixel level is 25 meter. 
-         * 
-         * Negative sign for black threshold instead of white.
-         * Threshold of to 0 to 100 translated to 0 - 200 for all pixels thresholded at 5000 meters.
-         * 
-         * Calibrated (visually) at 
-         * KRNO - 1346 meters, threshold = 28
-         * KLXV - 3027 meters, threshold = 61
-         * L70  - 811  meters, threshold = 16
-         * KHIE - 326  meters, threshold = 7
-         *--------------------------------------------
-         *       5510                    = 112  ~ 50 meters per px
-         * Formula to calculate threshold is:
-         * threshold = altitude / 3 (meters per foot) / 50
-         * Give 2 levels margin of safety
-         */
-        float factor = 4.f;
-        float mx [] = {
-                factor, 0,             0,             0,  -(factor) * (threshold - 5) * 2.0f,
-                0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 5) * 2.0f,
-                0,      0,             factor / 2.0f, 0,  -(factor) * (threshold - 5) * 2.0f,
-                0     , 0,             0,             1,  0
-       };
-       ColorMatrix cm = new ColorMatrix(mx);
-       paint.setColorFilter(new ColorMatrixColorFilter(cm));
     }
 
     /**

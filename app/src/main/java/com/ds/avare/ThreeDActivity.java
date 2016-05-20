@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ds.avare.adsb.Traffic;
@@ -71,12 +72,18 @@ public class ThreeDActivity extends Activity {
     private int mFrames;
 
     private Button mCenterButton;
+    private TextView mText;
+    private TextView mTextError;
 
     /**
      * Hold a reference to our GLSurfaceView
      */
     private ThreeDSurfaceView mGlSurfaceView;
     private TerrainRenderer mRenderer = null;
+
+    private static final int MESSAGE_INIT = 0;
+    private static final int MESSAGE_TEXT = 1;
+    private static final int MESSAGE_ERROR = 2;
 
     private void setLocation(Location location) {
         mAreaMapper.setGpsParams(new GpsParams(location));
@@ -109,6 +116,18 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void timeoutCallback(boolean timeout) {
+            if(mPref.isSimulationMode()) {
+                Message m = mHandler.obtainMessage();
+                m.what = MESSAGE_ERROR;
+                m.obj = getString(R.string.SimulationMode);
+                mHandler.sendMessage(m);
+            }
+            else if(timeout) {
+                Message m = mHandler.obtainMessage();
+                m.what = MESSAGE_ERROR;
+                m.obj = getString(R.string.GPSLost);
+                mHandler.sendMessage(m);
+            }
         }
 
         @Override
@@ -206,15 +225,36 @@ public class ThreeDActivity extends Activity {
                         // When ready, do stuff
                         mReady = true;
                         // cannot call widgets from opengl thread so handler
-                        mHandler.sendEmptyMessage(0);
+                        mHandler.sendEmptyMessage(MESSAGE_INIT);
                     }
                     else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
                         if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
+                            Message m = mHandler.obtainMessage();
+                            m.obj = mContext.getString(R.string.LoadingMaps);
+                            m.what = MESSAGE_TEXT;
+                            mHandler.sendMessage(m);
+
+                            // load tiles but give feedback as it hangs
                             Tile tout = mAreaMapper.getMapTile();
                             mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                             tout = mAreaMapper.getElevationTile();
                             mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
+
+                            // show errors
+                            m = mHandler.obtainMessage();
+                            m.what = MESSAGE_TEXT;
+                            if(!mRenderer.isMapSet()) {
+                                m.obj = mContext.getString(R.string.MissingElevation);
+                            }
+                            else if(!mRenderer.isTextureSet()) {
+                                m.obj = mContext.getString(R.string.MissingMaps);
+                            }
+                            else {
+                                m.obj = mContext.getString(R.string.Ready);
+                            }
+
+                            mHandler.sendMessage(m);
                         }
 
                         // tell renderer that we have new area
@@ -284,6 +324,9 @@ public class ThreeDActivity extends Activity {
                 return true;
             }
         });
+
+        mText = (TextView) view.findViewById(R.id.threed_text);
+        mTextError = (TextView) view.findViewById(R.id.threed_text_error);
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -376,7 +419,15 @@ public class ThreeDActivity extends Activity {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            setCenterButton();
+            if(msg.what == MESSAGE_INIT) {
+                setCenterButton();
+            }
+            else if(msg.what == MESSAGE_TEXT) {
+                mText.setText((String) msg.obj);
+            }
+            else if(msg.what == MESSAGE_ERROR) {
+                mTextError.setText((String) msg.obj);
+            }
         }
     };
 }

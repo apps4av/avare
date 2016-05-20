@@ -34,8 +34,6 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.PopoutAdapter;
@@ -51,7 +49,6 @@ import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
-import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
@@ -62,7 +59,6 @@ import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
-import com.ds.avare.utils.VerticalSeekBar;
 import com.ds.avare.views.LocationView;
 
 import java.io.File;
@@ -137,7 +133,6 @@ public class LocationActivity extends Activity implements Observer {
     private OptionButton mChartOption;
     private OptionButton mLayerOption;
     private Bundle mExtras;
-    private VerticalSeekBar mBar;
     private boolean mIsWaypoint;
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
@@ -201,13 +196,6 @@ public class LocationActivity extends Activity implements Observer {
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
                 mLocationView.updateParams(params);
-
-                /*
-                 * For terrain update threshold.
-                 */
-                float threshold = Helper.calculateThreshold(params.getAltitude());
-                mBar.setProgress(Math.round(threshold));
-                mLocationView.updateThreshold(threshold);
 
                 if(mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
                 	/*
@@ -544,14 +532,6 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public Object callback(Object o, Object o1) {
                 mPref.setChartType("" + (int) o1);
-                /*
-                 * Contrast bars only in terrain view
-                 */
-                if (mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
-                    mBar.setVisibility(View.VISIBLE);
-                } else {
-                    mBar.setVisibility(View.INVISIBLE);
-                }
                 mLocationView.forceReload();
                 return null;
             }
@@ -571,24 +551,6 @@ public class LocationActivity extends Activity implements Observer {
         });
         mLayerOption.setSelectedValue(mPref.getLayerType());
         mLocationView.setLayerType(mPref.getLayerType());
-
-
-        mBar = (VerticalSeekBar)view.findViewById(R.id.location_seekbar_threshold);
-        mBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mLocationView.updateThreshold(progress);
-            }
-        });
 
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -1263,15 +1225,6 @@ public class LocationActivity extends Activity implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        /*
-         * Contrast bars only in terrain view
-         */
-        if(mPref.getChartType().equals(Tile.ELEVATION_INDEX)) {
-            mBar.setVisibility(View.VISIBLE);
-        }
-        else {
-            mBar.setVisibility(View.INVISIBLE);
-        }
 
         mDestLayout.setVisibility(View.INVISIBLE);
 

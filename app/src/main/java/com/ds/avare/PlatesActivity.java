@@ -185,15 +185,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
-                mPlatesView.updateParams(params); 
-                
-                /*
-                 * Altitude update
-                 */
-                if(mService != null) {
-	                float threshold = Helper.calculateThreshold(params.getAltitude());
-	                mService.setThreshold(threshold);
-                }
+                mPlatesView.updateParams(params);
             }
         }
 

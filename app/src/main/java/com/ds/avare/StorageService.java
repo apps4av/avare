@@ -203,8 +203,7 @@ public class StorageService extends Service {
      * Curret ground elevation
      */
     private double mElev;
-    private double mThreshold;
-    
+
     /*
      * Hobbs time
      */
@@ -336,8 +335,7 @@ public class StorageService extends Service {
         mPixelDraw = new PixelDraw();
         
         mElev = -1;
-        mThreshold = 0;
-        
+
         mChecklist = new Checklist("");
         
         /*
@@ -1120,22 +1118,6 @@ public class StorageService extends Service {
        mElev = elev; 
     }
     
-    /**
-     * 
-     * @return
-     */
-    public double getThreshold() {
-       return mThreshold; 
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public void setThreshold(double thr) {
-       mThreshold = thr; 
-    }
-
     public ShadowedText getShadowedText() {
     	return mShadowedText;
     }

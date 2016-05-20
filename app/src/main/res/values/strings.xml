@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="lang"></string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Download chart&quot;</string>
+    <string name="MissingElevation">&quot;Download elevation chart&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
@@ -509,6 +510,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
     <string name="FirstPerson">Pilot Cam / Track Up</string>
     <string name="BirdEye">Satellite Cam / North Up</string>
+    <string name="Ready">Ready</string>
 
 
 </resources>

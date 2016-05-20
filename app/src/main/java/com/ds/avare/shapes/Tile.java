@@ -374,12 +374,6 @@ public class Tile {
                  */
                 Helper.invertCanvasColors(ctx.paint);
             }
-            else if(isTerrain) {
-                /*
-                 * Terrain
-                 */
-                Helper.setThreshold(ctx.paint, (float)ctx.service.getThreshold());
-            }
 
             /*
              * Pretty straightforward. Pan and draw individual tiles.

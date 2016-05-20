@@ -35,17 +35,18 @@ public class Map {
     public Map() {
     }
 
-    public void loadTerrain(BitmapHolder b) {
+    public boolean loadTerrain(BitmapHolder b) {
         Bitmap bitmap = b.getBitmap();
         if (bitmap == null) {
             if (LoggerConfig.ON) {
             }
-            return;
+            return false;
         }
 
         mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap));
         // It has been loaded. Recycle.
         b.recycle();
+        return true;
     }
 
     public void bindData(TextureShaderProgram textureProgram) {

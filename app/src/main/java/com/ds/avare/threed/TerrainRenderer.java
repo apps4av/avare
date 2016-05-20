@@ -172,12 +172,11 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
     public void setTexture(BitmapHolder b) {
         mTexture = TextureHelper.loadTexture(b);
-        mTextureSet = true;
+        mTextureSet = mTexture != 0;
     }
 
     public void setTerrain(BitmapHolder b) {
-        mMap.loadTerrain(b);
-        mMapSet = true;
+        mMapSet = mMap.loadTerrain(b);
     }
 
     public void setShips(Vector4d traffic[], Vector4d self) {
@@ -200,6 +199,14 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
     public Orientation getOrientation() {
         return mOrientation;
+    }
+
+    public boolean isMapSet() {
+        return mMapSet;
+    }
+
+    public boolean isTextureSet() {
+        return mTextureSet;
     }
 }
 

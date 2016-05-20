@@ -12,12 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,6 +24,12 @@ import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /***
  * Object to handle all of the text on the top two lines of the screen along
@@ -75,7 +75,7 @@ public class InfoLines {
     private int mFieldLines[][]; // Configuration/content of the status lines
     private int mRowCount; // How many status rows are in use
     private float mElev;
-    private float mThreshold;
+    private float mAltitude;
 
     private Context mContext;
     private Preferences mPref;
@@ -254,7 +254,7 @@ public class InfoLines {
      * Construct this object passing in the LocationView that did the creation.
      * The fields are defaulted to what is read from the shared preferences
      * 
-     * @param locationView
+     * @param service
      */
     public InfoLines(StorageService service) {
         mContext = service;
@@ -450,7 +450,7 @@ public class InfoLines {
         mShadowY = lineY * mRowCount + aShadow;
 
         mElev = (float) mService.getElevation();
-        mThreshold = (float) mService.getThreshold();
+        mAltitude = (float) mService.getGpsParams().getAltitude();
         
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so
@@ -753,13 +753,13 @@ public class InfoLines {
 
         case ID_FLD_MSL: {
             return Helper.centerString(Helper
-                    .calculateAltitudeFromThreshold(mThreshold), MAX_FIELD_SIZE_IN_CHARS);
+                    .calculateAltitudeFromMSL(mAltitude), MAX_FIELD_SIZE_IN_CHARS);
         }
 
         case ID_FLD_AGL: {
             return Helper.centerString(
-                    Helper.calculateAGLFromThreshold(
-                            mThreshold,
+                    Helper.calculateAGLFromMSL(
+                            mAltitude,
                             (float) mElev),
                     MAX_FIELD_SIZE_IN_CHARS);
         }
