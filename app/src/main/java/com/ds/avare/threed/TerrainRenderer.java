@@ -31,6 +31,7 @@ import com.ds.avare.utils.GenericCallback;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_LEQUAL;
@@ -127,7 +128,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 glUnused) {
         // Clear the rendering surface.
-        glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
