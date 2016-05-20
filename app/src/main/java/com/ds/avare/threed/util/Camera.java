@@ -15,6 +15,10 @@ package com.ds.avare.threed.util;
 
 import android.opengl.Matrix;
 
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.Projection;
+import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.data.Vector3d;
 
 /**
@@ -24,6 +28,7 @@ public class Camera {
     private Vector3d mCameraPos;
     private Vector3d mCameraLook;
     private Vector3d mCameraUp;
+    private boolean mFirstPerson;
 
     /**
      * Camera always up +ve z axis
@@ -32,18 +37,36 @@ public class Camera {
         mCameraPos = new Vector3d(0, 0, 0);
         mCameraLook = new Vector3d(0, 0, 0);
         mCameraUp = new Vector3d(0, 0, 0);
+        mFirstPerson = false;
     }
 
     /**
      * Set camera position and target
-     * @param x
-     * @param y
-     * @param z
-     * @param x0
-     * @param y0
-     * @param z0
      */
-    public void set(Vector3d pos, Vector3d look) {
+    public void set(AreaMapper mapper, Orientation orientation) {
+        Vector3d pos, look;
+        if (mFirstPerson) {
+            pos = getCameraVectorPositionFirstPerson(mapper);
+            look = getCameraVectorLookAtFirstPerson(mapper);
+            // let user rotate around ownship to see whats there
+            // angle Z rotate is reverse of satellite view because this is first person
+            // this is yaw
+            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
+                    orientation.getRotationZ(true), look.getVectorArray(), look.getVectorArrayScratch(), 0,
+                    0, 0, 1);
+            float out[] = look.getVectorArrayScratch();
+            look = new Vector3d(out[0], out[1], out[2]);
+            // angle x rotate, this is pitch
+            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
+                    orientation.getRotationX(true), look.getVectorArray(), look.getVectorArrayScratch(), 0,
+                    1, 0, 0);
+            out = look.getVectorArrayScratch();
+            look = new Vector3d(out[0], out[1], out[2]);
+        }
+        else {
+            pos = Camera.getCameraVectorPosition();
+            look = Camera.getCameraVectorLookAt();
+        }
 
         Vector3d up = new Vector3d(look.getX(), look.getY(), 1000f);
         mCameraPos.set(pos);
@@ -63,4 +86,39 @@ public class Camera {
 
     }
 
+    public static Vector3d getCameraVectorLookAtFirstPerson(AreaMapper map) {
+        GpsParams params = map.getmGpsParams();
+        // Find a point ahead on horizon in bearing direction and look at it
+        Coordinate c = Projection.findStaticPoint(params.getLongitude(), params.getLatitude(),
+                params.getBearing(), Projection.horizonDistance(params.getAltitude()));
+        Vector3d cameraVectorLookAt = map.gpsToAxis(c.getLongitude(), c.getLatitude(), params.getAltitude(), 0);
+        return cameraVectorLookAt;
+    }
+
+    public static Vector3d getCameraVectorPositionFirstPerson(AreaMapper map) {
+        // camera is where ownship is
+        GpsParams params = map.getmGpsParams();
+        Vector3d cameraVectorPosition = map.gpsToAxis(params.getLongitude(), params.getLatitude(), params.getAltitude(), 0);
+        return cameraVectorPosition;
+    }
+
+    public static Vector3d getCameraVectorLookAt() {
+        // Bird eye camera
+        Vector3d cameraVectorLookAt = new Vector3d(0, 1f, 0);
+        return cameraVectorLookAt;
+    }
+
+    public static Vector3d getCameraVectorPosition() {
+        // to south and high up
+        Vector3d cameraVectorPosition = new Vector3d(0, -1f, 1f);
+        return cameraVectorPosition;
+    }
+
+    public void setFirstPerson(boolean fp) {
+        mFirstPerson = fp;
+    }
+
+    public boolean isFirstPerson() {
+        return mFirstPerson;
+    }
 }

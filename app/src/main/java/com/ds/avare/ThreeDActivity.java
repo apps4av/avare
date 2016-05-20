@@ -24,7 +24,9 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -38,8 +40,6 @@ import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
-import com.ds.avare.threed.data.Vector3d;
-import com.ds.avare.threed.util.MatrixHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -67,8 +67,6 @@ public class ThreeDActivity extends Activity {
     private AreaMapper mAreaMapper;
 
     private boolean mReady;
-
-    private boolean mFirstPerson;
 
     private int mFrames;
 
@@ -119,6 +117,24 @@ public class ThreeDActivity extends Activity {
 
     };
 
+    /**
+     *
+     */
+    private void setCenterButton() {
+        // Button colors to be synced across activities
+        if (mPref.isTrackUp()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+            mToast.setText(getString(R.string.FirstPerson));
+            mRenderer.getCamera().setFirstPerson(true);
+            mGlSurfaceView.init();
+        } else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+            mToast.setText(getString(R.string.BirdEye));
+            mRenderer.getCamera().setFirstPerson(false);
+            mGlSurfaceView.init();
+        }
+        mToast.show();
+    }
 
     /*
      * (non-Javadoc)
@@ -145,8 +161,6 @@ public class ThreeDActivity extends Activity {
 
         mReady = false;
         mFrames = 0; // drawn frames
-
-        mFirstPerson = true;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -191,6 +205,8 @@ public class ThreeDActivity extends Activity {
                     if (((String) o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
                         mReady = true;
+                        // cannot call widgets from opengl thread so handler
+                        mHandler.sendEmptyMessage(0);
                     }
                     else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
@@ -201,22 +217,10 @@ public class ThreeDActivity extends Activity {
                             mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                         }
 
-                        Vector3d pos, look;
-                        if (mFirstPerson) {
-                            pos = mAreaMapper.getCameraVectorPositionFirstPerson();
-                            look = mAreaMapper.getCameraVectorLookAtFirstPerson();
-                            // let user rotate around ownship to see whats there
-                            // angle is reverse of satellite view because this is first person
-                            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
-                                    mGlSurfaceView.getAngle(), look.getVectorArray(), look.getVectorArrayScratch(), 0);
-                            float out[] = look.getVectorArrayScratch();
-                            look = new Vector3d(out[0], out[1], out[2]);
-                        }
-                        else {
-                            pos = mAreaMapper.getCameraVectorPosition();
-                            look = mAreaMapper.getCameraVectorLookAt();
-                        }
-                        mRenderer.setCamera(pos, look);
+                        // tell renderer that we have new area
+                        mRenderer.getCamera().set(mAreaMapper, mRenderer.getOrientation());
+                        // Set orientation
+                        mRenderer.getOrientation().set(mGlSurfaceView);
 
                         // Draw traffic every so many frames
                         if (mFrames++ % 60 == 0) {
@@ -226,20 +230,15 @@ public class ThreeDActivity extends Activity {
                                 // Simulate destination in sim mode
                             }
 
+                            // Draw traffic
                             Traffic.draw(mService, mAreaMapper, mRenderer);
-                        }
-                        if (mFirstPerson) {
-                            // Orientation from mouse event but only allow zooming in first person mode
-                            mRenderer.setOrientation(0, 0, 0, mGlSurfaceView.getScale());
-                        }
-                        else {
-                            // Orientation from mouse event
-                            mRenderer.setOrientation(mGlSurfaceView.getAngle(), mGlSurfaceView.getDisplacementX(), mGlSurfaceView.getDisplacementY(), mGlSurfaceView.getScale());
                         }
                     }
                     return null;
                 }
             });
+
+            // Set renderer
             mGlSurfaceView.setRenderer(mRenderer);
         } else {
             /*
@@ -281,18 +280,7 @@ public class ThreeDActivity extends Activity {
             public boolean onLongClick(View v) {
                 // long press on mCenterButton button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
-                if (mPref.isTrackUp()) {
-                    v.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.FirstPerson));
-                    mFirstPerson = true;
-                    mGlSurfaceView.init();
-                } else {
-                    v.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.BirdEye));
-                    mFirstPerson = false;
-                    mGlSurfaceView.init();
-                }
-                mToast.show();
+                setCenterButton();
                 return true;
             }
         });
@@ -351,29 +339,16 @@ public class ThreeDActivity extends Activity {
         super.onResume();
         Helper.setOrientationAndOn(this);
 
-
-
-    /*
-     * Registering our receiver
-     * Bind now.
-     */
+        /*
+         * Registering our receiver
+         * Bind now.
+         */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (mRenderer != null) {
             mGlSurfaceView.onResume();
         }
-
-        // Button colors to be synced across activities
-        if(mPref.isTrackUp()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-            mFirstPerson = true;
-        }
-        else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-            mFirstPerson = false;
-        }
-
     }
 
     /* (non-Javadoc)
@@ -387,9 +362,9 @@ public class ThreeDActivity extends Activity {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
-    /*
-     * Clean up on pause that was started in on resume
-     */
+        /*
+         * Clean up on pause that was started in on resume
+         */
         getApplicationContext().unbindService(mConnection);
 
         if (mRenderer != null) {
@@ -397,28 +372,11 @@ public class ThreeDActivity extends Activity {
         }
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            setCenterButton();
+        }
+    };
 }

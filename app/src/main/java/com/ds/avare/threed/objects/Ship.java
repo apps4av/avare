@@ -49,7 +49,7 @@ public class Ship {
         vector[1] = y -disp / 2;
         vector[2] = z;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 0 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 0 + offset * ELEMS, 0, 0, 1);
         tr[4  + offset * ELEMS] = intensity;
         tr[5  + offset * ELEMS] = 0;
         tr[6  + offset * ELEMS] = blue;
@@ -59,7 +59,7 @@ public class Ship {
         vector[1] = y;
         vector[2] = z + disp / 2;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS, 0, 0, 1);
         tr[12 + offset * ELEMS] = intensity;
         tr[13 + offset * ELEMS] = 0;
         tr[14 + offset * ELEMS] = blue;
@@ -69,7 +69,7 @@ public class Ship {
         vector[1] = y + disp / 2;
         vector[2] = z;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 16 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 16 + offset * ELEMS, 0, 0, 1);
         tr[20 + offset * ELEMS] = intensity;
         tr[21 + offset * ELEMS] = 0;
         tr[22 + offset * ELEMS] = blue;
@@ -80,7 +80,7 @@ public class Ship {
         vector[1] = y + disp / 2;
         vector[2] = z;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS, 0, 0, 1);
         tr[28 + offset * ELEMS] = 0;
         tr[29 + offset * ELEMS] = intensity;
         tr[30 + offset * ELEMS] = 0;
@@ -90,7 +90,7 @@ public class Ship {
         vector[1] = y;
         vector[2] = z + disp / 2;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 32 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 32 + offset * ELEMS, 0, 0, 1);
         tr[36 + offset * ELEMS] = 0;
         tr[37 + offset * ELEMS] = intensity;
         tr[38 + offset * ELEMS] = 0;
@@ -100,7 +100,7 @@ public class Ship {
         vector[1] = y -disp / 2;
         vector[2] = z;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS, 0, 0, 1);
         tr[44 + offset * ELEMS] = 0;
         tr[45 + offset * ELEMS] = intensity;
         tr[46 + offset * ELEMS] = 0;
@@ -128,7 +128,7 @@ public class Ship {
         vector[1] = y + 0;
         vector[2] = z + 0;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS, 0, 0, 1);
         tr[12 + offset * ELEMS] = 1;
         tr[13 + offset * ELEMS] = 0;
         tr[14 + offset * ELEMS] = 0;
@@ -148,7 +148,7 @@ public class Ship {
         vector[1] = y + 2f;
         vector[2] = z + 0;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS, 0, 0, 1);
         tr[28 + offset * ELEMS] = 0;
         tr[29 + offset * ELEMS] = 1;
         tr[30 + offset * ELEMS] = 0;
@@ -168,7 +168,7 @@ public class Ship {
         vector[1] = y + 0f;
         vector[2] = z + 2f;
         vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS);
+        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS, 0, 0, 1);
         tr[44 + offset * ELEMS] = 0;
         tr[45 + offset * ELEMS] = 0;
         tr[46 + offset * ELEMS] = 1;

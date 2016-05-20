@@ -14,11 +14,8 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 
@@ -138,28 +135,8 @@ public class AreaMapper {
         return mNewElevationTile;
     }
 
-    public Vector3d getCameraVectorLookAtFirstPerson() {
-        // Find a point ahead on horizon in bearing direction and look at it
-        Coordinate c = Projection.findStaticPoint(mGpsParams.getLongitude(), mGpsParams.getLatitude(),
-                mGpsParams.getBearing(), Projection.horizonDistance(mGpsParams.getAltitude()));
-        Vector3d cameraVectorLookAt = gpsToAxis(c.getLongitude(), c.getLatitude(), mGpsParams.getAltitude(), 0);
-        return cameraVectorLookAt;
-    }
-
-    public Vector3d getCameraVectorPositionFirstPerson() {
-        Vector3d cameraVectorPosition = gpsToAxis(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude(), 0);
-        return cameraVectorPosition;
-    }
-
-    public Vector3d getCameraVectorLookAt() {
-        // Bird eye camera
-        Vector3d cameraVectorLookAt = new Vector3d(0, 1f, 0);
-        return cameraVectorLookAt;
-    }
-
-    public Vector3d getCameraVectorPosition() {
-        Vector3d cameraVectorPosition = new Vector3d(0, -1f, 1f);
-        return cameraVectorPosition;
+    public GpsParams getmGpsParams() {
+        return mGpsParams;
     }
 
 }

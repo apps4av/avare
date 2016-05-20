@@ -45,12 +45,13 @@ public class MatrixHelper {
      * @param z
      * @param angle
      */
-    public static void rotatePoint(float x, float y, float z, float angle, float vector[], float resultVector[], int offset) {
+    public static void rotatePoint(float x, float y, float z, float angle, float vector[], float resultVector[], int offset, float xx, float yx, float zx) {
         float[] modelView = new float[16];
 
         Matrix.setIdentityM(modelView, 0);
         Matrix.translateM(modelView, 0, x, y, z);
-        Matrix.rotateM(modelView, 0, angle, 0.0f, 0.0f, 1.0f);
+        // rotate about x, y, or z axis
+        Matrix.rotateM(modelView, 0, angle, xx, yx, zx);
         Matrix.translateM(modelView, 0, -x, -y, -z);
         Matrix.multiplyMV(resultVector, offset, modelView, 0, vector, 0);
 

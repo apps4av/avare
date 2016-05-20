@@ -16,7 +16,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
-import com.ds.avare.threed.data.Vector3d;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.threed.objects.Map;
 import com.ds.avare.threed.objects.Ship;
@@ -24,6 +23,7 @@ import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.programs.TextureShaderProgram;
 import com.ds.avare.threed.util.Camera;
 import com.ds.avare.threed.util.MatrixHelper;
+import com.ds.avare.threed.util.Orientation;
 import com.ds.avare.threed.util.TextureHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
@@ -50,7 +50,6 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public static final String SURFACE_CREATED = "SurfaceCreated";
     public static final String DRAW_FRAME = "DrawFrame";
 
-    private static final float MAX_CAM_ANGLE = 45;
     private Context mContext;
 
     private final float[] mProjectionMatrix = new float[16];
@@ -60,12 +59,10 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private int mWidth;
     private int mHeight;
     private Camera mCamera;
+    private Orientation mOrientation;
 
     private Map mMap;
     private Ship mShip;
-
-    private float mAngle;
-    private float mCamAngle;
 
     private boolean mMapSet;
     private boolean mTextureSet;
@@ -75,8 +72,6 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private GenericCallback mCallback;
 
     private int mTexture;
-    private float mDisplacementX;
-    private float mDisplacementY;
 
     public TerrainRenderer(Context ctx, GenericCallback cb) {
         mContext = ctx;
@@ -97,12 +92,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMap = new Map();
         mShip = new Ship();
         mCamera = new Camera();
+        mOrientation = new Orientation();
         mTextureSet = false;
         mMapSet = false;
-        mAngle = 0;
-        mCamAngle = MAX_CAM_ANGLE;
-        mDisplacementX = 0;
-        mDisplacementY = 0;
 
         mTextureProgram = new TextureShaderProgram(mContext);
         mColorProgram = new ColorShaderProgram(mContext);
@@ -139,14 +131,14 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
-        MatrixHelper.perspectiveM(mProjectionMatrix, mCamAngle, (float) mWidth
+        MatrixHelper.perspectiveM(mProjectionMatrix, mOrientation.getViewAngle(), (float) mWidth
                 / (float) mHeight, 1f, 10f);
 
         //Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, mDisplacementX, mDisplacementY, 0.0f);
-        Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 0.0f, 1.0f);
+        Matrix.translateM(mModelMatrix, 0, mOrientation.getDisplacementX(mCamera.isFirstPerson()), mOrientation.getDisplacementY(mCamera.isFirstPerson()), 0.0f);
+        Matrix.rotateM(mModelMatrix, 0, mOrientation.getMapRotation(mCamera.isFirstPerson()), 0.0f, 0.0f, 1.0f);
 
 
         // View matrix from cam
@@ -174,13 +166,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
             mShip.draw();
         }
 
-
         mCallback.callback(this, DRAW_FRAME);
-    }
-
-    // Make camera from current position and target
-    public void setCamera(Vector3d pos, Vector3d look) {
-        mCamera.set(pos, look);
     }
 
     public void setTexture(BitmapHolder b) {
@@ -207,11 +193,12 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mShip.doneShips();
     }
 
-    public void setOrientation(float angle, float displacementX, float displacementY, float scale) {
-        mAngle = angle;
-        mDisplacementX = displacementX;
-        mDisplacementY = displacementY;
-        mCamAngle = MAX_CAM_ANGLE / scale;
+    public Camera getCamera() {
+        return mCamera;
+    }
+
+    public Orientation getOrientation() {
+        return mOrientation;
     }
 }
 
