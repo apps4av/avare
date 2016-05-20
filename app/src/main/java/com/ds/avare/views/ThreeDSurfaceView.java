@@ -32,7 +32,7 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
     private MultiTouchController.PointInfo mCurrTouchPoint;
 
     private static final float MAX_SCALE = 2f;
-    private static final float MIN_SCALE = 0.5f;
+    private static final float MIN_SCALE = 0.4f;
 
     public ThreeDSurfaceView(Context context) {
         super(context);

@@ -68,7 +68,7 @@ public class Camera {
             look = Camera.getCameraVectorLookAt();
         }
 
-        Vector3d up = new Vector3d(look.getX(), look.getY(), 1000f);
+        Vector3d up = new Vector3d(pos.getX(), pos.getY(), 1000f);
         mCameraPos.set(pos);
         mCameraLook.set(look);
         mCameraUp.set(up); // do not rotate up vector, assume no bank
@@ -91,14 +91,16 @@ public class Camera {
         // Find a point ahead on horizon in bearing direction and look at it
         Coordinate c = Projection.findStaticPoint(params.getLongitude(), params.getLatitude(),
                 params.getBearing(), Projection.horizonDistance(params.getAltitude()));
-        Vector3d cameraVectorLookAt = map.gpsToAxis(c.getLongitude(), c.getLatitude(), params.getAltitude(), 0);
+        Vector3d vec = map.gpsToAxis(c.getLongitude(), c.getLatitude(), params.getAltitude(), 0);
+        Vector3d cameraVectorLookAt = new Vector3d(vec.getX(), vec.getY(), vec.getZ());
         return cameraVectorLookAt;
     }
 
     public static Vector3d getCameraVectorPositionFirstPerson(AreaMapper map) {
         // camera is where ownship is
         GpsParams params = map.getmGpsParams();
-        Vector3d cameraVectorPosition = map.gpsToAxis(params.getLongitude(), params.getLatitude(), params.getAltitude(), 0);
+        Vector3d vec = map.gpsToAxis(params.getLongitude(), params.getLatitude(), params.getAltitude(), 0);
+        Vector3d cameraVectorPosition = new Vector3d(vec.getX(), vec.getY(), vec.getZ());
         return cameraVectorPosition;
     }
 

@@ -132,12 +132,13 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
         MatrixHelper.perspectiveM(mProjectionMatrix, mOrientation.getViewAngle(), (float) mWidth
-                / (float) mHeight, 1f, 10f);
+                / (float) mHeight, 0.05f, 10f);
 
         //Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
         Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, mOrientation.getDisplacementX(mCamera.isFirstPerson()), mOrientation.getDisplacementY(mCamera.isFirstPerson()), 0.0f);
+        Matrix.translateM(mModelMatrix, 0, mOrientation.getDisplacementX(mCamera.isFirstPerson()),
+                mOrientation.getDisplacementY(mCamera.isFirstPerson()), 0.0f);
         Matrix.rotateM(mModelMatrix, 0, mOrientation.getMapRotation(mCamera.isFirstPerson()), 0.0f, 0.0f, 1.0f);
 
 
