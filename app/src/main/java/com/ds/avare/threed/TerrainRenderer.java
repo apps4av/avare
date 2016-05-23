@@ -18,6 +18,7 @@ import android.opengl.Matrix;
 
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.threed.objects.Map;
+import com.ds.avare.threed.objects.Obstacles;
 import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.programs.TextureShaderProgram;
@@ -64,6 +65,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
     private Map mMap;
     private Ship mShip;
+    private Obstacles mObs;
 
     private boolean mMapSet;
     private boolean mTextureSet;
@@ -92,6 +94,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
         mMap = new Map();
         mShip = new Ship();
+        mObs = new Obstacles();
         mCamera = new Camera();
         mOrientation = new Orientation();
         mTextureSet = false;
@@ -133,7 +136,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
         MatrixHelper.perspectiveM(mProjectionMatrix, mOrientation.getViewAngle(), (float) mWidth
-                / (float) mHeight, 0.05f, 10f);
+                / (float) mHeight, 0.01f, 10f);
 
         //Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
@@ -166,6 +169,11 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
             mColorProgram.setUniforms(mMVPMatrix);
             mShip.bindData(mColorProgram);
             mShip.draw();
+
+            // Draw the obstacles
+            mObs.bindData(mColorProgram);
+            mObs.draw();
+
         }
 
         mCallback.callback(this, DRAW_FRAME);
@@ -194,6 +202,20 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mShip.doneShips();
     }
 
+
+    public void setObstacles(Vector4d[] obstacles) {
+        if(obstacles != null) {
+            mObs.initObstacles(obstacles.length);
+            for (Vector4d o : obstacles) {
+                mObs.addObstacles(o.getX(), o.getY(), o.getZ(), o.getAngle());
+            }
+        }
+        else {
+            mObs.initObstacles(0);
+        }
+        mObs.doneObstacles();
+    }
+
     public Camera getCamera() {
         return mCamera;
     }
@@ -209,6 +231,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public boolean isTextureSet() {
         return mTextureSet;
     }
+
 }
 
 

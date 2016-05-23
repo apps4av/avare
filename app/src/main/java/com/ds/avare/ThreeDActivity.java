@@ -37,15 +37,21 @@ import android.widget.Toast;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.views.ThreeDSurfaceView;
+
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -78,6 +84,15 @@ public class ThreeDActivity extends Activity {
 
     private OptionButton mChartOption;
 
+    private Vector4d mObstacles[];
+
+    /**
+     * For performing periodic activities.
+     */
+    private Timer mTimer;
+    private UpdateTask mTimerTask;
+
+
     /**
      * Hold a reference to our GLSurfaceView
      */
@@ -87,6 +102,7 @@ public class ThreeDActivity extends Activity {
     private static final int MESSAGE_INIT = 0;
     private static final int MESSAGE_TEXT = 1;
     private static final int MESSAGE_ERROR = 2;
+    private static final int MESSAGE_OBSTACLES = 3;
 
     private void setLocation(Location location) {
         mAreaMapper.setGpsParams(new GpsParams(location));
@@ -119,13 +135,12 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void timeoutCallback(boolean timeout) {
-            if(mPref.isSimulationMode()) {
+            if (mPref.isSimulationMode()) {
                 Message m = mHandler.obtainMessage();
                 m.what = MESSAGE_ERROR;
                 m.obj = getString(R.string.SimulationMode);
                 mHandler.sendMessage(m);
-            }
-            else if(timeout) {
+            } else if (timeout) {
                 Message m = mHandler.obtainMessage();
                 m.what = MESSAGE_ERROR;
                 m.obj = getString(R.string.GPSLost);
@@ -149,8 +164,7 @@ public class ThreeDActivity extends Activity {
             mToast.setText(getString(R.string.FirstPerson));
             mRenderer.getCamera().setFirstPerson(true);
             mGlSurfaceView.init();
-        }
-        else {
+        } else {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
             mToast.setText(getString(R.string.BirdEye));
             mRenderer.getCamera().setFirstPerson(false);
@@ -273,6 +287,12 @@ public class ThreeDActivity extends Activity {
 
                             // Draw traffic
                             Traffic.draw(mService, mAreaMapper, mRenderer);
+
+                            // Draw obstacles
+                            if (mObstacles != null && mObstacles.length != 0) {
+                                mRenderer.setObstacles(mObstacles);
+                            }
+
                         }
                     }
                     return null;
@@ -400,6 +420,12 @@ public class ThreeDActivity extends Activity {
         if (mRenderer != null) {
             mGlSurfaceView.onResume();
         }
+
+        // Periodic not time critical activities
+        mTimer = new Timer();
+        mTimerTask = new UpdateTask();
+        mTimer.schedule(mTimerTask, 0, 1000);
+
     }
 
     /* (non-Javadoc)
@@ -421,21 +447,58 @@ public class ThreeDActivity extends Activity {
         if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
+        mTimer.cancel();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what == MESSAGE_INIT) {
+            if (msg.what == MESSAGE_INIT) {
                 setCenterButton();
-            }
-            else if(msg.what == MESSAGE_TEXT) {
+            } else if (msg.what == MESSAGE_TEXT) {
                 mText.setText((String) msg.obj);
-            }
-            else if(msg.what == MESSAGE_ERROR) {
+            } else if (msg.what == MESSAGE_ERROR) {
                 mTextError.setText((String) msg.obj);
+            } else if(msg.what == MESSAGE_OBSTACLES) {
+                mObstacles = (Vector4d[]) msg.obj;
             }
+
         }
     };
+
+    /**
+     * Do stuff in background
+     */
+    private class UpdateTask extends TimerTask {
+
+        @Override
+        public void run() {
+
+            Thread.currentThread().setName("Background");
+
+            if (null == mService || null == mService.getDBResource()) {
+                return;
+            }
+            LinkedList<Obstacle> obs = null;
+            if (mPref.shouldShowObstacles()) {
+                obs = mService.getDBResource().findObstacles(mAreaMapper.getmGpsParams().getLongitude(),
+                        mAreaMapper.getmGpsParams().getLatitude(), 0);
+
+                Vector4d obstacles[] = new Vector4d[obs.size()];
+                int count = 0;
+                for (Obstacle ob : obs) {
+                    obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
+                }
+                Message m = mHandler.obtainMessage();
+                m.what = MESSAGE_OBSTACLES;
+                m.obj = obstacles;
+                mHandler.sendMessage(m);
+            }
+        }
+    }
 }
