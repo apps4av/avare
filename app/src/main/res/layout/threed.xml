@@ -21,6 +21,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
 
+    <com.ds.avare.utils.OptionButton
+        android:id="@+id/threed_spinner_chart"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:labelFor="@string/ChartTypeLabel"
+        android:entries="@array/ChartType" />
+
     <Button
         android:id="@+id/threed_button_center"
         android:layout_width="wrap_content"

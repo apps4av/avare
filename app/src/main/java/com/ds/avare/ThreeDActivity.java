@@ -44,6 +44,7 @@ import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.OptionButton;
 import com.ds.avare.views.ThreeDSurfaceView;
 
 /**
@@ -74,6 +75,8 @@ public class ThreeDActivity extends Activity {
     private Button mCenterButton;
     private TextView mText;
     private TextView mTextError;
+
+    private OptionButton mChartOption;
 
     /**
      * Hold a reference to our GLSurfaceView
@@ -141,12 +144,13 @@ public class ThreeDActivity extends Activity {
      */
     private void setCenterButton() {
         // Button colors to be synced across activities
-        if (mPref.isTrackUp()) {
+        if (mPref.isFirstPerson()) {
             mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
             mToast.setText(getString(R.string.FirstPerson));
             mRenderer.getCamera().setFirstPerson(true);
             mGlSurfaceView.init();
-        } else {
+        }
+        else {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
             mToast.setText(getString(R.string.BirdEye));
             mRenderer.getCamera().setFirstPerson(false);
@@ -226,8 +230,7 @@ public class ThreeDActivity extends Activity {
                         mReady = true;
                         // cannot call widgets from opengl thread so handler
                         mHandler.sendEmptyMessage(MESSAGE_INIT);
-                    }
-                    else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
+                    } else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
                         if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                             Message m = mHandler.obtainMessage();
@@ -244,13 +247,11 @@ public class ThreeDActivity extends Activity {
                             // show errors
                             m = mHandler.obtainMessage();
                             m.what = MESSAGE_TEXT;
-                            if(!mRenderer.isMapSet()) {
+                            if (!mRenderer.isMapSet()) {
                                 m.obj = mContext.getString(R.string.MissingElevation);
-                            }
-                            else if(!mRenderer.isTextureSet()) {
+                            } else if (!mRenderer.isTextureSet()) {
                                 m.obj = mContext.getString(R.string.MissingMaps);
-                            }
-                            else {
+                            } else {
                                 m.obj = mContext.getString(R.string.Ready);
                             }
 
@@ -318,8 +319,8 @@ public class ThreeDActivity extends Activity {
         mCenterButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                // long press on mCenterButton button sets track toggle
-                mPref.setTrackUp(!mPref.isTrackUp());
+                // long press on mCenterButton button sets first person toggle
+                mPref.setFirstPerson(!mPref.isFirstPerson());
                 setCenterButton();
                 return true;
             }
@@ -327,7 +328,20 @@ public class ThreeDActivity extends Activity {
 
         mText = (TextView) view.findViewById(R.id.threed_text);
         mTextError = (TextView) view.findViewById(R.id.threed_text_error);
+
+        // Charts different from main view
+        mChartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
+        mChartOption.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                mPref.setChartType3D("" + (int) o1);
+                return null;
+            }
+        });
+        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
+
     }
+
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -342,19 +356,13 @@ public class ThreeDActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
 
-        /*
-         * We've bound to LocalService, cast the IBinder and get LocalService instance
-         */
+            /*
+             * We've bound to LocalService, cast the IBinder and get LocalService instance
+             */
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            // Initial tiles
-            Tile t = new Tile(mContext, mPref, mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude());
-            Tile t2 = new Tile(mContext, mPref, mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude(), true);
             mAreaMapper = new AreaMapper();
-            mAreaMapper.setElevationTile(t);
-            mAreaMapper.setMapTile(t2);
-
         }
 
         /* (non-Javadoc)

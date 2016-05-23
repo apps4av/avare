@@ -508,9 +508,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
     <string name="CrashLabel">Avare has stopped unexpectedly!</string>
     <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
-    <string name="FirstPerson">Pilot Cam / Track Up</string>
-    <string name="BirdEye">Satellite Cam / North Up</string>
+    <string name="FirstPerson">Pilot Cam</string>
+    <string name="BirdEye">Satellite Cam</string>
     <string name="Ready">Ready</string>
+    <string name="ChartType3D">ChartType3D</string>
 
 
 </resources>

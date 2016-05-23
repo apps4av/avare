@@ -19,13 +19,11 @@ import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.weather.InternetWeatherCache;
 
 import java.io.File;
 import java.util.Arrays;
@@ -494,6 +492,24 @@ public class Preferences {
         editor.putString(mContext.getString(R.string.ChartType), type);
         editor.commit();
     }
+
+
+    /**
+     * @return
+     */
+    public String getChartType3D() {
+        return (mPref.getString(mContext.getString(R.string.ChartType3D), "0"));
+    }
+
+    /**
+     * @return
+     */
+    public void setChartType3D(String type) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.ChartType3D), type);
+        editor.commit();
+    }
+
 
     /**
      * @return
@@ -1055,6 +1071,14 @@ public class Preferences {
 
     public boolean setTrackUp(boolean trackUp) {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
+    }
+
+    public boolean isFirstPerson() {
+        return mPref.getBoolean(mContext.getString(R.string.FirstPerson), false);
+    }
+
+    public boolean setFirstPerson(boolean fp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.FirstPerson), fp).commit();
     }
 
     public void setLayerType(String layerType) {

@@ -95,49 +95,15 @@ public class Tile {
     	setup(pref);
     }
 
-    /**
-     * Get a tile for a particular position
-     * @param pref
-     * @param lon
-     * @param lat
-     */
-    public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
-    	mChartIndex = pref.getChartType();
+    private void CommonTile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
     	/*
     	 * Zoom appropriate to the given chart type.
-    	 * Max zoom is specified in arrays.xml, from where we find the 
+    	 * Max zoom is specified in arrays.xml, from where we find the
     	 * max zoom for this tile of this chart type.
     	 * Zoom will go from max to max - zoom of scale
     	 */
         mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
-        		[Integer.valueOf(mChartIndex)]) - zoom;
-        /*
-         * Extension varies for chart types because some chart have better compression with 
-         * one or other type of standard
-         */
-        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
-        		[Integer.valueOf(mChartIndex)];
-    	mProj = new Epsg900913(lat, lon, mZoom);
-    	setup(pref);
-    }
-
-    /**
-     * Get a tile for a particular position, with zoom equal to max elevation. Used for 3D
-     * @param pref
-     * @param lon
-     * @param lat
-     * @param elevation
-     */
-    public Tile(Context ctx, Preferences pref, double lon, double lat, boolean elevation) {
-        if(!elevation) {
-            return;
-        }
-        mChartIndex = pref.getChartType();
-    	/*
-    	 * Fixed zoom
-    	 */
-        mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
-                [Integer.valueOf(ELEVATION_INDEX)]);
+                [Integer.valueOf(mChartIndex)]) - zoom;
         /*
          * Extension varies for chart types because some chart have better compression with
          * one or other type of standard
@@ -149,28 +115,57 @@ public class Tile {
     }
 
     /**
+     * Get a tile for a particular position
+     * @param pref
+     * @param lon
+     * @param lat
+     */
+    public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
+    	mChartIndex = pref.getChartType();
+        CommonTile(ctx, pref, lon, lat, zoom);
+    }
+
+    /**
+     * Get a tile for a particular position
+     * @param type
+     * @param lon
+     * @param lat
+     */
+    public Tile(Context ctx, Preferences pref, String type, double lon, double lat, double zoom) {
+        mChartIndex = type;
+        CommonTile(ctx, pref, lon, lat, zoom);
+    }
+
+    /**
      * Get a tile for a particular position for elevation. Use this function for elevation only for AGL,3D
      * @param pref
      * @param lon
      * @param lat
      */
     public Tile(Context ctx, Preferences pref, double lon, double lat) {
-    	mChartIndex = ELEVATION_INDEX;
-    	/*
-    	 * Zoom appropriate to the given chart type.
-    	 * Max zoom is specified in arrays.xml, from where we find the 
-    	 * max zoom for this tile of this chart type.
-    	 */
-        mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
-        		[Integer.valueOf(mChartIndex)]); // use max zoom for elevation tiles used for AGL
-        /*
-         * Extension varies for chart types because some chart have better compression with 
-         * one or other type of standard
-         */
-        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
-        		[Integer.valueOf(mChartIndex)];
-    	mProj = new Epsg900913(lat, lon, mZoom);
-    	setup(pref);
+        mChartIndex = ELEVATION_INDEX;
+        CommonTile(ctx, pref, lon, lat, 0);
+    }
+
+
+    /**
+     * Get a tile for a particular position, with zoom equal to max elevation. Used for 3D
+     * @param pref
+     * @param lon
+     * @param lat
+     * @param threeD
+     */
+    public Tile(Context ctx, Preferences pref, double lon, double lat, boolean threeD) {
+        if(!threeD) {
+            return;
+        }
+        mChartIndex = pref.getChartType3D();
+
+        // Highest zoom for elevation tile
+        int zoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
+                [Integer.valueOf(mChartIndex)]) - Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
+                [Integer.valueOf(ELEVATION_INDEX)]);
+        CommonTile(ctx, pref, lon, lat, zoom);
     }
 
     /**
