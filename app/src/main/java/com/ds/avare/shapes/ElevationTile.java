@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
@@ -91,7 +92,7 @@ public class ElevationTile {
          * New tile
          */
         mTile = t;
-        BitmapHolder b = new BitmapHolder(mContext, mPref, t.getName(), 1);
+        BitmapHolder b = new BitmapHolder(mContext, mPref, t.getName(), 1, Bitmap.Config.ARGB_8888);
         if(b.getName() == null) {
             return;
         }

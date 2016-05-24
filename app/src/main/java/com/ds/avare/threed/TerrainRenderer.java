@@ -28,6 +28,7 @@ import com.ds.avare.threed.util.Orientation;
 import com.ds.avare.threed.util.TextureHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -73,6 +74,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     private TextureShaderProgram mTextureProgram;
     private ColorShaderProgram mColorProgram;
     private GenericCallback mCallback;
+    private BitmapHolder mElevBitmapHolder;
 
     private int mTexture;
 
@@ -185,7 +187,33 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setTerrain(BitmapHolder b) {
+        if(mElevBitmapHolder != null) {
+            mElevBitmapHolder.recycle();
+        }
         mMapSet = mMap.loadTerrain(b);
+        mElevBitmapHolder = b;
+    }
+
+    /**
+     * Get altitude from bitmap
+     * @param x
+     * @param y
+     * @return
+     */
+    public double getAltitudeAt(int x, int y) {
+        if(mElevBitmapHolder != null) {
+            if(mElevBitmapHolder.getBitmap() != null) {
+                if(x < mElevBitmapHolder.getBitmap().getWidth()
+                        && y < mElevBitmapHolder.getBitmap().getHeight()
+                        && x >= 0 && y >= 0) {
+
+                    int px = mElevBitmapHolder.getBitmap().getPixel(x, y);
+                    double elev = Helper.findElevationFromPixel(px);
+                    return elev;
+                }
+            }
+        }
+        return 0;
     }
 
     public void setShips(Vector4d traffic[], Vector4d self) {

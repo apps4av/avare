@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ConfigurationInfo;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -256,7 +257,7 @@ public class ThreeDActivity extends Activity {
                             Tile tout = mAreaMapper.getMapTile();
                             mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                             tout = mAreaMapper.getElevationTile();
-                            mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
+                            mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888));
 
                             // show errors
                             m = mHandler.obtainMessage();
@@ -280,9 +281,12 @@ public class ThreeDActivity extends Activity {
                         // Draw traffic every so many frames
                         if (mFrames++ % 60 == 0) {
 
+                            // Simulate destination in sim mode and get altitude from terrain
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
-                                setLocation(mService.getDestination().getLocationWithAltitude());
-                                // Simulate destination in sim mode
+                                Location l = mService.getDestination().getLocation();
+                                l.setAltitude(mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
+                                        (int)mAreaMapper.getYForLat(l.getLatitude())));
+                                setLocation(l);
                             }
 
                             // Draw traffic

@@ -18,6 +18,7 @@ import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 /**
  * Created by zkhan on 5/11/16.
@@ -31,6 +32,9 @@ public class AreaMapper {
 
     private boolean mNewMapTile;
     private boolean mNewElevationTile;
+
+    // This is needed to stay above surface (in feet) for quantization errors in elevation and GPS altitude errors
+    private static final float ALTITUDE_FUDGE = 300;
 
     public AreaMapper() {
         mGpsParams = new GpsParams(null);
@@ -62,10 +66,35 @@ public class AreaMapper {
         float ynorm = (float)y / BitmapHolder.HEIGHT * 2;
         float xnorm = (float)x / BitmapHolder.WIDTH * 2;
 
-        double alt = altitude / (255 * 25 * Preferences.heightConversion); // altitude in feet 25 meters per pixel
+        double alt = Helper.findPixelFromElevationNormalized((altitude + ALTITUDE_FUDGE) / Preferences.heightConversion);
 
         Vector4d ret = new Vector4d(xnorm, ynorm, (float)alt, (float)angle);
         return ret;
+    }
+
+
+    /**
+     * X for given lon starting from 0
+     * @param lon
+     * @return
+     */
+    public double getXForLon(double lon) {
+        if(mMapTile != null) {
+            return mMapTile.getOffsetX(lon) + BitmapHolder.WIDTH / 2;
+        }
+        return -1;
+    }
+
+    /**
+     * Y for given lat starting from 0
+     * @param lat
+     * @return
+     */
+    public double getYForLat(double lat) {
+        if(mMapTile != null) {
+            return mMapTile.getOffsetY(lat) + BitmapHolder.HEIGHT / 2;
+        }
+        return -1;
     }
 
     /**
@@ -138,5 +167,4 @@ public class AreaMapper {
     public GpsParams getmGpsParams() {
         return mGpsParams;
     }
-
 }

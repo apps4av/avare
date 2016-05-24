@@ -1789,15 +1789,15 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesTerrain">
-        <item>ELEV_NE</item>
-        <item>ELEV_NC</item>
-        <item>ELEV_NW</item>
-        <item>ELEV_SE</item>
-        <item>ELEV_SC</item>
-        <item>ELEV_SW</item>
-        <item>ELEV_AK</item>
-        <item>ELEV_HI</item>
-        <item>ELEV_PR</item>
+        <item>ELEV_NE_NEW</item>
+        <item>ELEV_NC_NEW</item>
+        <item>ELEV_NW_NEW</item>
+        <item>ELEV_SE_NEW</item>
+        <item>ELEV_SC_NEW</item>
+        <item>ELEV_SW_NEW</item>
+        <item>ELEV_AK_NEW</item>
+        <item>ELEV_HI_NEW</item>
+        <item>ELEV_PR_NEW</item>
         <item>REL_NE</item>
         <item>REL_NC</item>
         <item>REL_NW</item>
@@ -1973,7 +1973,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>10</item>
         <item>9</item>
         <item>11</item>
-        <item>9</item>
+        <item>10</item>
         <item>9</item>
         <item>10</item>
         <item>12</item>

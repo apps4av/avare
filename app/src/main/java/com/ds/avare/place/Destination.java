@@ -810,18 +810,6 @@ public class Destination extends Observable {
     }
 
     /**
-     *
-     * @return
-     */
-    public Location getLocationWithAltitude() {
-        Location l = new Location("");
-        l.setLatitude(mLatd);
-        l.setLongitude(mLond);
-        l.setAltitude(getElevation() / Preferences.heightConversion);
-        return l;
-    }
-
-    /**
      * 
      * @return
      */

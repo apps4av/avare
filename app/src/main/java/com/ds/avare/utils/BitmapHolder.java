@@ -195,6 +195,34 @@ public class BitmapHolder {
 
     /**
      * @param name
+     * Get bitmap from a file
+     */
+    public BitmapHolder(Context context, Preferences pref, String name, int sampleSize, Bitmap.Config type) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = type;
+        opt.inSampleSize = sampleSize;
+
+        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
+            mName = null;
+            return;
+        }
+        try {
+            mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, opt);
+        }
+        catch(OutOfMemoryError e) {
+        }
+        if(null != mBitmap) {
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mName = name;
+        }
+        else {
+            mName = null;
+        }
+    }
+
+    /**
+     * @param name
      * Get bitmap from a diagram / plate file
      */
     public BitmapHolder(String name) {
@@ -202,6 +230,39 @@ public class BitmapHolder {
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inSampleSize = 1;
         
+        if(!(new File(name).exists())) {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+            return;
+        }
+
+        try {
+            mBitmap = BitmapFactory.decodeFile(name, opt);
+        }
+        catch(OutOfMemoryError e){
+        }
+        if(null != mBitmap) {
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mName = name;
+        }
+        else {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+        }
+    }
+
+    /**
+     * @param name
+     * Get bitmap from a diagram / plate file
+     */
+    public BitmapHolder(String name, Bitmap.Config type) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = type;
+        opt.inSampleSize = 1;
+
         if(!(new File(name).exists())) {
             mWidth = 0;
             mHeight = 0;

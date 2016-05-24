@@ -51,7 +51,9 @@ import java.util.TimeZone;
  *
  */
 public class Helper {
-	
+
+    private static final double ALTITUDE_M_ELEVATION_PER_PIXEL = 24.5;
+
 	/***
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
@@ -260,7 +262,7 @@ public class Helper {
     }
 
     /**
-     * Finds elevation from the above elevation pixel formula from a pixel
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
      * @param px
      * @return
      */
@@ -268,9 +270,40 @@ public class Helper {
         /*
          * Average the RGB value. The elevation chart is already in gray scale
          */
-        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * (25.0 - 1.0) / 3.0);
+        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * 0.333 * ALTITUDE_M_ELEVATION_PER_PIXEL);
     }
-    
+
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixelNormalized(int px) {
+        /*
+         * Average the RGB value. The elevation chart is already in gray scale
+         * Note this is normalized
+         */
+        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *  0.333 * 0.003921569);
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevation(double elev) {
+        return elev / ALTITUDE_M_ELEVATION_PER_PIXEL;
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevationNormalized(double elev) {
+        return elev / ALTITUDE_M_ELEVATION_PER_PIXEL / 255.0;
+    }
+
     /**
      * 
      * @param paint

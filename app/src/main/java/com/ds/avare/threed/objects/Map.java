@@ -15,6 +15,7 @@ import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.TextureShaderProgram;
 import com.ds.avare.threed.util.LoggerConfig;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.glDrawArrays;
@@ -44,8 +45,6 @@ public class Map {
         }
 
         mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap));
-        // It has been loaded. Recycle.
-        b.recycle();
         return true;
     }
 
@@ -103,8 +102,7 @@ public class Map {
         int px;
         float pxf;
         px = b.getPixel(col, row);
-        px = px & 255;
-        pxf = ((float)px) * 0.003921569f;
+        pxf = (float)Helper.findElevationFromPixelNormalized(px);
         //-1,1    1,1
         //-1,-1   1,-1
         vertices[count++] = (float)((float)col * 2.0f - (float)COLS) / (float)COLS; //x
