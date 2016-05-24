@@ -52,9 +52,15 @@ import java.util.TimeZone;
  */
 public class Helper {
 
-    private static final double ALTITUDE_M_ELEVATION_PER_PIXEL = 24.5;
-
-	/***
+    // These would be based on meters and following Zubair's averaging method (of multiplying by 0.333)
+    // private static final double ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE     = + 24.5276170372963;
+    // private static final double ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT = - 111.078750610350;
+    
+    // This converts to feet and removes the need for averaging and thus saves as 3x pixels in flops
+    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = + 24.5276170372963*3.2808399;
+    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = - 364.431597044586;
+    
+    /***
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
@@ -270,7 +276,14 @@ public class Helper {
         /*
          * Average the RGB value. The elevation chart is already in gray scale
          */
-        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * 0.333 * ALTITUDE_M_ELEVATION_PER_PIXEL);
+        // return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *
+	// 	0.333333333 * ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT);
+	
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+        return (((double)(px & 0x000000FF)) *
+		ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
     }
 
     /**
@@ -283,7 +296,14 @@ public class Helper {
          * Average the RGB value. The elevation chart is already in gray scale
          * Note this is normalized
          */
-        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *  0.333 * 0.003921569);
+        // return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *
+	// 	0.333333333 * ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE / 255.0 + ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT);
+	
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+	return (((double)(px & 0x000000FF)) *
+		ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 255.0 + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
     }
 
     /**
@@ -292,7 +312,8 @@ public class Helper {
      * @return
      */
     public static double findPixelFromElevation(double elev) {
-        return elev / ALTITUDE_M_ELEVATION_PER_PIXEL;
+        // return (elev - ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE;
+	return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
     }
 
     /**
@@ -301,7 +322,8 @@ public class Helper {
      * @return
      */
     public static double findPixelFromElevationNormalized(double elev) {
-        return elev / ALTITUDE_M_ELEVATION_PER_PIXEL / 255.0;
+        // return (elev - ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE / 255.0;
+	return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 255.0;
     }
 
     /**
@@ -882,3 +904,4 @@ public class Helper {
     }
 
 }
+
