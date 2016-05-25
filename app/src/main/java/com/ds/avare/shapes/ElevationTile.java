@@ -37,7 +37,7 @@ public class ElevationTile {
     public ElevationTile(Context context) {
         mContext = context;
         mPref = new Preferences(context);
-        mElevBitmap = new BitmapHolder();
+        mElevBitmap = new BitmapHolder(Bitmap.Config.ARGB_8888);
     }
     
     /**

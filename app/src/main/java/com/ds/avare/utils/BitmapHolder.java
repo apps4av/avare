@@ -77,13 +77,30 @@ public class BitmapHolder {
     public static final int HEIGHT = 512;
 
     /**
-     * @param name
+     * @param
      * Get bitmap from renderer
      */
     public BitmapHolder() {
         Bitmap.Config conf = Bitmap.Config.RGB_565;
         try {
             mBitmap = Bitmap.createBitmap(WIDTH, HEIGHT, conf);
+            mBitmap.setDensity(Bitmap.DENSITY_NONE);
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mCanvas = new Canvas(mBitmap);
+            mName = null;
+        }
+        catch(OutOfMemoryError e){
+        }
+    }
+
+    /**
+     * @param
+     * Get bitmap from renderer of type
+     */
+    public BitmapHolder(Bitmap.Config config) {
+        try {
+            mBitmap = Bitmap.createBitmap(WIDTH, HEIGHT, config);
             mBitmap.setDensity(Bitmap.DENSITY_NONE);
             mWidth = mBitmap.getWidth();
             mHeight = mBitmap.getHeight();
