@@ -52,14 +52,56 @@ import java.util.TimeZone;
  */
 public class Helper {
 
-    // These would be based on meters and following Zubair's averaging method (of multiplying by 0.333)
-    // private static final double ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE     = + 24.5276170372963;
-    // private static final double ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT = - 111.078750610350;
-    
-    // This converts to feet and removes the need for averaging and thus saves as 3x pixels in flops
-    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = + 24.5276170372963*3.2808399;
-    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = - 364.431597044586;
-    
+    // All elevation is calculated in feet
+    // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
+    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
+    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = 364.431597044586;
+    private static final double ALTITUDE_FT_ELEVATION_PLUSZ               = ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE * 255.0 - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT;
+
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixel(int px) {
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+        return (((double)(px & 0x000000FF)) *
+                ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+    }
+
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixelNormalized(int px) {
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+        return findElevationFromPixel(px) / ALTITUDE_FT_ELEVATION_PLUSZ;
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevation(double elev) {
+        return (elev + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevationNormalized(double elev) {
+        return findPixelFromElevation(elev) / 255.0;
+    }
+
+
     /***
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
@@ -257,7 +299,7 @@ public class Helper {
     public static String calculateAGLFromMSL(float msl, float elevation) {
         boolean valid = (elevation < 0) ? false : true;
         double altitude = msl;
-        altitude -= elevation * Preferences.heightConversion;
+        altitude -= elevation;
         if(altitude < 0) {
             altitude = 0;
         }
@@ -265,65 +307,6 @@ public class Helper {
             return(String.format(Locale.getDefault(), "%d", (int)altitude));
         }
         return("");
-    }
-
-    /**
-     * Finds elevation from the above elevation pixel formula from a pixel in meters
-     * @param px
-     * @return
-     */
-    public static double findElevationFromPixel(int px) {
-        /*
-         * Average the RGB value. The elevation chart is already in gray scale
-         */
-        // return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *
-	// 	0.333333333 * ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT);
-	
-        /*
-         * No need to average. Gray scale has all three colors at the same value
-         */
-        return (((double)(px & 0x000000FF)) *
-		ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
-    }
-
-    /**
-     * Finds elevation from the above elevation pixel formula from a pixel in meters
-     * @param px
-     * @return
-     */
-    public static double findElevationFromPixelNormalized(int px) {
-        /*
-         * Average the RGB value. The elevation chart is already in gray scale
-         * Note this is normalized
-         */
-        // return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) *
-	// 	0.333333333 * ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE / 255.0 + ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT);
-	
-        /*
-         * No need to average. Gray scale has all three colors at the same value
-         */
-	return (((double)(px & 0x000000FF)) *
-		ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 255.0 + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
-    }
-
-    /**
-     * Find pixel value from elevation
-     * @param elev
-     * @return
-     */
-    public static double findPixelFromElevation(double elev) {
-        // return (elev - ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE;
-	return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
-    }
-
-    /**
-     * Find pixel value from elevation
-     * @param elev
-     * @return
-     */
-    public static double findPixelFromElevationNormalized(double elev) {
-        // return (elev - ALTITUDE_M_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_M_ELEVATION_PER_PIXEL_SLOPE / 255.0;
-	return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 255.0;
     }
 
     /**

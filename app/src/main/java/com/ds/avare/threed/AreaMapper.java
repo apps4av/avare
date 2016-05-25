@@ -15,7 +15,6 @@ package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.Tile;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -32,9 +31,6 @@ public class AreaMapper {
 
     private boolean mNewMapTile;
     private boolean mNewElevationTile;
-
-    // This is needed to stay above surface (in feet) for quantization errors in elevation and GPS altitude errors
-    private static final float ALTITUDE_FUDGE = 300;
 
     public AreaMapper() {
         mGpsParams = new GpsParams(null);
@@ -66,7 +62,7 @@ public class AreaMapper {
         float ynorm = (float)y / BitmapHolder.HEIGHT * 2;
         float xnorm = (float)x / BitmapHolder.WIDTH * 2;
 
-        double alt = Helper.findPixelFromElevationNormalized((altitude + ALTITUDE_FUDGE) / Preferences.heightConversion);
+        double alt = Helper.findPixelFromElevationNormalized(altitude);
 
         Vector4d ret = new Vector4d(xnorm, ynorm, (float)alt, (float)angle);
         return ret;
