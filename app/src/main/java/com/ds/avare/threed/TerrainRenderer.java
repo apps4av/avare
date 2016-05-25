@@ -235,7 +235,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         if(obstacles != null) {
             mObs.initObstacles(obstacles.length);
             for (Vector4d o : obstacles) {
-                mObs.addObstacles(o.getX(), o.getY(), o.getZ(), o.getAngle());
+                mObs.addObstacles(o.getX(), o.getY(), o.getZ());
             }
         }
         else {

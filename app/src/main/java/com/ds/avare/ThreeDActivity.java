@@ -284,8 +284,9 @@ public class ThreeDActivity extends Activity {
                             // Simulate destination in sim mode and get altitude from terrain
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 Location l = mService.getDestination().getLocation();
-                                l.setAltitude(mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
-                                        (int)mAreaMapper.getYForLat(l.getLatitude())));
+                                l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
+                                        (mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
+                                        (int)mAreaMapper.getYForLat(l.getLatitude()))) / Preferences.heightConversion);
                                 setLocation(l);
                             }
 

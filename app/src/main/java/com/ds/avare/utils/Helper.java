@@ -54,7 +54,7 @@ public class Helper {
 
     // All elevation is calculated in feet
     // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
-    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
+    public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
     public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = -364.431597044586;
     private static final double ALTITUDE_FT_ELEVATION_PLUSZ               = ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE * 255.0 + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT;
 

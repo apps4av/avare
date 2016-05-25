@@ -13,9 +13,8 @@ package com.ds.avare.threed.objects;
 
 import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.ColorShaderProgram;
-import com.ds.avare.threed.util.MatrixHelper;
 
-import static android.opengl.GLES20.GL_TRIANGLES;
+import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.glDrawArrays;
 import static com.ds.avare.threed.Constants.BYTES_PER_FLOAT;
 
@@ -27,7 +26,7 @@ public class Obstacles {
         (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) 
         * BYTES_PER_FLOAT;
 
-    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 3;
+    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 2;
     private float[] mObs;
     private int mObsCount;
 
@@ -35,45 +34,25 @@ public class Obstacles {
 
 
     // Make a triangle representing the obstacle, rotate
-    private static float[] getObstacle(float tr[], int offset, float x, float y, float z, float angle) {
+    private static float[] getObstacle(float tr[], int offset, float x, float y, float z) {
 
-        final float disp = 0.01f;
-        final float intensity = 0.9f;
-
-        float vector[] = new float[4];
-
-
-        // center base is location of ship triangle, left side wing
-        vector[0] = x;
-        vector[1] = y;
-        vector[2] = z;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 0 + offset * ELEMS, 0, 0, 1);
-        tr[4  + offset * ELEMS] = intensity;
+        tr[0  + offset * ELEMS] = x;
+        tr[1  + offset * ELEMS] = y;
+        tr[2  + offset * ELEMS] = z;
+        tr[3  + offset * ELEMS] = 1f;
+        tr[4  + offset * ELEMS] = 1;
         tr[5  + offset * ELEMS] = 0;
         tr[6  + offset * ELEMS] = 0;
         tr[7  + offset * ELEMS] = 1f;
 
-        vector[0] = x -disp / 2;
-        vector[1] = y;
-        vector[2] = 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS, 0, 0, 1);
-        tr[12 + offset * ELEMS] = intensity;
+        tr[8  + offset * ELEMS] = x;
+        tr[9  + offset * ELEMS] = y;
+        tr[10 + offset * ELEMS] = 0;
+        tr[11 + offset * ELEMS] = 1f;
+        tr[12 + offset * ELEMS] = 1;
         tr[13 + offset * ELEMS] = 0;
         tr[14 + offset * ELEMS] = 0;
         tr[15 + offset * ELEMS] = 1f;
-
-        vector[0] = x + disp / 2;
-        vector[1] = y;
-        vector[2] = 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 16 + offset * ELEMS, 0, 0, 1);
-        tr[20 + offset * ELEMS] = intensity;
-        tr[21 + offset * ELEMS] = 0;
-        tr[22 + offset * ELEMS] = 0;
-        tr[23 + offset * ELEMS] = 1f;
-
         return tr;
     }
 
@@ -84,8 +63,8 @@ public class Obstacles {
         mObs = new float[ELEMS * obsNum];
     }
 
-    public void addObstacles(float x, float y, float z, float angle) {
-        getObstacle(mObs, mObsCount, x, y, z, angle);
+    public void addObstacles(float x, float y, float z) {
+        getObstacle(mObs, mObsCount, x, y, z);
         mObsCount++;
     }
 
@@ -117,8 +96,7 @@ public class Obstacles {
             return;
         }
 
-        // Draw Obstacles
-        glDrawArrays(GL_TRIANGLES, 0, mObsCount);
+        glDrawArrays(GL_LINES, 0, mObsCount * 2);
 
     }
 
