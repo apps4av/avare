@@ -414,6 +414,10 @@ public class ThreeDActivity extends Activity {
         super.onResume();
         Helper.setOrientationAndOn(this);
 
+        // Clean messages
+        mText.setText("");
+        mTextError.setText("");
+
         /*
          * Registering our receiver
          * Bind now.
