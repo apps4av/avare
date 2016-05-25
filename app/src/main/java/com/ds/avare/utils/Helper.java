@@ -55,8 +55,8 @@ public class Helper {
     // All elevation is calculated in feet
     // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
     private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
-    private static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = 364.431597044586;
-    private static final double ALTITUDE_FT_ELEVATION_PLUSZ               = ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE * 255.0 - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT;
+    public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = -364.431597044586;
+    private static final double ALTITUDE_FT_ELEVATION_PLUSZ               = ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE * 255.0 + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT;
 
     /**
      * Finds elevation from the above elevation pixel formula from a pixel in meters
@@ -68,7 +68,7 @@ public class Helper {
          * No need to average. Gray scale has all three colors at the same value
          */
         return (((double)(px & 0x000000FF)) *
-                ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+                ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
     }
 
     /**
@@ -89,7 +89,7 @@ public class Helper {
      * @return
      */
     public static double findPixelFromElevation(double elev) {
-        return (elev + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
+        return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
     }
 
     /**
@@ -297,7 +297,7 @@ public class Helper {
      * @return
      */
     public static String calculateAGLFromMSL(float msl, float elevation) {
-        boolean valid = (elevation < 0) ? false : true;
+        boolean valid = (elevation >= (Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 0.5)) ? true : false; // 0.5 for rounding error
         double altitude = msl;
         altitude -= elevation;
         if(altitude < 0) {

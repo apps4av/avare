@@ -136,7 +136,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /**
      * Task that would draw obstacles
      */
-    private ElevationTask               mElevationTask; 
+    private ElevationTask               mElevationTask;
     private Thread                      mElevationThread;
     private long                        mElevationLastRun;
 
@@ -1501,7 +1501,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
                 mService.setElevationTile(t);
                 BitmapHolder elevBitmap = mService.getElevationBitmap();
-                double elev = -1;
+                double elev = Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1; // invalid elevation (not found)
                 // Load only if needed.
                 if(null != elevBitmap) {
                     int x = (int)Math.round(t.getOffsetX(lon)) + elevBitmap.getWidth() / 2;
