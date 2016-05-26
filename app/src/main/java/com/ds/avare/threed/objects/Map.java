@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import com.ds.avare.threed.Constants;
 import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.TextureShaderProgram;
-import com.ds.avare.threed.util.LoggerConfig;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
@@ -24,6 +23,8 @@ public class Map {
 
     private static final int ROWS = 512;
     private static final int COLS = 512;
+    private static final float ROWS_1 = 1f / ROWS;
+    private static final float COLS_1 = 1f / COLS;
 
     private static final int POSITION_COMPONENT_COUNT = 4;
     private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
@@ -37,10 +38,11 @@ public class Map {
     }
 
     public boolean loadTerrain(BitmapHolder b) {
+        if(null == b) {
+            return false;
+        }
         Bitmap bitmap = b.getBitmap();
         if (bitmap == null) {
-            if (LoggerConfig.ON) {
-            }
             return false;
         }
 
@@ -105,12 +107,12 @@ public class Map {
         pxf = (float)Helper.findElevationFromPixelNormalized(px);
         //-1,1    1,1
         //-1,-1   1,-1
-        vertices[count++] = (float)((float)col * 2.0f - (float)COLS) / (float)COLS; //x
-        vertices[count++] = (float)(-(float)row * 2.0f + (float)ROWS) / (float)ROWS; //y
+        vertices[count++] = (float)((float)col * 2.0f - (float)COLS) * (float)COLS_1; //x
+        vertices[count++] = (float)(-(float)row * 2.0f + (float)ROWS) * (float)ROWS_1; //y
         vertices[count++] = pxf; //z
         vertices[count++] = 1.f; //w
-        vertices[count++] = ((float)col) / ((float)COLS); //s
-        vertices[count++] = ((float)row) / ((float)ROWS); //t
+        vertices[count++] = ((float)col) * ((float)COLS_1); //s
+        vertices[count++] = ((float)row) * ((float)ROWS_1); //t
 
         return count;
     }

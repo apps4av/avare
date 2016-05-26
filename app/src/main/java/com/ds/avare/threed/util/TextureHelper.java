@@ -8,8 +8,6 @@
 ***/
 package com.ds.avare.threed.util;
 
-import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.ds.avare.utils.BitmapHolder;
 
@@ -43,19 +41,10 @@ public class TextureHelper {
         glGenTextures(1, textureObjectIds, 0);
 
         if (textureObjectIds[0] == 0) {
-            if (LoggerConfig.ON) {
-                Log.w(TAG, "Could not generate a new OpenGL texture object.");
-            }
             return 0;
-        } 
+        }
 
-        // Read in the resource
-        final Bitmap bitmap = b.getBitmap();
-
-        if (bitmap == null) {
-            if (LoggerConfig.ON) {
-            }
-
+        if (b == null || b.getBitmap() == null) {
             glDeleteTextures(1, textureObjectIds, 0);
             return 0;
         } 
@@ -67,7 +56,7 @@ public class TextureHelper {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // Load the bitmap into the bound texture.
-        texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
+        texImage2D(GL_TEXTURE_2D, 0, b.getBitmap(), 0);
 
         // Note: Following code may cause an error to be reported in the
         // ADB log as follows: E/IMGSRV(20095): :0: HardwareMipGen:
