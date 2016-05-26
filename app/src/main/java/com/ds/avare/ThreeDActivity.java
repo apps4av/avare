@@ -112,13 +112,26 @@ public class ThreeDActivity extends Activity {
     private void setLocation(Location location) {
         mAreaMapper.setGpsParams(new GpsParams(location));
 
+        Tile tm;
+        Tile te;
+
         /*
-         * Elevation tile
+         * Set tiles on new location.
+         * Match so that elevation and map tiles have common level
          */
-        Tile t = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude());
-        Tile t2 = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), true);
-        mAreaMapper.setElevationTile(t);
-        mAreaMapper.setMapTile(t2);
+        int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
+        int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
+        if(mZoomE > mZoomM) {
+            tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, mPref.getChartType3D());
+            te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomE - mZoomM, "6"); // lower res elev tile
+        }
+        else {
+            tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+            te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, "6");
+        }
+
+        mAreaMapper.setMapTile(tm);
+        mAreaMapper.setElevationTile(te);
     }
 
     private GpsInterface mGpsInfc = new GpsInterface() {
