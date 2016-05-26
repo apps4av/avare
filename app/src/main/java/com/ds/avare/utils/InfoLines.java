@@ -74,7 +74,6 @@ public class InfoLines {
     private int mFieldPosX[]; // X positions of the fields left edges
     private int mFieldLines[][]; // Configuration/content of the status lines
     private int mRowCount; // How many status rows are in use
-    private float mElev;
     private float mAltitude;
 
     private Context mContext;
@@ -449,7 +448,6 @@ public class InfoLines {
         float lineY = dataY + titleY;
         mShadowY = lineY * mRowCount + aShadow;
 
-        mElev = (float) mService.getElevation();
         mAltitude = (float) mService.getGpsParams().getAltitude();
         
         // Draw the shadowed background on the top 2 lines if we are configured
@@ -754,14 +752,6 @@ public class InfoLines {
         case ID_FLD_MSL: {
             return Helper.centerString(Helper
                     .calculateAltitudeFromMSL(mAltitude), MAX_FIELD_SIZE_IN_CHARS);
-        }
-
-        case ID_FLD_AGL: {
-            return Helper.centerString(
-                    Helper.calculateAGLFromMSL(
-                            mAltitude,
-                            (float) mElev),
-                    MAX_FIELD_SIZE_IN_CHARS);
         }
 
         // If we have a destination set that is a BASE,

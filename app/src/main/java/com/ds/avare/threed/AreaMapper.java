@@ -160,7 +160,7 @@ public class AreaMapper {
         return mNewElevationTile;
     }
 
-    public GpsParams getmGpsParams() {
+    public GpsParams getGpsParams() {
         return mGpsParams;
     }
 }

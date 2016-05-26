@@ -87,7 +87,7 @@ public class Camera {
     }
 
     public static Vector3d getCameraVectorLookAtFirstPerson(AreaMapper map) {
-        GpsParams params = map.getmGpsParams();
+        GpsParams params = map.getGpsParams();
         // Find a point ahead on horizon in bearing direction and look at it
         Coordinate c = Projection.findStaticPoint(params.getLongitude(), params.getLatitude(),
                 params.getBearing(), Projection.horizonDistance(params.getAltitude()));
@@ -98,7 +98,7 @@ public class Camera {
 
     public static Vector3d getCameraVectorPositionFirstPerson(AreaMapper map) {
         // camera is where ownship is
-        GpsParams params = map.getmGpsParams();
+        GpsParams params = map.getGpsParams();
         Vector3d vec = map.gpsToAxis(params.getLongitude(), params.getLatitude(), params.getAltitude(), 0);
         Vector3d cameraVectorPosition = new Vector3d(vec.getX(), vec.getY(), vec.getZ());
         return cameraVectorPosition;

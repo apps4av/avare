@@ -24,7 +24,6 @@ import com.ds.avare.threed.data.VertexArray;
 import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.util.MatrixHelper;
 
-import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glDrawArrays;
 import static com.ds.avare.threed.Constants.BYTES_PER_FLOAT;
@@ -38,7 +37,6 @@ public class Ship {
         * BYTES_PER_FLOAT;
 
     private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 6;
-    private static final int ELEMS_AXIS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * 8;
     private float[] mShips;
     private int mShipCount;
 
@@ -120,106 +118,10 @@ public class Ship {
         return tr;
     }
 
-    // Make axis
-    private static float[] getAxis(float tr[], int offset, float x, float y, float z, float angle) {
-
-        float vector[] = new float[4];
-
-        // x-axis
-        tr[0  + offset * ELEMS] = x;
-        tr[1  + offset * ELEMS] = y;
-        tr[2  + offset * ELEMS] = z;
-        tr[3  + offset * ELEMS] = 1f;
-        tr[4  + offset * ELEMS] = 0;
-        tr[5  + offset * ELEMS] = 1;
-        tr[6  + offset * ELEMS] = 0;
-        tr[7  + offset * ELEMS] = 1f;
-
-        vector[0] = x + 2f;
-        vector[1] = y + 0;
-        vector[2] = z + 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS, 0, 0, 1);
-        tr[12 + offset * ELEMS] = 0;
-        tr[13 + offset * ELEMS] = 1;
-        tr[14 + offset * ELEMS] = 0;
-        tr[15 + offset * ELEMS] = 1f;
-
-        // y-axis
-        tr[16 + offset * ELEMS] = x;
-        tr[17 + offset * ELEMS] = y;
-        tr[18 + offset * ELEMS] = z;
-        tr[19 + offset * ELEMS] = 1f;
-        tr[20 + offset * ELEMS] = 1;
-        tr[21 + offset * ELEMS] = 0;
-        tr[22 + offset * ELEMS] = 1;
-        tr[23 + offset * ELEMS] = 1f;
-
-        vector[0] = x + 0f;
-        vector[1] = y + 2f;
-        vector[2] = z + 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 24 + offset * ELEMS, 0, 0, 1);
-        tr[28 + offset * ELEMS] = 1;
-        tr[29 + offset * ELEMS] = 0;
-        tr[30 + offset * ELEMS] = 1;
-        tr[31 + offset * ELEMS] = 1f;
-
-        // z-axis
-        tr[32 + offset * ELEMS] = x;
-        tr[33 + offset * ELEMS] = y;
-        tr[34 + offset * ELEMS] = z - 2f;
-        tr[35 + offset * ELEMS] = 1f;
-        tr[36 + offset * ELEMS] = 0;
-        tr[37 + offset * ELEMS] = 0;
-        tr[38 + offset * ELEMS] = 1;
-        tr[39 + offset * ELEMS] = 1f;
-
-        vector[0] = x + 0f;
-        vector[1] = y + 0f;
-        vector[2] = z + 2f;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 40 + offset * ELEMS, 0, 0, 1);
-        tr[44 + offset * ELEMS] = 0;
-        tr[45 + offset * ELEMS] = 0;
-        tr[46 + offset * ELEMS] = 1;
-        tr[47 + offset * ELEMS] = 1f;
-
-        // -x-axis
-        tr[48 + offset * ELEMS] = x;
-        tr[49 + offset * ELEMS] = y;
-        tr[50 + offset * ELEMS] = z;
-        tr[51 + offset * ELEMS] = 1f;
-        tr[52 + offset * ELEMS] = 1;
-        tr[53 + offset * ELEMS] = 0;
-        tr[54 + offset * ELEMS] = 0;
-        tr[55 + offset * ELEMS] = 1f;
-
-        vector[0] = x - 2f;
-        vector[1] = y + 0f;
-        vector[2] = z + 0f;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 56 + offset * ELEMS, 0, 0, 1);
-        tr[60 + offset * ELEMS] = 1;
-        tr[61 + offset * ELEMS] = 0;
-        tr[62 + offset * ELEMS] = 0;
-        tr[63 + offset * ELEMS] = 1f;
-
-
-        return tr;
-    }
-
-
-    public void initShips(int shipNum, float x, float y, float z, float angle) {
+    public void initShips(int shipNum) {
         mVertexArray = null;
         mShipCount = 0;
-        mShips = new float[ELEMS * shipNum + ELEMS_AXIS];
-        // first ship is our ship
-        getShip(mShips, mShipCount, x, y, z, angle);
-        mShipCount++;
-
-        // draw axis around our ship
-        getAxis(mShips, shipNum, x, y, z, angle);
+        mShips = new float[ELEMS * shipNum];
     }
 
     public void addShip(float x, float y, float z, float angle) {
@@ -257,10 +159,6 @@ public class Ship {
 
         // Draw ships
         glDrawArrays(GL_TRIANGLES, 0, mShipCount * 6);
-
-        // Draw axis around ownship
-        glDrawArrays(GL_LINES, mShipCount * 6, 8);
-
 
     }
 

@@ -21,8 +21,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -37,7 +35,6 @@ import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
@@ -100,7 +97,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private BitmapHolder               mAirplaneBitmap;
     private BitmapHolder               mRunwayBitmap;
     private BitmapHolder               mLineBitmap;
-    private BitmapHolder               mObstacleBitmap;
     private BitmapHolder               mLineHeadingBitmap;
     
     /**
@@ -132,13 +128,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Which layer to draw
     private  String                     mLayerType;
     private Layer                       mLayer;
-
-    /**
-     * Task that would draw obstacles
-     */
-    private ElevationTask               mElevationTask;
-    private Thread                      mElevationThread;
-    private long                        mElevationLastRun;
 
     /**
      * Task that finds closets airport.
@@ -185,11 +174,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Projection of a touch point
      */
     private Projection                  mPointProjection;
-    
-    /*
-     * Obstacles
-     */
-    private LinkedList<Obstacle>        mObstacles;
     
     /*
      * Is it drawing?
@@ -284,18 +268,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mRunwayPaint = new Paint(mPaint);
         mRunwayPaint.setTextSize(getResources().getDimension(R.dimen.runwayNumberTextSize));
 
-        
-        mElevationTask = new ElevationTask();
-        mElevationThread = new Thread(mElevationTask);
-        mElevationLastRun = System.currentTimeMillis();
-        mElevationThread.start();
 
         setOnTouchListener(this);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
-        mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
         
@@ -636,15 +614,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;                
         }
 
-        // Do run run onbstacle task more frequenct than 10 seconds
-        if(((System.currentTimeMillis() - mElevationLastRun) > 1000 * 10) || force) {
-            mElevationLastRun = System.currentTimeMillis();
-	        mElevationTask.lat = mGpsParams.getLatitude();
-	        mElevationTask.lon = mGpsParams.getLongitude();
-	        mElevationTask.alt = mGpsParams.getAltitude();
-	        mElevationThread.interrupt();
-        }
-
         /*
          * Find
          */
@@ -788,23 +757,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
 
-    /**
-     *
-     * @param canvas
-     * @param ctx
-     */
-    private void drawObstacles(Canvas canvas, DrawingContext ctx) {
-        if(mPref.shouldShowObstacles()) {
-            if((mObstacles != null) && (null == mPointProjection)) {
-                mPaint.setShadowLayer(0, 0, 0, 0);
-                for (Obstacle o : mObstacles) {
-                    BitmapHolder.rotateBitmapIntoPlace(mObstacleBitmap, 0, o.getLongitude(), o.getLatitude(), false, mOrigin);
-                    canvas.drawBitmap(mObstacleBitmap.getBitmap(), mObstacleBitmap.getTransform(), mPaint);
-                }
-            }
-        }
-    }
-    
     /**
      *
      * @param canvas
@@ -1007,7 +959,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawAirSigMet(canvas, ctx);
         drawTracks(canvas, ctx);
         drawTrack(canvas, ctx);
-        drawObstacles(canvas, ctx);
         drawRunways(canvas, ctx);
         drawAircraft(canvas, ctx);
       	drawUserDefinedWaypoints(canvas, ctx);
@@ -1445,91 +1396,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
     }
 
-    
-    /**
-     * @author zkhan
-     * Find obstacles
-     */
-    
-    private class ElevationTask implements Runnable {
-        public boolean running = true;
-        private boolean runAgain = false;
-        public double lon;
-        public double lat;
-        public double alt;
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        public void run() {
-            
-            Thread.currentThread().setName("Elevation");
-
-            while(running) {
-                
-                if(!runAgain) {
-                    try {
-                        Thread.sleep(1000 * 3600);
-                    }
-                    catch(Exception e) {
-                        
-                    }
-                }
-                runAgain = false;
-                
-                if(null == mService) {
-                    continue;
-                }
-                
-                if(mImageDataSource == null) {
-                    continue;
-                }
-                
-                /*
-                 * Find obstacles in background as well
-                 */
-                LinkedList<Obstacle> obs = null;
-                if(mPref.shouldShowObstacles()) {
-                    obs = mImageDataSource.findObstacles(lon, lat, (int)alt);
-                }
-
-                /*
-                 * Elevation tile to find AGL and ground proximity warning
-                 */
-                Tile t = new Tile(mContext, mPref, lon, lat);
-
-                mService.setElevationTile(t);
-                BitmapHolder elevBitmap = mService.getElevationBitmap();
-                double elev = Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1; // invalid elevation (not found)
-                // Load only if needed.
-                if(null != elevBitmap) {
-                    int x = (int)Math.round(t.getOffsetX(lon)) + elevBitmap.getWidth() / 2;
-                    int y = (int)Math.round(t.getOffsetY(lat)) + elevBitmap.getHeight() / 2;
-                    if(elevBitmap.getBitmap() != null) {
-                    
-                        if(x < elevBitmap.getBitmap().getWidth()
-                            && y < elevBitmap.getBitmap().getHeight()
-                            && x >= 0 && y >= 0) {
-                        
-                            int px = elevBitmap.getBitmap().getPixel(x, y);
-                            elev = Helper.findElevationFromPixel(px);
-                        }
-                    }
-                }
-
-                ElevationUpdate ou = new ElevationUpdate();
-                ou.elev = elev;
-                ou.obs = obs;
-
-                Message m = mHandler.obtainMessage();
-                m.obj = ou;
-                mHandler.sendMessage(m);
-            }
-        }
-    }
-        
-
 
     /**
      * Center to the location
@@ -1710,39 +1576,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         return null;
     }
 
-    /**
-     * 
-     */
-    public void cleanup() {
-        mElevationTask.running = false;
-        mElevationThread.interrupt();
-    }
-
-
-    /**
-     * Use this with handler to update obstacles in UI thread
-     * @author zkhan
-     *
-     */
-    private class ElevationUpdate {
-        private LinkedList<Obstacle> obs;
-        private double elev;        
-    }
-
-    /**
-     * This leak warning is not an issue if we do not post delayed messages, which is true here.
-     */
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-        	if(msg.obj instanceof ElevationUpdate) {
-        		ElevationUpdate o = (ElevationUpdate)msg.obj;
-        		mService.setElevation(o.elev);
-        		mObstacles = o.obs;
-        	}
-        }
-    };
-    
     /**
      * 
      */

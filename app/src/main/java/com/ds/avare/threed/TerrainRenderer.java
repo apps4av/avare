@@ -19,6 +19,7 @@ import android.opengl.Matrix;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.threed.objects.Map;
 import com.ds.avare.threed.objects.Obstacles;
+import com.ds.avare.threed.objects.OwnShip;
 import com.ds.avare.threed.objects.Ship;
 import com.ds.avare.threed.programs.ColorShaderProgram;
 import com.ds.avare.threed.programs.TextureShaderProgram;
@@ -66,6 +67,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
 
     private Map mMap;
     private Ship mShip;
+    private OwnShip mOwnShip;
     private Obstacles mObs;
 
     private boolean mMapSet;
@@ -97,6 +99,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mMap = new Map();
         mShip = new Ship();
         mObs = new Obstacles();
+        mOwnShip = new OwnShip();
         mCamera = new Camera();
         mOrientation = new Orientation();
         mTextureSet = false;
@@ -138,7 +141,7 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
         MatrixHelper.perspectiveM(mProjectionMatrix, mOrientation.getViewAngle(), (float) mWidth
-                / (float) mHeight, 0.01f, 10f);
+                / (float) mHeight, 0.001f, 10f);
 
         //Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
 
@@ -175,6 +178,10 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
             // Draw the obstacles
             mObs.bindData(mColorProgram);
             mObs.draw();
+
+            // Draw the ownship
+            mOwnShip.bindData(mColorProgram);
+            mOwnShip.draw();
 
         }
 
@@ -213,21 +220,25 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-        return 0;
+        return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;
     }
 
-    public void setShips(Vector4d traffic[], Vector4d self) {
-
+    public void setShips(Vector4d traffic[]) {
         if(traffic != null) {
-            mShip.initShips(traffic.length + 1, self.getX(), self.getY(), self.getZ(), self.getAngle()); // +1 for self
+            mShip.initShips(traffic.length);
             for (Vector4d t : traffic) {
                 mShip.addShip(t.getX(), t.getY(), t.getZ(), t.getAngle()); // others
             }
         }
         else {
-            mShip.initShips(1, self.getX(), self.getY(), self.getZ(), self.getAngle()); // +1 for self
+            mShip.initShips(0);
         }
         mShip.doneShips();
+    }
+
+    public void setOwnShip(Vector4d self) {
+        mOwnShip.initOwnShip(self.getX(), self.getY(), self.getZ(), self.getAngle());
+        mOwnShip.doneOwnShips();
     }
 
 

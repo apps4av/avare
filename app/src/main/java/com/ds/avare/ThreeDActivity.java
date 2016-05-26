@@ -83,6 +83,8 @@ public class ThreeDActivity extends Activity {
     private TextView mText;
     private TextView mTextError;
 
+    private double mElev;
+
     private OptionButton mChartOption;
 
     private Vector4d mObstacles[];
@@ -131,6 +133,14 @@ public class ThreeDActivity extends Activity {
                  * Called by GPS. Update everything driven by GPS.
                  */
                 setLocation(location);
+                /**
+                 * Elevation here
+                 */
+                mElev = getELevation(location);
+                if(mElev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
+                    // Write out AGL
+                    mTextError.setText("AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - mElev) + "ft");
+                }
             }
         }
 
@@ -285,8 +295,7 @@ public class ThreeDActivity extends Activity {
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 Location l = mService.getDestination().getLocation();
                                 l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
-                                        (mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
-                                        (int)mAreaMapper.getYForLat(l.getLatitude()))) / Preferences.heightConversion);
+                                        getELevation(l) / Preferences.heightConversion);
                                 setLocation(l);
                             }
 
@@ -398,6 +407,16 @@ public class ThreeDActivity extends Activity {
         }
     };
 
+    /**
+     * Get elevation at this location
+     * @param l
+     * @return
+     */
+    private double getELevation(Location l) {
+        return mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
+                (int)mAreaMapper.getYForLat(l.getLatitude()));
+    }
+
 
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
@@ -495,8 +514,8 @@ public class ThreeDActivity extends Activity {
             }
             LinkedList<Obstacle> obs = null;
             if (mPref.shouldShowObstacles()) {
-                obs = mService.getDBResource().findObstacles(mAreaMapper.getmGpsParams().getLongitude(),
-                        mAreaMapper.getmGpsParams().getLatitude(), 0);
+                obs = mService.getDBResource().findObstacles(mAreaMapper.getGpsParams().getLongitude(),
+                        mAreaMapper.getGpsParams().getLatitude(), 0);
 
                 Vector4d obstacles[] = new Vector4d[obs.size()];
                 int count = 0;

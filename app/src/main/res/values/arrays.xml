@@ -2105,7 +2105,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Estimated Time Enroute</item>
 	    <item>Estimated Time of Arrival</item>
 	    <item>MSL Altitude</item>
-	    <item>AGL Height</item>
 	    <item>Hobbs Flight Timer</item>
 	    <item>Vertical Speed Indicator</item>
 	    <item>Vertical Speed Required</item>
@@ -2135,7 +2134,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>ETE Next</item>
 	    <item>ETA Next</item>
 	    <item>MSL ft</item>
-	    <item>AGL ft</item>
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
 	    <item>VSR fpm</item>

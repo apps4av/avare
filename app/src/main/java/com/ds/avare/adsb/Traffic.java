@@ -213,11 +213,9 @@ public class Traffic {
                 Traffic tr = t.valueAt(count);
                 ships[count] = mapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
             }
-            renderer.setShips(ships, mapper.getSelfLocation());
-        } else {
-            renderer.setShips(null, mapper.getSelfLocation());
+            renderer.setShips(ships);
         }
-
+        renderer.setOwnShip(mapper.getSelfLocation());
     }
 
 
