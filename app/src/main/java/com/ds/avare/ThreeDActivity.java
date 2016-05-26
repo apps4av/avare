@@ -82,8 +82,9 @@ public class ThreeDActivity extends Activity {
     private Button mCenterButton;
     private TextView mText;
     private TextView mTextError;
+    private TextView mTextAGL;
 
-    private double mElev;
+    private BitmapHolder mElevBitmapHolder;
 
     private OptionButton mChartOption;
 
@@ -106,6 +107,7 @@ public class ThreeDActivity extends Activity {
     private static final int MESSAGE_TEXT = 1;
     private static final int MESSAGE_ERROR = 2;
     private static final int MESSAGE_OBSTACLES = 3;
+    private static final int MESSAGE_AGL = 4;
 
     private void setLocation(Location location) {
         mAreaMapper.setGpsParams(new GpsParams(location));
@@ -136,10 +138,13 @@ public class ThreeDActivity extends Activity {
                 /**
                  * Elevation here
                  */
-                mElev = getELevation(location);
-                if(mElev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
+                double elev = getELevation(location);
+                if(elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
                     // Write out AGL
-                    mTextError.setText("AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - mElev) + "ft");
+                    Message m = mHandler.obtainMessage();
+                    m.what = MESSAGE_AGL;
+                    m.obj = "AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - elev) + "ft";
+                    mHandler.sendMessage(m);
                 }
             }
         }
@@ -255,7 +260,8 @@ public class ThreeDActivity extends Activity {
                         mReady = true;
                         // cannot call widgets from opengl thread so handler
                         mHandler.sendEmptyMessage(MESSAGE_INIT);
-                    } else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
+                    }
+                    else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
                         if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                             Message m = mHandler.obtainMessage();
@@ -267,7 +273,12 @@ public class ThreeDActivity extends Activity {
                             Tile tout = mAreaMapper.getMapTile();
                             mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
                             tout = mAreaMapper.getElevationTile();
-                            mRenderer.setTerrain(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888));
+                            // Keep elevation bitmap for elevation AGL calculations
+                            if(mElevBitmapHolder != null) {
+                                mElevBitmapHolder.recycle();
+                            }
+                            mElevBitmapHolder = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
+                            mRenderer.setTerrain(mElevBitmapHolder);
 
                             // show errors
                             m = mHandler.obtainMessage();
@@ -362,6 +373,7 @@ public class ThreeDActivity extends Activity {
 
         mText = (TextView) view.findViewById(R.id.threed_text);
         mTextError = (TextView) view.findViewById(R.id.threed_text_error);
+        mTextAGL = (TextView) view.findViewById(R.id.threed_text_agl);
 
         // Charts different from main view
         mChartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
@@ -413,8 +425,21 @@ public class ThreeDActivity extends Activity {
      * @return
      */
     private double getELevation(Location l) {
-        return mRenderer.getAltitudeAt((int)mAreaMapper.getXForLon(l.getLongitude()),
-                (int)mAreaMapper.getYForLat(l.getLatitude()));
+        int x = (int)mAreaMapper.getXForLon(l.getLongitude());
+        int y = (int)mAreaMapper.getYForLat(l.getLatitude());
+        if(mElevBitmapHolder != null) {
+            if(mElevBitmapHolder.getBitmap() != null) {
+                if(x < mElevBitmapHolder.getBitmap().getWidth()
+                        && y < mElevBitmapHolder.getBitmap().getHeight()
+                        && x >= 0 && y >= 0) {
+
+                    int px = mElevBitmapHolder.getBitmap().getPixel(x, y);
+                    double elev = Helper.findElevationFromPixel(px);
+                    return elev;
+                }
+            }
+        }
+        return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;
     }
 
 
@@ -437,6 +462,7 @@ public class ThreeDActivity extends Activity {
         // Clean messages
         mText.setText("");
         mTextError.setText("");
+        mTextAGL.setText("");
 
         /*
          * Registering our receiver
@@ -488,14 +514,19 @@ public class ThreeDActivity extends Activity {
         public void handleMessage(Message msg) {
             if (msg.what == MESSAGE_INIT) {
                 setCenterButton();
-            } else if (msg.what == MESSAGE_TEXT) {
+            }
+            else if (msg.what == MESSAGE_TEXT) {
                 mText.setText((String) msg.obj);
-            } else if (msg.what == MESSAGE_ERROR) {
+            }
+            else if (msg.what == MESSAGE_ERROR) {
                 mTextError.setText((String) msg.obj);
-            } else if(msg.what == MESSAGE_OBSTACLES) {
+            }
+            else if (msg.what == MESSAGE_OBSTACLES) {
                 mObstacles = (Vector4d[]) msg.obj;
             }
-
+            else if (msg.what == MESSAGE_AGL) {
+                mTextAGL.setText((String) msg.obj);
+            }
         }
     };
 

@@ -59,5 +59,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"/>
 
+    <TextView
+        android:id="@+id/threed_text_agl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14dp"
+        android:layout_margin="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/threed_text_error"/>
+
 </RelativeLayout>
 
