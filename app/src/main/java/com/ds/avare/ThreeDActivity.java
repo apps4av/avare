@@ -557,20 +557,18 @@ public class ThreeDActivity extends Activity {
                 return;
             }
             LinkedList<Obstacle> obs = null;
-            if (mPref.shouldShowObstacles()) {
-                obs = mService.getDBResource().findObstacles(mAreaMapper.getGpsParams().getLongitude(),
-                        mAreaMapper.getGpsParams().getLatitude(), 0);
+            obs = mService.getDBResource().findObstacles(mAreaMapper.getGpsParams().getLongitude(),
+                    mAreaMapper.getGpsParams().getLatitude(), 0);
 
-                Vector4d obstacles[] = new Vector4d[obs.size()];
-                int count = 0;
-                for (Obstacle ob : obs) {
-                    obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
-                }
-                Message m = mHandler.obtainMessage();
-                m.what = MESSAGE_OBSTACLES;
-                m.obj = obstacles;
-                mHandler.sendMessage(m);
+            Vector4d obstacles[] = new Vector4d[obs.size()];
+            int count = 0;
+            for (Obstacle ob : obs) {
+                obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
             }
+            Message m = mHandler.obtainMessage();
+            m.what = MESSAGE_OBSTACLES;
+            m.obj = obstacles;
+            mHandler.sendMessage(m);
         }
     }
 }

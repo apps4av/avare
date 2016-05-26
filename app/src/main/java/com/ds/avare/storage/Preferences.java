@@ -335,13 +335,6 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean shouldShowObstacles() {
-        return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean isTrackEnabled() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowTrack), true));
     }
