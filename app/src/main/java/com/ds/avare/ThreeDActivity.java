@@ -237,8 +237,77 @@ public class ThreeDActivity extends Activity {
                         mReady = true;
                         // cannot call widgets from opengl thread so handler
                         mHandler.sendEmptyMessage(MESSAGE_INIT);
+
+                        mAreaMapper = new AreaMapper();
+
                     }
                     else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
+
+                        // Draw traffic every so many frames
+                        if (mFrames++ % 60 == 0) {
+
+                            Location location;
+                            // Simulate destination in sim mode and get altitude from terrain
+                            if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
+                                Location l = mService.getDestination().getLocation();
+                                l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
+                                        getElevation(l.getLongitude(), l.getLatitude()) / Preferences.heightConversion);
+                                location = l;
+                            }
+                            else {
+                                location = mLocation;
+                            }
+
+                            if(location != null) {
+                                mAreaMapper.setGpsParams(new GpsParams(location));
+                                double lon = mAreaMapper.getGpsParams().getLongitude();
+                                double lat = mAreaMapper.getGpsParams().getLatitude();
+                                double alt = mAreaMapper.getGpsParams().getAltitude();
+
+                                /**
+                                 * Elevation here
+                                 */
+                                double elev = getElevation(lon, lat);
+                                if (elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
+                                    // Write out AGL
+                                    Message m = mHandler.obtainMessage();
+                                    m.what = MESSAGE_AGL;
+                                    m.obj = "AGL " + Math.round(alt - elev) + "ft";
+                                    mHandler.sendMessage(m);
+                                }
+
+                                Tile tm;
+                                Tile te;
+
+                                /*
+                                 * Set tiles on new location.
+                                 * Match so that elevation and map tiles have common level
+                                 */
+                                int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
+                                int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
+                                if (mZoomE > mZoomM) {
+                                    tm = new Tile(mContext, mPref, lon, lat, 0, mPref.getChartType3D());
+                                    te = new Tile(mContext, mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                }
+                                else {
+                                    tm = new Tile(mContext, mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new Tile(mContext, mPref, lon, lat, 0, "6");
+                                }
+
+                                mAreaMapper.setMapTile(tm);
+                                mAreaMapper.setElevationTile(te);
+                            }
+
+                            // Draw traffic
+                            Traffic.draw(mService, mAreaMapper, mRenderer);
+
+                            // Draw obstacles
+                            if (mObstacles != null && mObstacles.length != 0) {
+                                mRenderer.setObstacles(mObstacles);
+                            }
+
+                        }
+
 
                         if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                             Message m = mHandler.obtainMessage();
@@ -275,65 +344,6 @@ public class ThreeDActivity extends Activity {
                         // Set orientation
                         mRenderer.getOrientation().set(mGlSurfaceView);
 
-                        // Draw traffic every so many frames
-                        if (mFrames++ % 60 == 0) {
-
-                            Location location;
-                            // Simulate destination in sim mode and get altitude from terrain
-                            if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
-                                Location l = mService.getDestination().getLocation();
-                                l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
-                                        getElevation(l.getLongitude(), l.getLatitude()) / Preferences.heightConversion);
-                                location = l;
-                            }
-                            else {
-                                location = mLocation;
-                            }
-
-                            if(location != null) {
-                                /**
-                                 * Elevation here
-                                 */
-                                double elev = getElevation(location.getLongitude(), location.getLatitude());
-                                if (elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
-                                    // Write out AGL
-                                    Message m = mHandler.obtainMessage();
-                                    m.what = MESSAGE_AGL;
-                                    m.obj = "AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - elev) + "ft";
-                                    mHandler.sendMessage(m);
-                                }
-                                mAreaMapper.setGpsParams(new GpsParams(location));
-
-                                Tile tm;
-                                Tile te;
-
-                                /*
-                                 * Set tiles on new location.
-                                 * Match so that elevation and map tiles have common level
-                                 */
-                                int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
-                                int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
-                                if (mZoomE > mZoomM) {
-                                    tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, mPref.getChartType3D());
-                                    te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomE - mZoomM, "6"); // lower res elev tile
-                                } else {
-                                    tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, "6");
-                                }
-
-                                mAreaMapper.setMapTile(tm);
-                                mAreaMapper.setElevationTile(te);
-                            }
-
-                            // Draw traffic
-                            Traffic.draw(mService, mAreaMapper, mRenderer);
-
-                            // Draw obstacles
-                            if (mObstacles != null && mObstacles.length != 0) {
-                                mRenderer.setObstacles(mObstacles);
-                            }
-
-                        }
                     }
                     return null;
                 }
@@ -423,7 +433,6 @@ public class ThreeDActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            mAreaMapper = new AreaMapper();
         }
 
         /* (non-Javadoc)
@@ -548,7 +557,7 @@ public class ThreeDActivity extends Activity {
 
             Thread.currentThread().setName("Background");
 
-            if (null == mService || null == mService.getDBResource()) {
+            if (null == mService || null == mService.getDBResource() || mAreaMapper.getGpsParams() == null) {
                 return;
             }
             LinkedList<Obstacle> obs = null;
