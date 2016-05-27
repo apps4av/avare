@@ -84,8 +84,6 @@ public class ThreeDActivity extends Activity {
     private TextView mTextError;
     private TextView mTextAGL;
 
-    private BitmapHolder mElevBitmapHolder;
-
     private OptionButton mChartOption;
 
     private Vector4d mObstacles[];
@@ -151,7 +149,7 @@ public class ThreeDActivity extends Activity {
                 /**
                  * Elevation here
                  */
-                double elev = getELevation(location);
+                double elev = getElevation(location);
                 if(elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
                     // Write out AGL
                     Message m = mHandler.obtainMessage();
@@ -284,14 +282,13 @@ public class ThreeDActivity extends Activity {
 
                             // load tiles but give feedback as it hangs
                             Tile tout = mAreaMapper.getMapTile();
-                            mRenderer.setTexture(new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName()));
+                            BitmapHolder b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName());
+                            mRenderer.setTexture(b);
+                            b.recycle();
                             tout = mAreaMapper.getElevationTile();
-                            // Keep elevation bitmap for elevation AGL calculations
-                            if(mElevBitmapHolder != null) {
-                                mElevBitmapHolder.recycle();
-                            }
-                            mElevBitmapHolder = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
-                            mRenderer.setTerrain(mElevBitmapHolder);
+                            b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
+                            mRenderer.setTerrain(b);
+                            b.recycle();
 
                             // show errors
                             m = mHandler.obtainMessage();
@@ -319,7 +316,7 @@ public class ThreeDActivity extends Activity {
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 Location l = mService.getDestination().getLocation();
                                 l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
-                                        getELevation(l) / Preferences.heightConversion);
+                                        getElevation(l) / Preferences.heightConversion);
                                 setLocation(l);
                             }
 
@@ -437,22 +434,15 @@ public class ThreeDActivity extends Activity {
      * @param l
      * @return
      */
-    private double getELevation(Location l) {
+    private double getElevation(Location l) {
         int x = (int)mAreaMapper.getXForLon(l.getLongitude());
         int y = (int)mAreaMapper.getYForLat(l.getLatitude());
-        if(mElevBitmapHolder != null) {
-            if(mElevBitmapHolder.getBitmap() != null) {
-                if(x < mElevBitmapHolder.getBitmap().getWidth()
-                        && y < mElevBitmapHolder.getBitmap().getHeight()
-                        && x >= 0 && y >= 0) {
-
-                    int px = mElevBitmapHolder.getBitmap().getPixel(x, y);
-                    double elev = Helper.findElevationFromPixel(px);
-                    return elev;
-                }
-            }
+        double elev = mRenderer.getElevationNormalized(y, x);
+        if(elev <= -1) {
+            return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;
         }
-        return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;
+
+        return Helper.findElevationFromNormalizedElevation(elev);
     }
 
 

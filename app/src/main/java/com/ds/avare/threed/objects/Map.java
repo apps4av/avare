@@ -75,6 +75,19 @@ public class Map {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices());
     }
 
+    /**
+     * Elevation from vertex buffer
+     * @param row
+     * @param col
+     * @return
+     */
+    public float getZ(int row, int col) {
+        if(mVertexArray == null || row >= ROWS || col >= COLS) {
+            return -1;
+        }
+        int index = ((row * (COLS * 4) / 2 + row * 2 + col * 2) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT)) + 2;
+        return mVertexArray.get(index);
+    }
 
     /**
      *

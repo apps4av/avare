@@ -68,10 +68,6 @@ public class TextureHelper {
 
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        // Recycle the bitmap, since its data has been loaded into
-        // OpenGL.
-        b.recycle();
-
         // Unbind from the texture.
         glBindTexture(GL_TEXTURE_2D, 0);
 

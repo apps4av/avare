@@ -243,6 +243,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         return mTextureSet;
     }
 
+    public float getElevationNormalized(int row, int col) {
+        return mMap.getZ(row, col);
+    }
 }
 
 

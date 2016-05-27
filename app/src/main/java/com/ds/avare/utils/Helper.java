@@ -101,6 +101,9 @@ public class Helper {
         return findPixelFromElevation(elev) / 255.0;
     }
 
+    public static double findElevationFromNormalizedElevation(double elev) {
+        return (elev * ALTITUDE_FT_ELEVATION_PLUSZ);
+    }
 
     /***
 	 * Fetch the raw estimated time enroute given the input parameters
