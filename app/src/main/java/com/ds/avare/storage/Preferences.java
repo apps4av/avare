@@ -1066,6 +1066,14 @@ public class Preferences {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }
 
+    public boolean isTrackUpPlates() {
+        return mPref.getBoolean(mContext.getString(R.string.TrackUpPlates), false);
+    }
+
+    public boolean setTrackUpPlates(boolean trackUp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.TrackUpPlates), trackUp).commit();
+    }
+
     public boolean isFirstPerson() {
         return mPref.getBoolean(mContext.getString(R.string.FirstPerson), false);
     }

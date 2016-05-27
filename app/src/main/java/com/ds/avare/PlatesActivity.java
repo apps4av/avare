@@ -416,8 +416,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             @Override
             public boolean onLongClick(View v) {
                 // long press on center button sets track toggle
-                mPref.setTrackUp(!mPref.isTrackUp());
-                if (mPref.isTrackUp()) {
+                mPref.setTrackUpPlates(!mPref.isTrackUpPlates());
+                if (mPref.isTrackUpPlates()) {
                     mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.TrackUp));
                 } else {
@@ -852,7 +852,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         }
 
         // Button colors to be synced across activities
-        if(mPref.isTrackUp()) {
+        if(mPref.isTrackUpPlates()) {
             mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
         }
         else {

@@ -93,6 +93,7 @@ public class ThreeDActivity extends Activity {
      */
     private Timer mTimer;
     private UpdateTask mTimerTask;
+    private Location mLocation;
 
 
     /**
@@ -107,31 +108,9 @@ public class ThreeDActivity extends Activity {
     private static final int MESSAGE_OBSTACLES = 3;
     private static final int MESSAGE_AGL = 4;
 
-    private void setLocation(Location location) {
-        mAreaMapper.setGpsParams(new GpsParams(location));
-
-        Tile tm;
-        Tile te;
-
-        /*
-         * Set tiles on new location.
-         * Match so that elevation and map tiles have common level
-         */
-        int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
-        int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
-        if(mZoomE > mZoomM) {
-            tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, mPref.getChartType3D());
-            te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomE - mZoomM, "6"); // lower res elev tile
-        }
-        else {
-            tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-            te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, "6");
-        }
-
-        mAreaMapper.setMapTile(tm);
-        mAreaMapper.setElevationTile(te);
-    }
-
+    /**
+     * GPS calls
+     */
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -140,24 +119,7 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            if (location != null && mService != null && mReady) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-                setLocation(location);
-                /**
-                 * Elevation here
-                 */
-                double elev = getElevation(location);
-                if(elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
-                    // Write out AGL
-                    Message m = mHandler.obtainMessage();
-                    m.what = MESSAGE_AGL;
-                    m.obj = "AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - elev) + "ft";
-                    mHandler.sendMessage(m);
-                }
-            }
+            mLocation = location;
         }
 
         @Override
@@ -266,6 +228,10 @@ public class ThreeDActivity extends Activity {
             mRenderer = new TerrainRenderer(this, new GenericCallback() {
                 @Override
                 public Object callback(Object o, Object o1) {
+
+                    /*
+                     * This runs in opengl thread context.
+                     */
                     if (((String) o1).equals(TerrainRenderer.SURFACE_CREATED)) {
                         // When ready, do stuff
                         mReady = true;
@@ -312,12 +278,51 @@ public class ThreeDActivity extends Activity {
                         // Draw traffic every so many frames
                         if (mFrames++ % 60 == 0) {
 
+                            Location location;
                             // Simulate destination in sim mode and get altitude from terrain
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 Location l = mService.getDestination().getLocation();
                                 l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
-                                        getElevation(l) / Preferences.heightConversion);
-                                setLocation(l);
+                                        getElevation(l.getLongitude(), l.getLatitude()) / Preferences.heightConversion);
+                                location = l;
+                            }
+                            else {
+                                location = mLocation;
+                            }
+
+                            if(location != null) {
+                                /**
+                                 * Elevation here
+                                 */
+                                double elev = getElevation(location.getLongitude(), location.getLatitude());
+                                if (elev > Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1) {
+                                    // Write out AGL
+                                    Message m = mHandler.obtainMessage();
+                                    m.what = MESSAGE_AGL;
+                                    m.obj = "AGL " + Math.round(mAreaMapper.getGpsParams().getAltitude() - elev) + "ft";
+                                    mHandler.sendMessage(m);
+                                }
+                                mAreaMapper.setGpsParams(new GpsParams(location));
+
+                                Tile tm;
+                                Tile te;
+
+                                /*
+                                 * Set tiles on new location.
+                                 * Match so that elevation and map tiles have common level
+                                 */
+                                int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
+                                int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
+                                if (mZoomE > mZoomM) {
+                                    tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, mPref.getChartType3D());
+                                    te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomE - mZoomM, "6"); // lower res elev tile
+                                } else {
+                                    tm = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new Tile(mContext, mPref, location.getLongitude(), location.getLatitude(), 0, "6");
+                                }
+
+                                mAreaMapper.setMapTile(tm);
+                                mAreaMapper.setElevationTile(te);
                             }
 
                             // Draw traffic
@@ -431,12 +436,12 @@ public class ThreeDActivity extends Activity {
 
     /**
      * Get elevation at this location
-     * @param l
      * @return
      */
-    private double getElevation(Location l) {
-        int x = (int)mAreaMapper.getXForLon(l.getLongitude());
-        int y = (int)mAreaMapper.getYForLat(l.getLatitude());
+    private double getElevation(double lon, double lat) {
+        int x = (int)mAreaMapper.getXForLon(lon);
+        int y = (int)mAreaMapper.getYForLat(lat);
+        // Find from Map
         double elev = mRenderer.getElevationNormalized(y, x);
         if(elev <= -1) {
             return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;

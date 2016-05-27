@@ -200,6 +200,16 @@ authors: zkhan, jlmcgraw
             android:summary="@string/TrackUpSummary"
             android:title="@string/TrackUpLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/TrackUpPlates"
+            android:summary="@string/TrackUpPlatesSummary"
+            android:title="@string/TrackUpPlatesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/FirstPerson"
+            android:summary="@string/FirstPersonSummary"
+            android:title="@string/FirstPersonLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ScreenOn"
             android:summary="@string/ScreenOnSummary"
