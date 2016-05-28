@@ -35,7 +35,7 @@ public class Map {
     public Map() {
     }
 
-    public boolean loadTerrain(BitmapHolder b) {
+    public boolean loadTerrain(BitmapHolder b, float ratio) {
         if(null == b) {
             return false;
         }
@@ -44,7 +44,7 @@ public class Map {
             return false;
         }
 
-        mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap));
+        mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap, ratio));
         return true;
     }
 
@@ -79,19 +79,19 @@ public class Map {
      * @param col
      * @return
      */
-    public float getZ(int row, int col) {
+    public float getZ(int row, int col, float ratio) {
         if(mVertexArray == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
             return -1;
         }
         int index = ((row * (COLS * 4) / 2 + row * 2 + col * 2) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT));
-        return mVertexArray.get(index);
+        return mVertexArray.get(index) / ratio;
     }
 
     /**
      *
      * @return
      */
-    private static int numVertices() {
+    private int numVertices() {
         return (ROWS - 1) * (COLS * 4) / 2 + (ROWS - 1) * 2;
     }
 
@@ -104,19 +104,13 @@ public class Map {
      * @param b
      * @return
      */
-    private static int makeVertix(float vertices[], int count, int row, int col, Bitmap b) {
-
-        // tilesize = 512
-        // resolution = (2 * math.pi * 6378137) / (self.tileSize * 2**zoom)
-        // zoom = 9
-        // resolution = 152.8 meters per pixel, or 78233.6 (152.8 * 512) for -y to +y
-        // 6375 meters is max z (255 * 25 meters per pixel), or 12750 for -z to +z
+    private int makeVertix(float vertices[], int count, int row, int col, Bitmap b, float ratio) {
 
         int px;
         float pxf;
         px = b.getPixel(col, row);
         pxf = (float) Helper.findElevationFromPixelNormalized(px);
-        vertices[count++] = pxf;
+        vertices[count++] = pxf * ratio;
         // pack 10 bits for col, row, and reuse for texture as there is 1-1 texture/pixel mapping
         vertices[count++] = row * 1024 + col;
         return count;
@@ -129,9 +123,8 @@ public class Map {
      * @param b
      * @return
      */
-    private static float[] genTerrainFromBitmap(Bitmap b) {
+    private float[] genTerrainFromBitmap(Bitmap b, float ratio) {
         float vertices[] = new float[numVertices() * ((POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT))];
-
         int count = 0;
         int col;
         int row;
@@ -139,20 +132,20 @@ public class Map {
             for (col = 0; col < (COLS - 1); col += 2) {
 
                 // 1
-                count = makeVertix(vertices, count, row + 0, col + 0, b);
+                count = makeVertix(vertices, count, row + 0, col + 0, b, ratio);
                 // 6
-                count = makeVertix(vertices, count, row + 1, col + 0, b);
+                count = makeVertix(vertices, count, row + 1, col + 0, b, ratio);
                 // 2
-                count = makeVertix(vertices, count, row + 0, col + 1, b);
+                count = makeVertix(vertices, count, row + 0, col + 1, b, ratio);
                 // 7
-                count = makeVertix(vertices, count, row + 1, col + 1, b);
+                count = makeVertix(vertices, count, row + 1, col + 1, b, ratio);
             }
 
             // degenerate 10
-            count = makeVertix(vertices, count, row + 1, col - 1, b);
+            count = makeVertix(vertices, count, row + 1, col - 1, b, ratio);
 
             // degenerate 6
-            count = makeVertix(vertices, count, row + 1, 0, b);
+            count = makeVertix(vertices, count, row + 1, 0, b, ratio);
         }
         return vertices;
     }

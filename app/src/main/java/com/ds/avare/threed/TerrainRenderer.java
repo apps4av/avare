@@ -191,8 +191,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mTextureSet = mTexture != 0;
     }
 
-    public void setTerrain(BitmapHolder b) {
-        mMapSet = mMap.loadTerrain(b);
+    public void setTerrain(BitmapHolder b, float ratio) {
+        mMapSet = mMap.loadTerrain(b, ratio);
     }
 
     public void setShips(Vector4d traffic[]) {
@@ -243,8 +243,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         return mTextureSet;
     }
 
-    public float getElevationNormalized(int row, int col) {
-        return mMap.getZ(row, col);
+    public float getElevationNormalized(int row, int col, float ratio) {
+        return mMap.getZ(row, col, ratio);
     }
 }
 

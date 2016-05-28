@@ -322,7 +322,7 @@ public class ThreeDActivity extends Activity {
                             b.recycle();
                             tout = mAreaMapper.getElevationTile();
                             b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
-                            mRenderer.setTerrain(b);
+                            mRenderer.setTerrain(b, mAreaMapper.getTerrainRatio());
                             b.recycle();
 
                             // show errors
@@ -451,7 +451,7 @@ public class ThreeDActivity extends Activity {
         int x = (int)mAreaMapper.getXForLon(lon);
         int y = (int)mAreaMapper.getYForLat(lat);
         // Find from Map
-        double elev = mRenderer.getElevationNormalized(y, x);
+        double elev = mRenderer.getElevationNormalized(y, x, mAreaMapper.getTerrainRatio());
         if(elev <= -1) {
             return Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 1;
         }

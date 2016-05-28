@@ -14,7 +14,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Epsg900913;
 import com.ds.avare.shapes.Tile;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -29,6 +31,8 @@ public class AreaMapper {
     private Tile mElevationTile;
     private Tile mMapTile;
 
+    private float mRatio;
+
     private boolean mNewMapTile;
     private boolean mNewElevationTile;
 
@@ -38,6 +42,7 @@ public class AreaMapper {
         mNewElevationTile = false;
         mElevationTile = null;
         mMapTile = null;
+        mRatio = 0;
     }
 
     /**
@@ -62,7 +67,7 @@ public class AreaMapper {
         float ynorm = (float)y / BitmapHolder.HEIGHT * 2;
         float xnorm = (float)x / BitmapHolder.WIDTH * 2;
 
-        double alt = Helper.findPixelFromElevationNormalized(altitude);
+        double alt = Helper.findPixelFromElevationNormalized(altitude) * mRatio;
 
         Vector4d ret = new Vector4d(xnorm, ynorm, (float)alt, (float)angle);
         return ret;
@@ -133,6 +138,11 @@ public class AreaMapper {
         synchronized (this) {
             if (mElevationTile == null || (!tile.getName().equals(mElevationTile.getName()))) {
                 mElevationTile = tile;
+                /**
+                 * Meters per pixel of altitude divided by Meters per pixel on ground for particular zoom.
+                 * This will give height to terrain in proportion with ground
+                 */
+                mRatio = 2.0f * (float)(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / Preferences.heightConversion / Epsg900913.getResolution(tile.getZoom())); //2.0 because +z for height while -x to +x for ground
                 mNewElevationTile = true;
             }
         }
@@ -162,5 +172,9 @@ public class AreaMapper {
 
     public GpsParams getGpsParams() {
         return mGpsParams;
+    }
+
+    public float getTerrainRatio() {
+        return mRatio;
     }
 }
