@@ -23,11 +23,9 @@ public class Map {
 
     private static final int ROWS = 512;
     private static final int COLS = 512;
-    private static final float ROWS_1 = 1f / ROWS;
-    private static final float COLS_1 = 1f / COLS;
 
-    private static final int POSITION_COMPONENT_COUNT = 4;
-    private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
+    private static final int POSITION_COMPONENT_COUNT = 1;
+    private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 1;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT 
         + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTES_PER_FLOAT;
 
@@ -82,10 +80,10 @@ public class Map {
      * @return
      */
     public float getZ(int row, int col) {
-        if(mVertexArray == null || row >= ROWS || col >= COLS) {
+        if(mVertexArray == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
             return -1;
         }
-        int index = ((row * (COLS * 4) / 2 + row * 2 + col * 2) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT)) + 2;
+        int index = ((row * (COLS * 4) / 2 + row * 2 + col * 2) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT));
         return mVertexArray.get(index);
     }
 
@@ -117,16 +115,10 @@ public class Map {
         int px;
         float pxf;
         px = b.getPixel(col, row);
-        pxf = (float)Helper.findElevationFromPixelNormalized(px);
-        //-1,1    1,1
-        //-1,-1   1,-1
-        vertices[count++] = (float)((float)col * 2.0f - (float)COLS) * (float)COLS_1; //x
-        vertices[count++] = (float)(-(float)row * 2.0f + (float)ROWS) * (float)ROWS_1; //y
-        vertices[count++] = pxf; //z
-        vertices[count++] = 1.f; //w
-        vertices[count++] = ((float)col) * ((float)COLS_1); //s
-        vertices[count++] = ((float)row) * ((float)ROWS_1); //t
-
+        pxf = (float) Helper.findElevationFromPixelNormalized(px);
+        vertices[count++] = pxf;
+        // pack 10 bits for col, row, and reuse for texture as there is 1-1 texture/pixel mapping
+        vertices[count++] = row * 1024 + col;
         return count;
     }
 
