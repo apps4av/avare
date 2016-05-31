@@ -242,7 +242,7 @@ public class ThreeDActivity extends Activity {
                         // Draw traffic every so many frames
                         if (mFrames++ % 60 == 0) {
 
-                            Location location;
+                            Location location = null;
                             // Simulate destination in sim mode and get altitude from terrain
                             if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
                                 Location l = mService.getDestination().getLocation();
@@ -252,7 +252,9 @@ public class ThreeDActivity extends Activity {
                             }
                             else {
                                 synchronized (ThreeDActivity.this) {
-                                    location = new Location(mLocation);
+                                    if(mLocation != null) {
+                                        location = new Location(mLocation);
+                                    }
                                 }
                             }
 
