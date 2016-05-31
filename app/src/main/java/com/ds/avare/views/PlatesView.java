@@ -113,7 +113,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
     private boolean shouldRotate() {
         // XXX: Fix rotation
-        return mPref.isTrackUp() && (mShowingAD || null != mMatrix);
+        return mPref.isTrackUpPlates() && (mShowingAD || null != mMatrix);
     }
 
     /**

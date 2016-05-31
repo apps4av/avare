@@ -103,16 +103,15 @@ public class InfoLines {
     static final int ID_FLD_ETE = 8;
     static final int ID_FLD_ETA = 9;
     static final int ID_FLD_MSL = 10;
-    static final int ID_FLD_AGL = 11;
-    static final int ID_FLD_HOB = 12;
-    static final int ID_FLD_VSI = 13;
-    static final int ID_FLD_VSR = 14;
-    static final int ID_FLD_ODO = 15;
-    static final int ID_FLD_CDI = 16;
-    static final int ID_FLD_FPR = 17;
-    static final int ID_FLD_FUL = 18;
-    static final int ID_FLD_TMR = 19;
-    static final int ID_FLD_MAX = 20;
+    static final int ID_FLD_HOB = 11;
+    static final int ID_FLD_VSI = 12;
+    static final int ID_FLD_VSR = 13;
+    static final int ID_FLD_ODO = 14;
+    static final int ID_FLD_CDI = 15;
+    static final int ID_FLD_FPR = 16;
+    static final int ID_FLD_FUL = 17;
+    static final int ID_FLD_TMR = 18;
+    static final int ID_FLD_MAX = 19;
     static final String NOVALUE = "     ";
 
     static final double TITLE_TO_TEXT_RATIO = 2.5;

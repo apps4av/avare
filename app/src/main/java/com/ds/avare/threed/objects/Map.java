@@ -74,28 +74,6 @@ public class Map {
     }
 
     /**
-     * Elevation from vertex buffer
-     * @param row
-     * @param col
-     * @return
-     */
-    public float getZ(int row, int col, float ratio) {
-        if(mVertexArray == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
-            return -1;
-        }
-        int index = ((row * (COLS * 4) / 2 + row * 2 + col * 2) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT));
-        return mVertexArray.get(index) / ratio;
-    }
-
-    /**
-     *
-     * @return
-     */
-    private int numVertices() {
-        return (ROWS - 1) * (COLS * 4) / 2 + (ROWS - 1) * 2;
-    }
-
-    /**
      * rows, cols must be even
      * @param vertices
      * @param count
@@ -117,6 +95,34 @@ public class Map {
     }
 
     //http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/ibo_with_degenerate_triangles/
+
+    /**
+     * Elevation from vertex buffer
+     * @param row
+     * @param col
+     * @return
+     */
+    public float getZ(int row, int col, float ratio) {
+        if(mVertexArray == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
+            return -1;
+        }
+        int index;
+        int colp = 0;
+        if(row == ROWS) {
+            row--; // there is no last row
+            colp = 1; // but +1 as that row
+        }
+        index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT);
+        return mVertexArray.get(index) / ratio;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private int numVertices() {
+        return (ROWS - 1) * (((COLS / 2) * 4) + 2); // (524286 = 1048572 / 2) for 512x512
+    }
 
     /**
      * Make terrain index buffer from bitmap
