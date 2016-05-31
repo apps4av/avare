@@ -447,7 +447,9 @@ public class InfoLines {
         float lineY = dataY + titleY;
         mShadowY = lineY * mRowCount + aShadow;
 
-        mAltitude = (float) mService.getGpsParams().getAltitude();
+        if(mService != null) {
+            mAltitude = (float) mService.getGpsParams().getAltitude();
+        }
         
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so

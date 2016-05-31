@@ -75,8 +75,6 @@ public class ThreeDActivity extends Activity {
 
     private AreaMapper mAreaMapper;
 
-    private boolean mReady;
-
     private int mFrames;
 
     private Button mCenterButton;
@@ -84,7 +82,6 @@ public class ThreeDActivity extends Activity {
     private TextView mTextError;
     private TextView mTextAGL;
 
-    private OptionButton mChartOption;
 
     private Vector4d mObstacles[];
 
@@ -119,7 +116,9 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            mLocation = location;
+            synchronized (ThreeDActivity.this) {
+                mLocation = location;
+            }
         }
 
         @Override
@@ -185,7 +184,6 @@ public class ThreeDActivity extends Activity {
 
         mContext = this;
 
-        mReady = false;
         mFrames = 0; // drawn frames
 
         /*
@@ -233,8 +231,6 @@ public class ThreeDActivity extends Activity {
                      * This runs in opengl thread context.
                      */
                     if (((String) o1).equals(TerrainRenderer.SURFACE_CREATED)) {
-                        // When ready, do stuff
-                        mReady = true;
                         // cannot call widgets from opengl thread so handler
                         mHandler.sendEmptyMessage(MESSAGE_INIT);
 
@@ -255,7 +251,9 @@ public class ThreeDActivity extends Activity {
                                 location = l;
                             }
                             else {
-                                location = mLocation;
+                                synchronized (ThreeDActivity.this) {
+                                    location = new Location(mLocation);
+                                }
                             }
 
                             if(location != null) {
@@ -401,15 +399,15 @@ public class ThreeDActivity extends Activity {
         mTextAGL = (TextView) view.findViewById(R.id.threed_text_agl);
 
         // Charts different from main view
-        mChartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
-        mChartOption.setCallback(new GenericCallback() {
+        OptionButton chartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
+        chartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
                 mPref.setChartType3D("" + (int) o1);
                 return null;
             }
         });
-        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
+        chartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
 
     }
 
