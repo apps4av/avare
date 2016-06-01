@@ -26,7 +26,7 @@ public class Tips {
         // randomly generate tips
         String tips[] = ctx.getResources().getStringArray(R.array.Tips);
         String ret = tips[(int)Math.round(Math.random() * (tips.length - 1))];
-        ret += "\n" + ctx.getString(R.string.DisableTip);
+        ret += "-\n" + ctx.getString(R.string.DisableTip);
         return ret;
     }
 

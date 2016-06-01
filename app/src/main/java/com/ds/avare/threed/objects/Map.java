@@ -11,7 +11,7 @@ package com.ds.avare.threed.objects;
 import android.graphics.Bitmap;
 
 import com.ds.avare.threed.Constants;
-import com.ds.avare.threed.data.VertexArray;
+import com.ds.avare.threed.data.VertexArrayShort;
 import com.ds.avare.threed.programs.TextureShaderProgram;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -27,10 +27,13 @@ public class Map {
     private static final int POSITION_COMPONENT_COUNT = 1;
     private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 1;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT 
-        + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTES_PER_FLOAT;
+        + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTES_PER_SHORT;
 
 
-    private VertexArray mVertexArray;
+    // Change this in GLSL vertex shader, if changed here
+    private static final float OFFSET_ELEVATION = 0.1f;
+
+    private VertexArrayShort mVertexArrayShort;
 
     public Map() {
     }
@@ -44,21 +47,21 @@ public class Map {
             return false;
         }
 
-        mVertexArray = new VertexArray(genTerrainFromBitmap(bitmap, ratio));
+        mVertexArrayShort = new VertexArrayShort(genTerrainFromBitmap(bitmap, ratio));
         return true;
     }
 
     public void bindData(TextureShaderProgram textureProgram) {
-        if(mVertexArray == null) {
+        if(mVertexArrayShort == null) {
             return;
         }
-        mVertexArray.setVertexAttribPointer(
+        mVertexArrayShort.setVertexAttribPointer(
                 0,
                 textureProgram.getPositionAttributeLocation(),
                 POSITION_COMPONENT_COUNT,
                 STRIDE);
         
-        mVertexArray.setVertexAttribPointer(
+        mVertexArrayShort.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
                 textureProgram.getTextureCoordinatesAttributeLocation(),
                 TEXTURE_COORDINATES_COMPONENT_COUNT,
@@ -66,7 +69,7 @@ public class Map {
     }
     
     public void draw() {
-        if(mVertexArray == null) {
+        if(mVertexArrayShort == null) {
             return;
         }
 
@@ -82,15 +85,23 @@ public class Map {
      * @param b
      * @return
      */
-    private int makeVertix(float vertices[], int count, int row, int col, Bitmap b, float ratio) {
+    private int makeVertix(short vertices[], int count, int row, int col, Bitmap b, float ratio) {
 
         int px;
         float pxf;
         px = b.getPixel(col, row);
-        pxf = (float) Helper.findElevationFromPixelNormalized(px);
-        vertices[count++] = pxf * ratio;
+        pxf = (float) Helper.findElevationFromPixelNormalized(px) * ratio;
+        int pxi = (int)((pxf + OFFSET_ELEVATION) * 512.0 + 0.5);
+        int pxr = (pxi / 32) & 0x1F;
+        int pxc = pxi & 0x1F;
+
+        // Change this in GLSL vertex shader, if changed here
+        // pack: row * 32, col * 32, and use lower 5 bits of each for elevation
         // pack 10 bits for col, row, and reuse for texture as there is 1-1 texture/pixel mapping
-        vertices[count++] = row * 1024 + col;
+
+        // send row in position, col in texture coordinates, and half of elevation in position, half in texture coord
+        vertices[count++] = (short) (row * 32 + pxr);
+        vertices[count++] = (short) (col * 32 + pxc);
         return count;
     }
 
@@ -103,17 +114,18 @@ public class Map {
      * @return
      */
     public float getZ(int row, int col, float ratio) {
-        if(mVertexArray == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
+        if(mVertexArrayShort == null || row >= ROWS || col >= COLS || row < 0 || col < 0) {
             return -1;
         }
-        int index;
         int colp = 0;
         if(row == ROWS) {
             row--; // there is no last row
             colp = 1; // but +1 as that row
         }
-        index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT);
-        return mVertexArray.get(index) / ratio;
+        int index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT);
+        int r = (int)mVertexArrayShort.get(index) & 0x1F;
+        int c = (int)mVertexArrayShort.get(index + 1) & 0x1F;
+        return (((float)(r * 32 + c)) / 512.f - OFFSET_ELEVATION) / ratio;
     }
 
     /**
@@ -129,8 +141,8 @@ public class Map {
      * @param b
      * @return
      */
-    private float[] genTerrainFromBitmap(Bitmap b, float ratio) {
-        float vertices[] = new float[numVertices() * ((POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT))];
+    private short[] genTerrainFromBitmap(Bitmap b, float ratio) {
+        short vertices[] = new short[numVertices() * ((POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT))];
         int count = 0;
         int col;
         int row;
