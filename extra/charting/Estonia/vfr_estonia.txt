@@ -1,0 +1,15 @@
+# LCC with standard parallels and central meridian (24E) given, converted at 600 DPI
+#https://aim.eans.ee/index.php?option=com_content&view=article&id=79&Itemid=19&lang=en
+filename=ESTONIAN_VFR.jpg
+lat1=59.3333
+lat2=58
+lonlat0=21 60
+xy0=1425 930
+lonlat1=23 59.5
+xy1=6654 3717
+lonlat2=25 58.5
+xy2=12081 8979
+lonlat3=27.5 57.5
+xy3=19236 14001
+dims=full
+

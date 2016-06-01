@@ -29,10 +29,6 @@ import com.ds.avare.utils.Helper;
  */
 public class Tile {
 	
-	// This is from arrays.xml. This should not be retrieved "cleverly" from arrays.xml 
-	// because translation will mess it up
-	public static final String ELEVATION_INDEX = "6";
-	
     /**
      * 
      * Center tile is most important aspect of this database.
@@ -96,6 +92,35 @@ public class Tile {
     }
 
     /**
+     *
+     * @param ctx
+     * @return
+     */
+    public static int getMaxZoom(Context ctx, String index) {
+        return Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
+                [Integer.valueOf(index)]);
+    }
+
+    private void CommonTile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
+    	/*
+    	 * Zoom appropriate to the given chart type.
+    	 * Max zoom is specified in arrays.xml, from where we find the
+    	 * max zoom for this tile of this chart type.
+    	 * Zoom will go from max to max - zoom of scale
+    	 */
+        mZoom = getMaxZoom(ctx, mChartIndex) - zoom;
+
+        /*
+         * Extension varies for chart types because some chart have better compression with
+         * one or other type of standard
+         */
+        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
+                [Integer.valueOf(mChartIndex)];
+        mProj = new Epsg900913(lat, lon, mZoom);
+        setup(pref);
+    }
+
+    /**
      * Get a tile for a particular position
      * @param pref
      * @param lon
@@ -103,47 +128,29 @@ public class Tile {
      */
     public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
     	mChartIndex = pref.getChartType();
-    	/*
-    	 * Zoom appropriate to the given chart type.
-    	 * Max zoom is specified in arrays.xml, from where we find the 
-    	 * max zoom for this tile of this chart type.
-    	 * Zoom will go from max to max - zoom of scale
-    	 */
-        mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
-        		[Integer.valueOf(mChartIndex)]) - zoom;
-        /*
-         * Extension varies for chart types because some chart have better compression with 
-         * one or other type of standard
-         */
-        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
-        		[Integer.valueOf(mChartIndex)];
-    	mProj = new Epsg900913(lat, lon, mZoom);
-    	setup(pref);
+        CommonTile(ctx, pref, lon, lat, zoom);
     }
-    
+
     /**
-     * Get a tile for a particular position for elevation. Use this function for elevation only for AGL
+     * Get a tile for a particular position
      * @param pref
      * @param lon
      * @param lat
      */
-    public Tile(Context ctx, Preferences pref, double lon, double lat) {
-    	mChartIndex = ELEVATION_INDEX;
-    	/*
-    	 * Zoom appropriate to the given chart type.
-    	 * Max zoom is specified in arrays.xml, from where we find the 
-    	 * max zoom for this tile of this chart type.
-    	 */
-        mZoom = Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
-        		[Integer.valueOf(mChartIndex)]); // use max zoom for elevation tiles used for AGL
-        /*
-         * Extension varies for chart types because some chart have better compression with 
-         * one or other type of standard
-         */
-        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
-        		[Integer.valueOf(mChartIndex)];
-    	mProj = new Epsg900913(lat, lon, mZoom);
-    	setup(pref);
+    public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom, String index) {
+        mChartIndex = index;
+        CommonTile(ctx, pref, lon, lat, zoom);
+    }
+
+    /**
+     * Get a tile for a particular position
+     * @param type
+     * @param lon
+     * @param lat
+     */
+    public Tile(Context ctx, Preferences pref, String type, double lon, double lat, double zoom) {
+        mChartIndex = type;
+        CommonTile(ctx, pref, lon, lat, zoom);
     }
 
     /**
@@ -318,7 +325,6 @@ public class Tile {
 
         String type = ctx.context.getResources().getStringArray(R.array.ChartType)[index];
         boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
-        boolean isTerrain = ctx.pref.getChartType().equals(Tile.ELEVATION_INDEX);
         float scaleFactor = ctx.scale.getScaleFactor();
         float scaleCorrected = ctx.scale.getScaleCorrected();
 
@@ -346,12 +352,6 @@ public class Tile {
                  * IFR charts invert color at night
                  */
                 Helper.invertCanvasColors(ctx.paint);
-            }
-            else if(isTerrain) {
-                /*
-                 * Terrain
-                 */
-                Helper.setThreshold(ctx.paint, (float)ctx.service.getThreshold());
             }
 
             /*

@@ -161,6 +161,30 @@ public class Projection {
         return(mCoords);
     }
 
+
+    /**
+     * Given distance (NM), lon/lat, and bearing, find next point
+     * @return new coordinate
+     */
+    public static Coordinate findStaticPoint(double longitude, double latitude, double bearing, double distance) {
+        double ER = Preferences.earthRadiusConversion;
+        double lat1 = Math.toRadians(latitude);
+        double lon1 = Math.toRadians(longitude);
+        double brg = Math.toRadians(bearing);
+        double lat2 = Math.asin((Math.sin(lat1) * Math.cos(distance / ER) + Math.cos(lat1) * Math.sin(distance / ER) * Math.cos(brg)));
+        double lon2 = lon1 + Math.atan2((Math.sin(brg) * Math.sin(distance / ER) * Math.cos(lat1)), Math.cos(distance / ER) - Math.sin(lat1) * Math.sin(lat2));
+        return(new Coordinate(Math.toDegrees(lon2), Math.toDegrees(lat2)));
+    }
+
+    /**
+     * Distance to horizon in NM for altitude feet
+     * @param altitudeft
+     * @return
+     */
+    public static double horizonDistance(double altitudeft) {
+        return 1.06 * Math.sqrt(altitudeft);
+    }
+
     /**
      * @return
      */

@@ -73,7 +73,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_HELI = 14;
     private static final int GROUP_ONC = 15;
     private static final int GROUP_TPC = 16;
-    private static final int GROUP_NUM = 17;
+    private static final int GROUP_MISC = 17;
+    private static final int GROUP_NUM = 18;
     
     /**
      * @param context
@@ -108,7 +109,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_TPC] = context.getResources().getStringArray(R.array.resNameTPC);
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
         mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
-        
+        mChildren[GROUP_MISC] = context.getResources().getStringArray(R.array.resNameMisc);
+
         /*
          * Assign children file names
          */
@@ -130,7 +132,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
-        
+        mChildrenFiles[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
+
         /*
          * Allocate space for versions
          * This will be filled later. For now, init them with any value.
@@ -153,7 +156,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
-        
+        mVers[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
+
         /*
          * Allocate space for checked charts
          */
@@ -175,7 +179,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_TPC] = new int[mVers[GROUP_TPC].length];
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
         mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
-        
+        mChecked[GROUP_MISC] = new int[mVers[GROUP_MISC].length];
+
         /*
          * Get various bitmaps
          */
@@ -308,7 +313,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mChildrenFiles[group][child].equals(name)) {
-                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO);
+                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
                 }
             }
         }
@@ -420,7 +425,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC);
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
     }
 
     /**

@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="lang"></string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Download chart&quot;</string>
+    <string name="MissingElevation">&quot;Download elevation chart&quot;</string>
     <string name="LoadingMaps">&quot;Loading Charts&quot;</string>
     <string name="OK">&quot;OK&quot;</string>
     <string name="Nearest">&quot;Nearest&quot;</string>
@@ -80,6 +81,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Main">&quot;Map&quot;</string>
     <string name="Plates">&quot;Plate&quot;</string>
     <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="ThreeD">&quot;3D&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
     <string name="DestinationSet">&quot;Destination set to &quot;</string>
@@ -103,9 +105,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">&quot;Exit&quot;</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
-    <string name="Obstacles">&quot;Obstacles&quot;</string>
-    <string name="ObstaclesLabel">&quot;Show Obstacles&quot;</string>
-    <string name="ObstaclesSummary">&quot;Show obstacles near the aircraft&quot;</string>
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
     <string name="BackgroundSummary">&quot;Select to use a color background on text, to improve readability on smaller screens&quot;</string>
@@ -163,6 +162,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, otherwise North up&quot;</string>
+    <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>
+    <string name="TrackUpPlatesLabel">&quot;Track Up - Plates&quot;</string>
+    <string name="TrackUpPlatesSummary">&quot;Select to show plates track up, otherwise North up&quot;</string>
     <string name="Understand">&quot;I Understand&quot;</string>
     <string name="XlateWeather">&quot;XlateWeather&quot;</string>
     <string name="XlateWeatherLabel">&quot;Translate Weather&quot;</string>
@@ -347,7 +349,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>
     <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>
 	<string name="AFDSummary">&quot;Airport Facilitiy Directory information.&quot;</string>
-	<string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
+    <string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
+    <string name="ThreeDSummary">&quot;See around in 3D.&quot;</string>
 	<string name="PlanSummary">&quot;Flight plan creation and management.&quot;</string>
 	<string name="WXSummary">&quot;Weather briefing for local, destination or route.&quot;</string>
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
@@ -356,7 +359,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TripSummary">&quot;Travel display.&quot;</string>
     				
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
-	<string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+    <string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
+    <string name="prefTabThreeD">&quot;prefTabThreeD&quot;</string>
 	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
 	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
@@ -460,6 +464,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftType">Aircraft Type</string>
     <string name="AircraftTypeSummary">Aircraft type for filing</string>
 
+    <string name="AircraftICAOCode">Aircraft ICAO Code</string>
+    <string name="AircraftICAOCodeSummary">Aircraft ICAO code 24-bit decimal</string>
+
     <string name="AircraftColorPrimary">Aircraft Color - First</string>
     <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>
 
@@ -501,6 +508,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
     <string name="CrashLabel">Avare has stopped unexpectedly!</string>
     <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
+    <string name="FirstPerson">Pilot Cam</string>
+    <string name="FirstPersonLabel">Pilot Cam</string>
+    <string name="FirstPersonSummary">&quot;Select to use Pilot Camera on 3D, otherwise use Satellite Camera&quot;</string>
+    <string name="BirdEye">Satellite Cam</string>
+    <string name="Ready">Ready</string>
+    <string name="ChartType3D">ChartType3D</string>
 
 
 </resources>

@@ -1,0 +1,12 @@
+#use gtag_tmerc.py
+filename=CVFR_North.png
+lon0=35
+lonlat0=34.16667 33.33333
+xy0=281 340
+lonlat1=35 33
+xy1=2732 1524
+lonlat2=35.5 31.3333
+xy2=4225 7363
+lonlat3=35.3333 32.666667
+xy3=3718 2690
+dims=34.1 33.4 35.9 31.3333

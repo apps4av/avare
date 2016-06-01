@@ -1,0 +1,12 @@
+#use gtag_tmerc.py, import PDF at 200 dpi
+filename=CVFR_South.png
+lon0=35
+lonlat0=34.16667 31.5
+xy0=379 331
+lonlat1=34.5 31
+xy1=1375 2101
+lonlat2=35 30.166667
+xy2=2889 5047
+lonlat3=35.6667 29.5
+xy3=4940 7395
+dims=34.1 31.3333 35.8 29.4

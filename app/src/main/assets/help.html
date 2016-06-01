@@ -35,6 +35,34 @@ then just <b>press the Map, Options, Download and Update buttons</b> in Avare.<b
 
 
 <h3>Avare Releases</h3>
+ <b>7.2.7</b><br>
+ <ul>
+  <li>Fixed bugs in 3D, fixed plates track up button, fixed info lines.</li>
+ </ul>
+ <b>7.2.5</b><br>
+ <ul>
+  <li>3D improvements to memory.</li>
+ </ul>
+ <b>7.2.4</b><br>
+ <ul>
+  <li>3D improvements to memory.</li>
+  <li>Plates Track/North button separate now.</li>
+ </ul>
+ <b>7.2.3</b><br>
+ <ul>
+  <li>Added 3D view of charts and ADS-B traffic. See below for 3D view.</li>
+  <li>Moved obstacles and AGL to 3D view from Map view.</li>
+  <li>To use 3D view, you must download new elevation charts from Download->Terrain.</li>
+ </ul>
+ <b>7.2.2</b><br>
+ <ul>
+  <li>ICAO address filtering for ADSB</li>
+  <li>Fixed an app stop bug</li>
+ </ul>
+ <b>7.2.1</b><br>
+ <ul>
+  <li>Added charts for Israel and Slovenia</li>
+ </ul>
  <b>7.1.9/7.2.0</b><br>
  <ul>
   <li>Bug fixes</li>
@@ -60,18 +88,6 @@ then just <b>press the Map, Options, Download and Update buttons</b> in Avare.<b
 <ul>
  <li>Fixed ADSB crash</li>
 </ul>
- <b>7.1.3</b><br>
- <ul>
-  <li>Added Esri shape file support (see below for help on loading shape files)</li>
-  <li>ADSB fixes for altitude and CONUS display</li>
-  <li>ADSB weather optimizations</li>
- </ul>
- <b>7.1.2</b><br>
- <ul>
-  <li>Added TPC charts that cover most of the world</li>
-  <li>Graceful handling of Marshmallow permissions</li>
-  <li>Fixed plates delete code that was not deleting old plates</li>
- </ul>
 
 <h3>Avare Help Choices</h3>
 
@@ -97,7 +113,7 @@ online FAA chart reference maps to help you select Downloads in Avare.
 <p>•<a title="Terrain Maps" href="#0.1_Terrain">Terrain &amp; Proximity</a></p>
 
 <p>•<a title="AFD Pages" href="#0.1_Terminal">Procedures &amp; Graphical A/FD</a></p>
-<p>•<a title="Charts Ref." href="#0.1_Troubleshooting">Troubleshooting<br>
+ p>•<a title="Charts Ref." href="#0.1_Troubleshooting">Troubleshooting<br>
 </a></p>
 <p>•<a title="Charts Ref." href="#0.1_Charts">FAA Charts Reference</a></p>
 
@@ -557,7 +573,31 @@ parse all these files to generate a combined view of your POIs.
 However, the user may only define 100 POIs in all files combined.<br>
 </p>
 
-<p>• <b>Fuel Tank Reminders</b><br>
+<p>• <b>3D View</b><br>
+ Note: This screen requires significant memory and processing power, and may crash / misbehave on older devices.
+ To see charts in 3D, download elevation charts from the Download menu for your area. Charts and other data will be displayed under 3D tab.
+ Move around on the 3D screen using touch. To check out 3D view of a destination you have not been to, use Simulation mode with Destination set to the destination.
+ <ul>
+  <li>If the center button is gray, you are in Satellite Camera mode.</li>
+  <li>Your aircraft will be located where blue/green/red/magenta lines intersect.</li>
+  <li>Several straight lines emerge from your aircraft to show your heading. Magenta line shows your current track, and disappears under terrain higher than your altitude.</li>
+  <li>If you are receiving ADSB traffic, you will see other aircrafts with red/green wing colors that follow the nav lights convention.</li>
+  <li>You will see obstacles in the area as red vertical lines.</li>
+  <li>Your elevation AGL is shown when GPS is locked.</li>
+  <li>Pinch with two fingers to zoom in and out. Pan left, right, up, and down with finger swipe. Rotate the map with two finger rotate.</li>
+  </ul>
+ <ul>
+  <li>If the center button is green, you are in Pilot Camera mode. You can get in/out of this mode by long pressing the center button.</li>
+  <li>You will see as if you are looking out from the front wind screen of your aircraft. You will not see your own aircraft.</li>
+  <li>If you are receiving ADSB traffic, you will see other aircrafts with red and white wing colors that follow the Nav lights convention.</li>
+  <li>You will see obstacles as red vertical lines.</li>
+  <li>Your elevation AGL is shown when GPS is locked.</li>
+  <li>Pinch with two fingers to zoom in and out. Look left, right, up, and down with finger swipe.</li>
+  <li>Compare the device screen with your front wind screen to find the location of traffic in real world.</li>
+ </ul>
+</p>
+
+ <p>• <b>Fuel Tank Reminders</b><br>
 The fuel tank reminder is implemented as a display instrument that is selectable in any field of the top two status lines. 
 To enable it, double tap the display field you wish to use for it, and select "Fuel Tank Switch Timer" from the list. 
 The timer starts up at 30 minutes and will count down to zero. It is initially suspended/stopped. 

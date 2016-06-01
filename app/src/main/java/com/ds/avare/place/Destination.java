@@ -807,7 +807,7 @@ public class Destination extends Observable {
         l.setLatitude(mLatd);
         l.setLongitude(mLond);
         return l;
-    }    
+    }
 
     /**
      * 

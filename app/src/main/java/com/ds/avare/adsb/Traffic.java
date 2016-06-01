@@ -4,9 +4,13 @@ import android.graphics.Color;
 import android.util.SparseArray;
 
 import com.ds.avare.IHelperService;
+import com.ds.avare.StorageService;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
+import com.ds.avare.threed.AreaMapper;
+import com.ds.avare.threed.TerrainRenderer;
+import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.Helper;
 
 public class Traffic {
@@ -106,7 +110,7 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, boolean shouldDraw) {
+    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, int ownIcao, boolean shouldDraw) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
 
@@ -126,6 +130,11 @@ public class Traffic {
                 continue;
             }
 
+            if(t.mIcaoAddress == ownIcao) {
+                // Do not draw shadow of own
+                continue;
+            }
+
             if(!isOnScreen(ctx.origin, t.mLat, t.mLon)) {
                 continue;
             }
@@ -142,18 +151,18 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
-            String text;
+            String text = t.mCallSign;
 
             if(altitude <= IHelperService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
                 diff = (int)t.mAltitude;
-                text = diff + "Pr'"; // show that this is pressure altitude
+                text += diff + "Pr'"; // show that this is pressure altitude
                 // do not filter when own PA is not known
             }
             else {
                 // Own PA is known, show height difference
                 diff = (int)(t.mAltitude - altitude);
-                text = (diff > 0 ? "+" : "") + diff + "'";
+                text += (diff > 0 ? "+" : "") + diff + "'";
                 // filter
                 if(Math.abs(diff) > filterAltitude) {
                     continue;
@@ -188,6 +197,27 @@ public class Traffic {
 
 
     }
+
+
+    /**
+     * Draw for 3D
+     * @param service
+     * @param mapper
+     * @param renderer
+     */
+    public static void draw(StorageService service, AreaMapper mapper, TerrainRenderer renderer) {
+        if (service != null) {
+            SparseArray<Traffic> t = service.getTrafficCache().getTraffic();
+            Vector4d ships[] = new Vector4d[t.size()];
+            for (int count = 0; count < t.size(); count++) {
+                Traffic tr = t.valueAt(count);
+                ships[count] = mapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
+            }
+            renderer.setShips(ships);
+        }
+        renderer.setOwnShip(mapper.getSelfLocation());
+    }
+
 
     /*
      * Determine if shape belong to a screen based on Screen longitude and latitude

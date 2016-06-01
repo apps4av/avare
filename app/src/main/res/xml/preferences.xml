@@ -200,6 +200,16 @@ authors: zkhan, jlmcgraw
             android:summary="@string/TrackUpSummary"
             android:title="@string/TrackUpLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/TrackUpPlates"
+            android:summary="@string/TrackUpPlatesSummary"
+            android:title="@string/TrackUpPlatesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/FirstPerson"
+            android:summary="@string/FirstPersonSummary"
+            android:title="@string/FirstPersonLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/ScreenOn"
             android:summary="@string/ScreenOnSummary"
@@ -216,11 +226,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/NightMode"
             android:summary="@string/NightModeSummary"
             android:title="@string/NightModeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/Obstacles"
-            android:summary="@string/ObstaclesSummary"
-            android:title="@string/ObstaclesLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="100000"
             android:entries="@array/ADSBTrafficFilterAltitude"
@@ -315,21 +320,26 @@ authors: zkhan, jlmcgraw
 		            android:key="@string/prefTabPlan"
 		            android:summary="@string/PlanSummary"
 		            android:title="@string/Plan" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabNear"
+                    android:summary="@string/NearSummary"
+                    android:title="@string/Near" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabThreeD"
+                    android:summary="@string/ThreeDSummary"
+                    android:title="@string/ThreeD" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabChecklist"
+                    android:summary="@string/ChecklistSummary"
+                    android:title="@string/List" />
 		        <CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabWX"
 		            android:summary="@string/WXSummary"
 		            android:title="@string/WXB" />
-				<CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabNear"
-		            android:summary="@string/NearSummary"
-		            android:title="@string/Near" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabChecklist"
-		            android:summary="@string/ChecklistSummary"
-		            android:title="@string/List" />
 				<CheckBoxPreference
 		            android:defaultValue="true"
 		            android:key="@string/prefTabTools"
@@ -387,6 +397,11 @@ authors: zkhan, jlmcgraw
             android:title="@string/AircraftType"
             android:summary="@string/AircraftTypeSummary"
             android:key="@string/AircraftType"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/AircraftICAOCode"
+            android:summary="@string/AircraftICAOCodeSummary"
+            android:key="@string/AircraftICAOCode"/>
 
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:entries="@array/ACColor"

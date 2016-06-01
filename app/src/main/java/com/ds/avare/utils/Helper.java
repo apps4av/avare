@@ -51,8 +51,61 @@ import java.util.TimeZone;
  *
  */
 public class Helper {
-	
-	/***
+
+    // All elevation is calculated in feet
+    // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
+    public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
+    public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT = -364.431597044586;
+    private static final double ALTITUDE_FT_ELEVATION_PLUSZ               = ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE * 255.0 + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT;
+
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixel(int px) {
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+        return (((double)(px & 0x000000FF)) *
+                ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+    }
+
+    /**
+     * Finds elevation from the above elevation pixel formula from a pixel in meters
+     * @param px
+     * @return
+     */
+    public static double findElevationFromPixelNormalized(int px) {
+        /*
+         * No need to average. Gray scale has all three colors at the same value
+         */
+        return findElevationFromPixel(px) / ALTITUDE_FT_ELEVATION_PLUSZ;
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevation(double elev) {
+        return (elev - ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT) / ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE;
+    }
+
+    /**
+     * Find pixel value from elevation
+     * @param elev
+     * @return
+     */
+    public static double findPixelFromElevationNormalized(double elev) {
+        return findPixelFromElevation(elev) / 255.0;
+    }
+
+    public static double findElevationFromNormalizedElevation(double elev) {
+        return (elev * ALTITUDE_FT_ELEVATION_PLUSZ);
+    }
+
+    /***
 	 * Fetch the raw estimated time enroute given the input parameters
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
@@ -236,25 +289,20 @@ public class Helper {
     }
 
     /**
-     * See the explanation in the function setThreshold. 
-     * @param threshold
      * @return
      */
-    public static String calculateAltitudeFromThreshold(float threshold) {
-        double altitude = (threshold) * Preferences.heightConversion * 50.0;
+    public static String calculateAltitudeFromMSL(float msl) {
+        double altitude = msl;
         return(String.format(Locale.getDefault(), "%d", (int)altitude));
     }
 
     /**
-     * See the explanation in the function setThreshold. 
-     * @param threshold
-     * @param elevation
      * @return
      */
-    public static String calculateAGLFromThreshold(float threshold, float elevation) {
-        boolean valid = (elevation < 0) ? false : true;
-        double altitude = (threshold) * Preferences.heightConversion * 50.0;
-        altitude -= elevation * Preferences.heightConversion;
+    public static String calculateAGLFromMSL(float msl, float elevation) {
+        boolean valid = (elevation >= (Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT - 0.5)) ? true : false; // 0.5 for rounding error
+        double altitude = msl;
+        altitude -= elevation;
         if(altitude < 0) {
             altitude = 0;
         }
@@ -264,64 +312,6 @@ public class Helper {
         return("");
     }
 
-    /**
-     * See the explanation in the function setThreshold. 
-     * @param altitude
-     * @return
-     */
-    public static float calculateThreshold(double altitude) {
-        float threshold = (float)(altitude / Preferences.heightConversion / 50.0); 
-        return(threshold);
-    }
-
-    /**
-     * 
-     * @param paint
-     */
-    public static void setThreshold(Paint paint, float threshold) {
-        /*
-         * Elevation matrix. This will threshold the elevation with GPS altitude.
-         * The factor is used to increase the brightness for a given elevation map.
-         * Elevation map is prepared so that altitudes from 0-5000 meter are encoded with 0-200 pixel values.
-         * Each pixel level is 25 meter. 
-         * 
-         * Negative sign for black threshold instead of white.
-         * Threshold of to 0 to 100 translated to 0 - 200 for all pixels thresholded at 5000 meters.
-         * 
-         * Calibrated (visually) at 
-         * KRNO - 1346 meters, threshold = 28
-         * KLXV - 3027 meters, threshold = 61
-         * L70  - 811  meters, threshold = 16
-         * KHIE - 326  meters, threshold = 7
-         *--------------------------------------------
-         *       5510                    = 112  ~ 50 meters per px
-         * Formula to calculate threshold is:
-         * threshold = altitude / 3 (meters per foot) / 50
-         * Give 2 levels margin of safety
-         */
-        float factor = 4.f;
-        float mx [] = {
-                factor, 0,             0,             0,  -(factor) * (threshold - 5) * 2.0f,
-                0,      factor / 1.5f, 0,             0,  -(factor) * (threshold - 5) * 2.0f,
-                0,      0,             factor / 2.0f, 0,  -(factor) * (threshold - 5) * 2.0f,
-                0     , 0,             0,             1,  0
-       };
-       ColorMatrix cm = new ColorMatrix(mx);
-       paint.setColorFilter(new ColorMatrixColorFilter(cm));
-    }
-
-    /**
-     * Finds elevation from the above elevation pixel formula from a pixel
-     * @param px
-     * @return
-     */
-    public static double findElevationFromPixel(int px) {
-        /*
-         * Average the RGB value. The elevation chart is already in gray scale
-         */
-        return (((double)(px & 0x000000FF) + ((px & 0x0000FF00) >> 8) + ((px & 0x00FF0000) >> 16)) * (25.0 - 1.0) / 3.0);
-    }
-    
     /**
      * 
      * @param paint
@@ -900,3 +890,4 @@ public class Helper {
     }
 
 }
+

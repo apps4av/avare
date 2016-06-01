@@ -31,6 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Heli/Other Charts</item>
         <item>ONC Large Files</item>
         <item>TPC Large Files</item>
+        <item>Misc. Charts</item>
     </string-array>
 
     <string-array name="resGroupsPopout">
@@ -1483,6 +1484,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>TPC_t18a</item>
     </string-array>
 
+
+    <string-array name="resNameMisc">
+        <item>VFR Israel</item>
+        <item>VFR Slovenia</item>
+    </string-array>
+
     <string-array name="resFilesDatabase">
         <item>databases</item>
         <item>geoplates</item>
@@ -1782,15 +1789,15 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resFilesTerrain">
-        <item>ELEV_NE</item>
-        <item>ELEV_NC</item>
-        <item>ELEV_NW</item>
-        <item>ELEV_SE</item>
-        <item>ELEV_SC</item>
-        <item>ELEV_SW</item>
-        <item>ELEV_AK</item>
-        <item>ELEV_HI</item>
-        <item>ELEV_PR</item>
+        <item>ELEV_NE_NEW</item>
+        <item>ELEV_NC_NEW</item>
+        <item>ELEV_NW_NEW</item>
+        <item>ELEV_SE_NEW</item>
+        <item>ELEV_SC_NEW</item>
+        <item>ELEV_SW_NEW</item>
+        <item>ELEV_AK_NEW</item>
+        <item>ELEV_HI_NEW</item>
+        <item>ELEV_PR_NEW</item>
         <item>REL_NE</item>
         <item>REL_NC</item>
         <item>REL_NW</item>
@@ -1905,6 +1912,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>WashingtonHeli</item>
     </string-array>
 
+    <string-array name="resFilesMisc">
+        <item>VFRIsrael</item>
+        <item>VFRSlovenia</item>
+    </string-array>
+
+
     <string-array name="ChartType">
         <item>Sectional</item>
         <item>TAC</item>
@@ -1918,6 +1931,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Heli/Other</item>
         <item>ONC World</item>
         <item>TPC World</item>
+        <item>Misc.</item>
     </string-array>
 
     <string-array name="ChartFileExtesion">
@@ -1931,6 +1945,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>.jpg</item>
         <item>.jpg</item>
         <item>.png</item>
+        <item>.jpg</item>
         <item>.jpg</item>
         <item>.jpg</item>
     </string-array>
@@ -1948,6 +1963,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>9</item>
         <item>10</item>
         <item>11</item>
+        <item>12</item>
     </string-array>
 
     <string-array name="ChartMaxZooms">
@@ -1957,12 +1973,13 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>10</item>
         <item>9</item>
         <item>11</item>
-        <item>9</item>
+        <item>10</item>
         <item>9</item>
         <item>10</item>
         <item>12</item>
         <item>9</item>
         <item>10</item>
+        <item>12</item>
     </string-array>
     
     <string-array name="UnitsD">
@@ -2088,7 +2105,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Estimated Time Enroute</item>
 	    <item>Estimated Time of Arrival</item>
 	    <item>MSL Altitude</item>
-	    <item>AGL Height</item>
 	    <item>Hobbs Flight Timer</item>
 	    <item>Vertical Speed Indicator</item>
 	    <item>Vertical Speed Required</item>
@@ -2118,7 +2134,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>ETE Next</item>
 	    <item>ETA Next</item>
 	    <item>MSL ft</item>
-	    <item>AGL ft</item>
 	    <item>Flight Time</item>
 	    <item>VSI fpm</item>
 	    <item>VSR fpm</item>
@@ -2277,11 +2292,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>NEXRAD</item>
     </string-array>
 
-    <string-array name="Tips">
-        <item>If you upgraded the app from version 6.0.9 or below, you MUST update all your charts and databases even if they show as current.</item>
-    </string-array>
-
-
     <string-array name="ACColor">
         <item>Amber</item>
         <item>Blue</item>
@@ -2347,6 +2357,45 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>L</item>
         <item>W</item>
         <item>Z</item>
+    </string-array>
+
+    <string-array name="Tips">
+        <item>&quot;All headings relating to Avare flight plans are magnetic headings, not true headings&quot;</item>
+        <item>&quot;In METAR and TAF, wind direction is true heading, not magnetic, and ceilings are AGL, not MSL&quot;</item>
+        <item>&quot;Tap and hold on a map location to show distance, direction from it to the airplane and heading to it&quot;</item>
+        <item>&quot;You can change the shape and color of the airplane icon via Display->&quot;</item>
+        <item>&quot;These tips can be turned off via Application State->Show Tips&quot;</item>
+        <item>&quot;You can change which of the tabs are displayed on the bottom via Display->Tab Bar Content&quot;</item>
+        <item>&quot;The fields in map mode can be modified by turning on Application State->Use Dynamic Fields&quot;</item>
+        <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
+        <item>&quot;If pre-downloaded SUA or weather disappear in flight, check Weather->Data Expiry and Use ADSB Weather&quot;</item>
+        <item>&quot;If you're not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
+        <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
+        <item>&quot;To get geo-referenced plates, make sure to download them under Database->Plates Georeference Info&quot;</item>
+        <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
+        <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>
+        <item>&quot;Setting the correct Glide Ratio makes fields beyond glide range appear red in the Near tab&quot;</item>
+        <item>&quot;Drawings on maps move and rescale with the map, but drawings on plates do not&quot;</item>
+        <item>&quot;Use the settings to change between North Up and Track Up - separately for maps and for plates&quot;</item>
+        <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes.&quot;</item>
+        <item>&quot;New flight plans are inactive by default. Click the Inactive button to activate them.&quot;</item>
+        <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321 or add directly from the map&quot;</item>
+        <item>&quot;Choosing a field in the Near tab allows you to create a direct-to flight plan to it&quot;</item>
+        <item>&quot;Choose minimal length for fields in the Near tab via Display->Near Runway Minimum Length&quot;</item>
+        <item>&quot;Set how long weather and TFRs are displayed for via Weather->Data Expiry&quot;</item>
+        <item>&quot;To see maps from different areas, use simulation mode and enter a destination in that areas&quot;</item>
+        <item>&quot;Don't just keep Avare's data up-to-date, update Avare itself regularly via Google Play&quot;</item>
+        <item>&quot;To get support or report bugs, go to apps4av.com and look for the forum link&quot;</item>
+        <item>&quot;Arrivals, departure procedures, alternate minimums and other info are included with a field's plates&quot;</item>
+        <item>&quot;Practicing using Avare when flying as a passenger will make you more proficient using it&quot;</item>
+        <item>&quot;Long press on an airport to show its METAR, TAF, COMM and other information&quot;</item>
+        <item>&quot;Avare includes density altitude information for airports&quot;</item>
+        <item>&quot;Avare works with most ADS/B receivers. Confirm compatibility before purchasing one&quot;</item>
+        <item>&quot;When Avare encounters unfamliar fixes on "Create New Plan," it skips those fixes&quot;</item>
+        <item>&quot;Every time you find a bug and report it, you help make Avare a better product&quot;</item>
+        <item>&quot;Avare's taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
+        <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
+        <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
     </string-array>
 
 </resources>

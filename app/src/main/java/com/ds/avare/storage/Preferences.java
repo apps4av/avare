@@ -19,13 +19,11 @@ import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.weather.InternetWeatherCache;
 
 import java.io.File;
 import java.util.Arrays;
@@ -120,7 +118,7 @@ public class Preferences {
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             speedConversion = 1.944; // m/s to kt/hr
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 6076.12;
             earthRadiusConversion = 3440.069;
             distanceConversionUnit = mContext.getString(R.string.DistKnot);
@@ -128,7 +126,7 @@ public class Preferences {
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         } else if (getDistanceUnit().equals(mContext.getString(R.string.UnitMile))) {
             speedConversion = 2.2396; // m/s to mi/hr
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 5280;
             earthRadiusConversion = 3963.1676;
             distanceConversionUnit = mContext.getString(R.string.DistMile);
@@ -136,7 +134,7 @@ public class Preferences {
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         } else if (getDistanceUnit().equals(mContext.getString(R.string.UnitKilometer))) {
             speedConversion = 3.6; // m/s to kph
-            heightConversion = 3.28;
+            heightConversion = 3.28084;
             feetConversion = 3280.84;
             earthRadiusConversion = 6378.09999805;
             distanceConversionUnit = mContext.getString(R.string.DistKilometer);
@@ -337,13 +335,6 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean shouldShowObstacles() {
-        return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean isTrackEnabled() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowTrack), true));
     }
@@ -494,6 +485,24 @@ public class Preferences {
         editor.putString(mContext.getString(R.string.ChartType), type);
         editor.commit();
     }
+
+
+    /**
+     * @return
+     */
+    public String getChartType3D() {
+        return (mPref.getString(mContext.getString(R.string.ChartType3D), "0"));
+    }
+
+    /**
+     * @return
+     */
+    public void setChartType3D(String type) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putString(mContext.getString(R.string.ChartType3D), type);
+        editor.commit();
+    }
+
 
     /**
      * @return
@@ -719,12 +728,12 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return mPref.getBoolean(mContext.getString(R.string.register), false);
+        return  mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
      * @return
-     */
+         */
     public String getExternalGpsSource() {
         return mPref.getString(mContext.getString(R.string.externalGps), "0");
     }
@@ -881,6 +890,10 @@ public class Preferences {
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
             mTabs |= 1 << MainActivity.tabFind;
+        }
+
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
+            mTabs |= 1 << MainActivity.tabThreeD;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
@@ -1053,6 +1066,22 @@ public class Preferences {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }
 
+    public boolean isTrackUpPlates() {
+        return mPref.getBoolean(mContext.getString(R.string.TrackUpPlates), false);
+    }
+
+    public boolean setTrackUpPlates(boolean trackUp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.TrackUpPlates), trackUp).commit();
+    }
+
+    public boolean isFirstPerson() {
+        return mPref.getBoolean(mContext.getString(R.string.FirstPerson), false);
+    }
+
+    public boolean setFirstPerson(boolean fp) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.FirstPerson), fp).commit();
+    }
+
     public void setLayerType(String layerType) {
         mPref.edit()
                 .putString(mContext.getString(R.string.LayerType), layerType)
@@ -1088,6 +1117,17 @@ public class Preferences {
 
     public String getAircraftType() {
         return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
+    }
+
+    public int getAircraftICAOCode() {
+        int code = 0;
+        try {
+            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
+        }
+        catch (Exception e) {
+
+        }
+        return code;
     }
 
     public String getAircraftTailNumber() {

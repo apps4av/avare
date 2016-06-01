@@ -13,8 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ds.avare"
-    android:versionCode="250"
-    android:versionName="7.2.0" >
+    android:versionCode="257"
+    android:versionName="7.2.7" >
 
     <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -31,6 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="false"></uses-feature>
 
     <application
         android:icon="@drawable/aircraft"
@@ -69,6 +70,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".SubmitActivity"/>
+        <activity android:name=".ThreeDActivity"/>
         <activity android:name=".SyncActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>

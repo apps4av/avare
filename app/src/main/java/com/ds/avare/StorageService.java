@@ -46,13 +46,11 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
-import com.ds.avare.shapes.ElevationTile;
 import com.ds.avare.shapes.MetarLayer;
 import com.ds.avare.shapes.PixelDraw;
 import com.ds.avare.shapes.RadarLayer;
 import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
-import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
@@ -188,8 +186,6 @@ public class StorageService extends Service {
     
     private TileMap mTiles;
     
-    private ElevationTile mElevTile;
-    
     // Handler for the top two lines of status information
     private InfoLines mInfoLines;
 
@@ -198,12 +194,6 @@ public class StorageService extends Service {
     
     // Handler for drawing text with an oval shadow
     private ShadowedText mShadowedText;
-    
-    /*
-     * Curret ground elevation
-     */
-    private double mElev;
-    private double mThreshold;
     
     /*
      * Hobbs time
@@ -323,7 +313,6 @@ public class StorageService extends Service {
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
-        mElevTile = new ElevationTile(getApplicationContext());
         mCheckLists = null;
         
         mCap = new DrawCapLines(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
@@ -334,10 +323,7 @@ public class StorageService extends Service {
         
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
-        
-        mElev = -1;
-        mThreshold = 0;
-        
+
         mChecklist = new Checklist("");
         
         /*
@@ -541,8 +527,7 @@ public class StorageService extends Service {
          * If we ever exit, reclaim memory
          */
         mTiles.recycleBitmaps();
-        mElevTile.recycleBitmaps();
-        
+
         if(null != mDiagramBitmap) {
             mDiagramBitmap.recycle();
             mDiagramBitmap = null;
@@ -1059,30 +1044,6 @@ public class StorageService extends Service {
  
     /**
      * 
-     * @param t
-     */
-    public void setElevationTile(Tile t) {
-        mElevTile.setElevationTile(t);
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public BitmapHolder getElevationBitmap() {
-        return mElevTile.getElevationBitmap();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ElevationTile getElevationTile() {
-        return mElevTile;
-    }
-
-    /**
-     * 
      */
     public void setDownloading(boolean state) {
        mDownloading = state; 
@@ -1104,38 +1065,6 @@ public class StorageService extends Service {
         mCheckLists = list;
     }
     
-    /**
-     * 
-     * @return
-     */
-    public double getElevation() {
-       return mElev; 
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public void setElevation(double elev) {
-       mElev = elev; 
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public double getThreshold() {
-       return mThreshold; 
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public void setThreshold(double thr) {
-       mThreshold = thr; 
-    }
-
     public ShadowedText getShadowedText() {
     	return mShadowedText;
     }

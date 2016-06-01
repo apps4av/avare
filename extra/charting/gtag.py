@@ -122,7 +122,12 @@ def projectIt(inputf):
 	os.system(string)
 	
 	# crop, compress
-	string = "gdal_translate -co tiled=yes -co blockxsize=512 -co blockysize=512 -co compress=deflate " +  "-projwin " + getDims(inputf["dims"]) + " temp2 " + inputf["filename"] + ".tif"
+	dims = inputf["dims"]
+	string = ""
+	if dims == 'full':
+		string = "gdal_translate -co tiled=yes -co blockxsize=512 -co blockysize=512 -co compress=deflate " +  " temp2 " + inputf["filename"] + ".tif"
+	else:
+		string = "gdal_translate -co tiled=yes -co blockxsize=512 -co blockysize=512 -co compress=deflate " +  "-projwin " + getDims(dims) + " temp2 " + inputf["filename"] + ".tif"
 	print string
 	os.system(string)
 
