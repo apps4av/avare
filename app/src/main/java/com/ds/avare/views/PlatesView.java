@@ -18,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -399,24 +398,13 @@ public class PlatesView extends View implements OnTouchListener {
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
-        @Override
-        public void onLongPress(MotionEvent e) {
-        	
-        }
-
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
             if( mScaling ) return false;
 
-            Log.i("PlatesView::GestureList", "mDraw: " + mDraw);
-            /*
-             * Do not move on multitouch
-             */
+            // If user is drawing
             if(mDraw && mService != null) {
                 float x = e2.getX() ;
                 float y = e2.getY() ;
@@ -436,6 +424,7 @@ public class PlatesView extends View implements OnTouchListener {
 
             }
 
+            // If user is panning
             if( !mDraw ) {
 
                 float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
@@ -461,6 +450,7 @@ public class PlatesView extends View implements OnTouchListener {
 
     }
 
+    // Class to handle multi-touch scale gestures
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
