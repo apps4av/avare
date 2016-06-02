@@ -86,16 +86,13 @@ public class Map {
     private int makeVertix(short vertices[], int count, int row, int col, Bitmap b) {
 
         int px = b.getPixel(col, row) & 0xFF;
-        int pxr = (px / 32) & 0x1F;
-        int pxc = px & 0x1F;
+        int pxr = (px / 64) & 0x3F;
+        int pxc = px & 0x3F;
 
         // Change this in GLSL vertex shader, if changed here
-        // pack: row * 32, col * 32, and use lower 5 bits of each for elevation
-        // pack 10 bits for col, row, and reuse for texture as there is 1-1 texture/pixel mapping
-
-        // send row in position, col in texture coordinates, and half of elevation in position, half in texture coord
-        vertices[count++] = (short) (row * 32 + pxr);
-        vertices[count++] = (short) (col * 32 + pxc);
+        // pack data : 10 bit row + 6 high bits of pixel then 10 bit col + 6 low bits of pixel
+        vertices[count++] = (short) (row * 64 + pxr);
+        vertices[count++] = (short) (col * 64 + pxc);
         return count;
     }
 
@@ -117,9 +114,9 @@ public class Map {
             colp = 1; // but +1 as that row
         }
         int index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * COMPONENTS;
-        int r = (int)mVertexArrayShort.get(index) & 0x1F;
-        int c = (int)mVertexArrayShort.get(index + 1) & 0x1F;
-        int px = r * 32 + c;
+        int r = (int)mVertexArrayShort.get(index) & 0x3F;
+        int c = (int)mVertexArrayShort.get(index + 1) & 0x3F;
+        int px = r * 64 + c;
         return (float)Helper.findElevationFromPixelNormalized(px);
     }
 

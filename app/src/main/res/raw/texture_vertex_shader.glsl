@@ -9,7 +9,7 @@ attribute float a_S1;
 
 varying vec2 v_TextureCoordinates;
 
-const float ONE_OVER_32  = 0.03125;
+const float ONE_OVER_64  = 0.015625;
 const float ONE_OVER_512 = 0.001953125;
 const float ONE_OVER_256 = 0.00390625;
 
@@ -17,11 +17,13 @@ void main()
 {
 
     // data comes in packed to save memory
-    float row  = floor(a_S0 * ONE_OVER_32);
-    float col  = floor(a_S1 * ONE_OVER_32);
-    float pxr  = row * -32.0 + a_S0;
-    float pxc  = col * -32.0 + a_S1;
-    float px   = pxr * 32.0 + pxc;
+    // all this code goes hand in hand with java
+    float row  = floor(a_S0 * ONE_OVER_64);
+    float col  = floor(a_S1 * ONE_OVER_64);
+    float pxr  = row * -64.0 + a_S0;
+    float pxc  = col * -64.0 + a_S1;
+    float px   = pxr * 64.0 + pxc;
+    // this from Helper.java class under utils
     float ht   = u_Normal * (px * u_Slope + u_Intercept);
 
     //-1,1    1,1
