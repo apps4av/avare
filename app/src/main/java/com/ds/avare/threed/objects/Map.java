@@ -118,7 +118,7 @@ public class Map {
             return -1;
         }
         int colp = 0;
-        if(row == ROWS) {
+        if(row == (ROWS - 1)) {
             row--; // there is no last row
             colp = 1; // but +1 as that row
         }
