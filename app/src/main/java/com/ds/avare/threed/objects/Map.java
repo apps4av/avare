@@ -24,18 +24,15 @@ public class Map {
     private static final int ROWS = 512;
     private static final int COLS = 512;
 
-    private static final int POSITION_COMPONENT_COUNT = 1;
-    private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 1;
-    private static final int STRIDE = (POSITION_COMPONENT_COUNT 
-        + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTES_PER_SHORT;
+    public static final int COMPONENTS = 2;
+    private static final int STRIDE = COMPONENTS * Constants.BYTES_PER_SHORT;
 
-
-    // Change this in GLSL vertex shader, if changed here
-    private static final float OFFSET_ELEVATION = 0.1f;
+    private float mRatio;
 
     private VertexArrayShort mVertexArrayShort;
 
     public Map() {
+        mRatio = 0;
     }
 
     public boolean loadTerrain(BitmapHolder b, float ratio) {
@@ -47,7 +44,8 @@ public class Map {
             return false;
         }
 
-        mVertexArrayShort = new VertexArrayShort(genTerrainFromBitmap(bitmap, ratio));
+        mVertexArrayShort = new VertexArrayShort(genTerrainFromBitmap(bitmap));
+        mRatio = ratio;
         return true;
     }
 
@@ -57,14 +55,14 @@ public class Map {
         }
         mVertexArrayShort.setVertexAttribPointer(
                 0,
-                textureProgram.getPositionAttributeLocation(),
-                POSITION_COMPONENT_COUNT,
+                textureProgram.getS0AttributeLocation(),
+                1,
                 STRIDE);
         
         mVertexArrayShort.setVertexAttribPointer(
-                POSITION_COMPONENT_COUNT,
-                textureProgram.getTextureCoordinatesAttributeLocation(),
-                TEXTURE_COORDINATES_COMPONENT_COUNT,
+                1,
+                textureProgram.getS1AttributeLocation(),
+                1,
                 STRIDE);
     }
     
@@ -85,15 +83,11 @@ public class Map {
      * @param b
      * @return
      */
-    private int makeVertix(short vertices[], int count, int row, int col, Bitmap b, float ratio) {
+    private int makeVertix(short vertices[], int count, int row, int col, Bitmap b) {
 
-        int px;
-        float pxf;
-        px = b.getPixel(col, row);
-        pxf = (float) Helper.findElevationFromPixelNormalized(px) * ratio;
-        int pxi = (int)((pxf + OFFSET_ELEVATION) * 512.0 + 0.5);
-        int pxr = (pxi / 32) & 0x1F;
-        int pxc = pxi & 0x1F;
+        int px = b.getPixel(col, row) & 0xFF;
+        int pxr = (px / 32) & 0x1F;
+        int pxc = px & 0x1F;
 
         // Change this in GLSL vertex shader, if changed here
         // pack: row * 32, col * 32, and use lower 5 bits of each for elevation
@@ -122,10 +116,11 @@ public class Map {
             row--; // there is no last row
             colp = 1; // but +1 as that row
         }
-        int index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT);
+        int index = (row * (((COLS / 2) * 4) + 2) + col * 2 + colp) * COMPONENTS;
         int r = (int)mVertexArrayShort.get(index) & 0x1F;
         int c = (int)mVertexArrayShort.get(index + 1) & 0x1F;
-        return (((float)(r * 32 + c)) / 512.f - OFFSET_ELEVATION) / ratio;
+        int px = r * 32 + c;
+        return (float)Helper.findElevationFromPixelNormalized(px);
     }
 
     /**
@@ -141,8 +136,8 @@ public class Map {
      * @param b
      * @return
      */
-    private short[] genTerrainFromBitmap(Bitmap b, float ratio) {
-        short vertices[] = new short[numVertices() * ((POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT))];
+    private short[] genTerrainFromBitmap(Bitmap b) {
+        short vertices[] = new short[numVertices() * COMPONENTS];
         int count = 0;
         int col;
         int row;
@@ -150,22 +145,26 @@ public class Map {
             for (col = 0; col < (COLS - 1); col += 2) {
 
                 // 1
-                count = makeVertix(vertices, count, row + 0, col + 0, b, ratio);
+                count = makeVertix(vertices, count, row + 0, col + 0, b);
                 // 6
-                count = makeVertix(vertices, count, row + 1, col + 0, b, ratio);
+                count = makeVertix(vertices, count, row + 1, col + 0, b);
                 // 2
-                count = makeVertix(vertices, count, row + 0, col + 1, b, ratio);
+                count = makeVertix(vertices, count, row + 0, col + 1, b);
                 // 7
-                count = makeVertix(vertices, count, row + 1, col + 1, b, ratio);
+                count = makeVertix(vertices, count, row + 1, col + 1, b);
             }
 
             // degenerate 10
-            count = makeVertix(vertices, count, row + 1, col - 1, b, ratio);
+            count = makeVertix(vertices, count, row + 1, col - 1, b);
 
             // degenerate 6
-            count = makeVertix(vertices, count, row + 1, 0, b, ratio);
+            count = makeVertix(vertices, count, row + 1, 0, b);
         }
+
         return vertices;
     }
 
+    public float getRatio() {
+        return mRatio;
+    }
 }

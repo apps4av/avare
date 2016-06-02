@@ -29,6 +29,7 @@ import com.ds.avare.threed.util.Orientation;
 import com.ds.avare.threed.util.TextureHelper;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -164,6 +165,10 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
             // Draw the map.
             mTextureProgram.useProgram();
             mTextureProgram.setUniforms(mMVPMatrix, mTexture);
+            mTextureProgram.setUniformsHeight(
+                    (float)Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE,
+                    (float)Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT,
+                    mMap.getRatio() / (float)Helper.ALTITUDE_FT_ELEVATION_PLUSZ);
             mMap.bindData(mTextureProgram);
             mMap.draw();
 

@@ -20,10 +20,15 @@ abstract class ShaderProgram {
     protected static final String U_MATRIX = "u_Matrix";
     protected static final String U_TEXTURE_UNIT = "u_TextureUnit";
 
+    protected static final String U_NORMAL = "u_Normal";
+    protected static final String U_SLOPE = "u_Slope";
+    protected static final String U_INTERCEPT = "u_Intercept";
+
     // Attribute constants
     protected static final String A_POSITION = "a_Position";
     protected static final String A_COLOR = "a_Color";
-    protected static final String A_TEXTURE_COORDINATES = "a_TextureCoordinates";
+    protected static final String A_S0 = "a_S0";
+    protected static final String A_S1 = "a_S1";
 
     // Shader program
     protected final int program;
