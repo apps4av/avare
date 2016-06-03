@@ -863,7 +863,7 @@ public class LocationActivity extends Activity implements Observer {
         if(mPref.showTips()) {
             mWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
             mWarnDialog.setTitle(getString(R.string.Tip));
-            mWarnDialog.setMessage(Tips.getTip(LocationActivity.this));
+            mWarnDialog.setMessage(Tips.getTip(LocationActivity.this, mPref));
             mWarnDialog.setCancelable(false);
             mWarnDialog.setCanceledOnTouchOutside(false);
             mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {

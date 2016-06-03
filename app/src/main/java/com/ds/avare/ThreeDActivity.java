@@ -557,7 +557,7 @@ public class ThreeDActivity extends Activity {
 
             Thread.currentThread().setName("Background");
 
-            if (null == mService || null == mService.getDBResource() || mAreaMapper.getGpsParams() == null) {
+            if (null == mService || null == mService.getDBResource() || mAreaMapper == null || mAreaMapper.getGpsParams() == null) {
                 return;
             }
             LinkedList<Obstacle> obs = null;

@@ -423,6 +423,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CAPGridLabel">&quot;Show CAP Grids&quot;</string>
     <string name="Tip">&quot;Tip&quot;</string>
     <string name="DisableTip">&quot;Tips can be disabled from Preferences under Application State&quot;</string>
+    <string name="tipIndex">&quot;TipIndex&quot;</string>
     <string name="prefTip">&quot;Tip&quot;</string>
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
     <string name="prefTipSummary">&quot;Select to display tips when the application starts&quot;</string>
