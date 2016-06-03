@@ -422,7 +422,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CAPGridSummary">&quot;Select to show the US Civil Air Patrol grids on the map.&quot;</string>
     <string name="CAPGridLabel">&quot;Show CAP Grids&quot;</string>
     <string name="Tip">&quot;Tip&quot;</string>
-    <string name="DisableTip">&quot;Tips can be disabled from Preferences under Application State&quot;</string>
+    <string name="DisableTip">&quot;Tips can be disabled from Preferences.&quot;</string>
     <string name="tipIndex">&quot;TipIndex&quot;</string>
     <string name="prefTip">&quot;Tip&quot;</string>
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
