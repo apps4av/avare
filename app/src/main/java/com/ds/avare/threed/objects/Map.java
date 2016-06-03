@@ -21,11 +21,13 @@ import static android.opengl.GLES20.glDrawArrays;
 
 public class Map {
 
-    private static final int ROWS = 512;
-    private static final int COLS = 512;
+    private static final int ROWS = BitmapHolder.HEIGHT;
+    private static final int COLS = BitmapHolder.WIDTH;
 
     public static final int COMPONENTS = 2;
     private static final int STRIDE = COMPONENTS * Constants.BYTES_PER_SHORT;
+
+    private static final int NUM_VERTICES = (ROWS - 1) * (((COLS / 2) * 4) + 2); // (524286 = 1048572 / 2) for 512x512
 
     private float mRatio;
 
@@ -71,7 +73,7 @@ public class Map {
             return;
         }
 
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices());
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES);
     }
 
     /**
@@ -121,20 +123,12 @@ public class Map {
     }
 
     /**
-     *
-     * @return
-     */
-    private int numVertices() {
-        return (ROWS - 1) * (((COLS / 2) * 4) + 2); // (524286 = 1048572 / 2) for 512x512
-    }
-
-    /**
      * Make terrain index buffer from bitmap
      * @param b
      * @return
      */
     private short[] genTerrainFromBitmap(Bitmap b) {
-        short vertices[] = new short[numVertices() * COMPONENTS];
+        short vertices[] = new short[NUM_VERTICES * COMPONENTS];
         int count = 0;
         int col;
         int row;

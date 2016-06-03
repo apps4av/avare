@@ -134,6 +134,9 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
      */
     @Override
     public void onDrawFrame(GL10 glUnused) {
+
+        mCallback.callback(this, DRAW_FRAME);
+
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -187,8 +190,6 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
             mOwnShip.draw();
 
         }
-
-        mCallback.callback(this, DRAW_FRAME);
     }
 
     public void setTexture(BitmapHolder b) {
