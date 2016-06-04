@@ -26,8 +26,10 @@ import android.view.View.OnTouchListener;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.ViewParams;
 
 /**
  * 
@@ -36,17 +38,12 @@ import com.ds.avare.utils.Helper;
  */
 public class AfdView extends View implements OnTouchListener {
 	
-
-    private Scale                        mScale;
-    private Pan                          mPan;
 	private Paint                        mPaint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private Preferences                  mPref;
     
-    private static final float MAX_AFD_SCALE = 8;
-    private float mScaleFactor          = 1.f;
-    private boolean                     mScaling;
+    private ViewParams  mViewParams;
 
     private ScaleGestureDetector mScaleDetector;
 
@@ -57,8 +54,9 @@ public class AfdView extends View implements OnTouchListener {
     private void  setup(Context context) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPan = new Pan();
-        mScale = new Scale(MAX_AFD_SCALE);
+        mViewParams = new ViewParams();
+        mViewParams.mPan = new Pan();
+        mViewParams.mScale = new Scale(ViewParams.MAX_SCALE);
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
@@ -88,7 +86,8 @@ public class AfdView extends View implements OnTouchListener {
     public AfdView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     /* (non-Javadoc)
@@ -116,7 +115,7 @@ public class AfdView extends View implements OnTouchListener {
         /*
          * On double tap, move to center
          */
-        mPan = new Pan();
+        mViewParams.mPan = new Pan();
 
         invalidate();
     }
@@ -137,17 +136,17 @@ public class AfdView extends View implements OnTouchListener {
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactorRaw();
+        float scale = mViewParams.mScale.getScaleFactorRaw();
 
     	/*
     	 * A/FD
     	 */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX() * scale
+                mViewParams.mPan.getMoveX() * scale
                 + getWidth() / 2
                 - mBitmap.getWidth() / 2 * scale ,
-                mPan.getMoveY() * scale
+                mViewParams.mPan.getMoveY() * scale
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
@@ -158,66 +157,17 @@ public class AfdView extends View implements OnTouchListener {
         Helper.restoreCanvasColors(mPaint);
     }
 
-    // Class to handle multi-touch scale gestures
-    private class ScaleListener
-            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        /**
-         * This is the active focal point in terms of the viewport. Could be a local
-         * variable but kept here to minimize per-frame allocations.
-         */
-        private float lastFocusX;
-        private float lastFocusY;
-
-        // Detects that new pointers are going down.
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
-            mScaling = true;
-            lastFocusX = scaleGestureDetector.getFocusX();
-            lastFocusY = scaleGestureDetector.getFocusY();
-            return true;
-        }
-
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            mScaling = false;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-
-            float scaleFactor = detector.getScaleFactor();
-            mScaleFactor *= scaleFactor;
-            mScaleFactor = Math.min(mScaleFactor, MAX_AFD_SCALE);
-            mScale.setScaleFactor(mScaleFactor);
-
-            float focusX = detector.getFocusX();
-            float focusY = detector.getFocusY();
-
-            float moveX = mPan.getMoveX() + ((focusX - lastFocusX) / mScaleFactor);
-            float moveY = mPan.getMoveY() + ((focusY - lastFocusY) / mScaleFactor);
-            lastFocusX = focusX;
-            lastFocusY = focusY;
-
-            mPan.setMove(moveX, moveY);
-
-            invalidate();
-
-            return true;
-        }
-    }
-
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
-            if( mScaling ) return false;
+            if( mViewParams.mScaling ) return false;
 
-            float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
-            float moveY = mPan.getMoveY() - (distanceY) / mScale.getScaleFactor();
-            mPan.setMove(moveX, moveY);
+            float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
+            float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
+            mViewParams.mPan.setMove(moveX, moveY);
 
             invalidate();
             return true;

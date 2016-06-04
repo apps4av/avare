@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -30,9 +31,11 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.ViewParams;
 
 /**
  * 
@@ -42,9 +45,6 @@ import com.ds.avare.utils.Helper;
  */
 public class PlatesView extends View implements OnTouchListener {
 	
-
-    private Scale                        mScale;
-    private Pan                          mPan;
 	private Paint                        mPaint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
@@ -57,6 +57,7 @@ public class PlatesView extends View implements OnTouchListener {
     private StorageService              mService;
     private double                     mAirportLon;
     private double                     mAirportLat;
+    private ViewParams                  mViewParams;
 
     private Context                   mContext;
     /*
@@ -68,10 +69,6 @@ public class PlatesView extends View implements OnTouchListener {
      * dip to pix scaling factor
      */
     private float                      mDipToPix;
-
-    private static final float MAX_PLATE_SCALE = 8;
-    private float mScaleFactor = 1.f;
-    private boolean                     mScaling;
 
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
@@ -89,15 +86,16 @@ public class PlatesView extends View implements OnTouchListener {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 
+        mViewParams = new ViewParams();
         mContext = context;
-        mPan = new Pan();
+        mViewParams.mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mPref = new Preferences(context);
-        mScale = new Scale(MAX_PLATE_SCALE);
+        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
@@ -135,7 +133,8 @@ public class PlatesView extends View implements OnTouchListener {
     public PlatesView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     
@@ -218,7 +217,7 @@ public class PlatesView extends View implements OnTouchListener {
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
-            float scale = mScale.getScaleFactorRaw();
+            float scale = mViewParams.mScale.getScaleFactorRaw();
 
             float lon = (float) mGpsParams.getLongitude();
             float lat = (float) mGpsParams.getLatitude();
@@ -288,10 +287,10 @@ public class PlatesView extends View implements OnTouchListener {
             /*
         	 * Plate
         	 */
-            float x = mPan.getMoveX() * scale
+            float x = mViewParams.mPan.getMoveX() * scale
                     + getWidth() / 2
                     - mBitmap.getWidth() / 2 * scale;
-            float y = mPan.getMoveY() * scale
+            float y = mViewParams.mPan.getMoveY() * scale
                     + getHeight() / 2
                     - mBitmap.getHeight() / 2 * scale;
             mBitmap.getTransform().setScale(scale, scale);
@@ -318,11 +317,11 @@ public class PlatesView extends View implements OnTouchListener {
                 canvas.drawCircle(
                         pixAirportx * scale
                         + getWidth() / 2
-                        + mPan.getMoveX() * scale
+                        + mViewParams.mPan.getMoveX() * scale
                         - mBitmap.getWidth() / 2 * scale,
                         pixAirporty * scale
                         + getHeight() / 2
-                        + mPan.getMoveY() * scale 
+                        + mViewParams.mPan.getMoveY() * scale
                         - mBitmap.getHeight() / 2 * scale,
                         16, mPaint);
                 mPaint.setAlpha(255);
@@ -340,12 +339,12 @@ public class PlatesView extends View implements OnTouchListener {
 	                        pixx * scale
 	                        + getWidth() / 2
 	                        - mAirplaneBitmap.getWidth() / 2
-	                        + mPan.getMoveX() * scale
+	                        + mViewParams.mPan.getMoveX() * scale
 	                        - mBitmap.getWidth() / 2 * scale,
 	                        pixy * scale
 	                        + getHeight() / 2
 	                        - mAirplaneBitmap.getHeight() / 2
-	                        + mPan.getMoveY() * scale 
+	                        + mViewParams.mPan.getMoveY() * scale
 	                        - mBitmap.getHeight() / 2 * scale);
 	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
                 }
@@ -387,7 +386,7 @@ public class PlatesView extends View implements OnTouchListener {
         /*
          * On long press, move to center
          */
-        mPan = new Pan();
+        mViewParams.mPan = new Pan();
 
         invalidate();
     }
@@ -402,7 +401,7 @@ public class PlatesView extends View implements OnTouchListener {
                                 float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
-            if( mScaling ) return false;
+            if( mViewParams.mScaling ) return false;
 
             // If user is drawing
             if(mDraw && mService != null) {
@@ -427,10 +426,10 @@ public class PlatesView extends View implements OnTouchListener {
             // If user is panning
             if( !mDraw ) {
 
-                float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
-                float moveY = mPan.getMoveY() - (distanceY) / mScale.getScaleFactor();
+                float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
+                float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
 
-                mPan.setMove(moveX, moveY);
+                mViewParams.mPan.setMove(moveX, moveY);
             }
 
             invalidate();
@@ -448,56 +447,6 @@ public class PlatesView extends View implements OnTouchListener {
             return true;
         }
 
-    }
-
-    // Class to handle multi-touch scale gestures
-    private class ScaleListener
-            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        /**
-         * This is the active focal point in terms of the viewport. Could be a local
-         * variable but kept here to minimize per-frame allocations.
-         */
-        private float lastFocusX;
-        private float lastFocusY;
-
-        // Detects that new pointers are going down.
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
-            mScaling = true;
-
-            lastFocusX = scaleGestureDetector.getFocusX();
-            lastFocusY = scaleGestureDetector.getFocusY();
-            return true;
-        }
-
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            mScaling = false;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-
-            float scaleFactor = detector.getScaleFactor();
-            mScaleFactor *= scaleFactor;
-            mScaleFactor = Math.min(mScaleFactor, MAX_PLATE_SCALE);
-            mScale.setScaleFactor(mScaleFactor);
-
-            float focusX = detector.getFocusX();
-            float focusY = detector.getFocusY();
-
-            float moveX = mPan.getMoveX() + ((focusX - lastFocusX) / mScaleFactor);
-            float moveY = mPan.getMoveY() + ((focusY - lastFocusY) / mScaleFactor);
-            lastFocusX = focusX;
-            lastFocusY = focusY;
-
-            mPan.setMove(moveX, moveY);
-
-            invalidate();
-
-            return true;
-        }
     }
 
     /**
