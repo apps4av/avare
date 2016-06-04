@@ -1344,6 +1344,7 @@ public class LocationView extends View implements OnTouchListener {
                 } else {
                     mService.getDraw().addPoint(x, y, mOrigin);
                 }
+                invalidate();
                 return true;
             }
 
