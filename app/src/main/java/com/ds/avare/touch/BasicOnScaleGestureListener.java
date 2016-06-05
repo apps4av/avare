@@ -1,6 +1,5 @@
 package com.ds.avare.touch;
 
-import android.util.Log;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
@@ -15,50 +14,50 @@ public class BasicOnScaleGestureListener
      * This is the active focal point in terms of the viewport. Could be a local
      * variable but kept here to minimize per-frame allocations.
      */
-    protected float lastFocusX;
-    protected float lastFocusY;
+    protected float mLastFocusX;
+    protected float mLastFocusY;
 
     // Passed in from the caller to get/set attributes
-    protected ViewParams viewParams;
-    protected View view;
+    protected ViewParams mViewParams;
+    protected View mView;
 
-    public BasicOnScaleGestureListener(ViewParams viewParams, View view) {
-        this.viewParams = viewParams;
-        this.view = view;
+    public BasicOnScaleGestureListener(ViewParams mViewParams, View view) {
+        this.mViewParams = mViewParams;
+        this.mView = view;
     }
 
     // Detects that new pointers are going down.
     @Override
     public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
-        viewParams.mScaling = true;
+        mViewParams.setScaling(true);
 
-        lastFocusX = scaleGestureDetector.getFocusX();
-        lastFocusY = scaleGestureDetector.getFocusY();
+        mLastFocusX = scaleGestureDetector.getFocusX();
+        mLastFocusY = scaleGestureDetector.getFocusY();
         return true;
     }
 
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
-        viewParams.mScaling = false;
+        mViewParams.setScaling(false);
     }
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
         float scaleFactor = detector.getScaleFactor();
-        viewParams.mScaleFactor *= scaleFactor;
-        viewParams.mScaleFactor = Math.max(viewParams.MIN_SCALE, Math.min(viewParams.mScaleFactor, viewParams.MAX_SCALE));
-        viewParams.mScale.setScaleFactor(viewParams.mScaleFactor);
+        mViewParams.setScaleFactor(mViewParams.getScaleFactor() * scaleFactor);
+        mViewParams.setScaleFactor(Math.max(mViewParams.getMinScale(), Math.min(mViewParams.getScaleFactor(), mViewParams.getMaxScale())));
+        mViewParams.getScale().setScaleFactor(mViewParams.getScaleFactor());
 
         float focusX = detector.getFocusX();
         float focusY = detector.getFocusY();
 
-        float moveX = viewParams.mPan.getMoveX() + ((focusX - lastFocusX) / viewParams.mScaleFactor);
-        float moveY = viewParams.mPan.getMoveY() + ((focusY - lastFocusY) / viewParams.mScaleFactor);
-        lastFocusX = focusX;
-        lastFocusY = focusY;
+        float moveX = mViewParams.getPan().getMoveX() + ((focusX - mLastFocusX) / mViewParams.getScaleFactor());
+        float moveY = mViewParams.getPan().getMoveY() + ((focusY - mLastFocusY) / mViewParams.getScaleFactor());
+        mLastFocusX = focusX;
+        mLastFocusY = focusY;
 
-        viewParams.mPan.setMove(moveX, moveY);
-        view.invalidate();
+        mViewParams.getPan().setMove(moveX, moveY);
+        mView.invalidate();
 
         return true;
     }

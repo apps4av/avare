@@ -55,8 +55,8 @@ public class AfdView extends View implements OnTouchListener {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mViewParams = new ViewParams();
-        mViewParams.mPan = new Pan();
-        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
+        mViewParams.setPan(new Pan());
+        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
@@ -116,7 +116,7 @@ public class AfdView extends View implements OnTouchListener {
         /*
          * On double tap, move to center
          */
-        mViewParams.mPan = new Pan();
+        mViewParams.setPan(new Pan());
 
         // Figure out the scale that will fit to window
         float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
@@ -124,9 +124,9 @@ public class AfdView extends View implements OnTouchListener {
         float toFitScaleFactor = Math.min(heightScale, widthScale);
 
         // Scale to "fit", and set that as minimum scale
-        mViewParams.mScale.setScaleFactor(toFitScaleFactor);
-        mViewParams.mScaleFactor = toFitScaleFactor;
-        mViewParams.MIN_SCALE = toFitScaleFactor;
+        mViewParams.getScale().setScaleFactor(toFitScaleFactor);
+        mViewParams.setScaleFactor(toFitScaleFactor);
+        mViewParams.setMinScale(toFitScaleFactor);
 
         invalidate();
     }
@@ -147,17 +147,17 @@ public class AfdView extends View implements OnTouchListener {
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mViewParams.mScale.getScaleFactorRaw();
+        float scale = mViewParams.getScale().getScaleFactorRaw();
 
     	/*
     	 * A/FD
     	 */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mViewParams.mPan.getMoveX() * scale
+                mViewParams.getPan().getMoveX() * scale
                 + getWidth() / 2
                 - mBitmap.getWidth() / 2 * scale ,
-                mViewParams.mPan.getMoveY() * scale
+                mViewParams.getPan().getMoveY() * scale
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
@@ -174,11 +174,13 @@ public class AfdView extends View implements OnTouchListener {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
-            if( mViewParams.mScaling ) return false;
+            if( mViewParams.isScaling()) {
+                return false;
+            }
 
-            float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
-            float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
-            mViewParams.mPan.setMove(moveX, moveY);
+            float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
+            float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
+            mViewParams.getPan().setMove(moveX, moveY);
 
             invalidate();
             return true;

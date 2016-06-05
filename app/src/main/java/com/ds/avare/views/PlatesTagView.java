@@ -63,10 +63,10 @@ public class PlatesTagView extends View implements OnTouchListener {
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
         mViewParams = new ViewParams();
-        mViewParams.mPan = new Pan();
+        mViewParams.setPan(new Pan());
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
-        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
+        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
         setBackgroundColor(Color.BLACK);
         mX = mY = 0;
         mAirportName = "";
@@ -135,17 +135,17 @@ public class PlatesTagView extends View implements OnTouchListener {
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mViewParams.mScale.getScaleFactorRaw();
+        float scale = mViewParams.getScale().getScaleFactorRaw();
         
         /*
          * Plate
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mViewParams.mPan.getMoveX() * scale
+                mViewParams.getPan().getMoveX() * scale
                 + getWidth() / 2
                 - mBitmap.getWidth() / 2 * scale ,
-                mViewParams.mPan.getMoveY() * scale
+                mViewParams.getPan().getMoveY() * scale
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
@@ -169,12 +169,12 @@ public class PlatesTagView extends View implements OnTouchListener {
             float x =
                     (mAirportX * scale
                     + getWidth() / 2
-                    + mViewParams.mPan.getMoveX() * scale
+                    + mViewParams.getPan().getMoveX() * scale
                     - mBitmap.getWidth() / 2 * scale);
             float y =
                     (mAirportY * scale
                     + getHeight() / 2
-                    + mViewParams.mPan.getMoveY() * scale
+                    + mViewParams.getPan().getMoveY() * scale
                     - mBitmap.getHeight() / 2 * scale);
             
             mPaint.setAlpha(127);
@@ -194,7 +194,7 @@ public class PlatesTagView extends View implements OnTouchListener {
      * @param y
      */
     public void verify(double x, double y) {
-        mViewParams.mPan.setMove(
+        mViewParams.getPan().setMove(
                 (float)-x + mBitmap.getWidth() / 2,
                 (float)-y + mBitmap.getHeight() / 2
                 );
@@ -208,8 +208,8 @@ public class PlatesTagView extends View implements OnTouchListener {
         /*
          * On double tap, move to center
          */
-        mViewParams.mPan = new Pan();
-        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
+        mViewParams.setPan(new Pan());
+        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
         
         /*
          * Fit plate to screen
@@ -218,7 +218,7 @@ public class PlatesTagView extends View implements OnTouchListener {
             float h = getHeight();
             float ih = mBitmap.getHeight();
             float fac = h / ih;
-            mViewParams.mScale.setScaleFactor(fac);
+            mViewParams.getScale().setScaleFactor(fac);
         }
 
         postInvalidate();
@@ -266,12 +266,14 @@ public class PlatesTagView extends View implements OnTouchListener {
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
 
-            if (mViewParams.mScaling) return false;
+            if (mViewParams.isScaling()) {
+                return false;
+            }
 
-            float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
-            float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
+            float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
+            float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
 
-            mViewParams.mPan.setMove(moveX, moveY);
+            mViewParams.getPan().setMove(moveX, moveY);
             invalidate();
             return true;
         }

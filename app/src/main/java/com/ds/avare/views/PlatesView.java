@@ -88,14 +88,14 @@ public class PlatesView extends View implements OnTouchListener {
 
         mViewParams = new ViewParams();
         mContext = context;
-        mViewParams.mPan = new Pan();
+        mViewParams.setPan(new Pan());
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mPref = new Preferences(context);
-        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
+        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
@@ -217,7 +217,7 @@ public class PlatesView extends View implements OnTouchListener {
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
-            float scale = mViewParams.mScale.getScaleFactorRaw();
+            float scale = mViewParams.getScale().getScaleFactorRaw();
 
             float lon = (float) mGpsParams.getLongitude();
             float lat = (float) mGpsParams.getLatitude();
@@ -287,10 +287,10 @@ public class PlatesView extends View implements OnTouchListener {
             /*
         	 * Plate
         	 */
-            float x = mViewParams.mPan.getMoveX() * scale
+            float x = mViewParams.getPan().getMoveX() * scale
                     + getWidth() / 2
                     - mBitmap.getWidth() / 2 * scale;
-            float y = mViewParams.mPan.getMoveY() * scale
+            float y = mViewParams.getPan().getMoveY() * scale
                     + getHeight() / 2
                     - mBitmap.getHeight() / 2 * scale;
             mBitmap.getTransform().setScale(scale, scale);
@@ -317,11 +317,11 @@ public class PlatesView extends View implements OnTouchListener {
                 canvas.drawCircle(
                         pixAirportx * scale
                         + getWidth() / 2
-                        + mViewParams.mPan.getMoveX() * scale
+                        + mViewParams.getPan().getMoveX() * scale
                         - mBitmap.getWidth() / 2 * scale,
                         pixAirporty * scale
                         + getHeight() / 2
-                        + mViewParams.mPan.getMoveY() * scale
+                        + mViewParams.getPan().getMoveY() * scale
                         - mBitmap.getHeight() / 2 * scale,
                         16, mPaint);
                 mPaint.setAlpha(255);
@@ -339,12 +339,12 @@ public class PlatesView extends View implements OnTouchListener {
 	                        pixx * scale
 	                        + getWidth() / 2
 	                        - mAirplaneBitmap.getWidth() / 2
-	                        + mViewParams.mPan.getMoveX() * scale
+	                        + mViewParams.getPan().getMoveX() * scale
 	                        - mBitmap.getWidth() / 2 * scale,
 	                        pixy * scale
 	                        + getHeight() / 2
 	                        - mAirplaneBitmap.getHeight() / 2
-	                        + mViewParams.mPan.getMoveY() * scale
+	                        + mViewParams.getPan().getMoveY() * scale
 	                        - mBitmap.getHeight() / 2 * scale);
 	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
                 }
@@ -386,7 +386,7 @@ public class PlatesView extends View implements OnTouchListener {
         /*
          * On short press, move to center
          */
-        mViewParams.mPan = new Pan();
+        mViewParams.setPan(new Pan());
 
         // Figure out the scale that will fit to window
         float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
@@ -394,9 +394,9 @@ public class PlatesView extends View implements OnTouchListener {
         float toFitScaleFactor = Math.min(heightScale, widthScale);
 
         // Scale to "fit", and set that as minimum scale
-        mViewParams.mScale.setScaleFactor(toFitScaleFactor);
-        mViewParams.mScaleFactor = toFitScaleFactor;
-        mViewParams.MIN_SCALE = toFitScaleFactor;
+        mViewParams.getScale().setScaleFactor(toFitScaleFactor);
+        mViewParams.setScaleFactor(toFitScaleFactor);
+        mViewParams.setMinScale(toFitScaleFactor);
         invalidate();
     }
 
@@ -410,7 +410,9 @@ public class PlatesView extends View implements OnTouchListener {
                                 float distanceX, float distanceY) {
 
             // Don't pan/draw if multi-touch scaling is under way
-            if( mViewParams.mScaling ) return false;
+            if( mViewParams.isScaling() ) {
+                return false;
+            }
 
             // If user is drawing
             if(mDraw && mService != null) {
@@ -435,10 +437,10 @@ public class PlatesView extends View implements OnTouchListener {
             // If user is panning
             if( !mDraw ) {
 
-                float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
-                float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
+                float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
+                float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
 
-                mViewParams.mPan.setMove(moveX, moveY);
+                mViewParams.getPan().setMove(moveX, moveY);
             }
 
             invalidate();
