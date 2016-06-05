@@ -90,9 +90,13 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
+    private TouchMode mTouchMode = TouchMode.PAN_MODE;
 
+    private enum TouchMode {
+        DRAW_MODE, PAN_MODE
+    }
     public static final String AD = "AIRPORT-DIAGRAM";
-    
+
     /*
      * For GPS taxi
      */
@@ -354,12 +358,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Bring up preferences
                  */
-                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                if(mTouchMode == TouchMode.PAN_MODE) {
                     mPlatesView.setDraw(true);
+                    mTouchMode = TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
-                    mPlatesView.setDraw(false);                    
+                    mPlatesView.setDraw(false);
+                    mTouchMode = TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
