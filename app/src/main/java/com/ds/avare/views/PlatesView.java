@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -201,6 +202,7 @@ public class PlatesView extends View implements OnTouchListener {
     public void setParams(float[] params, boolean ad) {
     	mMatrix = params;
     	mShowingAD = ad;
+        center();
     	postInvalidate();
     }
 
@@ -382,10 +384,19 @@ public class PlatesView extends View implements OnTouchListener {
      */
     public void center() {
         /*
-         * On long press, move to center
+         * On short press, move to center
          */
         mViewParams.mPan = new Pan();
 
+        // Figure out the scale that will fit to window
+        float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
+        float widthScale = (float)this.getWidth() / (float)mBitmap.getBitmap().getWidth();
+        float toFitScaleFactor = Math.min(heightScale, widthScale);
+
+        // Scale to "fit", and set that as minimum scale
+        mViewParams.mScale.setScaleFactor(toFitScaleFactor);
+        mViewParams.mScaleFactor = toFitScaleFactor;
+        mViewParams.MIN_SCALE = toFitScaleFactor;
         invalidate();
     }
 

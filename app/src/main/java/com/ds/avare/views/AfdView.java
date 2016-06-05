@@ -105,6 +105,7 @@ public class AfdView extends View implements OnTouchListener {
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
+        if( mBitmap != null ) center();
         postInvalidate();
     }
 
@@ -116,6 +117,16 @@ public class AfdView extends View implements OnTouchListener {
          * On double tap, move to center
          */
         mViewParams.mPan = new Pan();
+
+        // Figure out the scale that will fit to window
+        float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
+        float widthScale = (float)this.getWidth() / (float)mBitmap.getBitmap().getWidth();
+        float toFitScaleFactor = Math.min(heightScale, widthScale);
+
+        // Scale to "fit", and set that as minimum scale
+        mViewParams.mScale.setScaleFactor(toFitScaleFactor);
+        mViewParams.mScaleFactor = toFitScaleFactor;
+        mViewParams.MIN_SCALE = toFitScaleFactor;
 
         invalidate();
     }
