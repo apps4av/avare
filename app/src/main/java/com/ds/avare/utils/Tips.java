@@ -15,18 +15,25 @@ package com.ds.avare.utils;
 import android.content.Context;
 
 import com.ds.avare.R;
+import com.ds.avare.storage.Preferences;
 
 /**
  * Created by zkhan on 8/11/15.
  */
 public class Tips {
 
-    public static String getTip(Context ctx) {
+    public static String getTip(Context ctx, Preferences pref) {
 
-        // randomly generate tips
+        // generate tips sequentially
         String tips[] = ctx.getResources().getStringArray(R.array.Tips);
-        String ret = tips[(int)Math.round(Math.random() * (tips.length - 1))];
-        ret += "\n" + ctx.getString(R.string.DisableTip);
+        int index = pref.getTipIndex();
+        if(index >= tips.length) {
+            index = 0;
+        }
+        String ret = tips[index];
+        ret += ".\n" + ctx.getString(R.string.DisableTip);
+        index++;
+        pref.setTipIndex(index);
         return ret;
     }
 

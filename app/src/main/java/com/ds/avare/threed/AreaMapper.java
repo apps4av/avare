@@ -64,12 +64,12 @@ public class AreaMapper {
         double dlon = -(lonc - lon);
         double y = (dlat / py); // pixels from center
         double x = (dlon / px); // pixels from center
-        float ynorm = (float)y / BitmapHolder.HEIGHT * 2;
-        float xnorm = (float)x / BitmapHolder.WIDTH * 2;
+        double ynorm = y / ((double)BitmapHolder.HEIGHT) * 2;
+        double xnorm = x / ((double)BitmapHolder.WIDTH) * 2;
 
         double alt = Helper.findPixelFromElevationNormalized(altitude) * mRatio;
 
-        Vector4d ret = new Vector4d(xnorm, ynorm, (float)alt, (float)angle);
+        Vector4d ret = new Vector4d((float)xnorm, (float)ynorm, (float)alt, (float)angle);
         return ret;
     }
 

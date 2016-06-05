@@ -75,8 +75,6 @@ public class ThreeDActivity extends Activity {
 
     private AreaMapper mAreaMapper;
 
-    private int mFrames;
-
     private Button mCenterButton;
     private TextView mText;
     private TextView mTextError;
@@ -91,6 +89,7 @@ public class ThreeDActivity extends Activity {
     private Timer mTimer;
     private UpdateTask mTimerTask;
     private Location mLocation;
+    private long mTime;
 
 
     /**
@@ -184,8 +183,6 @@ public class ThreeDActivity extends Activity {
 
         mContext = this;
 
-        mFrames = 0; // drawn frames
-
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
@@ -236,11 +233,12 @@ public class ThreeDActivity extends Activity {
 
                         mAreaMapper = new AreaMapper();
 
+                        mTime = System.currentTimeMillis();
                     }
                     else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
                         // Draw traffic every so many frames
-                        if (mFrames++ % 60 == 0) {
+                        if ((System.currentTimeMillis() - 1000) > mTime) {
 
                             Location location = null;
                             // Simulate destination in sim mode and get altitude from terrain
@@ -296,7 +294,38 @@ public class ThreeDActivity extends Activity {
 
                                 mAreaMapper.setMapTile(tm);
                                 mAreaMapper.setElevationTile(te);
+
+                                if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
+                                    Message m = mHandler.obtainMessage();
+                                    m.obj = mContext.getString(R.string.LoadingMaps);
+                                    m.what = MESSAGE_TEXT;
+                                    mHandler.sendMessage(m);
+
+                                    // load tiles but give feedback as it hangs
+                                    Tile tout = mAreaMapper.getMapTile();
+                                    BitmapHolder b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName());
+                                    mRenderer.setTexture(b);
+                                    b.recycle();
+                                    tout = mAreaMapper.getElevationTile();
+                                    b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
+                                    mRenderer.setTerrain(b, mAreaMapper.getTerrainRatio());
+                                    b.recycle();
+
+                                    // show errors
+                                    m = mHandler.obtainMessage();
+                                    m.what = MESSAGE_TEXT;
+                                    if (!mRenderer.isMapSet()) {
+                                        m.obj = mContext.getString(R.string.MissingElevation);
+                                    } else if (!mRenderer.isTextureSet()) {
+                                        m.obj = mContext.getString(R.string.MissingMaps);
+                                    } else {
+                                        m.obj = mContext.getString(R.string.Ready);
+                                    }
+
+                                    mHandler.sendMessage(m);
+                                }
                             }
+
 
                             // Draw traffic
                             Traffic.draw(mService, mAreaMapper, mRenderer);
@@ -306,45 +335,16 @@ public class ThreeDActivity extends Activity {
                                 mRenderer.setObstacles(mObstacles);
                             }
 
+                            // For one second run
+                            mTime = System.currentTimeMillis();
                         }
-
-
-                        if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
-                            Message m = mHandler.obtainMessage();
-                            m.obj = mContext.getString(R.string.LoadingMaps);
-                            m.what = MESSAGE_TEXT;
-                            mHandler.sendMessage(m);
-
-                            // load tiles but give feedback as it hangs
-                            Tile tout = mAreaMapper.getMapTile();
-                            BitmapHolder b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName());
-                            mRenderer.setTexture(b);
-                            b.recycle();
-                            tout = mAreaMapper.getElevationTile();
-                            b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
-                            mRenderer.setTerrain(b, mAreaMapper.getTerrainRatio());
-                            b.recycle();
-
-                            // show errors
-                            m = mHandler.obtainMessage();
-                            m.what = MESSAGE_TEXT;
-                            if (!mRenderer.isMapSet()) {
-                                m.obj = mContext.getString(R.string.MissingElevation);
-                            } else if (!mRenderer.isTextureSet()) {
-                                m.obj = mContext.getString(R.string.MissingMaps);
-                            } else {
-                                m.obj = mContext.getString(R.string.Ready);
-                            }
-
-                            mHandler.sendMessage(m);
-                        }
-
-                        // tell renderer that we have new area
-                        mRenderer.getCamera().set(mAreaMapper, mRenderer.getOrientation());
-                        // Set orientation
-                        mRenderer.getOrientation().set(mGlSurfaceView);
-
                     }
+
+                    // Set orientation
+                    mRenderer.getOrientation().set(mGlSurfaceView);
+                    // tell renderer that we have new area
+                    mRenderer.getCamera().set(mAreaMapper, mRenderer.getOrientation());
+
                     return null;
                 }
             });
@@ -557,7 +557,7 @@ public class ThreeDActivity extends Activity {
 
             Thread.currentThread().setName("Background");
 
-            if (null == mService || null == mService.getDBResource() || mAreaMapper.getGpsParams() == null) {
+            if (null == mService || null == mService.getDBResource() || mAreaMapper == null || mAreaMapper.getGpsParams() == null) {
                 return;
             }
             LinkedList<Obstacle> obs = null;

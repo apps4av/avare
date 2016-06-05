@@ -2363,8 +2363,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;All headings relating to Avare flight plans are magnetic headings, not true headings&quot;</item>
         <item>&quot;In METAR and TAF, wind direction is true heading, not magnetic, and ceilings are AGL, not MSL&quot;</item>
         <item>&quot;Tap and hold on a map location to show distance, direction from it to the airplane and heading to it&quot;</item>
-        <item>&quot;You can change the shape and color of the airplane icon via Display->&quot;</item>
-        <item>&quot;These tips can be turned off via Application State->Show Tips&quot;</item>
+        <item>&quot;You can change the shape and color of the airplane icon via Display->Location Display Icon&quot;</item>
         <item>&quot;You can change which of the tabs are displayed on the bottom via Display->Tab Bar Content&quot;</item>
         <item>&quot;The fields in map mode can be modified by turning on Application State->Use Dynamic Fields&quot;</item>
         <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
@@ -2377,8 +2376,8 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Setting the correct Glide Ratio makes fields beyond glide range appear red in the Near tab&quot;</item>
         <item>&quot;Drawings on maps move and rescale with the map, but drawings on plates do not&quot;</item>
         <item>&quot;Use the settings to change between North Up and Track Up - separately for maps and for plates&quot;</item>
-        <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes.&quot;</item>
-        <item>&quot;New flight plans are inactive by default. Click the Inactive button to activate them.&quot;</item>
+        <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes&quot;</item>
+        <item>&quot;New flight plans are inactive by default. Click the Inactive button to activate them&quot;</item>
         <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321 or add directly from the map&quot;</item>
         <item>&quot;Choosing a field in the Near tab allows you to create a direct-to flight plan to it&quot;</item>
         <item>&quot;Choose minimal length for fields in the Near tab via Display->Near Runway Minimum Length&quot;</item>
@@ -2396,6 +2395,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Avare's taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
         <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
         <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
+        <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
     </string-array>
 
 </resources>

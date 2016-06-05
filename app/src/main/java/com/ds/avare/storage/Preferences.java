@@ -923,6 +923,14 @@ public class Preferences {
         return mTabs;
     }
 
+    public void setTipIndex(int index) {
+        mPref.edit().putInt(mContext.getString(R.string.tipIndex), index).commit();
+    }
+    public int getTipIndex() {
+        return mPref.getInt(mContext.getString(R.string.tipIndex), 0);
+    }
+
+
     /**
      * Hotel settings save
      */

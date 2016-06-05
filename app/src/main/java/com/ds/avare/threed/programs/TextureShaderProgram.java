@@ -18,6 +18,7 @@ import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glUniform1f;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 
@@ -25,23 +26,29 @@ public class TextureShaderProgram extends ShaderProgram {
     // Uniform locations
     private final int uMatrixLocation;
     private final int uTextureUnitLocation;
-    
+    private final int uNormalLocation;
+    private final int uSlopeLocation;
+    private final int uInterceptLocation;
+
     // Attribute locations
-    private final int aPositionLocation;
-    private final int aTextureCoordinatesLocation;
+    private final int aS0;
+    private final int aS1;
 
     public TextureShaderProgram(Context context) {
         super(context, R.raw.texture_vertex_shader,
-            R.raw.texture_fragment_shader);
+                R.raw.texture_fragment_shader);
 
         // Retrieve uniform locations for the shader program.
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
         uTextureUnitLocation = glGetUniformLocation(program, U_TEXTURE_UNIT);
-        
+
+        uSlopeLocation = glGetUniformLocation(program, U_SLOPE);
+        uInterceptLocation = glGetUniformLocation(program, U_INTERCEPT);
+        uNormalLocation = glGetUniformLocation(program, U_NORMAL);
+
         // Retrieve attribute locations for the shader program.
-        aPositionLocation = glGetAttribLocation(program, A_POSITION);
-        aTextureCoordinatesLocation = 
-            glGetAttribLocation(program, A_TEXTURE_COORDINATES);
+        aS0 = glGetAttribLocation(program, A_S0);
+        aS1 = glGetAttribLocation(program, A_S1);
     }
 
     public void setUniforms(float[] matrix, int textureId) {
@@ -59,11 +66,18 @@ public class TextureShaderProgram extends ShaderProgram {
         glUniform1i(uTextureUnitLocation, 0);
     }
 
-    public int getPositionAttributeLocation() {
-        return aPositionLocation;
+
+    public int getS0AttributeLocation() {
+        return aS0;
     }
 
-    public int getTextureCoordinatesAttributeLocation() {
-        return aTextureCoordinatesLocation;
+    public int getS1AttributeLocation() {
+        return aS1;
+    }
+
+    public void setUniformsHeight(float slope, float intercept, float normal) {
+        glUniform1f(uSlopeLocation, slope);
+        glUniform1f(uInterceptLocation, intercept);
+        glUniform1f(uNormalLocation, normal);
     }
 }

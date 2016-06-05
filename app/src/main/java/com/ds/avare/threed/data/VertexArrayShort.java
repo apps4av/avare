@@ -10,32 +10,39 @@ package com.ds.avare.threed.data;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
-import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.GL_UNSIGNED_SHORT;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glVertexAttribPointer;
-import static com.ds.avare.threed.Constants.BYTES_PER_FLOAT;
+import static com.ds.avare.threed.Constants.BYTES_PER_SHORT;
 
-public class VertexArray {    
-    private final FloatBuffer floatBuffer;
+public class VertexArrayShort {
+    private final ShortBuffer shortBuffer;
 
-    public VertexArray(float[] vertexData) {
-        floatBuffer = ByteBuffer
-            .allocateDirect(vertexData.length * BYTES_PER_FLOAT)
+    public VertexArrayShort(short[] vertexData) {
+        shortBuffer = ByteBuffer
+            .allocateDirect(vertexData.length * BYTES_PER_SHORT)
             .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
+            .asShortBuffer()
             .put(vertexData);
     }
         
     public void setVertexAttribPointer(int dataOffset, int attributeLocation,
         int componentCount, int stride) {        
-        floatBuffer.position(dataOffset);        
-        glVertexAttribPointer(attributeLocation, componentCount, GL_FLOAT, 
-            false, stride, floatBuffer);
+        shortBuffer.position(dataOffset);
+        glVertexAttribPointer(attributeLocation, componentCount, GL_UNSIGNED_SHORT,
+            false, stride, shortBuffer);
         glEnableVertexAttribArray(attributeLocation);
 
-        floatBuffer.position(0);
+        shortBuffer.position(0);
+    }
+
+    /**
+     * Get data from position
+     */
+    public float get(int index) {
+        return shortBuffer.get(index);
     }
 
 }
