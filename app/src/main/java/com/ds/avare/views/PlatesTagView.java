@@ -19,17 +19,18 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
+
+import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.ViewParams;
 
 /**
  * 
@@ -38,23 +39,21 @@ import com.ds.avare.utils.BitmapHolder;
  * User tags a plate through this view
  *
  */
-public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
+public class PlatesTagView extends View implements OnTouchListener {
 	
 
-    private Pan                          mPan;
 	private Paint                        mPaint;
-    private MultiTouchController<Object> mMultiTouchC;
-    private PointInfo                    mCurrTouchPoint;
+    private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
-    private Scale                        mScale;
     private int                          mX;
     private int                          mY;
     private float                        mAirportX;
     private float                        mAirportY;
-    private String                        mAirportName;
+    private String                       mAirportName;
 
-    private static final double MAX_PLATE_SCALE = 8;
-    
+    private ViewParams mViewParams;
+    private ScaleGestureDetector mScaleDetector;
+
     /**
      * 
      * @param context
@@ -63,11 +62,11 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mPaint = new Paint();
         mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
         mPaint.setAntiAlias(true);
-        mPan = new Pan();
+        mViewParams = new ViewParams();
+        mViewParams.mPan = new Pan();
         setOnTouchListener(this);
-        mScale = new Scale(MAX_PLATE_SCALE);
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new PointInfo();
+        mGestureDetector = new GestureDetector(context, new GestureListener());
+        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
         setBackgroundColor(Color.BLACK);
         mX = mY = 0;
         mAirportName = "";
@@ -79,8 +78,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      * @param context
      */
 	public PlatesTagView(Context context) {
-		super(context);
-		setup(context);
+        this(context, null, 0);
 	}
 
     /**
@@ -88,8 +86,9 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      * @param context
      */
     public PlatesTagView(Context context, AttributeSet set) {
-        super(context, set);
-        setup(context);
+        this(context, set, 0);
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     /**
@@ -106,73 +105,17 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
+        boolean retVal = mGestureDetector.onTouchEvent(e);
+        retVal = mScaleDetector.onTouchEvent(e) || retVal;
+        return retVal;
     }
 
     /**
-     * @param name
+     * @param
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
         postInvalidate();
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return mBitmap;
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
-     */
-    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
-        objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public void selectObject(Object obj, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
-            mPan.setMove(newObjPosAndScale.getXOff(), newObjPosAndScale.getYOff());
-        }
-        else {
-            /*
-             * Clamp scaling.
-             */
-            mScale.setScaleFactor(newObjPosAndScale.getScale());
-        }
-
-        /*
-         * Store location
-         */
-        mX = Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
-        mY = Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
-
-        invalidate();
-        return true;
-    }
-
-    /**
-     * @param touchPoint
-     */
-    private void touchPointChanged(PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        invalidate();
     }
 
     /* (non-Javadoc)
@@ -192,17 +135,17 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactorRaw();
+        float scale = mViewParams.mScale.getScaleFactorRaw();
         
         /*
          * Plate
          */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
-                mPan.getMoveX() * scale
+                mViewParams.mPan.getMoveX() * scale
                 + getWidth() / 2
                 - mBitmap.getWidth() / 2 * scale ,
-                mPan.getMoveY() * scale
+                mViewParams.mPan.getMoveY() * scale
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
@@ -226,12 +169,12 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
             float x =
                     (mAirportX * scale
                     + getWidth() / 2
-                    + mPan.getMoveX() * scale
+                    + mViewParams.mPan.getMoveX() * scale
                     - mBitmap.getWidth() / 2 * scale);
             float y =
                     (mAirportY * scale
                     + getHeight() / 2
-                    + mPan.getMoveY() * scale
+                    + mViewParams.mPan.getMoveY() * scale
                     - mBitmap.getHeight() / 2 * scale);
             
             mPaint.setAlpha(127);
@@ -251,7 +194,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      * @param y
      */
     public void verify(double x, double y) {
-        mPan.setMove(
+        mViewParams.mPan.setMove(
                 (float)-x + mBitmap.getWidth() / 2,
                 (float)-y + mBitmap.getHeight() / 2
                 );
@@ -265,8 +208,8 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         /*
          * On double tap, move to center
          */
-        mPan = new Pan();
-        mScale = new Scale(MAX_PLATE_SCALE);
+        mViewParams.mPan = new Pan();
+        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
         
         /*
          * Fit plate to screen
@@ -275,7 +218,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
             float h = getHeight();
             float ih = mBitmap.getHeight();
             float fac = h / ih;
-            mScale.setScaleFactor(fac);
+            mViewParams.mScale.setScaleFactor(fac);
         }
 
         postInvalidate();
@@ -316,6 +259,22 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
         mAirportY = -1;
         mAirportName = "";        
         postInvalidate();
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                float distanceX, float distanceY) {
+
+            if (mViewParams.mScaling) return false;
+
+            float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
+            float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
+
+            mViewParams.mPan.setMove(moveX, moveY);
+            invalidate();
+            return true;
+        }
     }
 }
 

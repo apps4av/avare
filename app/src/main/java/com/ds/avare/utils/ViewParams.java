@@ -14,7 +14,7 @@ public class ViewParams {
     public float mScaleFactor = 1.f;
     public Scale mScale;
     public Pan mPan;
-    public static final float MAX_SCALE = 8;
-    public static final float MIN_SCALE = 0.03125f;
+    public float MAX_SCALE = 8;
+    public float MIN_SCALE = 0.03125f;
     public boolean mScaling;
 }

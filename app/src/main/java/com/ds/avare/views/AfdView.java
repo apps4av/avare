@@ -56,7 +56,7 @@ public class AfdView extends View implements OnTouchListener {
         mPaint.setAntiAlias(true);
         mViewParams = new ViewParams();
         mViewParams.mPan = new Pan();
-        mViewParams.mScale = new Scale(ViewParams.MAX_SCALE);
+        mViewParams.mScale = new Scale(mViewParams.MAX_SCALE);
         setOnTouchListener(this);
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);

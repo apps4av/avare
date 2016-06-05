@@ -1,5 +1,6 @@
 package com.ds.avare.touch;
 
+import android.util.Log;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
@@ -43,10 +44,9 @@ public class BasicOnScaleGestureListener
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-
         float scaleFactor = detector.getScaleFactor();
         viewParams.mScaleFactor *= scaleFactor;
-        viewParams.mScaleFactor = Math.max(ViewParams.MIN_SCALE, Math.min(viewParams.mScaleFactor, ViewParams.MAX_SCALE));
+        viewParams.mScaleFactor = Math.max(viewParams.MIN_SCALE, Math.min(viewParams.mScaleFactor, viewParams.MAX_SCALE));
         viewParams.mScale.setScaleFactor(viewParams.mScaleFactor);
 
         float focusX = detector.getFocusX();
@@ -58,7 +58,6 @@ public class BasicOnScaleGestureListener
         lastFocusY = focusY;
 
         viewParams.mPan.setMove(moveX, moveY);
-
         view.invalidate();
 
         return true;
