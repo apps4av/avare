@@ -61,6 +61,8 @@ public class AfdView extends View implements OnTouchListener {
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mPref = new Preferences(context);
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
     
     /**
@@ -86,8 +88,6 @@ public class AfdView extends View implements OnTouchListener {
     public AfdView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
-        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
-        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     /* (non-Javadoc)

@@ -71,6 +71,8 @@ public class PlatesTagView extends View implements OnTouchListener {
         mX = mY = 0;
         mAirportName = "";
         mAirportX = mAirportY = -1;
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
     
     /**
@@ -87,8 +89,6 @@ public class PlatesTagView extends View implements OnTouchListener {
      */
     public PlatesTagView(Context context, AttributeSet set) {
         this(context, set, 0);
-        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
-        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     /**

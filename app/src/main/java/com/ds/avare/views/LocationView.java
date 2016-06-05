@@ -23,7 +23,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -270,6 +269,8 @@ public class LocationView extends View implements OnTouchListener {
         mDoCallbackWhenDone = false;
              
         mDipToPix = Helper.getDpiToPix(context);
+        mScaleDetector = new ScaleGestureDetector(context, new ComplexOnScaleGestureListener(mViewParams, this));
+
     }
     
     /**
@@ -302,7 +303,6 @@ public class LocationView extends View implements OnTouchListener {
     public LocationView(Context context, AttributeSet aset, int arg) {
         super(context, aset, arg);
         setup(context);
-        mScaleDetector = new ScaleGestureDetector(context, new ComplexOnScaleGestureListener(mViewParams, this));
     }
 
     /* (non-Javadoc)
@@ -1492,8 +1492,6 @@ public class LocationView extends View implements OnTouchListener {
      */
     public void setDraw(boolean b) {
         mDraw = b;
-        Log.d("LocationView::setDraw", "mDraw = " + mDraw);
-
         invalidate();
     }
 

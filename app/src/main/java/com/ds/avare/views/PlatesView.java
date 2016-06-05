@@ -18,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -101,7 +100,8 @@ public class PlatesView extends View implements OnTouchListener {
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mDipToPix = Helper.getDpiToPix(context);
-
+        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
+        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
@@ -133,8 +133,6 @@ public class PlatesView extends View implements OnTouchListener {
     public PlatesView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
-        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
-        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
     }
 
     
