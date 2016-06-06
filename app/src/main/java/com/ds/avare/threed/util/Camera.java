@@ -50,16 +50,16 @@ public class Camera {
             look = getCameraVectorLookAtFirstPerson(mapper);
             // let user rotate around ownship to see whats there
             // angle Z rotate is reverse of satellite view because this is first person
-            // this is yaw
-            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
-                    orientation.getRotationZ(true), look.getVectorArray(), look.getVectorArrayScratch(), 0,
-                    0, 0, 1);
-            float out[] = look.getVectorArrayScratch();
-            look = new Vector3d(out[0], out[1], out[2]);
             // angle x rotate, this is pitch
             MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
                     orientation.getRotationX(true), look.getVectorArray(), look.getVectorArrayScratch(), 0,
                     1, 0, 0);
+            float out[] = look.getVectorArrayScratch();
+            look = new Vector3d(out[0], out[1], out[2]);
+            // this is yaw
+            MatrixHelper.rotatePoint(pos.getX(), pos.getY(), pos.getZ(),
+                    orientation.getRotationZ(true), look.getVectorArray(), look.getVectorArrayScratch(), 0,
+                    0, 0, 1);
             out = look.getVectorArrayScratch();
             look = new Vector3d(out[0], out[1], out[2]);
         }
