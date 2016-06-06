@@ -234,7 +234,6 @@ public class Traffic {
             }
             renderer.setShips(ships);
         }
-        renderer.setOwnShip(mapper.getSelfLocation());
     }
 
 

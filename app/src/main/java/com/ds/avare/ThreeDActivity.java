@@ -343,6 +343,9 @@ public class ThreeDActivity extends Activity {
                         }
                     }
 
+                    // Our position
+                    mRenderer.setOwnShip(mAreaMapper.getSelfLocation());
+
                     // Set orientation
                     mRenderer.getOrientation().set(mGlSurfaceView);
                     // tell renderer that we have new area
