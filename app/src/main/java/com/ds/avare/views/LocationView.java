@@ -25,7 +25,6 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
@@ -52,7 +51,6 @@ import com.ds.avare.shapes.TileMap;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.BitmapHolder;
@@ -61,7 +59,6 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NavComments;
-import com.ds.avare.utils.ViewParams;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.AirSigMet;
@@ -69,6 +66,11 @@ import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
+
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -79,7 +81,7 @@ import java.util.List;
  * 
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
-public class LocationView extends View implements OnTouchListener {
+public class LocationView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
     /**
      * paint for onDraw
      */
@@ -98,10 +100,17 @@ public class LocationView extends View implements OnTouchListener {
     private BitmapHolder               mLineHeadingBitmap;
     
     /**
+     * The magic of multi touch
+     */
+    private MultiTouchController<Object> mMultiTouchC;
+    /**
+     * The magic of multi touch
+     */
+    private PointInfo                   mCurrTouchPoint;
+    /**
      * Gesture like long press, double touch outside of multi-touch
      */
     private GestureDetector             mGestureDetector;
-
     /**
      * Cache
      */
@@ -129,6 +138,11 @@ public class LocationView extends View implements OnTouchListener {
      * Storage service that contains all the state
      */
     private StorageService              mService;
+
+    /**
+     * Translation of current pan 
+     */
+    private Pan                         mPan;
     
     private DataSource                  mImageDataSource;
     
@@ -136,7 +150,11 @@ public class LocationView extends View implements OnTouchListener {
      * To tell activity to do something on a gesture or touch
      */
     private GestureInterface            mGestureCallBack; 
-    
+
+    /**
+     * Scale factor based on pinch zoom
+     */
+    private Scale                       mScale;
     
     /*
      * A hashmap to load only required tiles.
@@ -162,7 +180,6 @@ public class LocationView extends View implements OnTouchListener {
      */
     private boolean                   mDraw;
 
-    private ViewParams                  mViewParams;
     /*
      * Macro of zoom
      */
@@ -189,7 +206,9 @@ public class LocationView extends View implements OnTouchListener {
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     
     private static final float MOVEMENT_THRESHOLD = 32.f;
-
+    
+    private static final int MAX_SCALE = 4;
+    
     /*
      * dip to pix scaling factor
      */
@@ -200,9 +219,6 @@ public class LocationView extends View implements OnTouchListener {
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
 
-    private ScaleGestureDetector mScaleDetector;
-
-
     /**
      * @param context
      */
@@ -212,9 +228,8 @@ public class LocationView extends View implements OnTouchListener {
          * Set up all graphics.
          */
         mContext = context;
-        mViewParams = new ViewParams();
-        mViewParams.setPan(new Pan());
-        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
+        mPan = new Pan();
+        mScale = new Scale(MAX_SCALE);
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
@@ -259,7 +274,9 @@ public class LocationView extends View implements OnTouchListener {
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
-
+        mMultiTouchC = new MultiTouchController<Object>(this);
+        mCurrTouchPoint = new PointInfo();
+        
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         // We're going to give the user twice the slop as normal
@@ -269,15 +286,13 @@ public class LocationView extends View implements OnTouchListener {
         mDoCallbackWhenDone = false;
              
         mDipToPix = Helper.getDpiToPix(context);
-        mScaleDetector = new ScaleGestureDetector(context, new ComplexOnScaleGestureListener(mViewParams, this));
-
     }
     
     /**
      * 
      */
     private void updateCoordinates() {
-        mOrigin.update(mGpsTile, getWidth(), getHeight(), mGpsParams, mViewParams.getPan(), mViewParams.getScale());
+        mOrigin.update(mGpsTile, getWidth(), getHeight(), mGpsParams, mPan, mScale);
     }
 
     /**
@@ -285,7 +300,8 @@ public class LocationView extends View implements OnTouchListener {
      * Default for tools, do not call
      */
     public LocationView(Context context) {
-        this(context, null, 0);
+        super(context);
+        setup(context);
     }
 
     /**
@@ -293,7 +309,8 @@ public class LocationView extends View implements OnTouchListener {
      * Default for tools, do not call
      */
     public LocationView(Context context, AttributeSet aset) {
-        this(context, aset, 0);
+        super(context, aset);
+        setup(context);
     }
 
     /**
@@ -350,8 +367,6 @@ public class LocationView extends View implements OnTouchListener {
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-
-
         boolean bPassToGestureDetector = true;
         
         if(e.getAction() == MotionEvent.ACTION_UP) {
@@ -375,7 +390,7 @@ public class LocationView extends View implements OnTouchListener {
              * Now that we have moved passed the macro level, re-query for new tiles.
              * Do not query repeatedly hence check for mFactor = 1
              */
-            if(mMacro != mViewParams.getScale().getMacroFactor()) {
+            if(mMacro != mScale.getMacroFactor()) {
                 dbquery(true);
             }
         }
@@ -389,7 +404,7 @@ public class LocationView extends View implements OnTouchListener {
                 if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
                     double lon = mOrigin.getLongitudeOf(e.getX());
                     double lat = mOrigin.getLatitudeOf(e.getY());
-                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor());
+                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mScale.getScaleFactor());
                     mDragStartedX = e.getX();
                     mDragStartedY = e.getY();
                 }
@@ -426,10 +441,9 @@ public class LocationView extends View implements OnTouchListener {
                     mClosestTask.cancel(true);
                 }
             }
-            boolean retVal = mScaleDetector.onTouchEvent(e);
-            retVal = mGestureDetector.onTouchEvent(e) || retVal;
+            mGestureDetector.onTouchEvent(e);
         }
-        return true;
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), mMacro);
     }
     
     /**
@@ -452,6 +466,134 @@ public class LocationView extends View implements OnTouchListener {
         Point p = new Point();
         p.set((int)focusX, (int)focusY);
         return p;
+    }
+
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public Object getDraggableObjectAtPoint(PointInfo pt) {
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
+     */
+    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
+        objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
+                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public void selectObject(Object obj, PointInfo touchPoint) {
+        touchPointChanged(touchPoint);
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
+        touchPointChanged(touchPoint);
+        if(false == mCurrTouchPoint.isMultiTouch()) {
+            
+            /*
+             * Do not move on drag
+             */
+            if(mDragPlanPoint >= 0) {
+                return true;                
+            }
+            
+            /*
+             * Do not move on multitouch
+             */
+            if(mDraw && mService != null) {
+                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
+                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
+                if (mPref.isTrackUp()) {
+                    double thetab = mGpsParams.getBearing();
+                    double p[] = new double[2];
+                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                    p = Helper.rotateCoord(c_x, c_y, thetab, x, y);
+                    mService.getDraw().addPoint((float)p[0],(float)p[1], mOrigin);
+                }
+                else {
+                    mService.getDraw().addPoint(x, y, mOrigin);
+                }
+                return true;
+            }
+
+            // Pan
+            if(mPan.setMove(
+                            newObjPosAndScale.getXOff(),
+                            newObjPosAndScale.getYOff())) {
+                /*
+                 * Query when we have moved one tile. This will happen in background.
+                 */
+                dbquery(true);
+            }
+        }
+        else {
+            
+            // Zooming does not change drag
+            mDragPlanPoint = -1;
+            
+            /*
+             * on double touch find distance and bearing between two points.
+             */
+
+            if(mPointProjection == null) {
+                double x0 = mCurrTouchPoint.getXs()[0];
+                double y0 = mCurrTouchPoint.getYs()[0];
+                double x1 = mCurrTouchPoint.getXs()[1];
+                double y1 = mCurrTouchPoint.getYs()[1];
+
+                double lon0,lat0,lon1,lat1;
+                // convert to origin coord if Trackup
+                if(mPref.isTrackUp()) {
+                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                    double thetab = mGpsParams.getBearing();
+                    double p0[],p1[];
+                    p0 = Helper.rotateCoord(c_x, c_y, thetab, x0, y0);
+                    p1 = Helper.rotateCoord(c_x, c_y, thetab, x1, y1);
+                    lon0 = mOrigin.getLongitudeOf(p0[0]);
+                    lat0 = mOrigin.getLatitudeOf(p0[1]);
+                    lon1 = mOrigin.getLongitudeOf(p1[0]);
+                    lat1 = mOrigin.getLatitudeOf(p1[1]);
+                }
+                else {
+                    lon0 = mOrigin.getLongitudeOf(x0);
+                    lat0 = mOrigin.getLatitudeOf(y0);
+                    lon1 = mOrigin.getLongitudeOf(x1);
+                    lat1 = mOrigin.getLatitudeOf(y1);
+                }
+                mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+            }
+
+
+            /*
+             * Clamp scaling.
+             */
+            
+            mScale.setScaleFactor(newObjPosAndScale.getScale());
+        }
+        updateCoordinates();
+        invalidate();
+        return true;
+    }
+    
+    /**
+     * @param touchPoint
+     */
+    private void touchPointChanged(PointInfo touchPoint) {
+        mCurrTouchPoint.set(touchPoint);
+        invalidate();
     }
 
     /**
@@ -659,7 +801,7 @@ public class LocationView extends View implements OnTouchListener {
         }
         
         // Tell the rings to draw themselves
-        mService.getDistanceRings().draw(canvas, mOrigin, mViewParams.getScale(), mMovement, mPref.isTrackUp(), mGpsParams);
+        mService.getDistanceRings().draw(canvas, mOrigin, mScale, mMovement, mPref.isTrackUp(), mGpsParams);
     }
 
     /**
@@ -683,7 +825,7 @@ public class LocationView extends View implements OnTouchListener {
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
-            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mViewParams.getScale(), mMovement, mPaint, mPref.isNightMode(), true);
+            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), true);
         }
     }
 
@@ -731,7 +873,7 @@ public class LocationView extends View implements OnTouchListener {
 		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
 		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
 		        float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
-		      	mService.getEdgeTape().draw(canvas, mViewParams.getScale(), pixPerNm, x, y,
+		      	mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y, 
 		      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
 	        }
     	}
@@ -747,7 +889,7 @@ public class LocationView extends View implements OnTouchListener {
     // Display cap grids
     private void drawCapGrids(Canvas canvas, DrawingContext ctx) {
         if(mPointProjection == null && mPref.showCAPGrids()) {
-        	mService.getCap().draw(canvas, mOrigin, mViewParams.getScale());
+        	mService.getCap().draw(canvas, mOrigin, mScale);
         }
     }
 
@@ -799,8 +941,8 @@ public class LocationView extends View implements OnTouchListener {
         ctx.origin = mOrigin;
         ctx.paint = mPaint;
         ctx.textPaint = mMsgPaint;
-        ctx.scale = mViewParams.getScale();
-        ctx.pan = mViewParams.getPan();
+        ctx.scale = mScale;
+        ctx.pan = mPan;
         ctx.pref = mPref;
         ctx.runwayPaint = mRunwayPaint;
         ctx.view = this;
@@ -851,8 +993,8 @@ public class LocationView extends View implements OnTouchListener {
                  * Set pan to zero since we entered new destination
                  * and we want to show it without pan.
                  */
-                mViewParams.setPan(new Pan());
-                mService.setPan(mViewParams.getPan());
+                mPan = new Pan();
+                mService.setPan(mPan);
                 updateCoordinates();                
             }
         }
@@ -899,10 +1041,10 @@ public class LocationView extends View implements OnTouchListener {
         if(null == mMovement) {
             mMovement = new Movement();
         }
-        mViewParams.setPan(mService.getPan());
-        if(null == mViewParams.getPan()) {
-            mViewParams.setPan(new Pan());
-            mService.setPan(mViewParams.getPan());
+        mPan = mService.getPan();
+        if(null == mPan) {
+            mPan = new Pan();
+            mService.setPan(mPan);
         }
         if(null != params) {
             mGpsParams = params;
@@ -959,7 +1101,7 @@ public class LocationView extends View implements OnTouchListener {
         }
 
         TileMap map = mService.getTiles();
-        map.loadTiles(lon, lat, mViewParams.getPan(), mMacro, mViewParams.getScale(), mGpsParams.getBearing(),
+        map.loadTiles(lon, lat, mPan, mMacro, mScale, mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
@@ -969,7 +1111,7 @@ public class LocationView extends View implements OnTouchListener {
                         /*
                          * Set move with pan after new tiles are finally loaded
                          */
-                        mViewParams.getPan().setMove((float)(mViewParams.getPan().getMoveX() * t.factor), (float)(mViewParams.getPan().getMoveY() * t.factor));
+                        mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
 
                         int index = Integer.parseInt(mPref.getChartType());
                         String type = getResources().getStringArray(R.array.ChartType)[index];
@@ -979,57 +1121,17 @@ public class LocationView extends View implements OnTouchListener {
                         /*
                          * And pan
                          */
-                        mViewParams.getPan().setTileMove(t.movex, t.movey);
+                        mPan.setTileMove(t.movex, t.movey);
                         mMovement = new Movement(t.offsets);
                         mService.setMovement(mMovement);
-                        mMacro = mViewParams.getScale().getMacroFactor();
-                        mViewParams.getScale().updateMacro();
+                        mMacro = mScale.getMacroFactor();
+                        mScale.updateMacro();
                         updateCoordinates();
                         invalidate();
 
                         return null;
                     }
                 });
-    }
-
-
-    private class ComplexOnScaleGestureListener
-            extends BasicOnScaleGestureListener {
-
-        private int macroScaleFactor;
-
-        public ComplexOnScaleGestureListener(ViewParams viewParams, View view) {
-            super(viewParams, view);
-        }
-
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            macroScaleFactor = mViewParams.getScale().getMacroFactor();
-            return super.onScaleBegin(detector);
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            float scaleFactor = detector.getScaleFactor();
-            mViewParams.setScaleFactor(mViewParams.getScaleFactor() * scaleFactor);
-            mViewParams.setScaleFactor(Math.max(mViewParams.getMinScale(), Math.min(mViewParams.getScaleFactor(), mViewParams.getMaxScale())));
-            mViewParams.getScale().setScaleFactor(mViewParams.getScaleFactor());
-
-            float focusX = detector.getFocusX();
-            float focusY = detector.getFocusY();
-
-            float moveX = mViewParams.getPan().getMoveX() + ((focusX - mLastFocusX) / mViewParams.getScaleFactor()) / macroScaleFactor;
-            float moveY = mViewParams.getPan().getMoveY() + ((focusY - mLastFocusY) / mViewParams.getScaleFactor()) / macroScaleFactor;
-            mLastFocusX = focusX;
-            mLastFocusY = focusY;
-
-            mViewParams.getPan().setMove(moveX, moveY);
-
-            updateCoordinates();
-            invalidate();
-
-            return true;
-        }
     }
 
     /**
@@ -1302,9 +1404,9 @@ public class LocationView extends View implements OnTouchListener {
         /*
          * On double tap, move to center
          */
-        mViewParams.setPan(new Pan());
+        mPan = new Pan();
         if(mService != null) {
-            mService.setPan(mViewParams.getPan());
+            mService.setPan(mPan);
             mService.getTiles().forceReload();
         }
         dbquery(true);
@@ -1317,51 +1419,6 @@ public class LocationView extends View implements OnTouchListener {
      *s
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                float distanceX, float distanceY) {
-
-            // Don't pan or draw if multi-touch scaling is under way
-            if( mViewParams.isScaling() ) {
-                return false;
-            }
-
-            if(mDraw && mService != null) {
-
-//                float x = distanceX * mViewParams.mScale.getScaleFactor();
-//                float y = distanceY * mViewParams.mScale.getScaleFactor();
-                float x = e2.getX() ;
-                float y = e2.getY() ;
-                    /*
-                     * Threshold the drawing so we do not generate too many points
-                     */
-                if (mPref.isTrackUp()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
-                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
-                    p = Helper.rotateCoord(c_x, c_y, thetab, x, y);
-                    mService.getDraw().addPoint((float) p[0], (float) p[1], mOrigin);
-                } else {
-                    mService.getDraw().addPoint(x, y, mOrigin);
-                }
-                invalidate();
-                return true;
-            }
-
-            // Panning
-            if( !mDraw ) {
-                float moveX = mViewParams.getPan().getMoveX() - (distanceX / mViewParams.getScaleFactor()) / mViewParams.getScale().getMacroFactor();
-                float moveY = mViewParams.getPan().getMoveY() - (distanceY / mViewParams.getScaleFactor()) / mViewParams.getScale().getMacroFactor();
-
-                mViewParams.getPan().setMove(moveX, moveY);
-            }
-
-            updateCoordinates();
-            invalidate();
-            return true;
-        }
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -1523,7 +1580,7 @@ public class LocationView extends View implements OnTouchListener {
      * 
      */
     public void zoomOut() {
-        mViewParams.getScale().zoomOut();
+        mScale.zoomOut();
     }
 
     public void setLayerType(String type) {
