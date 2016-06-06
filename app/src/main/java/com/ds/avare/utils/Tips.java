@@ -31,7 +31,7 @@ public class Tips {
             index = 0;
         }
         String ret = tips[index];
-        ret += ".\n" + ctx.getString(R.string.DisableTip);
+        ret += ".";
         index++;
         pref.setTipIndex(index);
         return ret;

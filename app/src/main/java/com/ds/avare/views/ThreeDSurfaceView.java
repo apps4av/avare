@@ -54,11 +54,11 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
     }
 
     public float getDisplacementY() {
-        return -mY * MAX_SCALE / getHeight() / mScale;
+        return -mY * MAX_SCALE / getHeight();
     }
 
     public float getDisplacementX() {
-        return  mX * MAX_SCALE / getWidth() / mScale;
+        return  mX * MAX_SCALE / getWidth();
     }
 
     public float getScale() {

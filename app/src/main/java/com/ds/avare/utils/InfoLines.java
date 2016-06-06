@@ -447,7 +447,7 @@ public class InfoLines {
         float lineY = dataY + titleY;
         mShadowY = lineY * mRowCount + aShadow;
 
-        if(mService != null) {
+        if(mService != null && mService.getGpsParams() != null) {
             mAltitude = (float) mService.getGpsParams().getAltitude();
         }
         
