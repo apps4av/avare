@@ -61,7 +61,7 @@ public class ThreeDSurfaceView extends GLSurfaceView {
             double radians = Math.atan2(deltaY, deltaX);
 
             // This is the first touch - save the starting delta
-            if( !mViewParams.mScaling ) {
+            if( !mViewParams.isScaling() ) {
                 mStartRadians = radians;
                 mStartAngle = mAngle;
             }
@@ -78,24 +78,24 @@ public class ThreeDSurfaceView extends GLSurfaceView {
     }
 
     public float getDisplacementY() {
-        return -mViewParams.mPan.getMoveY() * MAX_SCALE / getHeight() / mViewParams.mScaleFactor;
+        return -mViewParams.getPan().getMoveY() * MAX_SCALE / getHeight() / mViewParams.getScaleFactor();
     }
 
     public float getDisplacementX() {
-        return  mViewParams.mPan.getMoveX() * MAX_SCALE / getWidth() / mViewParams.mScaleFactor;
+        return  mViewParams.getPan().getMoveX() * MAX_SCALE / getWidth() / mViewParams.getScaleFactor();
     }
 
     public float getScale() {
-        return mViewParams.mScaleFactor;
+        return mViewParams.getScaleFactor();
     }
 
     public void init() {
         mAngle = 0;
         mViewParams = new ViewParams();
-        mViewParams.mPan = new Pan();
-        mViewParams.mScale = new Scale(MAX_SCALE);
-        mViewParams.MAX_SCALE = MAX_SCALE;
-        mViewParams.MIN_SCALE = MIN_SCALE;
+        mViewParams.setPan(new Pan());
+        mViewParams.setScale(new Scale(MAX_SCALE));
+        mViewParams.setMaxScale(MAX_SCALE);
+        mViewParams.setMinScale(MIN_SCALE);
 
         mGestureDetector = new GestureDetector(getContext(), new GestureListener());
         BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
@@ -107,12 +107,14 @@ public class ThreeDSurfaceView extends GLSurfaceView {
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
 
-            if (mViewParams.mScaling) return false;
+            if (mViewParams.isScaling()) {
+                return false;
+            }
 
-            float moveX = mViewParams.mPan.getMoveX() - (distanceX) / mViewParams.mScale.getScaleFactor();
-            float moveY = mViewParams.mPan.getMoveY() - (distanceY) / mViewParams.mScale.getScaleFactor();
+            float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
+            float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
 
-            mViewParams.mPan.setMove(moveX, moveY);
+            mViewParams.getPan().setMove(moveX, moveY);
             invalidate();
             return true;
         }
