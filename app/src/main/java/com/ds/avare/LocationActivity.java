@@ -51,7 +51,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.threed.Constants;
+import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
@@ -149,7 +149,7 @@ public class LocationActivity extends Activity implements Observer {
     private ImageButton mPlanPause;
     private Button mPlanNext;
 
-    private Constants.TouchMode mTouchMode = Constants.TouchMode.PAN_MODE;
+    private BasicOnScaleGestureListener.TouchMode mTouchMode = BasicOnScaleGestureListener.TouchMode.PAN_MODE;
 
     private ExpandableListView mListPopout;
 
@@ -803,14 +803,14 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                if(mTouchMode == Constants.TouchMode.PAN_MODE) {
+                if(mTouchMode == BasicOnScaleGestureListener.TouchMode.PAN_MODE) {
                     mLocationView.setDraw(true);
-                    mTouchMode = Constants.TouchMode.DRAW_MODE;
+                    mTouchMode = BasicOnScaleGestureListener.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mLocationView.setDraw(false);
-                    mTouchMode = Constants.TouchMode.PAN_MODE;
+                    mTouchMode = BasicOnScaleGestureListener.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
