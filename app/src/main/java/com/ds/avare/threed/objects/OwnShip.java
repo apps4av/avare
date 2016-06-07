@@ -36,13 +36,12 @@ public class OwnShip {
         (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) 
         * BYTES_PER_FLOAT;
 
-    private static final int COORDS = 10;
-    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * COORDS;
+    private static final int ELEMS = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * (4 * 2 + 180 * 2);
     private float[] mShips;
 
     private VertexArray mVertexArray;
 
-    private static float mScanAngle = 0;
+    private static int mScanAngle = 0;
 
     // Make axis
     private static float[] getAxis(float tr[], int offset, float x, float y, float z, float angle) {
@@ -130,24 +129,29 @@ public class OwnShip {
         tr[63 + offset * ELEMS] = 1f;
 
         // y-axis scan orange
-        tr[64 + offset * ELEMS] = x;
-        tr[65 + offset * ELEMS] = y;
-        tr[66 + offset * ELEMS] = z;
-        tr[67 + offset * ELEMS] = 1f;
-        tr[68 + offset * ELEMS] = 1;
-        tr[69 + offset * ELEMS] = 0;
-        tr[70 + offset * ELEMS] = 1;
-        tr[71 + offset * ELEMS] = 1f;
+        // make 180 lines with 1 degree increment so we do not regenerate them
+        int coord = 0;
+        for(int deg = -90; deg < 90; deg ++) {
+            tr[64 + offset * ELEMS + coord * 16] = x;
+            tr[65 + offset * ELEMS + coord * 16] = y;
+            tr[66 + offset * ELEMS + coord * 16] = z;
+            tr[67 + offset * ELEMS + coord * 16] = 1f;
+            tr[68 + offset * ELEMS + coord * 16] = 1;
+            tr[69 + offset * ELEMS + coord * 16] = 0;
+            tr[70 + offset * ELEMS + coord * 16] = 1;
+            tr[71 + offset * ELEMS + coord * 16] = 1f;
 
-        vector[0] = x + 0f;
-        vector[1] = y + 2f;
-        vector[2] = z + 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle - mScanAngle++, vector, tr, 72 + offset * ELEMS, 0, 0, 1);
-        tr[76 + offset * ELEMS] = 1;
-        tr[77 + offset * ELEMS] = 0;
-        tr[78 + offset * ELEMS] = 1;
-        tr[79 + offset * ELEMS] = 1f;
+            vector[0] = x + 0f;
+            vector[1] = y + 2f;
+            vector[2] = z + 0;
+            vector[3] = 1f;
+            MatrixHelper.rotatePoint(x, y, z, -angle - deg, vector, tr, 72 + offset * ELEMS + coord * 16, 0, 0, 1);
+            tr[76 + offset * ELEMS + coord * 16] = 1;
+            tr[77 + offset * ELEMS + coord * 16] = 0;
+            tr[78 + offset * ELEMS + coord * 16] = 1;
+            tr[79 + offset * ELEMS + coord * 16] = 1f;
+            coord++;
+        }
 
 
         return tr;
@@ -189,7 +193,8 @@ public class OwnShip {
         }
 
         // Draw axis around ownship
-        glDrawArrays(GL_LINES, 0, COORDS);
+        glDrawArrays(GL_LINES, 0, 4 * 2);
+        glDrawArrays(GL_LINES, 4 * 2 + ((mScanAngle++ % 180) * 2), 2);
 
     }
 

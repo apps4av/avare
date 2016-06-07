@@ -338,13 +338,14 @@ public class ThreeDActivity extends Activity {
                                 mRenderer.setObstacles(mObstacles);
                             }
 
+                            // Our position
+                            mRenderer.setOwnShip(mAreaMapper.getSelfLocation());
+
                             // For one second run
                             mTime = System.currentTimeMillis();
                         }
                     }
 
-                    // Our position
-                    mRenderer.setOwnShip(mAreaMapper.getSelfLocation());
 
                     // Set orientation
                     mRenderer.getOrientation().set(mGlSurfaceView);

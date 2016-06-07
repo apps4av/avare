@@ -31,8 +31,8 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
     private MultiTouchController<Object> mMultiTouchC;
     private MultiTouchController.PointInfo mCurrTouchPoint;
 
-    private static final float MAX_SCALE = 3f; // change this range in relationship to MAX_VIEW_ANGLE
-    private static final float MIN_SCALE = 1.0f;
+    private static final float MAX_SCALE = 12f;
+    private static final float MIN_SCALE = 1.0f; // change this range in relationship to MAX_VIEW_ANGLE
 
     public ThreeDSurfaceView(Context context) {
         super(context);
