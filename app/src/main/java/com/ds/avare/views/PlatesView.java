@@ -52,12 +52,12 @@ public class PlatesView extends View implements OnTouchListener {
     private String                       mErrorStatus;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
-    private float[]                     mMatrix;
-    private boolean                    mShowingAD;
-    private StorageService              mService;
-    private double                     mAirportLon;
-    private double                     mAirportLat;
-    private ViewParams                  mViewParams;
+    private float[]                      mMatrix;
+    private boolean                      mShowingAD;
+    private StorageService               mService;
+    private double                       mAirportLon;
+    private double                       mAirportLat;
+    private ViewParams                   mViewParams;
 
     private Context                   mContext;
     /*
@@ -436,6 +436,16 @@ public class PlatesView extends View implements OnTouchListener {
 
             // If user is panning
             if( !mDraw ) {
+
+                // In the case of ship-up, rotate the scrolling
+                if (shouldRotate()) {
+                    double thetab = mGpsParams.getBearing();
+                    double p[];
+                    p = Helper.rotateCoord(0, 0, thetab, distanceX, distanceY);
+
+                    distanceX = (float)p[0];
+                    distanceY = (float)p[1];
+                }
 
                 float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
                 float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
