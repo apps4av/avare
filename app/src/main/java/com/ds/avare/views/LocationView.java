@@ -1018,8 +1018,8 @@ public class LocationView extends View implements OnTouchListener {
             float focusX = detector.getFocusX();
             float focusY = detector.getFocusY();
 
-            float moveX = mViewParams.getPan().getMoveX() + ((focusX - mLastFocusX) / mViewParams.getScaleFactor()) / macroScaleFactor;
-            float moveY = mViewParams.getPan().getMoveY() + ((focusY - mLastFocusY) / mViewParams.getScaleFactor()) / macroScaleFactor;
+            float moveX = mViewParams.getPan().getMoveX() + ((focusX - mLastFocusX) / mViewParams.getScaleFactor()) / mMacro;
+            float moveY = mViewParams.getPan().getMoveY() + ((focusY - mLastFocusY) / mViewParams.getScaleFactor()) / mMacro;
             mLastFocusX = focusX;
             mLastFocusY = focusY;
 
@@ -1328,14 +1328,12 @@ public class LocationView extends View implements OnTouchListener {
             }
 
             if(mDraw && mService != null) {
-
-//                float x = distanceX * mViewParams.mScale.getScaleFactor();
-//                float y = distanceY * mViewParams.mScale.getScaleFactor();
                 float x = e2.getX() ;
                 float y = e2.getY() ;
-                    /*
-                     * Threshold the drawing so we do not generate too many points
-                     */
+
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
                 if (mPref.isTrackUp()) {
                     double thetab = mGpsParams.getBearing();
                     double p[] = new double[2];
@@ -1352,10 +1350,11 @@ public class LocationView extends View implements OnTouchListener {
 
             // Panning
             if( !mDraw ) {
-                float moveX = mViewParams.getPan().getMoveX() - (distanceX / mViewParams.getScaleFactor()) / mViewParams.getScale().getMacroFactor();
-                float moveY = mViewParams.getPan().getMoveY() - (distanceY / mViewParams.getScaleFactor()) / mViewParams.getScale().getMacroFactor();
+                float moveX = mViewParams.getPan().getMoveX() - (distanceX / mViewParams.getScaleFactor()) / mMacro;
+                float moveY = mViewParams.getPan().getMoveY() - (distanceY / mViewParams.getScaleFactor()) / mMacro;
 
                 mViewParams.getPan().setMove(moveX, moveY);
+                dbquery(true);
             }
 
             updateCoordinates();
