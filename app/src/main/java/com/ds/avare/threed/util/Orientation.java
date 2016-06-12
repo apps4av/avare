@@ -88,11 +88,9 @@ public class Orientation {
         if(!fp) {
             return 0;
         }
-        if(fp) {
-            return 0; // Remove this for pitch with pan in first pilot mode.
-        }
         // convert displacement y to angle
         float degrees = (-mDisplacementY * 15);
+
         return degrees;
     }
 

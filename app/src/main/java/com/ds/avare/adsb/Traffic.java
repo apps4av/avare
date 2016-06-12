@@ -5,6 +5,7 @@ import android.util.SparseArray;
 
 import com.ds.avare.IHelperService;
 import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
@@ -110,7 +111,7 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, int ownIcao, boolean shouldDraw) {
+    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
 
@@ -190,8 +191,26 @@ public class Traffic {
             double xr = x + PixelCoordinate.rotateX(speedLength, t.mHeading);
             double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
             ctx.canvas.drawLine(x, y, (float)xr, (float)yr, ctx.paint);
+
+            /*
+             * If in track-up mode, rotate canvas around screen x/y of
+             * where we want to draw
+             */
+            boolean bRotated = false;
+            if (ctx.pref.isTrackUp() && (params != null)) {
+                bRotated = true;
+                ctx.canvas.save();
+                ctx.canvas.rotate((int) params.getBearing(), x, y);
+            }
+
+
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    text, Color.DKGRAY, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+                    text, Color.BLACK, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+
+
+            if (true == bRotated) {
+                ctx.canvas.restore();
+            }
 
         }
 
@@ -215,7 +234,6 @@ public class Traffic {
             }
             renderer.setShips(ships);
         }
-        renderer.setOwnShip(mapper.getSelfLocation());
     }
 
 

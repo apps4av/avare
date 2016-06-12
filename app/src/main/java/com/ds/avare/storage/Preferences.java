@@ -839,6 +839,13 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean show3DInfoLines() {
+        return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines3D), true);
+    }
+
+    /**
+     * @return
+     */
     public String getUDWLocation() {
         try {
             return mPref.getString(mContext.getString(R.string.UDWLocation), "");

@@ -48,6 +48,7 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
+import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
 
 import java.util.LinkedList;
@@ -77,8 +78,8 @@ public class ThreeDActivity extends Activity {
 
     private Button mCenterButton;
     private TextView mText;
-    private TextView mTextError;
-    private TextView mTextAGL;
+
+    private GlassView mGlassView;
 
 
     private Vector4d mObstacles[];
@@ -194,6 +195,8 @@ public class ThreeDActivity extends Activity {
 
         mGlSurfaceView = (ThreeDSurfaceView) view.findViewById(R.id.threed_surface);
 
+        mGlassView = (GlassView) view.findViewById(R.id.threed_overlay_view);
+
         // Check if the system supports OpenGL ES 2.0.
         ActivityManager activityManager =
                 (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -270,7 +273,7 @@ public class ThreeDActivity extends Activity {
                                     // Write out AGL
                                     Message m = mHandler.obtainMessage();
                                     m.what = MESSAGE_AGL;
-                                    m.obj = "AGL " + Math.round(alt - elev) + "ft";
+                                    m.obj = Math.round(alt - elev) + "ft";
                                     mHandler.sendMessage(m);
                                 }
 
@@ -335,10 +338,14 @@ public class ThreeDActivity extends Activity {
                                 mRenderer.setObstacles(mObstacles);
                             }
 
+                            // Our position
+                            mRenderer.setOwnShip(mAreaMapper.getSelfLocation());
+
                             // For one second run
                             mTime = System.currentTimeMillis();
                         }
                     }
+
 
                     // Set orientation
                     mRenderer.getOrientation().set(mGlSurfaceView);
@@ -397,8 +404,6 @@ public class ThreeDActivity extends Activity {
         });
 
         mText = (TextView) view.findViewById(R.id.threed_text);
-        mTextError = (TextView) view.findViewById(R.id.threed_text_error);
-        mTextAGL = (TextView) view.findViewById(R.id.threed_text_agl);
 
         // Charts different from main view
         OptionButton chartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
@@ -433,6 +438,7 @@ public class ThreeDActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+            mGlassView.setService(mService);
         }
 
         /* (non-Javadoc)
@@ -478,8 +484,8 @@ public class ThreeDActivity extends Activity {
 
         // Clean messages
         mText.setText("");
-        mTextError.setText("");
-        mTextAGL.setText("");
+        mGlassView.setStatus(null);
+        mGlassView.setAgl("");
 
         /*
          * Registering our receiver
@@ -536,13 +542,13 @@ public class ThreeDActivity extends Activity {
                 mText.setText((String) msg.obj);
             }
             else if (msg.what == MESSAGE_ERROR) {
-                mTextError.setText((String) msg.obj);
+                mGlassView.setStatus((String) msg.obj);
             }
             else if (msg.what == MESSAGE_OBSTACLES) {
                 mObstacles = (Vector4d[]) msg.obj;
             }
             else if (msg.what == MESSAGE_AGL) {
-                mTextAGL.setText((String) msg.obj);
+                mGlassView.setAgl((String) msg.obj);
             }
         }
     };

@@ -43,31 +43,18 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/threed_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFFFF"
+        android:background="#7F000000"
+        android:textColor="#7FFFFFFF"
         android:textSize="12dp"
         android:layout_margin="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_above="@+id/threed_button_center"
+        android:layout_alignParentRight="true"/>
 
-    <TextView
-        android:id="@+id/threed_text_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFF0000"
-        android:textSize="12dp"
-        android:layout_margin="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
-
-    <TextView
-        android:id="@+id/threed_text_agl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFFFF"
-        android:textSize="14dp"
-        android:layout_margin="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/threed_text_error"/>
+    <com.ds.avare.views.GlassView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/threed_overlay_view"
+        android:layout_centerVertical="true" />
 
 </RelativeLayout>
 

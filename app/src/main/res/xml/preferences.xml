@@ -285,6 +285,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/ExtendInfoLines"
             android:summary="@string/ExtendInfoLinesSummary"
             android:title="@string/ExtendInfoLinesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ExtendInfoLines3D"
+            android:summary="@string/ExtendInfoLines3DSummary"
+            android:title="@string/ExtendInfoLines3DLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:entries="@array/RunwayLengths"
             android:entryValues="@array/RunwayLengths"

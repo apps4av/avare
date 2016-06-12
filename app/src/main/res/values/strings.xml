@@ -305,6 +305,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ExtendInfoLines">ExtendInfoLines</string>
     <string name="ExtendInfoLinesLabel">Show Status Area on Plates</string>
     <string name="ExtendInfoLinesSummary">Select to show the configuable status area on the Plate screen</string>
+    <string name="ExtendInfoLines3D">ExtendInfoLines3D</string>
+    <string name="ExtendInfoLines3DLabel">Show Status Area on 3D</string>
+    <string name="ExtendInfoLines3DSummary">Select to show the configuable status area on the 3D screen</string>
     <string name="UDWLocation">&quot;UDWLocation&quot;</string>
     <string name="UDWSearch">User defined waypoint/plans files are found in: </string>
     <string name="UDWLabel">&quot;User Defined Waypoints/Plans&quot;</string>
@@ -422,7 +425,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CAPGridSummary">&quot;Select to show the US Civil Air Patrol grids on the map.&quot;</string>
     <string name="CAPGridLabel">&quot;Show CAP Grids&quot;</string>
     <string name="Tip">&quot;Tip&quot;</string>
-    <string name="DisableTip">&quot;Tips can be disabled from Preferences.&quot;</string>
     <string name="tipIndex">&quot;TipIndex&quot;</string>
     <string name="prefTip">&quot;Tip&quot;</string>
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
