@@ -44,7 +44,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.touch.BasicOnScaleGestureListener;
+import com.ds.avare.threed.Constants;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
@@ -91,7 +91,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
-    private BasicOnScaleGestureListener.TouchMode mTouchMode = BasicOnScaleGestureListener.TouchMode.PAN_MODE;
+    private Constants.TouchMode mTouchMode = Constants.TouchMode.PAN_MODE;
 
     public static final String AD = "AIRPORT-DIAGRAM";
 
@@ -356,14 +356,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Bring up preferences
                  */
-                if(mTouchMode == BasicOnScaleGestureListener.TouchMode.PAN_MODE) {
+                if(mTouchMode == Constants.TouchMode.PAN_MODE) {
                     mPlatesView.setDraw(true);
-                    mTouchMode = BasicOnScaleGestureListener.TouchMode.DRAW_MODE;
+                    mTouchMode = Constants.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mPlatesView.setDraw(false);
-                    mTouchMode = BasicOnScaleGestureListener.TouchMode.PAN_MODE;
+                    mTouchMode = Constants.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
