@@ -73,7 +73,7 @@ authors: zkhan, jlmcgraw
         android:title="@string/prefWeatherCategoryTitle" 
         android:icon="@android:drawable/ic_menu_call" >
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="30"
+            android:defaultValue="360"
             android:entries="@array/Expires"
             android:entryValues="@array/Expires"
             android:key="@string/Expires"

@@ -1062,7 +1062,7 @@ public class Preferences {
      * @return
      */
     public int getExpiryTime() {
-        String exp = mPref.getString(mContext.getString(R.string.Expires), "120");
+        String exp = mPref.getString(mContext.getString(R.string.Expires), "360");
         return Integer.parseInt(exp);
     }
 
