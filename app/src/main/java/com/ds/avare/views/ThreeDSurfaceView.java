@@ -78,11 +78,11 @@ public class ThreeDSurfaceView extends GLSurfaceView {
     }
 
     public float getDisplacementY() {
-        return -mViewParams.getPan().getMoveY() * MAX_SCALE / getHeight() / mViewParams.getScaleFactor();
+        return -mViewParams.getPan().getMoveY() * MAX_SCALE / getHeight() / 2; // factor of 2 slows down pan
     }
 
     public float getDisplacementX() {
-        return  mViewParams.getPan().getMoveX() * MAX_SCALE / getWidth() / mViewParams.getScaleFactor();
+        return  mViewParams.getPan().getMoveX() * MAX_SCALE / getWidth() / 2;
     }
 
     public float getScale() {

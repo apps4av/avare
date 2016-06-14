@@ -95,32 +95,15 @@ public class GlassView extends View {
     @Override
     public void onDraw(Canvas canvas) {
 
-
-        float w = getWidth();
-        float h = getHeight();
-
         /*
          * Now draw the target cross hair
          */
-
-        // center miniature aircraft, this does not move
-        if(mPref.isFirstPerson()) {
-            float wingLineWidth = w / 4;
-            float wingLineOffset = w / 8;
-            float fatLineHeight = h / 128 + 1;
-
-            mPaint.setColor(Color.rgb(0xFF, 0x8C, 0x00)); // orange
-            mPaint.setStrokeWidth(fatLineHeight);
-            canvas.drawLine(w / 2 + wingLineOffset, h / 2, w / 2 + wingLineOffset + wingLineWidth, h / 2, mPaint);
-            canvas.drawLine(w / 2 - wingLineOffset, h / 2, w / 2 - wingLineOffset - wingLineWidth, h / 2, mPaint);
-            canvas.drawCircle(w / 2, h / 2, fatLineHeight / 2 + 1, mPaint);
-        }
 
         drawStatusLines(canvas);
 
         if(mAgl != null) {
             mPaint.setColor(Color.WHITE);
-            canvas.drawText(mAgl, 8, h - mPaint.getTextSize() - 8, mPaint);
+            canvas.drawText(mAgl, 8, getHeight() - mPaint.getTextSize() - 8, mPaint);
         }
     }
 
