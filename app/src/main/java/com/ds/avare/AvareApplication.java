@@ -14,6 +14,8 @@ package com.ds.avare;
 
 import android.app.Application;
 
+import com.ds.avare.utils.BitmapHolder;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -35,5 +37,8 @@ public class AvareApplication extends Application {
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
+
+        BitmapHolder.setDims(512);
+
     }
 }

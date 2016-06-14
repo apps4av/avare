@@ -88,8 +88,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        // Set line to be thick
-        glLineWidth(6);
+        // Set line to be thick and dependant on dpi
+        glLineWidth(Helper.getDpiToPix(mContext) * 3);
 
         // hide surfaces
         glEnable(GL_DEPTH_TEST);
