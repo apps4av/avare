@@ -15,7 +15,10 @@ package com.ds.avare.place;
 
 import com.ds.avare.shapes.ChartShape;
 import com.ds.avare.shapes.Shape;
+import com.ds.avare.utils.BitmapHolder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -100,6 +103,81 @@ public class Boundaries {
             s.makePolygon();
         }
     }
+
+
+    public static int getZoom(int index) {
+        switch (BitmapHolder.WIDTH) {
+            case 256:
+                return mZooms[index] + 1;
+            case 512:
+                return mZooms[index];
+
+        }
+        return 0;
+    }
+
+
+    public static String getChartExtension(int index) {
+        return mExtension[index];
+    }
+
+    public static String getChartType(int index) {
+        return mChartType[index];
+    }
+
+    public static ArrayList<String> getChartTypes() {
+        return new ArrayList<String>(Arrays.asList(mChartType));
+    }
+
+    private static String[] mChartType = {
+            "Sectional",
+            "TAC",
+            "WAC",
+            "IFR Low",
+            "IFR High",
+            "IFR Area",
+            "Terrain",
+            "Shaded Relief",
+            "Topographic",
+            "Heli/Other",
+            "ONC World",
+            "TPC World",
+            "Misc."
+    };
+
+
+    // Zooms are for 512x512 tiles on charts
+    private static int[] mZooms = {
+            10,
+            11,
+            9,
+            10,
+            9,
+            11,
+            10,
+            9,
+            10,
+            12,
+            9,
+            10,
+            12
+    };
+
+    private static String[] mExtension = {
+            ".jpg",
+            ".jpg",
+            ".jpg",
+            ".png",
+            ".png",
+            ".png",
+            ".png",
+            ".jpg",
+            ".jpg",
+            ".png",
+            ".jpg",
+            ".jpg",
+            ".jpg"
+    };
 
 
     // name,lon,lat
@@ -1121,4 +1199,5 @@ public class Boundaries {
         "9","WashingtonHeli","-76.4016","38.428",
         "9","WashingtonHeli","-76.4016","39.1489",
     };
+
 }

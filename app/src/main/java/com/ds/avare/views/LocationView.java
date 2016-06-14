@@ -35,6 +35,7 @@ import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -972,7 +973,7 @@ public class LocationView extends View implements OnTouchListener {
                         mViewParams.getPan().setMove((float)(mViewParams.getPan().getMoveX() * t.factor), (float)(mViewParams.getPan().getMoveY() * t.factor));
 
                         int index = Integer.parseInt(mPref.getChartType());
-                        String type = getResources().getStringArray(R.array.ChartType)[index];
+                        String type =  Boundaries.getChartType(index);
 
                         mGpsTile = t.gpsTile;
                         mOnChart = type + "\n" + t.chart;
