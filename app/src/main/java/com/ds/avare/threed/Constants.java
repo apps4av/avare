@@ -24,4 +24,7 @@ package com.ds.avare.threed;
 public class Constants {
     public static final int BYTES_PER_FLOAT = 4;
     public static final int BYTES_PER_SHORT = 2;
+    public static enum TouchMode {
+        DRAW_MODE, PAN_MODE
+    }
 }
