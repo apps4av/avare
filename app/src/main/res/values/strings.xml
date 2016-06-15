@@ -447,7 +447,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ConnectedDrive">Connected to Google Drive</string>
     <string name="DisconnectedDrive">Disconnected from Google Drive</string>
 
-    <string name="Expires">&quot;DataExpire&quot;</string>
+    <string name="Expires">&quot;DataExpiry&quot;</string>
     <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
     <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads, and disappear from Map screen&quot;</string>
 
@@ -517,9 +517,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="BirdEye">Satellite Cam</string>
     <string name="Ready">Ready</string>
     <string name="ChartType3D">ChartType3D</string>
-    <string name="TileSize">TileSize</string>
-    <string name="TileSizeLabel">New Tile Size</string>
-    <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
 
 
 </resources>

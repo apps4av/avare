@@ -28,7 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:labelFor="@string/ChartTypeLabel"
-        />
+        android:entries="@array/ChartType" />
 
     <Button
         android:id="@+id/threed_button_center"

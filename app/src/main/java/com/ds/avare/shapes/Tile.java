@@ -17,7 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import com.ds.avare.R;
-import com.ds.avare.place.Boundaries;
 import com.ds.avare.position.Epsg900913;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
@@ -98,7 +97,8 @@ public class Tile {
      * @return
      */
     public static int getMaxZoom(Context ctx, String index) {
-        return Boundaries.getZoom(Integer.valueOf(index));
+        return Integer.valueOf(ctx.getResources().getStringArray(R.array.ChartMaxZooms)
+                [Integer.valueOf(index)]);
     }
 
     private void CommonTile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
@@ -114,7 +114,8 @@ public class Tile {
          * Extension varies for chart types because some chart have better compression with
          * one or other type of standard
          */
-        mExtension = Boundaries.getChartExtension(Integer.valueOf(mChartIndex));
+        mExtension = ctx.getResources().getStringArray(R.array.ChartFileExtesion)
+                [Integer.valueOf(mChartIndex)];
         mProj = new Epsg900913(lat, lon, mZoom);
         setup(pref);
     }
@@ -322,7 +323,7 @@ public class Tile {
 
         int index = Integer.parseInt(ctx.pref.getChartType());
 
-        String type = Boundaries.getChartType(index);
+        String type = ctx.context.getResources().getStringArray(R.array.ChartType)[index];
         boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
         float scaleFactor = ctx.scale.getScaleFactor();
         float scaleCorrected = ctx.scale.getScaleCorrected();

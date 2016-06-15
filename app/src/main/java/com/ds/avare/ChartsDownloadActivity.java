@@ -269,7 +269,7 @@ public class ChartsDownloadActivity extends Activity {
             return false;
         }
         
-        mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust(), mPref.isTileSize256());
+        mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
         mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName, mChartAdapter.isStatic(mName));
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);

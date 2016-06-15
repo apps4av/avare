@@ -14,9 +14,6 @@ package com.ds.avare;
 
 import android.app.Application;
 
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -38,9 +35,5 @@ public class AvareApplication extends Application {
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
-
-        // XXX:
-        // This is transition code to 256 tiles, remove after transition is complete
-        BitmapHolder.setDims(new Preferences(getApplicationContext()).isTileSize256() ? 256 : 512);
     }
 }

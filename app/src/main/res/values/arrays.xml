@@ -1918,6 +1918,70 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 
+    <string-array name="ChartType">
+        <item>Sectional</item>
+        <item>TAC</item>
+        <item>WAC</item>
+        <item>IFR Low</item>
+        <item>IFR High</item>
+        <item>IFR Area</item>
+        <item>Terrain</item>
+        <item>Shaded Relief</item>
+        <item>Topographic</item>
+        <item>Heli/Other</item>
+        <item>ONC World</item>
+        <item>TPC World</item>
+        <item>Misc.</item>
+    </string-array>
+
+    <string-array name="ChartFileExtesion">
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.png</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.png</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+        <item>.jpg</item>
+    </string-array>
+    
+    <string-array name="ChartTypeValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="ChartMaxZooms">
+        <item>10</item>
+        <item>11</item>
+        <item>9</item>
+        <item>10</item>
+        <item>9</item>
+        <item>11</item>
+        <item>10</item>
+        <item>9</item>
+        <item>10</item>
+        <item>12</item>
+        <item>9</item>
+        <item>10</item>
+        <item>12</item>
+    </string-array>
+    
     <string-array name="UnitsD">
         <item>Nautical Miles</item>
         <item>Statute Miles</item>
@@ -2209,8 +2273,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>30</item>
         <item>60</item>
         <item>120</item>
-        <item>240</item>
-        <item>360</item>
         <item>1440</item>
     </string-array>
 

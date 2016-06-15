@@ -18,10 +18,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
@@ -31,11 +29,14 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.ViewParams;
+
+import org.metalev.multitouch.controller.MultiTouchController;
+import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
+import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
+import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
 /**
  * 
@@ -43,21 +44,25 @@ import com.ds.avare.utils.ViewParams;
  * @author plinel
  *
  */
-public class PlatesView extends View implements OnTouchListener {
+public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
 	
+
+    private Scale                        mScale;
+    private Pan                          mPan;
 	private Paint                        mPaint;
+    private MultiTouchController<Object> mMultiTouchC;
+    private PointInfo                    mCurrTouchPoint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private GpsParams                    mGpsParams;
     private String                       mErrorStatus;
     private Preferences                  mPref;
     private BitmapHolder                 mAirplaneBitmap;
-    private float[]                      mMatrix;
-    private boolean                      mShowingAD;
-    private StorageService               mService;
-    private double                       mAirportLon;
-    private double                       mAirportLat;
-    private ViewParams                   mViewParams;
+    private float[]                     mMatrix;
+    private boolean                    mShowingAD;
+    private StorageService              mService;
+    private double                     mAirportLon;
+    private double                     mAirportLat;
 
     private Context                   mContext;
     /*
@@ -70,11 +75,11 @@ public class PlatesView extends View implements OnTouchListener {
      */
     private float                      mDipToPix;
 
+    private static final double MAX_PLATE_SCALE = 8;
+    
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     private static final int SHADOW = 4;
-
-    private ScaleGestureDetector mScaleDetector;
 
     /**
      * 
@@ -86,23 +91,23 @@ public class PlatesView extends View implements OnTouchListener {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 
-        mViewParams = new ViewParams();
         mContext = context;
-        mViewParams.setPan(new Pan());
+        mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mPref = new Preferences(context);
-        mViewParams.setScale(new Scale(mViewParams.getMaxScale()));
+        mScale = new Scale(MAX_PLATE_SCALE);
         setOnTouchListener(this);
+        mMultiTouchC = new MultiTouchController<Object>(this);
+        mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mDipToPix = Helper.getDpiToPix(context);
-        BasicOnScaleGestureListener gestureListener = new BasicOnScaleGestureListener(mViewParams, this);
-        mScaleDetector = new ScaleGestureDetector(context, gestureListener);
+
     }
 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
@@ -116,7 +121,8 @@ public class PlatesView extends View implements OnTouchListener {
      * @param context
      */
 	public PlatesView(Context context) {
-		this(context, null, 0);
+		super(context);
+		setup(context);
 	}
 
     /**
@@ -124,7 +130,8 @@ public class PlatesView extends View implements OnTouchListener {
      * @param context
      */
     public PlatesView(Context context, AttributeSet set) {
-        this(context, set, 0);
+        super(context, set);
+        setup(context);
     }
 
     /**
@@ -166,9 +173,8 @@ public class PlatesView extends View implements OnTouchListener {
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        boolean retVal = mGestureDetector.onTouchEvent(e);
-        retVal = mScaleDetector.onTouchEvent(e) || retVal;
-        return retVal;
+        mGestureDetector.onTouchEvent(e);
+        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
     }
 
     /**
@@ -178,6 +184,97 @@ public class PlatesView extends View implements OnTouchListener {
         mBitmap = holder;
         postInvalidate();
     }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public Object getDraggableObjectAtPoint(PointInfo pt) {
+        return mBitmap;
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
+     */
+    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
+        float x = mPan.getMoveX();
+        float y = mPan.getMoveY();
+        if(shouldRotate()) {
+            double p[] = new double[2];
+            double thetab = mGpsParams.getBearing();
+            p = Helper.rotateCoord(0, 0, -thetab, x, y);
+            objPosAndScaleOut.set((float)p[0],(float)p[1], true,
+                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+        }
+        else {
+            objPosAndScaleOut.set(x, y, true,
+                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+        }
+
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public void selectObject(Object obj, PointInfo touchPoint) {
+        touchPointChanged(touchPoint);
+    }
+
+    /* (non-Javadoc)
+     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
+     */
+    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
+        touchPointChanged(touchPoint);
+        if(false == mCurrTouchPoint.isMultiTouch()) {
+            /*
+             * Do not move on multitouch
+             */
+            if(mDraw && mService != null) {
+                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
+                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
+                if (shouldRotate()) {
+                    double thetab = mGpsParams.getBearing();
+                    double p[] = new double[2];
+                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
+                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
+                }
+                else {
+                    mService.getPixelDraw().addPoint(x, y);
+                }
+
+                return true;
+            }
+
+            /*
+             * Multi-touch is zoom, single touch is pan
+             */
+            float x = newObjPosAndScale.getXOff();
+            float y = newObjPosAndScale.getYOff();
+
+            if (shouldRotate()) {
+                double thetab = mGpsParams.getBearing();
+                double p[] = new double[2];
+                p = Helper.rotateCoord(0, 0, thetab, x, y);
+                mPan.setMove((float) p[0], (float) p[1]);
+            }
+            else {
+                mPan.setMove(x, y);
+            }
+
+            
+        } else {
+            /*
+             * Clamp scaling.
+             */
+            mScale.setScaleFactor(newObjPosAndScale.getScale());
+        }
+        
+        invalidate();
+        return true;
+    }
+
     /**
      * 
      * @param canvas
@@ -202,8 +299,15 @@ public class PlatesView extends View implements OnTouchListener {
     public void setParams(float[] params, boolean ad) {
     	mMatrix = params;
     	mShowingAD = ad;
-        center();
     	postInvalidate();
+    }
+    
+    /**
+     * @param touchPoint
+     */
+    private void touchPointChanged(PointInfo touchPoint) {
+        mCurrTouchPoint.set(touchPoint);
+        invalidate();
     }
 
     /* (non-Javadoc)
@@ -217,7 +321,7 @@ public class PlatesView extends View implements OnTouchListener {
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
-            float scale = mViewParams.getScale().getScaleFactorRaw();
+            float scale = mScale.getScaleFactorRaw();
 
             float lon = (float) mGpsParams.getLongitude();
             float lat = (float) mGpsParams.getLatitude();
@@ -287,10 +391,10 @@ public class PlatesView extends View implements OnTouchListener {
             /*
         	 * Plate
         	 */
-            float x = mViewParams.getPan().getMoveX() * scale
+            float x = mPan.getMoveX() * scale
                     + getWidth() / 2
                     - mBitmap.getWidth() / 2 * scale;
-            float y = mViewParams.getPan().getMoveY() * scale
+            float y = mPan.getMoveY() * scale
                     + getHeight() / 2
                     - mBitmap.getHeight() / 2 * scale;
             mBitmap.getTransform().setScale(scale, scale);
@@ -317,11 +421,11 @@ public class PlatesView extends View implements OnTouchListener {
                 canvas.drawCircle(
                         pixAirportx * scale
                         + getWidth() / 2
-                        + mViewParams.getPan().getMoveX() * scale
+                        + mPan.getMoveX() * scale
                         - mBitmap.getWidth() / 2 * scale,
                         pixAirporty * scale
                         + getHeight() / 2
-                        + mViewParams.getPan().getMoveY() * scale
+                        + mPan.getMoveY() * scale 
                         - mBitmap.getHeight() / 2 * scale,
                         16, mPaint);
                 mPaint.setAlpha(255);
@@ -339,12 +443,12 @@ public class PlatesView extends View implements OnTouchListener {
 	                        pixx * scale
 	                        + getWidth() / 2
 	                        - mAirplaneBitmap.getWidth() / 2
-	                        + mViewParams.getPan().getMoveX() * scale
+	                        + mPan.getMoveX() * scale
 	                        - mBitmap.getWidth() / 2 * scale,
 	                        pixy * scale
 	                        + getHeight() / 2
 	                        - mAirplaneBitmap.getHeight() / 2
-	                        + mViewParams.getPan().getMoveY() * scale
+	                        + mPan.getMoveY() * scale 
 	                        - mBitmap.getHeight() / 2 * scale);
 	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
                 }
@@ -384,19 +488,10 @@ public class PlatesView extends View implements OnTouchListener {
      */
     public void center() {
         /*
-         * On short press, move to center
+         * On long press, move to center
          */
-        mViewParams.setPan(new Pan());
+        mPan = new Pan();
 
-        // Figure out the scale that will fit to window
-        float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
-        float widthScale = (float)this.getWidth() / (float)mBitmap.getBitmap().getWidth();
-        float toFitScaleFactor = Math.min(heightScale, widthScale);
-
-        // Scale to "fit", and set that as minimum scale
-        mViewParams.getScale().setScaleFactor(toFitScaleFactor);
-        mViewParams.setScaleFactor(toFitScaleFactor);
-        mViewParams.setMinScale(toFitScaleFactor);
         invalidate();
     }
 
@@ -406,55 +501,12 @@ public class PlatesView extends View implements OnTouchListener {
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                float distanceX, float distanceY) {
-
-            // Don't pan/draw if multi-touch scaling is under way
-            if( mViewParams.isScaling() ) {
-                return false;
-            }
-
-            // If user is drawing
-            if(mDraw && mService != null) {
-                float x = e2.getX() ;
-                float y = e2.getY() ;
-
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
-                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
-                }
-                else {
-                    mService.getPixelDraw().addPoint(x, y);
-                }
-
-            }
-
-            // If user is panning
-            if( !mDraw ) {
-
-                // In the case of ship-up, rotate the scrolling
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[];
-                    p = Helper.rotateCoord(0, 0, thetab, distanceX, distanceY);
-
-                    distanceX = (float)p[0];
-                    distanceY = (float)p[1];
-                }
-
-                float moveX = mViewParams.getPan().getMoveX() - (distanceX) / mViewParams.getScale().getScaleFactor();
-                float moveY = mViewParams.getPan().getMoveY() - (distanceY) / mViewParams.getScale().getScaleFactor();
-
-                mViewParams.getPan().setMove(moveX, moveY);
-            }
-
-            invalidate();
-            return true;
+        /* (non-Javadoc)
+         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
+         */
+        @Override
+        public void onLongPress(MotionEvent e) {
+        	
         }
         
         @Override
@@ -469,7 +521,8 @@ public class PlatesView extends View implements OnTouchListener {
         }
 
     }
-
+    
+    
     /**
      * 
      * @param b
