@@ -54,7 +54,6 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
-import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
@@ -399,10 +398,6 @@ public class LocationActivity extends Activity implements Observer {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
-
-        // XXX:
-        // This is transition code to 256 tiles, remove after transition is complete
-        BitmapHolder.setDims(mPref.isTileSize256() ? 256 : 512);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
