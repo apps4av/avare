@@ -36,6 +36,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
+        <CheckBoxPreference
+            android:key="@string/TileSize"
+            android:summary="@string/TileSizeSummary"
+            android:title="@string/TileSizeLabel" />
         <com.ds.avare.utils.FolderPreference
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
@@ -73,7 +77,7 @@ authors: zkhan, jlmcgraw
         android:title="@string/prefWeatherCategoryTitle" 
         android:icon="@android:drawable/ic_menu_call" >
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="30"
+            android:defaultValue="360"
             android:entries="@array/Expires"
             android:entryValues="@array/Expires"
             android:key="@string/Expires"

@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
@@ -414,6 +415,7 @@ public class ThreeDActivity extends Activity {
                 return null;
             }
         });
+        chartOption.setOptions(Boundaries.getChartTypes());
         chartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
 
     }

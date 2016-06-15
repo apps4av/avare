@@ -1062,7 +1062,7 @@ public class Preferences {
      * @return
      */
     public int getExpiryTime() {
-        String exp = mPref.getString(mContext.getString(R.string.Expires), "120");
+        String exp = mPref.getString(mContext.getString(R.string.Expires), "360");
         return Integer.parseInt(exp);
     }
 
@@ -1166,5 +1166,9 @@ public class Preferences {
 
         }
         return intervalInt;
+    }
+
+    public boolean isTileSize256() {
+        return mPref.getBoolean(mContext.getString(R.string.TileSize), false);
     }
 }
