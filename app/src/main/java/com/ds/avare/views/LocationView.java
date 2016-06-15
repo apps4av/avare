@@ -23,6 +23,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -351,6 +352,7 @@ public class LocationView extends View implements OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent e) {
 
+        Log.d("LocationView::onTouch", "BEGIN");
 
         boolean bPassToGestureDetector = true;
         
@@ -369,7 +371,7 @@ public class LocationView extends View implements OnTouchListener {
             /*
              * Do not draw point. Only when long press and down.
              */
-             mPointProjection = null;
+            mPointProjection = null;
 
             /*
              * Now that we have moved passed the macro level, re-query for new tiles.
@@ -380,8 +382,14 @@ public class LocationView extends View implements OnTouchListener {
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            Log.d("LocationView::onTouch", "action_down: true");
 
             if(mService != null) {
+                Log.d("LocationView::onTouch", "action_down: mService != null");
+                Log.d("LocationView::onTouch", "action_down: mService.getPlan() != null: " + (mService.getPlan() != null));
+                Log.d("LocationView::onTouch", "action_down: mDragPlanPoint: " + (mDragPlanPoint));
+                Log.d("LocationView::onTouch", "action_down: mPref.allowRubberBanding: " + (mPref.allowRubberBanding()));
+
                 /*
                  * Find if this is close to a plan point. Do rubber banding if true
                  * This is where rubberbanding starts
@@ -401,27 +409,68 @@ public class LocationView extends View implements OnTouchListener {
             // Remember this point so we can make sure we move far enough before losing the long press
             mDoCallbackWhenDone = false;
             mDownFocusPoint = getFocusPoint(e);
+            Log.d("LocationView::onTouch", "mDownFocusPoint: " + mDownFocusPoint);
+
             startClosestAirportTask(e.getX(), e.getY());
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE) {
+            Log.d("LocationView::onTouch", "action_move: true");
+
             if(mDownFocusPoint != null) {
         
                 Point fp = getFocusPoint(e);
                 final int deltaX = fp.x - mDownFocusPoint.x;
                 final int deltaY = fp.y - mDownFocusPoint.y;
                 int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
+                Log.d("LocationView::onTouch", "distanceSquare: " + distanceSquare);
+                Log.d("LocationView::onTouch", "mTouchSlopSquare: " + mTouchSlopSquare);
+
                 bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
                 
             }
             // Rubberbanding, intermediate
             rubberBand(e.getX(), e.getY(), false);
         }
-        
+        Log.d("LocationView::onTouch", "e.getPointerCount: " + e.getPointerCount());
+
+        if( e.getPointerCount() == 2) {
+            double x0 = e.getX(0);
+            double y0 = e.getY(0);
+            double x1 = e.getX(1);
+            double y1 = e.getY(1);
+
+            double lon0,lat0,lon1,lat1;
+            // convert to origin coord if Trackup
+            if(mPref.isTrackUp()) {
+                double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                double thetab = mGpsParams.getBearing();
+                double p0[],p1[];
+                p0 = Helper.rotateCoord(c_x, c_y, thetab, x0, y0);
+                p1 = Helper.rotateCoord(c_x, c_y, thetab, x1, y1);
+                lon0 = mOrigin.getLongitudeOf(p0[0]);
+                lat0 = mOrigin.getLatitudeOf(p0[1]);
+                lon1 = mOrigin.getLongitudeOf(p1[0]);
+                lat1 = mOrigin.getLatitudeOf(p1[1]);
+            }
+            else {
+                lon0 = mOrigin.getLongitudeOf(x0);
+                lat0 = mOrigin.getLatitudeOf(y0);
+                lon1 = mOrigin.getLongitudeOf(x1);
+                lat1 = mOrigin.getLatitudeOf(y1);
+            }
+            mPointProjection = new Projection(lon0, lat0, lon1, lat1);
+        } else {
+            mPointProjection = null;
+        }
+        Log.d("LocationView::onTouch", "mPointProjection == null: " + (mPointProjection == null));
+
+        Log.d("LocationView::onTouch", "bPassToGestureDetector: " + bPassToGestureDetector);
         if(bPassToGestureDetector) {
             // Once we break out of the square or stop the long press, keep sending
             if(e.getAction() == MotionEvent.ACTION_MOVE || e.getAction() == MotionEvent.ACTION_UP) {
                 mDownFocusPoint = null;
-                mPointProjection = null;
+                //mPointProjection = null;
                 if(mClosestTask != null) {
                     mClosestTask.cancel(true);
                 }
@@ -1004,8 +1053,18 @@ public class LocationView extends View implements OnTouchListener {
 
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
+            // Stop any rubber banding
+            mDragPlanPoint = -1;
+
             macroScaleFactor = mViewParams.getScale().getMacroFactor();
             return super.onScaleBegin(detector);
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            // Stop any rubber banding
+            mPointProjection = null;
+            super.onScaleEnd(detector);
         }
 
         @Override
@@ -1321,6 +1380,12 @@ public class LocationView extends View implements OnTouchListener {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
+            // Don't pan if rubber-banding is in progress
+            if(mDragPlanPoint >= 0) {
+                invalidate();
+
+                return true;
+            }
 
             // Don't pan or draw if multi-touch scaling is under way
             if( mViewParams.isScaling() ) {
