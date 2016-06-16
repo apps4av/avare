@@ -392,7 +392,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * Do not query repeatedly hence check for mFactor = 1
              */
             if(mMacro != mScale.getMacroFactor()) {
-                dbquery(true);
+                loadTiles();
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
@@ -536,7 +536,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 /*
                  * Query when we have moved one tile. This will happen in background.
                  */
-                dbquery(true);
+                loadTiles();
             }
         }
         else {
@@ -596,49 +596,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mCurrTouchPoint.set(touchPoint);
         invalidate();
     }
-
-    /**
-     * 
-     * @param force
-     */
-    private void dbquery(boolean force) {
-
-        if(mService == null) {
-            return;
-        }
-        
-        if(mImageDataSource == null) {
-            return;
-        }
-        
-        if(null == mService) {
-            return;                
-        }
-
-        /*
-         * Find
-         */
-        if((!force) && (mGpsTile != null)) {
-            double offsets[] = new double[2];
-
-            if(mGpsTile.within(mGpsParams.getLongitude(), mGpsParams.getLatitude())) {
-                /*
-                 * We are within same tile no need for query.
-                 */
-            	offsets[0] = mGpsTile.getOffsetX(mGpsParams.getLongitude());
-            	offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
-                mMovement = new Movement(offsets);
-                postInvalidate();
-                return;
-            }
-        }
-
-        /*
-         * Find
-         */
-        loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude());
-    }
-
 
 
     /**
@@ -1005,7 +962,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * 
      */
     public void forceReload() {
-        dbquery(true);        
+        loadTiles();
     }
         
     /**
@@ -1023,7 +980,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Database query for new location / pan location.
          */
-        dbquery(false);
+        if(mGpsTile != null) {
+            double offsets[] = new double[2];
+
+            /*
+             * No need to load tiles when we are on current tile
+             */
+            if(mGpsTile.within(mGpsParams.getLongitude(), mGpsParams.getLatitude())) {
+                /*
+                 * We are within same tile no need for query.
+                 */
+                offsets[0] = mGpsTile.getOffsetX(mGpsParams.getLongitude());
+                offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
+                mMovement = new Movement(offsets);
+                postInvalidate();
+            }
+        }
+        else {
+            loadTiles();
+        }
+
      }
 
     
@@ -1056,7 +1032,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         else {
             mGpsParams = new GpsParams(null);
         }
-        dbquery(true);
+        loadTiles();
         postInvalidate();
 
         // Tell the CDI the paint that we use for display tfr
@@ -1096,26 +1072,30 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Function that loads new tiles in background
      *
      */
-    private void loadTiles(final double lon, final double lat) {
+    private void loadTiles() {
         if(mService == null) {
             return;
         }
 
+        if(mImageDataSource == null) {
+            return;
+        }
+
         TileMap map = mService.getTiles();
-        map.loadTiles(lon, lat, mPan, mMacro, mScale, mGpsParams.getBearing(),
+        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mPan, mMacro, mScale, mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
-                        TileMap.TileUpdate t = (TileMap.TileUpdate)tu;
-                        ((TileMap)map).flip();
+                        TileMap.TileUpdate t = (TileMap.TileUpdate) tu;
+                        ((TileMap) map).flip();
 
                         /*
                          * Set move with pan after new tiles are finally loaded
                          */
-                        mPan.setMove((float)(mPan.getMoveX() * t.factor), (float)(mPan.getMoveY() * t.factor));
+                        mPan.setMove((float) (mPan.getMoveX() * t.factor), (float) (mPan.getMoveY() * t.factor));
 
                         int index = Integer.parseInt(mPref.getChartType());
-                        String type =  Boundaries.getChartType(index);
+                        String type = Boundaries.getChartType(index);
 
                         mGpsTile = t.gpsTile;
                         mOnChart = type + "\n" + t.chart;
@@ -1410,14 +1390,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             mService.setPan(mPan);
             mService.getTiles().forceReload();
         }
-        dbquery(true);
+        loadTiles();
         updateCoordinates();
         postInvalidate();
     }
             
     /**
      * @author zkhan
-     *s
+     *
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
