@@ -352,8 +352,6 @@ public class LocationView extends View implements OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent e) {
 
-        Log.d("LocationView::onTouch", "BEGIN");
-
         boolean bPassToGestureDetector = true;
         
         if(e.getAction() == MotionEvent.ACTION_UP) {
@@ -382,14 +380,8 @@ public class LocationView extends View implements OnTouchListener {
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            Log.d("LocationView::onTouch", "action_down: true");
 
             if(mService != null) {
-                Log.d("LocationView::onTouch", "action_down: mService != null");
-                Log.d("LocationView::onTouch", "action_down: mService.getPlan() != null: " + (mService.getPlan() != null));
-                Log.d("LocationView::onTouch", "action_down: mDragPlanPoint: " + (mDragPlanPoint));
-                Log.d("LocationView::onTouch", "action_down: mPref.allowRubberBanding: " + (mPref.allowRubberBanding()));
-
                 /*
                  * Find if this is close to a plan point. Do rubber banding if true
                  * This is where rubberbanding starts
@@ -409,12 +401,10 @@ public class LocationView extends View implements OnTouchListener {
             // Remember this point so we can make sure we move far enough before losing the long press
             mDoCallbackWhenDone = false;
             mDownFocusPoint = getFocusPoint(e);
-            Log.d("LocationView::onTouch", "mDownFocusPoint: " + mDownFocusPoint);
 
             startClosestAirportTask(e.getX(), e.getY());
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE) {
-            Log.d("LocationView::onTouch", "action_move: true");
 
             if(mDownFocusPoint != null) {
         
@@ -422,8 +412,6 @@ public class LocationView extends View implements OnTouchListener {
                 final int deltaX = fp.x - mDownFocusPoint.x;
                 final int deltaY = fp.y - mDownFocusPoint.y;
                 int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
-                Log.d("LocationView::onTouch", "distanceSquare: " + distanceSquare);
-                Log.d("LocationView::onTouch", "mTouchSlopSquare: " + mTouchSlopSquare);
 
                 bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
                 
@@ -431,8 +419,10 @@ public class LocationView extends View implements OnTouchListener {
             // Rubberbanding, intermediate
             rubberBand(e.getX(), e.getY(), false);
         }
-        Log.d("LocationView::onTouch", "e.getPointerCount: " + e.getPointerCount());
 
+        // Any time there are two fingers on the screen, set the PointProjection to get
+        //  the distance/bearing between the two points. If there aren't two pointers
+        //  make sure to nullify the projection
         if( e.getPointerCount() == 2) {
             double x0 = e.getX(0);
             double y0 = e.getY(0);
@@ -460,12 +450,8 @@ public class LocationView extends View implements OnTouchListener {
                 lat1 = mOrigin.getLatitudeOf(y1);
             }
             mPointProjection = new Projection(lon0, lat0, lon1, lat1);
-        } else {
-            mPointProjection = null;
         }
-        Log.d("LocationView::onTouch", "mPointProjection == null: " + (mPointProjection == null));
 
-        Log.d("LocationView::onTouch", "bPassToGestureDetector: " + bPassToGestureDetector);
         if(bPassToGestureDetector) {
             // Once we break out of the square or stop the long press, keep sending
             if(e.getAction() == MotionEvent.ACTION_MOVE || e.getAction() == MotionEvent.ACTION_UP) {
@@ -1065,6 +1051,7 @@ public class LocationView extends View implements OnTouchListener {
             // Stop any rubber banding
             mPointProjection = null;
             super.onScaleEnd(detector);
+//            invalidate();
         }
 
         @Override
@@ -1383,7 +1370,6 @@ public class LocationView extends View implements OnTouchListener {
             // Don't pan if rubber-banding is in progress
             if(mDragPlanPoint >= 0) {
                 invalidate();
-
                 return true;
             }
 
