@@ -1051,7 +1051,7 @@ public class LocationView extends View implements OnTouchListener {
             // Stop any rubber banding
             mPointProjection = null;
             super.onScaleEnd(detector);
-//            invalidate();
+            invalidate();
         }
 
         @Override
