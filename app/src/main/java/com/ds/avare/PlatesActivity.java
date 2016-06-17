@@ -90,9 +90,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
+    private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
     public static final String AD = "AIRPORT-DIAGRAM";
-    
+
     /*
      * For GPS taxi
      */
@@ -354,12 +355,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 /*
                  * Bring up preferences
                  */
-                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                if(mTouchMode == com.ds.avare.touch.Constants.TouchMode.PAN_MODE) {
                     mPlatesView.setDraw(true);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
-                    mPlatesView.setDraw(false);                    
+                    mPlatesView.setDraw(false);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }

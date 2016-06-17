@@ -149,6 +149,7 @@ public class LocationActivity extends Activity implements Observer {
     private ImageButton mPlanPause;
     private Button mPlanNext;
 
+    private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
     private ExpandableListView mListPopout;
 
@@ -803,12 +804,14 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                if(mTouchMode == com.ds.avare.touch.Constants.TouchMode.PAN_MODE) {
                     mLocationView.setDraw(true);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mLocationView.setDraw(false);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
