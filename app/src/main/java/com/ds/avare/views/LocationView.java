@@ -36,6 +36,7 @@ import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -376,7 +377,7 @@ public class LocationView extends View implements OnTouchListener {
              * Do not query repeatedly hence check for mFactor = 1
              */
             if(mMacro != mViewParams.getScale().getMacroFactor()) {
-                dbquery(true);
+                loadTiles();
             }
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
@@ -528,10 +529,8 @@ public class LocationView extends View implements OnTouchListener {
         /*
          * Find
          */
-        loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude());
+        loadTiles();
     }
-
-
 
     /**
      *
@@ -897,7 +896,7 @@ public class LocationView extends View implements OnTouchListener {
      * 
      */
     public void forceReload() {
-        dbquery(true);        
+        loadTiles();
     }
         
     /**
@@ -915,7 +914,26 @@ public class LocationView extends View implements OnTouchListener {
         /*
          * Database query for new location / pan location.
          */
-        dbquery(false);
+        if(mGpsTile != null) {
+            double offsets[] = new double[2];
+
+            /*
+             * No need to load tiles when we are on current tile
+             */
+            if(mGpsTile.within(mGpsParams.getLongitude(), mGpsParams.getLatitude())) {
+                /*
+                 * We are within same tile no need for query.
+                 */
+                offsets[0] = mGpsTile.getOffsetX(mGpsParams.getLongitude());
+                offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
+                mMovement = new Movement(offsets);
+                postInvalidate();
+            }
+        }
+        else {
+            loadTiles();
+        }
+
      }
 
     
@@ -948,7 +966,7 @@ public class LocationView extends View implements OnTouchListener {
         else {
             mGpsParams = new GpsParams(null);
         }
-        dbquery(true);
+        loadTiles();
         postInvalidate();
 
         // Tell the CDI the paint that we use for display tfr
@@ -988,26 +1006,30 @@ public class LocationView extends View implements OnTouchListener {
      * Function that loads new tiles in background
      *
      */
-    private void loadTiles(final double lon, final double lat) {
+    private void loadTiles() {
         if(mService == null) {
             return;
         }
 
+        if(mImageDataSource == null) {
+            return;
+        }
+
         TileMap map = mService.getTiles();
-        map.loadTiles(lon, lat, mViewParams.getPan(), mMacro, mViewParams.getScale(), mGpsParams.getBearing(),
+        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mViewParams.getPan(), mMacro, mViewParams.getScale(), mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
-                        TileMap.TileUpdate t = (TileMap.TileUpdate)tu;
-                        ((TileMap)map).flip();
+                        TileMap.TileUpdate t = (TileMap.TileUpdate) tu;
+                        ((TileMap) map).flip();
 
                         /*
                          * Set move with pan after new tiles are finally loaded
                          */
-                        mViewParams.getPan().setMove((float)(mViewParams.getPan().getMoveX() * t.factor), (float)(mViewParams.getPan().getMoveY() * t.factor));
+                        mViewParams.getPan().setMove((float) (mViewParams.getPan().getMoveX() * t.factor), (float) (mViewParams.getPan().getMoveY() * t.factor));
 
                         int index = Integer.parseInt(mPref.getChartType());
-                        String type = getResources().getStringArray(R.array.ChartType)[index];
+                        String type = Boundaries.getChartType(index);
 
                         mGpsTile = t.gpsTile;
                         mOnChart = type + "\n" + t.chart;
@@ -1353,14 +1375,14 @@ public class LocationView extends View implements OnTouchListener {
             mService.setPan(mViewParams.getPan());
             mService.getTiles().forceReload();
         }
-        dbquery(true);
+        loadTiles();
         updateCoordinates();
         postInvalidate();
     }
             
     /**
      * @author zkhan
-     *s
+     *
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 

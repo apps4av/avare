@@ -47,11 +47,11 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.threed.Constants;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
@@ -149,7 +149,7 @@ public class LocationActivity extends Activity implements Observer {
     private ImageButton mPlanPause;
     private Button mPlanNext;
 
-    private Constants.TouchMode mTouchMode = Constants.TouchMode.PAN_MODE;
+    private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
     private ExpandableListView mListPopout;
 
@@ -538,6 +538,7 @@ public class LocationActivity extends Activity implements Observer {
                 return null;
             }
         });
+        mChartOption.setOptions(Boundaries.getChartTypes());
         mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
         mLocationView.forceReload();
 
@@ -803,14 +804,14 @@ public class LocationActivity extends Activity implements Observer {
                 /*
                  * Bring up preferences
                  */
-                if(mTouchMode == Constants.TouchMode.PAN_MODE) {
+                if(mTouchMode == com.ds.avare.touch.Constants.TouchMode.PAN_MODE) {
                     mLocationView.setDraw(true);
-                    mTouchMode = Constants.TouchMode.DRAW_MODE;
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mLocationView.setDraw(false);
-                    mTouchMode = Constants.TouchMode.PAN_MODE;
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }

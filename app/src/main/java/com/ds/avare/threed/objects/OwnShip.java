@@ -48,23 +48,22 @@ public class OwnShip {
 
         float vector[] = new float[4];
 
-        // x-axis
-        tr[0  + offset * ELEMS] = x;
-        tr[1  + offset * ELEMS] = y;
+        // miniature aircraft wings right
+        tr[0  + offset * ELEMS] = x + 0.001f;
+        tr[1  + offset * ELEMS] = y + 0.01f;
         tr[2  + offset * ELEMS] = z;
         tr[3  + offset * ELEMS] = 1f;
-        tr[4  + offset * ELEMS] = 0;
-        tr[5  + offset * ELEMS] = 1;
+        tr[4  + offset * ELEMS] = 1;
+        tr[5  + offset * ELEMS] = 0.75f;
         tr[6  + offset * ELEMS] = 0;
         tr[7  + offset * ELEMS] = 1f;
 
-        vector[0] = x + 2f;
-        vector[1] = y + 0;
-        vector[2] = z + 0;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 8 + offset * ELEMS, 0, 0, 1);
-        tr[12 + offset * ELEMS] = 0;
-        tr[13 + offset * ELEMS] = 1;
+        tr[8  + offset * ELEMS] = x + 0.005f;
+        tr[9  + offset * ELEMS] = y + 0.01f;
+        tr[10 + offset * ELEMS] = z;
+        tr[11 + offset * ELEMS] = 1f;
+        tr[12 + offset * ELEMS] = 1;
+        tr[13 + offset * ELEMS] = 0.75f;
         tr[14 + offset * ELEMS] = 0;
         tr[15 + offset * ELEMS] = 1f;
 
@@ -108,27 +107,26 @@ public class OwnShip {
         tr[46 + offset * ELEMS] = 1;
         tr[47 + offset * ELEMS] = 1f;
 
-        // -x-axis
-        tr[48 + offset * ELEMS] = x;
-        tr[49 + offset * ELEMS] = y;
+        // miniature aircraft wings left
+        tr[48 + offset * ELEMS] = x - 0.001f;
+        tr[49 + offset * ELEMS] = y + 0.01f;
         tr[50 + offset * ELEMS] = z;
         tr[51 + offset * ELEMS] = 1f;
         tr[52 + offset * ELEMS] = 1;
-        tr[53 + offset * ELEMS] = 0;
+        tr[53 + offset * ELEMS] = 0.75f;
         tr[54 + offset * ELEMS] = 0;
         tr[55 + offset * ELEMS] = 1f;
 
-        vector[0] = x - 2f;
-        vector[1] = y + 0f;
-        vector[2] = z + 0f;
-        vector[3] = 1f;
-        MatrixHelper.rotatePoint(x, y, z, -angle, vector, tr, 56 + offset * ELEMS, 0, 0, 1);
+        tr[56 + offset * ELEMS] = x - 0.005f;
+        tr[57 + offset * ELEMS] = y + 0.01f;
+        tr[58 + offset * ELEMS] = z;
+        tr[59 + offset * ELEMS] = 1f;
         tr[60 + offset * ELEMS] = 1;
-        tr[61 + offset * ELEMS] = 0;
+        tr[61 + offset * ELEMS] = 0.75f;
         tr[62 + offset * ELEMS] = 0;
         tr[63 + offset * ELEMS] = 1f;
 
-        // y-axis scan orange
+        // y-axis scan green
         // make 180 lines with 1 degree increment so we do not regenerate them
         int coord = 0;
         for(int deg = -90; deg < 90; deg ++) {
@@ -136,9 +134,9 @@ public class OwnShip {
             tr[65 + offset * ELEMS + coord * 16] = y;
             tr[66 + offset * ELEMS + coord * 16] = z;
             tr[67 + offset * ELEMS + coord * 16] = 1f;
-            tr[68 + offset * ELEMS + coord * 16] = 1;
-            tr[69 + offset * ELEMS + coord * 16] = 0;
-            tr[70 + offset * ELEMS + coord * 16] = 1;
+            tr[68 + offset * ELEMS + coord * 16] = 0;
+            tr[69 + offset * ELEMS + coord * 16] = 1;
+            tr[70 + offset * ELEMS + coord * 16] = 0;
             tr[71 + offset * ELEMS + coord * 16] = 1f;
 
             vector[0] = x + 0f;
@@ -146,9 +144,9 @@ public class OwnShip {
             vector[2] = z + 0;
             vector[3] = 1f;
             MatrixHelper.rotatePoint(x, y, z, -angle - deg, vector, tr, 72 + offset * ELEMS + coord * 16, 0, 0, 1);
-            tr[76 + offset * ELEMS + coord * 16] = 1;
-            tr[77 + offset * ELEMS + coord * 16] = 0;
-            tr[78 + offset * ELEMS + coord * 16] = 1;
+            tr[76 + offset * ELEMS + coord * 16] = 0;
+            tr[77 + offset * ELEMS + coord * 16] = 1;
+            tr[78 + offset * ELEMS + coord * 16] = 0;
             tr[79 + offset * ELEMS + coord * 16] = 1f;
             coord++;
         }
