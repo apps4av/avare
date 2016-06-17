@@ -491,48 +491,6 @@ public class LocationView extends View implements OnTouchListener {
     }
 
     /**
-     * 
-     * @param force
-     */
-    private void dbquery(boolean force) {
-
-        if(mService == null) {
-            return;
-        }
-        
-        if(mImageDataSource == null) {
-            return;
-        }
-        
-        if(null == mService) {
-            return;                
-        }
-
-        /*
-         * Find
-         */
-        if((!force) && (mGpsTile != null)) {
-            double offsets[] = new double[2];
-
-            if(mGpsTile.within(mGpsParams.getLongitude(), mGpsParams.getLatitude())) {
-                /*
-                 * We are within same tile no need for query.
-                 */
-            	offsets[0] = mGpsTile.getOffsetX(mGpsParams.getLongitude());
-            	offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
-                mMovement = new Movement(offsets);
-                postInvalidate();
-                return;
-            }
-        }
-
-        /*
-         * Find
-         */
-        loadTiles();
-    }
-
-    /**
      *
      * @param canvas
      * @param ctx
@@ -1427,7 +1385,7 @@ public class LocationView extends View implements OnTouchListener {
                 float moveY = mViewParams.getPan().getMoveY() - (distanceY / mViewParams.getScaleFactor()) / mMacro;
 
                 mViewParams.getPan().setMove(moveX, moveY);
-                dbquery(true);
+                loadTiles();
             }
 
             updateCoordinates();
