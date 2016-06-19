@@ -76,6 +76,14 @@ Redistribution and use in source and binary forms, with or without modification,
             android:drawableLeft="@android:drawable/ic_menu_more"
             android:visibility="visible" />
 
+        <com.ds.avare.utils.OptionButton
+            android:id="@+id/location_spinner_chart_persistent"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/location_button_menu"
+            android:labelFor="@string/ChartTypeLabel"
+            android:visibility="invisible" />
+
         <Button
             android:id="@+id/plan_prev"
             android:textStyle="bold"
@@ -258,7 +266,7 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_below="@+id/location_popout_buttons"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"/>
-            
+
         </RelativeLayout>
         
         
