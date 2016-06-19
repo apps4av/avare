@@ -846,6 +846,13 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean showPersistentChartOptionButton() {
+        return mPref.getBoolean(mContext.getString(R.string.prefPersistentChartOptionButton), false);
+    }
+
+    /**
+     * @return
+     */
     public String getUDWLocation() {
         try {
             return mPref.getString(mContext.getString(R.string.UDWLocation), "");

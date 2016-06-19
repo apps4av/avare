@@ -132,6 +132,7 @@ public class LocationActivity extends Activity implements Observer {
     private TwoButton mDrawButton;
     private Button mWebButton;
     private OptionButton mChartOption;
+    private OptionButton mChartOptionPersistent;
     private OptionButton mLayerOption;
     private Bundle mExtras;
     private boolean mIsWaypoint;
@@ -534,12 +535,30 @@ public class LocationActivity extends Activity implements Observer {
             public Object callback(Object o, Object o1) {
                 mPref.setChartType("" + (int) o1);
                 mLocationView.forceReload();
+                mChartOptionPersistent.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
                 return null;
             }
         });
         mChartOption.setOptions(Boundaries.getChartTypes());
         mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
         mLocationView.forceReload();
+
+        mChartOptionPersistent = (OptionButton)view.findViewById(R.id.location_spinner_chart_persistent);
+        mChartOptionPersistent.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                mPref.setChartType("" + (int) o1);
+                mLocationView.forceReload();
+                mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
+                return null;
+            }
+        });
+        mChartOptionPersistent.setOptions(Boundaries.getChartTypes());
+        mChartOptionPersistent.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
+
+        if (mPref.showPersistentChartOptionButton()) {
+            mChartOptionPersistent.setVisibility(View.VISIBLE);
+        }
 
 
         mLayerOption = (OptionButton)view.findViewById(R.id.location_spinner_layer);
@@ -946,7 +965,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateSim = new AnimateButton(LocationActivity.this, mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
         mAnimateTrack = new AnimateButton(LocationActivity.this, mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
         mAnimateChart = new AnimateButton(LocationActivity.this, mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(LocationActivity.this, mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateHelp = new AnimateButton(LocationActivity.this, mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton, mChartOptionPersistent);
         mAnimateDownload = new AnimateButton(LocationActivity.this, mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePref = new AnimateButton(LocationActivity.this, mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
