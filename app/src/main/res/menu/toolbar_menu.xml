@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_preferences"
+        android:title="Preferences" />
+    <item
+        android:id="@+id/action_download"
+        android:title="Download" />
+    <item
+        android:id="@+id/action_ads"
+        android:title="Ads" />
+    <item
+        android:id="@+id/action_help"
+        android:title="Help" />
+    <item
+        android:id="@+id/action_tracks"
+        android:checkable="true"
+        android:title="Tracks" />
+    <item
+        android:id="@+id/action_simulation"
+        android:checkable="true"
+        android:title="Simulation" />
+    <item
+        android:id="@+id/action_flight_plan_controls"
+        android:checkable="true"
+        android:title="Flight Plan Controls" />
+
+    <item
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.AppCompatSpinner"
+        android:id="@+id/action_chart"
+        android:title="Chart Type" />
+    <item
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.AppCompatSpinner"
+        android:id="@+id/action_layer"
+        android:title="Layer Type" />
+
+</menu>

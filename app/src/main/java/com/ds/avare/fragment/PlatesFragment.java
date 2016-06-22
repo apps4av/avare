@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -9,11 +9,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.ds.avare;
+package com.ds.avare.fragment;
 
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,13 +22,22 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.Toast;
 
+import com.ds.avare.MainActivity;
+import com.ds.avare.PlatesTagActivity;
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.gps.GpsInterface;
@@ -61,7 +67,9 @@ import java.util.TreeMap;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity implements Observer, Chronometer.OnChronometerTickListener  {
+public class PlatesFragment extends Fragment implements Observer, Chronometer.OnChronometerTickListener  {
+    public static final String TAG = "PlatesFragment";
+
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -79,7 +87,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private Button mDrawClearButton;
     private TwoButton mDrawButton;
     private Destination mDest;
-    private Toast mToast;
     private ArrayList<String> mListPlates;
     private ArrayList<String> mListApproaches;
     private ArrayList<String> mListAirports;
@@ -90,35 +97,36 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
+    private CoordinatorLayout mCoordinatorLayout;
 
     public static final String AD = "AIRPORT-DIAGRAM";
-    
+
     /*
      * For GPS taxi
      */
     private float[] mMatrix;
-       
+
     /**
      * @return
      */
     public float[] getMatrix(String name) {
         if(name.equals(AD)) {
-            return(mMatrix);            
+            return(mMatrix);
         }
 
         if(mService != null && mService.getDiagram() != null && mService.getDiagram().getName() != null) {
-            
+
             /*
              * If the user has already tagged a plate, load its matrix
              */
             String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
             if(aname != null) {
                 float ret[];
-                
+
                 /*
                  * First try to get plate info from local tags, if not found there, use downloaded plates
                  */
-                
+
                 /*
                  * Local plates are useful for tagging new plates, and for tagging own maps
                  * Local plates tag info is in preferences.
@@ -141,7 +149,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         }
                     }
                 }
-                
+
                 /*
                  * Downloaded one
                  */
@@ -149,12 +157,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 if(null != ret) {
                     return ret;
                 }
-                
+
             }
         }
         return null;
-    }    
-       
+    }
+
     /*
      * Add an airport to the airports list if it doesn't already exist
      */
@@ -163,7 +171,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mListAirports.add(name);
         }
     }
-    
+
     /*
      * Start GPS
      */
@@ -181,7 +189,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * Called by GPS. Update everything driven by GPS.
                  */
                 GpsParams params = new GpsParams(location);
-                
+
                 /*
                  * Store GPS last location in case activity dies, we want to start from same loc
                  */
@@ -196,7 +204,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
              *  Tell location view to show GPS status
              */
             if(mPref.isSimulationMode()) {
-                mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));                
+                mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));
             }
             else if(timeout) {
                 mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
@@ -206,7 +214,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  *  GPS kicking.
                  */
                 mPlatesView.updateErrorStatus(null);
-            }           
+            }
         }
 
         @Override
@@ -214,44 +222,42 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         }
     };
 
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {       
-        ((MainActivity)this.getParent()).showMapTab();
-    }
-    
     private boolean arePopupsShowing() {
-        return (null != mPlatesPopup && mPlatesPopup.isShowing()) || 
+        return (null != mPlatesPopup && mPlatesPopup.isShowing()) ||
                 (null != mAirportPopup && mAirportPopup.isShowing()) ||
                 (null != mApproachPopup && mApproachPopup.isShowing());
     }
 
     /**
-     * 
+     *
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
+        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences(getApplicationContext());
-        
+        mPref = new Preferences(getContext());
+
         mDestString = "<" + getString(R.string.Destination) + ">";
         nearString = "<" + getString(R.string.Nearest) + ">";
-        
-        /*
-         * Get views from XML
-         */
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.plates, null);
-        setContentView(view);
-        mPlatesView = (PlatesView)view.findViewById(R.id.plates);
-        
-        mPlatesButton = (Button)view.findViewById(R.id.plates_button_plates);
+
+        // Allocate the watch object for fuel tanks
+        mTankObserver = new TankObserver();
+        mTimerObserver = new TimerObserver();
+
+        mService = null;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.plates, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mPlatesView = (PlatesView) view.findViewById(R.id.plates);
+
+        mPlatesButton = (Button) view.findViewById(R.id.plates_button_plates);
         mPlatesButton.getBackground().setAlpha(255);
         mPlatesButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -268,7 +274,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 int index = mService.getLastPlateIndex();
                 if (index >= mListPlates.size()) {
                     index = 0;
@@ -279,7 +285,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
         });
 
-        mApproachButton = (Button)view.findViewById(R.id.plates_button_approach);
+        mApproachButton = (Button) view.findViewById(R.id.plates_button_approach);
         mApproachButton.getBackground().setAlpha(255);
         mApproachButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -289,8 +295,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
 
                 if (mListApproaches.size() == 0) {
-                    mToast.setText(getString(R.string.NoApproachToShow));
-                    mToast.show();
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.NoApproachToShow), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -303,11 +308,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         }
                         Cifp cifp = mCifp.get(which);
                         cifp.setApproach(mService, mPref);
-                        ((MainActivity) PlatesActivity.this.getParent()).showPlanTab();
+                        ((MainActivity) getContext()).showPlanView();
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(getString(R.string.SelectApproachToShow));
                 mApproachPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), 0, onClickListener).create();
                 mApproachPopup.show();
@@ -318,11 +323,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         /*
          * Timer, make chronometer invisible. Just use button to show time
          */
-        mChronometer = (Chronometer)view.findViewById(R.id.plates_chronometer);
+        mChronometer = (Chronometer) view.findViewById(R.id.plates_chronometer);
         mCounting = false;
-        mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
+        mPlatesTimerButton = (Button) view.findViewById(R.id.plates_button_timer);
         mPlatesTimerButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(!mCounting) {
@@ -332,7 +336,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     mCounting = true;
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
-                    mChronometer.setOnChronometerTickListener(PlatesActivity.this);
+                    mChronometer.setOnChronometerTickListener(PlatesFragment.this);
                 }
                 else {
                     mCounting = false;
@@ -345,12 +349,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         /*
          * Draw
          */
-        mDrawButton = (TwoButton)view.findViewById(R.id.plate_button_draw);
+        mDrawButton = (TwoButton) view.findViewById(R.id.plate_button_draw);
         mDrawButton.setTwoClickListener(new TwoClickListener() {
 
             @Override
             public void onClick(View v) {
-                
+
                 /*
                  * Bring up preferences
                  */
@@ -359,14 +363,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
-                    mPlatesView.setDraw(false);                    
+                    mPlatesView.setDraw(false);
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
-            
+
         });
-        
-        mDrawClearButton = (Button)view.findViewById(R.id.plate_button_draw_clear);
+
+        mDrawClearButton = (Button) view.findViewById(R.id.plate_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -376,10 +380,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         mService.getPixelDraw().clear();
                     }
                 }
-            }            
+            }
         });
-        
-        mAirportButton = (Button)view.findViewById(R.id.plates_button_airports);
+
+        mAirportButton = (Button) view.findViewById(R.id.plates_button_airports);
         mAirportButton.getBackground().setAlpha(255);
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -396,15 +400,15 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
                 builder.setTitle(getString(R.string.SelectAirportToShow));
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
             }
-        });      
-               
-        mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
+        });
+
+        mCenterButton = (Button) view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -419,19 +423,18 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 mPref.setTrackUpPlates(!mPref.isTrackUpPlates());
                 if (mPref.isTrackUpPlates()) {
                     mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.TrackUp));
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.TrackUp), Snackbar.LENGTH_SHORT).show();
                 } else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.NorthUp));
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.NorthUp), Snackbar.LENGTH_SHORT).show();
                 }
-                mToast.show();
                 mPlatesView.invalidate();
                 return true;
             }
         });
 
 
-        mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
+        mPlatesTagButton = (Button) view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
         // Only show tagging option when georef password is set
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
@@ -448,27 +451,18 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                         if(aname.startsWith("ILS-") || aname.startsWith("HI-ILS-") || aname.startsWith("HI-TACAN-") || aname.startsWith("HI-VOR-") || aname.startsWith("VOR-") || aname.startsWith("LDA-") || aname.startsWith("RNAV-")
                                 || aname.startsWith("NDB-") || aname.startsWith("LOC-") || aname.startsWith("HI-LOC-") || aname.startsWith("SDA-") || aname.startsWith("GPS-")
                                 || aname.startsWith("TACAN-") || aname.startsWith("COPTER-") || aname.startsWith("CUSTOM-")) {
-                            Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
+                            Intent intent = new Intent(getContext(), PlatesTagActivity.class);
                             startActivity(intent);
                         }
                     }
                 }
-                
+
             }
-        });      
+        });
 
-        /*
-         * Create toast beforehand so multiple clicks don't throw up a new toast
-         */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        
-        // Allocate the watch object for fuel tanks
-        mTankObserver = new TankObserver();
-        mTimerObserver = new TimerObserver();
-
-        mService = null;
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
-    
+
     private void setPlateFromPos(int pos) {
         if(mService != null && mPlateFound != null) {
             if(pos >= mPlateFound.length) {
@@ -483,15 +477,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 mPlatesView.setParams(getMatrix(name), true);
             }
             else {
-                mPlatesView.setParams(getMatrix(name), false);                            
+                mPlatesView.setParams(getMatrix(name), false);
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
         }
         else {
             mPlatesButton.setText("");
-            mToast.setText(getString(R.string.PlatesNF));
-            mToast.show();
+            Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
         }
 
         // Get flight procedures set up for this plate
@@ -508,8 +501,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         for(Cifp cifp : mCifp) {
             mListApproaches.add(cifp.getInitialCourse());
         }
-    } 
-    
+    }
+
     private String getLastIfAirport() {
         String airport = null;
         if(null != mService) {
@@ -518,26 +511,26 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 airport = null;
             }
         }
-        
+
         return airport;
     }
-    
+
     private void setAirportFromPos(int pos) {
         if(mService != null && mListAirports != null && mListAirports.size() > pos) {
             String airport = mListAirports.get(pos);
-            
+
             Destination curDest = mService.getDestination();
             if(curDest != null && !curDest.getType().equals(Destination.BASE)) {
                 curDest = null;
             }
-            if(airport.equals(mDestString)) {   
+            if(airport.equals(mDestString)) {
                 if(null != curDest && doesAirportHavePlates(mPref.mapsFolder(), curDest.getID())) {
                     airport = curDest.getID();
                 }
                 else {
                     airport = getLastIfAirport();
                 }
-                mService.setLastPlateAirport(mDestString);                
+                mService.setLastPlateAirport(mDestString);
             }
             else if(airport.equals(nearString)) {
                 int nearestNum = mService.getArea().getAirportsNumber();
@@ -559,16 +552,16 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             else {
                 mService.setLastPlateAirport(airport);
             }
-            
+
             if(null == airport && mListAirports.size() > 2) {
                 airport = mListAirports.get(2);
             }
-            
+
             mPlateFound = null;
             if(null != airport) {
-                
+
                 mDest = new Destination(airport, Destination.BASE, mPref, mService);
-                mDest.addObserver(PlatesActivity.this);
+                mDest.addObserver(this);
                 mDest.find();
 
                 String mapFolder = mPref.mapsFolder();
@@ -582,10 +575,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                             return fileName.endsWith(Preferences.IMAGE_EXTENSION);
                         }
                     };
-                    
+
                     /*
-                     * TODO: RAS make this an async request (maybe just move all 
-                     * the loading to the background - especially if we get the last used 
+                     * TODO: RAS make this an async request (maybe just move all
+                     * the loading to the background - especially if we get the last used
                      * chart loaded immediately)
                      */
 
@@ -595,26 +588,26 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
                     TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
                     if (dplates != null) {
-                    	for(String plate : dplates) {
-	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
-	                    	plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
-                    	}
+                        for(String plate : dplates) {
+                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+                            plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
+                        }
                     }
                     if (aplates != null) {
-	                    for(String plate : aplates) {
-	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
-	                    	plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
-	                    }
+                        for(String plate : aplates) {
+                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+                            plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
+                        }
                     }
                     if(mins != null) {
-	                    for(String plate : mins) {
-	                        String folder = plate.substring(0, 1) + "/";
-	                    	plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
-	                    }
+                        for(String plate : mins) {
+                            String folder = plate.substring(0, 1) + "/";
+                            plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
+                        }
                     }
                     if(plates.size() > 0) {
-                    	mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
-                        mListPlates = new ArrayList<String>(plates.keySet());                        
+                        mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
+                        mListPlates = new ArrayList<String>(plates.keySet());
                     }
                 }
             }
@@ -624,10 +617,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-                
+
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);
-                
+
                 /*
                  * A list of plates available for this airport
                  */
@@ -637,16 +630,15 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 mAirportButton.setText(mService.getLastPlateAirport());
                 /*
                  * Reset to the last one that worked
-                 */ 
-                mToast.setText(getString(R.string.PlatesNF));
-                mToast.show();
+                 */
+                Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
             }
-        }        
+        }
     }
-    
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
-     * 
+     *
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -655,13 +647,13 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         @Override
         public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
+                                       IBinder service) {
+            /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);         
+            mService.registerGpsListener(mGpsInfc);
             mPlatesView.setService(mService);
 
             mListPlates = new ArrayList<String>();
@@ -677,7 +669,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             if(null != mService.getLastPlateAirport()) {
                 addAirport(mService.getLastPlateAirport());
             }
-            
+
             /*
              *  Load the nearest airport
              */
@@ -696,7 +688,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 dest = mDestination.getID();
                 addAirport(dest);
             }
-            
+
             /*
              * Add airports in the plan
              */
@@ -710,11 +702,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 }
             }
-            
+
             /*
              * Now add all the airports that are in the recently found list
              */
-            String [] vals = mPref.getRecent(); 
+            String [] vals = mPref.getRecent();
             for(int pos=0; pos < vals.length; pos++) {
                 String destType = StringPreference.parseHashedNameDestType(vals[pos]);
                 if(destType != null && destType.equals("Base")) {
@@ -726,7 +718,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
             int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
             setAirportFromPos(lastIndex);
-            
+
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
@@ -747,30 +739,30 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
      */
     private class TankObserver implements Observer {
 
-		@Override
-		public void update(Observable observable, Object data) {
-			final FuelTimer fuelTimer = (FuelTimer) observable;
-			switch ((Integer)data) {
-				case FuelTimer.REFRESH:
-					mPlatesView.postInvalidate();
-					break;
+        @Override
+        public void update(Observable observable, Object data) {
+            final FuelTimer fuelTimer = (FuelTimer) observable;
+            switch ((Integer)data) {
+                case FuelTimer.REFRESH:
+                    mPlatesView.postInvalidate();
+                    break;
 
-				case FuelTimer.SWITCH_TANK:
-					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
-					alertDialog.setTitle(PlatesActivity.this.getString(R.string.switchTanks));
-					alertDialog.setCancelable(false);
-					alertDialog.setCanceledOnTouchOutside(false);
-					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, PlatesActivity.this.getString(R.string.OK), new DialogInterface.OnClickListener() {
-		
-		                public void onClick(DialogInterface dialog, int which) {
-		                	fuelTimer.reset();
-		                    dialog.dismiss();
-		                }
-		            });
-					alertDialog.show();
-					break;
-			}
-		}
+                case FuelTimer.SWITCH_TANK:
+                    AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+                    alertDialog.setTitle(getString(R.string.switchTanks));
+                    alertDialog.setCancelable(false);
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            fuelTimer.reset();
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+                    break;
+            }
+        }
     }
 
     /**
@@ -796,9 +788,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        
+
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
             mService.getFuelTimer().removeObserver(mTankObserver);
@@ -809,7 +801,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mPlatesPopup.dismiss();
         }
         catch(Exception e) {
-            
+
         }
         try {
             mApproachPopup.dismiss();
@@ -821,30 +813,30 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mAirportPopup.dismiss();
         }
         catch(Exception e) {
-            
+
         }
-        
+
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
     }
 
     /**
-     * 
+     *
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        
+//        Helper.setOrientationAndOn(this); // TODO
+
         /*
          * Registering our receiver
          * Bind now.
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
@@ -859,21 +851,21 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         }
     }
-   
+
     /**
-     * 
+     *
      * @author zkhan
      *
      */
     private class PlatesComparable implements Comparator<String>{
-        
+
         @Override
         public int compare(String o1, String o2) {
             /*
              * Airport diagram must be first
              */
             String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
-            
+
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
                     return -1;
@@ -901,10 +893,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
             return o1.compareTo(o2);
         }
-    }    
+    }
 
     /**
-     * 
+     *
      * @param mapFolder
      * @param id
      * @return
@@ -912,9 +904,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     public static boolean doesAirportHavePlates(String mapFolder, String id) {
         return new File(mapFolder + "/plates/" + id).exists() || new File(mapFolder + "/area/" + id).exists();
     }
-    
+
     /**
-     * 
+     *
      * @param mapFolder
      * @param id
      * @return
@@ -922,8 +914,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     public static boolean doesAirportHaveAirportDiagram(String mapFolder, String id) {
         return new File(mapFolder + "/plates/" + id + "/" + AD + Preferences.IMAGE_EXTENSION).exists();
     }
-    
-    
+
+
     @Override
     public void update(Observable observable, Object data) {
         if(mDest.isFound()) {
@@ -938,6 +930,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         mPlatesTimerButton.setText(chronometer.getText());
     }
-    
+
 
 }

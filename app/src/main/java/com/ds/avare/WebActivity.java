@@ -16,7 +16,6 @@ package com.ds.avare;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.Helper;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -42,7 +42,7 @@ import android.widget.ProgressBar;
  * @author zkhan
  *
  */
-public class WebActivity extends Activity  {
+public class WebActivity extends AppCompatActivity {
     
     private WebView mWebView;
     private EditText mSearchText;

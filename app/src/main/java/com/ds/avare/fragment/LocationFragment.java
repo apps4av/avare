@@ -9,11 +9,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+package com.ds.avare.fragment;
 
-package com.ds.avare;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,16 +23,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
+import com.ds.avare.BuildConfig;
+import com.ds.avare.ChartsDownloadActivity;
+import com.ds.avare.MainActivity;
+import com.ds.avare.MessageActivity;
+import com.ds.avare.PrefActivity;
+import com.ds.avare.R;
+import com.ds.avare.RegisterActivity;
+import com.ds.avare.StorageService;
+import com.ds.avare.WebActivity;
 import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
@@ -71,7 +81,9 @@ import java.util.Observer;
  * @author zkhan, jlmcgraw
  * Main activity
  */
-public class LocationActivity extends Activity implements Observer {
+public class LocationFragment extends Fragment implements Observer {
+
+    public static final String TAG = "LocationFragment";
 
     /**
      * This view display location on the map.
@@ -90,11 +102,9 @@ public class LocationActivity extends Activity implements Observer {
      * App preferences
      */
     private Preferences mPref;
-    
-    private Toast mToast;
 
     private Location mInitLocation;
-    
+
     /**
      * Shows warning message about Avare
      */
@@ -144,6 +154,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
+    private CoordinatorLayout mCoordinatorLayout;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -166,11 +177,11 @@ public class LocationActivity extends Activity implements Observer {
                          * Find the nearest airport and load its plate on rollout
                          */
                         Airport nearest = mService.getArea().getAirport(0);
-                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
+                        if(nearest != null && PlatesFragment.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
                                 nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
-                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                            ((MainActivity) getContext()).showPlatesView();
                         }
                     }
                 }
@@ -285,9 +296,12 @@ public class LocationActivity extends Activity implements Observer {
     private void goTo(String dst, String type) {
         mIsWaypoint = false;
         mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(LocationActivity.this);
-        mToast.setText(getString(R.string.Searching) + " " + dst);
-        mToast.show();
+        mDestination.addObserver(LocationFragment.this);
+        Snackbar.make(
+                mCoordinatorLayout,
+                getString(R.string.Searching) + " " + dst,
+                Snackbar.LENGTH_SHORT
+        ).show();
         mDestination.find();
         mDestLayout.setVisibility(View.INVISIBLE);
     }
@@ -299,20 +313,17 @@ public class LocationActivity extends Activity implements Observer {
     private void planTo(String dst, String type) {
         mIsWaypoint = true;
         mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(LocationActivity.this);
-        mToast.setText(getString(R.string.Searching) + " " + dst);
-        mToast.show();
+        mDestination.addObserver(LocationFragment.this);
+        Snackbar.make(
+                mCoordinatorLayout,
+                getString(R.string.Searching) + " " + dst,
+                Snackbar.LENGTH_SHORT
+        ).show();
         mDestination.find();
         mDestLayout.setVisibility(View.INVISIBLE);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
     public void onBackPressed() {
-
         /*
          * Back button hides some controls
          */
@@ -324,7 +335,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * And may exit
          */
-        mAlertDialogExit = new AlertDialog.Builder(LocationActivity.this).create();
+        mAlertDialogExit = new AlertDialog.Builder(getContext()).create();
         mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
@@ -337,7 +348,7 @@ public class LocationActivity extends Activity implements Observer {
                  * Go to background
                  */
                 setTrackState(false);   // ensure tracks are turned off
-                LocationActivity.super.onBackPressed();
+                getActivity().finish();
                 dialog.dismiss();
             }
         });
@@ -354,7 +365,6 @@ public class LocationActivity extends Activity implements Observer {
         });
 
         mAlertDialogExit.show();
-
     }
 
     /**
@@ -385,28 +395,100 @@ public class LocationActivity extends Activity implements Observer {
         mAnimatePref.animate();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("foo", "bar");
+    }
 
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
+        Helper.setTheme(getActivity());
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
+        mPref = new Preferences(getContext());
 
         /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
+         * Throw this in case GPS is disabled.
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        if (Gps.isGpsDisabled(getContext(), mPref)) {
+            mGpsWarnDialog = new AlertDialog.Builder(getContext()).create();
+            mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
+            mGpsWarnDialog.setCancelable(false);
+            mGpsWarnDialog.setCanceledOnTouchOutside(false);
+            mGpsWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(i);
+                }
+            });
+            mGpsWarnDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            mGpsWarnDialog.show();
+        }
 
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.location, null);
-        setContentView(view);
-        mLocationView = (LocationView)view.findViewById(R.id.location);
+                /*
+         * Throw this in case GPS is disabled.
+         */
+        if(mPref.showTips()) {
+            mWarnDialog = new AlertDialog.Builder(getContext()).create();
+            mWarnDialog.setTitle(getString(R.string.Tip));
+            mWarnDialog.setMessage(Tips.getTip(getContext(), mPref));
+            mWarnDialog.setCancelable(false);
+            mWarnDialog.setCanceledOnTouchOutside(false);
+            mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            mWarnDialog.show();
+        }
+
+        /*
+         * Check if this was sent from Google Maps
+         */
+//        mExtras = getIntent().getExtras();
+        mExtras = savedInstanceState; // TODO
+
+        mService = null;
+
+        // Allocate the object that will get told about the status of the
+        // fuel tank
+        mTankObserver = new TankObserver();
+        mTimerObserver = new TimerObserver();
+
+        mInitLocation = Gps.getLastLocation(getContext());
+        if (null == mInitLocation) {
+            mInitLocation = mPref.getLastLocation();
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.location, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mLocationView = (LocationView) view.findViewById(R.id.location);
 
         /*
          * To be notified of some action in the view
@@ -443,7 +525,7 @@ public class LocationActivity extends Activity implements Observer {
                 if (GestureInterface.DOUBLE_TAP == nEvent) {
 
                     // Create the alert dialog and add the title.
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle(R.string.SelectTextFieldTitle);
 
                     // The list of items to chose from. When a selection is made, save it off locally
@@ -515,7 +597,7 @@ public class LocationActivity extends Activity implements Observer {
                     /*
                      * Now populate the pop out weather etc.
                      */
-                    PopoutAdapter p = new PopoutAdapter(LocationActivity.this, data);
+                    PopoutAdapter p = new PopoutAdapter(getContext(), data);
                     mListPopout.setAdapter(p);
                 }
             }
@@ -525,10 +607,9 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * black pop out
          */
-        mListPopout = (ExpandableListView)view.findViewById(R.id.location_list_popout);
+        mListPopout = (ExpandableListView) view.findViewById(R.id.location_list_popout);
 
-
-        mChartOption = (OptionButton)view.findViewById(R.id.location_spinner_chart);
+        mChartOption = (OptionButton) view.findViewById(R.id.location_spinner_chart);
         mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
@@ -541,62 +622,39 @@ public class LocationActivity extends Activity implements Observer {
         mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
         mLocationView.forceReload();
 
-        final MainActivity mainActivity = (MainActivity) getParent();
-        View tabView = mainActivity.getTabWidget().getChildTabViewAt(MainActivity.tabMain);
-        tabView.setOnLongClickListener(
-                new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (mainActivity.getTabHost().getCurrentTab() == MainActivity.tabMain) {
-                            mChartOption.performClick();
-                        }
-                        return false;
-                    }
-                }
-        );
-
-        mLayerOption = (OptionButton)view.findViewById(R.id.location_spinner_layer);
-        mLayerOption.setCallback(new GenericCallback() {
-            @Override
-            public Object callback(Object o, Object o1) {
-                mPref.setLayerType(mLayerOption.getCurrentValue());
-                mLocationView.setLayerType(mPref.getLayerType());
-                return null;
-            };
-        });
-        mLayerOption.setSelectedValue(mPref.getLayerType());
-        mLocationView.setLayerType(mPref.getLayerType());
-
-        mCenterButton = (Button)view.findViewById(R.id.location_button_center);
+        mCenterButton = (Button) view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 mLocationView.center();
             }
-
         });
         mCenterButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 // long press on center button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
+                String snackbarText;
                 if(mPref.isTrackUp()) {
                     mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.TrackUp));
+                    snackbarText = getString(R.string.TrackUp);
                 }
                 else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-                    mToast.setText(getString(R.string.NorthUp));
+                    snackbarText = getString(R.string.NorthUp);
                 }
-                mToast.show();
+                Snackbar.make(
+                        mCoordinatorLayout,
+                        snackbarText,
+                        Snackbar.LENGTH_SHORT
+                ).show();
                 mLocationView.invalidate();
                 return true;
             }
         });
 
-        mCrossButton = (Button)view.findViewById(R.id.location_button_cross);
+        mCrossButton = (Button) view.findViewById(R.id.location_button_cross);
         mCrossButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -606,58 +664,64 @@ public class LocationActivity extends Activity implements Observer {
 
         });
 
-        mDestLayout = (RelativeLayout)view.findViewById(R.id.location_popout_layout);
+        mDestLayout = (RelativeLayout) view.findViewById(R.id.location_popout_layout);
 
-        mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
+        mMenuButton = (Button) view.findViewById(R.id.location_button_menu);
         mMenuButton.getBackground().setAlpha(255);
         mMenuButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 showMenu();
             }
-
         });
 
-        mHelpButton = (Button)view.findViewById(R.id.location_button_help);
+        mHelpButton = (Button) view.findViewById(R.id.location_button_help);
         mHelpButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LocationActivity.this, WebActivity.class);
-                intent.putExtra("url", NetworkHelper.getHelpUrl(LocationActivity.this));
+                Intent intent = new Intent(getContext(), WebActivity.class);
+                intent.putExtra("url", NetworkHelper.getHelpUrl(getContext()));
                 startActivity(intent);
             }
-
         });
 
-        mPlatesButton = (Button)view.findViewById(R.id.location_button_plate);
+        mLayerOption = (OptionButton) view.findViewById(R.id.location_spinner_layer);
+        mLayerOption.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                mPref.setLayerType(mLayerOption.getCurrentValue());
+                mLocationView.setLayerType(mPref.getLayerType());
+                return null;
+            }
+        });
+        mLayerOption.setSelectedValue(mPref.getLayerType());
+        mLocationView.setLayerType(mPref.getLayerType());
+
+        mPlatesButton = (Button) view.findViewById(R.id.location_button_plate);
         mPlatesButton.getBackground().setAlpha(255);
         mPlatesButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if (null != mAirportPressed) {
                     if (mService != null) {
                         mService.setLastPlateAirport(mAirportPressed);
                         mService.setLastPlateIndex(0);
-                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                        ((MainActivity) getContext()).showPlatesView();
                     }
                     mAirportPressed = null;
                 }
             }
         });
 
-        mAfdButton = (Button)view.findViewById(R.id.location_button_afd);
+        mAfdButton = (Button) view.findViewById(R.id.location_button_afd);
         mAfdButton.getBackground().setAlpha(255);
         mAfdButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null != mAirportPressed) {
                     if(mService != null) {
                         mService.setLastAfdAirport(mAirportPressed);
-                        ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
+                        ((MainActivity) getContext()).showAfdView();
                         mAirportPressed = null;
                     }
                 }
@@ -665,13 +729,12 @@ public class LocationActivity extends Activity implements Observer {
         });
 
 
-        mPlanButton = (Button)view.findViewById(R.id.location_button_plan);
+        mPlanButton = (Button) view.findViewById(R.id.location_button_plan);
         mPlanButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null == mAirportPressed) {
-                	return;
+                    return;
                 }
                 String type = Destination.BASE;
                 if(mAirportPressed.contains("&")) {
@@ -682,9 +745,8 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-        mDrawClearButton = (Button)view.findViewById(R.id.location_button_draw_clear);
+        mDrawClearButton = (Button) view.findViewById(R.id.location_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(mService != null) {
@@ -695,51 +757,43 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-        mDownloadButton = (Button)view.findViewById(R.id.location_button_dl);
+        mDownloadButton = (Button) view.findViewById(R.id.location_button_dl);
         mDownloadButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
             }
         });
 
-        mPrefButton = (Button)view.findViewById(R.id.location_button_pref);
+        mPrefButton = (Button) view.findViewById(R.id.location_button_pref);
         mPrefButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 /*
                  * Bring up preferences
                  */
-                startActivity(new Intent(LocationActivity.this, PrefActivity.class));
+                startActivity(new Intent(getContext(), PrefActivity.class));
             }
-
         });
 
-        mWebButton = (Button)view.findViewById(R.id.location_button_ads);
+        mWebButton = (Button) view.findViewById(R.id.location_button_ads);
         mWebButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 /*
                  * Bring up preferences
                  */
-                startActivity(new Intent(LocationActivity.this, MessageActivity.class));
+                startActivity(new Intent(getContext(), MessageActivity.class));
             }
-
         });
 
         /*
          * Dest button
          */
-        mDestButton = (Button)view.findViewById(R.id.location_button_dest);
+        mDestButton = (Button) view.findViewById(R.id.location_button_dest);
         mDestButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
 
@@ -769,8 +823,8 @@ public class LocationActivity extends Activity implements Observer {
         });
 
 
-        mSimButton = (TwoButton)view.findViewById(R.id.location_button_sim);
-        if(mPref.isSimulationMode()) {
+        mSimButton = (TwoButton) view.findViewById(R.id.location_button_sim);
+        if (mPref.isSimulationMode()) {
             mSimButton.setText(getString(R.string.SimulationMode));
             mSimButton.setChecked(true);
         }
@@ -779,10 +833,8 @@ public class LocationActivity extends Activity implements Observer {
             mSimButton.setChecked(false);
         }
         mSimButton.setTwoClickListener(new TwoClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 /*
                  * Bring up preferences
                  */
@@ -800,17 +852,14 @@ public class LocationActivity extends Activity implements Observer {
                 else {
                     mPref.setSimMode(false);
                 }
-
             }
-
         });
 
         /*
          * Draw
          */
-        mDrawButton = (TwoButton)view.findViewById(R.id.location_button_draw);
+        mDrawButton = (TwoButton) view.findViewById(R.id.location_button_draw);
         mDrawButton.setTwoClickListener(new TwoClickListener() {
-
             @Override
             public void onClick(View v) {
                 /*
@@ -825,179 +874,108 @@ public class LocationActivity extends Activity implements Observer {
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
-
         });
 
         /*
          * The tracking button handler. Enable/Disable the saving of track points
          * to a KML file
          */
-        mTracksButton = (TwoButton)view.findViewById(R.id.location_button_tracks);
+        mTracksButton = (TwoButton) view.findViewById(R.id.location_button_tracks);
         mTracksButton.setTwoClickListener(new TwoClickListener() {
-
             @Override
             public void onClick(View v) {
-	            if(null != mService) {
-	                setTrackState(!mService.getTracks());
-	            }
+                if(null != mService) {
+                    setTrackState(!mService.getTracks());
+                }
             }
         });
 
-        /*
-         * Throw this in case GPS is disabled.
-         */
-        if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-            mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
-            mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
-            mGpsWarnDialog.setCancelable(false);
-            mGpsWarnDialog.setCanceledOnTouchOutside(false);
-            mGpsWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(i);
-                }
-            });
-            mGpsWarnDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            mGpsWarnDialog.show();
-        }
-
-                /*
-         * Throw this in case GPS is disabled.
-         */
-        if(mPref.showTips()) {
-            mWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
-            mWarnDialog.setTitle(getString(R.string.Tip));
-            mWarnDialog.setMessage(Tips.getTip(LocationActivity.this, mPref));
-            mWarnDialog.setCancelable(false);
-            mWarnDialog.setCanceledOnTouchOutside(false);
-            mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            mWarnDialog.show();
-        }
-
-        /*
-         * Check if this was sent from Google Maps
-         */
-        mExtras = getIntent().getExtras();
 
         // The Flight Plan Prev button collection. There are 3, Previous, Pause,
         // and next. They are only visible when a plan has been loaded and
         // activated.
 
         // Previous - set next destination to the previous waypoint
-        mPlanPrev = (Button)view.findViewById(R.id.plan_prev);
+        mPlanPrev = (Button) view.findViewById(R.id.plan_prev);
         mPlanPrev.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(true == activePlan.isActive()) {
-						activePlan.regress();
-					}
-				}
-			}
-
+            @Override
+            public void onClick(View v) {
+                if(null != mService) {
+                    Plan activePlan = mService.getPlan();
+                    if(true == activePlan.isActive()) {
+                        activePlan.regress();
+                    }
+                }
+            }
         });
 
         // Pause - Do no process any waypoint passage logic
-        mPlanPause = (ImageButton)view.findViewById(R.id.plan_pause);
+        mPlanPause = (ImageButton) view.findViewById(R.id.plan_pause);
         mPlanPause.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(null != activePlan) {
-						if(true == activePlan.suspendResume()) {
-							mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
-						} else {
-							mPlanPause.setImageResource(android.R.drawable.ic_media_play);
-						}
-					}
-				}
-			}
-
+            @Override
+            public void onClick(View v) {
+                if(null != mService) {
+                    Plan activePlan = mService.getPlan();
+                    if(null != activePlan) {
+                        if(true == activePlan.suspendResume()) {
+                            mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
+                        } else {
+                            mPlanPause.setImageResource(android.R.drawable.ic_media_play);
+                        }
+                    }
+                }
+            }
         });
 
         // Next - advance the destination to the next waypoint
-        mPlanNext = (Button)view.findViewById(R.id.plan_next);
+        mPlanNext = (Button) view.findViewById(R.id.plan_next);
         mPlanNext.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(true == activePlan.isActive()) {
-						activePlan.advance();
-					}
-				}
-			}
-
+            @Override
+            public void onClick(View v) {
+                if(null != mService) {
+                    Plan activePlan = mService.getPlan();
+                    if(true == activePlan.isActive()) {
+                        activePlan.advance();
+                    }
+                }
+            }
         });
 
-        mService = null;
-        mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
-        mAnimateWeb = new AnimateButton(LocationActivity.this, mWebButton, AnimateButton.DIRECTION_L_R);
-        mAnimateSim = new AnimateButton(LocationActivity.this, mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(LocationActivity.this, mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
-        mAnimateChart = new AnimateButton(LocationActivity.this, mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(LocationActivity.this, mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
-        mAnimateDownload = new AnimateButton(LocationActivity.this, mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePref = new AnimateButton(LocationActivity.this, mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
 
-        // Allocate the object that will get told about the status of the
-        // fuel tank
-        mTankObserver = new TankObserver();
-        mTimerObserver = new TimerObserver();
-
-
-        mInitLocation = Gps.getLastLocation(getApplicationContext());
-        if (null == mInitLocation) {
-            mInitLocation = mPref.getLastLocation();
-        }
+        mAnimateTracks = new AnimateButton(getContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
+        mAnimateWeb = new AnimateButton(getContext(), mWebButton, AnimateButton.DIRECTION_L_R);
+        mAnimateSim = new AnimateButton(getContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
+        mAnimateTrack = new AnimateButton(getContext(), mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateChart = new AnimateButton(getContext(), mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateHelp = new AnimateButton(getContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
+        mAnimateDownload = new AnimateButton(getContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePref = new AnimateButton(getContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
-    private void setTrackState(boolean bState)
-    {
+    private void setTrackState(boolean bState) {
         URI fileURI = mService.setTracks(bState);
-                	/* The fileURI is returned when the tracks are closed off.
-                	 */
+        /* The fileURI is returned when the tracks are closed off.
+        */
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
             switch(mPref.autoPostTracks()) {
                 case 0:
-		    	    			/* Just display a toast message to the user that the file was saved
-		    	    			 */
-                    Toast.makeText(LocationActivity.this,
+                    /* Just display a toast message to the user that the file was saved */
+                    Snackbar.make(
+                            mCoordinatorLayout,
                             String.format(getString(R.string.AutoPostTracksDialogText), fileName),
-                            Toast.LENGTH_LONG).show();
+                            Snackbar.LENGTH_LONG
+                    ).show();
                     break;
 
                 case 1:
 		    	    			/* Send this file out as an email attachment
 		    	    			 */
                     try {
-                        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
                         emailIntent.setType("application/kml");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT,
                                 getString(R.string.AutoPostTracksSubject) + " " + fileName);
                         emailIntent.putExtra(Intent.EXTRA_STREAM,
                                 Uri.fromFile(new File(fileURI.getPath())));
@@ -1011,7 +989,7 @@ public class LocationActivity extends Activity implements Observer {
 		    	    			/* Send it somewhere as KML. Let the user choose where.
 		    	    			 */
                     try {
-                        Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                         viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())),
                                 "application/vnd.google-earth.kml+xml");
                         startActivity(Intent.createChooser(viewIntent,
@@ -1037,9 +1015,10 @@ public class LocationActivity extends Activity implements Observer {
                 IBinder service) {
 
             if(!mPref.isRegistered()) {
-                Intent i = new Intent(LocationActivity.this, RegisterActivity.class);
+                Intent i = new Intent(getContext(), RegisterActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
+                if (!BuildConfig.DEBUG)
+                    startActivity(i);
             }
 
             /*
@@ -1057,7 +1036,7 @@ public class LocationActivity extends Activity implements Observer {
              */
             if(!mService.getDBResource().isPresent()) {
 
-                mAlertDialogDatabase = new AlertDialog.Builder(LocationActivity.this).create();
+                mAlertDialogDatabase = new AlertDialog.Builder(getContext()).create();
                 mAlertDialogDatabase.setTitle(getString(R.string.download));
                 mAlertDialogDatabase.setCancelable(false);
                 mAlertDialogDatabase.setCanceledOnTouchOutside(false);
@@ -1067,7 +1046,7 @@ public class LocationActivity extends Activity implements Observer {
                      * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
                      */
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                        Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         mLocationView.zoomOut();
                         startActivity(i);
@@ -1121,9 +1100,12 @@ public class LocationActivity extends Activity implements Observer {
                     addr = StringPreference.formatAddressName(addr);
 
                     mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
-                    mDestination.addObserver(LocationActivity.this);
-                    mToast.setText(getString(R.string.Searching) + " " + addr);
-                    mToast.show();
+                    mDestination.addObserver(LocationFragment.this);
+                    Snackbar.make(
+                            mCoordinatorLayout,
+                            getString(R.string.Searching) + " " + addr,
+                            Snackbar.LENGTH_SHORT
+                    ).show();
                     mDestination.find();
                 }
                 mExtras = null;
@@ -1161,11 +1143,11 @@ public class LocationActivity extends Activity implements Observer {
 					break;
 
 				case FuelTimer.SWITCH_TANK:
-					AlertDialog alertDialog = new AlertDialog.Builder(LocationActivity.this).create();
-					alertDialog.setTitle(LocationActivity.this.getString(R.string.switchTanks));
+					AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+					alertDialog.setTitle(LocationFragment.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);
-					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, LocationActivity.this.getString(R.string.OK), new DialogInterface.OnClickListener() {
+					alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, LocationFragment.this.getString(R.string.OK), new DialogInterface.OnClickListener() {
 
 		                public void onClick(DialogInterface dialog, int which) {
 		                    fuelTimer.reset();
@@ -1199,7 +1181,7 @@ public class LocationActivity extends Activity implements Observer {
     /**
      * Set the flight plan buttons visibility
      */
-    private void setPlanButtonVis() {
+    public void setPlanButtonVis() {
 	    int planButtons = View.INVISIBLE;
 		if (true == mPref.getPlanControl()) {
 	        if (null != mService) {
@@ -1219,27 +1201,19 @@ public class LocationActivity extends Activity implements Observer {
 	}
 
     /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
+//        Helper.setOrientationAndOn(this); TODO
 
         /*
          * Registering our receiver
          * Bind now.
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         mDestLayout.setVisibility(View.INVISIBLE);
 
@@ -1266,7 +1240,7 @@ public class LocationActivity extends Activity implements Observer {
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         if(null != mService) {
@@ -1279,7 +1253,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
         
         /*
          * Kill dialogs
@@ -1321,22 +1295,6 @@ public class LocationActivity extends Activity implements Observer {
          */
         hideMenu();
     }
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 
     /* (non-Javadoc)
      * @see android.app.Activity#onDestroy()
@@ -1362,8 +1320,11 @@ public class LocationActivity extends Activity implements Observer {
                  * Temporarily move to destination by giving false GPS signal.
                  */
                 if(null == mDestination) {
-                    mToast.setText(getString(R.string.DestinationNF));
-                    mToast.show();
+                    Snackbar.make(
+                            mCoordinatorLayout,
+                            getString(R.string.DestinationNF),
+                            Snackbar.LENGTH_SHORT
+                    ).show();
                     return;
                 }
                 if((Destination)arg0 != mDestination) {
@@ -1378,19 +1339,27 @@ public class LocationActivity extends Activity implements Observer {
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);
                     }
-                    mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
-                    mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
+                    Snackbar.make(
+                            mCoordinatorLayout,
+                            getString(R.string.DestinationSet) + ((Destination)arg0).getID(),
+                            Snackbar.LENGTH_SHORT
+                    ).show();
+                    ((MainActivity) getContext()).showMapView();
                 }
                 else {
                     if(mService != null) {
+                        String snackbarText;
                         if(mService.getPlan().insertDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
+                            snackbarText = ((Destination)arg0).getID() + getString(R.string.PlanSet);
                         }
                         else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                            snackbarText = ((Destination)arg0).getID() + getString(R.string.PlanNoset);
                         }
-                        mToast.show();                            
+                        Snackbar.make(
+                                mCoordinatorLayout,
+                                snackbarText,
+                                Snackbar.LENGTH_SHORT
+                        ).show();
                     }
                 }
                 
@@ -1405,8 +1374,11 @@ public class LocationActivity extends Activity implements Observer {
 
             }
             else {
-                mToast.setText(getString(R.string.DestinationNF));
-                mToast.show();
+                Snackbar.make(
+                        mCoordinatorLayout,
+                        getString(R.string.DestinationNF),
+                        Snackbar.LENGTH_SHORT
+                ).show();
             }
         }
     }
@@ -1437,4 +1409,39 @@ public class LocationActivity extends Activity implements Observer {
         	h.postDelayed(r, ms);
         }
     }
+
+    public void forceReloadLocationView() {
+        mLocationView.forceReload();
+    }
+
+    public void setLocationViewLayerType(String layerType) {
+        mLocationView.setLayerType(layerType);
+    }
+
+    public void setTracksMode(boolean tracksMode) {
+        if (mService != null) {
+            setTrackState(tracksMode);
+            if (tracksMode) Snackbar.make(mCoordinatorLayout, "Tracks enabled", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    public void setSimulationMode(boolean simulationMode) {
+        mPref.setSimMode(simulationMode);
+
+        if (simulationMode) {
+            Snackbar.make(mCoordinatorLayout, "Simulation mode enabled", Snackbar.LENGTH_LONG).show();
+
+            if (null != mService) {
+                Destination dest = mService.getDestination();
+                if (null != dest) {
+                    Location l = dest.getLocation();
+                    mLocationView.updateParams(new GpsParams(l));
+                }
+                mLocationView.forceReload();
+            }
+        } else {
+            Snackbar.make(mCoordinatorLayout, "Simulation mode disabled", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
 }

@@ -12,13 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  *
  * This is used to replace spinners.
  */
-public class OptionButton extends Button implements View.OnClickListener {
+public class OptionButton extends AppCompatButton implements View.OnClickListener {
 
     private Context mContext;
     private ArrayList<String> mOptions;

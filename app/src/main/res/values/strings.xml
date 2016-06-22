@@ -66,6 +66,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ScreenOn">&quot;Screen Timeout&quot;</string>
     <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
     <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
+    <string name="HideTabBar">&quot;Hide Tab Bar&quot;</string>
+    <string name="HideTabBarLabel">&quot;Hide Tab Bar&quot;</string>
+    <string name="HideTabBarSummary">&quot;Select to hide the bottom tab bar and only use side navigation menu.&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
@@ -523,5 +526,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="Developer">Developer Settings</string>
 
+    <string name="RegisterActivityPreferenceKey">REGISTER_ACTIVITY_PREFERENCE_KEY</string>
+    <string name="SyncActivityPreferenceKey">SYNC_ACTIVITY_PREFERENCE_KEY</string>
 
 </resources>

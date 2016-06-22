@@ -448,6 +448,8 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
+        if (true) return; // TODO short circuit for now
+
         Preferences p = new Preferences(act.getApplicationContext()); 
         if(p.isNightMode()) {
             act.setTheme(android.R.style.Theme_Black);

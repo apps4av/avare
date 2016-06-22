@@ -888,43 +888,43 @@ public class Preferences {
         long mTabs = 1;
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlates), true)) {
-            mTabs |= 1 << MainActivity.tabPlates;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_PLATES;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabAFD), true)) {
-            mTabs |= 1 << MainActivity.tabAFD;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_AFD;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
-            mTabs |= 1 << MainActivity.tabFind;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_FIND;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
-            mTabs |= 1 << MainActivity.tabThreeD;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_THREE_D;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
-            mTabs |= 1 << MainActivity.tabPlan;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_PLAN;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-            mTabs |= 1 << MainActivity.tabWXB;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_WXB;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
-            mTabs |= 1 << MainActivity.tabNear;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_NEAR;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
-            mTabs |= 1 << MainActivity.tabChecklist;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_CHECKLIST;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_TOOLS;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-            mTabs |= 1 << MainActivity.tabTrip;
+            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_TRIP;
         }
 
         return mTabs;
@@ -1036,6 +1036,14 @@ public class Preferences {
 
     public boolean getPlanControl() {
         return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
+    }
+
+    public boolean setPlanControl(boolean planControl) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.prefPlanControl), planControl).commit();
+    }
+
+    public boolean getHideTabBar() {
+        return mPref.getBoolean(mContext.getString(R.string.HideTabBar), false);
     }
 
     // Get last location known

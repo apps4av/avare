@@ -14,8 +14,8 @@ package com.ds.avare.animation;
 
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
-import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -24,7 +24,7 @@ import android.view.View.OnClickListener;
  * @author zkhan
  *
  */
-public class TwoButton extends Button implements OnClickListener {
+public class TwoButton extends AppCompatButton implements OnClickListener {
 
 	private boolean mOn;
 	private String mOnName;

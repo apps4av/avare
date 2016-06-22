@@ -1,4 +1,5 @@
 /*
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -8,13 +9,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+package com.ds.avare.fragment;
 
-
-package com.ds.avare;
-
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,20 +21,27 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.ds.avare.MainActivity;
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
@@ -50,20 +53,21 @@ import com.ds.avare.utils.Helper;
 import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
- 
+
 /**
- * 
+ *
  * @author zkhan
  *
  */
-public class SearchActivity extends Activity implements Observer {
+public class SearchFragment extends Fragment implements Observer {
+
+    public static final String TAG = "SearchFragment";
 
     private StorageService mService;
-    
+
     private ListView mSearchListView;
     private EditText mSearchText;
     private Preferences mPref;
-    private Toast mToast;
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     private ProgressBar mProgressBar;
@@ -73,7 +77,8 @@ public class SearchActivity extends Activity implements Observer {
     private Button mPlanButton;
     private Button mPlatesButton;
     private boolean mIsWaypoint;
-    
+    private CoordinatorLayout mCoordinatorLayout;
+
     private AnimateButton mAnimatePlates;
     private AnimateButton mAnimatePlan;
     private AnimateButton mAnimateSelect;
@@ -84,13 +89,13 @@ public class SearchActivity extends Activity implements Observer {
      */
     private AlertDialog mAlertDialogEdit;
 
-    
+
     /**
      * Current destination info
      */
     private Destination mDestination;
 
-    
+
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -110,97 +115,79 @@ public class SearchActivity extends Activity implements Observer {
         }
     };
 
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
-    }
-
-    
     /**
-     * 
+     *
      * @param dst
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
         mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(SearchActivity.this);
-        mToast.setText(getString(R.string.Searching) + " " + dst);
-        mToast.show();
+        mDestination.addObserver(SearchFragment.this);
+        Snackbar.make(mCoordinatorLayout, getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT).show();
         mDestination.find(dbType);
         mSearchText.setText("");
     }
 
     /**
-     * 
+     *
      * @param dst
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
         mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(SearchActivity.this);
-        mToast.setText(getString(R.string.Searching) + " " + dst);
-        mToast.show();
+        mDestination.addObserver(SearchFragment.this);
+        Snackbar.make(mCoordinatorLayout, getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT).show();
         mDestination.find(dbType);
         mSearchText.setText("");
     }
 
     /**
-     * 
+     *
      */
     private void initList() {
-        String [] vals = mPref.getRecent();        
-        mAdapter = new SearchAdapter(SearchActivity.this, vals);
+        String [] vals = mPref.getRecent();
+        mAdapter = new SearchAdapter(getContext(), vals);
         mSearchListView.setAdapter(mAdapter);
     }
-    
+
     @Override
     /**
-     * 
+     *
      */
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
- 
-                
+        Helper.setTheme(getActivity());
+
         mService = null;
         mIsWaypoint = false;
-        mPref = new Preferences(getApplicationContext());
-        
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.search, null);        
-        setContentView(view);
-        
-        /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
-         */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        
+        mPref = new Preferences(getContext());
+
         /*
          * Lose info
          */
         mSelected = null;
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         /*
          * For a search query
          */
-        mSearchListView = (ListView)view.findViewById(R.id.search_list_view);
-        
+        mSearchListView = (ListView) view.findViewById(R.id.search_list_view);
+
         /*
          * Progress bar
          */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.search_progress_bar));
-                
-        mSelectedButton = (Button)view.findViewById(R.id.search_button_delete);
+        mProgressBar = (ProgressBar) (view.findViewById(R.id.search_progress_bar));
+
+        mSelectedButton = (Button) view.findViewById(R.id.search_button_delete);
         mSelectedButton.getBackground().setAlpha(255);
         mSelectedButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null != mSelected) {
@@ -210,32 +197,28 @@ public class SearchActivity extends Activity implements Observer {
                 }
                 mSelected = null;
             }
-            
         });
 
-        mEditButton = (Button)view.findViewById(R.id.search_button_note);
+        mEditButton = (Button) view.findViewById(R.id.search_button_note);
         mEditButton.getBackground().setAlpha(255);
         mEditButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null != mSelected) {
-                    final EditText edit = new EditText(SearchActivity.this);
+                    final EditText edit = new EditText(getContext());
                     String type = StringPreference.parseHashedNameDbType(mSelected);
                     if(type == null) {
-                        mToast.setText(R.string.GpsOnly);
-                        mToast.show();
-                        return;                        
+                        Snackbar.make(mCoordinatorLayout, getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT).show();
+                        return;
                     }
                     if(!type.equals(Destination.GPS)) {
-                        mToast.setText(R.string.GpsOnly);
-                        mToast.show();
-                        return;                        
+                        Snackbar.make(mCoordinatorLayout, getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT).show();
+                        return;
                     }
-                    
+
                     edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
 
-                    mAlertDialogEdit = new AlertDialog.Builder(SearchActivity.this).create();
+                    mAlertDialogEdit = new AlertDialog.Builder(getContext()).create();
                     mAlertDialogEdit.setTitle(getString(R.string.Label));
                     mAlertDialogEdit.setCanceledOnTouchOutside(true);
                     mAlertDialogEdit.setCancelable(true);
@@ -245,7 +228,7 @@ public class SearchActivity extends Activity implements Observer {
                             /*
                              * Edit and save description field
                              */
-                            
+
                             mPref.modifyARecent(mSelected, edit.getText().toString());
                             initList();
                             mSelected = null;
@@ -257,24 +240,23 @@ public class SearchActivity extends Activity implements Observer {
                         public void onClick(DialogInterface dialog, int which) {
                             mSelected = null;
                             dialog.dismiss();
-                        }            
+                        }
                     });
 
                     mAlertDialogEdit.show();
                 }
             }
-            
+
         });
 
-        mPlanButton = (Button)view.findViewById(R.id.search_button_plan);
+        mPlanButton = (Button) view.findViewById(R.id.search_button_plan);
         mPlanButton.getBackground().setAlpha(255);
         mPlanButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null != mSelected) {
-                    String id = StringPreference.parseHashedNameId(mSelected); 
-                    String destType = StringPreference.parseHashedNameDestType(mSelected); 
+                    String id = StringPreference.parseHashedNameId(mSelected);
+                    String destType = StringPreference.parseHashedNameDestType(mSelected);
                     String dbType = StringPreference.parseHashedNameDbType(mSelected);
                     if(id == null || destType == null) {
                         return;
@@ -284,27 +266,26 @@ public class SearchActivity extends Activity implements Observer {
                 }
             }
         });
-        
-        mPlatesButton = (Button)view.findViewById(R.id.search_button_plates);
+
+        mPlatesButton = (Button) view.findViewById(R.id.search_button_plates);
         mPlatesButton.getBackground().setAlpha(255);
         mPlatesButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if(null != mSelected) {
-                    String id = StringPreference.parseHashedNameId(mSelected);  
+                    String id = StringPreference.parseHashedNameId(mSelected);
                     if(id == null) {
                         return;
                     }
-                    
+
                     if(mService != null) {
                         mService.setLastPlateAirport(id);
                         mService.setLastPlateIndex(0);
-                        ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
+                        ((MainActivity) getContext()).showPlatesView();
                     }
                 }
             }
-        });        
+        });
 
 
         /*
@@ -313,13 +294,13 @@ public class SearchActivity extends Activity implements Observer {
         mSearchListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                    long arg3) {
+                                    long arg3) {
                 /*
                  * Commas not allowed
                  */
                 String txt = mAdapter.getItem(position).replace(",", " ");
-                String id = StringPreference.parseHashedNameId(txt); 
-                String destType = StringPreference.parseHashedNameDestType(txt); 
+                String id = StringPreference.parseHashedNameId(txt);
+                String destType = StringPreference.parseHashedNameDestType(txt);
                 String dbType = StringPreference.parseHashedNameDbType(txt);
                 if(id == null || destType == null) {
                     return;
@@ -328,60 +309,58 @@ public class SearchActivity extends Activity implements Observer {
                 goTo(id, destType, dbType);
             }
         });
-        
-        mSearchListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
+        mSearchListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                    int index, long arg3) {
-                mSelected = mAdapter.getItem(index); 
+            public boolean onItemLongClick(AdapterView<?> arg0, View v, int index, long arg3) {
+                mSelected = mAdapter.getItem(index);
                 if(mSelected == null) {
                     return false;
                 }
-                
+
                 // Don't display the plates button if there are no plates
                 String id = StringPreference.parseHashedNameId(mSelected);
-                
-                if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), id)) {
-                	mAnimatePlates.animate(true);
+
+                if (PlatesFragment.doesAirportHavePlates(mPref.mapsFolder(), id)) {
+                    mAnimatePlates.animate(true);
                 }
                 else {
-                	mAnimatePlates.stopAndHide();
+                    mAnimatePlates.stopAndHide();
                 }
 
                 mAnimateSelect.animate(true);
                 mAnimatePlan.animate(true);
-                
+
                 // Don't display the edit button if we can't edit
                 String type = StringPreference.parseHashedNameDbType(mSelected);
                 if(type == null || !type.equals(Destination.GPS)) {
-                	mAnimateEdit.stopAndHide();
+                    mAnimateEdit.stopAndHide();
                 }
                 else {
-                	mAnimateEdit.animate(true);
+                    mAnimateEdit.animate(true);
                 }
 
                 return true;
             }
-        }); 
+        });
 
 
         /*
          * For searching, start search on every new key press
          */
-        mSearchText = (EditText)view.findViewById(R.id.search_edit_text);
-        mSearchText.addTextChangedListener(new TextWatcher() { 
+        mSearchText = (EditText) view.findViewById(R.id.search_edit_text);
+        mSearchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable arg0) {
             }
-    
+
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
             }
-    
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int after) {
-                
+
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if(null != mSearchTask) {
                     if (!mSearchTask.getStatus().equals(AsyncTask.Status.FINISHED)) {
@@ -391,7 +370,7 @@ public class SearchActivity extends Activity implements Observer {
                         mSearchTask.cancel(true);
                     }
                 }
-                
+
                 /*
                  * If text is 0 length or too long, then do not search, show last list
                  */
@@ -399,19 +378,19 @@ public class SearchActivity extends Activity implements Observer {
                     initList();
                     return;
                 }
-                
+
                 if(s.toString().startsWith("address,")) {
                     String [] vals = new String[1];
                     String addr = s.toString().substring(8); // 8 = length of "address,"
                     if(addr.length() > 1) {
                         StringPreference sp = new StringPreference(Destination.MAPS, Destination.MAPS, Destination.MAPS, addr);
                         vals[0] = sp.getHashedName();
-                        mAdapter = new SearchAdapter(SearchActivity.this, vals);
+                        mAdapter = new SearchAdapter(getContext(), vals);
                         mSearchListView.setAdapter(mAdapter);
                     }
                     return;
                 }
-                
+
                 /*
                  * This is a geo coordinate with &?
                  */
@@ -419,7 +398,7 @@ public class SearchActivity extends Activity implements Observer {
                     String [] vals = new String[1];
                     StringPreference sp = new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, s.toString());
                     vals[0] = sp.getHashedName();
-                    mAdapter = new SearchAdapter(SearchActivity.this, vals);
+                    mAdapter = new SearchAdapter(getContext(), vals);
                     mSearchListView.setAdapter(mAdapter);
                     return;
                 }
@@ -430,19 +409,18 @@ public class SearchActivity extends Activity implements Observer {
 
             }
         });
-        
-        mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePlan = new AnimateButton(SearchActivity.this, mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateSelect = new AnimateButton(SearchActivity.this, mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
+
+        mAnimatePlates = new AnimateButton(getContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlan = new AnimateButton(getContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateSelect = new AnimateButton(getContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimateEdit = new AnimateButton(getContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
-        
-        
-    
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
-     * 
+     *
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -451,8 +429,8 @@ public class SearchActivity extends Activity implements Observer {
          */
         @Override
         public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
+                                       IBinder service) {
+            /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
@@ -475,40 +453,32 @@ public class SearchActivity extends Activity implements Observer {
     };
 
     /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
+        Helper.setOrientationAndOn(getActivity());
 
         /*
          * Registering our receiver
          * Bind now.
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
-    
+
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        
+
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
-        
+
         if(null != mSearchText) {
             mSearchText.setText("");
         }
@@ -524,36 +494,12 @@ public class SearchActivity extends Activity implements Observer {
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
 
     }
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
- 
     /**
-     * 
+     *
      */
     @Override
     public void update(Observable arg0, Object arg1) {
@@ -563,46 +509,54 @@ public class SearchActivity extends Activity implements Observer {
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
-            
+
                 /*
                  * Temporarily move to destination by giving false GPS signal.
                  */
                 if(null == mDestination) {
-                    mToast.setText(getString(R.string.DestinationNF));
-                    mToast.show();
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 if((Destination)arg0 != mDestination) {
                     /*
                      * If user presses a selection repeatedly, reject previous
                      */
-                    return;                    
+                    return;
                 }
                 mPref.addToRecent(mDestination.getStorageName());
-                
+
                 if(!mIsWaypoint) {
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);
                     }
-                    mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
-                    mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
+                    Snackbar.make(
+                            mCoordinatorLayout,
+                            getString(R.string.DestinationSet) + ((Destination)arg0).getID(),
+                            Snackbar.LENGTH_SHORT
+                    ).show();
+                    ((MainActivity) getContext()).showMapView();
                 }
                 else {
                     if(mService != null) {
                         if(mService.getPlan().appendDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
+                            Snackbar.make(
+                                    mCoordinatorLayout,
+                                    ((Destination)arg0).getID() + getString(R.string.PlanSet),
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
                         }
                         else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                            Snackbar.make(
+                                    mCoordinatorLayout,
+                                    ((Destination)arg0).getID() + getString(R.string.PlanNoset),
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
                         }
-                        mToast.show();                            
                     }
                 }
             }
             else {
-                mToast.setText(getString(R.string.DestinationNF));
-                mToast.show();
+                Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
             }
         }
     }
@@ -620,7 +574,7 @@ public class SearchActivity extends Activity implements Observer {
          */
         @Override
         protected Boolean doInBackground(Object... vals) {
-            
+
             Thread.currentThread().setName("Search");
 
             String srch = (String)vals[0];
@@ -629,7 +583,7 @@ public class SearchActivity extends Activity implements Observer {
             }
 
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-            synchronized (SearchActivity.class) {
+            synchronized (SearchFragment.class) {
                 /*
                  * This is not to be done repeatedly with new text input so sync.
                  */
@@ -646,7 +600,7 @@ public class SearchActivity extends Activity implements Observer {
             }
             return true;
         }
-        
+
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
@@ -659,7 +613,7 @@ public class SearchActivity extends Activity implements Observer {
             if(null == selection) {
                 return;
             }
-            mAdapter = new SearchAdapter(SearchActivity.this, selection);
+            mAdapter = new SearchAdapter(getContext(), selection);
             mSearchListView.setAdapter(mAdapter);
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }

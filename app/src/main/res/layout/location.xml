@@ -74,7 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:drawableLeft="@android:drawable/ic_menu_more"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/plan_prev"
@@ -144,8 +144,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"
+			android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:drawableLeft="@android:drawable/ic_menu_mylocation" />
 
@@ -179,7 +178,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:visibility="invisible"
             android:labelFor="@string/ChartTypeLabel"
             />
-        
+
         <RelativeLayout
             android:layout_margin="5dp"
             android:id="@+id/location_popout_layout"
@@ -189,8 +188,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:scrollbars="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            >
-            
+            android:elevation="5dp">
+
 	        <Button
 	            android:id="@+id/location_button_cross"
 	            android:layout_width="fill_parent"
@@ -255,12 +254,12 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:clickable="false"
                 android:layout_margin="5dp"
                 android:cacheColorHint="#00000000"
+                android:theme="@style/Theme.AppCompat"
                 android:layout_below="@+id/location_popout_buttons"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"/>
-            
+
         </RelativeLayout>
-        
-        
+
 </RelativeLayout>
 

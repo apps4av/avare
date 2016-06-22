@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -9,11 +9,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.ds.avare;
+package com.ds.avare.fragment;
 
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,14 +20,21 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
@@ -54,22 +58,24 @@ import java.util.Observer;
  * @author zkhan,rasii
  * An activity that deals with A/FD information
  */
-public class AirportActivity extends Activity implements Observer {   
+public class AirportFragment extends Fragment implements Observer {
+    public static final String TAG = "AirportFragment";
+
     private StorageService mService;
     private Preferences mPref;
     private Destination mDestination;
     private ListView mAirportView;
-    private Toast mToast;
     private AfdView mAfdView;
     private Button mAirportButton;
     private Button mViewButton;
     private AlertDialog mViewPopup;
-    private AlertDialog mAirportPopup;    
+    private AlertDialog mAirportPopup;
     private ArrayList<String> mListViews;
     private ArrayList<String> mListAirports;
     private Button mCenterButton;
     private String mDestString;
     private String mNearString;
+    private CoordinatorLayout mCoordinatorLayout;
 
     private GpsInterface mGpsInfc = new GpsInterface() {
 
@@ -90,43 +96,33 @@ public class AirportActivity extends Activity implements Observer {
         }
     };
 
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
-    }
-    
     /**
-     * 
+     *
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
+        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences(getApplicationContext());
-        /*
-         * Create toast beforehand so multiple clicks don't throw up a new toast
-         */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        
+        mPref = new Preferences(getContext());
+
         mDestString = "<" + getString(R.string.Destination) + ">";
         mNearString = "<" + getString(R.string.Nearest) + ">";
-        
-        /*
-         * Get views from XML
-         */
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.airport, null);
-        setContentView(view);
-        mAirportView = (ListView)view.findViewById(R.id.airport_list);
-        mAfdView = (AfdView)view.findViewById(R.id.airport_afd);
-        
-        mViewButton = (Button)view.findViewById(R.id.airport_button_views);
+
+        mService = null;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.airport, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mAirportView = (ListView) view.findViewById(R.id.airport_list);
+        mAfdView = (AfdView) view.findViewById(R.id.airport_afd);
+
+        mViewButton = (Button) view.findViewById(R.id.airport_button_views);
         mViewButton.getBackground().setAlpha(255);
         mViewButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -134,7 +130,7 @@ public class AirportActivity extends Activity implements Observer {
                 if(mListViews.size() == 0 || arePopupsShowing()) {
                     return;
                 }
-                
+
                 DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -142,8 +138,8 @@ public class AirportActivity extends Activity implements Observer {
                         setViewFromPos(which);
                     }
                 };
-                
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 int index = mService.getAfdIndex();
                 if(index >= mListViews.size()) {
                     index = 0;
@@ -151,9 +147,9 @@ public class AirportActivity extends Activity implements Observer {
                 mViewPopup = builder.setSingleChoiceItems(mListViews.toArray(new String[mListViews.size()]), index, onClickListener).create();
                 mViewPopup.show();
             }
-        });         
-        
-        mAirportButton = (Button)view.findViewById(R.id.airport_button_airports);
+        });
+
+        mAirportButton = (Button) view.findViewById(R.id.airport_button_airports);
         mAirportButton.getBackground().setAlpha(255);
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -161,7 +157,7 @@ public class AirportActivity extends Activity implements Observer {
                 if(mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
-                
+
                 DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -169,16 +165,16 @@ public class AirportActivity extends Activity implements Observer {
                         setNewDestinationFromPos(which);
                     }
                 };
-                
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 int index = mListAirports.indexOf(mService.getLastAfdAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
 
             }
-        });              
+        });
 
-        mCenterButton = (Button)view.findViewById(R.id.airport_button_center);
+        mCenterButton = (Button) view.findViewById(R.id.airport_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -186,19 +182,19 @@ public class AirportActivity extends Activity implements Observer {
                 mAfdView.center();
             }
         });
-        
-        mService = null;
+
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
-    
+
     private boolean arePopupsShowing() {
-        return (null != mViewPopup && mViewPopup.isShowing()) || 
+        return (null != mViewPopup && mViewPopup.isShowing()) ||
                 (null != mAirportPopup && mAirportPopup.isShowing());
     }
-    
+
     private void setupViewInfo() {
         mListViews.clear();
         mListViews.add(getString(R.string.AFD));
-        
+
         /*
          * Get Text A/FD
          */
@@ -230,7 +226,7 @@ public class AirportActivity extends Activity implements Observer {
             values[iterator] = s;
             iterator++;
         }
-        
+
         /*
          * Add AWOS
          */
@@ -267,7 +263,7 @@ public class AirportActivity extends Activity implements Observer {
             iterator++;
         }
         /*
-         * Add frequencies (unicom, atis, tower etc)  
+         * Add frequencies (unicom, atis, tower etc)
          */
         for(String key : freq.keySet()){
             views[iterator] = key;
@@ -288,15 +284,15 @@ public class AirportActivity extends Activity implements Observer {
             }
             mRunwayName = mRunwayName+run.getNumber();
             views[iterator] = mRunwayName + " (" + run.getLength() + "'x" + run.getWidth() + "')";
-            values[iterator] = 
+            values[iterator] =
                     "DT: " + run.getThreshold() + ",\n" +
-                    "Elev: " + run.getElevation() + ",\n" +
-                    "Surf: " + run.getSurface() + ",\n" +
-                    "Ptrn: " + run.getPattern() + ",\n" +
-                    "ALS: " + run.getLights() + ",\n" +
-                    "ILS: " + run.getILS() + ",\n" +
-                    "VGSI: " + run.getVGSI()
-                    ;
+                            "Elev: " + run.getElevation() + ",\n" +
+                            "Surf: " + run.getSurface() + ",\n" +
+                            "Ptrn: " + run.getPattern() + ",\n" +
+                            "ALS: " + run.getLights() + ",\n" +
+                            "ILS: " + run.getILS() + ",\n" +
+                            "VGSI: " + run.getVGSI()
+            ;
             iterator++;
         }
 
@@ -315,17 +311,17 @@ public class AirportActivity extends Activity implements Observer {
 
         mAirportView.setClickable(false);
         mAirportView.setDividerHeight(10);
-        TypeValueAdapter tvAdapter = new TypeValueAdapter(AirportActivity.this, views, values);
+        TypeValueAdapter tvAdapter = new TypeValueAdapter(getContext(), views, values);
         mAirportView.setAdapter(tvAdapter);
 
         mAirportView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                    int index, long arg3) {
+                                           int index, long arg3) {
                 return true;
             }
         });
-        
+
         /*
          * Not found
          */
@@ -334,28 +330,28 @@ public class AirportActivity extends Activity implements Observer {
             mAirportView.setVisibility(View.VISIBLE);
             mAfdView.setVisibility(View.INVISIBLE);
             mCenterButton.setVisibility(View.INVISIBLE);
-            return;                
+            return;
         }
-        
+
         /*
          * Now add all A/FD pages to the list
          */
-        String[] afd = mDestination.getAfd();            
+        String[] afd = mDestination.getAfd();
         for(int plate = 0; plate < afd.length; plate++) {
             String tokens[] = afd[plate].split("/");
             mListViews.add(tokens[tokens.length - 1]);
-        }     
+        }
     }
-    
+
     /*
      * Add an airport to the airports list if it doesn't already exist
      */
-    private void addAirport(String name) {  
+    private void addAirport(String name) {
         if(mListAirports.indexOf(name) < 0) {
             mListAirports.add(name);
         }
     }
-    
+
     private void setViewFromPos(int pos) {
         if(mDestination != null && mService != null && mListViews != null) {
             String[] afd = mDestination.getAfd();
@@ -375,13 +371,13 @@ public class AirportActivity extends Activity implements Observer {
                     mCenterButton.setVisibility(View.VISIBLE);
                 }
                 else {
-                    mAirportView.setVisibility(View.VISIBLE);                            
+                    mAirportView.setVisibility(View.VISIBLE);
                     mAfdView.setVisibility(View.INVISIBLE);
                     mCenterButton.setVisibility(View.INVISIBLE);
                     mService.loadDiagram(null);
                     mAfdView.setBitmap(null);
                 }
-                
+
                 mService.setAfdIndex(pos);
             }
         }
@@ -420,25 +416,24 @@ public class AirportActivity extends Activity implements Observer {
             else {
                 mService.setLastAfdAirport(airport);
             }
-            
+
             if(airport == null && mListAirports.size() > 2) {
                 airport = mListAirports.get(2);
             }
-            
+
             // If data is still null, there are no valid airports
             if(airport == null) {
                 mAirportButton.setText(mService.getLastAfdAirport());
                 mViewButton.setText("");
-                
+
                 mAfdView.setBitmap(null);
-                mToast.setText(getString(R.string.ValidDest));
                 mAirportView.setVisibility(View.VISIBLE);
                 mAfdView.setVisibility(View.INVISIBLE);
                 mCenterButton.setVisibility(View.INVISIBLE);
-                mToast.show();
+                Snackbar.make(mCoordinatorLayout, getString(R.string.ValidDest), Snackbar.LENGTH_SHORT).show();
                 return;
             }
-            
+
             // If we don't have to do a Destination.find() skip it.
             int viewPos = mService.getAfdIndex();
             if(null != oldDest && oldDest.getID().equals(airport) && oldDest.getType().equals(Destination.BASE)) {
@@ -454,23 +449,26 @@ public class AirportActivity extends Activity implements Observer {
                 viewPos = 0;
                 mDestination = new Destination(airport, Destination.BASE, mPref, mService);
                 mService.setLastAfdDestination(mDestination);
-                mDestination.addObserver(AirportActivity.this);
-                mToast.setText(getString(R.string.Searching) + " " + mDestination.getID());
-                mToast.show();
+                mDestination.addObserver(AirportFragment.this);
+                Snackbar.make(
+                        mCoordinatorLayout,
+                        getString(R.string.Searching) + " " + mDestination.getID(),
+                        Snackbar.LENGTH_SHORT
+                ).show();
                 mDestination.find();
             }
-            
+
             mService.setLastAfdDestination(mDestination);
             mAirportButton.setText(airport);
 
             setViewFromPos(viewPos);
-        }                   
+        }
     }
-    
-    
+
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
-     * 
+     *
      */
     private ServiceConnection mConnection = new ServiceConnection() {
         /* (non-Javadoc)
@@ -478,8 +476,8 @@ public class AirportActivity extends Activity implements Observer {
          */
         @Override
         public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
+                                       IBinder service) {
+            /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
@@ -491,12 +489,12 @@ public class AirportActivity extends Activity implements Observer {
              * Initialize the lists
              */
             mListViews = new ArrayList<String>();
-            mListViews.add(AirportActivity.this.getString(R.string.AFD));
+            mListViews.add(getString(R.string.AFD));
 
             mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
             mListAirports.add(mNearString);
-            
+
             /*
              * Are we being told to load an airport?
              */
@@ -512,7 +510,7 @@ public class AirportActivity extends Activity implements Observer {
             if(null != curDestination && curDestination.getType().equals(Destination.BASE)) {
                 addAirport(curDestination.getID());
             }
-            
+
             /*
              *  Load the nearest airport
              */
@@ -522,7 +520,7 @@ public class AirportActivity extends Activity implements Observer {
                 nearest = mService.getArea().getAirport(0);
                 addAirport(nearest.getId());
             }
-            
+
             /*
              * Add anything in the plan
              */
@@ -536,23 +534,23 @@ public class AirportActivity extends Activity implements Observer {
                     }
                 }
             }
-            
+
             /*
              * Now add anything in the recently found list
              */
-            String [] vals = mPref.getRecent(); 
+            String [] vals = mPref.getRecent();
             for(int pos=0; pos < vals.length; pos++) {
                 String destType = StringPreference.parseHashedNameDestType(vals[pos]);
                 if(destType != null && destType.equals(Destination.BASE)) {
                     String id = StringPreference.parseHashedNameId(vals[pos]);
 
-                    addAirport(id);                
+                    addAirport(id);
                 }
             }
 
             int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
-            setNewDestinationFromPos(lastIndex);            
-        }    
+            setNewDestinationFromPos(lastIndex);
+        }
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
@@ -566,31 +564,31 @@ public class AirportActivity extends Activity implements Observer {
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        
+
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
-        
+
         try {
             mViewPopup.dismiss();
         }
         catch(Exception e) {}
-        
+
         try {
             mAirportPopup.dismiss();
         }
-        catch(Exception e) {} 
+        catch(Exception e) {}
 
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
     }
 
     /**
-     * 
+     *
      */
     @Override
     public void onResume() {
@@ -600,11 +598,11 @@ public class AirportActivity extends Activity implements Observer {
         /*
          * Registering our receiver
          * Bind now.
-         */        
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+         */
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        Helper.setOrientationAndOn(this);
+        Helper.setOrientationAndOn(getActivity());
     }
 
     @Override
@@ -616,23 +614,21 @@ public class AirportActivity extends Activity implements Observer {
             Boolean result = (Boolean)data;
             if(result) {
                 if(null == mDestination) {
-                    mToast.setText(getString(R.string.DestinationNF));
-                    mToast.show();
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 if((Destination)observable != mDestination) {
                     /*
                      * If user presses a selection repeatedly, reject previous
                      */
-                    return;                    
+                    return;
                 }
 
                 setupViewInfo();
                 setViewFromPos(0);
             }
             else {
-                mToast.setText(getString(R.string.DestinationNF));
-                mToast.show();
+                Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
             }
         }
     }

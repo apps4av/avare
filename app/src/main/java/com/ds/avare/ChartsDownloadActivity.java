@@ -11,9 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,6 +23,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +38,7 @@ import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.ThemedProgressDialog;
 
 import java.io.File;
 
@@ -46,7 +46,7 @@ import java.io.File;
  * @author zkhan
  *
  */
-public class ChartsDownloadActivity extends Activity {
+public class ChartsDownloadActivity extends AppCompatActivity {
     
     private String mName;
     private ProgressDialog mProgressDialog;
@@ -272,7 +272,7 @@ public class ChartsDownloadActivity extends Activity {
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust(), mPref.isTileSize256());
         mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName, mChartAdapter.isStatic(mName));
         
-        mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
+        mProgressDialog = new ThemedProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setMax(100);
         mProgressDialog.setCancelable(false);
@@ -326,7 +326,7 @@ public class ChartsDownloadActivity extends Activity {
         mDelete = new Delete(mHandler);
         mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
         
-        mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
+        mProgressDialog = new ThemedProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setMax(100);
         mProgressDialog.setCancelable(false);

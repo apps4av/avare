@@ -22,10 +22,10 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
+import com.ds.avare.fragment.PlanFragment;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -979,16 +979,16 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.SHOW_BUSY, null);
         	}
         	else if(MSG_ACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.ACTIVE, null);
+        		mCallback.callback(PlanFragment.ACTIVE, null);
         	}
         	else if(MSG_INACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.INACTIVE, null);
+        		mCallback.callback(PlanFragment.INACTIVE, null);
         	}
            	else if(MSG_SAVE_HIDE == msg.what) {	
             	String func = "javascript:save_hide(" + (String)msg.obj + ")";
@@ -1007,7 +1007,7 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	
-        		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
+        		mCallback.callback(PlanFragment.MESSAGE, msg.obj);
         	}
         }
     };

@@ -28,6 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:labelFor="@string/ChartTypeLabel"
+        android:visibility="gone"
         />
 
     <Button
@@ -35,8 +36,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@android:drawable/ic_menu_mylocation"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 
     <TextView
@@ -47,8 +48,9 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textColor="#7FFFFFFF"
         android:textSize="12dp"
         android:layout_margin="10dp"
-        android:layout_above="@+id/threed_button_center"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        />
 
     <com.ds.avare.views.GlassView
         android:layout_width="fill_parent"
