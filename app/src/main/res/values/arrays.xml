@@ -2334,6 +2334,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
         <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
         <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
+        <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>
     </string-array>
 
 </resources>

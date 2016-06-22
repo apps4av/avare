@@ -41,7 +41,7 @@ public class OwnShip {
 
     private VertexArray mVertexArray;
 
-    private static int mScanAngle = 0;
+    private static float mScanAngle = 0;
 
     // Make axis
     private static float[] getAxis(float tr[], int offset, float x, float y, float z, float angle) {
@@ -190,9 +190,11 @@ public class OwnShip {
             return;
         }
 
+        mScanAngle += 0.25;
+
         // Draw axis around ownship
         glDrawArrays(GL_LINES, 0, 4 * 2);
-        glDrawArrays(GL_LINES, 4 * 2 + ((mScanAngle++ % 180) * 2), 2);
+        glDrawArrays(GL_LINES, 4 * 2 + ((((int)mScanAngle) % 180) * 2), 2);
 
     }
 

@@ -36,10 +36,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-        <CheckBoxPreference
-            android:key="@string/TileSize"
-            android:summary="@string/TileSizeSummary"
-            android:title="@string/TileSizeLabel" />
         <com.ds.avare.utils.FolderPreference
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
@@ -446,4 +442,17 @@ authors: zkhan, jlmcgraw
 
     </PreferenceScreen>
 
-</PreferenceScreen>
+
+    <PreferenceScreen
+        android:title="@string/Developer"
+        android:icon="@android:drawable/ic_menu_zoom" >
+
+        <CheckBoxPreference
+            android:key="@string/TileSize"
+            android:summary="@string/TileSizeSummary"
+            android:title="@string/TileSizeLabel" />
+
+    </PreferenceScreen>
+
+
+    </PreferenceScreen>
