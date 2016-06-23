@@ -994,12 +994,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 offsets[1] = mGpsTile.getOffsetY(mGpsParams.getLatitude());
                 mMovement = new Movement(offsets);
                 postInvalidate();
+                return;
             }
         }
-        else {
-            loadTiles();
-        }
-
+        loadTiles();
      }
 
     
