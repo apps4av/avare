@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016, Apps4Av Inc. (apps4av.com)
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -9,10 +9,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+package com.ds.avare.fragment;
 
-package com.ds.avare;
-
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,13 +26,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -59,7 +62,9 @@ import java.util.TimerTask;
 /**
  * @author zkhan
  */
-public class ThreeDActivity extends Activity {
+public class ThreeDFragment extends Fragment {
+
+    public static final String TAG = "ThreeDFragment";
 
     /**
      * Service that keeps state even when activity is dead
@@ -71,14 +76,13 @@ public class ThreeDActivity extends Activity {
      */
     private Preferences mPref;
 
-    private Toast mToast;
-
     private Context mContext;
 
     private AreaMapper mAreaMapper;
 
     private Button mCenterButton;
     private TextView mText;
+    private CoordinatorLayout mCoordinatorLayout;
 
     private GlassView mGlassView;
 
@@ -117,7 +121,7 @@ public class ThreeDActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            synchronized (ThreeDActivity.this) {
+            synchronized (ThreeDFragment.this) {
                 mLocation = location;
             }
         }
@@ -150,25 +154,15 @@ public class ThreeDActivity extends Activity {
         // Button colors to be synced across activities
         if (mPref.isFirstPerson()) {
             mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-            mToast.setText(getString(R.string.FirstPerson));
+            Snackbar.make(mCoordinatorLayout, getString(R.string.FirstPerson), Snackbar.LENGTH_SHORT).show();
             mRenderer.getCamera().setFirstPerson(true);
             mGlSurfaceView.init();
         } else {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-            mToast.setText(getString(R.string.BirdEye));
+            Snackbar.make(mCoordinatorLayout, getString(R.string.BirdEye), Snackbar.LENGTH_SHORT).show();
             mRenderer.getCamera().setFirstPerson(false);
             mGlSurfaceView.init();
         }
-        mToast.show();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
     }
 
     /* (non-Javadoc)
@@ -176,33 +170,28 @@ public class ThreeDActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        Helper.setTheme(this);
+        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
+        mPref = new Preferences(getContext());
 
-        mContext = this;
+        mContext = getContext();
+    }
 
-        /*
-         * Create toast beforehand so multiple clicks dont throw up a new toast
-         */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.threed, container, false);
+    }
 
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.threed, null);
-        setContentView(view);
-
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mGlSurfaceView = (ThreeDSurfaceView) view.findViewById(R.id.threed_surface);
 
         mGlassView = (GlassView) view.findViewById(R.id.threed_overlay_view);
 
         // Check if the system supports OpenGL ES 2.0.
-        ActivityManager activityManager =
-                (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        ConfigurationInfo configurationInfo = activityManager
-                .getDeviceConfigurationInfo();
+        ActivityManager activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
+        ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
         // Even though the latest emulator supports OpenGL ES 2.0,
         // it has a bug where it doesn't set the reqGlEsVersion so
         // the above check doesn't work. The below will detect if the
@@ -224,7 +213,7 @@ public class ThreeDActivity extends Activity {
             mGlSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
             // Assign our renderer.
-            mRenderer = new TerrainRenderer(this, new GenericCallback() {
+            mRenderer = new TerrainRenderer(getContext(), new GenericCallback() {
                 @Override
                 public Object callback(Object o, Object o1) {
 
@@ -253,7 +242,7 @@ public class ThreeDActivity extends Activity {
                                 location = l;
                             }
                             else {
-                                synchronized (ThreeDActivity.this) {
+                                synchronized (ThreeDFragment.this) {
                                     if(mLocation != null) {
                                         location = new Location(mLocation);
                                     }
@@ -373,9 +362,7 @@ public class ThreeDActivity extends Activity {
              * This hides our app from those devices which don't support OpenGL
              * ES 2.0.
              */
-            mToast.setText("This device does not support OpenGL ES 2.0.");
-            mToast.show();
-            return;
+            Snackbar.make(mCoordinatorLayout, "This device does not support OpenGL ES 2.0.", Snackbar.LENGTH_SHORT).show();
         }
 
         mAreaMapper = new AreaMapper();
@@ -418,8 +405,8 @@ public class ThreeDActivity extends Activity {
         chartOption.setOptions(Boundaries.getChartTypes());
         chartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
 
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
-
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -467,22 +454,13 @@ public class ThreeDActivity extends Activity {
         return Helper.findElevationFromNormalizedElevation(elev);
     }
 
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
+        Helper.setOrientationAndOn(getActivity());
 
         // Clean messages
         mText.setText("");
@@ -493,8 +471,8 @@ public class ThreeDActivity extends Activity {
          * Registering our receiver
          * Bind now.
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (mRenderer != null) {
             mGlSurfaceView.onResume();
@@ -511,7 +489,7 @@ public class ThreeDActivity extends Activity {
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         if (null != mService) {
@@ -521,17 +499,12 @@ public class ThreeDActivity extends Activity {
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
 
         if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
         mTimer.cancel();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private Handler mHandler = new Handler() {

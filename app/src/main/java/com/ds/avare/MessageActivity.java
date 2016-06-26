@@ -13,9 +13,9 @@ package com.ds.avare;
 
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +29,7 @@ import com.ds.avare.utils.OptionButton;
  * @author zkhan
  *
  */
-public class MessageActivity extends Activity  {
+public class MessageActivity extends AppCompatActivity {
     
     private WebView mWebView;
     private OptionButton mOptions;

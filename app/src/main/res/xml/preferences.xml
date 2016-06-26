@@ -15,10 +15,10 @@ authors: zkhan, jlmcgraw
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceScreen 
+    <PreferenceScreen
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
-        <com.ds.avare.utils.FolderPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:key="@string/Maps"
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
@@ -36,7 +36,7 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-        <com.ds.avare.utils.FolderPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
             android:title="@string/UDWLabel" />
@@ -108,12 +108,14 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefAppStateCategoryTitle" 
         android:icon="@android:drawable/ic_menu_mapmode" >
-        <com.ds.avare.utils.RegisterActivityPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:summary="@string/onlineSummary"
-            android:title="@string/online" />
-        <com.ds.avare.utils.SyncActivityPreference
+            android:title="@string/online"
+            android:key="@string/RegisterActivityPreferenceKey" />
+        <com.ds.avare.utils.GenericDialogPreference
             android:summary="@string/syncSummary"
-            android:title="@string/sync" />
+            android:title="@string/sync"
+            android:key="@string/SyncActivityPreferenceKey" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/LeaveRunning"
@@ -301,7 +303,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShapeFile"
             android:summary="@string/ShapeFileSummary"
             android:title="@string/ShapeFileLabel" />
-        <PreferenceScreen 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/HideTabBar"
+            android:summary="@string/HideTabBarSummary"
+            android:title="@string/HideTabBarLabel" />
+        <PreferenceScreen
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >

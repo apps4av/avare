@@ -11,51 +11,37 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.preference.DialogPreference;
-import android.util.AttributeSet;
+import android.os.Bundle;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceDialogFragmentCompat;
 
 import com.ds.avare.SyncActivity;
-
 
 /**
  * 
  * @author zkhan
  *
  */
-public class SyncActivityPreference extends DialogPreference {
+public class SyncActivityPreferenceDialogFragment extends PreferenceDialogFragmentCompat {
 
-    private Context mContext;
-
-    /**
-     *
-     * @param context
-     * @param attrs
-     */
-    public SyncActivityPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
+    public static SyncActivityPreferenceDialogFragment newInstance(Preference preference) {
+        SyncActivityPreferenceDialogFragment fragment = new SyncActivityPreferenceDialogFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putString("key", preference.getKey());
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
-    /**
-     * 
-     */
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        super.onDialogClosed(positiveResult);
-    }
-    
-
-    /**
-     * 
-     */
     @Override
     public void onClick (DialogInterface dialog, int which) {
-        if(which == DialogInterface.BUTTON_POSITIVE) {
-            mContext.startActivity(new Intent(mContext, SyncActivity.class));
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            getContext().startActivity(new Intent(getContext(), SyncActivity.class));
         }
     }
+
+    @Override
+    public void onDialogClosed(boolean positiveResult) { }
+
 }

@@ -13,9 +13,10 @@ package com.ds.avare.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Environment;
-import android.preference.DialogPreference;
-import android.util.AttributeSet;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceDialogFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
  * @author zkhan
  *
  */
-public class FolderPreference extends DialogPreference {
+public class FolderPreferenceDialogFragment extends PreferenceDialogFragmentCompat {
 
     private Context mContext;
     
@@ -58,7 +59,39 @@ public class FolderPreference extends DialogPreference {
     private Button mButtonSDCard;
     private Button mButtonExternal;
     private Preferences mPref;
-    
+    private String mKey;
+
+    public static FolderPreferenceDialogFragment newInstance(Preference preference) {
+        FolderPreferenceDialogFragment fragment = new FolderPreferenceDialogFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putString("key", preference.getKey());
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+
+        mContext = getContext();
+        mPref = new Preferences(getContext());
+        mKey = arguments.getString("key");
+
+        // A "generic" handler that is used for several different config items
+        // we need to find out what control this is to see where to read the
+        // initial value from
+        //
+        // User defined Waypoints
+        if (mKey.equals(mContext.getString(R.string.UDWLocation)))
+            init(mPref.getUDWLocation());
+
+            // The chart/map location
+        else if (mKey.equals(mContext.getString(R.string.Maps)))
+            init(mPref.mapsFolder());
+    }
+
     /**
      * 
      * @param path
@@ -83,33 +116,9 @@ public class FolderPreference extends DialogPreference {
     
     /**
      * 
-     * @param context
-     * @param attrs
-     */
-    public FolderPreference(Context context, AttributeSet attrs) {        
-        super(context, attrs);
-        mContext = context;
-        mPref = new Preferences(context);
-        
-        // A "generic" handler that is used for several different config items
-        // we need to find out what control this is to see where to read the
-        // initial value from
-        //
-        // User defined Waypoints
-        if(getKey().equals(mContext.getString(R.string.UDWLocation)))
-        	init(mPref.getUDWLocation());
-        
-        // The chart/map location
-        else if(getKey().equals(mContext.getString(R.string.Maps)))
-        	init(mPref.mapsFolder());
-    }
-
-    /**
-     * 
      */
     @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        super.onDialogClosed(positiveResult);
+    public void onDialogClosed(boolean positiveResult) {
         if(positiveResult) {
         	
         	// Create a default toast message that assumes failure
@@ -121,7 +130,7 @@ public class FolderPreference extends DialogPreference {
             	String absPath = mPath.getAbsolutePath();
 
             	// If this is for the charts, then set it and display some toast
-                if(getKey().equals(mContext.getString(R.string.Maps))) {
+                if(mKey.equals(mContext.getString(R.string.Maps))) {
 
                 	// Save this in the preferences for maps
                 	mPref.setMapsFolder(absPath);
@@ -132,7 +141,7 @@ public class FolderPreference extends DialogPreference {
                 }
                 
                 // If this is for the UserDefinedWaypoints setting ...
-                else if (getKey().equals(mContext.getString(R.string.UDWLocation))) {
+                else if (mKey.equals(mContext.getString(R.string.UDWLocation))) {
                 	
                 	// Save this in preferences for the UDWaypoints
                 	mPref.setUDWLocation(absPath);
@@ -147,9 +156,9 @@ public class FolderPreference extends DialogPreference {
             t.show();
         }
     }
-    
+
     @Override
-    protected View onCreateDialogView() {
+    protected View onCreateDialogView(Context context) {
         LayoutInflater layoutInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.folder, null);
         

@@ -12,10 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +39,7 @@ import java.util.Random;
  * @author zkhan
  *
  */
-public class SubmitActivity extends Activity {
+public class SubmitActivity extends AppCompatActivity {
     
     private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;

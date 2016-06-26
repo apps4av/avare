@@ -11,51 +11,37 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-
 import com.ds.avare.RegisterActivity;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.preference.DialogPreference;
-import android.util.AttributeSet;
-
+import android.os.Bundle;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceDialogFragmentCompat;
 
 /**
  * 
  * @author zkhan
  *
  */
-public class RegisterActivityPreference extends DialogPreference {
+public class RegisterActivityPreferenceDialogFragment extends PreferenceDialogFragmentCompat {
 
-    private Context mContext;
-    
-    /**
-     * 
-     * @param context
-     * @param attrs
-     */
-    public RegisterActivityPreference(Context context, AttributeSet attrs) {        
-        super(context, attrs);
-        mContext = context;
+    public static RegisterActivityPreferenceDialogFragment newInstance(Preference preference) {
+        RegisterActivityPreferenceDialogFragment fragment = new RegisterActivityPreferenceDialogFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putString("key", preference.getKey());
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
-    /**
-     * 
-     */
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        super.onDialogClosed(positiveResult);
-    }
-    
-
-    /**
-     * 
-     */
     @Override
     public void onClick (DialogInterface dialog, int which) {
-        if(which == DialogInterface.BUTTON_POSITIVE) {
-            mContext.startActivity(new Intent(mContext, RegisterActivity.class));
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            getContext().startActivity(new Intent(getContext(), RegisterActivity.class));
         }
     }
+
+    @Override
+    public void onDialogClosed(boolean b) { }
+
 }

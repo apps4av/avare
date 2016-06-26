@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:title="@string/Main" />
+        <item
+            android:id="@+id/nav_plate"
+            android:title="@string/Plates" />
+        <item
+            android:id="@+id/nav_afd"
+            android:title="@string/AFD" />
+        <item
+            android:id="@+id/nav_find"
+            android:title="@string/Find" />
+        <item
+            android:id="@+id/nav_plan"
+            android:title="@string/Plan" />
+        <item
+            android:id="@+id/nav_near"
+            android:title="@string/Near" />
+        <item
+            android:id="@+id/nav_3d"
+            android:title="@string/ThreeD" />
+        <item
+            android:id="@+id/nav_list"
+            android:title="@string/List" />
+        <item
+            android:id="@+id/nav_wxb"
+            android:title="@string/WXB" />
+        <item
+            android:id="@+id/nav_trip"
+            android:title="@string/Trip" />
+        <item
+            android:id="@+id/nav_tools"
+            android:title="@string/Tools" />
+        <item
+            android:id="@+id/nav_split"
+            android:title="Split" />
+    </group>
+
+</menu>

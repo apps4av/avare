@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -9,18 +9,18 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.ds.avare;
+package com.ds.avare.fragment;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.webinfc.WebAppListInterface;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,12 +32,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -47,7 +50,9 @@ import android.widget.ProgressBar;
  * @author zkhan
  * An activity that deals with lists - loading, creating, deleting and using
  */
-public class ChecklistActivity extends Activity {
+public class ChecklistFragment extends Fragment {
+
+    public static final String TAG = "ChecklistFragment";
 
     /**
      * This view display location on the map.
@@ -66,7 +71,7 @@ public class ChecklistActivity extends Activity {
      * Service that keeps state even when activity is dead
      */
     private StorageService mService;
-    
+
     /*
      * If page it loaded
      */
@@ -107,36 +112,28 @@ public class ChecklistActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
+     *
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        Helper.setTheme(this);
+        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
-     
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mContext = this;
+
+        mContext = getContext();
         mService = null;
         mIsPageLoaded = false;
         mInited = false;
+    }
 
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.checklist, null);
-        setContentView(view);
-        mWebView = (WebView)view.findViewById(R.id.list_mainpage);
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.checklist, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mWebView = (WebView) view.findViewById(R.id.list_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mInfc = new WebAppListInterface(mContext, mWebView, new GenericCallback() {
@@ -144,82 +141,82 @@ public class ChecklistActivity extends Activity {
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
              */
-        	@Override
-        	public Object callback(Object o, Object o1) {
-            	Message m = mHandler.obtainMessage((Integer)o, o1);
-            	mHandler.sendMessage(m);
-        		return null;
-        	}
+            @Override
+            public Object callback(Object o, Object o1) {
+                Message m = mHandler.obtainMessage((Integer)o, o1);
+                mHandler.sendMessage(m);
+                return null;
+            }
         });
         mWebView.addJavascriptInterface(mInfc, "AndroidList");
         mWebView.setWebChromeClient(new WebChromeClient() {
-	     	public void onProgressChanged(WebView view, int progress) {
+            public void onProgressChanged(WebView view, int progress) {
                 /*
-                 * Now update HTML with latest list stuff, do this every time we start the List screen as 
+                 * Now update HTML with latest list stuff, do this every time we start the List screen as
                  * things might have changed.
                  * When both service and page loaded then proceed.
                  */
-	     		if(100 == progress) {
-		     		mIsPageLoaded = true;
-	     		}
-     	    }
-	     	
-	     	// This is needed to remove title from Confirm dialog
-	        @Override
-	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new AlertDialog.Builder(ChecklistActivity.this)
-	            	.setTitle("")
-	            	.setCancelable(true)
-	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface arg0) {
-	            			result.cancel();							
-						}
-	            	})
-	            	.setMessage(message)
-	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.confirm();
-	            		}
-	            	})
-	            	.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.cancel();
-	            		}
-	            	})
-	            	.create()
-	            	.show();
-	            return true;
-	        }
+                if(100 == progress) {
+                    mIsPageLoaded = true;
+                }
+            }
 
-	    });
+            // This is needed to remove title from Confirm dialog
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("")
+                        .setCancelable(true)
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface arg0) {
+                                result.cancel();
+                            }
+                        })
+                        .setMessage(message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                result.confirm();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                result.cancel();
+                            }
+                        })
+                        .create()
+                        .show();
+                return true;
+            }
+
+        });
 
         // This is need on some old phones to get focus back to webview.
-        mWebView.setOnTouchListener(new View.OnTouchListener() {  
-			@Override
-			public boolean onTouch(View arg0, MotionEvent arg1) {
-				arg0.performClick();
-				arg0.requestFocus();
-				return false;
-			}
+        mWebView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                arg0.performClick();
+                arg0.requestFocus();
+                return false;
+            }
         });
-        
+
         mWebView.setOnLongClickListener(new OnLongClickListener() {
-        	@Override
-        	public boolean onLongClick(View v) {
-        	    return true;
-        	}
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
+            }
         });
         mWebView.setLongClickable(false);
 
-        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "list"));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getContext(), "list"));
         /*
          * Progress bar
          */
-        mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.list_load_progress));
+        mProgressBarSearch = (ProgressBar) (view.findViewById(R.id.list_load_progress));
         mProgressBarSearch.setVisibility(View.VISIBLE);
-        
-        mBackButton = (Button)view.findViewById(R.id.list_button_back);
+
+        mBackButton = (Button) view.findViewById(R.id.list_button_back);
         mBackButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -228,27 +225,24 @@ public class ChecklistActivity extends Activity {
             }
         });
 
-        mForwardButton = (Button)view.findViewById(R.id.list_button_forward);
+        mForwardButton = (Button) view.findViewById(R.id.list_button_forward);
         mForwardButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 mInfc.moveForward();
             }
-            
         });
-
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
-     * 
+     *
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * android.content.ServiceConnection#onServiceConnected(android.content
          * .ComponentName, android.os.IBinder)
@@ -263,7 +257,7 @@ public class ChecklistActivity extends Activity {
             mInfc.connect(binder.getService());
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            
+
             /*
              * When both service and page loaded then proceed.
              * The plan will be loaded either from here or from page load end event
@@ -275,7 +269,7 @@ public class ChecklistActivity extends Activity {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * android.content.ServiceConnection#onServiceDisconnected(android.content
          * .ComponentName)
@@ -287,42 +281,31 @@ public class ChecklistActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
+     *
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        
-        Helper.setOrientationAndOn(this);
+
+        Helper.setOrientationAndOn(getActivity());
 
         /*
          * Registering our receiver Bind now.
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection,
-                Context.BIND_AUTO_CREATE);
-        
-		mWebView.requestFocus();        
+        Intent intent = new Intent(getContext(), StorageService.class);
+        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        mWebView.requestFocus();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see android.app.Activity#onPause()
      */
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         if (null != mService) {
@@ -332,90 +315,60 @@ public class ChecklistActivity extends Activity {
         /*
          * Clean up on pause that was started in on resume
          */
-        getApplicationContext().unbindService(mConnection);
+        getContext().unbindService(mConnection);
 
         // Cancel the timer if one is running
         if(mTimer != null) {
-        	mTimer.cancel();
+            mTimer.cancel();
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-    
     /***
-    * A background timer class to send off messages if we are in simulation mode
-    * @author zkhan
-    */
+     * A background timer class to send off messages if we are in simulation mode
+     * @author zkhan
+     */
     private class UpdateTask extends TimerTask {
-	    // Called whenever the timer fires.
-	    public void run() {
-	    	if(mService != null && mIsPageLoaded && !mInited) {
-	    		// Load plans when done with service and page loading
-	    		mHandler.sendEmptyMessage(INIT);
-	    		mInited = true;
-	    	}
-	    }
+        // Called whenever the timer fires.
+        public void run() {
+            if(mService != null && mIsPageLoaded && !mInited) {
+                // Load plans when done with service and page loading
+                mHandler.sendEmptyMessage(INIT);
+                mInited = true;
+            }
+        }
     }
 
 
     /**
-     * 
+     *
      */
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-    		if(msg.what == SHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.VISIBLE);
-    		}
-    		else if(msg.what == UNSHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.INVISIBLE);
-    		}
-    		else if(msg.what == MESSAGE) {
-    			// Show an important message
-    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-    			builder.setMessage((String)msg.obj)
-    			       .setCancelable(false)
-    			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-    			           public void onClick(DialogInterface dialog, int id) {
-    			                dialog.dismiss();
-    			           }
-    			});
-    			AlertDialog alert = builder.create();
-    			alert.show();
-    		}
-    		else if(msg.what == INIT) {
+            if(msg.what == SHOW_BUSY) {
+                mProgressBarSearch.setVisibility(View.VISIBLE);
+            }
+            else if(msg.what == UNSHOW_BUSY) {
                 mProgressBarSearch.setVisibility(View.INVISIBLE);
-  				mInfc.newList();
-   				mInfc.newSaveList();
-    		}
+            }
+            else if(msg.what == MESSAGE) {
+                // Show an important message
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setMessage((String)msg.obj)
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+            else if(msg.what == INIT) {
+                mProgressBarSearch.setVisibility(View.INVISIBLE);
+                mInfc.newList();
+                mInfc.newSaveList();
+            }
         }
     };
 

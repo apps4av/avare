@@ -37,6 +37,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:icon="@drawable/aircraft"
         android:label="@string/app_name"
         android:name="AvareApplication"
+        android:theme="@style/AppTheme"
         android:allowBackup="true">
 
         <activity android:name="org.acra.CrashReportDialog"
@@ -55,22 +56,11 @@ Redistribution and use in source and binary forms, with or without modification,
             </intent-filter>
         </service>
         <activity android:name=".PrefActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".PlanActivity" />
-        <activity android:name=".AirportActivity" />
-        <activity android:name=".SatelliteActivity" />
         <activity android:name=".WebActivity" />
-        <activity android:name=".LocationActivity" />
-        <activity android:name=".NearestActivity" />
-        <activity android:name=".PlatesActivity" />
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
-        <activity android:name=".WeatherActivity" />
-        <activity android:name=".ChecklistActivity"/>
-        <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".SubmitActivity"/>
-        <activity android:name=".ThreeDActivity"/>
         <activity android:name=".SyncActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>
