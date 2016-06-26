@@ -521,5 +521,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TileSizeLabel">New Tile Size</string>
     <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
 
+    <string name="Developer">Developer Settings</string>
+
 
 </resources>

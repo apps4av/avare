@@ -542,6 +542,19 @@ public class LocationActivity extends Activity implements Observer {
         mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
         mLocationView.forceReload();
 
+        final MainActivity mainActivity = (MainActivity) getParent();
+        View tabView = mainActivity.getTabWidget().getChildTabViewAt(MainActivity.tabMain);
+        tabView.setOnLongClickListener(
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if (mainActivity.getTabHost().getCurrentTab() == MainActivity.tabMain) {
+                            mChartOption.performClick();
+                        }
+                        return false;
+                    }
+                }
+        );
 
         mLayerOption = (OptionButton)view.findViewById(R.id.location_spinner_layer);
         mLayerOption.setCallback(new GenericCallback() {
