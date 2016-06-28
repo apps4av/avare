@@ -14,6 +14,7 @@ package com.ds.avare.shapes;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Coordinate;
@@ -84,7 +85,7 @@ public abstract class Shape {
 
     /**
      * 
-     * @param coords
+     * @param
      */
     public void add(double lon, double lat, boolean issep) {
     	add(lon,lat,issep, 0);
@@ -188,6 +189,8 @@ public abstract class Shape {
              * Draw the shape segment by segment
              */
             if(getNumCoords() > 0) {
+                Path path = new Path();
+
                 float pts[] = new float[(getNumCoords()) * 4];
                 int i = 0;
                 int coord = 0;
@@ -196,19 +199,18 @@ public abstract class Shape {
                 float x2;
                 float y2;
 
+                path.moveTo(x1, y1);
+
                 for (coord = 1; coord < getNumCoords(); coord++) {
                     x2 = (float) origin.getOffsetX(mCoords.get(coord).getLongitude());
                     y2 = (float) origin.getOffsetY(mCoords.get(coord).getLatitude());
 
-                    pts[i++] = x1;
-                    pts[i++] = y1;
-                    pts[i++] = x2;
-                    pts[i++] = y2;
-
-                    x1 = x2;
-                    y1 = y2;
+                    path.lineTo(x2, y2);
                 }
-                c.drawLines(pts, paint);
+
+                path.close();
+                paint.setAlpha(50);
+                c.drawPath(path, paint);
             }
         }
     }
