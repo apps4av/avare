@@ -831,7 +831,7 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
     @Override
     public void onResume() {
         super.onResume();
-//        Helper.setOrientationAndOn(this); // TODO
+        Helper.setOrientationAndOn(getActivity());
 
         /*
          * Registering our receiver

@@ -19,13 +19,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:minHeight="?attr/actionBarSize" />
 
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/coordinator_layout"
@@ -33,38 +27,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/fragment_containers_linear_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:weightSum="2">
-
                 <FrameLayout
                     android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content" />
                 <!-- setting this will make the view slide up and down when the snackbar is shown -->
                 <!--app:layout_behavior="com.ds.avare.utils.FrameLayoutBehavior"-->
 
-                <FrameLayout
-                    android:id="@+id/fragment_container_secondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-            </LinearLayout>
         </android.support.design.widget.CoordinatorLayout>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:layout_weight="0" />
-        </LinearLayout>
+            android:minHeight="?attr/actionBarSize" />
 
     </LinearLayout>
 
@@ -74,8 +50,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:background="#303030"
-        app:itemTextColor="#B3FFFFFF"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/nav_drawer" />
 

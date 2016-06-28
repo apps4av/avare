@@ -464,8 +464,7 @@ public class LocationFragment extends Fragment implements Observer {
         /*
          * Check if this was sent from Google Maps
          */
-//        mExtras = getIntent().getExtras();
-        mExtras = savedInstanceState; // TODO
+        mExtras = getActivity().getIntent().getExtras();
 
         mService = null;
 
@@ -1020,7 +1019,7 @@ public class LocationFragment extends Fragment implements Observer {
             if(!mPref.isRegistered()) {
                 Intent i = new Intent(getContext(), RegisterActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                if (!BuildConfig.DEBUG)
+                if (!BuildConfig.DEBUG) // don't require registration when running debug apk
                     startActivity(i);
             }
 
@@ -1209,7 +1208,7 @@ public class LocationFragment extends Fragment implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-//        Helper.setOrientationAndOn(this); TODO
+        Helper.setOrientationAndOn(getActivity());
 
         /*
          * Registering our receiver
