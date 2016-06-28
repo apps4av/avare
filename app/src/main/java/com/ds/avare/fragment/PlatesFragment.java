@@ -98,6 +98,7 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
     private CoordinatorLayout mCoordinatorLayout;
+    private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
     public static final String AD = "AIRPORT-DIAGRAM";
 
@@ -358,12 +359,14 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
                 /*
                  * Bring up preferences
                  */
-                if(mDrawButton.getText().equals(getString(R.string.Draw))) {
+                if(mTouchMode == com.ds.avare.touch.Constants.TouchMode.PAN_MODE) {
                     mPlatesView.setDraw(true);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.DRAW_MODE;
                     mDrawClearButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     mPlatesView.setDraw(false);
+                    mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
                     mDrawClearButton.setVisibility(View.INVISIBLE);
                 }
             }
