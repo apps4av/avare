@@ -420,7 +420,7 @@ public class NearestFragment extends Fragment implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-//        Helper.setOrientationAndOn(this); TODO
+        Helper.setOrientationAndOn(getActivity());
 
         /*
          * Registering our receiver

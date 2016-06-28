@@ -38,7 +38,6 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:text="ahsanr@gmail.com"
         android:gravity="center" />
 
 </LinearLayout>
