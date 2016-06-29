@@ -2,6 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group
+        android:id="@+id/menu_activities"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_preferences"
+            android:title="Preferences" />
+        <item
+            android:id="@+id/nav_downloads"
+            android:title="Downloads" />
+        <item
+            android:id="@+id/nav_ads"
+            android:title="Ads" />
+        <item
+            android:id="@+id/nav_help"
+            android:title="Help" />
+    </group>
+
+    <group
+        android:id="@+id/menu_controls"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_toggle_toolbar"
+            android:title="Toggle Toolbar" />
+        <item
+            android:id="@+id/nav_toggle_tabbar"
+            android:title="Toggle Tabs" />
+    </group>
+
+    <group
         android:id="@+id/menu_views"
         android:checkableBehavior="single">
         <item
@@ -37,34 +65,6 @@
         <item
             android:id="@+id/nav_tools"
             android:title="@string/Tools" />
-    </group>
-
-    <group
-        android:id="@+id/menu_controls"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_toggle_toolbar"
-            android:title="Toggle Toolbar" />
-        <item
-            android:id="@+id/nav_toggle_tablayout"
-            android:title="Toggle Tabs" />
-    </group>
-
-    <group
-        android:id="@+id/menu_activities"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_preferences"
-            android:title="Preferences" />
-        <item
-            android:id="@+id/nav_downloads"
-            android:title="Downloads" />
-        <item
-            android:id="@+id/nav_ads"
-            android:title="Ads" />
-        <item
-            android:id="@+id/nav_help"
-            android:title="Help" />
     </group>
 
 </menu>
