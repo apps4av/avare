@@ -50,13 +50,11 @@ import com.ds.avare.fragment.SearchFragment;
 import com.ds.avare.fragment.ThreeDFragment;
 import com.ds.avare.fragment.TripFragment;
 import com.ds.avare.fragment.WeatherFragment;
-import com.ds.avare.place.Airport;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -87,18 +85,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
     // except tabMain is configurable on or off by the user. 
-    public static final int NAV_ITEM_IDX_MAP = 0;
-    public static final int NAV_ITEM_IDX_PLATES = 1;
-    public static final int NAV_ITEM_IDX_AFD = 2;
-    public static final int NAV_ITEM_IDX_FIND = 3;
-    public static final int NAV_ITEM_IDX_PLAN = 4;
-    public static final int NAV_ITEM_IDX_NEAR = 5;
-    public static final int NAV_ITEM_IDX_THREE_D = 6;
-    public static final int NAV_ITEM_IDX_CHECKLIST = 7;
-    public static final int NAV_ITEM_IDX_WXB = 8;
-    public static final int NAV_ITEM_IDX_TRIP = 9;
-    public static final int NAV_ITEM_IDX_TOOLS = 10;
-    public static final int NAV_ITEM_IDX_SPLIT = 11;
+    public static final int NAV_ITEM_IDX_MAP       = 6;
+    public static final int NAV_ITEM_IDX_PLATES    = 7;
+    public static final int NAV_ITEM_IDX_AFD       = 8;
+    public static final int NAV_ITEM_IDX_FIND      = 9;
+    public static final int NAV_ITEM_IDX_PLAN      = 10;
+    public static final int NAV_ITEM_IDX_NEAR      = 11;
+    public static final int NAV_ITEM_IDX_THREE_D   = 12;
+    public static final int NAV_ITEM_IDX_CHECKLIST = 13;
+    public static final int NAV_ITEM_IDX_WXB       = 14;
+    public static final int NAV_ITEM_IDX_TRIP      = 15;
+    public static final int NAV_ITEM_IDX_TOOLS     = 16;
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -151,12 +148,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(intent);
 
         mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
+        mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
         int selectedNavItemId = (savedInstanceState == null)
                 ? NAV_ITEM_IDX_MAP
-                : savedInstanceState.getInt(SELECTED_NAV_ITEM_IDX_KEY, 0);
+                : savedInstanceState.getInt(SELECTED_NAV_ITEM_IDX_KEY, NAV_ITEM_IDX_MAP);
         onNavigationItemSelected(mNavigationView.getMenu().getItem(selectedNavItemId));
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -294,11 +292,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
             return true;
         } else if (itemId == R.id.nav_toggle_toolbar) {
-            mToolbar.setVisibility((mToolbar.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
+            mPref.setHideToolbar(!mPref.getHideToolbar());
+            mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
             if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
             return true;
-        } else if (itemId == R.id.nav_toggle_tablayout) {
-            mTabLayout.setVisibility((mTabLayout.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE);
+        } else if (itemId == R.id.nav_toggle_tabbar) {
+            mPref.setHideTabBar(!mPref.getHideTabBar());
+            mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
             if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
 
         // set nav item as selected
-        if (mNavigationView != null) mNavigationView.getMenu().getItem(navItemIdx).setChecked(true);
+        if (mNavigationView != null) item.setChecked(true);
 
         // set tab item to selected
         if (mTabLayout != null) {
@@ -429,18 +429,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_preferences:
-                startPreferencesActivity();
-                break;
-            case R.id.action_download:
-                startChartsDownloadActivity();
-                break;
-            case R.id.action_ads:
-                startAdsActivity();
-                break;
-            case R.id.action_help:
-                startHelpActivity();
-                break;
             case R.id.action_tracks:
                 if (getLocationFragment() != null) {
                     item.setChecked(!item.isChecked());

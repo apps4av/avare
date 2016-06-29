@@ -308,6 +308,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/HideTabBar"
             android:summary="@string/HideTabBarSummary"
             android:title="@string/HideTabBarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/HideToolbar"
+            android:summary="@string/HideToolbarSummary"
+            android:title="@string/HideToolbarLabel" />
         <PreferenceScreen
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"

@@ -3,18 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_preferences"
-        android:title="Preferences" />
-    <item
-        android:id="@+id/action_download"
-        android:title="Download" />
-    <item
-        android:id="@+id/action_ads"
-        android:title="Ads" />
-    <item
-        android:id="@+id/action_help"
-        android:title="Help" />
-    <item
         android:id="@+id/action_tracks"
         android:checkable="true"
         android:title="Tracks" />

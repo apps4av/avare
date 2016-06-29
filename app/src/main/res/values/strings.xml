@@ -68,7 +68,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="HideTabBar">&quot;Hide Tab Bar&quot;</string>
     <string name="HideTabBarLabel">&quot;Hide Tab Bar&quot;</string>
-    <string name="HideTabBarSummary">&quot;Select to hide the bottom tab bar and only use side navigation menu.&quot;</string>
+    <string name="HideTabBarSummary">&quot;Select to hide the bottom tab bar.&quot;</string>
+    <string name="HideToolbar">&quot;Hide Toolbar&quot;</string>
+    <string name="HideToolbarLabel">&quot;Hide Toolbar&quot;</string>
+    <string name="HideToolbarSummary">&quot;Select to hide the top toolbar.&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
