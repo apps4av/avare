@@ -369,6 +369,8 @@ public class PlanFragment extends Fragment {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            if (!isAdded()) return;
+
             if(msg.what == SHOW_BUSY) {
                 mProgressBarSearch.setVisibility(View.VISIBLE);
             }

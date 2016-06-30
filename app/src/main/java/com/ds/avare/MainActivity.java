@@ -17,7 +17,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
@@ -34,13 +33,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ds.avare.fragment.AirportFragment;
@@ -89,18 +85,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
     // except tabMain is configurable on or off by the user. 
-    public static final int NAV_ITEM_IDX_MAP = 0;
-    public static final int NAV_ITEM_IDX_PLATES = 1;
-    public static final int NAV_ITEM_IDX_AFD = 2;
-    public static final int NAV_ITEM_IDX_FIND = 3;
-    public static final int NAV_ITEM_IDX_PLAN = 4;
-    public static final int NAV_ITEM_IDX_NEAR = 5;
-    public static final int NAV_ITEM_IDX_THREE_D = 6;
-    public static final int NAV_ITEM_IDX_CHECKLIST = 7;
-    public static final int NAV_ITEM_IDX_WXB = 8;
-    public static final int NAV_ITEM_IDX_TRIP = 9;
-    public static final int NAV_ITEM_IDX_TOOLS = 10;
-    public static final int NAV_ITEM_IDX_SPLIT = 11;
+    public static final int NAV_ITEM_IDX_MAP       = 6;
+    public static final int NAV_ITEM_IDX_PLATES    = 7;
+    public static final int NAV_ITEM_IDX_AFD       = 8;
+    public static final int NAV_ITEM_IDX_FIND      = 9;
+    public static final int NAV_ITEM_IDX_PLAN      = 10;
+    public static final int NAV_ITEM_IDX_NEAR      = 11;
+    public static final int NAV_ITEM_IDX_THREE_D   = 12;
+    public static final int NAV_ITEM_IDX_CHECKLIST = 13;
+    public static final int NAV_ITEM_IDX_WXB       = 14;
+    public static final int NAV_ITEM_IDX_TRIP      = 15;
+    public static final int NAV_ITEM_IDX_TOOLS     = 16;
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -153,13 +148,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(intent);
 
         mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
+        mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-//        mNavigationView.getMenu().getItem(0).setChecked(true);
         int selectedNavItemId = (savedInstanceState == null)
                 ? NAV_ITEM_IDX_MAP
-                : savedInstanceState.getInt(SELECTED_NAV_ITEM_IDX_KEY, 0);
+                : savedInstanceState.getInt(SELECTED_NAV_ITEM_IDX_KEY, NAV_ITEM_IDX_MAP);
         onNavigationItemSelected(mNavigationView.getMenu().getItem(selectedNavItemId));
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -232,106 +227,103 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        Fragment fragment = null;
-        Fragment fragmentSecondary = null;
+        Fragment newFragment = null;
         String tag = null;
         int navItemIdx = -1;
 
-        findViewById(R.id.fragment_container_secondary).setVisibility(View.GONE);
-
         if (itemId == R.id.nav_map)  {
-            fragment = getSupportFragmentManager().findFragmentByTag(LocationFragment.TAG);
-            if (fragment == null) fragment = new LocationFragment();
+            newFragment = new LocationFragment();
             tag = LocationFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_MAP;
-            // disable swipe to open so it doesn't interfere with map
-//            if (mDrawerLayout != null) mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else if (itemId == R.id.nav_plate) {
-            fragment = getSupportFragmentManager().findFragmentByTag(PlatesFragment.TAG);
-            if (fragment == null) fragment = new PlatesFragment();
+            newFragment = new PlatesFragment();
             tag = PlatesFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_PLATES;
-            // disable swipe to open so it doesn't interfere with map
-//            if (mDrawerLayout != null) mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else if (itemId == R.id.nav_afd) {
-            fragment = getSupportFragmentManager().findFragmentByTag(AirportFragment.TAG);
-            if (fragment == null) fragment = new AirportFragment();
+            newFragment = new AirportFragment();
             tag = AirportFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_AFD;
         } else if (itemId == R.id.nav_find) {
-            fragment = getSupportFragmentManager().findFragmentByTag(SearchFragment.TAG);
-            if (fragment == null) fragment = new SearchFragment();
+            newFragment = new SearchFragment();
             tag = SearchFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_FIND;
         } else if (itemId == R.id.nav_plan) {
-            fragment = getSupportFragmentManager().findFragmentByTag(PlanFragment.TAG);
-            if (fragment == null) fragment = new PlanFragment();
+            newFragment = new PlanFragment();
             tag = PlanFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_PLAN;
         } else if (itemId == R.id.nav_near) {
-            fragment = getSupportFragmentManager().findFragmentByTag(NearestFragment.TAG);
-            if (fragment == null) fragment = new NearestFragment();
+            newFragment = new NearestFragment();
             tag = NearestFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_NEAR;
         } else if (itemId == R.id.nav_3d) {
-            fragment = getSupportFragmentManager().findFragmentByTag(ThreeDFragment.TAG);
-            if (fragment == null) fragment = new ThreeDFragment();
+            newFragment = new ThreeDFragment();
             tag = ThreeDFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_THREE_D;
-            // disable swipe to open so it doesn't interfere with map
-//            if (mDrawerLayout != null) mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         } else if (itemId == R.id.nav_list) {
-            fragment = getSupportFragmentManager().findFragmentByTag(ChecklistFragment.TAG);
-            if (fragment == null) fragment = new ChecklistFragment();
+            newFragment = new ChecklistFragment();
             tag = ChecklistFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_CHECKLIST;
         } else if (itemId == R.id.nav_wxb) {
-            fragment = getSupportFragmentManager().findFragmentByTag(WeatherFragment.TAG);
-            if (fragment == null) fragment = new WeatherFragment();
+            newFragment = new WeatherFragment();
             tag = WeatherFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_WXB;
         } else if (itemId == R.id.nav_trip) {
-            fragment = getSupportFragmentManager().findFragmentByTag(TripFragment.TAG);
-            if (fragment == null) fragment = new TripFragment();
+            newFragment = new TripFragment();
             tag = TripFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_TRIP;
         } else if (itemId == R.id.nav_tools) {
-            fragment = getSupportFragmentManager().findFragmentByTag(SatelliteFragment.TAG);
-            if (fragment == null) fragment = new SatelliteFragment();
+            newFragment = new SatelliteFragment();
             tag = SatelliteFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_TOOLS;
-        } else if (itemId == R.id.nav_split) {
-            fragment = getSupportFragmentManager().findFragmentByTag(LocationFragment.TAG);
-            if (fragment == null) fragment = new LocationFragment();
-            tag = LocationFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_SPLIT;
-
-            fragmentSecondary = getSupportFragmentManager().findFragmentByTag(PlatesFragment.TAG + "Split");
-            if (fragmentSecondary == null) fragmentSecondary = new PlatesFragment();
-
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.fragment_containers_linear_layout);
-            linearLayout.setOrientation(
-                    (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-                            ? LinearLayout.HORIZONTAL
-                            : LinearLayout.VERTICAL
-            );
-            findViewById(R.id.fragment_container_secondary).setVisibility(View.VISIBLE);
+        } else if (itemId == R.id.nav_preferences) {
+            startPreferencesActivity();
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        } else if (itemId == R.id.nav_downloads) {
+            startChartsDownloadActivity();
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        } else if (itemId == R.id.nav_ads) {
+            startAdsActivity();
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        } else if (itemId == R.id.nav_help) {
+            startHelpActivity();
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        } else if (itemId == R.id.nav_toggle_toolbar) {
+            mPref.setHideToolbar(!mPref.getHideToolbar());
+            mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        } else if (itemId == R.id.nav_toggle_tabbar) {
+            mPref.setHideTabBar(!mPref.getHideTabBar());
+            mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
+            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, fragment, tag);
-        if (fragmentSecondary == null) {
-            fragmentSecondary = getSupportFragmentManager().findFragmentByTag(PlatesFragment.TAG + "Split");
-            if (fragmentSecondary != null) ft.remove(fragmentSecondary);
-        } else {
-            ft.replace(R.id.fragment_container_secondary, fragmentSecondary, PlatesFragment.TAG + "Split");
+
+        if (getSupportFragmentManager().getFragments() != null) {
+            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                ft.hide(fragment);
+            }
         }
+
+        Fragment existingFragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (existingFragment == null) {
+            ft.add(R.id.fragment_container, newFragment, tag);
+        } else {
+            ft.show(existingFragment);
+        }
+
         ft.commit();
 
         if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
 
         // set nav item as selected
-        if (mNavigationView != null) mNavigationView.getMenu().getItem(navItemIdx).setChecked(true);
+        if (mNavigationView != null) item.setChecked(true);
 
         // set tab item to selected
         if (mTabLayout != null) {
@@ -360,8 +352,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem flightPlanControlsItem = menu.findItem(R.id.action_flight_plan_controls);
 
         // these menu items should only be visible on specific tabs
-        chartItem.setVisible(isMainNavItemSelected() || isThreeDNavItemSelected() || isSplitNavItemSelected());
-        layerItem.setVisible(isMainNavItemSelected() || isSplitNavItemSelected());
+        chartItem.setVisible(isMainNavItemSelected() || isThreeDNavItemSelected());
+        layerItem.setVisible(isMainNavItemSelected());
         tracksItem.setVisible(isMainNavItemSelected());
         simulationItem.setVisible(isMainNavItemSelected());
         flightPlanControlsItem.setVisible(isMainNavItemSelected());
@@ -437,22 +429,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_preferences:
-                startActivity(new Intent(this, PrefActivity.class));
-                break;
-            case R.id.action_download:
-                Intent i = new Intent(this, ChartsDownloadActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-                break;
-            case R.id.action_ads:
-                startActivity(new Intent(this, MessageActivity.class));
-                break;
-            case R.id.action_help:
-                Intent intent = new Intent(this, WebActivity.class);
-                intent.putExtra("url", NetworkHelper.getHelpUrl(this));
-                startActivity(intent);
-                break;
             case R.id.action_tracks:
                 if (getLocationFragment() != null) {
                     item.setChecked(!item.isChecked());
@@ -480,6 +456,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return true;
+    }
+
+    private void startPreferencesActivity() {
+        startActivity(new Intent(this, PrefActivity.class));
+    }
+
+    private void startChartsDownloadActivity() {
+        Intent i = new Intent(this, ChartsDownloadActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(i);
+    }
+
+    private void startAdsActivity() {
+        startActivity(new Intent(this, MessageActivity.class));
+    }
+
+    private void startHelpActivity() {
+        Intent intent = new Intent(this, WebActivity.class);
+        intent.putExtra("url", NetworkHelper.getHelpUrl(this));
+        startActivity(intent);
     }
 
     @Override
@@ -607,10 +603,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private boolean isThreeDNavItemSelected() {
         return mNavigationView.getMenu().getItem(NAV_ITEM_IDX_THREE_D).isChecked();
-    }
-
-    private boolean isSplitNavItemSelected() {
-        return mNavigationView.getMenu().getItem(NAV_ITEM_IDX_SPLIT).isChecked();
     }
 
     private int getSelectedNavItemIdx() {

@@ -1046,6 +1046,18 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.HideTabBar), false);
     }
 
+    public boolean getHideToolbar() {
+        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), false);
+    }
+
+    public void setHideTabBar(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideTabBar), val).apply();
+    }
+
+    public void setHideToolbar(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideToolbar), val).apply();
+    }
+
     // Get last location known
     public Location getLastLocation() {
         // Default is middle of USA, Kansas City
