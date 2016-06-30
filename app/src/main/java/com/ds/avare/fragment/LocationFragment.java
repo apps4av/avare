@@ -27,11 +27,14 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
@@ -74,6 +77,8 @@ import com.ds.avare.views.LocationView;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -610,7 +615,9 @@ public class LocationFragment extends Fragment implements Observer {
          */
         mListPopout = (ExpandableListView) view.findViewById(R.id.location_list_popout);
 
-        mChartOption = (OptionButton) view.findViewById(R.id.location_spinner_chart);
+
+
+        mChartOption = (OptionButton)view.findViewById(R.id.location_button_maps);
         mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
@@ -686,7 +693,7 @@ public class LocationFragment extends Fragment implements Observer {
             }
         });
 
-        mLayerOption = (OptionButton) view.findViewById(R.id.location_spinner_layer);
+        mLayerOption = (OptionButton) view.findViewById(R.id.location_button_layers);
         mLayerOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {

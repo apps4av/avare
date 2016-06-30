@@ -140,12 +140,31 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="150dp"
             android:textStyle="bold"/>
 
+
+		<com.ds.avare.utils.OptionButton
+			android:id="@+id/location_button_maps"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:alpha=".8"
+			android:drawableLeft="@drawable/ic_map" />
+
+        <com.ds.avare.utils.OptionButton
+            android:id="@+id/location_button_layers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/location_button_maps"
+            android:alpha=".8"
+            android:drawableLeft="@drawable/ic_layers" />
+
         <Button
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+			android:alpha=".8"
             android:drawableLeft="@android:drawable/ic_menu_mylocation" />
 
         <Button

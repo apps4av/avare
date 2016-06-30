@@ -184,7 +184,7 @@ public abstract class Shape {
                     paint.setColor(color);
                 }
             }
-        } else {
+        } else if (this instanceof TFRShape) {
             /*
              * Draw the shape segment by segment
              */
@@ -211,6 +211,30 @@ public abstract class Shape {
                 path.close();
                 paint.setAlpha(50);
                 c.drawPath(path, paint);
+            }
+        } else {
+            if(getNumCoords() > 0) {
+                float pts[] = new float[(getNumCoords()) * 4];
+                int i = 0;
+                int coord = 0;
+                float x1 = (float) origin.getOffsetX(mCoords.get(coord).getLongitude());
+                float y1 = (float) origin.getOffsetY(mCoords.get(coord).getLatitude());
+                float x2;
+                float y2;
+
+                for (coord = 1; coord < getNumCoords(); coord++) {
+                    x2 = (float) origin.getOffsetX(mCoords.get(coord).getLongitude());
+                    y2 = (float) origin.getOffsetY(mCoords.get(coord).getLatitude());
+
+                    pts[i++] = x1;
+                    pts[i++] = y1;
+                    pts[i++] = x2;
+                    pts[i++] = y2;
+
+                    x1 = x2;
+                    y1 = y2;
+                }
+                c.drawLines(pts, paint);
             }
         }
     }
