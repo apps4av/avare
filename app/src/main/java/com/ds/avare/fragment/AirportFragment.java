@@ -475,8 +475,7 @@ public class AirportFragment extends Fragment implements Observer {
          * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
@@ -495,61 +494,7 @@ public class AirportFragment extends Fragment implements Observer {
             mListAirports.add(mDestString);
             mListAirports.add(mNearString);
 
-            /*
-             * Are we being told to load an airport?
-             */
-            String lastDest = mService.getLastAfdAirport();
-            if(null != lastDest) {
-                addAirport(lastDest);
-            }
-
-            /*
-             * Load the current destination
-             */
-            Destination curDestination = mService.getDestination();
-            if(null != curDestination && curDestination.getType().equals(Destination.BASE)) {
-                addAirport(curDestination.getID());
-            }
-
-            /*
-             *  Load the nearest airport
-             */
-            int nearestNum = mService.getArea().getAirportsNumber();
-            Airport nearest = null;
-            if(nearestNum > 0) {
-                nearest = mService.getArea().getAirport(0);
-                addAirport(nearest.getId());
-            }
-
-            /*
-             * Add anything in the plan
-             */
-            Plan plan = mService.getPlan();
-            if(null != plan) {
-                int nDest = plan.getDestinationNumber();
-                for(int i=0; i < nDest; i++) {
-                    Destination planDest = plan.getDestination(i);
-                    if(null != planDest && planDest.getType().equals(Destination.BASE)) {
-                        addAirport(planDest.getID());
-                    }
-                }
-            }
-
-            /*
-             * Now add anything in the recently found list
-             */
-            String [] vals = mPref.getRecent();
-            for(int pos=0; pos < vals.length; pos++) {
-                String destType = StringPreference.parseHashedNameDestType(vals[pos]);
-                if(destType != null && destType.equals(Destination.BASE)) {
-                    String id = StringPreference.parseHashedNameId(vals[pos]);
-
-                    addAirport(id);
-                }
-            }
-
-            int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
-            setNewDestinationFromPos(lastIndex);
+            initializeFromService();
         }
 
         /* (non-Javadoc)
@@ -560,9 +505,15 @@ public class AirportFragment extends Fragment implements Observer {
         }
     };
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && mService != null) initializeFromService();
+    }
+
     /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
+         * @see android.app.Activity#onPause()
+         */
     @Override
     public void onPause() {
         super.onPause();
@@ -632,4 +583,63 @@ public class AirportFragment extends Fragment implements Observer {
             }
         }
     }
+
+    private void initializeFromService() {
+        /*
+         * Are we being told to load an airport?
+         */
+        String lastDest = mService.getLastAfdAirport();
+        if(null != lastDest) {
+            addAirport(lastDest);
+        }
+
+        /*
+         * Load the current destination
+         */
+        Destination curDestination = mService.getDestination();
+        if(null != curDestination && curDestination.getType().equals(Destination.BASE)) {
+            addAirport(curDestination.getID());
+        }
+
+        /*
+         *  Load the nearest airport
+         */
+        int nearestNum = mService.getArea().getAirportsNumber();
+        Airport nearest = null;
+        if(nearestNum > 0) {
+            nearest = mService.getArea().getAirport(0);
+            addAirport(nearest.getId());
+        }
+
+        /*
+         * Add anything in the plan
+         */
+        Plan plan = mService.getPlan();
+        if(null != plan) {
+            int nDest = plan.getDestinationNumber();
+            for(int i=0; i < nDest; i++) {
+                Destination planDest = plan.getDestination(i);
+                if(null != planDest && planDest.getType().equals(Destination.BASE)) {
+                    addAirport(planDest.getID());
+                }
+            }
+        }
+
+        /*
+         * Now add anything in the recently found list
+         */
+        String [] vals = mPref.getRecent();
+        for(int pos=0; pos < vals.length; pos++) {
+            String destType = StringPreference.parseHashedNameDestType(vals[pos]);
+            if(destType != null && destType.equals(Destination.BASE)) {
+                String id = StringPreference.parseHashedNameId(vals[pos]);
+
+                addAirport(id);
+            }
+        }
+
+        int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
+        setNewDestinationFromPos(lastIndex);
+    }
+
 }

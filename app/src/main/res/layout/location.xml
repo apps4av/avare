@@ -153,18 +153,26 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/location_button_layers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/location_button_maps"
+            android:layout_above="@id/location_button_maps"
             android:alpha=".8"
             android:drawableLeft="@drawable/ic_layers" />
+
+        <Button
+            android:id="@+id/location_button_drawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:alpha=".8"
+            android:drawableLeft="@drawable/ic_menu_black_24dp" />
 
         <Button
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-			android:alpha=".8"
+            android:alpha=".8"
             android:drawableLeft="@android:drawable/ic_menu_mylocation" />
 
         <Button

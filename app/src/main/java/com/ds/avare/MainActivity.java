@@ -612,4 +612,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return 0;
     }
 
+    public DrawerLayout getDrawerLayout() {
+        // TODO add a listener in fragment instead
+        return mDrawerLayout;
+    }
+
 }
