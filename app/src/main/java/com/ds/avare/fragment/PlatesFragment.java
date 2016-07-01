@@ -666,65 +666,11 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
             mListAirports.add(mDestString);
             mListAirports.add(nearString);
 
-            /*
-             * Are we being told to load an airport?
-             */
-            if(null != mService.getLastPlateAirport()) {
-                addAirport(mService.getLastPlateAirport());
-            }
-
-            /*
-             *  Load the nearest airport
-             */
-            int nearestNum = mService.getArea().getAirportsNumber();
-            if(nearestNum > 0) {
-                Airport nearest = mService.getArea().getAirport(0);
-                addAirport(nearest.getId());
-            }
-
-            /*
-             * See if we have a destination, if we do - add it to the airports list
-             */
-            mDestination = mService.getDestination();
-            String dest = null;
-            if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
-                dest = mDestination.getID();
-                addAirport(dest);
-            }
-
-            /*
-             * Add airports in the plan
-             */
-            Plan plan = mService.getPlan();
-            if(null != plan) {
-                int nDest = plan.getDestinationNumber();
-                for(int i=0; i < nDest; i++) {
-                    Destination planDest = plan.getDestination(i);
-                    if(planDest.getType().equals(Destination.BASE)) {
-                        addAirport(planDest.getID());
-                    }
-                }
-            }
-
-            /*
-             * Now add all the airports that are in the recently found list
-             */
-            String [] vals = mPref.getRecent();
-            for(int pos=0; pos < vals.length; pos++) {
-                String destType = StringPreference.parseHashedNameDestType(vals[pos]);
-                if(destType != null && destType.equals("Base")) {
-                    String id = StringPreference.parseHashedNameId(vals[pos]);
-
-                    addAirport(id);
-                }
-            }
-
-            int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
-            setAirportFromPos(lastIndex);
-
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
+
+            initializeFromService();
         }
 
         /* (non-Javadoc)
@@ -734,6 +680,12 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && mService != null) initializeFromService();
+    }
 
     /**
      * We are interested in events from the fuel tank timer
@@ -934,5 +886,62 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         mPlatesTimerButton.setText(chronometer.getText());
     }
 
+    private void initializeFromService() {
+        /*
+         * Are we being told to load an airport?
+         */
+        if(null != mService.getLastPlateAirport()) {
+            addAirport(mService.getLastPlateAirport());
+        }
+
+        /*
+         *  Load the nearest airport
+         */
+        int nearestNum = mService.getArea().getAirportsNumber();
+        if(nearestNum > 0) {
+            Airport nearest = mService.getArea().getAirport(0);
+            addAirport(nearest.getId());
+        }
+
+        /*
+         * See if we have a destination, if we do - add it to the airports list
+         */
+        mDestination = mService.getDestination();
+        String dest = null;
+        if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
+            dest = mDestination.getID();
+            addAirport(dest);
+        }
+
+        /*
+         * Add airports in the plan
+         */
+        Plan plan = mService.getPlan();
+        if(null != plan) {
+            int nDest = plan.getDestinationNumber();
+            for(int i=0; i < nDest; i++) {
+                Destination planDest = plan.getDestination(i);
+                if(planDest.getType().equals(Destination.BASE)) {
+                    addAirport(planDest.getID());
+                }
+            }
+        }
+
+        /*
+         * Now add all the airports that are in the recently found list
+         */
+        String [] vals = mPref.getRecent();
+        for(int pos=0; pos < vals.length; pos++) {
+            String destType = StringPreference.parseHashedNameDestType(vals[pos]);
+            if(destType != null && destType.equals("Base")) {
+                String id = StringPreference.parseHashedNameId(vals[pos]);
+
+                addAirport(id);
+            }
+        }
+
+        int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
+        setAirportFromPos(lastIndex);
+    }
 
 }

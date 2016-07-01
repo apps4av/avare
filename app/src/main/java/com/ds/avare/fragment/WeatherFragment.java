@@ -11,24 +11,17 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import com.ds.avare.R;
-import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppInterface;
-
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -40,6 +33,13 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppInterface;
 
 /**
  * @author zkhan Main activity

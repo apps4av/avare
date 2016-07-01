@@ -27,14 +27,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatSpinner;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
@@ -77,8 +75,8 @@ import com.ds.avare.views.LocationView;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -142,6 +140,7 @@ public class LocationFragment extends Fragment implements Observer {
     private Button mAfdButton;
     private Button mDownloadButton;
     private Button mMenuButton;
+    private Button mDrawerButton;
     private RelativeLayout mDestLayout;
     private TwoButton mSimButton;
     private TwoButton mDrawButton;
@@ -682,6 +681,17 @@ public class LocationFragment extends Fragment implements Observer {
             }
         });
 
+        mDrawerButton = (Button) view.findViewById(R.id.location_button_drawer);
+        mDrawerButton.getBackground().setAlpha(255);
+        mDrawerButton.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
+                    }
+                }
+        );
+
         mHelpButton = (Button) view.findViewById(R.id.location_button_help);
         mHelpButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -701,6 +711,9 @@ public class LocationFragment extends Fragment implements Observer {
                 return null;
             }
         });
+        ArrayList<String> layerItems = new ArrayList<>(3);
+        layerItems.addAll(Arrays.asList("No Layer", "METAR", "NEXRAD"));
+        mLayerOption.setOptions(layerItems);
         mLayerOption.setSelectedValue(mPref.getLayerType());
         mLocationView.setLayerType(mPref.getLayerType());
 
@@ -713,6 +726,7 @@ public class LocationFragment extends Fragment implements Observer {
                     if (mService != null) {
                         mService.setLastPlateAirport(mAirportPressed);
                         mService.setLastPlateIndex(0);
+                        mDestLayout.setVisibility(View.INVISIBLE);
                         ((MainActivity) getContext()).showPlatesView();
                     }
                     mAirportPressed = null;
@@ -728,6 +742,7 @@ public class LocationFragment extends Fragment implements Observer {
                 if(null != mAirportPressed) {
                     if(mService != null) {
                         mService.setLastAfdAirport(mAirportPressed);
+                        mDestLayout.setVisibility(View.INVISIBLE);
                         ((MainActivity) getContext()).showAfdView();
                         mAirportPressed = null;
                     }
@@ -1020,8 +1035,7 @@ public class LocationFragment extends Fragment implements Observer {
          * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
 
             if(!mPref.isRegistered()) {
                 Intent i = new Intent(getContext(), RegisterActivity.class);
@@ -1038,94 +1052,11 @@ public class LocationFragment extends Fragment implements Observer {
             mService.registerGpsListener(mGpsInfc);
             mService.getFlightStatus().registerListener(mFSInfc);
 
-            mService.getTiles().setOrientation();
-            
-            /*
-             * Check if database needs upgrade
-             */
-            if(!mService.getDBResource().isPresent()) {
-
-                mAlertDialogDatabase = new AlertDialog.Builder(getContext()).create();
-                mAlertDialogDatabase.setTitle(getString(R.string.download));
-                mAlertDialogDatabase.setCancelable(false);
-                mAlertDialogDatabase.setCanceledOnTouchOutside(false);
-                mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
-                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        mLocationView.zoomOut();
-                        startActivity(i);
-                    }
-                });
-                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                mAlertDialogDatabase.show();
-                return;
-            }
-
-            /*
-             * Now set location if not obtained from service
-             */
-            mDestination = mService.getDestination();
-            if(mPref.isSimulationMode()) {
-                // In sim mode, set location to destination or last known location
-                if(mDestination != null && mDestination.getLocation() != null) {
-                    mService.setGpsParams(new GpsParams(mDestination.getLocation()));
-                }
-                else if (mInitLocation != null) {
-                    mService.setGpsParams(new GpsParams(mInitLocation));
-                }
-            }
-            else {
-                // In navigate mode, leave location to GPS location, or last known location
-                if(mService.getGpsParams() == null && mInitLocation != null) {
-                    mService.setGpsParams(new GpsParams(mInitLocation));
-                }
-            }
-
-            mLocationView.initParams(mService.getGpsParams(), mService);
-            mLocationView.updateParams(mService.getGpsParams());
-
-            /*
-             * See if we got an intent to search for address as dest
-             */
-            if(null != mExtras) {
-                String addr = mExtras.getString(Intent.EXTRA_TEXT);
-                if(addr != null) {
-
-                    /*
-                     * , cannot be saved in prefs
-                     */
-                    addr = StringPreference.formatAddressName(addr);
-
-                    mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
-                    mDestination.addObserver(LocationFragment.this);
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.Searching) + " " + addr,
-                            Snackbar.LENGTH_SHORT
-                    ).show();
-                    mDestination.find();
-                }
-                mExtras = null;
-            }
-
-            // mService is now valid, set the plan button vis
-            setPlanButtonVis();
-
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
+
+            initializeFromService();
         }
 
         /* (non-Javadoc)
@@ -1135,6 +1066,12 @@ public class LocationFragment extends Fragment implements Observer {
         public void onServiceDisconnected(ComponentName arg0) {
         }
     };
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && mService != null) initializeFromService();
+    }
 
     /**
      * We are interested in events from the fuel tank timer
@@ -1263,7 +1200,7 @@ public class LocationFragment extends Fragment implements Observer {
          * Clean up on pause that was started in on resume
          */
         getContext().unbindService(mConnection);
-        
+
         /*
          * Kill dialogs
          */
@@ -1451,6 +1388,93 @@ public class LocationFragment extends Fragment implements Observer {
         } else {
             Snackbar.make(mCoordinatorLayout, "Simulation mode disabled", Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void initializeFromService() {
+        mService.getTiles().setOrientation();
+
+        /*
+         * Check if database needs upgrade
+         */
+        if(!mService.getDBResource().isPresent()) {
+
+            mAlertDialogDatabase = new AlertDialog.Builder(getContext()).create();
+            mAlertDialogDatabase.setTitle(getString(R.string.download));
+            mAlertDialogDatabase.setCancelable(false);
+            mAlertDialogDatabase.setCanceledOnTouchOutside(false);
+            mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
+            mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    mLocationView.zoomOut();
+                    startActivity(i);
+                }
+            });
+            mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            mAlertDialogDatabase.show();
+            return;
+        }
+
+        /*
+         * Now set location if not obtained from service
+         */
+        mDestination = mService.getDestination();
+        if(mPref.isSimulationMode()) {
+            // In sim mode, set location to destination or last known location
+            if(mDestination != null && mDestination.getLocation() != null) {
+                mService.setGpsParams(new GpsParams(mDestination.getLocation()));
+            }
+            else if (mInitLocation != null) {
+                mService.setGpsParams(new GpsParams(mInitLocation));
+            }
+        }
+        else {
+            // In navigate mode, leave location to GPS location, or last known location
+            if(mService.getGpsParams() == null && mInitLocation != null) {
+                mService.setGpsParams(new GpsParams(mInitLocation));
+            }
+        }
+
+        mLocationView.initParams(mService.getGpsParams(), mService);
+        mLocationView.updateParams(mService.getGpsParams());
+
+        /*
+         * See if we got an intent to search for address as dest
+         */
+        if(null != mExtras) {
+            String addr = mExtras.getString(Intent.EXTRA_TEXT);
+            if(addr != null) {
+
+                /*
+                 * , cannot be saved in prefs
+                 */
+                addr = StringPreference.formatAddressName(addr);
+
+                mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
+                mDestination.addObserver(LocationFragment.this);
+                Snackbar.make(
+                        mCoordinatorLayout,
+                        getString(R.string.Searching) + " " + addr,
+                        Snackbar.LENGTH_SHORT
+                ).show();
+                mDestination.find();
+            }
+            mExtras = null;
+        }
+
+        // mService is now valid, set the plan button vis
+        setPlanButtonVis();
     }
 
 }

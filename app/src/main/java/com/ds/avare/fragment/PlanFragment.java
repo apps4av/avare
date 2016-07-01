@@ -11,16 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.ds.avare.R;
-import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppPlanInterface;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,13 +28,23 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import com.ds.avare.R;
+import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppPlanInterface;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author zkhan
