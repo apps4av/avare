@@ -61,6 +61,7 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
+import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
 
@@ -71,7 +72,7 @@ import java.util.TimerTask;
 /**
  * @author zkhan
  */
-public class ThreeDFragment extends Fragment {
+public class ThreeDFragment extends Fragment implements ToolbarVisibilityListener {
 
     public static final String TAG = "ThreeDFragment";
 
@@ -525,7 +526,7 @@ public class ThreeDFragment extends Fragment {
         mTimerTask = new UpdateTask();
         mTimer.schedule(mTimerTask, 0, 1000);
 
-        setToolbarAuxButtonsVis();
+        setToolbarAuxButtonsVisibility();
     }
 
     /* (non-Javadoc)
@@ -550,7 +551,7 @@ public class ThreeDFragment extends Fragment {
         mTimer.cancel();
     }
 
-    public void setToolbarAuxButtonsVis() {
+    public void setToolbarAuxButtonsVisibility() {
         mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
         mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
@@ -575,6 +576,11 @@ public class ThreeDFragment extends Fragment {
             }
         }
     };
+
+    @Override
+    public void onToolbarVisibilityChanged(boolean visible) {
+        setToolbarAuxButtonsVisibility();
+    }
 
     /**
      * Do stuff in background

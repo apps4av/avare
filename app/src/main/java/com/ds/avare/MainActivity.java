@@ -45,8 +45,11 @@ import com.ds.avare.fragment.WeatherFragment;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.ToolbarVisibilityListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mDrawerToggle;
 
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
+    private List<ToolbarVisibilityListener> mToolbarVisibilityListeners = new ArrayList<>();
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -199,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             newFragment = new LocationFragment();
             tag = LocationFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_MAP;
+            addToolbarVisibilityListener((LocationFragment) newFragment);
         } else if (itemId == R.id.nav_plate) {
             newFragment = new PlatesFragment();
             tag = PlatesFragment.TAG;
@@ -223,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             newFragment = new ThreeDFragment();
             tag = ThreeDFragment.TAG;
             navItemIdx = NAV_ITEM_IDX_THREE_D;
+            addToolbarVisibilityListener((ThreeDFragment) newFragment);
         } else if (itemId == R.id.nav_list) {
             newFragment = new ChecklistFragment();
             tag = ChecklistFragment.TAG;
@@ -258,9 +264,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_toggle_toolbar) {
             mPref.setHideToolbar(!mPref.getHideToolbar());
             mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
-            // TODO add a listener in fragment instead
-            if (getLocationFragment() != null) getLocationFragment().setToolbarAuxButtonsVis();
             if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+            for (ToolbarVisibilityListener listener : mToolbarVisibilityListeners) {
+                listener.onToolbarVisibilityChanged(mPref.getHideToolbar());
+            }
             return true;
         } else if (itemId == R.id.nav_toggle_tabbar) {
             mPref.setHideTabBar(!mPref.getHideTabBar());
@@ -440,8 +447,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public DrawerLayout getDrawerLayout() {
-        // TODO add a listener in fragment instead
+        // TODO pass into fragment instead
         return mDrawerLayout;
+    }
+
+    public void addToolbarVisibilityListener(ToolbarVisibilityListener listener) {
+        mToolbarVisibilityListeners.add(listener);
     }
 
 }

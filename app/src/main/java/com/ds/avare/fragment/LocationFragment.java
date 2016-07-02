@@ -78,6 +78,7 @@ import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
+import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.LocationView;
 
 import java.io.File;
@@ -91,7 +92,7 @@ import java.util.Observer;
  * @author zkhan, jlmcgraw
  * Main activity
  */
-public class LocationFragment extends Fragment implements Observer {
+public class LocationFragment extends Fragment implements Observer, ToolbarVisibilityListener {
 
     public static final String TAG = "LocationFragment";
 
@@ -1085,6 +1086,11 @@ public class LocationFragment extends Fragment implements Observer {
         if (!hidden && mService != null) initializeFromService();
     }
 
+    @Override
+    public void onToolbarVisibilityChanged(boolean visible) {
+        setToolbarAuxButtonsVisibility();
+    }
+
     /**
      * We are interested in events from the fuel tank timer
      * @author Ron
@@ -1158,7 +1164,7 @@ public class LocationFragment extends Fragment implements Observer {
 	    mPlanNext.setVisibility(planButtons);
 	}
 
-    public void setToolbarAuxButtonsVis() {
+    public void setToolbarAuxButtonsVisibility() {
         mLayerOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
         mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
         mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
@@ -1183,7 +1189,7 @@ public class LocationFragment extends Fragment implements Observer {
 
         // Set visibility of the plan buttons
         setPlanButtonVis();
-        setToolbarAuxButtonsVis();
+        setToolbarAuxButtonsVisibility();
 
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
