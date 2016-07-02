@@ -83,7 +83,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_pause"
-            android:drawableLeft="@android:drawable/ic_media_previous"
+            android:drawableLeft="@drawable/ic_skip_previous_black_24dp"
             android:visibility="invisible" />
 
         <ImageButton
@@ -93,7 +93,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_next"
-            android:src="@android:drawable/ic_media_play"
+            android:src="@drawable/ic_play_arrow_black_24dp"
             android:visibility="invisible" />
 
         <Button
@@ -103,7 +103,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/location_button_draw_clear"
-            android:drawableLeft="@android:drawable/ic_media_next"
+            android:drawableLeft="@drawable/ic_skip_next_black_24dp"
             android:visibility="invisible" />
 
         <com.ds.avare.animation.TwoButton
@@ -141,13 +141,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"/>
 
 
-		<com.ds.avare.utils.OptionButton
-			android:id="@+id/location_button_maps"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:alpha=".8"
-			android:drawableLeft="@drawable/ic_map" />
+        <com.ds.avare.utils.OptionButton
+            android:id="@+id/location_button_maps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:alpha=".8"
+            android:drawableLeft="@drawable/ic_map_black_24dp" />
 
         <com.ds.avare.utils.OptionButton
             android:id="@+id/location_button_layers"
@@ -155,7 +155,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_above="@id/location_button_maps"
             android:alpha=".8"
-            android:drawableLeft="@drawable/ic_layers" />
+            android:drawableLeft="@drawable/ic_layers_black_24dp" />
 
         <Button
             android:id="@+id/location_button_drawer"
@@ -173,7 +173,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:alpha=".8"
-            android:drawableLeft="@android:drawable/ic_menu_mylocation" />
+            android:drawableLeft="@drawable/ic_my_location_white_24dp" />
 
         <Button
             android:id="@+id/location_button_draw_clear"
@@ -233,7 +233,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        	android:id="@+id/location_popout_buttons"
                 android:layout_below="@+id/location_button_cross"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"	        	
+                android:layout_height="wrap_content"
 	        	>
 		        <Button
 		            android:id="@+id/location_button_dest"

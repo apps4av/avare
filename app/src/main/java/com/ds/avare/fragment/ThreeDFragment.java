@@ -30,12 +30,21 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.AppCompatSpinner;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.Traffic;
@@ -81,6 +90,8 @@ public class ThreeDFragment extends Fragment {
     private AreaMapper mAreaMapper;
 
     private Button mCenterButton;
+    private OptionButton mChartOption;
+    private Button mDrawerButton;
     private TextView mText;
     private CoordinatorLayout mCoordinatorLayout;
 
@@ -147,9 +158,6 @@ public class ThreeDFragment extends Fragment {
 
     };
 
-    /**
-     *
-     */
     private void setCenterButton() {
         // Button colors to be synced across activities
         if (mPref.isFirstPerson()) {
@@ -165,13 +173,12 @@ public class ThreeDFragment extends Fragment {
         }
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
+        Helper.setTheme(getActivity());
+
+        setHasOptionsMenu(true);
 
         mPref = new Preferences(getContext());
 
@@ -394,32 +401,68 @@ public class ThreeDFragment extends Fragment {
         mText = (TextView) view.findViewById(R.id.threed_text);
 
         // Charts different from main view
-        OptionButton chartOption = (OptionButton) view.findViewById(R.id.threed_spinner_chart);
-        chartOption.setCallback(new GenericCallback() {
+        mChartOption = (OptionButton) view.findViewById(R.id.threed_button_maps);
+        mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
                 mPref.setChartType3D("" + (int) o1);
+                getActivity().supportInvalidateOptionsMenu();
                 return null;
             }
         });
-        chartOption.setOptions(Boundaries.getChartTypes());
-        chartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
+        mChartOption.setOptions(Boundaries.getChartTypes());
+        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
+
+        mDrawerButton = (Button) view.findViewById(R.id.threed_button_drawer);
+        mDrawerButton.getBackground().setAlpha(255);
+        mDrawerButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
+                    }
+                }
+        );
 
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.toolbar_threed_menu, menu);
+
+        MenuItem chartItem = menu.findItem(R.id.action_chart);
+
+        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
+
+        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
+        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        chartSpinner.setAdapter(chartAdapter);
+        chartSpinner.setSelection(Integer.valueOf(mPref.getChartType3D()), false);
+
+        chartSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setChartType3D(String.valueOf(position));
+                        mChartOption.setCurrentSelectionIndex(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
+    }
+
     /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
 
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
@@ -434,8 +477,7 @@ public class ThreeDFragment extends Fragment {
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
          */
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
+        public void onServiceDisconnected(ComponentName arg0) { }
     };
 
     /**
@@ -483,6 +525,7 @@ public class ThreeDFragment extends Fragment {
         mTimerTask = new UpdateTask();
         mTimer.schedule(mTimerTask, 0, 1000);
 
+        setToolbarAuxButtonsVis();
     }
 
     /* (non-Javadoc)
@@ -505,6 +548,11 @@ public class ThreeDFragment extends Fragment {
             mGlSurfaceView.onPause();
         }
         mTimer.cancel();
+    }
+
+    public void setToolbarAuxButtonsVis() {
+        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
 
     private Handler mHandler = new Handler() {

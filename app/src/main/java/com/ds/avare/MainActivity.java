@@ -13,30 +13,22 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ds.avare.fragment.AirportFragment;
@@ -50,14 +42,11 @@ import com.ds.avare.fragment.SearchFragment;
 import com.ds.avare.fragment.ThreeDFragment;
 import com.ds.avare.fragment.TripFragment;
 import com.ds.avare.fragment.WeatherFragment;
-import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,11 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
 
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
 
@@ -97,33 +81,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int NAV_ITEM_IDX_TRIP      = 15;
     public static final int NAV_ITEM_IDX_TOOLS     = 16;
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) { }
-    };
-
     @Override
-    /**
-     *
-     */
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         mPref = new Preferences(this);
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        mService = null;
 
         setContentView(R.layout.main);
 
@@ -294,6 +258,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_toggle_toolbar) {
             mPref.setHideToolbar(!mPref.getHideToolbar());
             mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
+            // TODO add a listener in fragment instead
+            if (getLocationFragment() != null) getLocationFragment().setToolbarAuxButtonsVis();
             if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
             return true;
         } else if (itemId == R.id.nav_toggle_tabbar) {
@@ -341,123 +307,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-
-        MenuItem chartItem = menu.findItem(R.id.action_chart);
-        MenuItem layerItem = menu.findItem(R.id.action_layer);
-        MenuItem tracksItem = menu.findItem(R.id.action_tracks);
-        MenuItem simulationItem = menu.findItem(R.id.action_simulation);
-        MenuItem flightPlanControlsItem = menu.findItem(R.id.action_flight_plan_controls);
-
-        // these menu items should only be visible on specific tabs
-        chartItem.setVisible(isMainNavItemSelected() || isThreeDNavItemSelected());
-        layerItem.setVisible(isMainNavItemSelected());
-        tracksItem.setVisible(isMainNavItemSelected());
-        simulationItem.setVisible(isMainNavItemSelected());
-        flightPlanControlsItem.setVisible(isMainNavItemSelected());
-
-        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
-        AppCompatSpinner layerSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(layerItem);
-
-        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
-        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        chartSpinner.setAdapter(chartAdapter);
-
-        if (isMainNavItemSelected()) {
-            chartSpinner.setSelection(Integer.valueOf(mPref.getChartType()), false);
-            chartSpinner.setOnItemSelectedListener(
-                    new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            if (getLocationFragment() != null) {
-                                mPref.setChartType(String.valueOf(position));
-                                getLocationFragment().forceReloadLocationView();
-                            }
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) { }
-                    }
-            );
-        } else if (isThreeDNavItemSelected()) {
-            chartSpinner.setSelection(Integer.valueOf(mPref.getChartType3D()), false);
-            chartSpinner.setOnItemSelectedListener(
-                    new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            if (getThreeDFragment() != null) {
-                                mPref.setChartType3D(String.valueOf(position));
-                            }
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) { }
-                    }
-            );
-        }
-
-        List<String> layerItems = Arrays.asList("No Layer", "METAR", "NEXRAD");
-        final ArrayAdapter<String> layerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, layerItems);
-        layerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        layerSpinner.setAdapter(layerAdapter);
-        layerSpinner.setSelection(layerItems.indexOf(mPref.getLayerType()), false);
-
-        layerSpinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (getLocationFragment() != null) {
-                            mPref.setLayerType(layerAdapter.getItem(position));
-                            getLocationFragment().setLocationViewLayerType(mPref.getLayerType());
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) { }
-                }
-        );
-
-        tracksItem.setChecked(mService != null && mService.getTracks());
-        simulationItem.setChecked(mPref.isSimulationMode());
-        flightPlanControlsItem.setChecked(mPref.getPlanControl());
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_tracks:
-                if (getLocationFragment() != null) {
-                    item.setChecked(!item.isChecked());
-                    getLocationFragment().setTracksMode(item.isChecked());
-                    invalidateOptionsMenu();
-                }
-                break;
-            case R.id.action_simulation:
-                if (getLocationFragment() != null) {
-                    item.setChecked(!item.isChecked());
-                    getLocationFragment().setSimulationMode(item.isChecked());
-                    invalidateOptionsMenu();
-                }
-                break;
-            case R.id.action_flight_plan_controls:
-                if (getLocationFragment() != null) {
-                    item.setChecked(!item.isChecked());
-                    mPref.setPlanControl(item.isChecked());
-                    getLocationFragment().setPlanButtonVis();
-                    invalidateOptionsMenu();
-                }
-                break;
-            default:
-                break;
-        }
-
-        return true;
-    }
-
     private void startPreferencesActivity() {
         startActivity(new Intent(this, PrefActivity.class));
     }
@@ -501,13 +350,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        unbindService(mConnection);
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mNavigationView != null) {
@@ -518,10 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume() {
         super.onResume();
-
-        Intent intent = new Intent(this, StorageService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         Helper.setOrientationAndOn(this);
     }
 
@@ -590,19 +428,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return null;
     }
 
-    private ThreeDFragment getThreeDFragment() {
-        if (isThreeDNavItemSelected()) {
-            return (ThreeDFragment) getSupportFragmentManager().findFragmentByTag(ThreeDFragment.TAG);
-        }
-        return null;
-    }
-
     private boolean isMainNavItemSelected() {
         return mNavigationView.getMenu().getItem(NAV_ITEM_IDX_MAP).isChecked();
-    }
-
-    private boolean isThreeDNavItemSelected() {
-        return mNavigationView.getMenu().getItem(NAV_ITEM_IDX_THREE_D).isChecked();
     }
 
     private int getSelectedNavItemIdx() {

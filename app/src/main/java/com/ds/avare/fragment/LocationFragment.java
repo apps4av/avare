@@ -27,12 +27,19 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
@@ -87,6 +94,8 @@ import java.util.Observer;
 public class LocationFragment extends Fragment implements Observer {
 
     public static final String TAG = "LocationFragment";
+
+    public static final String[] LAYER_TYPES = new String[] { "No Layer", "METAR", "NEXRAD" };
 
     /**
      * This view display location on the map.
@@ -414,6 +423,8 @@ public class LocationFragment extends Fragment implements Observer {
         super.onCreate(savedInstanceState);
         Helper.setTheme(getActivity());
 
+        setHasOptionsMenu(true);
+
         mPref = new Preferences(getContext());
 
         /*
@@ -614,12 +625,12 @@ public class LocationFragment extends Fragment implements Observer {
         mListPopout = (ExpandableListView) view.findViewById(R.id.location_list_popout);
 
 
-
         mChartOption = (OptionButton)view.findViewById(R.id.location_button_maps);
         mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
                 mPref.setChartType("" + (int) o1);
+                getActivity().supportInvalidateOptionsMenu();
                 mLocationView.forceReload();
                 return null;
             }
@@ -707,12 +718,13 @@ public class LocationFragment extends Fragment implements Observer {
             @Override
             public Object callback(Object o, Object o1) {
                 mPref.setLayerType(mLayerOption.getCurrentValue());
+                getActivity().supportInvalidateOptionsMenu();
                 mLocationView.setLayerType(mPref.getLayerType());
                 return null;
             }
         });
         ArrayList<String> layerItems = new ArrayList<>(3);
-        layerItems.addAll(Arrays.asList("No Layer", "METAR", "NEXRAD"));
+        layerItems.addAll(Arrays.asList(LAYER_TYPES));
         mLayerOption.setOptions(layerItems);
         mLayerOption.setSelectedValue(mPref.getLayerType());
         mLocationView.setLayerType(mPref.getLayerType());
@@ -1146,6 +1158,12 @@ public class LocationFragment extends Fragment implements Observer {
 	    mPlanNext.setVisibility(planButtons);
 	}
 
+    public void setToolbarAuxButtonsVis() {
+        mLayerOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+    }
+
     /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
@@ -1165,6 +1183,7 @@ public class LocationFragment extends Fragment implements Observer {
 
         // Set visibility of the plan buttons
         setPlanButtonVis();
+        setToolbarAuxButtonsVis();
 
         if(null != mService) {
             // Tell the fuel tank timer we need to know when it runs out
@@ -1242,17 +1261,6 @@ public class LocationFragment extends Fragment implements Observer {
         hideMenu();
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    /**
-     * 
-     */
     @Override
     public void update(Observable arg0, Object arg1) {
         /*
@@ -1354,14 +1362,6 @@ public class LocationFragment extends Fragment implements Observer {
         for(int ms = 500; ms <= 5000; ms+=500) {
         	h.postDelayed(r, ms);
         }
-    }
-
-    public void forceReloadLocationView() {
-        mLocationView.forceReload();
-    }
-
-    public void setLocationViewLayerType(String layerType) {
-        mLocationView.setLayerType(layerType);
     }
 
     public void setTracksMode(boolean tracksMode) {
@@ -1475,6 +1475,88 @@ public class LocationFragment extends Fragment implements Observer {
 
         // mService is now valid, set the plan button vis
         setPlanButtonVis();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.toolbar_location_menu, menu);
+
+        MenuItem chartItem = menu.findItem(R.id.action_chart);
+        MenuItem layerItem = menu.findItem(R.id.action_layer);
+        MenuItem tracksItem = menu.findItem(R.id.action_tracks);
+        MenuItem simulationItem = menu.findItem(R.id.action_simulation);
+        MenuItem flightPlanControlsItem = menu.findItem(R.id.action_flight_plan_controls);
+
+        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
+        AppCompatSpinner layerSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(layerItem);
+
+        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
+        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        chartSpinner.setAdapter(chartAdapter);
+        chartSpinner.setSelection(Integer.valueOf(mPref.getChartType()), false);
+
+        chartSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setChartType(String.valueOf(position));
+                        mChartOption.setCurrentSelectionIndex(position);
+                        mLocationView.forceReload();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
+
+        ArrayList<String> layerItems = new ArrayList<>(3);
+        layerItems.addAll(Arrays.asList(LocationFragment.LAYER_TYPES));
+        final ArrayAdapter<String> layerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, layerItems);
+        layerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        layerSpinner.setAdapter(layerAdapter);
+        layerSpinner.setSelection(layerItems.indexOf(mPref.getLayerType()), false);
+
+        layerSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setLayerType(layerAdapter.getItem(position));
+                        mLayerOption.setSelectedValue(layerAdapter.getItem(position));
+                        mLocationView.setLayerType(mPref.getLayerType());
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
+
+        tracksItem.setChecked(mService != null && mService.getTracks());
+        simulationItem.setChecked(mPref.isSimulationMode());
+        flightPlanControlsItem.setChecked(mPref.getPlanControl());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_tracks:
+                item.setChecked(!item.isChecked());
+                setTracksMode(item.isChecked());
+                break;
+            case R.id.action_simulation:
+                item.setChecked(!item.isChecked());
+                setSimulationMode(item.isChecked());
+                break;
+            case R.id.action_flight_plan_controls:
+                item.setChecked(!item.isChecked());
+                mPref.setPlanControl(item.isChecked());
+                setPlanButtonVis();
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
