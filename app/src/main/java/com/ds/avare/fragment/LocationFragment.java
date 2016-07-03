@@ -956,11 +956,9 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 if(null != mService) {
                     Plan activePlan = mService.getPlan();
                     if(null != activePlan) {
-                        if(true == activePlan.suspendResume()) {
-                            mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
-                        } else {
-                            mPlanPause.setImageResource(android.R.drawable.ic_media_play);
-                        }
+                        mPlanPause.setImageResource(activePlan.suspendResume()
+                                ? R.drawable.ic_pause_black_24dp
+                                : R.drawable.ic_play_arrow_black_24dp);
                     }
                 }
             }
@@ -1009,8 +1007,8 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                     break;
 
                 case 1:
-		    	    			/* Send this file out as an email attachment
-		    	    			 */
+                    /* Send this file out as an email attachment
+                     */
                     try {
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
                         emailIntent.setType("application/kml");
@@ -1025,8 +1023,8 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                     break;
 
                 case 2:
-		    	    			/* Send it somewhere as KML. Let the user choose where.
-		    	    			 */
+                    /* Send it somewhere as KML. Let the user choose where.
+                     */
                     try {
                         Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                         viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())),
@@ -1078,8 +1076,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
          * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
          */
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
+        public void onServiceDisconnected(ComponentName arg0) { }
     };
 
     @Override
@@ -1472,11 +1469,13 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
 
                 mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
                 mDestination.addObserver(LocationFragment.this);
-                Snackbar.make(
-                        mCoordinatorLayout,
-                        getString(R.string.Searching) + " " + addr,
-                        Snackbar.LENGTH_SHORT
-                ).show();
+                if (isVisible()) { // TODO figure out a better way to do this rather than checking isVisible
+                    Snackbar.make(
+                            mCoordinatorLayout,
+                            getString(R.string.Searching) + " " + addr,
+                            Snackbar.LENGTH_SHORT
+                    ).show();
+                }
                 mDestination.find();
             }
             mExtras = null;

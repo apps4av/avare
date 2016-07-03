@@ -487,7 +487,9 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         }
         else {
             mPlatesButton.setText("");
-            Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
+            if (isVisible()) {
+                Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
+            }
         }
 
         // Get flight procedures set up for this plate
@@ -634,7 +636,9 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
                 /*
                  * Reset to the last one that worked
                  */
-                Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
+                if (isVisible()) {
+                    Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
+                }
             }
         }
     }

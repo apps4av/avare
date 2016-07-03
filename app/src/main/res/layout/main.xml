@@ -43,7 +43,8 @@
             android:minHeight="?attr/actionBarSize"
             android:background="@color/tabBackground"
             app:tabTextColor="@color/tabTextColor"
-            app:tabSelectedTextColor="@color/tabSelectedTextColor" />
+            app:tabSelectedTextColor="@color/tabSelectedTextColor"
+            app:tabIndicatorColor="@color/tabIndicatorColor" />
 
     </LinearLayout>
 
