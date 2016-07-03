@@ -40,7 +40,10 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize" />
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/tabBackground"
+            app:tabTextColor="@color/tabTextColor"
+            app:tabSelectedTextColor="@color/tabSelectedTextColor" />
 
     </LinearLayout>
 

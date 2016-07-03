@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="colorPrimary">#2196F3</color>-->
     <color name="colorPrimary">#00897B</color>
 
     <!-- colorPrimaryDark is used for the status bar -->
-    <!--<color name="colorPrimaryDark">#1976D2</color>-->
     <color name="colorPrimaryDark">#263238</color>
 
     <color name="colorPrimaryLight">#BBDEFB</color>
 
-    <!-- colorAccent is used as the default value for colorControlActivated
-         which is used to tint widgets -->
-    <!--<color name="colorAccent">#009688</color>-->
-    <!--<color name="colorAccent">#D32F2F</color>-->
+    <!-- colorAccent is used as the default value for colorControlActivated which is used to tint widgets -->
     <color name="colorAccent">#1565C0</color>
 
     <color name="primaryText">#B3FFFFFF</color>
 
     <color name="secondaryText">#727272</color>
+
+    <color name="tabBackground">#263238</color>
+    <color name="tabTextColor">#B3FFFFFF</color>
+    <color name="tabSelectedTextColor">#BBDEFB</color>
 </resources>
