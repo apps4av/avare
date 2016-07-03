@@ -493,6 +493,8 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         if (null == mInitLocation) {
             mInitLocation = mPref.getLastLocation();
         }
+
+        ((MainActivity) getActivity()).addToolbarVisibilityListener(TAG, this);
     }
 
     @Override
@@ -1165,9 +1167,10 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
 	}
 
     public void setToolbarAuxButtonsVisibility() {
-        mLayerOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
-        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
-        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        int visibility = mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE;
+        mLayerOption.setVisibility(visibility);
+        mChartOption.setVisibility(visibility);
+        mDrawerButton.setVisibility(visibility);
     }
 
     /* (non-Javadoc)

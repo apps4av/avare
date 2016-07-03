@@ -184,6 +184,8 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
         mPref = new Preferences(getContext());
 
         mContext = getContext();
+
+        ((MainActivity) getActivity()).addToolbarVisibilityListener(TAG, this);
     }
 
     @Override

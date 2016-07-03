@@ -649,8 +649,7 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
          * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
          */
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
@@ -907,9 +906,8 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
          * See if we have a destination, if we do - add it to the airports list
          */
         mDestination = mService.getDestination();
-        String dest = null;
         if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
-            dest = mDestination.getID();
+            String dest = mDestination.getID();
             addAirport(dest);
         }
 
