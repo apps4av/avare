@@ -284,13 +284,18 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             return;
         }
 
-        /*
-         * Get draw points.
-         */
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(4 * mDipToPix);
+
+        Paint.Cap oldCaps = mPaint.getStrokeCap();
+        mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(6 * mDipToPix);
         mService.getPixelDraw().drawShape(canvas, mPaint);
-        
+
+        mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(2 * mDipToPix);
+        mService.getPixelDraw().drawShape(canvas, mPaint);
+        mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
+
     }
 
     /**

@@ -708,10 +708,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Get draw points.
          */
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(4 * mDipToPix);
+
+        // Blue inside, black outside
+        Paint.Cap oldCaps = mPaint.getStrokeCap();
+        mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(6 * mDipToPix);
         mService.getDraw().drawShape(canvas, mPaint, mOrigin);
-        
+
+        mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(2 * mDipToPix);
+        mService.getDraw().drawShape(canvas, mPaint, mOrigin);
+        mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
     }
 
 
