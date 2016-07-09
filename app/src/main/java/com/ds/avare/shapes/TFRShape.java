@@ -45,8 +45,9 @@ public class TFRShape extends Shape {
      */
     public static void draw(DrawingContext ctx, LinkedList<TFRShape> shapes, boolean shouldShow) {
 
-        ctx.paint.setColor(Color.RED);
-        ctx.paint.setShadowLayer(0, 0, 0, 0);
+        Paint mPaint = new Paint();
+        mPaint.setColor(Color.RED);
+        mPaint.setShadowLayer(0, 0, 0, 0);
 
         if(!shouldShow) {
             return;
@@ -58,9 +59,23 @@ public class TFRShape extends Shape {
          * Draw TFRs only if they belong to the screen
          */
         if(null != shapes) {
-            ctx.paint.setColor(Color.RED);
-            ctx.paint.setStrokeWidth(3 * ctx.dip2pix);
-            ctx.paint.setShadowLayer(0, 0, 0, 0);
+
+            Paint strokePaint = new Paint();
+            strokePaint.setDither(true);
+            strokePaint.setStyle(Paint.Style.STROKE);
+            strokePaint.setAntiAlias(true);
+            strokePaint.setColor(Color.RED);
+            strokePaint.setStrokeWidth(3 * ctx.dip2pix);
+            strokePaint.setShadowLayer(0, 0, 0, 0);
+            Paint fillPaint = new Paint();
+            fillPaint.setDither(true);
+            fillPaint.setStyle(Paint.Style.FILL);
+            fillPaint.setAntiAlias(true);
+            fillPaint.setColor(Color.RED);
+            fillPaint.setStrokeWidth(3 * ctx.dip2pix);
+            fillPaint.setShadowLayer(0, 0, 0, 0);
+            fillPaint.setAlpha(50);
+
 
             for(int shape = 0; shape < shapes.size(); shape++) {
                 Shape todraw = shapes.get(shape);
@@ -70,8 +85,9 @@ public class TFRShape extends Shape {
                 if (todraw.isOld(expiry)) {
                     continue;
                 }
-                if(todraw.isOnScreen(ctx.origin) ) {
-                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                if(todraw.isOnScreen(ctx.origin)) {
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, strokePaint, ctx.pref.isNightMode(), true);
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, fillPaint, ctx.pref.isNightMode(), true);
                 }
             }
         }

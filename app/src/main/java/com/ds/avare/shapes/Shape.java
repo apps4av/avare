@@ -185,6 +185,7 @@ public abstract class Shape {
                 }
             }
         } else if (this instanceof TFRShape) {
+
             /*
              * Draw the shape segment by segment
              */
@@ -209,7 +210,6 @@ public abstract class Shape {
                 }
 
                 path.close();
-                paint.setAlpha(50);
                 c.drawPath(path, paint);
             }
         } else {
