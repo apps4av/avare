@@ -18,8 +18,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -31,17 +29,19 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import com.ds.avare.fragment.AirportFragment;
-import com.ds.avare.fragment.ChecklistFragment;
 import com.ds.avare.fragment.LocationFragment;
-import com.ds.avare.fragment.NearestFragment;
-import com.ds.avare.fragment.PlanFragment;
-import com.ds.avare.fragment.PlatesFragment;
-import com.ds.avare.fragment.SatelliteFragment;
-import com.ds.avare.fragment.SearchFragment;
-import com.ds.avare.fragment.ThreeDFragment;
-import com.ds.avare.fragment.TripFragment;
-import com.ds.avare.fragment.WeatherFragment;
+import com.ds.avare.navhandler.AfdNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.FindNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.ListNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.MapNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.NavigationItemSelectedHandler;
+import com.ds.avare.navhandler.NearNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.PlanNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.PlatesNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.ThreeDNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.ToolsNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.TripNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.WxbNavigationItemSelectedHandler;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
@@ -53,10 +53,9 @@ import java.util.Map;
 /**
  * @author zkhan
  */
-@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener {
 
-    private static final String SELECTED_NAV_ITEM_IDX_KEY = "selectedNavItemId";
+    private static final String SELECTED_NAV_ITEM_IDX_KEY = "selectedNavItemIdx";
 
     private Preferences mPref;
     private NavigationView mNavigationView;
@@ -68,9 +67,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
     private Map<String, ToolbarVisibilityListener> mToolbarVisibilityListeners = new HashMap<>();
 
-    // Tab panels that can display at the bottom of the screen. These manifest as 
-    // separate display panes with their own intent to handle the content. Each one
-    // except tabMain is configurable on or off by the user. 
+    // Nav items that display in the left slide out drawer. These indexes need to be updated
+    // if higher up menu items are added or deleted
     public static final int NAV_ITEM_IDX_MAP       = 6;
     public static final int NAV_ITEM_IDX_PLATES    = 7;
     public static final int NAV_ITEM_IDX_AFD       = 8;
@@ -82,6 +80,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int NAV_ITEM_IDX_WXB       = 14;
     public static final int NAV_ITEM_IDX_TRIP      = 15;
     public static final int NAV_ITEM_IDX_TOOLS     = 16;
+
+    private static final Map<Integer, NavigationItemSelectedHandler> NAV_ITEM_HANDLERS = new HashMap<>();
+
+    static {
+        NAV_ITEM_HANDLERS.put(R.id.nav_map, new MapNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_plate, new PlatesNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_afd, new AfdNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_find, new FindNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_plan, new PlanNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_near, new NearNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_3d, new ThreeDNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_list, new ListNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_wxb, new WxbNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_trip, new TripNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_tools, new ToolsNavigationItemSelectedHandler());
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,10 +132,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        int selectedNavItemId = (savedInstanceState == null)
+        int selectedNavItemIdx = (savedInstanceState == null)
                 ? NAV_ITEM_IDX_MAP
                 : savedInstanceState.getInt(SELECTED_NAV_ITEM_IDX_KEY, NAV_ITEM_IDX_MAP);
-        onNavigationItemSelected(mNavigationView.getMenu().getItem(selectedNavItemId));
+        onNavigationItemSelected(mNavigationView.getMenu().getItem(selectedNavItemIdx));
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.Add, R.string.Add);
@@ -193,119 +207,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        Fragment newFragment = null;
-        String tag = null;
-        int navItemIdx = -1;
+        if (NAV_ITEM_HANDLERS.containsKey(itemId)) { // selected a tab and need to change the view
+            NavigationItemSelectedHandler navItemHandler = NAV_ITEM_HANDLERS.get(itemId);
 
-        if (itemId == R.id.nav_map)  {
-            newFragment = new LocationFragment();
-            tag = LocationFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_MAP;
-        } else if (itemId == R.id.nav_plate) {
-            newFragment = new PlatesFragment();
-            tag = PlatesFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_PLATES;
-        } else if (itemId == R.id.nav_afd) {
-            newFragment = new AirportFragment();
-            tag = AirportFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_AFD;
-        } else if (itemId == R.id.nav_find) {
-            newFragment = new SearchFragment();
-            tag = SearchFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_FIND;
-        } else if (itemId == R.id.nav_plan) {
-            newFragment = new PlanFragment();
-            tag = PlanFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_PLAN;
-        } else if (itemId == R.id.nav_near) {
-            newFragment = new NearestFragment();
-            tag = NearestFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_NEAR;
-        } else if (itemId == R.id.nav_3d) {
-            newFragment = new ThreeDFragment();
-            tag = ThreeDFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_THREE_D;
-        } else if (itemId == R.id.nav_list) {
-            newFragment = new ChecklistFragment();
-            tag = ChecklistFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_CHECKLIST;
-        } else if (itemId == R.id.nav_wxb) {
-            newFragment = new WeatherFragment();
-            tag = WeatherFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_WXB;
-        } else if (itemId == R.id.nav_trip) {
-            newFragment = new TripFragment();
-            tag = TripFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_TRIP;
-        } else if (itemId == R.id.nav_tools) {
-            newFragment = new SatelliteFragment();
-            tag = SatelliteFragment.TAG;
-            navItemIdx = NAV_ITEM_IDX_TOOLS;
-        } else if (itemId == R.id.nav_preferences) {
-            startPreferencesActivity();
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_downloads) {
-            startChartsDownloadActivity();
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_ads) {
-            startAdsActivity();
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_help) {
-            startHelpActivity();
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (itemId == R.id.nav_toggle_toolbar) {
-            mPref.setHideToolbar(!mPref.getHideToolbar());
-            mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            for (ToolbarVisibilityListener listener : mToolbarVisibilityListeners.values()) {
-                listener.onToolbarVisibilityChanged(mPref.getHideToolbar());
-            }
-            return true;
-        } else if (itemId == R.id.nav_toggle_tabbar) {
-            mPref.setHideTabBar(!mPref.getHideTabBar());
-            mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
-            if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        }
+            navItemHandler.handleItemSelected(getSupportFragmentManager());
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            // set nav item as selected
+            if (mNavigationView != null) item.setChecked(true);
 
-        if (getSupportFragmentManager().getFragments() != null) {
-            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                ft.hide(fragment);
-            }
-        }
-
-        Fragment existingFragment = getSupportFragmentManager().findFragmentByTag(tag);
-        if (existingFragment == null) {
-            ft.add(R.id.fragment_container, newFragment, tag);
-        } else {
-            ft.show(existingFragment);
-        }
-
-        ft.commit();
-
-        if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
-
-        // set nav item as selected
-        if (mNavigationView != null) item.setChecked(true);
-
-        // set tab item to selected
-        if (mTabLayout != null) {
-            for (Map.Entry<Integer, Integer> entries : mTabIndexToNavItemIdMap.entrySet()) {
-                if (entries.getValue() == navItemIdx) {
-                    mTabLayout.getTabAt(entries.getKey()).select();
-                    break;
+            // set tab item as selected
+            if (mTabLayout != null) {
+                for (Map.Entry<Integer, Integer> entries : mTabIndexToNavItemIdMap.entrySet()) {
+                    if (entries.getValue() == navItemHandler.getNavItemIndex()) {
+                        mTabLayout.getTabAt(entries.getKey()).select();
+                        break;
+                    }
                 }
             }
+        } else { // selected a non tab item
+            if (itemId == R.id.nav_preferences) {
+                startPreferencesActivity();
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            } else if (itemId == R.id.nav_downloads) {
+                startChartsDownloadActivity();
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            } else if (itemId == R.id.nav_ads) {
+                startAdsActivity();
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            } else if (itemId == R.id.nav_help) {
+                startHelpActivity();
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            } else if (itemId == R.id.nav_toggle_toolbar) {
+                mPref.setHideToolbar(!mPref.getHideToolbar());
+                mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                for (ToolbarVisibilityListener listener : mToolbarVisibilityListeners.values()) {
+                    listener.onToolbarVisibilityChanged(mPref.getHideToolbar());
+                }
+                return true;
+            } else if (itemId == R.id.nav_toggle_tabbar) {
+                mPref.setHideTabBar(!mPref.getHideTabBar());
+                mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
+                if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
         }
 
-        // redraw the toolbar menu
-        invalidateOptionsMenu();
+        if (mDrawerLayout != null) mDrawerLayout.closeDrawer(GravityCompat.START);
 
         return true;
     }
@@ -341,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) { }
-
 
     @Override
     public void onBackPressed() {
