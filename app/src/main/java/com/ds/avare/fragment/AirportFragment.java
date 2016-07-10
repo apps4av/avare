@@ -11,20 +11,11 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,9 +26,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
 import com.ds.avare.adapters.TypeValueAdapter;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
@@ -46,7 +35,6 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.views.AfdView;
 
 import java.util.ArrayList;
@@ -59,11 +47,10 @@ import java.util.Observer;
  * @author zkhan,rasii
  * An activity that deals with A/FD information
  */
-public class AirportFragment extends Fragment implements Observer {
+public class AirportFragment extends StorageServiceGpsListenerFragment implements Observer {
+
     public static final String TAG = "AirportFragment";
 
-    private StorageService mService;
-    private Preferences mPref;
     private Destination mDestination;
     private ListView mAirportView;
     private AfdView mAfdView;
@@ -76,41 +63,12 @@ public class AirportFragment extends Fragment implements Observer {
     private Button mCenterButton;
     private String mDestString;
     private String mNearString;
-    private CoordinatorLayout mCoordinatorLayout;
 
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /**
-     *
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
-
-        mPref = new Preferences(getContext());
-
         mDestString = "<" + getString(R.string.Destination) + ">";
         mNearString = "<" + getString(R.string.Nearest) + ">";
-
-        mService = null;
     }
 
     @Override
@@ -184,8 +142,6 @@ public class AirportFragment extends Fragment implements Observer {
                 mAfdView.center();
             }
         });
-
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
 
     private boolean arePopupsShowing() {
@@ -318,8 +274,7 @@ public class AirportFragment extends Fragment implements Observer {
 
         mAirportView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                                           int index, long arg3) {
+            public boolean onItemLongClick(AdapterView<?> arg0, View v, int index, long arg3) {
                 return true;
             }
         });
@@ -432,9 +387,7 @@ public class AirportFragment extends Fragment implements Observer {
                 mAirportView.setVisibility(View.VISIBLE);
                 mAfdView.setVisibility(View.INVISIBLE);
                 mCenterButton.setVisibility(View.INVISIBLE);
-                if (isVisible()) {
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.ValidDest), Snackbar.LENGTH_SHORT).show();
-                }
+                showSnackbar(getString(R.string.ValidDest), Snackbar.LENGTH_SHORT);
                 return;
             }
 
@@ -454,13 +407,7 @@ public class AirportFragment extends Fragment implements Observer {
                 mDestination = new Destination(airport, Destination.BASE, mPref, mService);
                 mService.setLastAfdDestination(mDestination);
                 mDestination.addObserver(AirportFragment.this);
-                if (isVisible()) {
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.Searching) + " " + mDestination.getID(),
-                            Snackbar.LENGTH_SHORT
-                    ).show();
-                }
+                showSnackbar(getString(R.string.Searching) + " " + mDestination.getID(), Snackbar.LENGTH_SHORT);
                 mDestination.find();
             }
 
@@ -471,126 +418,34 @@ public class AirportFragment extends Fragment implements Observer {
         }
     }
 
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Initialize the lists
-             */
-            mListViews = new ArrayList<String>();
-            mListViews.add(getString(R.string.AFD));
-
-            mListAirports = new ArrayList<String>();
-            mListAirports.add(mDestString);
-            mListAirports.add(mNearString);
-
-            initializeFromService();
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden && mService != null) initializeFromService();
-    }
-
-    /* (non-Javadoc)
-         * @see android.app.Activity#onPause()
-         */
     @Override
     public void onPause() {
         super.onPause();
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
         try {
             mViewPopup.dismiss();
-        }
-        catch(Exception e) {}
-
-        try {
             mAirportPopup.dismiss();
-        }
-        catch(Exception e) {}
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
+        } catch(Exception e) { }
     }
 
-    /**
-     *
-     */
     @Override
     public void onResume() {
         super.onResume();
-
         mDestination = null;
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        Helper.setOrientationAndOn(getActivity());
     }
 
     @Override
-    public void update(Observable observable, Object data) {
+    protected void postServiceConnected() {
         /*
-         * Destination found?
+         * Initialize the lists
          */
-        if(observable instanceof Destination) {
-            Boolean result = (Boolean)data;
-            if(result) {
-                if(null == mDestination) {
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-                if((Destination)observable != mDestination) {
-                    /*
-                     * If user presses a selection repeatedly, reject previous
-                     */
-                    return;
-                }
+        mListViews = new ArrayList<>();
+        mListViews.add(getString(R.string.AFD));
 
-                setupViewInfo();
-                setViewFromPos(0);
-            }
-            else {
-                Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
-            }
-        }
-    }
+        mListAirports = new ArrayList<>();
+        mListAirports.add(mDestString);
+        mListAirports.add(mNearString);
 
-    private void initializeFromService() {
         /*
          * Are we being told to load an airport?
          */
@@ -646,6 +501,34 @@ public class AirportFragment extends Fragment implements Observer {
 
         int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
         setNewDestinationFromPos(lastIndex);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        /*
+         * Destination found?
+         */
+        if(observable instanceof Destination) {
+            Boolean result = (Boolean)data;
+            if(result) {
+                if(null == mDestination) {
+                    showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
+                    return;
+                }
+                if((Destination)observable != mDestination) {
+                    /*
+                     * If user presses a selection repeatedly, reject previous
+                     */
+                    return;
+                }
+
+                setupViewInfo();
+                setViewFromPos(0);
+            }
+            else {
+                showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
+            }
+        }
     }
 
 }

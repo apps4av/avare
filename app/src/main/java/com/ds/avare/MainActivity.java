@@ -101,11 +101,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        mPref = new Preferences(this);
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
+
+        mPref = new Preferences(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);

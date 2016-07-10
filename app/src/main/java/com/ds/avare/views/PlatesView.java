@@ -160,10 +160,6 @@ public class PlatesView extends View implements OnTouchListener {
         postInvalidate();
     }
 
-    
-    /* (non-Javadoc)
-     * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
-     */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         boolean retVal = mGestureDetector.onTouchEvent(e);

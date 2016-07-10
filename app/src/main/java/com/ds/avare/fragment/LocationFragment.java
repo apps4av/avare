@@ -11,22 +11,15 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
@@ -45,14 +38,11 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import com.ds.avare.BuildConfig;
 import com.ds.avare.ChartsDownloadActivity;
 import com.ds.avare.MainActivity;
 import com.ds.avare.MessageActivity;
 import com.ds.avare.PrefActivity;
 import com.ds.avare.R;
-import com.ds.avare.RegisterActivity;
-import com.ds.avare.StorageService;
 import com.ds.avare.WebActivity;
 import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.AnimateButton;
@@ -60,7 +50,6 @@ import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
@@ -92,7 +81,7 @@ import java.util.Observer;
  * @author zkhan, jlmcgraw
  * Main activity
  */
-public class LocationFragment extends Fragment implements Observer, ToolbarVisibilityListener {
+public class LocationFragment extends StorageServiceGpsListenerFragment implements Observer, ToolbarVisibilityListener {
 
     public static final String TAG = "LocationFragment";
 
@@ -106,15 +95,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
      * Current destination info
      */
     private Destination mDestination;
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    /**
-     * App preferences
-     */
-    private Preferences mPref;
 
     private Location mInitLocation;
 
@@ -168,7 +148,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
-    private CoordinatorLayout mCoordinatorLayout;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -202,70 +181,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 }
             }
         }
-    };
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-            if(location != null && mService != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-                GpsParams params = new GpsParams(location);
-
-                /*
-                 * Store GPS last location in case activity dies, we want to start from same loc
-                 */
-                mLocationView.updateParams(params);
-
-                if(mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
-                	/*
-                	 * Check that if we are close to passing a plan passage, blink
-                	 */
-                	blink();
-                }
-            }
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-            /*
-             *  No GPS signal
-             *  Tell location view to show GPS status
-             */
-            if(null == mService) {
-                mLocationView.updateErrorStatus(getString(R.string.Init));
-            }
-            else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
-                mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
-            }
-            else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
-                mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
-            }
-            else if(mPref.isSimulationMode()) {
-                mLocationView.updateErrorStatus(getString(R.string.SimulationMode));
-            }
-            else if(timeout) {
-                mLocationView.updateErrorStatus(getString(R.string.GPSLost));
-            }
-            else {
-                /*
-                 *  GPS kicking.
-                 */
-                mLocationView.updateErrorStatus(null);
-            }
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-
     };
 
     /**
@@ -312,11 +227,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mIsWaypoint = false;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(LocationFragment.this);
-        Snackbar.make(
-                mCoordinatorLayout,
-                getString(R.string.Searching) + " " + dst,
-                Snackbar.LENGTH_SHORT
-        ).show();
+        showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find();
         mDestLayout.setVisibility(View.INVISIBLE);
     }
@@ -329,11 +240,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mIsWaypoint = true;
         mDestination = new Destination(dst, type, mPref, mService);
         mDestination.addObserver(LocationFragment.this);
-        Snackbar.make(
-                mCoordinatorLayout,
-                getString(R.string.Searching) + " " + dst,
-                Snackbar.LENGTH_SHORT
-        ).show();
+        showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find();
         mDestLayout.setVisibility(View.INVISIBLE);
     }
@@ -355,9 +262,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
         mAlertDialogExit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-            /* (non-Javadoc)
-             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-             */
             public void onClick(DialogInterface dialog, int which) {
                 /*
                  * Go to background
@@ -368,9 +272,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             }
         });
         mAlertDialogExit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-            /* (non-Javadoc)
-             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-             */
             public void onClick(DialogInterface dialog, int which) {
                 /*
                  * Go to background
@@ -382,9 +283,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mAlertDialogExit.show();
     }
 
-    /**
-     *
-     */
     private void hideMenu() {
         mAnimateTracks.animateBack();
         mAnimateWeb.animateBack();
@@ -396,9 +294,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mAnimatePref.animateBack();
     }
 
-    /**
-     *
-     */
     private void showMenu() {
         mAnimateTracks.animate();
         mAnimateWeb.animate();
@@ -416,17 +311,11 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         outState.putString("foo", "bar");
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Helper.setTheme(getActivity());
 
         setHasOptionsMenu(true);
-
-        mPref = new Preferences(getContext());
 
         /*
          * Throw this in case GPS is disabled.
@@ -437,9 +326,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             mGpsWarnDialog.setCancelable(false);
             mGpsWarnDialog.setCanceledOnTouchOutside(false);
             mGpsWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     Intent i = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -447,9 +333,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 }
             });
             mGpsWarnDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
@@ -457,9 +340,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             mGpsWarnDialog.show();
         }
 
-                /*
-         * Throw this in case GPS is disabled.
-         */
         if(mPref.showTips()) {
             mWarnDialog = new AlertDialog.Builder(getContext()).create();
             mWarnDialog.setTitle(getString(R.string.Tip));
@@ -467,9 +347,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             mWarnDialog.setCancelable(false);
             mWarnDialog.setCanceledOnTouchOutside(false);
             mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
@@ -482,10 +359,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
          */
         mExtras = getActivity().getIntent().getExtras();
 
-        mService = null;
-
-        // Allocate the object that will get told about the status of the
-        // fuel tank
+        // Allocate the object that will get told about the status of the fuel tank
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
 
@@ -579,10 +453,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 }
             }
 
-            /*
-             * (non-Javadoc)
-             * @see com.ds.avare.GestureInterface#gestureCallBack(int, java.lang.String)
-             */
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
 
@@ -664,11 +534,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
                     snackbarText = getString(R.string.NorthUp);
                 }
-                Snackbar.make(
-                        mCoordinatorLayout,
-                        snackbarText,
-                        Snackbar.LENGTH_SHORT
-                ).show();
+                showSnackbar(snackbarText, Snackbar.LENGTH_SHORT);
                 mLocationView.invalidate();
                 return true;
             }
@@ -978,8 +844,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             }
         });
 
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
-
         mAnimateTracks = new AnimateButton(getContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
         mAnimateWeb = new AnimateButton(getContext(), mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(getContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
@@ -999,13 +863,8 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             switch(mPref.autoPostTracks()) {
                 case 0:
                     /* Just display a toast message to the user that the file was saved */
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            String.format(getString(R.string.AutoPostTracksDialogText), fileName),
-                            Snackbar.LENGTH_LONG
-                    ).show();
+                    showSnackbar(String.format(getString(R.string.AutoPostTracksDialogText), fileName), Snackbar.LENGTH_LONG);
                     break;
-
                 case 1:
                     /* Send this file out as an email attachment
                      */
@@ -1037,52 +896,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                     break;
             }
         }
-    }
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-
-            if(!mPref.isRegistered()) {
-                Intent i = new Intent(getContext(), RegisterActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                if (!BuildConfig.DEBUG) // don't require registration when running debug apk
-                    startActivity(i);
-            }
-
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mService.getFlightStatus().registerListener(mFSInfc);
-
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
-
-            initializeFromService();
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) { }
-    };
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden && mService != null) initializeFromService();
     }
 
     @Override
@@ -1170,20 +983,9 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mDrawerButton.setVisibility(visibility);
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(getActivity());
-
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         mDestLayout.setVisibility(View.INVISIBLE);
 
@@ -1191,80 +993,91 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         setPlanButtonVis();
         setToolbarAuxButtonsVisibility();
 
-        if(null != mService) {
+        if (mService != null) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         // Button colors to be synced across activities
-        if(mPref.isTrackUp()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-        }
-        else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-        }
-
+        mCenterButton.getBackground().setColorFilter(
+                mPref.isTrackUp() ? 0xFF00FF00 : 0xFF444444,
+                PorterDuff.Mode.MULTIPLY
+        );
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+        if (hidden && mService != null) {
+            mService.getFlightStatus().unregisterListener(mFSInfc);
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
+        if (mService != null) {
             mService.getFlightStatus().unregisterListener(mFSInfc);
             mService.getFuelTimer().removeObserver(mTankObserver);
             mService.getUpTimer().removeObserver(mTimerObserver);
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
+        // Kill dialogs
+        try {
+            mAlertDialogDatabase.dismiss();
+            mGpsWarnDialog.dismiss();
+            mWarnDialog.dismiss();
+            mAlertDialogExit.dismiss();
+        } catch (Exception e) { }
 
-        /*
-         * Kill dialogs
-         */
-        if(null != mAlertDialogDatabase) {
-            try {
-                mAlertDialogDatabase.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mGpsWarnDialog) {
-            try {
-                mGpsWarnDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mWarnDialog) {
-            try {
-                mWarnDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mAlertDialogExit) {
-            try {
-                mAlertDialogExit.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        /*
-         * Do this as switching from screen needs to hide its menu
-         */
+        // Do this as switching from screen needs to hide its menu
         hideMenu();
+    }
+
+    @Override
+    public void onGpsLocation(Location location) {
+        if (location != null && mService != null) {
+            // Called by GPS. Update everything driven by GPS.
+            GpsParams params = new GpsParams(location);
+
+            // Store GPS last location in case activity dies, we want to start from same loc
+            mLocationView.updateParams(params);
+
+            if (mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
+                // Check that if we are close to passing a plan passage, blink
+                blink();
+            }
+        }
+    }
+
+    @Override
+    public void onGpsTimeout(boolean timeout) {
+        /*
+         *  No GPS signal
+         *  Tell location view to show GPS status
+         */
+        if (mService == null) {
+            mLocationView.updateErrorStatus(getString(R.string.Init));
+        }
+        else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
+            mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
+        }
+        else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
+            mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
+        }
+        else if(mPref.isSimulationMode()) {
+            mLocationView.updateErrorStatus(getString(R.string.SimulationMode));
+        }
+        else if(timeout) {
+            mLocationView.updateErrorStatus(getString(R.string.GPSLost));
+        }
+        else {
+            // GPS kicking.
+            mLocationView.updateErrorStatus(null);
+        }
     }
 
     @Override
@@ -1280,11 +1093,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                  * Temporarily move to destination by giving false GPS signal.
                  */
                 if(null == mDestination) {
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.DestinationNF),
-                            Snackbar.LENGTH_SHORT
-                    ).show();
+                    showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
                     return;
                 }
                 if((Destination)arg0 != mDestination) {
@@ -1299,11 +1108,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);
                     }
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.DestinationSet) + ((Destination)arg0).getID(),
-                            Snackbar.LENGTH_SHORT
-                    ).show();
+                    showSnackbar(getString(R.string.DestinationSet) + ((Destination)arg0).getID(), Snackbar.LENGTH_SHORT);
                     ((MainActivity) getContext()).showMapView();
                 }
                 else {
@@ -1315,11 +1120,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                         else {
                             snackbarText = ((Destination)arg0).getID() + getString(R.string.PlanNoset);
                         }
-                        Snackbar.make(
-                                mCoordinatorLayout,
-                                snackbarText,
-                                Snackbar.LENGTH_SHORT
-                        ).show();
+                        showSnackbar(snackbarText, Snackbar.LENGTH_SHORT);
                     }
                 }
                 
@@ -1334,11 +1135,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
 
             }
             else {
-                Snackbar.make(
-                        mCoordinatorLayout,
-                        getString(R.string.DestinationNF),
-                        Snackbar.LENGTH_SHORT
-                ).show();
+                showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
             }
         }
     }
@@ -1373,7 +1170,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
     public void setTracksMode(boolean tracksMode) {
         if (mService != null) {
             setTrackState(tracksMode);
-            if (tracksMode) Snackbar.make(mCoordinatorLayout, "Tracks enabled", Snackbar.LENGTH_LONG).show();
+            if (tracksMode) showSnackbar("Tracks enabled", Snackbar.LENGTH_SHORT);
         }
     }
 
@@ -1381,7 +1178,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
         mPref.setSimMode(simulationMode);
 
         if (simulationMode) {
-            Snackbar.make(mCoordinatorLayout, "Simulation mode enabled", Snackbar.LENGTH_LONG).show();
+            showSnackbar("Simulation mode enabled", Snackbar.LENGTH_SHORT);
 
             if (null != mService) {
                 Destination dest = mService.getDestination();
@@ -1392,11 +1189,18 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 mLocationView.forceReload();
             }
         } else {
-            Snackbar.make(mCoordinatorLayout, "Simulation mode disabled", Snackbar.LENGTH_LONG).show();
+            showSnackbar("Simulation mode disabled", Snackbar.LENGTH_SHORT);
         }
     }
 
-    private void initializeFromService() {
+    @Override
+    protected void postServiceConnected() {
+        mService.getFlightStatus().registerListener(mFSInfc);
+
+        // Tell the fuel tank timer we need to know when it runs out
+        mService.getFuelTimer().addObserver(mTankObserver);
+        mService.getUpTimer().addObserver(mTimerObserver);
+
         mService.getTiles().setOrientation();
 
         /*
@@ -1410,9 +1214,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
             mAlertDialogDatabase.setCanceledOnTouchOutside(false);
             mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
             mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
                 public void onClick(DialogInterface dialog, int which) {
                     Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -1421,9 +1222,6 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
                 }
             });
             mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
@@ -1469,13 +1267,7 @@ public class LocationFragment extends Fragment implements Observer, ToolbarVisib
 
                 mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
                 mDestination.addObserver(LocationFragment.this);
-                if (isVisible()) { // TODO figure out a better way to do this rather than checking isVisible
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.Searching) + " " + addr,
-                            Snackbar.LENGTH_SHORT
-                    ).show();
-                }
+                showSnackbar(getString(R.string.Searching) + " " + addr, Snackbar.LENGTH_SHORT);
                 mDestination.find();
             }
             mExtras = null;

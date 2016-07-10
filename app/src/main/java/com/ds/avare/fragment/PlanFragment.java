@@ -11,19 +11,11 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,10 +29,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.webinfc.WebAppPlanInterface;
 
 import java.util.Timer;
@@ -50,7 +39,7 @@ import java.util.TimerTask;
  * @author zkhan
  * An activity that deals with flight plans - loading, creating, deleting and activating
  */
-public class PlanFragment extends Fragment {
+public class PlanFragment extends StorageServiceGpsListenerFragment {
 
     public static final String TAG = "PlanFragment";
 
@@ -68,17 +57,10 @@ public class PlanFragment extends Fragment {
     // A timer object to handle things when we are in sim mode
     private Timer mTimer;
 
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
     /*
      * If page it loaded
      */
     private boolean mIsPageLoaded;
-
-    private Context mContext;
 
     /*
      * Callback actions from web app
@@ -91,41 +73,9 @@ public class PlanFragment extends Fragment {
     public static final int INIT = 6;
 
 
-    /**
-     * App preferences
-     */
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
-
-        mContext = getContext();
-        mService = null;
         mIsPageLoaded = false;
         mInited = false;
     }
@@ -140,11 +90,7 @@ public class PlanFragment extends Fragment {
         mWebView = (WebView) view.findViewById(R.id.plan_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppPlanInterface(mContext, mWebView, new GenericCallback() {
-            /*
-             * (non-Javadoc)
-             * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
-             */
+        mInfc = new WebAppPlanInterface(getContext(), mWebView, new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
                 Message m = mHandler.obtainMessage((Integer)o, o1);
@@ -248,99 +194,31 @@ public class PlanFragment extends Fragment {
         });
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceConnected(android.content
-         * .ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get
-             * LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mInfc.connect(binder.getService());
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * When both service and page loaded then proceed.
-             * The plan will be loaded either from here or from page load end event
-             */
-            mTimer = new Timer();
-            TimerTask sim = new UpdateTask();
-            mTimer.scheduleAtFixedRate(sim, 0, 1000);
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceDisconnected(android.content
-         * .ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onResume()
-     */
     @Override
     public void onResume() {
         super.onResume();
-
-        Helper.setOrientationAndOn(getActivity());
-
-        /*
-         * Registering our receiver Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mWebView.requestFocus();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onPause()
-     */
     @Override
     public  void onPause() {
         super.onPause();
-
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
-
         // Cancel the timer if one is running
-        if(mTimer != null) {
-            mTimer.cancel();
-        }
+        if (mTimer != null) mTimer.cancel();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onDestroy()
-     */
+    @Override
+    protected void postServiceConnected() {
+        mInfc.connect(mService);
+        /*
+         * When both service and page loaded then proceed.
+         * The plan will be loaded either from here or from page load end event
+         */
+        mTimer = new Timer();
+        TimerTask sim = new UpdateTask();
+        mTimer.scheduleAtFixedRate(sim, 0, 1000);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -385,7 +263,7 @@ public class PlanFragment extends Fragment {
             }
             else if(msg.what == MESSAGE) {
                 // Show an important message
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage((String)msg.obj)
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {

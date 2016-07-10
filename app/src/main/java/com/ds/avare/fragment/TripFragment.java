@@ -11,20 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,9 +32,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
 
@@ -53,7 +42,7 @@ import java.util.Locale;
 /**
  * @author zkhan trip / hotel / car etc. activity
  */
-public class TripFragment extends Fragment {
+public class TripFragment extends StorageServiceGpsListenerFragment {
 
     public static final String TAG = "TripFragment";
 
@@ -62,64 +51,12 @@ public class TripFragment extends Fragment {
      */
     private WebView mWebView;
     private Button mFindButton;
-    AlertDialog mAlertDialog;
+    private AlertDialog mAlertDialog;
     private ProgressBar mProgress;
     private ProgressBar mProgressBar;
-    private Preferences mPref;
     private EditText mSearchText;
     private Button mNextButton;
     private Button mLastButton;
-    private CoordinatorLayout mCoordinatorLayout;
-
-
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    /**
-     * App preferences
-     */
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-            if (location != null && mService != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-            }
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
-        super.onCreate(savedInstanceState);
-
-        mPref = new Preferences(getContext());
-
-        mService = null;
-    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -143,8 +80,6 @@ public class TripFragment extends Fragment {
 
             /*
              * For hiding loading bar
-             * (non-Javadoc)
-             * @see android.webkit.WebViewClient#onPageFinished(android.webkit.WebView, java.lang.String)
              */
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -329,12 +264,9 @@ public class TripFragment extends Fragment {
             }
 
         });
-
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
 
     private boolean isDateWrong(String date) {
-
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
         sdf.setLenient(false);
 
@@ -363,7 +295,7 @@ public class TripFragment extends Fragment {
     	 * Set Dest from other screens
     	 */
         if(mService == null || mService.getDestination() == null) {
-            Snackbar.make(mCoordinatorLayout, getString(R.string.ValidDest), Snackbar.LENGTH_SHORT).show();
+            showSnackbar(getString(R.string.ValidDest), Snackbar.LENGTH_SHORT);
             return null;
         }
 
@@ -371,7 +303,7 @@ public class TripFragment extends Fragment {
     	 * Validate date
     	 */
         if(isDateWrong(fromtext) || isDateWrong(totext)) {
-            Snackbar.make(mCoordinatorLayout, getString(R.string.IncorrectDateFormat), Snackbar.LENGTH_SHORT).show();
+            showSnackbar(getString(R.string.IncorrectDateFormat), Snackbar.LENGTH_SHORT);
             return null;
         }
 
@@ -425,90 +357,23 @@ public class TripFragment extends Fragment {
             return url;
         }
 
-        Snackbar.make(mCoordinatorLayout, getString(R.string.ValidDest), Snackbar.LENGTH_SHORT).show();
+        showSnackbar(getString(R.string.ValidDest), Snackbar.LENGTH_SHORT);
 
         return null;
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceConnected(android.content
-         * .ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get
-             * LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceDisconnected(android.content
-         * .ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onResume()
-     */
     @Override
     public void onResume() {
         super.onResume();
-
-        Helper.setOrientationAndOn(getActivity());
-
-        /*
-         * Registering our receiver Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         mWebView.requestFocus();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onPause()
-     */
     @Override
     public void onPause() {
         super.onPause();
 
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
-
-        try {
-            mAlertDialog.dismiss();
-        }
-        catch(Exception e) {
-        }
+        try { mAlertDialog.dismiss(); }
+        catch(Exception e) { }
     }
 
 }

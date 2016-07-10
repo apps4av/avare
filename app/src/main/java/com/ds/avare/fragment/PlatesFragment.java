@@ -11,21 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +30,8 @@ import android.widget.Chronometer;
 import com.ds.avare.MainActivity;
 import com.ds.avare.PlatesTagActivity;
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
@@ -50,7 +41,6 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
 import java.io.File;
@@ -67,12 +57,11 @@ import java.util.TreeMap;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesFragment extends Fragment implements Observer, Chronometer.OnChronometerTickListener  {
+public class PlatesFragment extends StorageServiceGpsListenerFragment implements Observer, Chronometer.OnChronometerTickListener  {
+
     public static final String TAG = "PlatesFragment";
 
-    private Preferences mPref;
     private PlatesView mPlatesView;
-    private StorageService mService;
     private Destination mDestination;
     private Button mCenterButton;
     private Button mAirportButton;
@@ -97,7 +86,6 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
-    private CoordinatorLayout mCoordinatorLayout;
     private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
     public static final String AD = "AIRPORT-DIAGRAM";
@@ -173,71 +161,15 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         }
     }
 
-    /*
-     * Start GPS
-     */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-            if(location != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-                GpsParams params = new GpsParams(location);
-
-                /*
-                 * Store GPS last location in case activity dies, we want to start from same loc
-                 */
-                mPlatesView.updateParams(params);
-            }
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-            /*
-             *  No GPS signal
-             *  Tell location view to show GPS status
-             */
-            if(mPref.isSimulationMode()) {
-                mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));
-            }
-            else if(timeout) {
-                mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
-            }
-            else {
-                /*
-                 *  GPS kicking.
-                 */
-                mPlatesView.updateErrorStatus(null);
-            }
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
     private boolean arePopupsShowing() {
         return (null != mPlatesPopup && mPlatesPopup.isShowing()) ||
                 (null != mAirportPopup && mAirportPopup.isShowing()) ||
                 (null != mApproachPopup && mApproachPopup.isShowing());
     }
 
-    /**
-     *
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
         super.onCreate(savedInstanceState);
-
-        mPref = new Preferences(getContext());
 
         mDestString = "<" + getString(R.string.Destination) + ">";
         nearString = "<" + getString(R.string.Nearest) + ">";
@@ -245,8 +177,6 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         // Allocate the watch object for fuel tanks
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
-
-        mService = null;
     }
 
     @Override
@@ -296,7 +226,7 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
                 }
 
                 if (mListApproaches.size() == 0) {
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.NoApproachToShow), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(getString(R.string.NoApproachToShow), Snackbar.LENGTH_SHORT);
                     return;
                 }
 
@@ -426,10 +356,10 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
                 mPref.setTrackUpPlates(!mPref.isTrackUpPlates());
                 if (mPref.isTrackUpPlates()) {
                     mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.TrackUp), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(getString(R.string.TrackUp), Snackbar.LENGTH_SHORT);
                 } else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.NorthUp), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(getString(R.string.NorthUp), Snackbar.LENGTH_SHORT);
                 }
                 mPlatesView.invalidate();
                 return true;
@@ -462,8 +392,6 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
 
             }
         });
-
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
 
     private void setPlateFromPos(int pos) {
@@ -487,9 +415,7 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         }
         else {
             mPlatesButton.setText("");
-            if (isVisible()) {
-                Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
-            }
+            showSnackbar(getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT);
         }
 
         // Get flight procedures set up for this plate
@@ -636,58 +562,9 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
                 /*
                  * Reset to the last one that worked
                  */
-                if (isVisible()) {
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT).show();
-                }
+                showSnackbar(getString(R.string.PlatesNF), Snackbar.LENGTH_SHORT);
             }
         }
-    }
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mPlatesView.setService(mService);
-
-            mListPlates = new ArrayList<String>();
-            mListApproaches = new ArrayList<String>();
-
-            mListAirports = new ArrayList<String>();
-            mListAirports.add(mDestString);
-            mListAirports.add(nearString);
-
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
-
-            initializeFromService();
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden && mService != null) initializeFromService();
     }
 
     /**
@@ -742,72 +619,37 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         }
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
     @Override
     public void onPause() {
         super.onPause();
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
+        if (mService != null) {
             mService.getFuelTimer().removeObserver(mTankObserver);
             mService.getUpTimer().removeObserver(mTimerObserver);
         }
 
         try {
             mPlatesPopup.dismiss();
-        }
-        catch(Exception e) {
-
-        }
-        try {
             mApproachPopup.dismiss();
-        }
-        catch(Exception e) {
-
-        }
-        try {
             mAirportPopup.dismiss();
-        }
-        catch(Exception e) {
-
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
+        } catch(Exception e) { }
     }
 
-    /**
-     *
-     */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(getActivity());
 
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        if(null != mService) {
+        if (mService != null) {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
         }
 
         // Button colors to be synced across activities
-        if(mPref.isTrackUpPlates()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-        }
-        else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-        }
+        mCenterButton.getBackground().setColorFilter(
+                mPref.isTrackUpPlates() ? 0xFF00FF00 : 0xFF444444,
+                PorterDuff.Mode.MULTIPLY
+        );
     }
 
     /**
@@ -889,7 +731,21 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
         mPlatesTimerButton.setText(chronometer.getText());
     }
 
-    private void initializeFromService() {
+    @Override
+    protected void postServiceConnected() {
+        mPlatesView.setService(mService);
+
+        mListPlates = new ArrayList<String>();
+        mListApproaches = new ArrayList<String>();
+
+        mListAirports = new ArrayList<String>();
+        mListAirports.add(mDestString);
+        mListAirports.add(nearString);
+
+        // Tell the fuel tank timer we need to know when it runs out
+        mService.getFuelTimer().addObserver(mTankObserver);
+        mService.getUpTimer().addObserver(mTimerObserver);
+
         /*
          * Are we being told to load an airport?
          */
@@ -944,6 +800,32 @@ public class PlatesFragment extends Fragment implements Observer, Chronometer.On
 
         int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
         setAirportFromPos(lastIndex);
+    }
+
+    @Override
+    protected void onGpsLocation(Location location) {
+        if (location != null) {
+            // Called by GPS. Update everything driven by GPS.
+            GpsParams params = new GpsParams(location);
+            // Store GPS last location in case activity dies, we want to start from same loc
+            mPlatesView.updateParams(params);
+        }
+    }
+
+    @Override
+    protected void onGpsTimeout(boolean timeout) {
+        /*
+         *  No GPS signal
+         *  Tell location view to show GPS status
+         */
+        if (mPref.isSimulationMode()) {
+            mPlatesView.updateErrorStatus(getString(R.string.SimulationMode));
+        } else if (timeout) {
+            mPlatesView.updateErrorStatus(getString(R.string.GPSLost));
+        } else {
+            // GPS kicking.
+            mPlatesView.updateErrorStatus(null);
+        }
     }
 
 }

@@ -12,24 +12,17 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.fragment;
 
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.Gravity;
@@ -46,9 +39,7 @@ import android.widget.TextView;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
 import com.ds.avare.adsb.Traffic;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Obstacle;
@@ -72,21 +63,9 @@ import java.util.TimerTask;
 /**
  * @author zkhan
  */
-public class ThreeDFragment extends Fragment implements ToolbarVisibilityListener {
+public class ThreeDFragment extends StorageServiceGpsListenerFragment implements ToolbarVisibilityListener {
 
     public static final String TAG = "ThreeDFragment";
-
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    /**
-     * App preferences
-     */
-    private Preferences mPref;
-
-    private Context mContext;
 
     private AreaMapper mAreaMapper;
 
@@ -94,10 +73,8 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
     private OptionButton mChartOption;
     private Button mDrawerButton;
     private TextView mText;
-    private CoordinatorLayout mCoordinatorLayout;
 
     private GlassView mGlassView;
-
 
     private Vector4d mObstacles[];
 
@@ -122,69 +99,10 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
     private static final int MESSAGE_OBSTACLES = 3;
     private static final int MESSAGE_AGL = 4;
 
-    /**
-     * GPS calls
-     */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-            synchronized (ThreeDFragment.this) {
-                mLocation = location;
-            }
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-            if (mPref.isSimulationMode()) {
-                Message m = mHandler.obtainMessage();
-                m.what = MESSAGE_ERROR;
-                m.obj = getString(R.string.SimulationMode);
-                mHandler.sendMessage(m);
-            } else if (timeout) {
-                Message m = mHandler.obtainMessage();
-                m.what = MESSAGE_ERROR;
-                m.obj = getString(R.string.GPSLost);
-                mHandler.sendMessage(m);
-            }
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-
-    };
-
-    private void setCenterButton() {
-        // Button colors to be synced across activities
-        if (mPref.isFirstPerson()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-            Snackbar.make(mCoordinatorLayout, getString(R.string.FirstPerson), Snackbar.LENGTH_SHORT).show();
-            mRenderer.getCamera().setFirstPerson(true);
-            mGlSurfaceView.init();
-        } else {
-            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
-            Snackbar.make(mCoordinatorLayout, getString(R.string.BirdEye), Snackbar.LENGTH_SHORT).show();
-            mRenderer.getCamera().setFirstPerson(false);
-            mGlSurfaceView.init();
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Helper.setTheme(getActivity());
-
         setHasOptionsMenu(true);
-
-        mPref = new Preferences(getContext());
-
-        mContext = getContext();
-
         ((MainActivity) getActivity()).addToolbarVisibilityListener(TAG, this);
     }
 
@@ -284,15 +202,15 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
                                  * Set tiles on new location.
                                  * Match so that elevation and map tiles have common level
                                  */
-                                int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
-                                int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
+                                int mZoomM = Tile.getMaxZoom(getContext(), mPref.getChartType3D());
+                                int mZoomE = Tile.getMaxZoom(getContext(), "6");  // 6 is elevation tile index
                                 if (mZoomE > mZoomM) {
-                                    tm = new Tile(mContext, mPref, lon, lat, 0, mPref.getChartType3D());
-                                    te = new Tile(mContext, mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                    tm = new Tile(getContext(), mPref, lon, lat, 0, mPref.getChartType3D());
+                                    te = new Tile(getContext(), mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
                                 }
                                 else {
-                                    tm = new Tile(mContext, mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new Tile(mContext, mPref, lon, lat, 0, "6");
+                                    tm = new Tile(getContext(), mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new Tile(getContext(), mPref, lon, lat, 0, "6");
                                 }
 
                                 mAreaMapper.setMapTile(tm);
@@ -300,7 +218,7 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
 
                                 if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
                                     Message m = mHandler.obtainMessage();
-                                    m.obj = mContext.getString(R.string.LoadingMaps);
+                                    m.obj = getContext().getString(R.string.LoadingMaps);
                                     m.what = MESSAGE_TEXT;
                                     mHandler.sendMessage(m);
 
@@ -318,11 +236,11 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
                                     m = mHandler.obtainMessage();
                                     m.what = MESSAGE_TEXT;
                                     if (!mRenderer.isMapSet()) {
-                                        m.obj = mContext.getString(R.string.MissingElevation);
+                                        m.obj = getContext().getString(R.string.MissingElevation);
                                     } else if (!mRenderer.isTextureSet()) {
-                                        m.obj = mContext.getString(R.string.MissingMaps);
+                                        m.obj = getContext().getString(R.string.MissingMaps);
                                     } else {
-                                        m.obj = mContext.getString(R.string.Ready);
+                                        m.obj = getContext().getString(R.string.Ready);
                                     }
 
                                     mHandler.sendMessage(m);
@@ -372,7 +290,7 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
              * This hides our app from those devices which don't support OpenGL
              * ES 2.0.
              */
-            Snackbar.make(mCoordinatorLayout, "This device does not support OpenGL ES 2.0.", Snackbar.LENGTH_SHORT).show();
+            showSnackbar("This device does not support OpenGL ES 2.0.", Snackbar.LENGTH_SHORT);
         }
 
         mAreaMapper = new AreaMapper();
@@ -426,8 +344,6 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
                     }
                 }
         );
-
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
     }
 
     @Override
@@ -458,30 +374,88 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
         );
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
+        // Clean messages
+        mText.setText("");
+        mGlassView.setStatus(null);
+        mGlassView.setAgl("");
 
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mGlassView.setService(mService);
+        if (mRenderer != null) {
+            mGlSurfaceView.onResume();
         }
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) { }
-    };
+        // Periodic not time critical activities
+        mTimer = new Timer();
+        mTimerTask = new UpdateTask();
+        mTimer.schedule(mTimerTask, 0, 1000);
+
+        setToolbarAuxButtonsVisibility();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mRenderer != null) {
+            mGlSurfaceView.onPause();
+        }
+        mTimer.cancel();
+    }
+
+    @Override
+    protected void postServiceConnected() {
+        mGlassView.setService(mService);
+    }
+
+    @Override
+    protected void onGpsLocation(Location location) {
+        synchronized (ThreeDFragment.this) {
+            mLocation = location;
+        }
+    }
+
+    @Override
+    protected void onGpsTimeout(boolean timeout) {
+        if (mPref.isSimulationMode()) {
+            Message m = mHandler.obtainMessage();
+            m.what = MESSAGE_ERROR;
+            m.obj = getString(R.string.SimulationMode);
+            mHandler.sendMessage(m);
+        } else if (timeout) {
+            Message m = mHandler.obtainMessage();
+            m.what = MESSAGE_ERROR;
+            m.obj = getString(R.string.GPSLost);
+            mHandler.sendMessage(m);
+        }
+    }
+
+    @Override
+    public void onToolbarVisibilityChanged(boolean visible) {
+        setToolbarAuxButtonsVisibility();
+    }
+
+    public void setToolbarAuxButtonsVisibility() {
+        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void setCenterButton() {
+        // Button colors to be synced across activities
+        if (mPref.isFirstPerson()) {
+            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+            showSnackbar(getString(R.string.FirstPerson), Snackbar.LENGTH_SHORT);
+            mRenderer.getCamera().setFirstPerson(true);
+            mGlSurfaceView.init();
+        } else {
+            mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+            showSnackbar(getString(R.string.BirdEye), Snackbar.LENGTH_SHORT);
+            mRenderer.getCamera().setFirstPerson(false);
+            mGlSurfaceView.init();
+        }
+    }
 
     /**
      * Get elevation at this location
@@ -497,65 +471,6 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
         }
 
         return Helper.findElevationFromNormalizedElevation(elev);
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Helper.setOrientationAndOn(getActivity());
-
-        // Clean messages
-        mText.setText("");
-        mGlassView.setStatus(null);
-        mGlassView.setAgl("");
-
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        if (mRenderer != null) {
-            mGlSurfaceView.onResume();
-        }
-
-        // Periodic not time critical activities
-        mTimer = new Timer();
-        mTimerTask = new UpdateTask();
-        mTimer.schedule(mTimerTask, 0, 1000);
-
-        setToolbarAuxButtonsVisibility();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
-
-        if (mRenderer != null) {
-            mGlSurfaceView.onPause();
-        }
-        mTimer.cancel();
-    }
-
-    public void setToolbarAuxButtonsVisibility() {
-        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
-        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
 
     private Handler mHandler = new Handler() {
@@ -578,11 +493,6 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
             }
         }
     };
-
-    @Override
-    public void onToolbarVisibilityChanged(boolean visible) {
-        setToolbarAuxButtonsVisibility();
-    }
 
     /**
      * Do stuff in background
@@ -612,4 +522,5 @@ public class ThreeDFragment extends Fragment implements ToolbarVisibilityListene
             mHandler.sendMessage(m);
         }
     }
+
 }

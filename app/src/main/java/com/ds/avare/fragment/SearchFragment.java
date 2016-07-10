@@ -11,20 +11,11 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -41,14 +32,10 @@ import android.widget.ProgressBar;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
 import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.Helper;
 
 import java.util.LinkedHashMap;
 import java.util.Observable;
@@ -59,15 +46,12 @@ import java.util.Observer;
  * @author zkhan
  *
  */
-public class SearchFragment extends Fragment implements Observer {
+public class SearchFragment extends StorageServiceGpsListenerFragment implements Observer {
 
     public static final String TAG = "SearchFragment";
 
-    private StorageService mService;
-
     private ListView mSearchListView;
     private EditText mSearchText;
-    private Preferences mPref;
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     private ProgressBar mProgressBar;
@@ -77,7 +61,6 @@ public class SearchFragment extends Fragment implements Observer {
     private Button mPlanButton;
     private Button mPlatesButton;
     private boolean mIsWaypoint;
-    private CoordinatorLayout mCoordinatorLayout;
 
     private AnimateButton mAnimatePlates;
     private AnimateButton mAnimatePlan;
@@ -95,76 +78,12 @@ public class SearchFragment extends Fragment implements Observer {
      */
     private Destination mDestination;
 
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /**
-     *
-     * @param dst
-     */
-    private void goTo(String dst, String type, String dbType) {
-        mIsWaypoint = false;
-        mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(SearchFragment.this);
-        Snackbar.make(mCoordinatorLayout, getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT).show();
-        mDestination.find(dbType);
-        mSearchText.setText("");
-    }
-
-    /**
-     *
-     * @param dst
-     */
-    private void planTo(String dst, String type, String dbType) {
-        mIsWaypoint = true;
-        mDestination = new Destination(dst, type, mPref, mService);
-        mDestination.addObserver(SearchFragment.this);
-        Snackbar.make(mCoordinatorLayout, getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT).show();
-        mDestination.find(dbType);
-        mSearchText.setText("");
-    }
-
-    /**
-     *
-     */
-    private void initList() {
-        String [] vals = mPref.getRecent();
-        mAdapter = new SearchAdapter(getContext(), vals);
-        mSearchListView.setAdapter(mAdapter);
-    }
-
     @Override
-    /**
-     *
-     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Helper.setTheme(getActivity());
 
-        mService = null;
         mIsWaypoint = false;
-        mPref = new Preferences(getContext());
-
-        /*
-         * Lose info
-         */
+        // Lose info
         mSelected = null;
     }
 
@@ -208,11 +127,11 @@ public class SearchFragment extends Fragment implements Observer {
                     final EditText edit = new EditText(getContext());
                     String type = StringPreference.parseHashedNameDbType(mSelected);
                     if(type == null) {
-                        Snackbar.make(mCoordinatorLayout, getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT).show();
+                        showSnackbar(getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT);
                         return;
                     }
                     if(!type.equals(Destination.GPS)) {
-                        Snackbar.make(mCoordinatorLayout, getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT).show();
+                        showSnackbar(getString(R.string.GpsOnly), Snackbar.LENGTH_SHORT);
                         return;
                     }
 
@@ -410,97 +329,29 @@ public class SearchFragment extends Fragment implements Observer {
             }
         });
 
-        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinator_layout);
-
         mAnimatePlates = new AnimateButton(getContext(), mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlan = new AnimateButton(getContext(), mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateSelect = new AnimateButton(getContext(), mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateEdit = new AnimateButton(getContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Now initialize the list to recent in case someone needs to go there, and not search
-             */
-            initList();
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Helper.setOrientationAndOn(getActivity());
-
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
     @Override
     public void onPause() {
         super.onPause();
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        if(null != mSearchText) {
+        if (mSearchText != null) {
             mSearchText.setText("");
         }
 
-        if(null != mAlertDialogEdit) {
-            try {
-                mAlertDialogEdit.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
-
+        try { mAlertDialogEdit.dismiss(); }
+        catch (Exception e) { }
     }
 
-    /**
-     *
-     */
+    @Override
+    protected void postServiceConnected() {
+        initList();
+    }
+
     @Override
     public void update(Observable arg0, Object arg1) {
         /*
@@ -514,7 +365,7 @@ public class SearchFragment extends Fragment implements Observer {
                  * Temporarily move to destination by giving false GPS signal.
                  */
                 if(null == mDestination) {
-                    Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
+                    showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
                     return;
                 }
                 if((Destination)arg0 != mDestination) {
@@ -529,36 +380,56 @@ public class SearchFragment extends Fragment implements Observer {
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);
                     }
-                    Snackbar.make(
-                            mCoordinatorLayout,
-                            getString(R.string.DestinationSet) + ((Destination)arg0).getID(),
-                            Snackbar.LENGTH_SHORT
-                    ).show();
+                    showSnackbar(getString(R.string.DestinationSet) + ((Destination)arg0).getID(), Snackbar.LENGTH_SHORT);
                     ((MainActivity) getContext()).showMapView();
                 }
                 else {
                     if(mService != null) {
                         if(mService.getPlan().appendDestination((Destination)arg0)) {
-                            Snackbar.make(
-                                    mCoordinatorLayout,
-                                    ((Destination)arg0).getID() + getString(R.string.PlanSet),
-                                    Snackbar.LENGTH_SHORT
-                            ).show();
+                            showSnackbar(((Destination)arg0).getID() + getString(R.string.PlanSet), Snackbar.LENGTH_SHORT);
                         }
                         else {
-                            Snackbar.make(
-                                    mCoordinatorLayout,
-                                    ((Destination)arg0).getID() + getString(R.string.PlanNoset),
-                                    Snackbar.LENGTH_SHORT
-                            ).show();
+                            showSnackbar(((Destination)arg0).getID() + getString(R.string.PlanNoset), Snackbar.LENGTH_SHORT);
                         }
                     }
                 }
             }
             else {
-                Snackbar.make(mCoordinatorLayout, getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT).show();
+                showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
             }
         }
+    }
+
+    /**
+     *
+     * @param dst
+     */
+    private void goTo(String dst, String type, String dbType) {
+        mIsWaypoint = false;
+        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination.addObserver(SearchFragment.this);
+        showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
+        mDestination.find(dbType);
+        mSearchText.setText("");
+    }
+
+    /**
+     *
+     * @param dst
+     */
+    private void planTo(String dst, String type, String dbType) {
+        mIsWaypoint = true;
+        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination.addObserver(SearchFragment.this);
+        showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
+        mDestination.find(dbType);
+        mSearchText.setText("");
+    }
+
+    private void initList() {
+        String [] vals = mPref.getRecent();
+        mAdapter = new SearchAdapter(getContext(), vals);
+        mSearchListView.setAdapter(mAdapter);
     }
 
     /**

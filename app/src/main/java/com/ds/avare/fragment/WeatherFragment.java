@@ -11,19 +11,11 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.fragment;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,16 +27,13 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.ds.avare.R;
-import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.webinfc.WebAppInterface;
 
 /**
- * @author zkhan Main activity
+ * @author zkhan
  */
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends StorageServiceGpsListenerFragment {
 
     public static final String TAG = "WeatherFragment";
 
@@ -59,56 +48,6 @@ public class WeatherFragment extends Fragment {
     public static final int UNSHOW_BUSY = 2;
     public static final int MESSAGE = 3;
 
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    private Context mContext;
-
-    /**
-     * App preferences
-     */
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-            if (location != null && mService != null) {
-
-                /*
-                 * Called by GPS. Update everything driven by GPS.
-                 */
-            }
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(getActivity());
-        super.onCreate(savedInstanceState);
-
-        mContext = getContext();
-        mService = null;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.weather, container, false);
@@ -119,7 +58,7 @@ public class WeatherFragment extends Fragment {
         mWebView = (WebView) view.findViewById(R.id.weather_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppInterface(mContext, mWebView, new GenericCallback() {
+        mInfc = new WebAppInterface(getContext(), mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
@@ -200,80 +139,15 @@ public class WeatherFragment extends Fragment {
         Search.setVisibility(View.VISIBLE);
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceConnected(android.content
-         * .ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get
-             * LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mInfc.connect(mService);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * android.content.ServiceConnection#onServiceDisconnected(android.content
-         * .ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onResume()
-     */
     @Override
     public void onResume() {
         super.onResume();
-
-        Helper.setOrientationAndOn(getActivity());
-
-        /*
-         * Registering our receiver Bind now.
-         */
-        Intent intent = new Intent(getContext(), StorageService.class);
-        getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mWebView.requestFocus();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.app.Activity#onPause()
-     */
     @Override
-    public  void onPause() {
-        super.onPause();
-
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getContext().unbindService(mConnection);
+    protected void postServiceConnected() {
+        mInfc.connect(mService);
     }
 
     /**
@@ -290,7 +164,7 @@ public class WeatherFragment extends Fragment {
             }
             else if(msg.what == MESSAGE) {
                 // Show an important message
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage((String)msg.obj)
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
