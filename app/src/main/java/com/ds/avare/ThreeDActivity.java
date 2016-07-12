@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.threed.data.Vector4d;
+import com.ds.avare.threed.objects.Map;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -93,12 +95,17 @@ public class ThreeDActivity extends Activity {
     private Location mLocation;
     private long mTime;
 
+    private BitmapHolder mTempBitmap;
+    private short[] mVertices;
 
     /**
      * Hold a reference to our GLSurfaceView
      */
     private ThreeDSurfaceView mGlSurfaceView;
     private TerrainRenderer mRenderer = null;
+
+    // This task loads bitmaps and makes elevation vertices in background
+    private AsyncTask<Object, Void, Float> mLoadTask;
 
     private static final int MESSAGE_INIT = 0;
     private static final int MESSAGE_TEXT = 1;
@@ -241,7 +248,7 @@ public class ThreeDActivity extends Activity {
                     }
                     else if (((String) o1).equals(TerrainRenderer.DRAW_FRAME)) {
 
-                        // Draw traffic every so many frames
+                        // Do heavy load stuff every second
                         if ((System.currentTimeMillis() - 1000) > mTime) {
 
                             Location location = null;
@@ -300,33 +307,68 @@ public class ThreeDActivity extends Activity {
                                 mAreaMapper.setElevationTile(te);
 
                                 if (mAreaMapper.isMapTileNew() || mAreaMapper.isElevationTileNew()) {
-                                    Message m = mHandler.obtainMessage();
-                                    m.obj = mContext.getString(R.string.LoadingMaps);
-                                    m.what = MESSAGE_TEXT;
-                                    mHandler.sendMessage(m);
 
-                                    // load tiles but give feedback as it hangs
-                                    Tile tout = mAreaMapper.getMapTile();
-                                    BitmapHolder b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName());
-                                    mRenderer.setTexture(b);
-                                    b.recycle();
-                                    tout = mAreaMapper.getElevationTile();
-                                    b = new BitmapHolder(mPref.mapsFolder() + "/" + tout.getName(), Bitmap.Config.ARGB_8888);
-                                    mRenderer.setTerrain(b, mAreaMapper.getTerrainRatio());
-                                    b.recycle();
-
-                                    // show errors
-                                    m = mHandler.obtainMessage();
-                                    m.what = MESSAGE_TEXT;
-                                    if (!mRenderer.isMapSet()) {
-                                        m.obj = mContext.getString(R.string.MissingElevation);
-                                    } else if (!mRenderer.isTextureSet()) {
-                                        m.obj = mContext.getString(R.string.MissingMaps);
-                                    } else {
-                                        m.obj = mContext.getString(R.string.Ready);
+                                    if(mLoadTask != null) {
+                                        if(mLoadTask.getStatus() == AsyncTask.Status.RUNNING) {
+                                            mLoadTask.cancel(false);
+                                        }
                                     }
 
-                                    mHandler.sendMessage(m);
+                                    mLoadTask = new AsyncTask<Object, Void, Float>() {
+
+                                        @Override
+                                        protected Float doInBackground(Object... params) {
+                                            // load tiles for elevation
+                                            if(mTempBitmap != null) {
+                                                mTempBitmap.recycle();
+                                            }
+                                            mTempBitmap = new BitmapHolder((String)params[0], Bitmap.Config.ARGB_8888);
+                                            mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
+                                            mTempBitmap.recycle();
+                                            // load tiles for map/texture
+                                            mTempBitmap = new BitmapHolder((String)params[1]);
+
+                                            return (Float)params[2];
+                                        }
+
+                                        @Override
+                                        protected void onPreExecute () {
+                                            // Show we are loading new data
+                                            Message m = mHandler.obtainMessage();
+                                            m.obj = mContext.getString(R.string.LoadingMaps);
+                                            m.what = MESSAGE_TEXT;
+                                            mHandler.sendMessage(m);
+                                        }
+
+                                        @Override
+                                        protected void onPostExecute(Float arg) {
+                                            final float ratio = arg;
+                                            // Tell GL that new stuff is ready which will be loaded in Runnable
+                                            mGlSurfaceView.queueEvent(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            mRenderer.setTexture(mTempBitmap);
+                                                            mRenderer.setTerrain(mVertices, ratio);
+                                                            // show errors or success
+                                                            Message m = mHandler.obtainMessage();
+                                                            m.what = MESSAGE_TEXT;
+                                                            if (!mRenderer.isMapSet()) {
+                                                                m.obj = mContext.getString(R.string.MissingElevation);
+                                                            } else if (!mRenderer.isTextureSet()) {
+                                                                m.obj = mContext.getString(R.string.MissingMaps);
+                                                            } else {
+                                                                m.obj = mContext.getString(R.string.Ready);
+                                                            }
+                                                            mHandler.sendMessage(m);
+                                                        }
+                                                    });
+                                        }
+                                    };
+                                    mLoadTask.execute(
+                                            mPref.mapsFolder() + "/" + mAreaMapper.getElevationTile().getName(),
+                                            mPref.mapsFolder() + "/" + mAreaMapper.getMapTile().getName(),
+                                            mAreaMapper.getTerrainRatio());
                                 }
                             }
 
