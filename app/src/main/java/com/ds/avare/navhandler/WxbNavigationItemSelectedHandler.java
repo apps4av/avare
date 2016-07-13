@@ -2,7 +2,6 @@ package com.ds.avare.navhandler;
 
 import android.support.v4.app.Fragment;
 
-import com.ds.avare.MainActivity;
 import com.ds.avare.fragment.WeatherFragment;
 
 /**
@@ -18,11 +17,6 @@ public class WxbNavigationItemSelectedHandler extends NavigationItemSelectedHand
     @Override
     protected Fragment getNewFragment() {
         return new WeatherFragment();
-    }
-
-    @Override
-    public int getNavItemIndex() {
-        return MainActivity.NAV_ITEM_IDX_WXB;
     }
 
 }

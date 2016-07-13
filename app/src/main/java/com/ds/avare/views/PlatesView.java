@@ -384,6 +384,8 @@ public class PlatesView extends View implements OnTouchListener {
          */
         mViewParams.setPan(new Pan());
 
+        if (mBitmap == null || mBitmap.getBitmap() == null) return;
+
         // Figure out the scale that will fit to window
         float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
         float widthScale = (float)this.getWidth() / (float)mBitmap.getBitmap().getWidth();

@@ -888,43 +888,43 @@ public class Preferences {
         long mTabs = 1;
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlates), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_PLATES;
+            mTabs |= 1 << MainActivity.TAB_PLATES;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabAFD), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_AFD;
+            mTabs |= 1 << MainActivity.TAB_AFD;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_FIND;
+            mTabs |= 1 << MainActivity.TAB_FIND;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_THREE_D;
+            mTabs |= 1 << MainActivity.TAB_THREE_D;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_PLAN;
+            mTabs |= 1 << MainActivity.TAB_PLAN;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_WXB;
+            mTabs |= 1 << MainActivity.TAB_WXB;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_NEAR;
+            mTabs |= 1 << MainActivity.TAB_NEAR;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_CHECKLIST;
+            mTabs |= 1 << MainActivity.TAB_CHECKLIST;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_TOOLS;
+            mTabs |= 1 << MainActivity.TAB_TOOLS;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-            mTabs |= 1 << MainActivity.NAV_ITEM_IDX_TRIP;
+            mTabs |= 1 << MainActivity.TAB_TRIP;
         }
 
         return mTabs;

@@ -1,36 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
-        android:id="@+id/menu_activities"
+        android:id="@+id/nav_menu_activities_group"
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_preferences"
-            android:title="Preferences" />
+            android:title="@string/Settings" />
         <item
             android:id="@+id/nav_downloads"
-            android:title="Downloads" />
+            android:title="@string/Downloads" />
         <item
             android:id="@+id/nav_ads"
-            android:title="Ads" />
+            android:title="@string/Advertisements" />
         <item
             android:id="@+id/nav_help"
-            android:title="Help" />
+            android:title="@string/Help" />
     </group>
 
     <group
-        android:id="@+id/menu_controls"
+        android:id="@+id/nav_menu_map_actions_group"
+        android:visible="false"
         android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_toggle_toolbar"
-            android:title="Toggle Toolbar" />
+            android:id="@+id/nav_action_map_chart"
+            android:title="Chart"
+            app:actionViewClass="android.support.v7.widget.AppCompatSpinner"
+            app:showAsAction="always" />
         <item
-            android:id="@+id/nav_toggle_tabbar"
-            android:title="Toggle Tabs" />
+            android:id="@+id/nav_action_map_layer"
+            android:title="Layer"
+            app:actionViewClass="android.support.v7.widget.AppCompatSpinner"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/nav_action_map_tracks"
+            android:title="Tracks"
+            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/nav_action_map_simulation"
+            android:title="Simulation"
+            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
+            app:showAsAction="always" />
     </group>
 
     <group
-        android:id="@+id/menu_views"
+        android:id="@+id/nav_menu_threed_actions_group"
+        android:visible="false"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_action_threed_chart"
+            android:title="Chart"
+            app:actionViewClass="android.support.v7.widget.AppCompatSpinner"
+            app:showAsAction="always" />
+    </group>
+
+    <group
+        android:id="@+id/nav_menu_tabs_group"
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_map"
@@ -65,6 +92,21 @@
         <item
             android:id="@+id/nav_tools"
             android:title="@string/Tools" />
+    </group>
+
+    <group
+        android:id="@+id/nav_menu_toggles_group"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_toggle_toolbar"
+            android:title="Show Toolbar"
+            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/nav_toggle_tabbar"
+            android:title="Show Tabs"
+            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
+            app:showAsAction="always" />
     </group>
 
 </menu>

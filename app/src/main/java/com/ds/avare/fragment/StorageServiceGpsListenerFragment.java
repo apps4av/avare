@@ -12,13 +12,24 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.AppCompatSpinner;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.ds.avare.BuildConfig;
+import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.RegisterActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by arabbani on 7/9/16.
@@ -89,23 +100,48 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         // Registering our receiver. Bind now.
         Intent intent = new Intent(getContext(), StorageService.class);
         getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        setupNavigationMenuItems();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         if (mService != null) mService.unregisterGpsListener(mGpsInfc);
-        // Clean up on pause that was started in on resume
+        // Clean up anything that was started in onResume
         getContext().unbindService(mConnection);
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
+    public final void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden && mService != null) postServiceConnected();
+
+        if (hidden) {
+            onHidden();
+        } else {
+            onUnhidden();
+        }
+    }
+
+    public boolean onNavigationItemSelected(MenuItem item) {
+        return false;
+    }
+
+    protected void onUnhidden() {
+        if (mService != null) {
+            postServiceConnected();
+        }
+
+        setupNavigationMenuItems();
+    }
+
+    protected int getNavigationMenuGroupId() {
+        return Menu.NONE;
     }
 
     protected void showSnackbar(String message, int duration) {
@@ -115,10 +151,34 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
         }
     }
 
+    protected void setupChartSpinner(AppCompatSpinner spinner, int selectedPosition, AdapterView.OnItemSelectedListener selectedListener) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setSelection(selectedPosition, false);
+        spinner.setOnItemSelectedListener(selectedListener);
+    }
+
+    protected void closeDrawer() {
+        ((MainActivity) getActivity()).getDrawerLayout().closeDrawer(GravityCompat.START);
+    }
+
+    private void setupNavigationMenuItems() {
+        Menu menu = ((MainActivity) getActivity()).getNavigationMenu();
+        List<Integer> groupIds = Arrays.asList(R.id.nav_menu_map_actions_group, R.id.nav_menu_threed_actions_group);
+        for (Integer groupId : groupIds) {
+            menu.setGroupVisible(groupId, false);
+        }
+
+        menu.setGroupVisible(getNavigationMenuGroupId(), true);
+    }
+
     protected void postServiceConnected() { }
     protected void onGpsStatus(GpsStatus gpsStatus) { }
     protected void onGpsLocation(Location location) { }
     protected void onGpsTimeout(boolean timeout) { }
     protected void onGpsEnabled(boolean enabled) { }
+    protected void onHidden() { }
 
 }

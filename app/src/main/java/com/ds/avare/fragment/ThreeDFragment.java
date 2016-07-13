@@ -33,7 +33,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -41,7 +40,6 @@ import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
@@ -51,7 +49,6 @@ import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
@@ -70,9 +67,10 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
     private AreaMapper mAreaMapper;
 
     private Button mCenterButton;
-    private OptionButton mChartOption;
     private Button mDrawerButton;
     private TextView mText;
+    private AppCompatSpinner mChartSpinnerNav;
+    private AppCompatSpinner mChartSpinnerBar;
 
     private GlassView mGlassView;
 
@@ -321,18 +319,23 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
 
         mText = (TextView) view.findViewById(R.id.threed_text);
 
-        // Charts different from main view
-        mChartOption = (OptionButton) view.findViewById(R.id.threed_button_maps);
-        mChartOption.setCallback(new GenericCallback() {
-            @Override
-            public Object callback(Object o, Object o1) {
-                mPref.setChartType3D("" + (int) o1);
-                getActivity().supportInvalidateOptionsMenu();
-                return null;
-            }
-        });
-        mChartOption.setOptions(Boundaries.getChartTypes());
-        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType3D()));
+        MenuItem chartMenuItem = ((MainActivity) getActivity()).getNavigationMenu().findItem(R.id.nav_action_threed_chart);
+        mChartSpinnerNav = (AppCompatSpinner) MenuItemCompat.getActionView(chartMenuItem);
+        setupChartSpinner(
+                mChartSpinnerNav,
+                Integer.valueOf(mPref.getChartType3D()),
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setChartType3D(String.valueOf(position));
+                        mChartSpinnerBar.setSelection(position, false);
+                        closeDrawer();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
 
         mDrawerButton = (Button) view.findViewById(R.id.threed_button_drawer);
         mDrawerButton.getBackground().setAlpha(255);
@@ -349,23 +352,20 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         inflater.inflate(R.menu.toolbar_threed_menu, menu);
 
         MenuItem chartItem = menu.findItem(R.id.action_chart);
 
-        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
-
-        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
-        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        chartSpinner.setAdapter(chartAdapter);
-        chartSpinner.setSelection(Integer.valueOf(mPref.getChartType3D()), false);
-
-        chartSpinner.setOnItemSelectedListener(
+        mChartSpinnerBar = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
+        setupChartSpinner(
+                mChartSpinnerBar,
+                Integer.valueOf(mPref.getChartType3D()),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         mPref.setChartType3D(String.valueOf(position));
-                        mChartOption.setCurrentSelectionIndex(position);
+                        mChartSpinnerNav.setSelection(position, false);
                     }
 
                     @Override
@@ -437,8 +437,12 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
         setToolbarAuxButtonsVisibility();
     }
 
+    @Override
+    protected int getNavigationMenuGroupId() {
+        return R.id.nav_menu_threed_actions_group;
+    }
+
     public void setToolbarAuxButtonsVisibility() {
-        mChartOption.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
         mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
 

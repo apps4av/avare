@@ -20,8 +20,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,18 +36,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.ds.avare.ChartsDownloadActivity;
 import com.ds.avare.MainActivity;
-import com.ds.avare.MessageActivity;
-import com.ds.avare.PrefActivity;
 import com.ds.avare.R;
-import com.ds.avare.WebActivity;
 import com.ds.avare.adapters.PopoutAdapter;
-import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
@@ -61,11 +60,8 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
-import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
-import com.ds.avare.utils.NetworkHelper;
-import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
 import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.LocationView;
@@ -121,33 +117,22 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
     private Button mDestButton;
     private Button mCenterButton;
     private Button mDrawClearButton;
-    private TwoButton mTracksButton;
-    private Button mHelpButton;
     private Button mCrossButton;
-    private Button mPrefButton;
     private Button mPlanButton;
     private Button mPlatesButton;
     private Button mAfdButton;
-    private Button mDownloadButton;
-    private Button mMenuButton;
     private Button mDrawerButton;
     private RelativeLayout mDestLayout;
-    private TwoButton mSimButton;
     private TwoButton mDrawButton;
-    private Button mWebButton;
-    private OptionButton mChartOption;
-    private OptionButton mLayerOption;
     private Bundle mExtras;
     private boolean mIsWaypoint;
-    private AnimateButton mAnimateTracks;
-    private AnimateButton mAnimateSim;
-    private AnimateButton mAnimateWeb;
-    private AnimateButton mAnimateTrack;
-    private AnimateButton mAnimateChart;
-    private AnimateButton mAnimateHelp;
-    private AnimateButton mAnimateDownload;
-    private AnimateButton mAnimatePref;
     private String mAirportPressed;
+    private AppCompatSpinner mChartSpinnerBar;
+    private AppCompatSpinner mLayerSpinnerBar;
+    private AppCompatSpinner mChartSpinnerNav;
+    private AppCompatSpinner mLayerSpinnerNav;
+    private AppCompatCheckBox mTracksCheckBox;
+    private AppCompatCheckBox mSimulationCheckBox;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -281,28 +266,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         });
 
         mAlertDialogExit.show();
-    }
-
-    private void hideMenu() {
-        mAnimateTracks.animateBack();
-        mAnimateWeb.animateBack();
-        mAnimateSim.animateBack();
-        mAnimateTrack.animateBack();
-        mAnimateChart.animateBack();
-        mAnimateHelp.animateBack();
-        mAnimateDownload.animateBack();
-        mAnimatePref.animateBack();
-    }
-
-    private void showMenu() {
-        mAnimateTracks.animate();
-        mAnimateWeb.animate();
-        mAnimateSim.animate();
-        mAnimateTrack.animate();
-        mAnimateChart.animate();
-        mAnimateHelp.animate();
-        mAnimateDownload.animate();
-        mAnimatePref.animate();
     }
 
     @Override
@@ -456,10 +419,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
 
-                if (GestureInterface.TOUCH == event) {
-                    hideMenu();
-                }
-
                 if (GestureInterface.LONG_PRESS == event) {
                     /*
                      * Show the popout
@@ -496,21 +455,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
          * black pop out
          */
         mListPopout = (ExpandableListView) view.findViewById(R.id.location_list_popout);
-
-
-        mChartOption = (OptionButton)view.findViewById(R.id.location_button_maps);
-        mChartOption.setCallback(new GenericCallback() {
-            @Override
-            public Object callback(Object o, Object o1) {
-                mPref.setChartType("" + (int) o1);
-                getActivity().supportInvalidateOptionsMenu();
-                mLocationView.forceReload();
-                return null;
-            }
-        });
-        mChartOption.setOptions(Boundaries.getChartTypes());
-        mChartOption.setCurrentSelectionIndex(Integer.parseInt(mPref.getChartType()));
-        mLocationView.forceReload();
 
         mCenterButton = (Button) view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -552,15 +496,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
         mDestLayout = (RelativeLayout) view.findViewById(R.id.location_popout_layout);
 
-        mMenuButton = (Button) view.findViewById(R.id.location_button_menu);
-        mMenuButton.getBackground().setAlpha(255);
-        mMenuButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMenu();
-            }
-        });
-
         mDrawerButton = (Button) view.findViewById(R.id.location_button_drawer);
         mDrawerButton.getBackground().setAlpha(255);
         mDrawerButton.setOnClickListener(
@@ -571,32 +506,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                     }
                 }
         );
-
-        mHelpButton = (Button) view.findViewById(R.id.location_button_help);
-        mHelpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WebActivity.class);
-                intent.putExtra("url", NetworkHelper.getHelpUrl(getContext()));
-                startActivity(intent);
-            }
-        });
-
-        mLayerOption = (OptionButton) view.findViewById(R.id.location_button_layers);
-        mLayerOption.setCallback(new GenericCallback() {
-            @Override
-            public Object callback(Object o, Object o1) {
-                mPref.setLayerType(mLayerOption.getCurrentValue());
-                getActivity().supportInvalidateOptionsMenu();
-                mLocationView.setLayerType(mPref.getLayerType());
-                return null;
-            }
-        });
-        ArrayList<String> layerItems = new ArrayList<>(3);
-        layerItems.addAll(Arrays.asList(LAYER_TYPES));
-        mLayerOption.setOptions(layerItems);
-        mLayerOption.setSelectedValue(mPref.getLayerType());
-        mLocationView.setLayerType(mPref.getLayerType());
 
         mPlatesButton = (Button) view.findViewById(R.id.location_button_plate);
         mPlatesButton.getBackground().setAlpha(255);
@@ -660,38 +569,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             }
         });
 
-        mDownloadButton = (Button) view.findViewById(R.id.location_button_dl);
-        mDownloadButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), ChartsDownloadActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-            }
-        });
-
-        mPrefButton = (Button) view.findViewById(R.id.location_button_pref);
-        mPrefButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Bring up preferences
-                 */
-                startActivity(new Intent(getContext(), PrefActivity.class));
-            }
-        });
-
-        mWebButton = (Button) view.findViewById(R.id.location_button_ads);
-        mWebButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Bring up preferences
-                 */
-                startActivity(new Intent(getContext(), MessageActivity.class));
-            }
-        });
-
         /*
          * Dest button
          */
@@ -725,39 +602,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             }
         });
 
-
-        mSimButton = (TwoButton) view.findViewById(R.id.location_button_sim);
-        if (mPref.isSimulationMode()) {
-            mSimButton.setText(getString(R.string.SimulationMode));
-            mSimButton.setChecked(true);
-        }
-        else {
-            mSimButton.setText(getString(R.string.Navigate));
-            mSimButton.setChecked(false);
-        }
-        mSimButton.setTwoClickListener(new TwoClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                 * Bring up preferences
-                 */
-                if(mSimButton.getText().equals(getString(R.string.SimulationMode))) {
-                    mPref.setSimMode(true);
-                    if(null != mService) {
-                        Destination dest = mService.getDestination();
-                        if(null != dest) {
-                            Location l = dest.getLocation();
-                            mLocationView.updateParams(new GpsParams(l));
-                        }
-                        mLocationView.forceReload();
-                    }
-                }
-                else {
-                    mPref.setSimMode(false);
-                }
-            }
-        });
-
         /*
          * Draw
          */
@@ -780,21 +624,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                 }
             }
         });
-
-        /*
-         * The tracking button handler. Enable/Disable the saving of track points
-         * to a KML file
-         */
-        mTracksButton = (TwoButton) view.findViewById(R.id.location_button_tracks);
-        mTracksButton.setTwoClickListener(new TwoClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null != mService) {
-                    setTrackState(!mService.getTracks());
-                }
-            }
-        });
-
 
         // The Flight Plan Prev button collection. There are 3, Previous, Pause,
         // and next. They are only visible when a plan has been loaded and
@@ -844,14 +673,64 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             }
         });
 
-        mAnimateTracks = new AnimateButton(getContext(), mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
-        mAnimateWeb = new AnimateButton(getContext(), mWebButton, AnimateButton.DIRECTION_L_R);
-        mAnimateSim = new AnimateButton(getContext(), mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(getContext(), mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
-        mAnimateChart = new AnimateButton(getContext(), mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
-        mAnimateHelp = new AnimateButton(getContext(), mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
-        mAnimateDownload = new AnimateButton(getContext(), mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePref = new AnimateButton(getContext(), mPrefButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        MenuItem chartMenuItem = ((MainActivity) getActivity()).getNavigationMenu().findItem(R.id.nav_action_map_chart);
+        mChartSpinnerNav = (AppCompatSpinner) MenuItemCompat.getActionView(chartMenuItem);
+        setupChartSpinner(
+                mChartSpinnerNav,
+                Integer.valueOf(mPref.getChartType()),
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setChartType(String.valueOf(position));
+                        mChartSpinnerBar.setSelection(position, false);
+                        mLocationView.forceReload();
+                        closeDrawer();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
+
+        MenuItem layerMenuItem = ((MainActivity) getActivity()).getNavigationMenu().findItem(R.id.nav_action_map_layer);
+        mLayerSpinnerNav = (AppCompatSpinner) MenuItemCompat.getActionView(layerMenuItem);
+        setupLayerSpinner(
+                mLayerSpinnerNav,
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mPref.setLayerType(LAYER_TYPES[position]);
+                        mLocationView.setLayerType(mPref.getLayerType());
+                        mLayerSpinnerBar.setSelection(position, false);
+                        closeDrawer();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                }
+        );
+        mLocationView.setLayerType(mPref.getLayerType());
+
+        MenuItem tracksMenuItem = ((MainActivity) getActivity()).getNavigationMenu().findItem(R.id.nav_action_map_tracks);
+        mTracksCheckBox = (AppCompatCheckBox) MenuItemCompat.getActionView(tracksMenuItem);
+        mTracksCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setTracksMode(isChecked);
+                closeDrawer();
+            }
+        });
+
+        MenuItem simulationMenuItem = ((MainActivity) getActivity()).getNavigationMenu().findItem(R.id.nav_action_map_simulation);
+        mSimulationCheckBox = (AppCompatCheckBox) MenuItemCompat.getActionView(simulationMenuItem);
+        mSimulationCheckBox.setChecked(mPref.isSimulationMode());
+        mSimulationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setSimulationMode(isChecked);
+                closeDrawer();
+            }
+        });
     }
 
     private void setTrackState(boolean bState) {
@@ -942,7 +821,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
      *
      */
     private class TimerObserver implements Observer {
-
         @Override
         public void update(Observable observable, Object data) {
             final UpTimer upTimer = (UpTimer) observable;
@@ -958,28 +836,24 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
      * Set the flight plan buttons visibility
      */
     public void setPlanButtonVis() {
-	    int planButtons = View.INVISIBLE;
-		if (true == mPref.getPlanControl()) {
-	        if (null != mService) {
-		        Plan activePlan = mService.getPlan();
-		        if (null != activePlan) {
-		        	if (true == activePlan.isActive()) {
-	        			planButtons = View.VISIBLE;
-	        		}
-	        	}
-	        }
-	    }
+        int planButtons = View.INVISIBLE;
+        if (mPref.getPlanControl() && mService != null) {
+            Plan activePlan = mService.getPlan();
+            if (activePlan != null && activePlan.isActive()) {
+                planButtons = View.VISIBLE;
+            }
+        }
 
-	    // Set the flight plan button visibility
-	    mPlanPrev.setVisibility(planButtons);
-	    mPlanPause.setVisibility(planButtons);
-	    mPlanNext.setVisibility(planButtons);
-	}
+        // Set the flight plan button visibility
+        mPlanPrev.setVisibility(planButtons);
+        mPlanPause.setVisibility(planButtons);
+        mPlanNext.setVisibility(planButtons);
+    }
 
     public void setToolbarAuxButtonsVisibility() {
         int visibility = mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE;
-        mLayerOption.setVisibility(visibility);
-        mChartOption.setVisibility(visibility);
+//        mLayerOption.setVisibility(visibility);
+//        mChartOption.setVisibility(visibility);
         mDrawerButton.setVisibility(visibility);
     }
 
@@ -1007,10 +881,10 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
+    protected void onHidden() {
+        super.onHidden();
 
-        if (hidden && mService != null) {
+        if (mService != null) {
             mService.getFlightStatus().unregisterListener(mFSInfc);
         }
     }
@@ -1032,9 +906,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             mWarnDialog.dismiss();
             mAlertDialogExit.dismiss();
         } catch (Exception e) { }
-
-        // Do this as switching from screen needs to hide its menu
-        hideMenu();
     }
 
     @Override
@@ -1180,9 +1051,9 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         if (simulationMode) {
             showSnackbar("Simulation mode enabled", Snackbar.LENGTH_SHORT);
 
-            if (null != mService) {
+            if (mService != null) {
                 Destination dest = mService.getDestination();
-                if (null != dest) {
+                if (dest != null) {
                     Location l = dest.getLocation();
                     mLocationView.updateParams(new GpsParams(l));
                 }
@@ -1275,33 +1146,26 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
         // mService is now valid, set the plan button vis
         setPlanButtonVis();
+
+        mTracksCheckBox.setChecked(mService.getTracks());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         inflater.inflate(R.menu.toolbar_location_menu, menu);
 
-        MenuItem chartItem = menu.findItem(R.id.action_chart);
-        MenuItem layerItem = menu.findItem(R.id.action_layer);
-        MenuItem tracksItem = menu.findItem(R.id.action_tracks);
-        MenuItem simulationItem = menu.findItem(R.id.action_simulation);
-        MenuItem flightPlanControlsItem = menu.findItem(R.id.action_flight_plan_controls);
-
-        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
-        AppCompatSpinner layerSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(layerItem);
-
-        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
-        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        chartSpinner.setAdapter(chartAdapter);
-        chartSpinner.setSelection(Integer.valueOf(mPref.getChartType()), false);
-
-        chartSpinner.setOnItemSelectedListener(
+        MenuItem chartMenuItem = menu.findItem(R.id.action_chart);
+        mChartSpinnerBar = (AppCompatSpinner) MenuItemCompat.getActionView(chartMenuItem);
+        setupChartSpinner(
+                mChartSpinnerBar,
+                Integer.valueOf(mPref.getChartType()),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         mPref.setChartType(String.valueOf(position));
-                        mChartOption.setCurrentSelectionIndex(position);
+                        mChartSpinnerNav.setSelection(position, false);
                         mLocationView.forceReload();
                     }
 
@@ -1310,53 +1174,49 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                 }
         );
 
-        ArrayList<String> layerItems = new ArrayList<>(3);
-        layerItems.addAll(Arrays.asList(LocationFragment.LAYER_TYPES));
-        final ArrayAdapter<String> layerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, layerItems);
-        layerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        layerSpinner.setAdapter(layerAdapter);
-        layerSpinner.setSelection(layerItems.indexOf(mPref.getLayerType()), false);
-
-        layerSpinner.setOnItemSelectedListener(
+        MenuItem layerMenuItem = menu.findItem(R.id.action_layer);
+        mLayerSpinnerBar = (AppCompatSpinner) MenuItemCompat.getActionView(layerMenuItem);
+        setupLayerSpinner(
+                mLayerSpinnerBar,
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        mPref.setLayerType(layerAdapter.getItem(position));
-                        mLayerOption.setSelectedValue(layerAdapter.getItem(position));
+                        mPref.setLayerType(LAYER_TYPES[position]);
                         mLocationView.setLayerType(mPref.getLayerType());
+                        mLayerSpinnerNav.setSelection(position, false);
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) { }
                 }
         );
-
-        tracksItem.setChecked(mService != null && mService.getTracks());
-        simulationItem.setChecked(mPref.isSimulationMode());
-        flightPlanControlsItem.setChecked(mPref.getPlanControl());
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_tracks:
-                item.setChecked(!item.isChecked());
-                setTracksMode(item.isChecked());
-                break;
-            case R.id.action_simulation:
-                item.setChecked(!item.isChecked());
-                setSimulationMode(item.isChecked());
-                break;
-            case R.id.action_flight_plan_controls:
-                item.setChecked(!item.isChecked());
-                mPref.setPlanControl(item.isChecked());
-                setPlanButtonVis();
-                break;
-            default:
-                break;
+    public boolean onNavigationItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.nav_action_map_tracks) {
+            mTracksCheckBox.setChecked(!mTracksCheckBox.isChecked());
+            closeDrawer();
+        } else if (item.getItemId() == R.id.nav_action_map_simulation) {
+            mSimulationCheckBox.setChecked(!mSimulationCheckBox.isChecked());
+            closeDrawer();
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
+    }
+
+    @Override
+    protected int getNavigationMenuGroupId() {
+        return R.id.nav_menu_map_actions_group;
+    }
+
+    private void setupLayerSpinner(AppCompatSpinner spinner, AdapterView.OnItemSelectedListener selectedListener) {
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, LAYER_TYPES);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setSelection(Arrays.binarySearch(LAYER_TYPES, mPref.getLayerType()), false);
+        spinner.setOnItemSelectedListener(selectedListener);
     }
 
 }

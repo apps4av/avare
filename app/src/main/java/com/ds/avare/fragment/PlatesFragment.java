@@ -735,10 +735,10 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
     protected void postServiceConnected() {
         mPlatesView.setService(mService);
 
-        mListPlates = new ArrayList<String>();
-        mListApproaches = new ArrayList<String>();
+        mListPlates = new ArrayList<>();
+        mListApproaches = new ArrayList<>();
 
-        mListAirports = new ArrayList<String>();
+        mListAirports = new ArrayList<>();
         mListAirports.add(mDestString);
         mListAirports.add(nearString);
 
