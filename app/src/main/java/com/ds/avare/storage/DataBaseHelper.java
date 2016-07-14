@@ -301,7 +301,7 @@ public class DataBaseHelper  {
          * Limit to airports taken by array airports
          */
         String qry = "select * from " + TABLE_AIRPORTS + "," + TABLE_AIRPORT_RUNWAYS + " where ";
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry += TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and ";
         }
 
@@ -706,7 +706,7 @@ public class DataBaseHelper  {
         		qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
         	}
             qry = qbasic + TABLE_AIRPORTS + " where ";
-            if(!mPref.shouldShowAllFacilities()) {
+            if(!mPref.isShowAllFacilities()) {
                 qry += TYPE_DB + "=='AIRPORT' and ";
             }
             qry += qendK;
@@ -750,7 +750,7 @@ public class DataBaseHelper  {
         closes(cursor);
 
         qry = qbasic + TABLE_AIRPORTS + " where ";
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry += TYPE_DB + "=='AIRPORT' and ";
         }
         qry += qend;
@@ -1441,7 +1441,7 @@ public class DataBaseHelper  {
                 + " (" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
                 + ") as dist";
         String qry = "select " + LOCATION_ID_DB + asDist + " from " + TABLE_AIRPORTS;
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry +=  " where " + TYPE_DB + "=='AIRPORT' and ";
         }
         else {

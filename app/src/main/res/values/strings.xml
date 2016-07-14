@@ -63,9 +63,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="databases">&quot;Databases (Required)&quot;</string>
     <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>
     <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
-    <string name="ScreenOn">&quot;Screen Timeout&quot;</string>
-    <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
-    <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
+    <string name="KeepScreenOn">&quot;Screen Timeout&quot;</string>
+    <string name="KeepScreenOnLabel">&quot;Keep Screen On&quot;</string>
+    <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>

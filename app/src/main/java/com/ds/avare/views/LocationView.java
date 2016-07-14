@@ -782,7 +782,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         /*
          * Some pre-conditions that would prevent us from drawing anything
          */
-        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
+        if(mPref.isDrawTracks() && (null == mPointProjection)) {
                 
             /*
              *  Set the brush color and width
@@ -834,7 +834,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas what to draw them on
      */
     private void drawEdgeMarkers(Canvas canvas) {
-    	if(mPref.shouldShowEdgeTape()) {
+    	if(mPref.isShowEdgeTape()) {
 	        if(mPointProjection == null) {
 		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
 		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));

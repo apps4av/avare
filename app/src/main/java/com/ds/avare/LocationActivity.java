@@ -159,7 +159,7 @@ public class LocationActivity extends Activity implements Observer {
         @Override
         public void rollout() {
             if(mPref != null && mService != null) {
-                if(mPref.shouldAutoDisplayAirportDiagram()) {
+                if(mPref.isAutoDisplayAirportDiagram()) {
                     int nearestNum = mService.getArea().getAirportsNumber();
                     if(nearestNum > 0) {
                         /*
@@ -198,7 +198,7 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 mLocationView.updateParams(params);
 
-                if(mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
+                if(mService != null && mService.getPlan().isEarlyPass() && mPref.isBlinkScreen()) {
                 	/*
                 	 * Check that if we are close to passing a plan passage, blink
                 	 */

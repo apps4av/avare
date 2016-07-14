@@ -212,7 +212,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         if(null == lm) {
             return true;
         }
-        return(pref.shouldGpsWarn() && 
+        return(pref.isGpsWarn() &&
                 (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
     }
 
