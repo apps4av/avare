@@ -311,10 +311,7 @@ public class Preferences {
         return ret;
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldLeaveRunning() {
+    public boolean isLeaveRunning() {
         return (mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
     }
 

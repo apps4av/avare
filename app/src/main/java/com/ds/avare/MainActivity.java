@@ -193,7 +193,7 @@ public class MainActivity extends TabActivity {
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
-        if(!mPref.shouldLeaveRunning()) {
+        if(!mPref.isLeaveRunning()) {
             if (isFinishing()) {
                 /*
                  * Do not kill on orientation change
