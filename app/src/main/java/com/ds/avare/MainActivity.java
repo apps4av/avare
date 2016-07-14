@@ -170,31 +170,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        /*
-        MenuItem chartItem = mNavigationView.getMenu().findItem(R.id.nav_action_chart);
-        AppCompatSpinner chartSpinner = (AppCompatSpinner) MenuItemCompat.getActionView(chartItem);
-        getLocationFragment().setupChartSpinner(chartSpinner);
-
-        ArrayAdapter<String> chartAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Boundaries.getChartTypes());
-        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        chartSpinner.setAdapter(chartAdapter);
-        chartSpinner.setSelection(Integer.valueOf(mPref.getChartType()), false);
-
-        chartSpinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        mPref.setChartType(String.valueOf(position));
-                        getLocationFragment().reloadLocationView();
-                        mDrawerLayout.closeDrawer(GravityCompat.START);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) { }
-                }
-        );
-        */
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.Add, R.string.Add);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
@@ -268,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (itemId == getSelectedNavItemId()) return true;
 
         if (NAV_ITEM_HANDLERS.containsKey(itemId)) { // selected a view change item
-            selectNavItem(itemId);
+            handleSelectedNavItem(itemId);
 
             // set tab item as selected
             if (mTabLayout != null) {
@@ -314,16 +289,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         int navItemId = mTabIndexToNavItemIdMap.get(tab.getPosition());
-        selectNavItem(navItemId);
+        handleSelectedNavItem(navItemId);
     }
 
-    private void selectNavItem(int navItemId) {
+    private void handleSelectedNavItem(int navItemId) {
         MenuItem item = mNavigationView.getMenu().findItem(navItemId);
 
         if (item.isChecked()) return;
 
         NavigationItemSelectedHandler navItemHandler = NAV_ITEM_HANDLERS.get(navItemId);
-        navItemHandler.handleItemSelected(getSupportFragmentManager());
+        navItemHandler.handleItemSelected(getSupportFragmentManager(), mNavigationView.getMenu());
         item.setChecked(true); // set nav item as selected
     }
 
@@ -458,7 +433,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private int getSelectedNavItemId() {
         for (int i = 0; i < mNavigationView.getMenu().size(); i++) {
-            if (mNavigationView.getMenu().getItem(i).isChecked()) {
+            MenuItem item = mNavigationView.getMenu().getItem(i);
+            if (item.getGroupId() == R.id.nav_menu_tabs_group && item.isChecked()) {
                 return mNavigationView.getMenu().getItem(i).getItemId();
             }
         }

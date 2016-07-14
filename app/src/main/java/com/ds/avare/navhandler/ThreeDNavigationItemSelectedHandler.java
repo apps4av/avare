@@ -2,6 +2,7 @@ package com.ds.avare.navhandler;
 
 import android.support.v4.app.Fragment;
 
+import com.ds.avare.R;
 import com.ds.avare.fragment.LocationFragment;
 import com.ds.avare.fragment.ThreeDFragment;
 
@@ -29,6 +30,11 @@ public class ThreeDNavigationItemSelectedHandler extends NavigationItemSelectedH
     @Override
     protected Fragment getNewFragment() {
         return new ThreeDFragment();
+    }
+
+    @Override
+    protected int getNavigationMenuGroupId() {
+        return R.id.nav_menu_threed_actions_group;
     }
 
 }

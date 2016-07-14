@@ -437,11 +437,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
         setToolbarAuxButtonsVisibility();
     }
 
-    @Override
-    protected int getNavigationMenuGroupId() {
-        return R.id.nav_menu_threed_actions_group;
-    }
-
     public void setToolbarAuxButtonsVisibility() {
         mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }

@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -53,7 +52,6 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
@@ -68,7 +66,6 @@ import com.ds.avare.views.LocationView;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
@@ -266,12 +263,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         });
 
         mAlertDialogExit.show();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("foo", "bar");
     }
 
     @Override
@@ -1203,11 +1194,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         }
 
         return false;
-    }
-
-    @Override
-    protected int getNavigationMenuGroupId() {
-        return R.id.nav_menu_map_actions_group;
     }
 
     private void setupLayerSpinner(AppCompatSpinner spinner, AdapterView.OnItemSelectedListener selectedListener) {

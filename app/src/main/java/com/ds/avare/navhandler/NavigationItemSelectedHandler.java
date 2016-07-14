@@ -3,11 +3,14 @@ package com.ds.avare.navhandler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
 
 import com.ds.avare.R;
 import com.ds.avare.fragment.SatelliteFragment;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +18,9 @@ import java.util.Set;
  */
 public abstract class NavigationItemSelectedHandler {
 
-    public void handleItemSelected(FragmentManager fm) {
+    private final List<Integer> navMenuActionGroupIds = Arrays.asList(R.id.nav_menu_map_actions_group, R.id.nav_menu_threed_actions_group);
+
+    public void handleItemSelected(FragmentManager fm, Menu menu) {
         FragmentTransaction ft = fm.beginTransaction();
 
         Set<String> tagsToRemove = getTagsToRemove();
@@ -35,6 +40,8 @@ public abstract class NavigationItemSelectedHandler {
         }
 
         ft.commit();
+
+        setupNavigationMenuItems(menu);
     }
 
     private void removeFragments(FragmentManager fm, FragmentTransaction ft, Set<String> tagsToRemove) {
@@ -53,6 +60,17 @@ public abstract class NavigationItemSelectedHandler {
                 ft.hide(fragment);
             }
         }
+    }
+
+    private void setupNavigationMenuItems(Menu menu) {
+        for (Integer groupId : navMenuActionGroupIds) {
+            menu.setGroupVisible(groupId, false);
+        }
+        menu.setGroupVisible(getNavigationMenuGroupId(), true);
+    }
+
+    protected int getNavigationMenuGroupId() {
+        return Menu.NONE;
     }
 
     protected Set<String> getTagsToRemove() {

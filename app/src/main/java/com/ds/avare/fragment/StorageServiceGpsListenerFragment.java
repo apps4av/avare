@@ -14,7 +14,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.AppCompatSpinner;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,9 +26,6 @@ import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by arabbani on 7/9/16.
@@ -104,8 +100,6 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
         // Registering our receiver. Bind now.
         Intent intent = new Intent(getContext(), StorageService.class);
         getContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        setupNavigationMenuItems();
     }
 
     @Override
@@ -136,12 +130,6 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
         if (mService != null) {
             postServiceConnected();
         }
-
-        setupNavigationMenuItems();
-    }
-
-    protected int getNavigationMenuGroupId() {
-        return Menu.NONE;
     }
 
     protected void showSnackbar(String message, int duration) {
@@ -162,16 +150,6 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
 
     protected void closeDrawer() {
         ((MainActivity) getActivity()).getDrawerLayout().closeDrawer(GravityCompat.START);
-    }
-
-    private void setupNavigationMenuItems() {
-        Menu menu = ((MainActivity) getActivity()).getNavigationMenu();
-        List<Integer> groupIds = Arrays.asList(R.id.nav_menu_map_actions_group, R.id.nav_menu_threed_actions_group);
-        for (Integer groupId : groupIds) {
-            menu.setGroupVisible(groupId, false);
-        }
-
-        menu.setGroupVisible(getNavigationMenuGroupId(), true);
     }
 
     protected void postServiceConnected() { }
