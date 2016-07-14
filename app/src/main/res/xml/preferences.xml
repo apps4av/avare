@@ -211,9 +211,9 @@ authors: zkhan, jlmcgraw
             android:title="@string/FirstPersonLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/ScreenOn"
-            android:summary="@string/ScreenOnSummary"
-            android:title="@string/ScreenOnLabel" />
+            android:key="@string/KeepScreenOn"
+            android:summary="@string/KeepScreenOnSummary"
+            android:title="@string/KeepScreenOnLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="Portrait"
             android:entries="@array/Orientation"

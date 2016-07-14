@@ -318,14 +318,11 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean shouldShowBackground() {
+    public boolean isShowBackground() {
         return (mPref.getBoolean(mContext.getString(R.string.Background), true));
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldShowAllFacilities() {
+    public boolean isShowAllFacilities() {
         return (mPref.getBoolean(mContext.getString(R.string.AllFacilities), false));
     }
 
@@ -343,17 +340,11 @@ public class Preferences {
         return (mPref.getBoolean(mContext.getString(R.string.XlateWeather), false));
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldExtendRunways() {
+    public boolean isExtendRunways() {
         return (mPref.getBoolean(mContext.getString(R.string.Runways), true));
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldAutoDisplayAirportDiagram() {
+    public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
 
@@ -389,10 +380,7 @@ public class Preferences {
         return 0;
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldGpsWarn() {
+    public boolean isGpsWarn() {
         return (mPref.getBoolean(mContext.getString(R.string.GpsOffWarn), true));
     }
 
@@ -403,11 +391,8 @@ public class Preferences {
         return (mPref.getString(mContext.getString(R.string.OrientationP), "Portrait"));
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldScreenStayOn() {
-        return (mPref.getBoolean(mContext.getString(R.string.ScreenOn), true));
+    public boolean isKeepScreenOn() {
+        return (mPref.getBoolean(mContext.getString(R.string.KeepScreenOn), true));
     }
 
     /**
@@ -581,10 +566,7 @@ public class Preferences {
         return (mPref.getString(name, null));
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldDrawTracks() {
+    public boolean isDrawTracks() {
         return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
     }
 
@@ -682,10 +664,7 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.prefUseDynamicFields), true);
     }
 
-    /**
-     * @return
-     */
-    public boolean shouldBlinkScreen() {
+    public boolean isBlinkScreen() {
         return mPref.getBoolean(mContext.getString(R.string.blinkScreen), false);
     }
 
@@ -752,7 +731,7 @@ public class Preferences {
     /**
      * @return
      */
-    public boolean shouldShowEdgeTape() {
+    public boolean isShowEdgeTape() {
         return mPref.getBoolean(mContext.getString(R.string.EdgeTape), false);
     }
 
