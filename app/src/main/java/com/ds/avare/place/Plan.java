@@ -685,7 +685,8 @@ public class Plan implements Observer {
         double mCurrentDistance;
         double mCurrentBearing;
         double mSpeed;
-        
+        double mEarlyPassTime;
+
         // Use this to set early pass flag, meaning we are close to our dest.
         private static final double EARLY_PASS_THRESHOLD = 23; // seconds
 
@@ -728,10 +729,15 @@ public class Plan implements Observer {
              * Find early pass
              */
             double timerem = (mCurrentDistance / mSpeed) * 3600;
-            if (timerem < EARLY_PASS_THRESHOLD) {
+            if (timerem < (mPref.getEarlyPassTimer())) {
                 if (!mEarlyPass) {
-                    mEarlyPass = true;
-                    mEarlyPassEvent = true;
+                    mEarlyPass = false;
+                    if (true == mPref.getPlanPassage()) {
+                        mEarlyPassEvent = true;
+                        return true;
+                    } else {
+                        mEarlyPassEvent = false;
+                    }
                 }
             }
 

@@ -366,6 +366,17 @@ public class Preferences {
         return 0;
     }
 
+    // An int value that represents the seconds before the waypoint to advance
+    // to the next leg
+    public int getEarlyPassTimer() {
+        String val = mPref.getString(mContext.getString(R.string.EarlyPassTimer), "10");
+        try {
+            return (Integer.parseInt(val));
+        } catch (Exception e) {
+        }
+        return 10;
+    }
+
     /**
      * Get chart cycle previous, next, current
      *
@@ -1012,6 +1023,10 @@ public class Preferences {
 
     public boolean getPlanControl() {
         return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
+    }
+
+    public boolean getPlanPassage() {
+        return mPref.getBoolean(mContext.getString(R.string.prefPlanPassage), false);
     }
 
     // Get last location known

@@ -299,6 +299,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
     <string name="DisplayIconLabel">&quot;Location Display Icon&quot;</string>
     <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location (requires restart).&quot;</string>
+    <string name="EarlyPassTimer">&quot;EarlyPassTimer&quot;</string>
+    <string name="EarlyPassTimerLabel">&quot;Early Pass Timer Value&quot;</string>
+    <string name="EarlyPassTimerSummary">&quot;Select the number of seconds before the waypoint to advance to next leg.&quot;</string>
     <string name="Cycle">Cycle</string>
     <string name="CycleLabel">Chart Download Cycle</string>
     <string name="CycleSummary">Select which cycle to download the charts from</string>
@@ -420,6 +423,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefPlanControl">&quot;PlanControl&quot;</string>
     <string name="prefPlanControlLabel">&quot;Show Flight Plan Controls&quot;</string>
     <string name="prefPlanControlSummary">&quot;Select to display flight plan control buttons on chart view&quot;</string>
+    <string name="prefPlanPassage">&quot;PlanPassage&quot;</string>
+    <string name="prefPlanPassageLabel">&quot;Early Passage&quot;</string>
+    <string name="prefPlanPassageSummary">&quot;Select to change route leg early for autopilot turns&quot;</string>
     <string name="switchTanks">&quot;Switch Fuel Tanks&quot;</string>
     <string name="CAPGrid">&quot;CAPGrids&quot;</string>
     <string name="CAPGridSummary">&quot;Select to show the US Civil Air Patrol grids on the map.&quot;</string>

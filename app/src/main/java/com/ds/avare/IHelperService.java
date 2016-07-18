@@ -151,7 +151,7 @@ public class IHelperService extends Service {
                     lat = d.getLocation().getLatitude();
                     elev = d.getElevation();
                     if(p != null) {
-                        idNext = p.findNextNotPassed() + 1;
+                        idNext = p.findNextNotPassed();
                         idOrig = idNext - 1;
                         bearingTrue = p.getBearing((int)idOrig, (int)idNext);
                         bearingMagnetic = Helper.getMagneticHeading(bearingTrue, d.getDeclination());
