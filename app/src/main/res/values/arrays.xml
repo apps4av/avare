@@ -465,6 +465,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Houston Heli</item>
         <item>Los Angeles Heli</item>
         <item>New York Heli</item>
+        <item>US Gulf Coast Heli</item>
         <item>Washington Heli</item>
     </string-array>
 
@@ -1909,6 +1910,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>HoustonHeli</item>
         <item>LosAngelesHeli</item>
         <item>NewYorkHeli</item>
+        <item>USGulfCoastHeli</item>
         <item>WashingtonHeli</item>
     </string-array>
 
