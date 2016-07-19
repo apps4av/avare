@@ -125,6 +125,9 @@ public class Map {
      * @return
      */
     public static short[] genTerrainFromBitmap(Bitmap b) {
+        if(null == b) {
+            return null;
+        }
         short vertices[] = new short[NUM_VERTICES * COMPONENTS];
         int count = 0;
         int col;
