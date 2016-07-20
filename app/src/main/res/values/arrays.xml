@@ -57,7 +57,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameWeather">
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
-        <item>@string/TFRs</item>
+        <item>TFRs</item>
+        <item>Game TFRs</item>
     </string-array>
 
     <string-array name="resNameOther">
@@ -1500,6 +1501,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>weather</item>
         <item>conus</item>
         <item>TFRs</item>
+        <item>GameTFRs</item>
     </string-array>
 
     <string-array name="resFilesOther">
