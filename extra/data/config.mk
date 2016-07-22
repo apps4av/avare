@@ -14,7 +14,7 @@
 
 output:
 	#download
-	${DOWNLOAD} http://localhost/nfdc/AWOS.txt APT.txt
+	${DOWNLOAD} http://localhost/nfdc/APT.txt APT.txt
 	${DOWNLOAD} http://localhost/nfdc/AWOS.txt AWOS.txt
 	${DOWNLOAD} http://localhost/nfdc/TWR.txt TWR.txt
 	${DOWNLOAD} http://localhost/nfdc/FIX.txt FIX.txt
