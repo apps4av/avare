@@ -37,6 +37,9 @@ LINK=http://localhost/plates
 
 DPI=150
 
+
+${MODULE_DIR}/airport.pl > airport_min.txt;  
+
 rm -rf mins
 mkdir mins
 cd mins
