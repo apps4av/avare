@@ -537,6 +537,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Developer">Developer Settings</string>
     <string name="DeclareEmergency">Declare Emergency?</string>
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Send SMS to Emergency Contact</string>
+    <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
 
 
 </resources>

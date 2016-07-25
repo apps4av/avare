@@ -30,6 +30,7 @@ import java.util.ArrayList;
  */
 public class Emergency {
     public static String declare(Context ctx, Preferences pref, StorageService service) {
+        String ret = ctx.getString(R.string.Done);
 
         GpsParams params = service.getGpsParams();
         /*
@@ -56,9 +57,14 @@ public class Emergency {
                             ", current time is " + time + "Zulu. " +
                             pilotName;
 
-            SmsManager smsManager = SmsManager.getDefault();
-            ArrayList<String> parts = smsManager.divideMessage(message);
-            smsManager.sendMultipartTextMessage(number, null, parts, null, null);
+            try {
+                SmsManager smsManager = SmsManager.getDefault();
+                ArrayList<String> parts = smsManager.divideMessage(message);
+                smsManager.sendMultipartTextMessage(number, null, parts, null, null);
+            }
+            catch (Exception e) {
+                ret = ctx.getString(R.string.SMSFailed);
+            }
 
         }
 
@@ -78,7 +84,6 @@ public class Emergency {
             d.find();
         }
 
-        String ret = ctx.getString(R.string.Done);
 
         return ret;
     }
