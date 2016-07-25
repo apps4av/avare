@@ -208,6 +208,7 @@ public class AirportActivity extends Activity implements Observer {
         LinkedList<Runway> runways = mDestination.getRunways();
         String[] views = new String[map.size() + freq.size() + awos.size() + runways.size()];
         String[] values = new String[map.size() + freq.size() + awos.size() + runways.size()];
+        int[] categories = new int[map.size() + freq.size() + awos.size() + runways.size()];
         int iterator = 0;
         /*
          * Add header. Check below if this is not added twice
@@ -216,17 +217,20 @@ public class AirportActivity extends Activity implements Observer {
         if(s != null) {
             views[iterator] = DataBaseHelper.LOCATION_ID;
             values[iterator] = s;
+            categories[iterator] = TypeValueAdapter.CATEGORY_LABEL;
             iterator++;
         }
         s = map.get(DataBaseHelper.FACILITY_NAME);
         if(s != null) {
             views[iterator] = DataBaseHelper.FACILITY_NAME;
+            categories[iterator] = TypeValueAdapter.CATEGORY_LABEL;
             values[iterator] = s;
             iterator++;
         }
         s = map.get(DataBaseHelper.FUEL_TYPES);
         if(s != null) {
             views[iterator] = DataBaseHelper.FUEL_TYPES;
+            categories[iterator] = TypeValueAdapter.CATEGORY_FUEL;
             values[iterator] = s;
             iterator++;
         }
@@ -264,6 +268,8 @@ public class AirportActivity extends Activity implements Observer {
 
             // Add them all to our array
             values[iterator] = f1p1 + f2p2 + rem;
+            categories[iterator] = TypeValueAdapter.CATEGORY_FREQUENCY;
+
             iterator++;
         }
         /*
@@ -272,6 +278,7 @@ public class AirportActivity extends Activity implements Observer {
         for(String key : freq.keySet()){
             views[iterator] = key;
             values[iterator] = freq.get(key);
+            categories[iterator] = TypeValueAdapter.CATEGORY_FREQUENCY;
             iterator++;
         }
         /*
@@ -297,6 +304,8 @@ public class AirportActivity extends Activity implements Observer {
                     "ILS: " + run.getILS() + ",\n" +
                     "VGSI: " + run.getVGSI()
                     ;
+            categories[iterator] = TypeValueAdapter.CATEGORY_RUNWAYS;
+
             iterator++;
         }
 
@@ -309,13 +318,14 @@ public class AirportActivity extends Activity implements Observer {
                 continue;
             }
             views[iterator] = key;
+            categories[iterator] = TypeValueAdapter.CATEGORY_ANY;
             values[iterator] = map.get(key);
             iterator++;
         }
 
         mAirportView.setClickable(false);
         mAirportView.setDividerHeight(10);
-        TypeValueAdapter tvAdapter = new TypeValueAdapter(AirportActivity.this, views, values);
+        TypeValueAdapter tvAdapter = new TypeValueAdapter(AirportActivity.this, views, values, categories, mPref.isNightMode());
         mAirportView.setAdapter(tvAdapter);
 
         mAirportView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

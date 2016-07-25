@@ -12,19 +12,18 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adapters;
 
 
-import java.util.regex.Pattern;
-
-import com.ds.avare.R;
-import com.ds.avare.R.id;
-import com.ds.avare.R.layout;
-
 import android.content.Context;
+import android.graphics.Color;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.ds.avare.R;
+
+import java.util.regex.Pattern;
 
 /**
  * @author zkhan
@@ -35,17 +34,25 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
     private Context  mContext;
     private String[] mType;
     private String[] mValue;
-    
-    
+    private boolean mNight;
+
+    private int[]    mCategory;
+
+	public static final int CATEGORY_ANY = 0;
+	public static final int CATEGORY_LABEL = 1;
+	public static final int CATEGORY_FREQUENCY = 2;
+	public static final int CATEGORY_RUNWAYS = 3;
+	public static final int CATEGORY_FUEL = 4;
+
     /**
-     * @param context
-     * @param textViewResourceId
      */
-    public TypeValueAdapter(Context context, String[] type, String value[]) {
+    public TypeValueAdapter(Context context, String[] type, String value[], int category[], boolean night) {
         super(context, R.layout.typevalue, type);
         mContext = context;
         mType = type;
         mValue = value;
+		mCategory = category;
+        mNight = night;
     }
 
 	@Override
@@ -61,6 +68,50 @@ public class TypeValueAdapter extends ArrayAdapter<String> {
 		TextView textView = (TextView) rowView
 				.findViewById(R.id.typevalue_type);
 
+        // Set colors in list to separate out frequencies, fuel, etc.
+		switch(mCategory[position]) {
+			case CATEGORY_LABEL:
+                if(mNight) {
+                    textView.setTextColor(Color.RED);
+                }
+                else {
+                    textView.setTextColor(0xFFAA0000);
+                }
+				break;
+			case CATEGORY_FREQUENCY:
+                if(mNight) {
+                    textView.setTextColor(0xFF545AA7);
+                }
+                else {
+                    textView.setTextColor(0xFF0000AA);
+                }
+				break;
+			case CATEGORY_RUNWAYS:
+                if(mNight) {
+                    textView.setTextColor(Color.MAGENTA);
+                }
+                else {
+                    textView.setTextColor(0xFFAA00AA);
+                }
+				break;
+			case CATEGORY_FUEL:
+                if(mNight) {
+                    textView.setTextColor(Color.GREEN);
+                }
+                else {
+                    textView.setTextColor(0xFF00AA00);
+                }
+				break;
+			default:
+			case CATEGORY_ANY:
+                if(mNight) {
+                    textView.setTextColor(0xFFAAAAAA);
+                }
+                else {
+                    textView.setTextColor(Color.BLACK);
+                }
+				break;
+		}
 		textView.setText(mType[position]);
 		textView = (TextView) rowView.findViewById(R.id.typevalue_value);
 		textView.setText(mValue[position]);
