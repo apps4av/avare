@@ -54,6 +54,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
@@ -109,6 +110,10 @@ public class LocationActivity extends Activity implements Observer {
      * Shows warning about GPS
      */
     private AlertDialog mGpsWarnDialog;
+    /**
+     * To go to emergency mode
+     */
+    private AlertDialog mSosDialog;
 
     /**
      * Version related warnings
@@ -720,16 +725,39 @@ public class LocationActivity extends Activity implements Observer {
 
         });
 
-        mWebButton = (Button)view.findViewById(R.id.location_button_ads);
+        mWebButton = (Button)view.findViewById(R.id.location_button_sos);
         mWebButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                mSosDialog = new AlertDialog.Builder(LocationActivity.this).create();
+                mSosDialog.setTitle(getString(R.string.DeclareEmergency));
+                mSosDialog.setMessage(getString(R.string.DeclareEmergencyDetails));
+                mSosDialog.setCancelable(false);
+                mSosDialog.setCanceledOnTouchOutside(false);
+                mSosDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        String ret = Emergency.declare(getApplicationContext(), mPref, mService);
+                        hideMenu();
+                        Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
 
-                /*
-                 * Bring up preferences
-                 */
-                startActivity(new Intent(LocationActivity.this, MessageActivity.class));
+                    }
+                });
+                mSosDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+                    /* (non-Javadoc)
+                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                     */
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        hideMenu();
+                    }
+                });
+                mSosDialog.show();
+
             }
 
         });
@@ -1295,6 +1323,14 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mGpsWarnDialog) {
             try {
                 mGpsWarnDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        if(null != mSosDialog) {
+            try {
+                mSosDialog.dismiss();
             }
             catch (Exception e) {
             }

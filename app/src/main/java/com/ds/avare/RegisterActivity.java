@@ -81,6 +81,9 @@ public class RegisterActivity extends Activity {
         if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             permissionsNeeded.add(getString(R.string.RationaleExternalStorage));
         }
+        if (!addPermission(permissionsList, Manifest.permission.SEND_SMS)) {
+            permissionsNeeded.add(getString(R.string.RationaleSMS));
+        }
 
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {

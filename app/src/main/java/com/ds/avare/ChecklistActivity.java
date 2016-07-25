@@ -11,14 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppListInterface;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -35,13 +27,21 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppListInterface;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -271,6 +271,16 @@ public class ChecklistActivity extends Activity {
             mTimer = new Timer();
             TimerTask sim = new UpdateTask();
             mTimer.scheduleAtFixedRate(sim, 0, 1000);
+
+
+            /*
+             * To load a list from other activities
+             */
+            String overList = mService.getOverrideListName();
+            if(overList != null) {
+                mInfc.loadList(overList);
+                mService.setOverrideListName(null);
+            }
         }
 
         /*

@@ -1125,6 +1125,14 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
     }
 
+    public String getEmergencyNumber() {
+        return mPref.getString(mContext.getString(R.string.EmergencyContact), "");
+    }
+
+    public String getEmergencyChecklist() {
+        return mPref.getString(mContext.getString(R.string.EmergencyChecklist), "");
+    }
+
     public int getAircraftICAOCode() {
         int code = 0;
         try {

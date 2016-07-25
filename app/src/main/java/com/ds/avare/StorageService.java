@@ -123,6 +123,7 @@ public class StorageService extends Service {
     private boolean mDownloading;
     
     private LinkedList<Checklist> mCheckLists;
+    String mOverrideListName;
 
     private MetarLayer mMetarLayer;
     
@@ -247,7 +248,15 @@ public class StorageService extends Service {
     // Timer for count up
     private UpTimer mUpTimer;
 
-    
+    public String getOverrideListName() {
+        return mOverrideListName;
+    }
+
+    public void setOverrideListName(String overrideListName) {
+        mOverrideListName = overrideListName;
+    }
+
+
     /**
      * @author zkhan
      *
@@ -308,6 +317,7 @@ public class StorageService extends Service {
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
         mAfdIndex = 0;
+        mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);

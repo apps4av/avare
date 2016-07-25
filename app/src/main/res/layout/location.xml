@@ -37,19 +37,19 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/location_button_ads"
+            android:layout_above="@+id/location_button_sos"
             android:gravity="left|center"
             android:text="@string/download"
             android:drawableLeft="@drawable/download"
             android:visibility="invisible" />
 
          <Button
-            android:id="@+id/location_button_ads"
+            android:id="@+id/location_button_sos"
             android:textStyle="bold"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_help"
-            android:text="@string/Advertisements"
+            android:text="@string/SOS"
             android:drawableLeft="@drawable/web"
             android:gravity="left|center"
             android:visibility="invisible" />
