@@ -346,9 +346,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoCodeLabel">&quot;Geo. Reference Password&quot;</string>
     <string name="GeoCode">&quot;GeoPassword&quot;</string>
     <string name="GeoCodeSummary">&quot;Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)&quot;</string>
-    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
-    <string name="GameTFR">&quot;GameTFR&quot;</string>
-    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
 
     <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
@@ -536,7 +533,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="Developer">Developer Settings</string>
     <string name="DeclareEmergency">Declare Emergency?</string>
-    <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Send SMS to Emergency Contact</string>
+    <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n4.Send SMS to Emergency Contact</string>
     <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
 
 

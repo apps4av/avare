@@ -636,6 +636,15 @@ public class Preferences {
     }
 
     /**
+     *
+     *
+     * @return
+     */
+    public void showDistanceRingStatic() {
+        mPref.edit().putString(mContext.getString(R.string.prefDistanceRingType), "2").commit();
+    }
+
+    /**
      * @return
      */
     public int getDistanceRingColor() {
@@ -793,13 +802,6 @@ public class Preferences {
      */
     public boolean allowRubberBanding() {
         return mPref.getBoolean(mContext.getString(R.string.rubberBand), true);
-    }
-
-    /**
-     * @return
-     */
-    public boolean showGameTFRs() {
-        return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
     }
 
     /**

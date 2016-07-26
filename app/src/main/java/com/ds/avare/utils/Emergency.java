@@ -68,6 +68,9 @@ public class Emergency {
 
         }
 
+        // Turn on distance guidance
+        pref.showDistanceRingStatic();
+
         // Emergency checklist
         String checklist = pref.getEmergencyChecklist();
         service.setOverrideListName(checklist);

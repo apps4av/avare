@@ -29,6 +29,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Radial;
+import com.ds.avare.position.TimedCoordinate;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -58,9 +59,10 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBasePlates;
     private SQLiteDatabase mDataBaseGeoPlates;
     private SQLiteDatabase mDataBaseFuel; 
-    private SQLiteDatabase mDataBaseRatings; 
-    private SQLiteDatabase mDataBaseWeather; 
-    
+    private SQLiteDatabase mDataBaseRatings;
+    private SQLiteDatabase mDataBaseWeather;
+    private SQLiteDatabase mDataBaseGameTFRs;
+
     /*
      * Preferences
      */
@@ -82,7 +84,8 @@ public class DataBaseHelper  {
     private Integer mUsersProcedures;
     private Integer mUsersFuel;
     private Integer mUsersRatings;
-    
+    private Integer mUsersGameTFRs;
+
     
     public  static final String  FACILITY_NAME = "Facility Name";
     private static final String  FACILITY_NAME_DB = "FacilityName";
@@ -137,6 +140,7 @@ public class DataBaseHelper  {
     private static final String TABLE_AIRWAYS = "airways";
     private static final String TABLE_FUEL = "fuel";
     private static final String TABLE_RATINGS = "ratings";
+    private static final String TABLE_GAME = "gametfr";
 
 
     /**
@@ -2787,4 +2791,121 @@ public class DataBaseHelper  {
         closesRatings(cursor);
         return ret;
 	}
+
+
+    /**
+     *
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryGameTFRs(String statement, String name) {
+        Cursor c = null;
+
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         *
+         */
+        synchronized(mUsersGameTFRs) {
+            if(mDataBaseGameTFRs == null) {
+                mUsersGameTFRs = 0;
+                try {
+
+                    mDataBaseGameTFRs = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseGameTFRs = null;
+                }
+            }
+            if(mDataBaseGameTFRs == null) {
+                return c;
+            }
+            mUsersGameTFRs++;
+        }
+
+        /*
+         * In case we fail
+         */
+
+        if(mDataBaseGameTFRs == null) {
+            return c;
+        }
+
+        if(!mDataBaseGameTFRs.isOpen()) {
+            return c;
+        }
+
+        /*
+         * Find with sqlite query
+         */
+        try {
+            c = mDataBaseGameTFRs.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+
+    /**
+     * Close database
+     */
+    private void closesGameTFRs(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        synchronized(mUsersGameTFRs) {
+            mUsersGameTFRs--;
+            if((mDataBaseGameTFRs != null) && (mUsersGameTFRs <= 0)) {
+                try {
+                    mDataBaseGameTFRs.close();
+                }
+
+
+                catch (Exception e) {
+                }
+                mDataBaseGameTFRs = null;
+                mUsersGameTFRs = 0;
+            }
+        }
+    }
+
+
+    public LinkedList<TimedCoordinate> findGameTFRs() {
+        LinkedList<TimedCoordinate> ret = new LinkedList<TimedCoordinate>();
+
+        long now     = Helper.getMillisGMT();
+        long before  = now + (mPref.getExpiryTime() + 60) * 60 * 1000; // look 6 hour past and expiry plus 1 hour time in future
+        long after   = now - 6 * 60 * 60 * 1000;
+
+        String qry = "select * from " + TABLE_GAME + " where ((datetime > " + after + ") and (datetime < " + before + "))";
+        Cursor cursor = doQueryRatings(qry, "gametfr.db");
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        TimedCoordinate c = new TimedCoordinate(cursor.getFloat(3), cursor.getFloat(2), cursor.getLong(0));
+                        ret.add(c);
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesRatings(cursor);
+        return ret;
+    }
 }

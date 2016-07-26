@@ -14,9 +14,6 @@ package com.ds.avare.shapes;
 
 
 import android.graphics.Color;
-import android.graphics.Paint;
-
-import com.ds.avare.place.GameTFR;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -74,26 +71,6 @@ public class TFRShape extends Shape {
                     todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
                 }
             }
-        }
-
-        /*
-         * Possible game TFRs, Orange
-         */
-        if(ctx.pref.showGameTFRs()) {
-            ctx.paint.setColor(0xFFFF4500);
-            ctx.paint.setStrokeWidth(3 * ctx.dip2pix);
-            ctx.paint.setShadowLayer(0, 0, 0, 0);
-            Paint.Style style = ctx.paint.getStyle();
-            ctx.paint.setStyle(Paint.Style.STROKE);
-            for(int shape = 0; shape < GameTFR.GAME_TFR_COORDS.length; shape++) {
-                double lat = GameTFR.GAME_TFR_COORDS[shape][0];
-                double lon = GameTFR.GAME_TFR_COORDS[shape][1];
-                float x = (float)ctx.origin.getOffsetX(lon);
-                float y = (float)ctx.origin.getOffsetY(lat);
-                float radius = ctx.origin.getPixelsInNmAtLatitude(GameTFR.RADIUS_NM, lat);
-                ctx.canvas.drawCircle(x, y, radius, ctx.paint);
-            }
-            ctx.paint.setStyle(style);
         }
 
     }

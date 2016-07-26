@@ -190,6 +190,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private float                mDragStartedX;
     private float                mDragStartedY;
 
+
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
@@ -242,7 +243,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mPaint.setAntiAlias(true);
         mPointProjection = null;
         mDraw = false;
-        
+
         mPref = new Preferences(context);
         
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
@@ -816,8 +817,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * Draw the vertical approach slope indicator if we have a destination set
      * @param canvas what to draw the data upon
      */
-    private void drawVASI(Canvas canvas)
-    {
+    private void drawVASI(Canvas canvas) {
         if(mPointProjection == null && mErrorStatus == null) {
         	if(mPref.getShowCDI()) {
 	        	Destination dest = mService.getDestination();
@@ -827,6 +827,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         	}
         }
     	
+    }
+
+    /***
+     */
+    private void drawGameTFRs(DrawingContext ctx) {
+        if(mPointProjection == null) {
+            mService.getmGameTFRs().draw(ctx);
+        }
+
     }
 
     /***
@@ -921,6 +930,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
         drawTFR(canvas, ctx);
+        drawGameTFRs(ctx);
         drawShapes(canvas, ctx);
         drawAirSigMet(canvas, ctx);
         drawTracks(canvas, ctx);

@@ -488,6 +488,10 @@ public class ChartsDownloadActivity extends Activity {
                         mService.getTFRFetcher().parse();
                     }
 
+                    if(mName.equals("GameTFRs")) {
+                        mService.getmGameTFRs().loadGames(mService);
+                    }
+
                     if(mName.equals("weather")) {
                         mService.getInternetWeatherCache().parse(mService);
                         if(mPref.getLayerType().equals("METAR")) {
@@ -559,6 +563,9 @@ public class ChartsDownloadActivity extends Activity {
     
                     if(mName.equals(getString(R.string.TFRs))) {
                         mService.deleteTFRFetcher();
+                    }
+                    if(mName.equals("GameTFRs")) {
+                        mService.deleteGameTFRs();
                     }
 
                     if(mName.equals("weather")) {

@@ -22,13 +22,13 @@ import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.TimedCoordinate;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -168,6 +168,14 @@ public class DataSource {
      */
     public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
         return dbHelper.findObstacles(lon, lat, height);
+    }
+
+    /**
+     *
+     * @return All Game TFRs
+     */
+    public LinkedList<TimedCoordinate> findGameTFRs() {
+        return dbHelper.findGameTFRs();
     }
 
     /**
