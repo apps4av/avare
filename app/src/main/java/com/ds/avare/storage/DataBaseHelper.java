@@ -28,8 +28,8 @@ import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.Radial;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -39,11 +39,13 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 /**
@@ -2887,21 +2889,30 @@ public class DataBaseHelper  {
     public LinkedList<LabelCoordinate> findGameTFRs() {
         LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
 
-        long now     = Helper.getMillisGMT();
-        long before  = now + 12 * 60 * 60 * 1000; // look 6 hour past and 12 hour time in future
-        long after   = now - 6 * 60 * 60 * 1000;
 
-        String qry = "select * from " + TABLE_GAME + " where ((datetime > " + after + ") and (datetime < " + before + "))";
+        // Game TFRs in EST
+        SimpleDateFormat formatterIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        formatterIso.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        String now = formatterIso.format(new Date());
+
+        SimpleDateFormat formatterZulu = new SimpleDateFormat("ddHH:mm'Z'");
+        formatterZulu.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+
+        // Find -6 hours to +12 hours
+        String qry = "select * from " + TABLE_GAME + " where datetime > + date('" + now + "','-6 hours') and datetime < + date('" + now + "','+12 hours')";
         Cursor cursor = doQueryRatings(qry, "gametfr.db");
-        SimpleDateFormat formatter = new SimpleDateFormat("ddHHmm");
 
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
                     do {
-                        String date = cursor.getString(1) + " " + formatter.format(cursor.getLong(0)) + "Z";
+                        String date = cursor.getString(0);
+                        Date effective = formatterIso.parse(date);
+                        // print in zulu
+                        String toprint = formatterZulu.format(effective);
 
-                        LabelCoordinate c = new LabelCoordinate(cursor.getFloat(3), cursor.getFloat(2), date);
+                        LabelCoordinate c = new LabelCoordinate(cursor.getFloat(3), cursor.getFloat(2), toprint + " " + cursor.getString(1));
                         ret.add(c);
                     }
                     while(cursor.moveToNext());
