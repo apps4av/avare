@@ -13,25 +13,25 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.position;
 
 /**
- * Simple WGS coordinates with time in it
+ * Simple WGS coordinates with label in it
  * @author zkhan
  *
  */
-public class TimedCoordinate extends Coordinate {
+public class LabelCoordinate extends Coordinate {
 
-    private long mTime;
+    private String mLabel;
 
     /**
      *
      * @param lon
      * @param lat
      */
-    public TimedCoordinate(double lon, double lat, long time) {
+    public LabelCoordinate(double lon, double lat, String label) {
         super(lon, lat);
-        mTime = time;
+        mLabel = label;
     }
 
-    public long getTime() {
-        return mTime;
+    public String getLabel() {
+        return mLabel;
     }
 }

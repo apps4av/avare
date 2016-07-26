@@ -7,11 +7,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.position.TimedCoordinate;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.utils.Helper;
 
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 
 /**
@@ -26,7 +25,7 @@ public class GameTFR {
     private static final double RADIUS_NM = 3.0; // NM
     private static final int HOURS = 6;
 
-    LinkedList<TimedCoordinate> mTFRs;
+    LinkedList<LabelCoordinate> mTFRs;
 
     public void loadGames(StorageService service) {
         if(service != null) {
@@ -55,12 +54,9 @@ public class GameTFR {
         Paint.Style style = ctx.paint.getStyle();
         ctx.paint.setStyle(Paint.Style.STROKE);
         // Show date time of TFR
-        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd HHmm");
-        for(TimedCoordinate tfr : mTFRs) {
+        for(LabelCoordinate tfr : mTFRs) {
             double lat = tfr.getLatitude();
             double lon = tfr.getLongitude();
-            long eff = tfr.getTime();
-            String date = formatter.format(eff) + "Z";
 
             // Draw TFR
             float x = (float) ctx.origin.getOffsetX(lon);
@@ -68,7 +64,7 @@ public class GameTFR {
             float radius = ctx.origin.getPixelsInNmAtLatitude(GameTFR.RADIUS_NM, lat);
             ctx.canvas.drawCircle(x, y, radius, ctx.paint);
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    date, Color.BLACK, (float) x, (float) y + radius + ctx.textPaint.getTextSize());
+                    tfr.getLabel(), Color.BLACK, (float) x, (float) y + radius + ctx.textPaint.getTextSize());
         }
         ctx.paint.setStyle(style);
 

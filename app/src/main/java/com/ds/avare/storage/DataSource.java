@@ -22,7 +22,7 @@ import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.TimedCoordinate;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -174,7 +174,7 @@ public class DataSource {
      *
      * @return All Game TFRs
      */
-    public LinkedList<TimedCoordinate> findGameTFRs() {
+    public LinkedList<LabelCoordinate> findGameTFRs() {
         return dbHelper.findGameTFRs();
     }
 

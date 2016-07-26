@@ -29,7 +29,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Radial;
-import com.ds.avare.position.TimedCoordinate;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -38,6 +38,7 @@ import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -2883,20 +2884,24 @@ public class DataBaseHelper  {
     }
 
 
-    public LinkedList<TimedCoordinate> findGameTFRs() {
-        LinkedList<TimedCoordinate> ret = new LinkedList<TimedCoordinate>();
+    public LinkedList<LabelCoordinate> findGameTFRs() {
+        LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
 
         long now     = Helper.getMillisGMT();
-        long before  = now + (mPref.getExpiryTime() + 60) * 60 * 1000; // look 6 hour past and expiry plus 1 hour time in future
+        long before  = now + 12 * 60 * 60 * 1000; // look 6 hour past and 12 hour time in future
         long after   = now - 6 * 60 * 60 * 1000;
 
         String qry = "select * from " + TABLE_GAME + " where ((datetime > " + after + ") and (datetime < " + before + "))";
         Cursor cursor = doQueryRatings(qry, "gametfr.db");
+        SimpleDateFormat formatter = new SimpleDateFormat("ddHHmm");
+
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
                     do {
-                        TimedCoordinate c = new TimedCoordinate(cursor.getFloat(3), cursor.getFloat(2), cursor.getLong(0));
+                        String date = cursor.getString(1) + " " + formatter.format(cursor.getLong(0)) + "Z";
+
+                        LabelCoordinate c = new LabelCoordinate(cursor.getFloat(3), cursor.getFloat(2), date);
                         ret.add(c);
                     }
                     while(cursor.moveToNext());
