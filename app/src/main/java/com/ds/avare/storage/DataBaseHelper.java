@@ -39,6 +39,7 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -2889,18 +2890,27 @@ public class DataBaseHelper  {
     public LinkedList<LabelCoordinate> findGameTFRs() {
         LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
 
+        // Find -6 hours to +12 hours
+        Calendar begin = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        begin.add(Calendar.HOUR_OF_DAY, -6);
+        end.add(Calendar.HOUR_OF_DAY, 12);
+
 
         // Game TFRs in EST
         SimpleDateFormat formatterIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         formatterIso.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-        String now = formatterIso.format(new Date());
+        String bS = formatterIso.format(begin.getTime());
+        String eS = formatterIso.format(end.getTime());
 
         SimpleDateFormat formatterZulu = new SimpleDateFormat("ddHH:mm'Z'");
         formatterZulu.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 
-        // Find -6 hours to +12 hours
-        String qry = "select * from " + TABLE_GAME + " where datetime > + date('" + now + "','-6 hours') and datetime < + date('" + now + "','+12 hours')";
+        String qry = "select * from " + TABLE_GAME + " where effective between '" + bS +  "' and '"  + eS + "'";
+
+
+
         Cursor cursor = doQueryRatings(qry, "gametfr.db");
 
         try {
