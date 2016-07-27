@@ -12,13 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.telephony.SmsManager;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 
@@ -29,10 +29,10 @@ import java.util.ArrayList;
  * Created by zkhan on 7/25/16.
  */
 public class Emergency {
-    public static String declare(Context ctx, Preferences pref, StorageService service) {
+    public static String declare(Context ctx, final Preferences pref, final StorageService service) {
         String ret = ctx.getString(R.string.Done);
 
-        GpsParams params = service.getGpsParams();
+        final GpsParams params = service.getGpsParams();
         /*
          * Send this message on SMS:
          * I Need Help!
@@ -46,7 +46,7 @@ public class Emergency {
 
             String pilotName = pref.getPilotContact();
             String tailNumber = pref.getAircraftTailNumber();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM HH:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd HH:mm:ss");
             String time = formatter.format(Helper.getMillisGMT());
 
             String message =
@@ -75,17 +75,27 @@ public class Emergency {
         String checklist = pref.getEmergencyChecklist();
         service.setOverrideListName(checklist);
 
-        // closests airport
-        Airport ap = null;
-        Area area = service.getArea();
-        if(area != null) {
-            ap = area.getAirport(0);
-        }
-        if(ap != null) {
-            Destination d = new Destination(ap.getId(), Destination.BASE, pref, service);
-            service.setDestination(d);
-            d.find();
-        }
+        // Find airport with min length then go to it
+        AsyncTask<Void, Void, Void> atask = new AsyncTask<Void, Void, Void>() {
+            Airport[] ap;
+
+            @Override
+            protected Void doInBackground(Void... v) {
+                ap = service.getDBResource().findClosestAirports(params.getLongitude(), params.getLatitude(), pref.getLongestRunway());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                // closests airport with minimum runway length
+                if (ap != null) {
+                    Destination d = new Destination(ap[0].getId(), Destination.BASE, pref, service);
+                    service.setDestination(d);
+                    d.find();
+                }
+            }
+        };
+        atask.execute();
 
 
         return ret;
