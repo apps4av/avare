@@ -43,10 +43,6 @@ public class TFRShape extends Shape {
      */
     public static void draw(DrawingContext ctx, LinkedList<TFRShape> shapes, boolean shouldShow) {
 
-        Paint mPaint = new Paint();
-        mPaint.setColor(Color.RED);
-        mPaint.setShadowLayer(0, 0, 0, 0);
-
         if(!shouldShow) {
             return;
         }
@@ -65,6 +61,7 @@ public class TFRShape extends Shape {
             strokePaint.setColor(Color.RED);
             strokePaint.setStrokeWidth(3 * ctx.dip2pix);
             strokePaint.setShadowLayer(0, 0, 0, 0);
+
             Paint fillPaint = new Paint();
             fillPaint.setDither(true);
             fillPaint.setStyle(Paint.Style.FILL);
@@ -85,7 +82,9 @@ public class TFRShape extends Shape {
                 }
                 if(todraw.isOnScreen(ctx.origin)) {
                     todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, strokePaint, ctx.pref.isNightMode(), true);
-                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, fillPaint, ctx.pref.isNightMode(), true);
+                    if (ctx.pref.isTFRShading()) {
+                        todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, fillPaint, ctx.pref.isNightMode(), true);
+                    }
                 }
             }
         }

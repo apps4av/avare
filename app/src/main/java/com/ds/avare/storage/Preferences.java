@@ -421,6 +421,13 @@ public class Preferences {
     }
 
     /**
+     * @return
+     */
+    public boolean isTFRShading() {
+        return (mPref.getBoolean(mContext.getString(R.string.TFRShading), false));
+    }
+
+    /**
      * @param activity
      * @return
      */
