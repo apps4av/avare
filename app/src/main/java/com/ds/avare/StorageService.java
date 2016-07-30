@@ -42,6 +42,7 @@ import com.ds.avare.network.ShapeFetcher;
 import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
@@ -123,9 +124,13 @@ public class StorageService extends Service {
     private boolean mDownloading;
     
     private LinkedList<Checklist> mCheckLists;
+    String mOverrideListName;
 
     private MetarLayer mMetarLayer;
-    
+
+    private GameTFR mGameTFRs;
+
+
     /**
      * GPS
      */
@@ -247,7 +252,19 @@ public class StorageService extends Service {
     // Timer for count up
     private UpTimer mUpTimer;
 
-    
+    public String getOverrideListName() {
+        return mOverrideListName;
+    }
+
+    public void setOverrideListName(String overrideListName) {
+        mOverrideListName = overrideListName;
+    }
+
+    public void deleteGameTFRs() {
+        mGameTFRs = new GameTFR();
+    }
+
+
     /**
      * @author zkhan
      *
@@ -302,12 +319,16 @@ public class StorageService extends Service {
         mTFRFetcher.parse();
         mShapeFetcher = new ShapeFetcher(getApplicationContext());
         mShapeFetcher.parse();
+        mGameTFRs = new GameTFR();
+        mGameTFRs.loadGames(this);
+
         mTimer = new Timer();
         TimerTask gpsTime = new UpdateTask();
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mDiagramBitmap = null;
         mAfdIndex = 0;
+        mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
@@ -573,6 +594,10 @@ public class StorageService extends Service {
      */
     public TFRFetcher getTFRFetcher() {
         return mTFRFetcher;
+    }
+
+    public GameTFR getmGameTFRs() {
+        return mGameTFRs;
     }
 
     /**

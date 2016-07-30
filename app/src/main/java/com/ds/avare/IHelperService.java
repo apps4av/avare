@@ -140,7 +140,9 @@ public class IHelperService extends Service {
                 double idNext = -1;
                 double idOrig = -1;
                 double deviation = 0;
-                
+                double bearingTrue = 0;
+                double bearingMagnetic = 0;
+
                 // If destination set, send how to get there (for autopilots).
                 if(d != null) {
                     distance = d.getDistance();
@@ -149,8 +151,10 @@ public class IHelperService extends Service {
                     lat = d.getLocation().getLatitude();
                     elev = d.getElevation();
                     if(p != null) {
-                        idNext = p.findNextNotPassed() + 1;
+                        idNext = p.findNextNotPassed();
                         idOrig = idNext - 1;
+                        bearingTrue = p.getBearing((int)idOrig, (int)idNext);
+                        bearingMagnetic = Helper.getMagneticHeading(bearingTrue, d.getDeclination());
                     }
                     if(c != null) {
                         deviation = c.getDeviation();
@@ -167,6 +171,8 @@ public class IHelperService extends Service {
                 object.put("destOriginId", idOrig);
                 object.put("destDeviation", deviation);
                 object.put("destElev", elev);
+                object.put("bearingTrue", bearingTrue);
+                object.put("bearingMagnetic", bearingMagnetic);
             } catch (JSONException e1) {
                 return null;
             }

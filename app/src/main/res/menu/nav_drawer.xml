@@ -12,8 +12,8 @@
             android:id="@+id/nav_downloads"
             android:title="@string/Downloads" />
         <item
-            android:id="@+id/nav_ads"
-            android:title="@string/Advertisements" />
+            android:id="@+id/nav_sos"
+            android:title="@string/SOS" />
         <item
             android:id="@+id/nav_help"
             android:title="@string/Help" />

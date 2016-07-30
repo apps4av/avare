@@ -57,7 +57,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resNameWeather">
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
-        <item>@string/TFRs</item>
+        <item>TFRs</item>
+        <item>Game TFRs</item>
     </string-array>
 
     <string-array name="resNameOther">
@@ -465,6 +466,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Houston Heli</item>
         <item>Los Angeles Heli</item>
         <item>New York Heli</item>
+        <item>US Gulf Coast Heli</item>
         <item>Washington Heli</item>
     </string-array>
 
@@ -1499,6 +1501,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>weather</item>
         <item>conus</item>
         <item>TFRs</item>
+        <item>GameTFRs</item>
     </string-array>
 
     <string-array name="resFilesOther">
@@ -1909,6 +1912,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>HoustonHeli</item>
         <item>LosAngelesHeli</item>
         <item>NewYorkHeli</item>
+        <item>USGulfCoastHeli</item>
         <item>WashingtonHeli</item>
     </string-array>
 
@@ -2101,6 +2105,15 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>45</item>
         <item>60</item>
         <item>90</item>
+    </string-array>
+
+    <string-array name="EarlyPassTimerValues">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
     </string-array>
 
     <string-array name="DisplayIconPrompt">

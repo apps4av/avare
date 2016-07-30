@@ -203,6 +203,15 @@ public class ChecklistFragment extends StorageServiceGpsListenerFragment {
         mTimer = new Timer();
         TimerTask sim = new UpdateTask();
         mTimer.scheduleAtFixedRate(sim, 0, 1000);
+
+        /*
+         * To load a list from other activities
+         */
+        String overList = mService.getOverrideListName();
+        if(overList != null) {
+            mInfc.loadList(overList);
+            mService.setOverrideListName(null);
+        }
     }
 
     /***

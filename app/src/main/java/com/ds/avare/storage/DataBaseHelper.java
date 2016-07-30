@@ -28,6 +28,7 @@ import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
@@ -37,11 +38,15 @@ import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 /**
@@ -58,9 +63,10 @@ public class DataBaseHelper  {
     private SQLiteDatabase mDataBasePlates;
     private SQLiteDatabase mDataBaseGeoPlates;
     private SQLiteDatabase mDataBaseFuel; 
-    private SQLiteDatabase mDataBaseRatings; 
-    private SQLiteDatabase mDataBaseWeather; 
-    
+    private SQLiteDatabase mDataBaseRatings;
+    private SQLiteDatabase mDataBaseWeather;
+    private SQLiteDatabase mDataBaseGameTFRs;
+
     /*
      * Preferences
      */
@@ -82,7 +88,8 @@ public class DataBaseHelper  {
     private Integer mUsersProcedures;
     private Integer mUsersFuel;
     private Integer mUsersRatings;
-    
+    private Integer mUsersGameTFRs;
+
     
     public  static final String  FACILITY_NAME = "Facility Name";
     private static final String  FACILITY_NAME_DB = "FacilityName";
@@ -137,6 +144,7 @@ public class DataBaseHelper  {
     private static final String TABLE_AIRWAYS = "airways";
     private static final String TABLE_FUEL = "fuel";
     private static final String TABLE_RATINGS = "ratings";
+    private static final String TABLE_GAME = "gametfr";
 
 
     /**
@@ -301,7 +309,7 @@ public class DataBaseHelper  {
          * Limit to airports taken by array airports
          */
         String qry = "select * from " + TABLE_AIRPORTS + "," + TABLE_AIRPORT_RUNWAYS + " where ";
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry += TABLE_AIRPORTS + "." + TYPE_DB + "=='AIRPORT' and ";
         }
 
@@ -706,7 +714,7 @@ public class DataBaseHelper  {
         		qendK = " (" + LOCATION_ID_DB + " like '" + name.substring(1) + "%' " + ") order by " + LOCATION_ID_DB + " asc";
         	}
             qry = qbasic + TABLE_AIRPORTS + " where ";
-            if(!mPref.shouldShowAllFacilities()) {
+            if(!mPref.isShowAllFacilities()) {
                 qry += TYPE_DB + "=='AIRPORT' and ";
             }
             qry += qendK;
@@ -750,7 +758,7 @@ public class DataBaseHelper  {
         closes(cursor);
 
         qry = qbasic + TABLE_AIRPORTS + " where ";
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry += TYPE_DB + "=='AIRPORT' and ";
         }
         qry += qend;
@@ -1441,7 +1449,7 @@ public class DataBaseHelper  {
                 + " (" + LATITUDE_DB + " - " + lat + ") * (" + LATITUDE_DB + " - " + lat + ")"
                 + ") as dist";
         String qry = "select " + LOCATION_ID_DB + asDist + " from " + TABLE_AIRPORTS;
-        if(!mPref.shouldShowAllFacilities()) {
+        if(!mPref.isShowAllFacilities()) {
             qry +=  " where " + TYPE_DB + "=='AIRPORT' and ";
         }
         else {
@@ -2787,4 +2795,143 @@ public class DataBaseHelper  {
         closesRatings(cursor);
         return ret;
 	}
+
+
+    /**
+     *
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryGameTFRs(String statement, String name) {
+        Cursor c = null;
+
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         *
+         */
+        synchronized(mUsersGameTFRs) {
+            if(mDataBaseGameTFRs == null) {
+                mUsersGameTFRs = 0;
+                try {
+
+                    mDataBaseGameTFRs = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseGameTFRs = null;
+                }
+            }
+            if(mDataBaseGameTFRs == null) {
+                return c;
+            }
+            mUsersGameTFRs++;
+        }
+
+        /*
+         * In case we fail
+         */
+
+        if(mDataBaseGameTFRs == null) {
+            return c;
+        }
+
+        if(!mDataBaseGameTFRs.isOpen()) {
+            return c;
+        }
+
+        /*
+         * Find with sqlite query
+         */
+        try {
+            c = mDataBaseGameTFRs.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+
+    /**
+     * Close database
+     */
+    private void closesGameTFRs(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        synchronized(mUsersGameTFRs) {
+            mUsersGameTFRs--;
+            if((mDataBaseGameTFRs != null) && (mUsersGameTFRs <= 0)) {
+                try {
+                    mDataBaseGameTFRs.close();
+                }
+
+
+                catch (Exception e) {
+                }
+                mDataBaseGameTFRs = null;
+                mUsersGameTFRs = 0;
+            }
+        }
+    }
+
+
+    public LinkedList<LabelCoordinate> findGameTFRs() {
+        LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
+
+        // Find -6 hours to +12 hours
+        Calendar begin = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        begin.add(Calendar.HOUR_OF_DAY, -6);
+        end.add(Calendar.HOUR_OF_DAY, 12);
+
+
+        // Game TFRs in EST
+        SimpleDateFormat formatterIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        formatterIso.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        String bS = formatterIso.format(begin.getTime());
+        String eS = formatterIso.format(end.getTime());
+
+        SimpleDateFormat formatterZulu = new SimpleDateFormat("ddHH:mm'Z'");
+        formatterZulu.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+
+        String qry = "select * from " + TABLE_GAME + " where effective between '" + bS +  "' and '"  + eS + "'";
+
+
+
+        Cursor cursor = doQueryRatings(qry, "gametfr.db");
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        String date = cursor.getString(0);
+                        Date effective = formatterIso.parse(date);
+                        // print in zulu
+                        String toprint = formatterZulu.format(effective);
+
+                        LabelCoordinate c = new LabelCoordinate(cursor.getFloat(3), cursor.getFloat(2), toprint + " " + cursor.getString(1));
+                        ret.add(c);
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        closesRatings(cursor);
+        return ret;
+    }
 }

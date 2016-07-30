@@ -30,8 +30,8 @@
 # 1. Set up an apache server at http://localhost 
 # 2. Install Python (with sqlite3, mapnik, urllib, shutils, pdftools-for pdf2txt), PERL (with XML, XML XPath, File, Archive::Zip, File Slurp, LWP Simple), ImageMagick, sqlite3, pdftotext, make, wget, unzip
 # 3. Put data in server http://localhost under:
-# 	Unzip all plate products from FAA (http://faacharts.faa.gov/ DDTPP*_XX.zip) under /plates/
-# 	Unzip AFD product from FAA (http://faacharts.faa.gov/ DAFD_XX.zip) under /afd/
+# 	Unzip all plate products from FAA (http://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/dtpp/ DDTPP*_XX.zip) under /plates/
+# 	Unzip AFD product from FAA (http://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/dafd/ DAFD_XX.zip) under /afd/
 # 	Unzip NFDC product from FAA (https://nfdc.faa.gov/fadds/subscriptionDownload.do?productId=548752 56DySubscription_XYZ.zip) under /nfdc/
 # 4. place http://www.navcanada.ca/EN/products-and-services/Documents/CanadianAirportCharts_Next.pdf in /can
 # 5. make CYCLE=1508

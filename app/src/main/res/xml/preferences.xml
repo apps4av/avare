@@ -191,6 +191,18 @@ authors: zkhan, jlmcgraw
             android:key="@string/ETABearing"
             android:summary="@string/ETABearingSummary"
             android:title="@string/ETABearingLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefPlanPassage"
+            android:summary="@string/prefPlanPassageSummary"
+            android:title="@string/prefPlanPassageLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="30"
+            android:entries="@array/EarlyPassTimerValues"
+            android:entryValues="@array/EarlyPassTimerValues"
+            android:key="@string/EarlyPassTimer"
+            android:summary="@string/EarlyPassTimerSummary"
+            android:title="@string/EarlyPassTimerLabel" />
     </PreferenceScreen>
         
     <PreferenceScreen 
@@ -213,9 +225,9 @@ authors: zkhan, jlmcgraw
             android:title="@string/FirstPersonLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="@string/ScreenOn"
-            android:summary="@string/ScreenOnSummary"
-            android:title="@string/ScreenOnLabel" />
+            android:key="@string/KeepScreenOn"
+            android:summary="@string/KeepScreenOnSummary"
+            android:title="@string/KeepScreenOnLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="Portrait"
             android:entries="@array/Orientation"
@@ -235,11 +247,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/ADSBTrafficFilter"
             android:summary="@string/ADSBTrafficFilterSummary"
             android:title="@string/ADSBTrafficFilterLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/GameTFR"
-            android:summary="@string/GameTFRSummary"
-            android:title="@string/GameTFRLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/CAPGrid"
@@ -451,6 +458,18 @@ authors: zkhan, jlmcgraw
             android:summary="@string/GlideRatioSummary"
             android:defaultValue="7.0"
             android:key="@string/GlideRatio"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/EmergencyContact"
+            android:summary="@string/EmergencyContactSummary"
+            android:defaultValue=""
+            android:key="@string/EmergencyContact"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/EmergencyChecklist"
+            android:summary="@string/EmergencyChecklistSummary"
+            android:defaultValue=""
+            android:key="@string/EmergencyChecklist"/>
 
     </PreferenceScreen>
 

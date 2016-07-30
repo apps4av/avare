@@ -37,16 +37,12 @@ public class Map {
         mRatio = 0;
     }
 
-    public boolean loadTerrain(BitmapHolder b, float ratio) {
-        if(null == b) {
-            return false;
-        }
-        Bitmap bitmap = b.getBitmap();
-        if (bitmap == null) {
-            return false;
-        }
+    public boolean loadTerrain(short vertexArray[], float ratio) {
 
-        mVertexArrayShort = new VertexArrayShort(genTerrainFromBitmap(bitmap));
+        if(null == vertexArray) {
+            return false;
+        }
+        mVertexArrayShort = new VertexArrayShort(vertexArray);
         mRatio = ratio;
         return true;
     }
@@ -76,28 +72,6 @@ public class Map {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES);
     }
 
-    /**
-     * rows, cols must be even
-     * @param vertices
-     * @param count
-     * @param row
-     * @param col
-     * @param b
-     * @return
-     */
-    private int makeVertix(short vertices[], int count, int row, int col, Bitmap b) {
-
-        int px = b.getPixel(col, row) & 0xFF;
-        int pxr = (px / 64) & 0x3F;
-        int pxc = px & 0x3F;
-
-        // Change this in GLSL vertex shader, if changed here
-        // pack data : 10 bit row + 6 high bits of pixel then 10 bit col + 6 low bits of pixel
-        vertices[count++] = (short) (row * 64 + pxr);
-        vertices[count++] = (short) (col * 64 + pxc);
-        return count;
-    }
-
     //http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/ibo_with_degenerate_triangles/
 
     /**
@@ -123,11 +97,37 @@ public class Map {
     }
 
     /**
+     * rows, cols must be even
+     * @param vertices
+     * @param count
+     * @param row
+     * @param col
+     * @param b
+     * @return
+     */
+    private static int makeVertix(short vertices[], int count, int row, int col, Bitmap b) {
+
+        int px = b.getPixel(col, row) & 0xFF;
+        int pxr = (px / 64) & 0x3F;
+        int pxc = px & 0x3F;
+
+        // Change this in GLSL vertex shader, if changed here
+        // pack data : 10 bit row + 6 high bits of pixel then 10 bit col + 6 low bits of pixel
+        vertices[count++] = (short) (row * 64 + pxr);
+        vertices[count++] = (short) (col * 64 + pxc);
+        return count;
+    }
+
+
+    /**
      * Make terrain index buffer from bitmap
      * @param b
      * @return
      */
-    private short[] genTerrainFromBitmap(Bitmap b) {
+    public static short[] genTerrainFromBitmap(Bitmap b) {
+        if(null == b) {
+            return null;
+        }
         short vertices[] = new short[NUM_VERTICES * COMPONENTS];
         int count = 0;
         int col;

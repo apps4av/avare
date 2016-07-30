@@ -453,7 +453,7 @@ public class InfoLines {
         
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so
-        if (mPref.shouldShowBackground()) {
+        if (mPref.isShowBackground()) {
             aPaint.setShadowLayer(0, 0, 0, 0);
             aPaint.setColor(aTextColorOpposite);
             aPaint.setAlpha(0x7f);

@@ -197,8 +197,8 @@ public class TerrainRenderer implements GLSurfaceView.Renderer {
         mTextureSet = mTexture != 0;
     }
 
-    public void setTerrain(BitmapHolder b, float ratio) {
-        mMapSet = mMap.loadTerrain(b, ratio);
+    public void setTerrain(short vertexArray[], float ratio) {
+        mMapSet = mMap.loadTerrain(vertexArray, ratio);
     }
 
     public void setShips(Vector4d traffic[]) {

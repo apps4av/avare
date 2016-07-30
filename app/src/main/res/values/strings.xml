@@ -64,9 +64,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="databases">&quot;Databases (Required)&quot;</string>
     <string name="ValidDest">&quot;Enter a valid destination first&quot;</string>
     <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
-    <string name="ScreenOn">&quot;Screen Timeout&quot;</string>
-    <string name="ScreenOnLabel">&quot;Keep Screen On&quot;</string>
-    <string name="ScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
+    <string name="KeepScreenOn">&quot;Screen Timeout&quot;</string>
+    <string name="KeepScreenOnLabel">&quot;Keep Screen On&quot;</string>
+    <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="HideTabBar">&quot;Hide Tab Bar&quot;</string>
     <string name="HideTabBarLabel">&quot;Hide Tab Bar&quot;</string>
     <string name="HideTabBarSummary">&quot;Select to hide the bottom tab bar.&quot;</string>
@@ -292,7 +292,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ImportAction">Import a check list from a plain text file</string>
     <string name="ImportActionFilePath">File path and name</string>
     <string name="Import">Import</string>
-    <string name="Advertisements">Ads</string>
+    <string name="SOS">Emergency</string>
     <string name="Locked">Locked</string>
     <string name="Edit">Edit</string>
     <string name="ExternalFolder">Try using external folder</string>
@@ -306,6 +306,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
     <string name="DisplayIconLabel">&quot;Location Display Icon&quot;</string>
     <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location (requires restart).&quot;</string>
+    <string name="EarlyPassTimer">&quot;EarlyPassTimer&quot;</string>
+    <string name="EarlyPassTimerLabel">&quot;Early Pass Timer Value&quot;</string>
+    <string name="EarlyPassTimerSummary">&quot;Select the number of seconds before the waypoint to advance to next leg.&quot;</string>
     <string name="Cycle">Cycle</string>
     <string name="CycleLabel">Chart Download Cycle</string>
     <string name="CycleSummary">Select which cycle to download the charts from</string>
@@ -350,9 +353,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoCodeLabel">&quot;Geo. Reference Password&quot;</string>
     <string name="GeoCode">&quot;GeoPassword&quot;</string>
     <string name="GeoCodeSummary">&quot;Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)&quot;</string>
-    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
-    <string name="GameTFR">&quot;GameTFR&quot;</string>
-    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
 
     <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
@@ -427,6 +427,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefPlanControl">&quot;PlanControl&quot;</string>
     <string name="prefPlanControlLabel">&quot;Show Flight Plan Controls&quot;</string>
     <string name="prefPlanControlSummary">&quot;Select to display flight plan control buttons on chart view&quot;</string>
+    <string name="prefPlanPassage">&quot;PlanPassage&quot;</string>
+    <string name="prefPlanPassageLabel">&quot;Early Passage&quot;</string>
+    <string name="prefPlanPassageSummary">&quot;Select to change route leg early for autopilot turns&quot;</string>
     <string name="switchTanks">&quot;Switch Fuel Tanks&quot;</string>
     <string name="CAPGrid">&quot;CAPGrids&quot;</string>
     <string name="CAPGridSummary">&quot;Select to show the US Civil Air Patrol grids on the map.&quot;</string>
@@ -504,11 +507,18 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FuelTimerLabel">Fuel Timer Interval</string>
     <string name="FuelTimerSummary">Select fuel timer reset interval (change requires app restart)</string>
 
+    <string name="EmergencyContact">Emergency Contact Phone</string>
+    <string name="EmergencyContactSummary">Emergency contact MOBILE phone number</string>
+
+    <string name="EmergencyChecklist">Emergency Checklist</string>
+    <string name="EmergencyChecklistSummary">Checklist Name to load in emergency</string>
+
     <string name="Proceed">Proceed</string>
     <string name="GrantPermissions">Grant Permissions</string>
     <string name="RationaleAccount">Let this app read your accounts? Email address from one account is needed to confirm that you have signed the privacy policy.</string>
     <string name="RationaleLocation">Let this app use your GPS? GPS is needed for showing your location on the map.</string>
     <string name="RationaleExternalStorage">Let this app use your SD Card? SD card access is needed to store large maps.</string>
+    <string name="RationaleSMS">Let this app send SMS when you declare an in flight emergency.</string>
     <string name="RationaleSettings">Let this app change your device settings? Settings are modified for screen brightness.</string>
     <string name="NoRationale">Disallowing a permission may cause the app to misbehave or crash.</string>
 
@@ -529,6 +539,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
 
     <string name="Developer">Developer Settings</string>
+    <string name="DeclareEmergency">Declare Emergency?</string>
+    <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n4.Send SMS to Emergency Contact</string>
+    <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
 
     <string name="RegisterActivityPreferenceKey">REGISTER_ACTIVITY_PREFERENCE_KEY</string>
     <string name="SyncActivityPreferenceKey">SYNC_ACTIVITY_PREFERENCE_KEY</string>

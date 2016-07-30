@@ -11,16 +11,23 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +54,7 @@ import com.ds.avare.navhandler.ToolsNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.TripNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.WxbNavigationItemSelectedHandler;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.ToolbarVisibilityListener;
@@ -68,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private AppCompatCheckBox mShowToolbarCheckBox;
     private AppCompatCheckBox mShowTabbarCheckBox;
+    // View container for Snackbars
+    private CoordinatorLayout mCoordinatorLayout;
+    // Service that keeps state even when activity is dead
+    protected StorageService mService;
+    /**
+     * To go to emergency mode
+     */
+    private AlertDialog mSosDialog;
 
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
     private Map<String, ToolbarVisibilityListener> mToolbarVisibilityListeners = new HashMap<>();
@@ -101,6 +117,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NAV_ITEM_HANDLERS.put(R.id.nav_trip, new TripNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_tools, new ToolsNavigationItemSelectedHandler());
     }
+
+    // Defines callbacks for service binding, passed to bindService()
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            mService = ((StorageService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg) { }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -177,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TextView navHeaderText = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_text);
         navHeaderText.setText(mPref.getRegisteredEmail());
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
     }
 
     private void setupTabs(TabLayout tabLayout) {
@@ -264,8 +294,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startPreferencesActivity();
             } else if (itemId == R.id.nav_downloads) {
                 startChartsDownloadActivity();
-            } else if (itemId == R.id.nav_ads) {
-                startAdsActivity();
+            } else if (itemId == R.id.nav_sos) {
+                showSosDialog();
             } else if (itemId == R.id.nav_help) {
                 startHelpActivity();
             } else if (itemId == R.id.nav_toggle_toolbar) {
@@ -331,6 +361,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+
+        // Registering our receiver. Bind now.
+        Intent intent = new Intent(this, StorageService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Clean up anything that was started in onResume
+        unbindService(mConnection);
+
+        // Kill dialogs
+        try {
+            mSosDialog.dismiss();
+        } catch (Exception e) { }
     }
 
     @Override
@@ -338,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*
          * Start service now, bind later. This will be no-op if service is already running
          */
-        if (!mPref.shouldLeaveRunning()) {
+        if(!mPref.isLeaveRunning()) {
             if (isFinishing()) {
                 /*
                  * Do not kill on orientation change
@@ -360,8 +407,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(i);
     }
 
-    private void startAdsActivity() {
-        startActivity(new Intent(this, MessageActivity.class));
+    private void showSosDialog() {
+        mSosDialog = new AlertDialog.Builder(this).create();
+        mSosDialog.setTitle(getString(R.string.DeclareEmergency));
+        mSosDialog.setMessage(getString(R.string.DeclareEmergencyDetails));
+        mSosDialog.setCancelable(false);
+        mSosDialog.setCanceledOnTouchOutside(false);
+        mSosDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                String message = Emergency.declare(getApplicationContext(), mPref, mService);
+                Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mSosDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        mSosDialog.show();
     }
 
     private void startHelpActivity() {

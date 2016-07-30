@@ -174,6 +174,7 @@ public class LocationView extends View implements OnTouchListener {
     private float                mDragStartedX;
     private float                mDragStartedY;
 
+
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
      */
@@ -228,7 +229,7 @@ public class LocationView extends View implements OnTouchListener {
         mPaint.setAntiAlias(true);
         mPointProjection = null;
         mDraw = false;
-        
+
         mPref = new Preferences(context);
         
         mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
@@ -600,10 +601,18 @@ public class LocationView extends View implements OnTouchListener {
         /*
          * Get draw points.
          */
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(4 * mDipToPix);
+
+        // Blue inside, black outside
+        Paint.Cap oldCaps = mPaint.getStrokeCap();
+        mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStrokeWidth(6 * mDipToPix);
         mService.getDraw().drawShape(canvas, mPaint, mOrigin);
-        
+
+        mPaint.setColor(Color.BLUE);
+        mPaint.setStrokeWidth(2 * mDipToPix);
+        mService.getDraw().drawShape(canvas, mPaint, mOrigin);
+        mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
     }
 
 
@@ -666,7 +675,7 @@ public class LocationView extends View implements OnTouchListener {
         /*
          * Some pre-conditions that would prevent us from drawing anything
          */
-        if(mPref.shouldDrawTracks() && (null == mPointProjection)) {
+        if(mPref.isDrawTracks() && (null == mPointProjection)) {
                 
             /*
              *  Set the brush color and width
@@ -700,8 +709,7 @@ public class LocationView extends View implements OnTouchListener {
      * Draw the vertical approach slope indicator if we have a destination set
      * @param canvas what to draw the data upon
      */
-    private void drawVASI(Canvas canvas)
-    {
+    private void drawVASI(Canvas canvas) {
         if(mPointProjection == null && mErrorStatus == null) {
         	if(mPref.getShowCDI()) {
 	        	Destination dest = mService.getDestination();
@@ -714,11 +722,20 @@ public class LocationView extends View implements OnTouchListener {
     }
 
     /***
+     */
+    private void drawGameTFRs(DrawingContext ctx) {
+        if(mPointProjection == null) {
+            mService.getmGameTFRs().draw(ctx);
+        }
+
+    }
+
+    /***
      * Draw the edge distance markers if configured to do so
      * @param canvas what to draw them on
      */
     private void drawEdgeMarkers(Canvas canvas) {
-    	if(mPref.shouldShowEdgeTape()) {
+    	if(mPref.isShowEdgeTape()) {
 	        if(mPointProjection == null) {
 		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
 		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
@@ -805,6 +822,7 @@ public class LocationView extends View implements OnTouchListener {
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
         drawTFR(canvas, ctx);
+        drawGameTFRs(ctx);
         drawShapes(canvas, ctx);
         drawAirSigMet(canvas, ctx);
         drawTracks(canvas, ctx);

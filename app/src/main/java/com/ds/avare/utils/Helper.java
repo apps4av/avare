@@ -459,7 +459,7 @@ public class Helper {
     public static void setOrientationAndOn(Activity act) {
         
         Preferences pref = new Preferences(act.getApplicationContext());
-        if(pref.shouldScreenStayOn()) {
+        if(pref.isKeepScreenOn()) {
             act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
         }
 

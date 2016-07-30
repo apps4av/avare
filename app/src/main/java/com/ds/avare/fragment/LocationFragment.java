@@ -146,7 +146,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         @Override
         public void rollout() {
             if(mPref != null && mService != null) {
-                if(mPref.shouldAutoDisplayAirportDiagram()) {
+                if(mPref.isAutoDisplayAirportDiagram()) {
                     int nearestNum = mService.getArea().getAirportsNumber();
                     if(nearestNum > 0) {
                         /*
@@ -908,7 +908,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             // Store GPS last location in case activity dies, we want to start from same loc
             mLocationView.updateParams(params);
 
-            if (mService != null && mService.getPlan().isEarlyPass() && mPref.shouldBlinkScreen()) {
+            if (mService != null && mService.getPlan().isEarlyPass() && mPref.isBlinkScreen()) {
                 // Check that if we are close to passing a plan passage, blink
                 blink();
             }

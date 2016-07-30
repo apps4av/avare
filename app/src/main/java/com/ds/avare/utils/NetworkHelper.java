@@ -315,6 +315,9 @@ public class NetworkHelper {
         if(file.equals("TFRs.zip")) {
             return(root + "/" + file);
         }
+        if(file.equals("GameTFRs.zip")) {
+            return(root + "/" + file);
+        }
         else if(file.equals("weather.zip")) {
             return(root + "/" + file);
         }

@@ -654,6 +654,25 @@ public class Plan implements Observer {
     }
 
     /**
+     * Bearing between two points in plan
+     * @param id0
+     * @param id1
+     * @return
+     */
+    public double getBearing(int id0, int id1) {
+        if(id0 < 0 || id1 < 0) {
+            return 0;
+        }
+        Destination d0 = getDestination(id0);
+        Destination d1 = getDestination(id1);
+        if(d0 == null || d1 == null) {
+            return 0;
+        }
+        return Projection.getStaticBearing(d0.getLocation().getLongitude(), d0.getLocation().getLatitude(),
+                d1.getLocation().getLongitude(), d1.getLocation().getLatitude());
+    }
+
+    /**
      * A class that finds a station passage
      * 
      * @author zkhan
@@ -666,7 +685,8 @@ public class Plan implements Observer {
         double mCurrentDistance;
         double mCurrentBearing;
         double mSpeed;
-        
+        double mEarlyPassTime;
+
         // Use this to set early pass flag, meaning we are close to our dest.
         private static final double EARLY_PASS_THRESHOLD = 23; // seconds
 
@@ -709,10 +729,15 @@ public class Plan implements Observer {
              * Find early pass
              */
             double timerem = (mCurrentDistance / mSpeed) * 3600;
-            if (timerem < EARLY_PASS_THRESHOLD) {
+            if (timerem < (mPref.getEarlyPassTimer())) {
                 if (!mEarlyPass) {
-                    mEarlyPass = true;
-                    mEarlyPassEvent = true;
+                    mEarlyPass = false;
+                    if (true == mPref.getPlanPassage()) {
+                        mEarlyPassEvent = true;
+                        return true;
+                    } else {
+                        mEarlyPassEvent = false;
+                    }
                 }
             }
 
