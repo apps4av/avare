@@ -157,7 +157,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                                 nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
-                            ((MainActivity) getContext()).showPlatesView();
+                            ((MainActivity) getContext()).showPlatesViewAndCenter();
                         }
                     }
                 }
@@ -508,7 +508,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                         mService.setLastPlateAirport(mAirportPressed);
                         mService.setLastPlateIndex(0);
                         mDestLayout.setVisibility(View.INVISIBLE);
-                        ((MainActivity) getContext()).showPlatesView();
+                        ((MainActivity) getContext()).showPlatesViewAndCenter();
                     }
                     mAirportPressed = null;
                 }
@@ -524,7 +524,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                     if(mService != null) {
                         mService.setLastAfdAirport(mAirportPressed);
                         mDestLayout.setVisibility(View.INVISIBLE);
-                        ((MainActivity) getContext()).showAfdView();
+                        ((MainActivity) getContext()).showAfdViewAndCenter();
                         mAirportPressed = null;
                     }
                 }

@@ -99,7 +99,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                     mService.setLastPlateAirport(mSelectedAirportId);
                     mService.setLastPlateIndex(0);
                 }
-                ((MainActivity) getContext()).showPlatesView();
+                ((MainActivity) getContext()).showPlatesViewAndCenter();
             }
         });
 

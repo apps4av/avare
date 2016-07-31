@@ -171,8 +171,10 @@ public class PlatesView extends View implements OnTouchListener {
      * @param holder
      */
     public void setBitmap(BitmapHolder holder) {
+        boolean init = (mBitmap == null);
         mBitmap = holder;
         postInvalidate();
+        if (init) center(); // center the first time a bitmap is loaded
     }
     /**
      * 
@@ -201,10 +203,9 @@ public class PlatesView extends View implements OnTouchListener {
      * Set params to show lon/lat 
      */
     public void setParams(float[] params, boolean ad) {
-    	mMatrix = params;
-    	mShowingAD = ad;
-        center();
-    	postInvalidate();
+        mMatrix = params;
+        mShowingAD = ad;
+        postInvalidate();
     }
 
     /* (non-Javadoc)

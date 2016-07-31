@@ -127,7 +127,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
     <string name="TFRShading">&quot;TFR Shading&quot;</string>
     <string name="TFRShadingLabel">&quot;TFR Shading&quot;</string>
-    <string name="TFRShadingSummary">&quot;Select to enable TFR shading&quot;</string>
+    <string name="TFRShadingSummary">&quot;Select to enable TFR shading (may significantly impact performance)&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>

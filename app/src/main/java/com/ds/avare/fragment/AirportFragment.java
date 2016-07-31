@@ -95,6 +95,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         setViewFromPos(which);
+                        mAfdView.center();
                     }
                 };
 
@@ -122,6 +123,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         setNewDestinationFromPos(which);
+                        mAfdView.center();
                     }
                 };
 
@@ -539,6 +541,10 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                 showSnackbar(getString(R.string.DestinationNF), Snackbar.LENGTH_SHORT);
             }
         }
+    }
+
+    public AfdView getAfdView() {
+        return mAfdView;
     }
 
 }

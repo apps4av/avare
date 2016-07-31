@@ -200,7 +200,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
                     if(mService != null) {
                         mService.setLastPlateAirport(id);
                         mService.setLastPlateIndex(0);
-                        ((MainActivity) getContext()).showPlatesView();
+                        ((MainActivity) getContext()).showPlatesViewAndCenter();
                     }
                 }
             }

@@ -39,7 +39,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.ds.avare.fragment.AirportFragment;
 import com.ds.avare.fragment.LocationFragment;
+import com.ds.avare.fragment.PlatesFragment;
 import com.ds.avare.fragment.StorageServiceGpsListenerFragment;
 import com.ds.avare.navhandler.AfdNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.FindNavigationItemSelectedHandler;
@@ -341,8 +343,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
         if (isMainNavItemSelected()) {
-            if (getLocationFragment() != null) {
-                getLocationFragment().onBackPressed();
+            LocationFragment fragment = (LocationFragment) getSupportFragmentManager().findFragmentByTag(LocationFragment.TAG);
+            if (fragment != null) {
+                fragment.onBackPressed();
             }
         } else {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_map));
@@ -464,22 +467,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Show the Plates view
      */
-    public void showPlatesView() {
+    public void showPlatesViewAndCenter() {
         switchView(R.id.nav_plate);
+
+        PlatesFragment fragment = (PlatesFragment) getSupportFragmentManager().findFragmentByTag(PlatesFragment.TAG);
+        if (fragment != null && fragment.getPlatesView() != null) {
+            fragment.getPlatesView().center();
+        }
     }
 
     /**
      * Show the AFD view
      */
-    public void showAfdView() {
+    public void showAfdViewAndCenter() {
         switchView(R.id.nav_afd);
-    }
 
-    private LocationFragment getLocationFragment() {
-        if (isMainNavItemSelected()) {
-            return (LocationFragment) getSupportFragmentManager().findFragmentByTag(LocationFragment.TAG);
+        AirportFragment fragment = (AirportFragment) getSupportFragmentManager().findFragmentByTag(AirportFragment.TAG);
+        if (fragment != null && fragment.getAfdView() != null) {
+            fragment.getAfdView().center();
         }
-        return null;
     }
 
     private StorageServiceGpsListenerFragment getVisibleFragment() {

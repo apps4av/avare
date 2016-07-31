@@ -202,6 +202,7 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         setPlateFromPos(which);
+                        mPlatesView.center();
                     }
                 };
 
@@ -330,6 +331,7 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         setAirportFromPos(which);
+                        mPlatesView.center();
                     }
                 };
 
@@ -826,6 +828,10 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
             // GPS kicking.
             mPlatesView.updateErrorStatus(null);
         }
+    }
+
+    public PlatesView getPlatesView() {
+        return mPlatesView;
     }
 
 }

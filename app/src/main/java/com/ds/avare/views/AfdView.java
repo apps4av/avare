@@ -17,6 +17,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -104,9 +105,10 @@ public class AfdView extends View implements OnTouchListener {
      * @param
      */
     public void setBitmap(BitmapHolder holder) {
+        boolean init = (mBitmap == null);
         mBitmap = holder;
-        if( mBitmap != null ) center();
         postInvalidate();
+        if (init) center(); // center the first time a bitmap is loaded
     }
 
     /**
@@ -117,6 +119,8 @@ public class AfdView extends View implements OnTouchListener {
          * On double tap, move to center
          */
         mViewParams.setPan(new Pan());
+
+        if (mBitmap == null || mBitmap.getBitmap() == null) return;
 
         // Figure out the scale that will fit to window
         float heightScale = (float)this.getHeight() / (float)mBitmap.getBitmap().getHeight();
