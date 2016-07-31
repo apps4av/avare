@@ -21,9 +21,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.support.v4.view.GravityCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
+import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
@@ -783,6 +784,14 @@ public class LocationView extends View implements OnTouchListener {
 
         if(mService == null) {
             return;
+        }
+
+        MainActivity mainActivity = (MainActivity) mContext;
+        if (mainActivity.getDrawerLayout() != null && mainActivity.getDrawerLayout().isDrawerVisible(GravityCompat.START)) {
+            // when the left nav drawer is slid open, an ACTION_DOWN event is registered but for some reason the ACTION_UP
+            // event is not and therefore the mPointProjection does not get nulled out. so we manually prevent going
+            // into projection mode whenever the drawer is open.
+            mPointProjection = null;
         }
 
     	// If our track is supposed to be at the top, save the current
