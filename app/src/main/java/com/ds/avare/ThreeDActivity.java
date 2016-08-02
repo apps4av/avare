@@ -326,8 +326,15 @@ public class ThreeDActivity extends Activity {
                                             mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
                                             mTempBitmap.recycle();
                                             // load tiles for map/texture
-                                            mTempBitmap = new BitmapHolder((String)params[1]);
-
+                                            if(mPref.getChartType3D().equals("6")) {
+                                                // Show palette when elevation is chosen for height guidance
+                                                mTempBitmap = new BitmapHolder(mContext, R.drawable.palette);
+                                                mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
+                                            }
+                                            else {
+                                                mTempBitmap = new BitmapHolder((String) params[1]);
+                                                mRenderer.setAltitude(256); // this tells shader to skip palette for texture
+                                            }
                                             return (Float)params[2];
                                         }
 
@@ -372,6 +379,10 @@ public class ThreeDActivity extends Activity {
                                 }
                             }
 
+                            if(mPref.getChartType3D().equals("6")) {
+                                // Show palette when elevation is chosen for height guidance
+                                mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
+                            }
 
                             // Draw traffic
                             Traffic.draw(mService, mAreaMapper, mRenderer);

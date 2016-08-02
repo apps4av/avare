@@ -27,6 +27,7 @@ public class TextureShaderProgram extends ShaderProgram {
     private final int uMatrixLocation;
     private final int uTextureUnitLocation;
     private final int uNormalLocation;
+    private final int uHeightLocation;
     private final int uSlopeLocation;
     private final int uInterceptLocation;
 
@@ -45,6 +46,7 @@ public class TextureShaderProgram extends ShaderProgram {
         uSlopeLocation = glGetUniformLocation(program, U_SLOPE);
         uInterceptLocation = glGetUniformLocation(program, U_INTERCEPT);
         uNormalLocation = glGetUniformLocation(program, U_NORMAL);
+        uHeightLocation = glGetUniformLocation(program, U_HEIGHT);
 
         // Retrieve attribute locations for the shader program.
         aS0 = glGetAttribLocation(program, A_S0);
@@ -75,9 +77,10 @@ public class TextureShaderProgram extends ShaderProgram {
         return aS1;
     }
 
-    public void setUniformsHeight(float slope, float intercept, float normal) {
+    public void setUniformsHeight(float slope, float intercept, float normal, float height) {
         glUniform1f(uSlopeLocation, slope);
         glUniform1f(uInterceptLocation, intercept);
         glUniform1f(uNormalLocation, normal);
+        glUniform1f(uHeightLocation, height);
     }
 }

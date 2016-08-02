@@ -23,6 +23,7 @@ abstract class ShaderProgram {
     protected static final String U_NORMAL = "u_Normal";
     protected static final String U_SLOPE = "u_Slope";
     protected static final String U_INTERCEPT = "u_Intercept";
+    protected static final String U_HEIGHT = "u_Height";
 
     // Attribute constants
     protected static final String A_POSITION = "a_Position";
