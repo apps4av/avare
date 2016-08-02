@@ -61,7 +61,6 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.utils.Tips;
-import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.LocationView;
 
 import java.io.File;
@@ -74,7 +73,7 @@ import java.util.Observer;
  * @author zkhan, jlmcgraw
  * Main activity
  */
-public class LocationFragment extends StorageServiceGpsListenerFragment implements Observer, ToolbarVisibilityListener {
+public class LocationFragment extends StorageServiceGpsListenerFragment implements Observer {
 
     public static final String TAG = "LocationFragment";
 
@@ -321,8 +320,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         if (null == mInitLocation) {
             mInitLocation = mPref.getLastLocation();
         }
-
-        ((MainActivity) getActivity()).addToolbarVisibilityListener(TAG, this);
     }
 
     @Override
@@ -768,11 +765,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         }
     }
 
-    @Override
-    public void onToolbarVisibilityChanged(boolean visible) {
-        setToolbarAuxButtonsVisibility();
-    }
-
     /**
      * We are interested in events from the fuel tank timer
      * @author Ron
@@ -841,11 +833,8 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mPlanNext.setVisibility(planButtons);
     }
 
-    public void setToolbarAuxButtonsVisibility() {
-        int visibility = mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE;
-//        mLayerOption.setVisibility(visibility);
-//        mChartOption.setVisibility(visibility);
-        mDrawerButton.setVisibility(visibility);
+    public void setDrawerButtonVisibility() {
+        mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -856,7 +845,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
         // Set visibility of the plan buttons
         setPlanButtonVis();
-        setToolbarAuxButtonsVisibility();
+        setDrawerButtonVisibility();
 
         if (mService != null) {
             // Tell the fuel tank timer we need to know when it runs out

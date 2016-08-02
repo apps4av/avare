@@ -94,19 +94,4 @@
             android:title="@string/Tools" />
     </group>
 
-    <group
-        android:id="@+id/nav_menu_toggles_group"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_toggle_toolbar"
-            android:title="Show Toolbar"
-            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
-            app:showAsAction="always" />
-        <item
-            android:id="@+id/nav_toggle_tabbar"
-            android:title="Show Tabs"
-            app:actionViewClass="android.support.v7.widget.AppCompatCheckBox"
-            app:showAsAction="always" />
-    </group>
-
 </menu>

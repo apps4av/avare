@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
@@ -24,19 +25,16 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.ds.avare.fragment.AirportFragment;
@@ -59,7 +57,6 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
-import com.ds.avare.utils.ToolbarVisibilityListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +64,9 @@ import java.util.Map;
 /**
  * @author zkhan
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener {
+public class MainActivity extends AppCompatActivity implements
+        TabLayout.OnTabSelectedListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String SELECTED_NAV_ITEM_ID_KEY = "selectedNavItemId";
 
@@ -76,8 +75,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TabLayout mTabLayout;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
-    private AppCompatCheckBox mShowToolbarCheckBox;
-    private AppCompatCheckBox mShowTabbarCheckBox;
     // View container for Snackbars
     private CoordinatorLayout mCoordinatorLayout;
     // Service that keeps state even when activity is dead
@@ -88,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AlertDialog mSosDialog;
 
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
-    private Map<String, ToolbarVisibilityListener> mToolbarVisibilityListeners = new HashMap<>();
 
     // Tab panels that can display at the bottom of the screen. Each one
     // except tabMain is configurable on or off by the user.
@@ -172,33 +168,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ? R.id.nav_map
                 : savedInstanceState.getInt(SELECTED_NAV_ITEM_ID_KEY, R.id.nav_map);
         onNavigationItemSelected(mNavigationView.getMenu().findItem(selectedNavItemId));
-
-        MenuItem showToolbarItem = mNavigationView.getMenu().findItem(R.id.nav_toggle_toolbar);
-        mShowToolbarCheckBox = (AppCompatCheckBox) MenuItemCompat.getActionView(showToolbarItem);
-        mShowToolbarCheckBox.setChecked(!mPref.getHideToolbar());
-        mShowToolbarCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mPref.setHideToolbar(!mPref.getHideToolbar());
-                mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
-                for (ToolbarVisibilityListener listener : mToolbarVisibilityListeners.values()) {
-                    listener.onToolbarVisibilityChanged(mPref.getHideToolbar());
-                }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            }
-        });
-
-        MenuItem showTabbarItem = mNavigationView.getMenu().findItem(R.id.nav_toggle_tabbar);
-        mShowTabbarCheckBox = (AppCompatCheckBox) MenuItemCompat.getActionView(showTabbarItem);
-        mShowTabbarCheckBox.setChecked(!mPref.getHideTabBar());
-        mShowTabbarCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mPref.setHideTabBar(!mPref.getHideTabBar());
-                mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            }
-        });
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.Add, R.string.Add);
@@ -300,10 +269,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showSosDialog();
             } else if (itemId == R.id.nav_help) {
                 startHelpActivity();
-            } else if (itemId == R.id.nav_toggle_toolbar) {
-                mShowToolbarCheckBox.setChecked(!mShowToolbarCheckBox.isChecked());
-            } else if (itemId == R.id.nav_toggle_tabbar) {
-                mShowTabbarCheckBox.setChecked(!mShowTabbarCheckBox.isChecked());
             } else if (item.getGroupId() == R.id.nav_menu_map_actions_group
                     || item.getGroupId() == R.id.nav_menu_threed_actions_group) {
                 // delegate to fragment onNavigationItemSelected
@@ -368,6 +333,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Registering our receiver. Bind now.
         Intent intent = new Intent(this, StorageService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        mToolbar.setVisibility(mPref.getHideToolbar() ? View.GONE : View.VISIBLE);
+        mTabLayout.setVisibility(mPref.getHideTabBar() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -509,10 +477,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         return -1;
-    }
-
-    public void addToolbarVisibilityListener(String key, ToolbarVisibilityListener listener) {
-        mToolbarVisibilityListeners.put(key, listener);
     }
 
     public DrawerLayout getDrawerLayout() {

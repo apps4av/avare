@@ -51,7 +51,6 @@ import com.ds.avare.threed.objects.Map;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.ToolbarVisibilityListener;
 import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
 
@@ -62,7 +61,7 @@ import java.util.TimerTask;
 /**
  * @author zkhan
  */
-public class ThreeDFragment extends StorageServiceGpsListenerFragment implements ToolbarVisibilityListener {
+public class ThreeDFragment extends StorageServiceGpsListenerFragment {
 
     public static final String TAG = "ThreeDFragment";
 
@@ -108,7 +107,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        ((MainActivity) getActivity()).addToolbarVisibilityListener(TAG, this);
     }
 
     @Override
@@ -434,7 +432,7 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
         mTimerTask = new UpdateTask();
         mTimer.schedule(mTimerTask, 0, 1000);
 
-        setToolbarAuxButtonsVisibility();
+        setDrawerButtonVisibility();
     }
 
     @Override
@@ -474,12 +472,7 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment implements
         }
     }
 
-    @Override
-    public void onToolbarVisibilityChanged(boolean visible) {
-        setToolbarAuxButtonsVisibility();
-    }
-
-    public void setToolbarAuxButtonsVisibility() {
+    public void setDrawerButtonVisibility() {
         mDrawerButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
     }
 
