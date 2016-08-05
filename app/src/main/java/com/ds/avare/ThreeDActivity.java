@@ -253,8 +253,16 @@ public class ThreeDActivity extends Activity {
 
                             Location location = null;
                             // Simulate destination in sim mode and get altitude from terrain
-                            if (mPref.isSimulationMode() && mService != null && mService.getDestination() != null) {
-                                Location l = mService.getDestination().getLocation();
+                            if (mPref.isSimulationMode() && mService != null) {
+                                Location l = new Location("");
+                                if(mService.getDestination() != null) {
+                                    l = mService.getDestination().getLocation();
+                                }
+                                else if(mService.getGpsParams() != null) {
+                                    l.setLatitude(mService.getGpsParams().getLatitude());
+                                    l.setLongitude(mService.getGpsParams().getLongitude());
+                                    l.setBearing((float) mService.getGpsParams().getBearing());
+                                }
                                 l.setAltitude(Helper.ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE / 2.0 +  // give margin for rounding in chart so we dont go underground
                                         getElevation(l.getLongitude(), l.getLatitude()) / Preferences.heightConversion);
                                 location = l;
