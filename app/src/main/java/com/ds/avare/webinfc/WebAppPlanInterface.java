@@ -704,7 +704,7 @@ public class WebAppPlanInterface implements Observer {
 					Math.round(Helper.getMagneticHeading(d.getBearing() + d.getWCA(), d.getDeclination())) + "," +
     				Math.round(d.getDistance()) + "," +
     				d.getEte() +  "," +
-    				d.getID() + "," + d.getType() + "::::";
+    				d.getID() + "," + d.getType() + "," + d.getFuel() + "::::";
     	}
     	// add total
     	plans += plan.toString();

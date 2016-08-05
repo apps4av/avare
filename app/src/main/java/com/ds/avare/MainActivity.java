@@ -104,22 +104,10 @@ public class MainActivity extends TabActivity {
 
         // We will always show the main chart tab
     	setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
-        
-        if(0 != (tabItems & (1 << tabPlates))) {
-        	setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
-        }
-        
-        if(0 != (tabItems & (1 << tabAFD))) {
-        	setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabFind))) {
-        	setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
-        }
-        
-        if(0 != (tabItems & (1 << tabPlan))) {
-        	setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
-        }
+        setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
 
         if(0 != (tabItems & (1 << tabNear))) {
         	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());

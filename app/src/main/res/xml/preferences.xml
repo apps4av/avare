@@ -313,26 +313,6 @@ authors: zkhan, jlmcgraw
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >
 		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabPlates"
-		            android:summary="@string/PlatesSummary"
-		            android:title="@string/Plates" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabAFD"
-		            android:summary="@string/AFDSummary"
-		            android:title="@string/AFD" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabFind"
-		            android:summary="@string/FindSummary"
-		            android:title="@string/Find" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabPlan"
-		            android:summary="@string/PlanSummary"
-		            android:title="@string/Plan" />
-                <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/prefTabNear"
                     android:summary="@string/NearSummary"
@@ -446,6 +426,12 @@ authors: zkhan, jlmcgraw
             android:summary="@string/GlideRatioSummary"
             android:defaultValue="7.0"
             android:key="@string/GlideRatio"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/FuelRateLabel"
+            android:summary="@string/FuelRateSummary"
+            android:defaultValue="10.0"
+            android:key="@string/FuelRateLabel"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/EmergencyContact"

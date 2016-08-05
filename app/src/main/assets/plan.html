@@ -97,13 +97,14 @@ var CELL_DISTANCE = 2;
 var CELL_TIME = 3;
 var CELL_COURSE = 4;
 var CELL_HEADING = 5;
-var CELL_LAST = 6;
+var CELL_FUEL = 6;
+var CELL_LAST = 7;
 
 var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second
 function loadplan() {
-	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102°";
+	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102° 10.1";
 	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
@@ -111,7 +112,7 @@ function loadplan() {
 	for(var pl = 1; pl < (plans.length - 1); pl++) {
 		// split plan individual fields
 		var data = plans[pl].split(",");
-		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6])) {
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])) {
 			// mismatch in view and model, sync	
 			AndroidPlan.refreshPlan();
 			return;
@@ -133,7 +134,7 @@ function onclick_row(row) {
 	AndroidPlan.moveTo(row - 1);
 }
 
-function set_plan_line(row, next, course, heading, distance, time, id, type) {
+function set_plan_line(row, next, course, heading, distance, time, id, type, fuel) {
 	// rows here are 1 indexed
 // Set plan line
 	var plan_table = document.getElementById("plan_table");
@@ -167,6 +168,7 @@ function set_plan_line(row, next, course, heading, distance, time, id, type) {
 	plan_table.rows[row].cells[CELL_DISTANCE].textContent = distance;
 	plan_table.rows[row].cells[CELL_TIME].textContent = time;
 	plan_table.rows[row].cells[CELL_HEADING].textContent = heading;
+	plan_table.rows[row].cells[CELL_FUEL].textContent = fuel;
 
 	plan_table.rows[row].onclick = (function() {
       var currentI = row;
@@ -199,6 +201,7 @@ function plan_add(id, type) {
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_COURSE] = row.insertCell(CELL_COURSE);
 	cell[CELL_HEADING] = row.insertCell(CELL_HEADING);
+	cell[CELL_FUEL] = row.insertCell(CELL_FUEL);
 
 	cell[CELL_WP].textContent = id.substring(0, 6);
 	cell[CELL_TYPE].textContent = type;
@@ -206,6 +209,7 @@ function plan_add(id, type) {
 	cell[CELL_TIME].textContent = "";	
 	cell[CELL_COURSE].textContent = "";
 	cell[CELL_HEADING].textContent = "";
+	cell[CELL_FUEL].textContent = "";
 
     // clear search input
     document.getElementById("search_input").value = "";
@@ -237,7 +241,8 @@ function plan_set_total(total) {
 	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
 	document.getElementById("plan_total_distance").textContent = vals[0];
 	document.getElementById("plan_total_time").textContent = vals[1];
-	//document.getElementById("plan_total_course").textContent = vals[2];
+	// total bearing makes no sense
+	document.getElementById("plan_total_fuel").textContent = vals[3];
 }
 
 // clear the entire plan
@@ -589,8 +594,8 @@ window.onload = show_help;
 		<button onclick="plan_discard()">Delete All</button>
 		<button onclick="plan_delete()">Delete</button>
 		<br></br>
-		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Course</th><th>Heading</th></table>
-		<table border="1"><tr><td></td><td><b>Total</b></td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_course"></td><td id="plan_total_heading"></td><tr></table>
+		<table id="plan_table" border="1"><th>Waypoint</th><th>Type</th><th>Distance</th><th>Time</th><th>Course</th><th>Heading</th><th>Fuel</th></table>
+		<table border="1"><tr><td></td><td><b>Total</b></td><td id="plan_total_distance"></td><td id="plan_total_time"></td><td id="plan_total_course"></td><td id="plan_total_heading"></td><td id="plan_total_fuel"></td><tr></table>
 		<br>
 		<button onclick="plan_moveup()">Up</button>
 		<button onclick="plan_movedn()">Down</button>
@@ -644,7 +649,7 @@ window.onload = show_help;
 	<button onclick="show_help()">Show Help</button><br>
 
 <a id="help">
-The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, course, and heading calculated from the current position to the final way point.<br>
+The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, course, fuel, and heading calculated from the current position to the final way point.<br>
 <br>
 <b>To Create a Flight Plan with Single Line Input</b>
 <ul>
@@ -749,7 +754,7 @@ Once you have the plan created:
 <li>On the Map screen, press make sure that the "Navigate"/"Simulation" slide out button is in the "Navigate" state.</li>
 <li>Go to Plan screen, press the "Next"/"Previous" buttons to move the green bar to the second way point in the plan. Note: The first way point should be your departure airport.</li>
 <li>Press the "Inactive" button to make it "Active".</li>
-<li>The distance remaining, course, heading to the next way point, and ETE will be shown in the Total row when the plane is moving.</li>
+<li>The distance remaining, course, heading to the next way point, fuel burn, and ETE will be shown in the Total row when the plane is moving.</li>
 <li>Move back to the Map screen to see the plan route in magenta.</li>
 </ul>
  

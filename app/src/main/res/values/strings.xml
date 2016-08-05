@@ -492,6 +492,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GlideRatioSummary">&quot;Aircraft glide ratio (glide distance in feet for every foot of altitude)&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
 
+    <string name="FuelRateLabel">Aircraft Fuel Burn Rate</string>
+    <string name="FuelRateSummary">Aircraft fuel burn rate per hour</string>
+
     <string name="SelectAirportToShow">&quot;Select an Airport&quot;</string>
     <string name="SelectPlateToShow">&quot;Select a Plate&quot;</string>
     <string name="SelectApproachToShow">&quot;Load an approach to Plan (Experimental)&quot;</string>
