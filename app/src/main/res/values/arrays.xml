@@ -286,10 +286,12 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Utah</item>
 		<item>Vermont</item>
 		<item>Virginia</item>
+		<item>Virgin Islands</item>
 		<item>Washington</item>
 		<item>West Virginia</item>
 		<item>Wisconsin</item>
 		<item>Wyoming</item>
+		<item>Others</item>
 	</string-array>
     <string-array name="resNameVFRAreaPlate">
         <item>VFR Area Canada</item>
@@ -1730,10 +1732,12 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>UT</item>
 		<item>VT</item>
 		<item>VA</item>
+		<item>VI</item>
 		<item>WA</item>
 		<item>WV</item>
 		<item>WI</item>
-		<item>WY</item>  
+		<item>WY</item>
+		<item>XX</item>
     </string-array>
     
     <string-array name="resFilesVFRAreaPlate">
