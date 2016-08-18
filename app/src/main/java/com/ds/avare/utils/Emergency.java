@@ -33,6 +33,10 @@ public class Emergency {
         String ret = ctx.getString(R.string.Done);
 
         final GpsParams params = service.getGpsParams();
+        if(params == null) {
+            return ctx.getString(R.string.SMSFailed);
+        }
+
         /*
          * Send this message on SMS:
          * I Need Help!
