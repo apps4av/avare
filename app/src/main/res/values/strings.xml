@@ -482,6 +482,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftEquipment">Aircraft Equipment</string>
     <string name="AircraftEquipmentSummary">Aircraft equipment code for filing</string>
 
+    <string name="AircraftSurveillance">Aircraft Surveillance</string>
+    <string name="AircraftSurveillanceSummary">Aircraft surveillance equipment code for filing</string>
+
     <string name="AircraftTAS">Aircraft TAS</string>
     <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
 

@@ -409,12 +409,15 @@ authors: zkhan, jlmcgraw
             android:summary="@string/AircraftColorSecondarySummary"
             android:title="@string/AircraftColorSecondary" />
 
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:entries="@array/ACEquipment"
-            android:entryValues="@array/ACEquipment"
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:key="@string/AircraftEquipment"
             android:summary="@string/AircraftEquipmentSummary"
             android:title="@string/AircraftEquipment" />
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:key="@string/AircraftSurveillance"
+            android:summary="@string/AircraftSurveillanceSummary"
+            android:title="@string/AircraftSurveillance" />
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/AircraftTAS"

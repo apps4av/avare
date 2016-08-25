@@ -102,7 +102,7 @@ public class Plan implements Observer {
             mPassed[i] = false;
         }
         mEte = "--:--";
-        mFuel = "X.X";
+        mFuel = "-.-";
         mPassage = new Passage();
         mEarlyPass = false;
         mEarlyPassEvent = false;

@@ -1112,7 +1112,11 @@ public class Preferences {
     }
 
     public String getAircraftEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "A");
+        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
+    }
+
+    public String getAircraftSurveillanceEquipment() {
+        return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
     }
 
     public String getAircraftColorPrimary() {
