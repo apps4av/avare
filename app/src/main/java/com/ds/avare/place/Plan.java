@@ -379,9 +379,14 @@ public class Plan implements Observer {
 	        }
         }
         // ETE is sum of all ETE legs
-        mEte = Helper.calculateEte(0, 0, mEteSec, false);
+        if(mEteSec > 99999 || mEteSec < 0) {
+            mEte = "--.--";
+        }
+        else {
+            mEte = Helper.calculateEte(0, 0, mEteSec, false);
+        }
         // Fuel is sum of all fuels, in increments of 0.1 gallons
-        if(mFuelGallons >= Float.MAX_VALUE) {
+        if(mFuelGallons > 9999 || mFuelGallons < 0) { // That is a 1500 gallons in lbs
             mFuel = "-.-";
         }
         else {

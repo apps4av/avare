@@ -156,7 +156,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherPlan">&quot;You must create a plan in Plan screen to get the latest Plan weather&quot;</string>
     <string name="NotamsPlan">&quot;You must create a plan in Plan screen to get NOTAMS&quot;</string>
     <string name="WeatherBrowser">&quot;You do not seem to have a web browser to open the weather data.&quot;</string>
-    <string name="NotamsBrowser">&quot;You do not seem to have a web browser to open the NOTAMS data.&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
