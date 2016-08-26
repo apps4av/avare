@@ -234,12 +234,14 @@ var CELL_SAVE_LAST = 4;
 function save_load(row) {
 	var plan_save = document.getElementById("save_table");
 	AndroidPlan.loadPlan(plan_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("plan_name").scrollIntoView();
 }
 
 // load the plan reverse
 function save_load_reverse(row) {
 	var plan_save = document.getElementById("save_table");
 	AndroidPlan.loadPlanReverse(plan_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("plan_name").scrollIntoView();
 }
 
 // delete the plan
@@ -346,8 +348,7 @@ var CELL_SEARCH_WP = 0;
 var CELL_SEARCH_ACTION = 1;
 var CELL_SEARCH_NAME = 2;
 var CELL_SEARCH_TYPE = 3;
-var CELL_SEARCH_SUBTYPE = 4;
-var CELL_SEARCH_LAST = 5;
+var CELL_SEARCH_LAST = 4;
 
 
 // Search a waypoint specified
@@ -390,14 +391,12 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_ACTION] = row.insertCell(CELL_SEARCH_ACTION);
 	cell[CELL_SEARCH_NAME] = row.insertCell(CELL_SEARCH_NAME);
 	cell[CELL_SEARCH_TYPE] = row.insertCell(CELL_SEARCH_TYPE);
-	cell[CELL_SEARCH_SUBTYPE] = row.insertCell(CELL_SEARCH_SUBTYPE);
 
 	cell[CELL_SEARCH_WP].textContent = id;
 	// this button will add to plan a particular result from search
 	cell[CELL_SEARCH_ACTION].innerHTML = "<button class='btn btn-block' onclick='plan_add_search(" + "\"" + id + "\",\"" + type + "\",\"" + subtype + "\")'>Add</button>";
 	cell[CELL_SEARCH_NAME].textContent = name;
-	cell[CELL_SEARCH_TYPE].textContent = type;	
-	cell[CELL_SEARCH_SUBTYPE].textContent = subtype;	
+	cell[CELL_SEARCH_TYPE].textContent = type + "-" + subtype;
 }
 
 function show_help() {
@@ -569,7 +568,7 @@ window.onload = show_help;
             </tr>
         </table>
 
-		<table class="table" id="search_table"><th>Waypoint</th><th>Action</th><th>Name</th><th>Type</th><th>Sub Type</th></table>
+		<table class="table" id="search_table"><th>Waypoint</th><th>Action</th><th>Name</th><th>Type</th></table>
 
         <table class="table"><th>Plan Weather</th>
             <tr>
@@ -599,7 +598,7 @@ window.onload = show_help;
             </tr>
         </table>
 
-		<table class="table" id="save_table"><th>Name</th><th>Load</th><th>Load Rev.</th><th>Delete</th></table>
+		<table class="table" id="save_table"><th>Plan</th><th></th><th></th><th></th></table>
 		<table class="table">
             <tr>
                 <td><button class="btn btn-block" id="list_first" onclick="first()"><< First</button></td>

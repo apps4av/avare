@@ -133,11 +133,14 @@ function list_discard() {
 function list_import() {
 	// call Android
 	var path = document.getElementById("import_input");
-	var r = confirm("Delete List then Import?");
-	if(r == true) {
+	bootbox.confirm("Delete List then Import?", function(result) {
+		if(result == false) {
+			return;
+		}
 		AndroidList.importFromFile(path.value);
 		path.value = "";
-	}
+		document.getElementById("list_name").scrollIntoView();
+	});
 }
 
 // Add a line to list
@@ -168,6 +171,7 @@ var CELL_SAVE_LAST = 3;
 function save_load(row) {
 	var list_save = document.getElementById("save_table");
 	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("list_name").scrollIntoView();
 }
 
 // add the current list to saved list
@@ -298,7 +302,7 @@ function save_add(name) {
                 <td><button class="btn btn-block"  onclick="save_hide(true)">Show Lists</button></td>
             </tr>
         </table>
-        <table class="table" id="save_table" ><th>Name</th></table>
+        <table class="table" id="save_table" ><th>List</th></table>
     </div>
     <div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>List Help</u></a></b></div><br>
 
