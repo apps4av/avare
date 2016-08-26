@@ -7,13 +7,8 @@
   <script src="jquery.min.js"></script>
   <script src="bootbox.min.js"></script>
   <script src="bootstrap.min.js"></script>
-
-
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="bootstrap-select.min.css">
-
-	<!-- Latest compiled and minified JavaScript -->
-	<script src="bootstrap-select.min.js"></script>
+  <link rel="stylesheet" href="bootstrap-select.min.css">
+  <script src="bootstrap-select.min.js"></script>
 
   <script type='text/javascript' >
 
@@ -540,7 +535,7 @@ function setAircraftSurveillance() {
     	</ul>
   	</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+				<button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
 			</div>
 
 		</div>
@@ -550,7 +545,7 @@ function setAircraftSurveillance() {
 
   <div class="modal fade" id="helpModal" role="dialog">
     <div class="modal-dialog">
-    
+
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
@@ -562,7 +557,7 @@ function setAircraftSurveillance() {
          	<div>
 The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
 <br>
-To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers. 
+To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers.
 <br>
 <b>To Fill and File the Flight Plan Form</b>
 <ul>
@@ -927,7 +922,7 @@ To proceed with plans and briefings, you must create an account with <label clas
                 </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
+          <button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
         </div>
       </div>
       
@@ -1072,6 +1067,7 @@ To proceed with plans and briefings, you must create an account with <label clas
 				<a id="nav_log"></a>
 			</p>
 		</div>
+  		<div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a></b></div><br>
 
 </body>
 
