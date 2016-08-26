@@ -9,6 +9,9 @@
   <script src="bootstrap.min.js"></script>
   <link rel="stylesheet" href="bootstrap-select.min.css">
   <script src="bootstrap-select.min.js"></script>
+	<style type="text/css">
+		button {color: black;  height:40px;}
+	</style>
 
   <script type='text/javascript' >
 
@@ -41,10 +44,10 @@ function set_faa_plans(plan) {
 		
 		var next = plans[r];
 		if(next == "1") {
-			cell[CELL_FAA_NAME].style.backgroundColor = "#90EE90";
+			cell[CELL_FAA_NAME].style.backgroundColor = "green";
 		}
 		else {
-			cell[CELL_FAA_NAME].style.backgroundColor = "#FFFF99";
+			cell[CELL_FAA_NAME].style.backgroundColor = "black";
 		}
 
 		// set onclick on row

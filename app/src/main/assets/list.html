@@ -21,6 +21,10 @@ authors: zkhan
 	<script src="bootstrap.min.js"></script>
 	<link rel="stylesheet" href="bootstrap-select.min.css">
 	<script src="bootstrap-select.min.js"></script>
+    <style type="text/css">
+        button {color: black; height:40px;}
+    </style>
+
 
 <script type="text/javascript" >
 
@@ -49,10 +53,10 @@ function set_list_line(row, next, text) {
 	var list_table = document.getElementById("list_table");
 
 	if(next == 1) {
-		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#90EE90";
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "green";
 	}
 	else {
-		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#FFFF99";
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "black";
 	}
 
 	list_table.rows[row].cells[CELL_TEXT].textContent = text;
