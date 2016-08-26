@@ -172,6 +172,7 @@ function save_load(row) {
 	var list_save = document.getElementById("save_table");
 	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
 	document.getElementById("list_name").scrollIntoView();
+	$("#saveModal").modal('hide');
 }
 
 // add the current list to saved list
@@ -193,24 +194,6 @@ function save_clear() {
 	}
 }
 
-// List table can be long. Hide it when asked or toggle it to show/hide
-function save_hide(toggle) {
-	var list_save = document.getElementById("save_table");
-	for(var row = list_save.rows.length - 1; row >= 1; row--) {
-			if(toggle) {
-				if(list_save.rows[row].style.display == "none") {
-					list_save.rows[row].style.display = "";
-				}
-				else {
-					list_save.rows[row].style.display = "none";
-				}
-			}
-			else {
-					list_save.rows[row].style.display = "none";
-			}
-	}
-}
-
 
 // Sets buttons on each row
 function set_buttons_save() {
@@ -218,9 +201,9 @@ function set_buttons_save() {
 	var list_save = document.getElementById("save_table");
 	for(var i = 1; i < list_save.rows.length; i++) {
 		list_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML =
-			"<button class='btn btn-block' onclick='save_load(" + i.toString() + ")'>Load</button>";
+			"<button class='btn btn-block' onclick='save_load(" + i.toString() + ")'>LD</button>";
 		list_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML =
-			"<button class='btn btn-block' onclick='save_delete(" + i.toString() + ")'>Delete</button>";
+			"<button class='btn btn-block' onclick='save_delete(" + i.toString() + ")'>Del</button>";
 	}
 
 		// clear save input
@@ -244,7 +227,6 @@ function save_add(name) {
 
 	set_buttons_save();
 
-	save_hide(false);
 }
 
 
@@ -272,39 +254,39 @@ function save_add(name) {
     <table class="table"><th>Add Item To List</th>
         <tr>
             <td><input id="item_input" placeholder="Mixture Full Rich."></td>
-        </tr>
-        <tr>
             <td><button class="btn btn-block" onclick="add_list_item()">Add</button></td>
         </tr>
     </table>
     <table class="table"><th>Import a List File</th>
         <tr>
             <td><input id="import_input" placeholder="/sdcard/list.txt"></td>
-        </tr>
-        <tr>
             <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
         </tr>
+        <table class="table"><th>Save List  <a onclick='$("#saveModal").modal()'><u>Saved Lists</u></a></th>
+            <tr>
+                <td><input id="save_name" placeholder="Current List Name"/></td>
+                <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
+            </tr>
+        </table>
     </table>
-    <table class="table"><th>Save List</th>
-        <tr>
-            <td><input id="save_name" placeholder="Current List Name"/></td>
-        </tr>
-        <tr>
-            <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
-        </tr>
-    </table>
-
-    <table class="table">
-        <tr>
-            <td><h3 ><span class="label label-success">Saved Lists</span></h3></td>
-        </tr>
-        <tr>
-            <td><button class="btn btn-block"  onclick="save_hide(true)">Show Lists</button></td>
-        </tr>
-    </table>
-    <table class="table" id="save_table" ><th>List</th></table>
 </div>
 <div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>List Help</u></a></b></div><br>
+
+<div class="modal fade" id="saveModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Saved Lists</h4>
+            </div>
+            <div class="modal-body" style="padding:1px;">
+                <table class="table" id="save_table" ><th>List</th></table>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="helpModal" role="dialog">
     <div class="modal-dialog">
@@ -337,9 +319,9 @@ function save_add(name) {
 
                     <b>To Load/Delete a Saved List</b>
                     <ul>
-                        <li>Press the "Show Lists" button to show the saved lists. Note: The same button can be pressed to hide the saved lists.</li>
-                        <li>Press the "Load" button to load the list.</li>
-                        <li>You can delete a saved list by pressing the "Delete" button to the right of its name in the Saved Lists list.</li>
+                        <li>Press the "Saved Lists" link to show the saved lists.</li>
+                        <li>Press the "LD" button to load the list.</li>
+                        <li>You can delete a saved list by pressing the "Del" button to the right of its name in the Saved Lists list.</li>
                     </ul>
 
                     <b>To Import a List from a File</b>
