@@ -2,18 +2,18 @@
 
 <head>
 
-<!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="bootstrap.min.css">
-  <script src="jquery.min.js"></script>
-  <script src="bootbox.min.js"></script>
-  <script src="bootstrap.min.js"></script>
-  <link rel="stylesheet" href="bootstrap-select.min.css">
-  <script src="bootstrap-select.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<script src="jquery.min.js"></script>
+	<script src="bootbox.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+	<link rel="stylesheet" href="bootstrap-select.min.css">
+	<script src="bootstrap-select.min.js"></script>
 	<style type="text/css">
 		button {color: black;  height:40px;}
 	</style>
 
-  <script type='text/javascript' >
+	<script type='text/javascript' >
 
 // set the table for faa plans
 //>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
@@ -22,7 +22,7 @@ var CELL_FAA_STATE = 1;
 var CELL_FAA_LAST = 2;
 function set_faa_plans(plan) {
 	var plans = plan.split(",");
-	
+
 	// delete the table
 	var faa_plan_save = document.getElementById("save_table_faa");
 	for(var row = faa_plan_save.rows.length - 1; row >= 1; row--) {
@@ -38,10 +38,10 @@ function set_faa_plans(plan) {
 		// Insert new cells (<td> elements) at the positions of the "new" <tr> element:
 		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
 		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
-		
+
 		cell[CELL_FAA_NAME].textContent = plans[r + 1];
 		cell[CELL_FAA_STATE].textContent = plans[r + 2];
-		
+
 		var next = plans[r];
 		if(next == "1") {
 			cell[CELL_FAA_NAME].style.backgroundColor = "green";
@@ -57,7 +57,7 @@ function set_faa_plans(plan) {
          	onclick_row(currentI);
       	}
    	})();
-   	
+
    	count++;
 	}
 }
@@ -241,7 +241,7 @@ function plan_file() {
 
 }
 
-// fetch faa plans from internet 
+// fetch faa plans from internet
 function get_faa_plans() {
 	bootbox.confirm("Do you want to fetch or update your list of FAA filed plans from Internet?", function(result) {
 		if(result == false) {
@@ -380,666 +380,666 @@ function setAircraftSurveillance() {
 <body>
 
 
-  <div class="modal fade" id="icaoSurveillanceEquipmentModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Surveillance Equipment</h4>
-        </div>
-        <div class="modal-body">
-         <div style="overflow: auto;">
-        		<ul class="list-group checked-list-box">
-        		<li class="list-group-item">
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonN">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonN"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="N"
-				checked="checked" />
-			N = NIL
-		</label>
-        		</li>	
-        		<li class="list-group-item">
+<div class="modal fade" id="icaoSurveillanceEquipmentModal" role="dialog">
+	<div class="modal-dialog">
 
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonA">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonA"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="A" />
-			A = Mode A
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonC">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonC"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="C" />
-			C = Modes A and C
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonE">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonE"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="E" />
-			E = Mode S, ID, Alt and Squitter
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonH">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonH"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="H" />
-			H = Mode S, ID, Alt and Enhanced Surv
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonI">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonI"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="I" />
-			I = Mode S, ID no Alt
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonL">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonL"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="L" />
-			L = Mode S, ID, Alt, Squitter and Enhanced Surv
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonP">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonP"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="P" />
-			P = Mode S, Alt no ID
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonS">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonS"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="S" />
-			S = Mode S, ID and Alt
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonX">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonX"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="X" />
-			X = Mode S, no ID no Alt
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonB1">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB1"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B1" />
-			B1 = ADS-B, Dedicated 1090 MHz Out
-		</label>
-
-			</li>
-    		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonB2">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB2"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B2" />
-			B2 = ADS-B, Dedicated 1090 MHz Out and In
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonU1">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU1"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U1" />
-			U1 = ADS-B, UAT Out
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonU2">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU2"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U2" />
-			U2 = ADS-B, UAT Out and In
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonV1">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV1"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V1" />
-			V1 = ADS-B, VDL Mode 4 Out
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonV2">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV2"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V2" />
-			V2 = ADS-B, VDL Mode 4 Out and In
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonD1">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonD1"
-				name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="D1" />
-			D1 = ADS-C, FANS
-		</label>
-        		</li>	
-        		<li class="list-group-item">
-
-		<label for="icaoSurveillanceEquipmentDialogRadioButtonG1">
-			<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonG1"
-					name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="G1" />
-			G1 = ADS-C, ATN
-		</label>
-    	</li>
-    	</ul>
-  	</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Surveillance Equipment</h4>
 			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<ul class="list-group checked-list-box">
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonN">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonN"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="N"
+									   checked="checked" />
+								N = NIL
+							</label>
+						</li>
+						<li class="list-group-item">
 
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonA">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonA"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="A" />
+								A = Mode A
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonC">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonC"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="C" />
+								C = Modes A and C
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonE">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonE"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="E" />
+								E = Mode S, ID, Alt and Squitter
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonH">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonH"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="H" />
+								H = Mode S, ID, Alt and Enhanced Surv
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonI">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonI"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="I" />
+								I = Mode S, ID no Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonL">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonL"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="L" />
+								L = Mode S, ID, Alt, Squitter and Enhanced Surv
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonP">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonP"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="P" />
+								P = Mode S, Alt no ID
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonS">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonS"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="S" />
+								S = Mode S, ID and Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonX">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonX"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="X" />
+								X = Mode S, no ID no Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonB1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B1" />
+								B1 = ADS-B, Dedicated 1090 MHz Out
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonB2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B2" />
+								B2 = ADS-B, Dedicated 1090 MHz Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonU1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U1" />
+								U1 = ADS-B, UAT Out
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonU2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U2" />
+								U2 = ADS-B, UAT Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonV1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V1" />
+								V1 = ADS-B, VDL Mode 4 Out
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonV2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V2" />
+								V2 = ADS-B, VDL Mode 4 Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonD1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonD1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="D1" />
+								D1 = ADS-C, FANS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonG1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonG1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="G1" />
+								G1 = ADS-C, ATN
+							</label>
+						</li>
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+				</div>
+
+			</div>
 		</div>
-   	</div>
- 	</div>
- 	</div>
-
-  <div class="modal fade" id="helpModal" role="dialog">
-    <div class="modal-dialog">
-
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">WXB Help</h4>
-        </div>
-        <div class="modal-body">
-         <div style="overflow: auto;">
-         	<div>
-The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
-<br>
-To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers.
-<br>
-<b>To Fill and File the Flight Plan Form</b>
-<ul>
-<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
-<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
-	Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Level as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
-	Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738.</li>
-<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
-<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
-</ul>
-<b>To Load a Plan</b>
-<ul>
-<li>Filed plans can be loaded in the filing form in any state.</li>
-<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
-<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
-</ul>
-<b>To Amend a Plan</b>
-<ul>
-<li>Filed plans can be amended when in PROPOSED state.</li>
-<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
-<li>Modify the form as needed.</li>
-<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
-</ul>
-<b>To Cancel the Filed Plan</b>
-<ul>
-<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
-<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
-</ul>
-<b>To Activate a Filed Plan</b>
-<ul>
-<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
-<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Select the time from now when you will take off from the drop down next to the "Activate" button.</li>
-<li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
-</ul>
-<b>To Close an Active Plan</b>
-<ul>
-<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
-<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
-<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
-<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
-</ul>
-<b>To Get Plan Briefing</b>
-<ul>
-<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-<li>Press the "Get Email Briefing" button once.</li>
-<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
-<li>Note: Route corridor width of 50 NM is used.</li>
-</ul>
-</ul>
-<b>To Get Plan Navigation Log</b>
-<ul>
-<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
-<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-<li>Press the "Get Log" button once.</li>
-<li>The navigation log will appear at the bottom of the button.</li>
-<li>To clear the navigation log, press the "Clear Log" button.</li>
-</ul>
 	</div>
-         </div>
-         </div>
-         </div>
-         </div>
-         </div>
+</div>
+
+<div class="modal fade" id="helpModal" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">WXB Help</h4>
+			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<div>
+						The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
+						<br>
+						To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers.
+						<br>
+						<b>To Fill and File the Flight Plan Form</b>
+						<ul>
+							<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
+							<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
+								Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Level as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
+								Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738.</li>
+							<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
+							<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
+						</ul>
+						<b>To Load a Plan</b>
+						<ul>
+							<li>Filed plans can be loaded in the filing form in any state.</li>
+							<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+							<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
+						</ul>
+						<b>To Amend a Plan</b>
+						<ul>
+							<li>Filed plans can be amended when in PROPOSED state.</li>
+							<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
+							<li>Modify the form as needed.</li>
+							<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
+						</ul>
+						<b>To Cancel the Filed Plan</b>
+						<ul>
+							<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
+							<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
+						</ul>
+						<b>To Activate a Filed Plan</b>
+						<ul>
+							<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
+							<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Select the time from now when you will take off from the drop down next to the "Activate Now" button.</li>
+							<li>Press the "Activate Now" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+						</ul>
+						<b>To Close an Active Plan</b>
+						<ul>
+							<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
+							<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
+							<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
+							<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
+						</ul>
+						<b>To Get Plan Briefing</b>
+						<ul>
+							<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+							<li>Press the "Get Email Briefing" button once.</li>
+							<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
+							<li>Note: Route corridor width of 50 NM is used.</li>
+						</ul>
+						</ul>
+						<b>To Get Plan Navigation Log</b>
+						<ul>
+							<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
+							<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+							<li>Press the "Get Log" button once.</li>
+							<li>The navigation log will appear at the bottom of the button.</li>
+							<li>To clear the navigation log, press the "Clear Log" button.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 
-  <div class="modal fade" id="icaoAircraftEquipmentModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Aircraft Equipment</h4>
-        </div>
-        <div class="modal-body">
-         <div style="overflow: auto;">
-        		<ul class="list-group checked-list-box">
-        		
-        		<li class="list-group-item">
-   <label for="icaoAircraftEquipmentDialogCheckboxN">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxN"
-			value="N" />
-		N = NIL
-	</label>
-				</li>	
-        		<li class="list-group-item">
+<div class="modal fade" id="icaoAircraftEquipmentModal" role="dialog">
+	<div class="modal-dialog">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxS">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxS"
-			value="S" />
-		S = (VOR, VHF RTF, ILS)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Aircraft Equipment</h4>
+			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<ul class="list-group checked-list-box">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxA">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxA"
-			value="A" />
-		A = GBAS Landing System
-	</label>
-				</li>	
-        		<li class="list-group-item">
+						<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxN">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxN"
+									   value="N" />
+								N = NIL
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxB">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxB"
-			value="B" />
-		B = LPV (APV with SBAS)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxS">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxS"
+									   value="S" />
+								S = (VOR, VHF RTF, ILS)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxC">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxC"
-			value="C" />
-		C = LORAN C
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxA">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxA"
+									   value="A" />
+								A = GBAS Landing System
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxD">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxD"
-			value="D" />
-		D = DME
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxB">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxB"
+									   value="B" />
+								B = LPV (APV with SBAS)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxE1">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE1"
-			value="E1" />
-		E1 = FMC WPR ACARS
-	</label>
+							<label for="icaoAircraftEquipmentDialogCheckboxC">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxC"
+									   value="C" />
+								C = LORAN C
+							</label>
+						</li>
+						<li class="list-group-item">
 
-				</li>	
-        		<li class="list-group-item">
-        		
-	<label for="icaoAircraftEquipmentDialogCheckboxE2">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE2"
-			value="E2" />
-		E2 = D-FIS ACARS
-	</label>
+							<label for="icaoAircraftEquipmentDialogCheckboxD">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxD"
+									   value="D" />
+								D = DME
+							</label>
+						</li>
+						<li class="list-group-item">
 
-				</li>	
-        		<li class="list-group-item">
-        		
-	<label for="icaoAircraftEquipmentDialogCheckboxE3">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE3"
-			value="E3" />
-		E3 = PDC ACARS
-	</label>
+							<label for="icaoAircraftEquipmentDialogCheckboxE1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE1"
+									   value="E1" />
+								E1 = FMC WPR ACARS
+							</label>
 
-				</li>	
-        		<li class="list-group-item">
-        		
-	<label for="icaoAircraftEquipmentDialogCheckboxF">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxF"
-			value="F" />
-		F = ADF
-	</label>
+						</li>
+						<li class="list-group-item">
 
-				</li>	
-        		<li class="list-group-item">
-        		
-	<label for="icaoAircraftEquipmentDialogCheckboxG">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxG"
-			value="G" />
-		G = GNSS
-	</label>
+							<label for="icaoAircraftEquipmentDialogCheckboxE2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE2"
+									   value="E2" />
+								E2 = D-FIS ACARS
+							</label>
 
-				</li>	
-        		<li class="list-group-item">
-        		
-	<label for="icaoAircraftEquipmentDialogCheckboxH">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxH"
-			value="H" />
-		H = HF RTF
-	</label>
-				</li>	
-        		<li class="list-group-item">
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxI">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxI"
-			value="I" />
-		I = Inert'l Nav
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxE3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE3"
+									   value="E3" />
+								E3 = PDC ACARS
+							</label>
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ1">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ1"
-			value="J1" />
-		J1 = CPDLC ATN VDL Mode 2
-	</label>
-				</li>	
-        		<li class="list-group-item">
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ2">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ2"
-			value="J2" />
-		J2 = CPDLC FANS 1/A HFDL
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxF">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxF"
+									   value="F" />
+								F = ADF
+							</label>
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ3">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ3"
-			value="J3" />
-		J3 = CPDLC FANS 1/A VDL Mode A
-	</label>
-				</li>	
-        		<li class="list-group-item">
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ4">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ4"
-			value="J4" />
-		J4 = CPDLC FANS 1/A VDL Mode 2
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxG">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxG"
+									   value="G" />
+								G = GNSS
+							</label>
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ5">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ5"
-			value="J5" />
-		J5 = CPDLC FANS 1/A SAT COM (INMARSAT)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ6">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ6"
-			value="J6" />
-		J6 = CPDLC FANS 1/A SAT COM (MTSAT)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxH">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxH"
+									   value="H" />
+								H = HF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxJ7">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ7"
-			value="J7" />
-		J7 = CPDLC FANS 1/A SAT COM (Iridium)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxI">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxI"
+									   value="I" />
+								I = Inert'l Nav
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxK">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxK"
-			value="K" />
-		K = MLS
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ1"
+									   value="J1" />
+								J1 = CPDLC ATN VDL Mode 2
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxL">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxL"
-			value="L" />
-		L = ILS
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ2"
+									   value="J2" />
+								J2 = CPDLC FANS 1/A HFDL
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxM1">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM1"
-			value="M1" />
-		M1 = ATC RTF SATCOM (INMARSAT)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ3"
+									   value="J3" />
+								J3 = CPDLC FANS 1/A VDL Mode A
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxM2">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM2"
-			value="M2" />
-		M2 = ATC RTF (MTSAT)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ4">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ4"
+									   value="J4" />
+								J4 = CPDLC FANS 1/A VDL Mode 2
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxM3">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM3"
-			value="M3" />
-		M3 = ATC RTF (Iridium)
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ5">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ5"
+									   value="J5" />
+								J5 = CPDLC FANS 1/A SAT COM (INMARSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxO">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxO"
-			value="O" />
-		O = VOR
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ6">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ6"
+									   value="J6" />
+								J6 = CPDLC FANS 1/A SAT COM (MTSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxR">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxR"
-			value="R" />
-		R = PBN Approved
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxJ7">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ7"
+									   value="J7" />
+								J7 = CPDLC FANS 1/A SAT COM (Iridium)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxT">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxT"
-			value="T" />
-		T = TACAN
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxK">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxK"
+									   value="K" />
+								K = MLS
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxU">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxU"
-			value="U" />
-		U = UHF RTF
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxL">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxL"
+									   value="L" />
+								L = ILS
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxV">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxV"
-			value="V" />
-		V = VHF RTF
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxM1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM1"
+									   value="M1" />
+								M1 = ATC RTF SATCOM (INMARSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxW">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxW"
-			value="W" />
-		W = RVSM
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxM2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM2"
+									   value="M2" />
+								M2 = ATC RTF (MTSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxX">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxX"
-			value="X" />
-		X = MNPS
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxM3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM3"
+									   value="M3" />
+								M3 = ATC RTF (Iridium)
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxY">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxY"
-			value="Y" />
-		Y = VHF with 8.33 kHz channel spacing
-	</label>
-				</li>	
-        		<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxO">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxO"
+									   value="O" />
+								O = VOR
+							</label>
+						</li>
+						<li class="list-group-item">
 
-	<label for="icaoAircraftEquipmentDialogCheckboxZ">
-		<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxZ"
-			value="Z" />
-		Z = Other (COM/, DAT/ or NAV/ in Field 18)
-	</label>
-				</li>	
-        		<li class="list-group-item">
-                </ul>
-                </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
-        </div>
-      </div>
-      
-    </div>
-    </div>
+							<label for="icaoAircraftEquipmentDialogCheckboxR">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxR"
+									   value="R" />
+								R = PBN Approved
+							</label>
+						</li>
+						<li class="list-group-item">
 
-		<div class="col-md-4"><b>Warning! You MUST read all information under <u></u><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a> before proceeding.</b></div><br>
-		<div class="col-md-4 table-responsive">
-			<table class="table">
-				<tr>
-				<td><h3 ><span class="label label-success">File an ICAO Plan</span></h3></td>
-				</tr>
-				<tr>
-				<td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
-				</tr>
-			    <tr>
-				<td>Aircraft ID</td><td><input id="icaoAircraftIdInput"/></td>
-				</tr>
-				<tr>
-				<td>Flight Rule</td><td><select class="selectpicker" id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
-				</tr>
-				<tr>
-				<td>Flight Type</td><td><select class="selectpicker" id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
-				</tr>
-				<tr>
-				<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
-				</tr>
-				<tr>
-				<td>Aircraft Type</td><td><input id="icaoAircraftTypeInput"/></td>
-				</tr>
-				<tr>
-				<td>Wake Turbulence</td><td><select class="selectpicker" id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
-				</tr>
-				<tr>
-				<td>Aircraft Equipment</td><td><input id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
-			    </tr>
-			    <tr>
-				<td>Departure</td><td><input id="icaoDepartureInput"/></td>
-			    </tr>
-				<tr>
-				<td>Departure Date&Time</td><td><input id="icaoDepartureDateInput"/></td>
-				</tr>
-				<tr>
-				<td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
-				</tr>
-				<tr>
-				<td>Level</td><td><input id="icaoLevelInput"/></td>
-				</tr>
-				<tr>
-				<td>Surveillance Equipment</td><td><input id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
-			    </tr>
-			    <tr>
-				<td>Route</td><td><input id="icaoRouteInput"/></td>
-			    </tr>
-				<tr>
-				<td>Other Info</td><td><input id="icaoOtherInfoInput"/></td>
-				</tr>
-				<tr>
-				<td>Destination</td><td><input id="icaoDestinationInput"/></td>
-				</tr>
-				<tr>
-				<td>Total Elapsed Time</td><td><input id="icaoTotalEstimatedElapsedTimeInput"/></td>
-				</tr>
-				<tr>
-				<td>Alternate 1</td><td><input id="icaoAlternate1Input"/></td>
-				</tr>
-			    <tr>
-				<td>Alternate 2</td><td><input id="icaoAlternate2Input"/></td>
-			    </tr>
-				<tr>
-				<td>Fuel Endurance</td><td><input id="icaoFuelEnduranceInput"/></td>
-				</tr>
-				<tr>
-				<td>People On Board</td><td><input  id="icaoPeopleOnBoardInput"/></td>
-				</tr>
-				<tr>
-				<td>Aircraft Color</td><td><input  id="icaoAircraftColorInput"/></td>
-				</tr>
-				<tr>
-				<td>Supplemental Remarks</td><td><input id="icaoSupplementalRemarksInput"/></td>
-			    </tr>
-			    <tr>
-				<td>Pilot In Command</td><td><input id="icaoPilotInCommandInput"/></td>
-			    </tr>
-				<tr>
-				<td>Pilot Info</td><td><input id="icaoPilotInfoInput"/></td>
-			    </tr>
-			    <tr>
-				<td><button class="btn btn-block" onclick="plan_file()">File Plan</button>
-				</td>
-				</tr>
-			</table>
-			<table class="table">
-				<tr>
-				<td><h3><span class="label label-success">Filed Plans</span></h3></td>
-				</tr>
-			</table>
-			<table id="save_table_faa" class="table">
-		  		<th>Plan</th><th>State</th>
-			</table>
-			<table class="table">
-			<tr>
+							<label for="icaoAircraftEquipmentDialogCheckboxT">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxT"
+									   value="T" />
+								T = TACAN
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxU">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxU"
+									   value="U" />
+								U = UHF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxV">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxV"
+									   value="V" />
+								V = VHF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxW">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxW"
+									   value="W" />
+								W = RVSM
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxX">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxX"
+									   value="X" />
+								X = MNPS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxY">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxY"
+									   value="Y" />
+								Y = VHF with 8.33 kHz channel spacing
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxZ">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxZ"
+									   value="Z" />
+								Z = Other (COM/, DAT/ or NAV/ in Field 18)
+							</label>
+						</li>
+						<li class="list-group-item">
+					</ul>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div class="col-md-4"><b>Warning! You MUST read all information under <u></u><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a> before proceeding.</b></div><br>
+<div class="col-md-4 table-responsive">
+	<table class="table">
+		<tr>
+			<td><h3 ><span class="label label-success">File an ICAO Plan</span></h3></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
+		</tr>
+		<tr>
+			<td>Aircraft ID</td><td><input id="icaoAircraftIdInput"/></td>
+		</tr>
+		<tr>
+			<td>Flight Rule</td><td><select class="selectpicker" id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
+		</tr>
+		<tr>
+			<td>Flight Type</td><td><select class="selectpicker" id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
+		</tr>
+		<tr>
+			<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
+		</tr>
+		<tr>
+			<td>Aircraft Type</td><td><input id="icaoAircraftTypeInput"/></td>
+		</tr>
+		<tr>
+			<td>Wake Turbulence</td><td><select class="selectpicker" id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
+		</tr>
+		<tr>
+			<td>Aircraft Equipment</td><td><input id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+		</tr>
+		<tr>
+			<td>Departure</td><td><input id="icaoDepartureInput"/></td>
+		</tr>
+		<tr>
+			<td>Departure Date&Time</td><td><input id="icaoDepartureDateInput"/></td>
+		</tr>
+		<tr>
+			<td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
+		</tr>
+		<tr>
+			<td>Level</td><td><input id="icaoLevelInput"/></td>
+		</tr>
+		<tr>
+			<td>Surveillance Equipment</td><td><input id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+		</tr>
+		<tr>
+			<td>Route</td><td><input id="icaoRouteInput"/></td>
+		</tr>
+		<tr>
+			<td>Other Info</td><td><input id="icaoOtherInfoInput"/></td>
+		</tr>
+		<tr>
+			<td>Destination</td><td><input id="icaoDestinationInput"/></td>
+		</tr>
+		<tr>
+			<td>Total Elapsed Time</td><td><input id="icaoTotalEstimatedElapsedTimeInput"/></td>
+		</tr>
+		<tr>
+			<td>Alternate 1</td><td><input id="icaoAlternate1Input"/></td>
+		</tr>
+		<tr>
+			<td>Alternate 2</td><td><input id="icaoAlternate2Input"/></td>
+		</tr>
+		<tr>
+			<td>Fuel Endurance</td><td><input id="icaoFuelEnduranceInput"/></td>
+		</tr>
+		<tr>
+			<td>People On Board</td><td><input  id="icaoPeopleOnBoardInput"/></td>
+		</tr>
+		<tr>
+			<td>Aircraft Color</td><td><input  id="icaoAircraftColorInput"/></td>
+		</tr>
+		<tr>
+			<td>Supplemental Remarks</td><td><input id="icaoSupplementalRemarksInput"/></td>
+		</tr>
+		<tr>
+			<td>Pilot In Command</td><td><input id="icaoPilotInCommandInput"/></td>
+		</tr>
+		<tr>
+			<td>Pilot Info</td><td><input id="icaoPilotInfoInput"/></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="plan_file()">File Plan</button>
+			</td>
+		</tr>
+	</table>
+	<table class="table">
+		<tr>
+			<td><h3><span class="label label-success">Filed Plans</span></h3></td>
+		</tr>
+	</table>
+	<table id="save_table_faa" class="table">
+		<th>Plan</th><th>State</th>
+	</table>
+	<table class="table">
+		<tr>
 			<td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="load_plan()">Load</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
 			<td><select class="selectpicker" id="activate_time" class="fullinput">
 				<option value="0">Departing Now</option>
@@ -1049,28 +1049,28 @@ To proceed with plans and briefings, you must create an account with <label clas
 				<option value="20">Departing 20 minutes from now</option>
 				<option value="25">Departing 25 minutes from now</option>
 				<option value="30">Departing 30 minutes from now</option>
-				</select>
+			</select>
 			</td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="get_navlog()">Get Log</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="clear_navlog()">Clear Log</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td>
-			</tr>
-			<tr>
+		</tr>
+		<tr>
 			<td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
 			<td><input id="close_location" class="fullinput" placeholder="At location, e.g. KBOS" /></td>
-			</tr>
-			</table>
-			<p>
-				<a id="nav_log"></a>
-			</p>
-		</div>
-  		<div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a></b></div><br>
+		</tr>
+	</table>
+	<p>
+		<a id="nav_log"></a>
+	</p>
+</div>
+<div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a></b></div><br>
 
 </body>
 

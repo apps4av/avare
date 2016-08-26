@@ -11,89 +11,89 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-authors: zkhan 
+authors: zkhan
 -->
 
 <head>
 
-<style>
-body {
-	color : #FFFFFF;
-	width: 800px;
-	background: #000000;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
+	<style>
+		body {
+		color : #FFFFFF;
+		width: 800px;
+		background: #000000;
+		font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+		}
 
-label {
-	color : #FF0000;
-	font-weight: bold; /* Make sure they're bold */
-	font-size : 20px;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
+		label {
+		color : #FF0000;
+		font-weight: bold; /* Make sure they're bold */
+		font-size : 20px;
+		font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+		}
 
-input {
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-	width:200px;
-}
+		input {
+		font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+		width:200px;
+		}
 
-p {
-	border: solid green;
-	border-radius: 1em;
-	width: 800px;
-	padding: 5px;
-}
+		p {
+		border: solid green;
+		border-radius: 1em;
+		width: 800px;
+		padding: 5px;
+		}
 
-table { 
-	color: #333; /* Lighten up font color */
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-	width: 800px;
-	border-collapse: collapse; 
-	border-spacing: 0; 
-}
- 
-button {
-	width: 100px;
-} 
- 
-td, th { 
-	color : #FFFFFF;
-	border: 1px solid #CCC;
-	height: 30px; 
-	width: 110px;
-	padding: 5px;
-} /* Make cells a bit taller */
- 
-th {
-	background: #222222; /* Light grey background */
-	font-weight: bold; /* Make sure they're bold */
-}
- 
-td {
-	background: #111111; /* Lighter grey background */
-	text-align: left; /* Left our text */
-}
+		table {
+		color: #333; /* Lighten up font color */
+		font-family: Helvetica, Arial, sans-serif; /* Nicer font */
+		width: 800px;
+		border-collapse: collapse;
+		border-spacing: 0;
+		}
 
-.halfbutton {
-	width: 50px; // For two buttons in one row
-}
+		button {
+		width: 100px;
+		}
 
-.halfinput {
-	width : 100px;
-}
+		td, th {
+		color : #FFFFFF;
+		border: 1px solid #CCC;
+		height: 30px;
+		width: 110px;
+		padding: 5px;
+		} /* Make cells a bit taller */
 
-.sublabel {
-	font-size : 15px;
-	color : #00FF00;
-}
-</style>
+		th {
+		background: #222222; /* Light grey background */
+		font-weight: bold; /* Make sure they're bold */
+		}
 
-<script type='text/javascript' >
+		td {
+		background: #111111; /* Lighter grey background */
+		text-align: left; /* Left our text */
+		}
+
+		.halfbutton {
+		width: 50px; // For two buttons in one row
+		}
+
+		.halfinput {
+		width : 100px;
+		}
+
+		.sublabel {
+		font-size : 15px;
+		color : #00FF00;
+		}
+	</style>
+
+	<script type='text/javascript' >
 
 function zeroPad(num) {
 	var out = num.toString();
 	if(out.length == 2) {
 		return out;
-	} 
+	}
 	else {
 		return '0' + out;
 	}
@@ -116,7 +116,7 @@ function getImageWinds(type, level, ftime) {
 	else if(level == '360') level = '225';
 	else if(level == '420') level = '175';
 	else if(level == '480') level = '125';
-	
+
 	var filename = 'http://aviationweather.gov/adds/data/winds/' + ftime + '_' + level + '_' + type + '.gif';
 	elem.src = filename;
 }
@@ -158,7 +158,7 @@ function updateImageIce() {
 	var fore = felem.options[felem.selectedIndex].value;
 	var telem = document.getElementById('typeIce');
 	var type = telem.options[telem.selectedIndex].value;
-	if(fore == '00') type = 'cip' + type; 
+	if(fore == '00') type = 'cip' + type;
 	else type = 'fip' + type;
 	getImageIce(type, level, fore );
 }
@@ -227,7 +227,7 @@ function settext() {
 	var txt = document.getElementById('timetxt');
 	var now = new Date();
 	var utc =  (now.getUTCMonth()) + 1 + '/' + now.getUTCDate() + ' ' + zeroPad(now.getUTCHours()) + '' + zeroPad(now.getUTCMinutes()) + ' UTC';
-	
+
 	txt.value = utc;
 	getData();
 }
@@ -248,8 +248,8 @@ window.onload = settext;
 </head>
 
 <body>
-	<h1>Charts</h1>
-	<p>
+<h1>Charts</h1>
+<p>
 	<label>Prog.</label><br>
 	<select onchange='weatherImg(this.value)'>
 		<option value='WSA'>WPC Surface Analysis</option>
@@ -287,7 +287,7 @@ window.onload = settext;
 		<OPTION VALUE='060'>6,000</OPTION>
 		<OPTION VALUE='030'>3,000</OPTION>
 		<OPTION VALUE='sfc'>sfc</OPTION>
-		</select>
+	</select>
 	<select id='fore' name='fore' onChange='updateImageWinds()'>
 		<option value='ruc00hr'>0hr</option>
 		<option value='ruc01hr'>1hr</option>
@@ -382,10 +382,10 @@ window.onload = settext;
 		<option value='http://aviationweather.gov/data/obs/sat/goes/vis_goesW.jpg'>Satellite West</option>
 		<option value='http://www.ospo.noaa.gov/data/land/fire/currenthms.jpg'>Fire and Smoke</option>
 	</select>
-	</p>
-	<br><img id='weatherImage' src='http://aviationweather.gov/adds/data/progs/hpc_sfc_analysis.gif'><br>
-	<h1>Plan Area</h1>
-	<a readonly id='plantable'>placeholder</a>
+</p>
+<br><img id='weatherImage' src='http://aviationweather.gov/adds/data/progs/hpc_sfc_analysis.gif'><br>
+<h1>Plan Area</h1>
+<a readonly id='plantable'>placeholder</a>
 </body>
 
 </html>
