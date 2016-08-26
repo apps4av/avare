@@ -381,7 +381,12 @@ public class Plan implements Observer {
         // ETE is sum of all ETE legs
         mEte = Helper.calculateEte(0, 0, mEteSec, false);
         // Fuel is sum of all fuels, in increments of 0.1 gallons
-        mFuel = String.valueOf((((float)Math.round(mFuelGallons * 10.f))) / 10.f);
+        if(mFuelGallons >= Float.MAX_VALUE) {
+            mFuel = "-.-";
+        }
+        else {
+            mFuel = String.valueOf((((float) Math.round(mFuelGallons * 10.f))) / 10.f);
+        }
         mLastLocation = params;
     }
 
