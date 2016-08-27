@@ -141,6 +141,7 @@ function list_import() {
 		AndroidList.importFromFile(path.value);
 		path.value = "";
 		document.getElementById("list_name").scrollIntoView();
+		$("#saveModal").modal('hide');
 	});
 }
 
@@ -258,20 +259,14 @@ function save_add(name) {
             <td><button class="btn btn-block" onclick="add_list_item()">Add</button></td>
         </tr>
     </table>
-    <table class="table"><th>Import a List File</th>
+    <table class="table"><th>Save List</th>
         <tr>
-            <td><input id="import_input" placeholder="/sdcard/list.txt"></td>
-            <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
+            <td><input id="save_name" placeholder="Current List Name"/></td>
+            <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
         </tr>
-        <table class="table"><th>Save List</th>
-            <tr>
-                <td><input id="save_name" placeholder="Current List Name"/></td>
-                <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
-            </tr>
-            <tr>
-                <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
-            </tr>
-        </table>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
+        </tr>
     </table>
 </div>
 <div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>List Help</u></a></b></div><br>
@@ -286,6 +281,12 @@ function save_add(name) {
             </div>
             <div class="modal-body" style="padding:1px;">
                 <table class="table" id="save_table" ><th>List</th></table>
+                <table class="table"><th>Import a Saved List File</th>
+                    <tr>
+                        <td><input id="import_input" placeholder="/sdcard/list.txt"></td>
+                        <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
@@ -333,7 +334,8 @@ function save_add(name) {
                         <li>A long list can be entered in a single action by importing it from disk.</li>
                         <li>Get the list prepared on the PC in text format.</li>
                         <li>Put the list on your device in an every-application-accessible folder like /sdcard/Download, using PC-device USB connection.</li>
-                        <li>Enter the name/path of the file in "Import a List File" box, for example /sdcard/Download/mylist.txt.</li>
+                        <li>Click on Saved Lists link.</li>
+                        <li>Enter the name/path of the file in "Import a Saved List File" box, for example /sdcard/Download/mylist.txt.</li>
                         <li>Press the Import button.</li>
                         <li>Be patient as the import can take up to a minute depending on the file size, and your device's capabilities.</li>
                         <li>The imported list is shown after it is imported.</li>

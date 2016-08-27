@@ -413,7 +413,7 @@ function show_help() {
 }
 
 function plan_get_weather() {
-	bootbox.confirm("Get Latest Plan Weather & NOTAMS from Internet?", function(result) {
+	bootbox.confirm("Get Latest Plan Briefing from Internet?", function(result) {
 		if(result == false) {
 			return;
 		}
@@ -568,9 +568,9 @@ window.onload = show_help;
         </tr>
     </table>
 
-    <table class="table"><th>Plan Weather & NOTAMS</th>
+    <table class="table"><th>Plan Briefing</th>
         <tr>
-            <td><a onclick="plan_get_weather()"><b><u>Get Weather & NOTAMS</u></b></a></td>
+            <td><a onclick="plan_get_weather()"><b><u>Get Briefing</u></b></a></td>
         </tr>
     </table>
 
@@ -758,13 +758,13 @@ window.onload = show_help;
                         <li>If you choose to fly direct to a destination by choosing any direct functions from other screens, the plan will auto de-activate.</li>
                     </ul>
 
-                    <b>Getting Plan Weather</b>
+                    <b>Getting Plan Briefing</b>
                     <ul>
-                        <li>Once a plan is entered, you can get the latest weather for that plan area.</li>
+                        <li>Once a plan is entered, you can get the latest briefing for that plan area.</li>
                         <li>Enter a plan with at least two points, at least one of which is an airport.</li>
                         <li>Make sure you are connected to the Internet.</li>
-                        <li>Press the "Get Weather" button.</li>
-                        <li>You may be asked to choose an application. You must choose a browser. After a few seconds, the weather will br shown in the browser window.</li>
+                        <li>Press the "Get Briefing" button.</li>
+                        <li>You may be asked to choose an application. You must choose a browser. After a few seconds, the briefing will be shown in the browser window.</li>
                     </ul>
                 </div>
             </div>

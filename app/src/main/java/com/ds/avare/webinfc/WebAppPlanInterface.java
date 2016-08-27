@@ -1022,38 +1022,18 @@ public class WebAppPlanInterface implements Observer {
             String plann = "";
             String plan = "";
             if(null == mService) {
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                 running = false;
                 return;
             }
 
             int num = mService.getPlan().getDestinationNumber();
-            if(num < 2) {
-                /*
-                 * Not a route.
-                 */
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-                running = false;
-                return;
-            }
             for(int i = 0; i < num; i++) {
                 Location l = mService.getPlan().getDestination(i).getLocation();
                 planf += l.getLongitude() + "," + l.getLatitude() + ";";
                 plan += mService.getPlan().getDestination(i).getID() + "(" +
                         mService.getPlan().getDestination(i).getType() + ") ";
             }
-            if(planf.equals("")) {
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-                running = false;
-                return;
-            }                
-            
+
             /*
              *  Get PIREP
              */
