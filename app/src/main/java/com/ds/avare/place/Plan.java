@@ -152,7 +152,7 @@ public class Plan implements Observer {
      * 
      * @return
      */
-    public void remove(int rmId) {
+    public synchronized void remove(int rmId) {
         int num = getDestinationNumber() - 1;
         if (rmId > num || rmId < 0) {
             return;
@@ -229,7 +229,7 @@ public class Plan implements Observer {
      * 
      * @return
      */
-    public boolean appendDestination(Destination dest) {
+    public synchronized boolean appendDestination(Destination dest) {
 
         int n = getDestinationNumber();
         if (n >= MAX_DESTINATIONS) {
@@ -296,7 +296,7 @@ public class Plan implements Observer {
      * 
      * @param params
      */
-    public void updateLocation(GpsParams params) {
+    public synchronized void updateLocation(GpsParams params) {
         mDistance = 0;
         mEteSec = 0;
         mFuelGallons = 0;
@@ -468,7 +468,7 @@ public class Plan implements Observer {
     /*
      * Get a list of coordinates forming this route on great circle
      */
-    public Coordinate[] getCoordinates() {
+    public synchronized Coordinate[] getCoordinates() {
         int num = getDestinationNumber();
 
         Coordinate[] c = null;
