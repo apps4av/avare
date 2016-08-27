@@ -52,7 +52,9 @@ public class OptionButton extends Button implements View.OnClickListener {
             return;
         }
         CharSequence[] entries = ta.getTextArray(0);
+        @SuppressWarnings("ResourceType")
         CharSequence label = ta.getText(1);
+        ta.recycle();
         if(null == entries) {
             return;
         }
