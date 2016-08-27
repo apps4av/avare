@@ -1015,10 +1015,11 @@ public class WebAppPlanInterface implements Observer {
             String Pirep = "";
             String Metar = "";
             String Taf = "";
+            String notams = "";
 
             String miles = "30";
             String planf = "";
-			String plann = "";
+            String plann = "";
             String plan = "";
             if(null == mService) {
             	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
@@ -1116,11 +1117,6 @@ public class WebAppPlanInterface implements Observer {
             	return;
             }
 
-
-            if(!running) {
-            	return;
-            }
-
 			// NOTAMS
 			num = mService.getPlan().getDestinationNumber();
 			plann = "";
@@ -1130,34 +1126,23 @@ public class WebAppPlanInterface implements Observer {
 					plann += "K" + d.getID() + ",";
 				}
 			}
-			if(plann.equals("")) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
-			}
-			plann = plann.replaceAll(",$", "");
-
-			String notams = NetworkHelper.getNotams(plann);
-			if(notams == null) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsError));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
+			if(!plann.equals("")) {
+				plann = plann.replaceAll(",$", "");
+				notams = NetworkHelper.getNotams(plann);
+				if(notams == null) {
+					notams = mContext.getString(R.string.NotamsError);
+				}
 			}
 
-
-			plan = "<font size='5' color='white'>" + plan + "</font><br></br>";
+			plan = "<font size='5' color='white'>" + plan + "</font><br>";
             plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
-            Metar = "<font size='6' color='white'>METARs</font><br></br>" + Metar; 
+            Metar = "<h3><font size='6' color='white'>METARs</font><br></h3>" + Metar;
             Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
-            Taf = "<font size='6' color='white'>TAFs</font><br></br>" + Taf; 
+            Taf = "<h3><font size='6' color='white'>TAFs</font><br></h3>" + Taf;
             Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
-            Pirep = "<font size='6' color='white'>PIREPs</font><br></br>" + Pirep; 
+            Pirep = "<h3><font size='6' color='white'>PIREPs</font><br></h3>" + Pirep;
             Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-			notams = "<font size='6' color='white'>NOTAMS</font><br></br>" + notams;
+			notams = "<h3><font size='6' color='white'>NOTAMS</font><br></h3>" + notams;
 
             String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;

@@ -11,6 +11,7 @@
 	<script src="bootstrap-select.min.js"></script>
 	<style type="text/css">
 		button {color: black;  height:40px;}
+		input {height:40px;}
 	</style>
 
 	<script type='text/javascript' >
@@ -932,8 +933,10 @@ function setAircraftSurveillance() {
 	</div>
 </div>
 
-<div class="col-md-4"><b>Warning! You MUST read all information under <u></u><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a> before proceeding.</b></div><br>
-<div class="col-md-4 table-responsive">
+<div class="table-responsive">
+	<table class = "table">
+		<th>Warning! You MUST read all information under <a onclick='$("#helpModal").modal()'><br><u>WXB Help</u></a> before proceeding.</th>
+	</table>
 	<table class="table">
 		<tr>
 			<td><h3 ><span class="label label-success">File an ICAO Plan</span></h3></td>
@@ -1066,11 +1069,10 @@ function setAircraftSurveillance() {
 			<td><input id="close_location" class="fullinput" placeholder="At location, e.g. KBOS" /></td>
 		</tr>
 	</table>
-	<p>
-		<a id="nav_log"></a>
-	</p>
+    <a id="nav_log"></a>
+    <br>
 </div>
-<div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>WXB Help</u></a></b></div><br>
+
 
 </body>
 
