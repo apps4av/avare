@@ -7,14 +7,19 @@
 	<script src="file:///android_asset/bootstrap.min.js"></script>
 	<script src="file:///android_asset/bootstrap-select.min.js"></script>
 	<script src="file:///android_asset/bootbox.min.js"></script>
+	<script src="file:///android_asset/toastr.min.js"></script>
 	<link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
 	<link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+	<link rel="stylesheet" href="file:///android_asset/toastr.min.css">
 	<style type="text/css">
 		button {color: black; height:40px;}
 		input {height:40px;}
+		.toast {opacity: 1 !important;}
 	</style>
 
 	<script type='text/javascript' >
+
+	toastr.options.timeOut = 2000;
 
 // set the table for faa plans
 //>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
@@ -164,6 +169,7 @@ function autofill() {
 			return;
 		}
 		AndroidWeather.fillPlan();
+		toastr.success('Filled from current Plan, and from Pilot & Aircraft Preferences');
 	});
 }
 
@@ -945,7 +951,7 @@ function setAircraftSurveillance() {
 			<td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
 		</tr>
 		<tr>
-			<td>Aircraft ID</td><td><input id="icaoAircraftIdInput"/></td>
+			<td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
 		</tr>
 		<tr>
 			<td>Flight Rule</td><td><select class="selectpicker" id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
@@ -957,19 +963,19 @@ function setAircraftSurveillance() {
 			<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
 		</tr>
 		<tr>
-			<td>Aircraft Type</td><td><input id="icaoAircraftTypeInput"/></td>
+			<td>Aircraft Type</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
 		</tr>
 		<tr>
 			<td>Wake Turbulence</td><td><select class="selectpicker" id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
 		</tr>
 		<tr>
-			<td>Aircraft Equipment</td><td><input id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+			<td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
 		</tr>
 		<tr>
-			<td>Departure</td><td><input id="icaoDepartureInput"/></td>
+			<td>Departure</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureInput"/></td>
 		</tr>
 		<tr>
-			<td>Departure Date&Time</td><td><input id="icaoDepartureDateInput"/></td>
+			<td>Departure Date&Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureDateInput"/></td>
 		</tr>
 		<tr>
 			<td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
@@ -978,43 +984,43 @@ function setAircraftSurveillance() {
 			<td>Level</td><td><input id="icaoLevelInput"/></td>
 		</tr>
 		<tr>
-			<td>Surveillance Equipment</td><td><input id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+			<td>Surveillance Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
 		</tr>
 		<tr>
-			<td>Route</td><td><input id="icaoRouteInput"/></td>
+			<td>Route</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoRouteInput"/></td>
 		</tr>
 		<tr>
-			<td>Other Info</td><td><input id="icaoOtherInfoInput"/></td>
+			<td>Other Info</td><td><input spellcheck="false" id="icaoOtherInfoInput"/></td>
 		</tr>
 		<tr>
-			<td>Destination</td><td><input id="icaoDestinationInput"/></td>
+			<td>Destination</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDestinationInput"/></td>
 		</tr>
 		<tr>
-			<td>Total Elapsed Time</td><td><input id="icaoTotalEstimatedElapsedTimeInput"/></td>
+			<td>Total Elapsed Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoTotalEstimatedElapsedTimeInput"/></td>
 		</tr>
 		<tr>
-			<td>Alternate 1</td><td><input id="icaoAlternate1Input"/></td>
+			<td>Alternate 1</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate1Input"/></td>
 		</tr>
 		<tr>
-			<td>Alternate 2</td><td><input id="icaoAlternate2Input"/></td>
+			<td>Alternate 2</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate2Input"/></td>
 		</tr>
 		<tr>
-			<td>Fuel Endurance</td><td><input id="icaoFuelEnduranceInput"/></td>
+			<td>Fuel Endurance</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoFuelEnduranceInput"/></td>
 		</tr>
 		<tr>
-			<td>People On Board</td><td><input  id="icaoPeopleOnBoardInput"/></td>
+			<td>People On Board</td><td><input id="icaoPeopleOnBoardInput"/></td>
 		</tr>
 		<tr>
-			<td>Aircraft Color</td><td><input  id="icaoAircraftColorInput"/></td>
+			<td>Aircraft Color</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftColorInput"/></td>
 		</tr>
 		<tr>
-			<td>Supplemental Remarks</td><td><input id="icaoSupplementalRemarksInput"/></td>
+			<td>Supplemental Remarks</td><td><input spellcheck="false" id="icaoSupplementalRemarksInput"/></td>
 		</tr>
 		<tr>
-			<td>Pilot In Command</td><td><input id="icaoPilotInCommandInput"/></td>
+			<td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
 		</tr>
 		<tr>
-			<td>Pilot Info</td><td><input id="icaoPilotInfoInput"/></td>
+			<td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
 		</tr>
 		<tr>
 			<td><button class="btn btn-block" onclick="plan_file()">File Plan</button>
@@ -1044,7 +1050,7 @@ function setAircraftSurveillance() {
 		</tr>
 		<tr>
 			<td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
-			<td><select class="selectpicker" id="activate_time" class="fullinput">
+			<td><select class="selectpicker" id="activate_time">
 				<option value="0">Departing Now</option>
 				<option value="5">Departing 5 minutes from now</option>
 				<option value="10">Departing 10 minutes from now</option>
@@ -1066,7 +1072,7 @@ function setAircraftSurveillance() {
 		</tr>
 		<tr>
 			<td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
-			<td><input id="close_location" class="fullinput" placeholder="At location, e.g. KBOS" /></td>
+			<td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="At location, e.g. KBOS" /></td>
 		</tr>
 	</table>
     <a id="nav_log"></a>

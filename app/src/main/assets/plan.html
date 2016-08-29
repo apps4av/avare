@@ -21,14 +21,19 @@ authors: zkhan
     <script src="file:///android_asset/bootstrap.min.js"></script>
     <script src="file:///android_asset/bootstrap-select.min.js"></script>
     <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
     <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
     <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
     <style type="text/css">
         button {color: black; height:40px;}
         input {height:40px;}
+        .toast {opacity: 1 !important;}
     </style>
 
     <script type="text/javascript" >
+
+	toastr.options.timeOut = 2000;
 
 var CELL_WP = 0;
 var CELL_TYPE = 1;
@@ -211,17 +216,12 @@ function plan_create() {
 	var name = document.getElementById("create_input").value.trim();
 
 	if(name == "") {
-		return
+		toastr.error('Please enter a valid route');
+		return;
 	}
 
-	// calll Android
-	bootbox.confirm("Delete Current Plan then Create??", function(result) {
-		if(result == false) {
-			return;
-		}
-		AndroidPlan.discardPlan();
-		AndroidPlan.createPlan(name);
-	});
+    AndroidPlan.discardPlan();
+    AndroidPlan.createPlan(name);
 
 }
 
@@ -259,6 +259,8 @@ function save_delete(row) {
 			return;
 		}
     	AndroidPlan.saveDelete(plan_name);
+		toastr.success('Plan deleted');
+
 	});
 
 }
@@ -268,9 +270,12 @@ function save_plan_add() {
 	var name = document.getElementById("save_name").value;
 
 	if(name == "") {
-		return
+		toastr.error('Please specify a valid name');
+		return;
 	}
 	AndroidPlan.savePlan(name);
+	toastr.success('Plan saved to ' + name);
+
 }
 
 // clear the entire save plan
@@ -473,7 +478,7 @@ window.onload = show_help;
             <td><h3 ><span class="label label-success">Create New Plan</span></h3></td>
         </tr>
         <tr>
-            <td><input id="create_input" placeholder="KBOS BOS V16 CMK KDXR"></td>
+            <td><input id="create_input" style="text-transform:uppercase" spellcheck="false" placeholder="KBOS BOS V16 CMK KDXR"></td>
             <td><button class="btn btn-block" onclick="plan_create()">Create</button></td>
         </tr>
     </table>
@@ -552,7 +557,7 @@ window.onload = show_help;
 
     <table class="table"><th>Add Waypoint to Plan</th>
         <tr>
-            <td><input id="search_input" placeholder="BOS"></td>
+            <td><input id="search_input" style="text-transform:uppercase" spellcheck="false" placeholder="BOS"></td>
             <td><button class="btn btn-block" onclick="search_waypoint()">Search</button></td>
         </tr>
     </table>
@@ -561,7 +566,7 @@ window.onload = show_help;
 
     <table class="table"><th>Save Plan</th>
         <tr>
-            <td><input id="save_name" placeholder="Current Plan Name"></td>
+            <td><input id="save_name" spellcheck="false" placeholder="Current Plan Name"></td>
             <td><button class="btn btn-block" onclick="save_plan_add()">Save</button></td>
         </tr>
         <tr>
@@ -604,7 +609,7 @@ window.onload = show_help;
                 <table class="table"><th>Filter Saved Plans</th></table>
                 <table class="table">
                     <tr>
-                        <td><input id="plan_filter" placeholder="Plan Filter Spec."></td>
+                        <td><input id="plan_filter" spellcheck="false" placeholder="Plan Filter Spec."></td>
                         <td><button class="btn btn-block" onclick="plan_filter()">Apply</button></td>
                     </tr>
                 </table>
