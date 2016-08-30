@@ -1143,15 +1143,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private String sua;
         private String layer;
         private LinkedList<Airep> aireps;
-        private LinkedList<String> freq;
         private LinkedList<String> runways;
         private Taf taf;
         private WindsAloft wa;
         private Metar metar;
         private String elev;
-        private String fuel;
-        private String ratings;
-        
+
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
          */     
@@ -1227,11 +1224,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
             else {
-                freq = mService.getDBResource().findFrequencies(airport);
-                if(isCancelled()) {
-                    return "";
-                }
-            
                 taf = mService.getDBResource().getTAF(airport);
                 if(isCancelled()) {
                     return "";
@@ -1252,36 +1244,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     return "";
                 }
 
-                LinkedList<String> fl = mService.getDBResource().findFuelCost(airport);
-                if(fl.size() == 0) {
-                	// If fuel not available, show its not
-                	fuel = mContext.getString(R.string.NotAvailable);
-                }
-                else {
-                	fuel = "";
-                }
-                // Concat all fuel reports
-                for(String s : fl) {
-                	fuel += s + "\n\n";
-                }
-                if(isCancelled())
-                    return "";
-                
-                
-                LinkedList<String> cm = mService.getDBResource().findRatings(airport);
-                if(cm.size() == 0) {
-                	// If ratings not available, show its not
-                	ratings = mContext.getString(R.string.NotAvailable);
-                }
-                else {
-                	ratings = "";
-                }
-                // Concat all fuel reports
-                for(String s : cm) {
-                	ratings += s + "\n\n";
-                }
-                if(isCancelled())
-                    return "";
             }
             
             /*
@@ -1369,11 +1331,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.airep = aireps;
                 mLongTouchDestination.mets = textMets;
                 mLongTouchDestination.wa = wa;
-                mLongTouchDestination.freq = freq;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.layer = layer;
-                mLongTouchDestination.fuel = fuel;
-                mLongTouchDestination.ratings = ratings;
                 if(metar != null) {
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +
