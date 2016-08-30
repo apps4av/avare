@@ -16,7 +16,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroups">
         <item>Databases</item>
         <item>Weather/TFRs</item>
-        <item>Other</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
@@ -34,21 +33,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Misc. Charts</item>
     </string-array>
 
-    <string-array name="resGroupsPopout">
-        <item>COMM</item>
-        <item>Performance</item>
-        <item>METAR</item>
-        <item>TAF</item>
-        <item>Winds/Temp.</item>
-        <item>AIREP/PIREP</item>
-        <item>AIRMET/SIGMET</item>
-        <item>TFR</item>
-        <item>SUA</item>
-        <item>Fuel Cost</item>
-        <item>User Ratings</item>
-        <item>Layer</item>
-    </string-array>
-    
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>Plates Georeference Info.</item>
@@ -59,11 +43,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>NEXRAD</item>
         <item>TFRs</item>
         <item>Game TFRs</item>
-    </string-array>
-
-    <string-array name="resNameOther">
-        <item>@string/FuelCost</item>
-        <item>@string/Ratings</item>
     </string-array>
 
     <string-array name="resNameAFD">
@@ -1504,11 +1483,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>conus</item>
         <item>TFRs</item>
         <item>GameTFRs</item>
-    </string-array>
-
-    <string-array name="resFilesOther">
-        <item>fuel</item>
-        <item>ratings</item>
     </string-array>
 
     <string-array name="resFilesIFRLE">

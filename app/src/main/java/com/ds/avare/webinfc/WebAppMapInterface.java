@@ -95,10 +95,12 @@ public class WebAppMapInterface {
 
                 String airep = "";
                 if(data.airep != null) {
-                    airep = "<hr><font color=\"yellow\">PIREP</font><br>";
                     for(Airep a : data.airep) {
                         String p = WeatherHelper.formatPirepHTML(a.rawText, mPref.isWeatherTranslated());
                         airep += p + "<br><br>";
+                    }
+                    if(!airep.equals("")) {
+                        airep = "<hr><font color=\"yellow\">PIREP</font><br>" + airep;
                     }
                 }
 

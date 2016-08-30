@@ -660,8 +660,6 @@ public class LocationActivity extends Activity implements Observer {
                 return null;
             };
         });
-        mLayerOption.setSelectedValue(mPref.getLayerType());
-        mLocationView.setLayerType(mPref.getLayerType());
 
         mCenterButton = (Button)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -1170,6 +1168,10 @@ public class LocationActivity extends Activity implements Observer {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
+
+            mLayerOption.setSelectedValue(mPref.getLayerType());
+            mLocationView.setLayerType(mPref.getLayerType());
+
         }
 
         /* (non-Javadoc)
