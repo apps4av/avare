@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.Airep;
 
@@ -84,7 +85,7 @@ public class WebAppMapInterface {
                 LongTouchDestination data = (LongTouchDestination)msg.obj;
                 String taf = "";
                 if(data.taf != null) {
-                    taf = "<hr><font color=\"yellow\">TAF </font>" + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(data.taf.rawText, mPref.isWeatherTranslated()), mPref.isWeatherTranslated())).replace("'", "\"");
+                    taf = "<hr><font color=\"yellow\">TAF </font>" + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(data.taf.rawText, mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                 }
 
                 String metar = "";
@@ -121,7 +122,7 @@ public class WebAppMapInterface {
                 String layer = "";
                 if(data.layer != null) {
                     if(!data.layer.equals("")) {
-                        layer = "<hr><font color=\"yellow\">Layer Time</font><br>";
+                        layer = "<hr><font color=\"yellow\">Layer Time</font> ";
                         layer += data.layer;
                     }
                 }
@@ -129,7 +130,7 @@ public class WebAppMapInterface {
                 String mets = "";
                 if(data.mets != null) {
                     if(!data.mets.equals("")) {
-                        mets = "<hr><font color=\"yellow\">SIG/AIRMETs</font><br>";
+                        mets = "<hr><font color=\"yellow\">SIG/AIRMETs</font> ";
                         mets += data.mets.replace("\n", "<br>");
                     }
                 }
@@ -137,14 +138,14 @@ public class WebAppMapInterface {
                 String performance = "";
                 if(data.performance != null) {
                     if(!data.performance.equals("")) {
-                        performance = "<hr><font color=\"yellow\">Performance</font><br>";
+                        performance = "<hr><font color=\"yellow\">Performance</font> ";
                         performance += data.performance.replace("\n", "<br>");
                     }
                 }
 
                 String winds = "";
                 if(data.wa != null) {
-                    winds = "<hr><font color=\"yellow\">Winds/Temp. Aloft</font><br>";
+                    winds = "<hr><font color=\"yellow\">Winds/Temp. Aloft</font> ";
                     winds += data.wa.station + data.wa.time + "<br>";
                     winds += "@ 03000 ft: " + WeatherHelper.decodeWind(data.wa.w3k) + "<br>";
                     winds += "@ 06000 ft: " + WeatherHelper.decodeWind(data.wa.w6k) + "<br>";
@@ -159,17 +160,17 @@ public class WebAppMapInterface {
 
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
-                        data.airport + "','" +
-                        "<font color=\"yellow\">Position " + "</font>" + data.info + "','" +
-                        metar + "','" +
-                        taf + "','" +
-                        airep + "','" +
-                        tfr + "','" +
-                        sua + "','" +
-                        mets + "','" +
-                        performance + "','" +
-                        winds + "','" +
-                        layer +
+                        Helper.formatJsArgs(data.airport) + "','" +
+                        "<font color=\"yellow\">Position " + "</font>" + Helper.formatJsArgs(data.info) + "','" +
+                        Helper.formatJsArgs(metar) + "','" +
+                        Helper.formatJsArgs(taf) + "','" +
+                        Helper.formatJsArgs(airep) + "','" +
+                        Helper.formatJsArgs(tfr) + "','" +
+                        Helper.formatJsArgs(sua) + "','" +
+                        Helper.formatJsArgs(mets) + "','" +
+                        Helper.formatJsArgs(performance) + "','" +
+                        Helper.formatJsArgs(winds) + "','" +
+                        Helper.formatJsArgs(layer) +
                         "')";
 
 
