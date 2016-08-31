@@ -119,10 +119,12 @@ public class WebAppMapInterface {
                     }
                 }
 
-                String layer = "";
+                String layer = mPref.useAdsbWeather() ?
+                        "<hr><font color=\"yellow\">Weather Source</font> ADS-B<br>" :
+                        "<hr><font color=\"yellow\">Weather Source</font> Internet<br>";
                 if(data.layer != null) {
                     if(!data.layer.equals("")) {
-                        layer = "<hr><font color=\"yellow\">Layer Time</font> ";
+                        layer += "<font color=\"yellow\">Weather Layer Time</font> ";
                         layer += data.layer;
                     }
                 }
@@ -130,7 +132,7 @@ public class WebAppMapInterface {
                 String mets = "";
                 if(data.mets != null) {
                     if(!data.mets.equals("")) {
-                        mets = "<hr><font color=\"yellow\">SIG/AIRMETs</font> ";
+                        mets = "<hr><font color=\"yellow\">SIG/AIRMETs</font><br>";
                         mets += data.mets.replace("\n", "<br>");
                     }
                 }

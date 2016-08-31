@@ -470,13 +470,16 @@ function refresh_plan_list() {
             <td><input id="create_input" style="text-transform:uppercase" spellcheck="false" placeholder="KBOS BOS V16 CMK KDXR"></td>
             <td><button class="btn btn-block" onclick="plan_create()">Create</button></td>
         </tr>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Plans</b></u></a></td>
+        </tr>
     </table>
     <table class="table">
         <tr>
             <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3></td>
         </tr>
         <tr>
-            <td>@<select id="plan_altitude" onchange="plan_set_altitude()" class="selectpicker">
+            <td>@<select id="plan_altitude" onchange="plan_set_altitude()" data-mobile="true" class="selectpicker">
                 <option>000</option>
                 <option>030</option>
                 <option>035</option>
@@ -557,9 +560,6 @@ function refresh_plan_list() {
         <tr>
             <td><input id="save_name" spellcheck="false" placeholder="Current Plan Name"></td>
             <td><button class="btn btn-block" onclick="save_plan_add()">Save</button></td>
-        </tr>
-        <tr>
-            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Plans</b></u></a></td>
         </tr>
     </table>
 

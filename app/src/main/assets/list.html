@@ -256,6 +256,12 @@ function save_add(name) {
 <div class="table-responsive">
     <table class="table">
         <tr>
+            <td><h3 ><span class="label label-success">Load A List</span></h3></td>
+        </tr>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
+        </tr>
+        <tr>
             <td><h3 ><span id="list_name" class="label label-success">List[]</span></h3></td>
         </tr>
     </table>
@@ -278,9 +284,6 @@ function save_add(name) {
         <tr>
             <td><input id="save_name" spellcheck="false" placeholder="Current List Name"/></td>
             <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
-        </tr>
-        <tr>
-            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
         </tr>
     </table>
 </div>

@@ -953,10 +953,10 @@ function setAircraftSurveillance() {
 			<td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
 		</tr>
 		<tr>
-			<td>Flight Rule</td><td><select class="selectpicker" id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
+			<td>Flight Rule</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
 		</tr>
 		<tr>
-			<td>Flight Type</td><td><select class="selectpicker" id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
+			<td>Flight Type</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
 		</tr>
 		<tr>
 			<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
@@ -965,7 +965,7 @@ function setAircraftSurveillance() {
 			<td>Aircraft Type</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
 		</tr>
 		<tr>
-			<td>Wake Turbulence</td><td><select class="selectpicker" id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
+			<td>Wake Turbulence</td><td><select class="selectpicker" data-mobile="true"  id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
 		</tr>
 		<tr>
 			<td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
@@ -1049,7 +1049,7 @@ function setAircraftSurveillance() {
 		</tr>
 		<tr>
 			<td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
-			<td><select class="selectpicker" id="activate_time">
+			<td><select class="selectpicker" data-mobile="true" id="activate_time">
 				<option value="0">Departing Now</option>
 				<option value="5">Departing 5 minutes from now</option>
 				<option value="10">Departing 10 minutes from now</option>

@@ -198,7 +198,7 @@ window.onload = settext;
     <a id='plantable'>placeholder</a><br>
     <h1>Charts</h1>
     <label>Prog.</label><br>
-    <select class="selectpicker" onchange='weatherImg(this.value)'>
+    <select class="selectpicker" data-mobile="true" onchange='weatherImg(this.value)'>
         <option value='WSA'>WPC Surface Analysis</option>
         <option value='W12P'>WPC 12 HR Prognostic</option>
         <option value='W24P'>WPC 24 HR Prognostic</option>
@@ -215,13 +215,13 @@ window.onload = settext;
         <option value='MLS18'>Mid Level Significant 1800Z</option>
     </select>
     <br><label>Winds/Temp.</label><br>
-    <select class="selectpicker" id='type' name='type' onChange='updateImageWinds()'>
+    <select class="selectpicker" id='type' name='type' data-mobile="true" onChange='updateImageWinds()'>
         <OPTION VALUE='wind'>Wind Speed</OPTION>
         <OPTION VALUE='temp'>Temperature</OPTION>
         <OPTION VALUE='isa'>Temp. Difference</OPTION>
         <OPTION VALUE='windstrm'>Streamlines</OPTION>
     </select>
-    <select class="selectpicker" id='level' name='level' onChange='updateImageWinds()'>
+    <select class="selectpicker" id='level' name='level' data-mobile="true"  onChange='updateImageWinds()'>
         <OPTION VALUE='sfc'>sfc</OPTION>
         <OPTION VALUE='030'>3,000</OPTION>
         <OPTION VALUE='060'>6,000</OPTION>
@@ -235,7 +235,7 @@ window.onload = settext;
         <OPTION VALUE='420'>FL420</OPTION>
         <OPTION VALUE='480'>FL480</OPTION>
     </select>
-    <select class="selectpicker" id='fore' name='fore' onChange='updateImageWinds()'>
+    <select class="selectpicker" id='fore' name='fore' data-mobile="true"  onChange='updateImageWinds()'>
         <option value='ruc00hr'>0hr</option>
         <option value='ruc01hr'>1hr</option>
         <option value='ruc02hr'>2hr</option>
@@ -257,7 +257,7 @@ window.onload = settext;
         <option value='ruc18hr'>18hr</option>
     </select>
     <br><label>Turbulence</label><br>
-    <select class="selectpicker" id='levelTurb' name='levelTurb' onChange='updateImageTurb()'>
+    <select class="selectpicker" id='levelTurb' data-mobile="true"  name='levelTurb' onChange='updateImageTurb()'>
         <OPTION VALUE='010'>1,000</OPTION>
         <OPTION VALUE='030'>3,000</OPTION>
         <OPTION VALUE='050'>5,000</OPTION>
@@ -282,7 +282,7 @@ window.onload = settext;
         <OPTION VALUE='430'>FL430</OPTION>
         <OPTION VALUE='450'>FL450</OPTION>
     </select>
-    <select class="selectpicker" id='foreTurb' name='foreTurb' onChange='updateImageTurb()'>
+    <select class="selectpicker" id='foreTurb' data-mobile="true"  name='foreTurb' onChange='updateImageTurb()'>
         <option value='00'>0hr</option>
         <option value='01'>1hr</option>
         <option value='02'>2hr</option>
@@ -291,19 +291,19 @@ window.onload = settext;
         <option value='09'>9hr</option>
         <option value='12'>12hr</option>
     </select>
-    <select class="selectpicker" id='catTurb' name='catTurb' onChange='updateImageTurb()'>
+    <select class="selectpicker" id='catTurb' data-mobile="true"  name='catTurb' onChange='updateImageTurb()'>
         <option value='lgt'>Light</option>
         <option value='med'>Medium</option>
         <option value='hvy'>Heavy</option>
     </select>
     <br><label>Icing</label><br>
-    <select class="selectpicker" id='typeIce' name='typeIce' onChange='updateImageIce()'>
+    <select class="selectpicker" id='typeIce' data-mobile="true"  name='typeIce' onChange='updateImageIce()'>
         <OPTION VALUE='sev'>Severity</OPTION>
         <OPTION VALUE='sev25'>Severity(Prob>25%)</OPTION>
         <OPTION VALUE='sev50'>Severity(Prob>50%)</OPTION>
         <OPTION VALUE=''>Probability</OPTION>
     </select>
-    <select class="selectpicker" id='levelIce' name='levelIce' onChange='updateImageIce()'>
+    <select class="selectpicker" id='levelIce' data-mobile="true"  name='levelIce' onChange='updateImageIce()'>
         <OPTION VALUE='010'>1,000</OPTION>
         <OPTION VALUE='030'>3,000</OPTION>
         <OPTION VALUE='050'>5,000</OPTION>
@@ -321,7 +321,7 @@ window.onload = settext;
         <OPTION VALUE='290'>FL290</OPTION>
         <OPTION VALUE='max'>max</OPTION>
     </select>
-    <select class="selectpicker" id='foreIce' name='foreIce' onChange='updateImageIce()'>
+    <select class="selectpicker" id='foreIce' data-mobile="true"  name='foreIce' onChange='updateImageIce()'>
         <option value='00'>0hr</option>
         <option value='02'>2hr</option>
         <option value='03'>3hr</option>
@@ -330,7 +330,7 @@ window.onload = settext;
         <option value='12'>12hr</option>
     </select><br>
     <label>Misc. Charts</label><br>
-    <select class="selectpicker" id='typeMisc' name='typeMisc' onChange='updateImageMisc()'>
+    <select class="selectpicker" id='typeMisc' data-mobile="true"  name='typeMisc' onChange='updateImageMisc()'>
         <option value='http://aviationweather.gov/data/iffdp/2020.gif'>Weather Depiction</option>
         <option value='http://aviationweather.gov/data/iffdp/2080.gif'>Radar Summary</option>
         <option value='http://aviationweather.gov/data/obs/sat/goes/vis_goesE.jpg'>Satellite East</option>
