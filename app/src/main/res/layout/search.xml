@@ -41,9 +41,10 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_delete"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:gravity="left|center"
         android:text="@string/Plan"
-        android:drawableLeft="@drawable/plan"
         android:visibility="invisible" />
     
     <Button
@@ -54,7 +55,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_above="@+id/search_button_note"
         android:gravity="left|center"
         android:text="@string/Delete"
-        android:drawableLeft="@drawable/remove"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:visibility="invisible" />    
     
     <Button
@@ -64,7 +66,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_plates"
 	    android:text="@string/Label"
-	    android:drawableLeft="@drawable/edit"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
 	    android:gravity="left|center"
 	    android:visibility="invisible" />
         
@@ -75,9 +78,9 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:gravity="left|center"
         android:text="@string/Plates"
-        android:drawableLeft="@drawable/plates"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:visibility="invisible" />      
     
     <ProgressBar

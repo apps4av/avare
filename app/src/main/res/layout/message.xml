@@ -18,6 +18,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/message_type"
             android:layout_width="match_parent"
             android:entries="@array/AdsOptions"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:layout_height="wrap_content"/>
         <WebView
             android:id="@+id/message_mainpage"

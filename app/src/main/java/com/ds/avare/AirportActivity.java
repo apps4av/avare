@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class AirportActivity extends Activity implements Observer {
     private AlertDialog mAirportPopup;    
     private ArrayList<String> mListViews;
     private ArrayList<String> mListAirports;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private String mDestString;
     private String mNearString;
 
@@ -178,7 +179,7 @@ public class AirportActivity extends Activity implements Observer {
             }
         });              
 
-        mCenterButton = (Button)view.findViewById(R.id.airport_button_center);
+        mCenterButton = (ImageButton)view.findViewById(R.id.airport_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override

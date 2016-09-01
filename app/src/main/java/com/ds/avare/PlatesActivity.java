@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.ds.avare.animation.TwoButton;
@@ -66,7 +67,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private PlatesView mPlatesView;
     private StorageService mService;
     private Destination mDestination;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
@@ -404,7 +405,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
         });      
                
-        mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
+        mCenterButton = (ImageButton)view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -418,7 +419,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 // long press on center button sets track toggle
                 mPref.setTrackUpPlates(!mPref.isTrackUpPlates());
                 if (mPref.isTrackUpPlates()) {
-                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mCenterButton.getBackground().setColorFilter(0xFF71BC78, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.TrackUp));
                 } else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);

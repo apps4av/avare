@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--  
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+<!--
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,34 +10,32 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/tabhost"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-        
-        <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="fill_parent"
-            android:layout_above="@+id/tabscroll"
-            android:layout_height="fill_parent">
-        </FrameLayout>
-        <HorizontalScrollView 
-            android:id="@+id/tabscroll"
-            android:fillViewport="true"
-            android:background="#FF000000"
-            android:layout_alignParentBottom="true"
-            android:fadeScrollbars="false"
-            android:scrollbarStyle="insideInset"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-	        <TabWidget
-	            android:id="@android:id/tabs"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content" />
-        </HorizontalScrollView>
-        
-        </RelativeLayout>
-</TabHost>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+
+    <gradient
+        android:startColor="#FFFFFF"
+        android:centerColor="#FFFFFF"
+        android:endColor="#FFFFFF"
+        />
+
+    <stroke
+        android:width="1dip"
+        android:color="#000000" />
+
+    <size
+        android:width="50dp"
+        android:height="50dp" />
+
+    <padding
+        android:left="5dp"
+        android:top="5dp"
+        android:right="5dp"
+        android:bottom="5dp" />
+
+    <corners
+        android:radius="5dp">
+    </corners>
+
+</shape>

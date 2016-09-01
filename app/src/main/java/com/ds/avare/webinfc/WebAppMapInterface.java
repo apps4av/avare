@@ -120,8 +120,8 @@ public class WebAppMapInterface {
                 }
 
                 String layer = mPref.useAdsbWeather() ?
-                        "<hr><font color=\"yellow\">Weather Source</font> ADS-B<br>" :
-                        "<hr><font color=\"yellow\">Weather Source</font> Internet<br>";
+                        "<hr><font color=\"yellow\">Weather/SUA Source</font> ADS-B<br>" :
+                        "<hr><font color=\"yellow\">Weather/SUA Source</font> Internet<br>";
                 if(data.layer != null) {
                     if(!data.layer.equals("")) {
                         layer += "<font color=\"yellow\">Weather Layer Time</font> ";

@@ -149,7 +149,7 @@ public class MainActivity extends TabActivity {
             i.putExtras(original);
         }
         View tabview = createTabView(mTabHost.getContext(), tag);
-        
+
         TabSpec setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(i);
         mTabHost.addTab(setContent);
     }

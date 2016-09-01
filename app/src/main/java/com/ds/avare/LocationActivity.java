@@ -122,7 +122,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     private AlertDialog mWarnDialog;
 
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private Button mDrawClearButton;
     private TwoButton mTracksButton;
     private Button mHelpButton;
@@ -661,7 +661,7 @@ public class LocationActivity extends Activity implements Observer {
             };
         });
 
-        mCenterButton = (Button)view.findViewById(R.id.location_button_center);
+        mCenterButton = (ImageButton)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
 
@@ -677,7 +677,7 @@ public class LocationActivity extends Activity implements Observer {
                 // long press on center button sets track toggle
                 mPref.setTrackUp(!mPref.isTrackUp());
                 if(mPref.isTrackUp()) {
-                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mCenterButton.getBackground().setColorFilter(0xFF71BC78, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.TrackUp));
                 }
                 else {
