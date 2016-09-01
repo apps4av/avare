@@ -42,6 +42,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.AfdView;
 
@@ -144,7 +145,7 @@ public class AirportActivity extends Activity implements Observer {
                     }
                 };
                 
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AirportActivity.this);
                 int index = mService.getAfdIndex();
                 if(index >= mListViews.size()) {
                     index = 0;
@@ -171,7 +172,7 @@ public class AirportActivity extends Activity implements Observer {
                     }
                 };
                 
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AirportActivity.this);
                 int index = mListAirports.indexOf(mService.getLastAfdAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();

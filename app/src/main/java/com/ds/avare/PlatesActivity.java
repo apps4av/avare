@@ -45,6 +45,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
@@ -269,7 +270,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 int index = mService.getLastPlateIndex();
                 if (index >= mListPlates.size()) {
                     index = 0;
@@ -308,7 +309,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 builder.setTitle(getString(R.string.SelectApproachToShow));
                 mApproachPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), 0, onClickListener).create();
                 mApproachPopup.show();
@@ -397,7 +398,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
                 builder.setTitle(getString(R.string.SelectAirportToShow));
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
@@ -757,7 +758,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 					break;
 
 				case FuelTimer.SWITCH_TANK:
-					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
+					AlertDialog alertDialog = new DecoratedAlertDialogBuilder(PlatesActivity.this).create();
 					alertDialog.setTitle(PlatesActivity.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);

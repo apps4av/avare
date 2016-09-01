@@ -12,18 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import com.ds.avare.R;
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppInterface;
-
-import android.location.GpsStatus;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -31,14 +19,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnLongClickListener;
+import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppInterface;
 
 /**
  * @author zkhan Main activity
@@ -150,7 +150,7 @@ public class WeatherActivity extends Activity {
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new AlertDialog.Builder(WeatherActivity.this)
+	            new DecoratedAlertDialogBuilder(WeatherActivity.this)
 	            	.setTitle("")
 	            	.setCancelable(true)
 	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -339,7 +339,7 @@ public class WeatherActivity extends Activity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {

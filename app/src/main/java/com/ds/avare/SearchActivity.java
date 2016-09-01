@@ -45,6 +45,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 
 import java.util.LinkedHashMap;
@@ -235,7 +236,7 @@ public class SearchActivity extends Activity implements Observer {
                     
                     edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
 
-                    mAlertDialogEdit = new AlertDialog.Builder(SearchActivity.this).create();
+                    mAlertDialogEdit = new DecoratedAlertDialogBuilder(SearchActivity.this).create();
                     mAlertDialogEdit.setTitle(getString(R.string.Label));
                     mAlertDialogEdit.setCanceledOnTouchOutside(true);
                     mAlertDialogEdit.setCancelable(true);

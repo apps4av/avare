@@ -55,6 +55,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -327,7 +328,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * And may exit
          */
-        mAlertDialogExit = new AlertDialog.Builder(LocationActivity.this).create();
+        mAlertDialogExit = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
         mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
@@ -415,7 +416,7 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Make a dialog to show destination info, when long pressed on it
          */
-        AlertDialog.Builder alert = new AlertDialog.Builder(LocationActivity.this);
+        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(LocationActivity.this);
         WebView wv = new WebView(LocationActivity.this);
         wv.loadUrl("file:///android_asset/map.html");
 
@@ -560,7 +561,7 @@ public class LocationActivity extends Activity implements Observer {
                 if (GestureInterface.DOUBLE_TAP == nEvent) {
 
                     // Create the alert dialog and add the title.
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LocationActivity.this);
+                    DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(LocationActivity.this);
                     builder.setTitle(R.string.SelectTextFieldTitle);
 
                     // The list of items to chose from. When a selection is made, save it off locally
@@ -769,7 +770,7 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                mSosDialog = new AlertDialog.Builder(LocationActivity.this).create();
+                mSosDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
                 mSosDialog.setTitle(getString(R.string.DeclareEmergency));
                 mSosDialog.setMessage(getString(R.string.DeclareEmergencyDetails));
                 mSosDialog.setCancelable(false);
@@ -880,7 +881,7 @@ public class LocationActivity extends Activity implements Observer {
          * Throw this in case GPS is disabled.
          */
         if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
-            mGpsWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
+            mGpsWarnDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setCancelable(false);
             mGpsWarnDialog.setCanceledOnTouchOutside(false);
@@ -909,7 +910,7 @@ public class LocationActivity extends Activity implements Observer {
          * Throw this in case GPS is disabled.
          */
         if(mPref.showTips()) {
-            mWarnDialog = new AlertDialog.Builder(LocationActivity.this).create();
+            mWarnDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
             mWarnDialog.setTitle(getString(R.string.Tip));
             mWarnDialog.setMessage(Tips.getTip(LocationActivity.this, mPref));
             mWarnDialog.setCancelable(false);
@@ -1090,7 +1091,7 @@ public class LocationActivity extends Activity implements Observer {
              */
             if(!mService.getDBResource().isPresent()) {
 
-                mAlertDialogDatabase = new AlertDialog.Builder(LocationActivity.this).create();
+                mAlertDialogDatabase = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
                 mAlertDialogDatabase.setTitle(getString(R.string.download));
                 mAlertDialogDatabase.setCancelable(false);
                 mAlertDialogDatabase.setCanceledOnTouchOutside(false);
@@ -1198,7 +1199,7 @@ public class LocationActivity extends Activity implements Observer {
 					break;
 
 				case FuelTimer.SWITCH_TANK:
-					AlertDialog alertDialog = new AlertDialog.Builder(LocationActivity.this).create();
+					AlertDialog alertDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
 					alertDialog.setTitle(LocationActivity.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);
@@ -1356,6 +1357,14 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mAlertDialogExit) {
             try {
                 mAlertDialogExit.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        if(null != mAlertDialogDestination) {
+            try {
+                mAlertDialogDestination.dismiss();
             }
             catch (Exception e) {
             }

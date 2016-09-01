@@ -15,9 +15,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
 
     <gradient
-        android:startColor="#ffffff"
+        android:startColor="#eeeeee"
+        android:endColor="#eeeeee"
         android:centerColor="#ffffff"
-        android:endColor="#ffffff"
         android:angle="-90" />
 
     <stroke

@@ -12,14 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.ds.avare.gps.GpsInterface;
-import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppPlanInterface;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -36,13 +28,22 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.GenericCallback;
+import com.ds.avare.utils.Helper;
+import com.ds.avare.webinfc.WebAppPlanInterface;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -172,7 +173,7 @@ public class PlanActivity extends Activity {
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new AlertDialog.Builder(PlanActivity.this)
+	            new DecoratedAlertDialogBuilder(PlanActivity.this)
 	            	.setTitle("")
 	            	.setMessage(message)
 	            	// on cancel is needed for without it JS may hang
@@ -421,7 +422,7 @@ public class PlanActivity extends Activity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {

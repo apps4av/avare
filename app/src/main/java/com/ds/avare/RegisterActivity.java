@@ -33,6 +33,7 @@ import com.ds.avare.message.Helper;
 import com.ds.avare.message.Logger;
 import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.PossibleEmail;
 
@@ -92,7 +93,7 @@ public class RegisterActivity extends Activity {
                 for (int i = 0; i < permissionsNeeded.size(); i++) {
                     message = message + "\n(" + (i + 1) + ") " + permissionsNeeded.get(i);
                 }
-                new AlertDialog.Builder(this)
+                new DecoratedAlertDialogBuilder(this)
                         .setMessage(message)
                         .setPositiveButton(getString(R.string.Proceed),
                                 new DialogInterface.OnClickListener() {
@@ -226,7 +227,7 @@ public class RegisterActivity extends Activity {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPrivacy = (WebView)layoutInflater.inflate(R.layout.privacy, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(this);
         alertDialogBuilder
             .setTitle(getString(R.string.register))
             .setView(mPrivacy)
@@ -315,7 +316,7 @@ public class RegisterActivity extends Activity {
         
         mRegisterDialog = alertDialogBuilder.create();
 
-        alertDialogBuilder = new AlertDialog.Builder(
+        alertDialogBuilder = new DecoratedAlertDialogBuilder(
                 RegisterActivity.this);
         alertDialogBuilder
             .setTitle(getString(R.string.unregister))

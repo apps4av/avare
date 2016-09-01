@@ -36,6 +36,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.ds.avare.gps.GpsInterface;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.webinfc.WebAppListInterface;
@@ -167,7 +168,7 @@ public class ChecklistActivity extends Activity {
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new AlertDialog.Builder(ChecklistActivity.this)
+	            new DecoratedAlertDialogBuilder(ChecklistActivity.this)
 	            	.setTitle("")
 	            	.setCancelable(true)
 	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -410,7 +411,7 @@ public class ChecklistActivity extends Activity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
