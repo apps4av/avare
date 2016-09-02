@@ -38,7 +38,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <Button
         android:id="@+id/search_button_plan"
         android:textStyle="bold"
-        android:layout_width="140dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_delete"
         android:background="@drawable/button_bg"
@@ -50,7 +50,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <Button
         android:id="@+id/search_button_delete"
         android:textStyle="bold"
-        android:layout_width="140dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_note"
         android:gravity="left|center"
@@ -62,7 +62,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <Button
 	    android:id="@+id/search_button_note"
 	    android:textStyle="bold"
-	    android:layout_width="140dp"
+        android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_plates"
 	    android:text="@string/Label"
@@ -74,7 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <Button
         android:id="@+id/search_button_plates"
         android:textStyle="bold"
-        android:layout_width="140dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left|center"
         android:text="@string/Plates"
