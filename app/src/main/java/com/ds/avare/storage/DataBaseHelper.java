@@ -1873,7 +1873,7 @@ public class DataBaseHelper  {
                     taf = new Taf();
                     taf.rawText = cursor.getString(0);
                     taf.time = cursor.getString(1);
-                    taf.stationId = cursor.getString(1);
+                    taf.stationId = cursor.getString(2);
                 }
             }
         }
