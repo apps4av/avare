@@ -10,17 +10,17 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <stroke
-        android:width="1dip"
-        android:color="#000000" />
-    <gradient android:startColor="#000000" android:centerColor="#000000"
-        android:endColor="#000000" android:angle="-90" />
-    <size
-        android:width="80dp"
-        android:height="40dp"/>
-    <corners
-        android:radius="10dp"/>
 
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--  Active tab -->
+    <item android:state_selected="true" android:state_focused="false"
+        android:state_pressed="false" android:drawable="@drawable/bg_selected" />
+    <!--  Inactive tab -->
+    <item android:state_selected="false" android:state_focused="false"
+        android:state_pressed="false" android:drawable="@drawable/bg_unselected" />
+    <!--  Pressed tab -->
+    <item android:state_pressed="true" android:drawable="@android:color/transparent" />
+    <!--  Selected tab (using d-pad) -->
+    <item android:state_focused="true" android:state_selected="true"
+        android:state_pressed="false" android:drawable="@android:color/transparent" />
+</selector>

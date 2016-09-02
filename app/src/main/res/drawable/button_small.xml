@@ -26,8 +26,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:color="#000000" />
 
     <size
-        android:width="55dp"
-        android:height="55dp" />
+        android:width="50dp"
+        android:height="50dp" />
 
     <padding
         android:left="5dp"
