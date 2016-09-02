@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -182,6 +183,7 @@ public class AirportActivity extends Activity implements Observer {
 
         mCenterButton = (ImageButton)view.findViewById(R.id.airport_button_center);
         mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
