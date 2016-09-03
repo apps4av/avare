@@ -21,7 +21,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:angle="-90" />
 
     <stroke
-        android:width="2dip"
+        android:width="1dip"
         android:color="#000000" />
 
     <size

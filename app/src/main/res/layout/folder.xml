@@ -45,7 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/folder_text_path"
         android:textSize="20sp"
         android:padding="10dp"
-        android:textColor="#FF0000"
+        android:textColor="#C04000"
         android:layout_below="@+id/folder_button_internal"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"/>

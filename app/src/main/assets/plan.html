@@ -63,6 +63,14 @@ function loadplan() {
 			return;
 		}
 	}
+
+	// delete extra lines in plan table
+	// XXX: ZIMMZ Q42 MIKYG Q480 AIR APE KDAY not working properly
+	var plan_table = document.getElementById("plan_table");
+    for(var row = plan_table.rows.length - 1; row > plans.length; row--) {
+        plan_table.deleteRow(row);
+    }
+
 	plan_set_total(plans[plans.length - 1]);
 }
 
@@ -89,7 +97,7 @@ function set_plan_line(row, next, course, heading, distance, time, id, type, fue
 	}
 
 	if(next == "1") {
-		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "green";
+		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#71bc78";
 	}
 	else {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "black";
@@ -184,10 +192,10 @@ function plan_movedn() {
 function plan_set_total(total) {
 	// plan total is split to show individual values
 	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
-	document.getElementById("plan_total_distance").innerHTML = "Distance<br>" + vals[0];
-	document.getElementById("plan_total_time").innerHTML = "Time<br>" + vals[1];
+	document.getElementById("plan_total_distance").innerHTML = "Distance<br><font color='#71bc78'>" + vals[0] + "</font>";
+	document.getElementById("plan_total_time").innerHTML = "Time<br><font color='#71bc78'>" + vals[1] + "</font>";
 	// total bearing makes no sense
-	document.getElementById("plan_total_fuel").innerHTML = "Fuel<br>" + vals[3];
+	document.getElementById("plan_total_fuel").innerHTML = "Fuel<br><font color='#71bc78'>" + vals[3] + "</font>";
 }
 
 // clear the entire plan

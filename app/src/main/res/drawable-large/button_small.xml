@@ -22,21 +22,21 @@ Redistribution and use in source and binary forms, with or without modification,
         />
 
     <stroke
-        android:width="2dip"
+        android:width="1dip"
         android:color="#000000" />
 
     <size
-        android:width="80dp"
-        android:height="80dp" />
+        android:width="70dp"
+        android:height="70dp" />
 
     <padding
-        android:left="8dp"
-        android:top="8dp"
-        android:right="8dp"
-        android:bottom="8dp" />
+        android:left="7dp"
+        android:top="7dp"
+        android:right="7dp"
+        android:bottom="7dp" />
 
     <corners
-        android:radius="8dp">
+        android:radius="7dp">
     </corners>
 
 </shape>

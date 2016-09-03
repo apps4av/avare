@@ -71,22 +71,19 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/nearest_button_gr"
+        android:layout_above="@+id/nearest_button_4"
         android:background="@drawable/button_bg"
         android:layout_margin="5dp"
-        android:gravity="left|center"
         android:text="@string/Destination"
         android:visibility="invisible" />
 
     <Button
-        android:id="@+id/nearest_button_gr"
+        android:id="@+id/nearest_button_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:gravity="left|center"
         android:background="@drawable/button_bg"
         android:layout_margin="5dp"
-        android:text="@string/GlideRatio"
         android:layout_above="@+id/nearest_button_3"
         android:visibility="invisible" />
 
@@ -106,7 +103,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:background="@drawable/button_bg"
         android:layout_margin="5dp"
-        android:gravity="left|center"
         android:layout_above="@+id/nearest_button_plates"
         android:layout_alignParentLeft="true"
         android:visibility="invisible" />
@@ -116,7 +112,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="left|center"
         android:text="@string/Plates"
         android:background="@drawable/button_bg"
         android:layout_margin="5dp"

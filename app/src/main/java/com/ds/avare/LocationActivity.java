@@ -35,7 +35,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ds.avare.animation.AnimateButton;
@@ -127,11 +126,9 @@ public class LocationActivity extends Activity implements Observer {
     private Button mDrawClearButton;
     private TwoButton mTracksButton;
     private Button mHelpButton;
-    private Button mCrossButton;
     private Button mPrefButton;
     private Button mDownloadButton;
     private Button mMenuButton;
-    private RelativeLayout mDestLayout;
     private TwoButton mSimButton;
     private TwoButton mDrawButton;
     private Button mWebButton;
@@ -293,7 +290,6 @@ public class LocationActivity extends Activity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
-        mDestLayout.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -307,7 +303,6 @@ public class LocationActivity extends Activity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
-        mDestLayout.setVisibility(View.INVISIBLE);
     }
 
     /*
@@ -316,14 +311,6 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-
-        /*
-         * Back button hides some controls
-         */
-        if(mDestLayout.getVisibility() == View.VISIBLE) {
-            mDestLayout.setVisibility(View.INVISIBLE);
-            return;
-        }
 
         /*
          * And may exit
@@ -474,12 +461,6 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     String dest = mAirportPressed;
                     mAirportPressed = null;
-                    if (false) { //XXX:
-                        mService.setDestination(null);
-                        mDestLayout.setVisibility(View.INVISIBLE);
-                        mLocationView.invalidate();
-                        return null;
-                    }
                     String type = Destination.BASE;
                     if (dest.contains("&")) {
                         type = Destination.GPS;
@@ -691,17 +672,6 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-        mCrossButton = (Button)view.findViewById(R.id.location_button_cross);
-        mCrossButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mDestLayout.setVisibility(View.INVISIBLE);
-            }
-
-        });
-
-        mDestLayout = (RelativeLayout)view.findViewById(R.id.location_popout_layout);
 
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
         mMenuButton.getBackground().setAlpha(255);
@@ -1278,8 +1248,6 @@ public class LocationActivity extends Activity implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        mDestLayout.setVisibility(View.INVISIBLE);
 
         // Set visibility of the plan buttons
         setPlanButtonVis();

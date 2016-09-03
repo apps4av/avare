@@ -326,7 +326,7 @@ public class FolderPreference extends DialogPreference {
                  */
                 if(sel.isDirectory()) {
                     if (sel.canWrite()) {
-                        mFileList[i].icon = android.R.drawable.ic_menu_view;
+                        mFileList[i].icon = android.R.drawable.ic_menu_save;
                     } 
                     else {
                         mFileList[i].icon = android.R.drawable.ic_lock_lock;
@@ -377,7 +377,7 @@ public class FolderPreference extends DialogPreference {
                  *  add margin between image and text (support various screen
                  */
                 textView.setCompoundDrawablePadding(10);
-                textView.setTextColor(Color.GREEN);
+                textView.setTextColor(Color.parseColor("#FF71BC78"));
                 return view;
             }
         };

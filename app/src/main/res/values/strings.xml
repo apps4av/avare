@@ -122,6 +122,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlusPlan">&quot;+Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
     <string name="PlanPrompt">&quot;Enter waypoints of plan e.g. KLAX KSBA GVO&quot;</string>
