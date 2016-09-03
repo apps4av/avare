@@ -48,7 +48,7 @@ Redistribution and use in source and binary forms, with or without modification,
     	<ImageView
     		android:text="@string/Maps"
             android:textColor="#FFFFFFFF"
-            android:src="@drawable/flag"
+            android:src="@android:drawable/ic_dialog_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         
