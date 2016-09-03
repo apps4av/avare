@@ -270,16 +270,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/AllFacilities"
             android:summary="@string/AllFacilitiesSummary"
             android:title="@string/AllFacilitiesLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/Background"
-            android:summary="@string/BackgroundSummary"
-            android:title="@string/BackgroundLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/prefPlanControl"
-            android:summary="@string/prefPlanControlSummary"
-            android:title="@string/prefPlanControlLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/DisplayIconPrompt"
@@ -287,16 +277,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/DisplayIcon"
             android:summary="@string/DisplayIconSummary"
             android:title="@string/DisplayIconLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/ExtendInfoLines"
-            android:summary="@string/ExtendInfoLinesSummary"
-            android:title="@string/ExtendInfoLinesLabel" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/ExtendInfoLines3D"
-            android:summary="@string/ExtendInfoLines3DSummary"
-            android:title="@string/ExtendInfoLines3DLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:entries="@array/RunwayLengths"
             android:entryValues="@array/RunwayLengths"
@@ -308,41 +288,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShapeFile"
             android:summary="@string/ShapeFileSummary"
             android:title="@string/ShapeFileLabel" />
-        <PreferenceScreen 
-	        android:title="@string/TabBarTitle" 
-            android:summary="@string/TabBarSummary"
-	        android:icon="@android:drawable/ic_menu_manage" >
-		        <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabNear"
-                    android:summary="@string/NearSummary"
-                    android:title="@string/Near" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabThreeD"
-                    android:summary="@string/ThreeDSummary"
-                    android:title="@string/ThreeD" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabChecklist"
-                    android:summary="@string/ChecklistSummary"
-                    android:title="@string/List" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabWX"
-		            android:summary="@string/WXSummary"
-		            android:title="@string/WXB" />
-				<CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabTools"
-		            android:summary="@string/GPSSummary"
-		            android:title="@string/Tools" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabTrip"
-                    android:summary="@string/TripSummary"
-                    android:title="@string/Trip" />
-			</PreferenceScreen>
         </PreferenceScreen>
 
 	<PreferenceScreen 
@@ -447,6 +392,91 @@ authors: zkhan, jlmcgraw
             android:summary="@string/EmergencyChecklistSummary"
             android:defaultValue=""
             android:key="@string/EmergencyChecklist"/>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:title="@string/UIConfiguration"
+        android:icon="@android:drawable/ic_menu_crop" >
+
+        <CheckBoxPreference
+            android:key="@string/b1map"
+            android:summary="@string/b1map"
+            android:title="@string/b1map" />
+
+        <CheckBoxPreference
+            android:key="@string/b1plate"
+            android:summary="@string/b1plate"
+            android:title="@string/b1plate" />
+
+        <CheckBoxPreference
+            android:key="@string/b2plate"
+            android:summary="@string/b2plate"
+            android:title="@string/b2plate" />
+
+        <CheckBoxPreference
+            android:key="@string/b3plate"
+            android:summary="@string/b3plate"
+            android:title="@string/b3plate" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefPlanControl"
+            android:summary="@string/prefPlanControlSummary"
+            android:title="@string/prefPlanControlLabel" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Background"
+            android:summary="@string/BackgroundSummary"
+            android:title="@string/BackgroundLabel" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ExtendInfoLines"
+            android:summary="@string/ExtendInfoLinesSummary"
+            android:title="@string/ExtendInfoLinesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ExtendInfoLines3D"
+            android:summary="@string/ExtendInfoLines3DSummary"
+            android:title="@string/ExtendInfoLines3DLabel" />
+
+        <PreferenceScreen
+            android:title="@string/TabBarTitle"
+            android:summary="@string/TabBarSummary"
+            android:icon="@android:drawable/ic_menu_manage" >
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabNear"
+                android:summary="@string/NearSummary"
+                android:title="@string/Near" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabThreeD"
+                android:summary="@string/ThreeDSummary"
+                android:title="@string/ThreeD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabChecklist"
+                android:summary="@string/ChecklistSummary"
+                android:title="@string/List" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabWX"
+                android:summary="@string/WXSummary"
+                android:title="@string/WXB" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabTools"
+                android:summary="@string/GPSSummary"
+                android:title="@string/Tools" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabTrip"
+                android:summary="@string/TripSummary"
+                android:title="@string/Trip" />
+        </PreferenceScreen>
 
     </PreferenceScreen>
 

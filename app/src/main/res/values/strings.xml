@@ -543,5 +543,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
     <string name="Menu">Menu</string>
 
+    <string name="b1map">Remove Button 1 in Map (Restart Required)</string>
+    <string name="b1plate">Remove Button 1 in Plate (Restart Required)</string>
+    <string name="b2plate">Remove Button 2 in Plate (Restart Required)</string>
+    <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
+    <string name="UIConfiguration">UI Configuration</string>
 
 </resources>

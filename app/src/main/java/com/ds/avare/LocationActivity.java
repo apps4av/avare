@@ -831,6 +831,9 @@ public class LocationActivity extends Activity implements Observer {
             }
 
         });
+        if(mPref.removeB1Map()) {
+            mDrawButton.setVisibility(View.INVISIBLE);
+        }
 
         /*
          * The tracking button handler. Enable/Disable the saving of track points

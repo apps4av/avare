@@ -343,6 +343,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
             }
         });
+        if(mPref.removeB2Plate()) {
+            mPlatesTimerButton.setVisibility(View.INVISIBLE);
+        }
+
 
         /*
          * Draw
@@ -367,7 +371,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
             
         });
-        
+        if(mPref.removeB1Plate()) {
+            mDrawButton.setVisibility(View.INVISIBLE);
+        }
+
         mDrawClearButton = (Button)view.findViewById(R.id.plate_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
 
@@ -457,7 +464,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
                 
             }
-        });      
+        });
+        if(mPref.removeB3Plate()) {
+            mPlatesTagButton.setVisibility(View.INVISIBLE);
+        }
+
 
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
