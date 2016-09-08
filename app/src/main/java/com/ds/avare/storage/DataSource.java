@@ -326,4 +326,8 @@ public class DataSource {
     public Coordinate findRunwayCoordinates(String name, String airport) {
         return dbHelper.findRunwayCoordinates(name, airport);
     }
+
+    public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
+        return dbHelper.getNavaidOrFixFromCoordinate(c);
+    }
 }

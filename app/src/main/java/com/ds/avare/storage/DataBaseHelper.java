@@ -423,7 +423,65 @@ public class DataBaseHelper  {
         return null;
         
     }
-    
+
+
+
+
+
+    public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
+
+        Cursor cursor;
+
+        // Find FIX here first
+        String qry = "select * from " + TABLE_FIX + " where " +
+                "(" + LONGITUDE_DB + " - " + c.getLongitude() + ")*" +
+                "(" + LONGITUDE_DB + " - " + c.getLongitude() + ")+" +
+                "(" + LATITUDE_DB + " - " + c.getLatitude() + ")*" +
+                "(" + LATITUDE_DB + " - " + c.getLatitude() + ")"  + " < 0.0000000001;";
+        /*
+         * NAV
+         */
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    StringPreference s = new StringPreference(Destination.FIX, cursor.getString(3), cursor.getString(4), cursor.getString(0));
+                    closes(cursor);
+                    return s;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+
+        qry = "select * from " + TABLE_NAV + " where " +
+                "(" + LONGITUDE_DB + " - " + c.getLongitude() + ")*" +
+                "(" + LONGITUDE_DB + " - " + c.getLongitude() + ")+" +
+                "(" + LATITUDE_DB + " - " + c.getLatitude() + ")*" +
+                "(" + LATITUDE_DB + " - " + c.getLatitude() + ")"  + " < 0.0000000001 and (Type != 'VOT');";
+
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    StringPreference s = new StringPreference(Destination.NAVAID, cursor.getString(3), cursor.getString(4), cursor.getString(0));
+                    closes(cursor);
+                    return s;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+
+        return null;
+    }
+
     /**
      * Search with I am feeling lucky. Best guess
      * @param name
@@ -2677,4 +2735,5 @@ public class DataBaseHelper  {
         closesGameTFRs(cursor);
         return ret;
     }
+
 }
