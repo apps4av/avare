@@ -182,7 +182,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mUpdateBitmapHolder = new BitmapHolder(mContext, R.drawable.check_red);
         mDeleteBitmapHolder = new BitmapHolder(mContext, R.drawable.delete);
         mAddBitmapHolder = new BitmapHolder(mContext, R.drawable.add);
-        mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.white_square);
+        mNoneBitmapHolder = new BitmapHolder(mContext, R.drawable.unknown);
         
         refreshIt();
         

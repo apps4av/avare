@@ -68,7 +68,7 @@ public class SearchAdapter extends ArrayAdapter<String> {
         mVORTACBitmapHolder = new BitmapHolder(mContext, R.drawable.vortac);
         mVORDMEBitmapHolder = new BitmapHolder(mContext, R.drawable.vordme);
         mAirportBitmapHolder = new BitmapHolder(mContext, R.drawable.airport);
-        mNoBitmapHolder = new BitmapHolder(mContext, R.drawable.no);
+        mNoBitmapHolder = new BitmapHolder(mContext, R.drawable.unknown);
         mFixBitmapHolder = new BitmapHolder(mContext, R.drawable.fix);
         mGeoBitmapHolder = new BitmapHolder(mContext, R.drawable.geo);
         mMapBitmapHolder = new BitmapHolder(mContext, R.drawable.maps);
