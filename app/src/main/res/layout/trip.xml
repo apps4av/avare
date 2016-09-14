@@ -13,49 +13,58 @@ Redistribution and use in source and binary forms, with or without modification,
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#FF000000"
     android:layout_height="match_parent">
 
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:background="#FFFFFFFF"
+		android:id="@+id/trip_bar"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true">
 	    <Button
             android:id="@+id/trip_button_last"
             android:contentDescription="@string/Last"
-            android:drawableLeft="@drawable/left"
-            android:layout_width="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+			android:background="@drawable/button_bg"
+			android:layout_weight="0.1"
+            android:text="&lt;"
+			android:layout_margin="5dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
             
         <EditText
             android:id="@+id/trip_edit_text"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:layout_marginRight="40dp"
-            android:layout_marginLeft="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
+			android:layout_weight="0.8"
+            android:layout_width="0dp"
             android:hint="@string/Search"
             android:inputType="textNoSuggestions" />
         
         <Button
             android:id="@+id/trip_button_next"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_width="40dp"
-            android:drawableRight="@drawable/right"
+			android:layout_weight="0.1"
+            android:layout_width="0dp"
+			android:background="@drawable/button_bg"
+			android:layout_margin="5dp"
+            android:text="&gt;"
             android:contentDescription="@string/Next"
             android:layout_height="wrap_content"/>
+	</LinearLayout>
 	
        <Button
            android:id="@+id/trip_button_find"
            android:layout_width="fill_parent"
             android:layout_alignParentBottom="true"
            android:text="@string/Hotels"
-           android:layout_height="wrap_content"/>
+		   android:background="@drawable/button_bg"
+		   android:layout_margin="5dp"
+		   android:layout_height="wrap_content"/>
 	    
 	    <WebView
 		    android:background="#FF000000"
 		    android:id="@+id/trip_mainpage"
-            android:layout_below="@+id/trip_edit_text"
+            android:layout_below="@+id/trip_bar"
             android:layout_above="@+id/trip_button_find"
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"/>

@@ -151,7 +151,7 @@ public class OptionButton extends Button implements View.OnClickListener {
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
         if(mLabel != null) {
             builder.setTitle(mLabel);
         }

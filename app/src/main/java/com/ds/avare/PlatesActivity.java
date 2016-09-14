@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.ds.avare.animation.TwoButton;
@@ -44,6 +45,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
@@ -66,7 +68,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private PlatesView mPlatesView;
     private StorageService mService;
     private Destination mDestination;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
@@ -268,7 +270,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 int index = mService.getLastPlateIndex();
                 if (index >= mListPlates.size()) {
                     index = 0;
@@ -307,7 +309,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 builder.setTitle(getString(R.string.SelectApproachToShow));
                 mApproachPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), 0, onClickListener).create();
                 mApproachPopup.show();
@@ -341,6 +343,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
             }
         });
+        if(mPref.removeB2Plate()) {
+            mPlatesTimerButton.setVisibility(View.INVISIBLE);
+        }
+
 
         /*
          * Draw
@@ -365,7 +371,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
             
         });
-        
+        if(mPref.removeB1Plate()) {
+            mDrawButton.setVisibility(View.INVISIBLE);
+        }
+
         mDrawClearButton = (Button)view.findViewById(R.id.plate_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
 
@@ -396,7 +405,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(PlatesActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
                 builder.setTitle(getString(R.string.SelectAirportToShow));
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
@@ -404,7 +413,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             }
         });      
                
-        mCenterButton = (Button)view.findViewById(R.id.plates_button_center);
+        mCenterButton = (ImageButton)view.findViewById(R.id.plates_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -418,7 +427,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 // long press on center button sets track toggle
                 mPref.setTrackUpPlates(!mPref.isTrackUpPlates());
                 if (mPref.isTrackUpPlates()) {
-                    mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                    mCenterButton.getBackground().setColorFilter(0xFF71BC78, PorterDuff.Mode.MULTIPLY);
                     mToast.setText(getString(R.string.TrackUp));
                 } else {
                     mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
@@ -455,7 +464,11 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
                 
             }
-        });      
+        });
+        if(mPref.removeB3Plate()) {
+            mPlatesTagButton.setVisibility(View.INVISIBLE);
+        }
+
 
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
@@ -756,7 +769,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 					break;
 
 				case FuelTimer.SWITCH_TANK:
-					AlertDialog alertDialog = new AlertDialog.Builder(PlatesActivity.this).create();
+					AlertDialog alertDialog = new DecoratedAlertDialogBuilder(PlatesActivity.this).create();
 					alertDialog.setTitle(PlatesActivity.this.getString(R.string.switchTanks));
 					alertDialog.setCancelable(false);
 					alertDialog.setCanceledOnTouchOutside(false);

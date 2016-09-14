@@ -122,6 +122,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlusPlan">&quot;+Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
     <string name="PlanPrompt">&quot;Enter waypoints of plan e.g. KLAX KSBA GVO&quot;</string>
@@ -540,6 +541,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DeclareEmergency">Declare Emergency?</string>
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n4.Send SMS to Emergency Contact</string>
     <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
+    <string name="Menu">Menu</string>
 
+    <string name="b1map">Remove Button 1 in Map (Restart Required)</string>
+    <string name="b1plate">Remove Button 1 in Plate (Restart Required)</string>
+    <string name="b2plate">Remove Button 2 in Plate (Restart Required)</string>
+    <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
+    <string name="UIConfiguration">UI Configuration</string>
 
 </resources>

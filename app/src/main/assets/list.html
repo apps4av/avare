@@ -20,15 +20,21 @@ authors: zkhan
     <script src="file:///android_asset/bootstrap.min.js"></script>
     <script src="file:///android_asset/bootstrap-select.min.js"></script>
     <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
     <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
     <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
     <style type="text/css">
         button {color: black; height:40px;}
         input {height:40px;}
+        .toast {opacity: 1 !important;}
     </style>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script type="text/javascript" >
+
+	toastr.options.timeOut = 2000;
 
 var CELL_TEXT = 0;
 var CELL_LAST = 1;
@@ -115,6 +121,7 @@ function save_delete(row) {
 		}
     	var list_save = document.getElementById("save_table");
 	    AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	    toastr.success('List deleted');
 	});
 
 }
@@ -135,14 +142,20 @@ function list_discard() {
 function list_import() {
 	// call Android
 	var path = document.getElementById("import_input");
+	if(path.value == "") {
+		toastr.error('Please specify a valid path');
+		return;
+	}
+
 	bootbox.confirm("Delete List then Import?", function(result) {
 		if(result == false) {
 			return;
 		}
 		AndroidList.importFromFile(path.value);
-		path.value = "";
 		document.getElementById("list_name").scrollIntoView();
 		$("#saveModal").modal('hide');
+	    toastr.info('Importing list from ' + path.value);
+		path.value = "";
 	});
 }
 
@@ -183,9 +196,11 @@ function save_list_add() {
 	var name = document.getElementById("save_name").value;
 
 	if(name == "") {
-		return
+		toastr.error('Please specify a valid name');
+		return;
 	}
 	AndroidList.saveList(name);
+	toastr.success('List saved to ' + name);
 }
 
 // clear the entire save list
@@ -242,6 +257,12 @@ function save_add(name) {
 <div class="table-responsive">
     <table class="table">
         <tr>
+            <td><h3 ><span class="label label-success">Load A List</span></h3></td>
+        </tr>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
+        </tr>
+        <tr>
             <td><h3 ><span id="list_name" class="label label-success">List[]</span></h3></td>
         </tr>
     </table>
@@ -256,17 +277,14 @@ function save_add(name) {
     </table>
     <table class="table"><th>Add Item To List</th>
         <tr>
-            <td><input id="item_input" placeholder="Mixture Full Rich."></td>
+            <td><input id="item_input" spellcheck="false" placeholder="Mixture Full Rich."></td>
             <td><button class="btn btn-block" onclick="add_list_item()">Add</button></td>
         </tr>
     </table>
     <table class="table"><th>Save List</th>
         <tr>
-            <td><input id="save_name" placeholder="Current List Name"/></td>
+            <td><input id="save_name" spellcheck="false" placeholder="Current List Name"/></td>
             <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
-        </tr>
-        <tr>
-            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
         </tr>
     </table>
 </div>
@@ -276,7 +294,7 @@ function save_add(name) {
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header alert-info">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Saved Lists</h4>
             </div>
@@ -284,7 +302,7 @@ function save_add(name) {
                 <table class="table" id="save_table" ><th>List</th></table>
                 <table class="table"><th>Import a Saved List File</th>
                     <tr>
-                        <td><input id="import_input" placeholder="/sdcard/list.txt"></td>
+                        <td><input id="import_input" spellcheck="false" placeholder="/sdcard/list.txt"></td>
                         <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
                     </tr>
                 </table>
@@ -299,13 +317,13 @@ function save_add(name) {
 
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header alert-info">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">List Help</h4>
             </div>
             <div class="modal-body">
                 <div style="overflow: auto;">
-                    The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off.
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off.
                     <br>
                     <b>To Create a List Line by Line</b>
                     <ul>

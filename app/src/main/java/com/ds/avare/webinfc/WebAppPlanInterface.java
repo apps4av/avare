@@ -1062,7 +1062,7 @@ public class WebAppPlanInterface implements Observer {
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
                     String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                     Taf += "<b><font size='5' color='white'>" + vals[0] + "</b><br>";
                     Taf += "<font size='5' color='white'>" + taf + "<br></br>";
                 }

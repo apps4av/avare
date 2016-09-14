@@ -24,46 +24,46 @@ Redistribution and use in source and binary forms, with or without modification,
         <Button
             android:id="@+id/location_button_pref"
             android:textStyle="bold"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_dl"
             android:text="@string/Settings"
-            android:drawableLeft="@drawable/settings"
-            android:gravity="left|center"
+            android:background="@drawable/button_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:visibility="invisible" />
 
          <Button
             android:id="@+id/location_button_dl"
             android:textStyle="bold"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
             android:layout_above="@+id/location_button_sos"
-            android:gravity="left|center"
             android:text="@string/download"
-            android:drawableLeft="@drawable/download"
+             android:background="@drawable/button_bg"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dp"
             android:visibility="invisible" />
 
          <Button
             android:id="@+id/location_button_sos"
             android:textStyle="bold"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
+             android:background="@drawable/button_bg"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_margin="5dp"
             android:layout_above="@+id/location_button_help"
             android:text="@string/SOS"
-            android:drawableLeft="@drawable/web"
-            android:gravity="left|center"
             android:visibility="invisible" />
          
          <Button
             android:id="@+id/location_button_help"
             android:textStyle="bold"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
+            android:background="@drawable/button_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="@string/Help"
-            android:drawableLeft="@drawable/help"
-            android:gravity="left|center"
             android:visibility="invisible" />
         
         <Button
@@ -73,7 +73,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:drawableLeft="@android:drawable/ic_menu_more"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
+            android:text="@string/Menu"
             android:visibility="visible" />
 
         <Button
@@ -83,7 +85,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_pause"
+            android:background="@drawable/button_small"
             android:drawableLeft="@android:drawable/ic_media_previous"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_margin="5dp"
             android:visibility="invisible" />
 
         <ImageButton
@@ -93,7 +98,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_next"
+            android:background="@drawable/button_small"
             android:src="@android:drawable/ic_media_play"
+            android:layout_margin="5dp"
             android:visibility="invisible" />
 
         <Button
@@ -102,52 +109,61 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:background="@drawable/button_small"
             android:layout_above="@+id/location_button_draw_clear"
             android:drawableLeft="@android:drawable/ic_media_next"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_margin="5dp"
             android:visibility="invisible" />
 
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_tracks"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_above="@+id/location_spinner_layer"
             android:visibility="invisible"
             android:textStyle="bold"
-            android:background="@android:drawable/btn_default"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
 
         <com.ds.avare.utils.OptionButton
             android:id="@+id/location_spinner_layer"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/location_button_sim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:visibility="invisible"
             android:labelFor="@string/LayerSelect"
             android:entries="@array/LayerType"/>
 
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_sim"
-            android:layout_height="wrap_content"
             android:visibility="invisible"
             android:layout_above="@+id/location_spinner_chart"
             android:layout_alignParentRight="true"
             android:textOff="@string/Navigate"
             android:textOn="@string/SimulationMode"
-            android:background="@android:drawable/btn_default"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:textStyle="bold"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:drawableLeft="@android:drawable/ic_menu_mylocation" />
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
+            android:src="@android:drawable/ic_menu_mylocation" />
 
         <Button
             android:id="@+id/location_button_draw_clear"
@@ -156,7 +172,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/location_button_draw"
-            android:drawableLeft="@drawable/erase"
+            android:text="@string/Clear"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
             android:visibility="invisible" />        
         
         <com.ds.avare.animation.TwoButton
@@ -165,102 +183,23 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:textOff="@string/Pan"
-            android:background="@android:drawable/btn_default"
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
             android:textStyle="bold" />
 
         <com.ds.avare.utils.OptionButton
             android:id="@+id/location_spinner_chart"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:visibility="invisible"
-            android:labelFor="@string/ChartTypeLabel"
-            />
-        
-        <RelativeLayout
-            android:layout_margin="5dp"
-            android:id="@+id/location_popout_layout"
-            android:visibility="invisible"
-            android:background="@drawable/border"
-            android:layout_alignParentBottom="true"
-            android:scrollbars="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            >
-            
-	        <Button
-	            android:id="@+id/location_button_cross"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_margin="5dp"
-	            android:background="@drawable/border_red_small"
-	            android:textColor="#FFFFFFFF"
-	            android:textStyle="bold"
-                android:textSize="15sp"
-                android:minHeight="40dp"
-                android:drawableLeft="@android:drawable/ic_input_delete"/>
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
+            android:labelFor="@string/ChartTypeLabel"
+            />
 
-	        <LinearLayout
-	        	android:id="@+id/location_popout_buttons"
-                android:layout_below="@+id/location_button_cross"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"	        	
-	        	>
-		        <Button
-		            android:id="@+id/location_button_dest"
-                    android:textStyle="bold"
-                    android:layout_margin="3dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-		            android:text="@string/ShortDestination"
-		            />
-	        
-		         <Button
-		            android:id="@+id/location_button_plan"
-                    android:textStyle="bold"
-                    android:layout_margin="3dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-		            android:text="@string/Plan"
-		            />
-	
-		         <Button
-	                android:id="@+id/location_button_plate"
-                    android:textStyle="bold"
-                    android:layout_margin="3dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-	                android:text="@string/Plates"
-	                />
-		         
-	             <Button
-	                android:id="@+id/location_button_afd"
-	                android:textStyle="bold"
-	                android:layout_margin="3dp"
-	                android:layout_width="0dp"
-	                android:layout_weight="1"
-                    android:layout_height="wrap_content"
-	                android:text="@string/AFD"
-	                />
-	        </LinearLayout>       
-	        
-            <ExpandableListView
-	            android:id="@+id/location_list_popout"
-	            android:clickable="false"
-                android:layout_margin="5dp"
-                android:cacheColorHint="#00000000"
-                android:layout_below="@+id/location_popout_buttons"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"/>
-            
-        </RelativeLayout>
-        
-        
 </RelativeLayout>
 

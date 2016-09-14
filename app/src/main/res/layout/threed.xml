@@ -23,18 +23,22 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <com.ds.avare.utils.OptionButton
         android:id="@+id/threed_spinner_chart"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
+        android:background="@drawable/button_bg_option"
+        android:layout_margin="5dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:labelFor="@string/ChartTypeLabel"
         />
 
-    <Button
+    <ImageButton
         android:id="@+id/threed_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@android:drawable/ic_menu_mylocation"
+        android:background="@drawable/button_small"
+        android:layout_margin="5dp"
+        android:src="@android:drawable/ic_menu_mylocation"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"/>
 

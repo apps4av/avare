@@ -16,7 +16,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroups">
         <item>Databases</item>
         <item>Weather/TFRs</item>
-        <item>Other</item>
         <item>VFR Sectional Charts</item>
         <item>TAC Charts</item>
         <item>WAC Charts</item>
@@ -34,21 +33,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Misc. Charts</item>
     </string-array>
 
-    <string-array name="resGroupsPopout">
-        <item>COMM</item>
-        <item>Performance</item>
-        <item>METAR</item>
-        <item>TAF</item>
-        <item>Winds/Temp.</item>
-        <item>AIREP/PIREP</item>
-        <item>AIRMET/SIGMET</item>
-        <item>TFR</item>
-        <item>SUA</item>
-        <item>Fuel Cost</item>
-        <item>User Ratings</item>
-        <item>Layer</item>
-    </string-array>
-    
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
         <item>Plates Georeference Info.</item>
@@ -59,11 +43,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>NEXRAD</item>
         <item>TFRs</item>
         <item>Game TFRs</item>
-    </string-array>
-
-    <string-array name="resNameOther">
-        <item>@string/FuelCost</item>
-        <item>@string/Ratings</item>
     </string-array>
 
     <string-array name="resNameAFD">
@@ -1506,11 +1485,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>GameTFRs</item>
     </string-array>
 
-    <string-array name="resFilesOther">
-        <item>fuel</item>
-        <item>ratings</item>
-    </string-array>
-
     <string-array name="resFilesIFRLE">
         <item>ELUS_NE</item>
         <item>ELUS_NC</item>
@@ -2293,21 +2267,29 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="Tips">
+        <item>&quot;Android OS since 5.0 does not allow apps (other than system apps) to store data on SD cards&quot;</item>
+        <item>&quot;Read help file, or search a topic in it before contacting our support&quot;</item>
         <item>&quot;All headings relating to Avare flight plans are magnetic headings, not true headings&quot;</item>
+        <item>&quot;Do not ask for help on the Google Store review page of the app. If you want a change, email support or join our forum&quot;</item>
         <item>&quot;In METAR and TAF, wind direction is true heading, not magnetic, and ceilings are AGL, not MSL&quot;</item>
         <item>&quot;Tap and hold on a map location to show distance, direction from it to the airplane and heading to it&quot;</item>
         <item>&quot;You can change the shape and color of the airplane icon via Display->Location Display Icon&quot;</item>
-        <item>&quot;You can change which of the tabs are displayed on the bottom via Display->Tab Bar Content&quot;</item>
+        <item>&quot;You can change which of the tabs are displayed on the bottom via UI Configuration->Tab Bar Content&quot;</item>
         <item>&quot;The fields in map mode can be modified by turning on Application State->Use Dynamic Fields&quot;</item>
         <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
+        <item>&quot;If the app. is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
         <item>&quot;If pre-downloaded SUA or weather disappear in flight, check Weather->Data Expiry and Use ADSB Weather&quot;</item>
         <item>&quot;If you're not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
+        <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
+        <item>&quot;If the app. is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
         <item>&quot;To get geo-referenced plates, make sure to download them under Database->Plates Georeference Info&quot;</item>
         <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
+        <item>&quot;You can hide non essential UI buttons and tabs from Preferences under UI Configuration&quot;</item>
         <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>
         <item>&quot;Setting the correct Glide Ratio makes fields beyond glide range appear red in the Near tab&quot;</item>
         <item>&quot;Drawings on maps move and rescale with the map, but drawings on plates do not&quot;</item>
+        <item>&quot;If your phone does not have enough internal storage for charts, uninstall some other apps. to make space&quot;</item>
         <item>&quot;Use the settings to change between North Up and Track Up - separately for maps and for plates&quot;</item>
         <item>&quot;Emergency mode lets you declare emergency by sending an SMS to your designated phone number&quot;</item>
         <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes&quot;</item>
@@ -2318,7 +2300,9 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Set how long weather and TFRs are displayed for via Weather->Data Expiry&quot;</item>
         <item>&quot;To see maps from different areas, use simulation mode and enter a destination in that areas&quot;</item>
         <item>&quot;Don't just keep Avare's data up-to-date, update Avare itself regularly via Google Play&quot;</item>
+        <item>&quot;Your email address is a signature you leave for signing a liability release form&quot;</item>
         <item>&quot;To get support or report bugs, go to apps4av.com and look for the forum link&quot;</item>
+        <item>&quot;If chart download fails after completing more than 50%, make sure your device has enough storage&quot;</item>
         <item>&quot;Arrivals, departure procedures, alternate minimums and other info are included with a field's plates&quot;</item>
         <item>&quot;Practicing using Avare when flying as a passenger will make you more proficient using it&quot;</item>
         <item>&quot;Long press on an airport to show its METAR, TAF, COMM and other information&quot;</item>
@@ -2328,6 +2312,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Every time you find a bug and report it, you help make Avare a better product&quot;</item>
         <item>&quot;Avare's taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
         <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
+        <item>&quot;If you like this app. please leave a positive review on the play store, and/or donate&quot;</item>
         <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
         <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
         <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>

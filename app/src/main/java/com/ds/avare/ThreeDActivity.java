@@ -32,7 +32,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,7 +79,7 @@ public class ThreeDActivity extends Activity {
 
     private AreaMapper mAreaMapper;
 
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private TextView mText;
 
     private GlassView mGlassView;
@@ -156,7 +156,7 @@ public class ThreeDActivity extends Activity {
     private void setCenterButton() {
         // Button colors to be synced across activities
         if (mPref.isFirstPerson()) {
-            mCenterButton.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+            mCenterButton.getBackground().setColorFilter(0xFF71BC78, PorterDuff.Mode.MULTIPLY);
             mToast.setText(getString(R.string.FirstPerson));
             mRenderer.getCamera().setFirstPerson(true);
             mGlSurfaceView.init();
@@ -441,7 +441,7 @@ public class ThreeDActivity extends Activity {
 
         mAreaMapper = new AreaMapper();
 
-        mCenterButton = (Button) view.findViewById(R.id.threed_button_center);
+        mCenterButton = (ImageButton) view.findViewById(R.id.threed_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new View.OnClickListener() {
 

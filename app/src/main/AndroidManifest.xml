@@ -13,8 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ds.avare"
-    android:versionCode="271"
-    android:versionName="7.4.1"
+    android:versionCode="281"
+    android:versionName="7.5.1"
     android:installLocation="auto" >
 
     <!-- GCM requires a Google account. -->
@@ -72,7 +72,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ChecklistActivity"/>
         <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
-        <activity android:name=".SubmitActivity"/>
         <activity android:name=".ThreeDActivity"/>
         <activity android:name=".SyncActivity"/>
         <activity android:name=".MessageActivity">

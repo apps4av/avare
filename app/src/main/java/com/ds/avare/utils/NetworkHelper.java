@@ -324,12 +324,6 @@ public class NetworkHelper {
         else if(file.equals("conus.zip")) {
             return(root + "/" + file);
         }
-        else if(file.equals("fuel.zip")) {
-            return(root + "/" + file);
-        }
-        else if(file.equals("ratings.zip")) {
-            return(root + "/" + file);
-        }
 
         // See if it is a static chart (not updated every 28 days)
         if(!isStatic) {
@@ -495,7 +489,7 @@ public class NetworkHelper {
         /*
          * Expires every so many mins
          */
-        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus") || name.equals("fuel") || name.equals("ratings")) {
+        if(name.equals("TFRs") || name.equals("weather") || name.equals("conus")) {
             return String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),

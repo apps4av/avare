@@ -408,7 +408,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             // Add plates tag PG's website
             mPaint.setColor(0x007F00);
             mPaint.setAlpha(255);
-            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top, mPaint);
+            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + getWidth() / 4, mPaint);
 
             if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);

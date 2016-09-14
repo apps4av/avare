@@ -21,14 +21,20 @@ authors: zkhan
     <script src="file:///android_asset/bootstrap.min.js"></script>
     <script src="file:///android_asset/bootstrap-select.min.js"></script>
     <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
     <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
     <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
     <style type="text/css">
         button {color: black; height:40px;}
         input {height:40px;}
+        .toast {opacity: 1 !important;}
     </style>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" >
+
+	toastr.options.timeOut = 2000;
 
 var CELL_WP = 0;
 var CELL_TYPE = 1;
@@ -57,6 +63,14 @@ function loadplan() {
 			return;
 		}
 	}
+
+	// delete extra lines in plan table
+	// XXX: ZIMMZ Q42 MIKYG Q480 AIR APE KDAY not working properly
+	var plan_table = document.getElementById("plan_table");
+    for(var row = plan_table.rows.length - 1; row > plans.length; row--) {
+        plan_table.deleteRow(row);
+    }
+
 	plan_set_total(plans[plans.length - 1]);
 }
 
@@ -83,7 +97,7 @@ function set_plan_line(row, next, course, heading, distance, time, id, type, fue
 	}
 
 	if(next == "1") {
-		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "green";
+		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "#71bc78";
 	}
 	else {
 		plan_table.rows[row].cells[CELL_WP].style.backgroundColor = "black";
@@ -178,10 +192,10 @@ function plan_movedn() {
 function plan_set_total(total) {
 	// plan total is split to show individual values
 	var vals = total.replace(/^[ ]+|[ ]+$/g,'').split(" ");
-	document.getElementById("plan_total_distance").innerHTML = "Distance<br>" + vals[0];
-	document.getElementById("plan_total_time").innerHTML = "Time<br>" + vals[1];
+	document.getElementById("plan_total_distance").innerHTML = "Distance<br><font color='#71bc78'>" + vals[0] + "</font>";
+	document.getElementById("plan_total_time").innerHTML = "Time<br><font color='#71bc78'>" + vals[1] + "</font>";
 	// total bearing makes no sense
-	document.getElementById("plan_total_fuel").innerHTML = "Fuel<br>" + vals[3];
+	document.getElementById("plan_total_fuel").innerHTML = "Fuel<br><font color='#71bc78'>" + vals[3] + "</font>";
 }
 
 // clear the entire plan
@@ -211,17 +225,12 @@ function plan_create() {
 	var name = document.getElementById("create_input").value.trim();
 
 	if(name == "") {
-		return
+		toastr.error('Please enter a valid route');
+		return;
 	}
 
-	// calll Android
-	bootbox.confirm("Delete Current Plan then Create??", function(result) {
-		if(result == false) {
-			return;
-		}
-		AndroidPlan.discardPlan();
-		AndroidPlan.createPlan(name);
-	});
+    AndroidPlan.discardPlan();
+    AndroidPlan.createPlan(name);
 
 }
 
@@ -259,6 +268,8 @@ function save_delete(row) {
 			return;
 		}
     	AndroidPlan.saveDelete(plan_name);
+		toastr.success('Plan deleted');
+
 	});
 
 }
@@ -268,9 +279,12 @@ function save_plan_add() {
 	var name = document.getElementById("save_name").value;
 
 	if(name == "") {
-		return
+		toastr.error('Please specify a valid name');
+		return;
 	}
 	AndroidPlan.savePlan(name);
+	toastr.success('Plan saved to ' + name);
+
 }
 
 // clear the entire save plan
@@ -402,16 +416,6 @@ function search_add(id, name, type, subtype) {
 	cell[CELL_SEARCH_TYPE].textContent = type + "-" + subtype;
 }
 
-function show_help() {
-	var help = document.getElementById("help");
-	if(help.style.display == "none") {
-		help.style.display = "";
-	}
-	else {
-		help.style.display = "none";
-	}
-}
-
 function plan_get_weather() {
 	bootbox.confirm("Get Latest Plan Briefing from Internet?", function(result) {
 		if(result == false) {
@@ -461,7 +465,6 @@ function refresh_plan_list() {
 	AndroidPlan.refreshPlanList();
 }
 
-window.onload = show_help;
 
 </script>
 
@@ -473,8 +476,11 @@ window.onload = show_help;
             <td><h3 ><span class="label label-success">Create New Plan</span></h3></td>
         </tr>
         <tr>
-            <td><input id="create_input" placeholder="KBOS BOS V16 CMK KDXR"></td>
+            <td><input id="create_input" style="text-transform:uppercase" spellcheck="false" placeholder="KBOS BOS V16 CMK KDXR"></td>
             <td><button class="btn btn-block" onclick="plan_create()">Create</button></td>
+        </tr>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Plans</b></u></a></td>
         </tr>
     </table>
     <table class="table">
@@ -482,7 +488,7 @@ window.onload = show_help;
             <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3></td>
         </tr>
         <tr>
-            <td>@<select id="plan_altitude" onchange="plan_set_altitude()" class="selectpicker">
+            <td>@<select id="plan_altitude" onchange="plan_set_altitude()" data-mobile="true" class="selectpicker">
                 <option>000</option>
                 <option>030</option>
                 <option>035</option>
@@ -552,7 +558,7 @@ window.onload = show_help;
 
     <table class="table"><th>Add Waypoint to Plan</th>
         <tr>
-            <td><input id="search_input" placeholder="BOS"></td>
+            <td><input id="search_input" style="text-transform:uppercase" spellcheck="false" placeholder="BOS"></td>
             <td><button class="btn btn-block" onclick="search_waypoint()">Search</button></td>
         </tr>
     </table>
@@ -561,11 +567,8 @@ window.onload = show_help;
 
     <table class="table"><th>Save Plan</th>
         <tr>
-            <td><input id="save_name" placeholder="Current Plan Name"></td>
+            <td><input id="save_name" spellcheck="false" placeholder="Current Plan Name"></td>
             <td><button class="btn btn-block" onclick="save_plan_add()">Save</button></td>
-        </tr>
-        <tr>
-            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Plans</b></u></a></td>
         </tr>
     </table>
 
@@ -583,7 +586,7 @@ window.onload = show_help;
 
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header alert-info">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Saved Plans</h4>
             </div>
@@ -601,10 +604,12 @@ window.onload = show_help;
                         <td><button class="btn btn-block" id="list_last" onclick="last()">>></button></td>
                     </tr>
                 </table>
-                <table class="table"><th>Filter Saved Plans</th></table>
+                <table class="table">
+                    <th>Filter Saved Plans</th>
+                </table>
                 <table class="table">
                     <tr>
-                        <td><input id="plan_filter" placeholder="Plan Filter Spec."></td>
+                        <td><input id="plan_filter" spellcheck="false" placeholder="Plan Filter Spec."></td>
                         <td><button class="btn btn-block" onclick="plan_filter()">Apply</button></td>
                     </tr>
                 </table>
@@ -618,18 +623,19 @@ window.onload = show_help;
     </div>
 </div>
 
+
 <div class="modal fade" id="helpModal" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header alert-info">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Plan Help</h4>
             </div>
             <div class="modal-body">
                 <div  style="overflow: auto;">
-                    The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, course, fuel, and heading calculated from the current position to the final way point.<br>
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The Plan screen allows you to create and follow a basic flight plan with multiple way points. Way points are listed in the Plan, along with the total distance, time, course, fuel, and heading calculated from the current position to the final way point.<br>
                     <br>
                     <b>To Create a Flight Plan with Single Line Input</b>
                     <ul>

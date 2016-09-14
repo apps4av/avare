@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,6 +43,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.AfdView;
 
@@ -67,7 +70,7 @@ public class AirportActivity extends Activity implements Observer {
     private AlertDialog mAirportPopup;    
     private ArrayList<String> mListViews;
     private ArrayList<String> mListAirports;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private String mDestString;
     private String mNearString;
 
@@ -143,7 +146,7 @@ public class AirportActivity extends Activity implements Observer {
                     }
                 };
                 
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AirportActivity.this);
                 int index = mService.getAfdIndex();
                 if(index >= mListViews.size()) {
                     index = 0;
@@ -170,7 +173,7 @@ public class AirportActivity extends Activity implements Observer {
                     }
                 };
                 
-                AlertDialog.Builder builder = new AlertDialog.Builder(AirportActivity.this);
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AirportActivity.this);
                 int index = mListAirports.indexOf(mService.getLastAfdAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
@@ -178,8 +181,9 @@ public class AirportActivity extends Activity implements Observer {
             }
         });              
 
-        mCenterButton = (Button)view.findViewById(R.id.airport_button_center);
+        mCenterButton = (ImageButton)view.findViewById(R.id.airport_button_center);
         mCenterButton.getBackground().setAlpha(255);
+        mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

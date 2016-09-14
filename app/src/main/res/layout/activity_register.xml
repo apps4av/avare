@@ -13,12 +13,16 @@ All rights reserved.
 	<com.ds.avare.utils.OptionButton
         android:id="@+id/spinner_register"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+		android:background="@drawable/button_bg_option"
+		android:layout_margin="5dp"
+		android:layout_height="wrap_content"/>
 	
     <Button
         android:id="@+id/btn_register"
         android:layout_below="@+id/spinner_register"
         android:layout_width="fill_parent"
+		android:background="@drawable/button_bg"
+		android:layout_margin="5dp"
         android:text="@string/register"
         android:layout_height="wrap_content"/>
      
@@ -26,6 +30,8 @@ All rights reserved.
         android:id="@+id/btn_unregister"
         android:layout_below="@+id/btn_register"
         android:layout_width="fill_parent"
+		android:background="@drawable/button_bg"
+		android:layout_margin="5dp"
         android:text="@string/unregister"
         android:layout_height="wrap_content"/>
     <ScrollView

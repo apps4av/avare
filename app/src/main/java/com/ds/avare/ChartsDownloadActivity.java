@@ -38,6 +38,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 
 import java.io.File;
@@ -442,7 +443,7 @@ public class ChartsDownloadActivity extends Activity {
                      * Throw a confirm dialog
                      */
                     String code = msg.getData().getString("code");
-                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog = new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this).create();
                     mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed) + ": " + code);
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);
@@ -531,7 +532,7 @@ public class ChartsDownloadActivity extends Activity {
                      * Throw a confirm dialog
                      */
                     
-                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog = new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this).create();
                     mAlertDialog.setMessage(getString(R.string.Delete) + " " + getString(R.string.Failed));
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);

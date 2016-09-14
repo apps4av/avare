@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FF000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
@@ -22,6 +23,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:visibility="invisible"/>   
     
     <com.ds.avare.views.PlatesView
@@ -31,12 +34,14 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/plates_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@android:drawable/ic_menu_mylocation"
+        android:src="@android:drawable/ic_menu_mylocation"
         android:layout_centerInParent="true"
+        android:background="@drawable/button_small"
+        android:layout_margin="5dp"
         android:layout_alignParentBottom="true"/>
     
 	    <Button
@@ -47,6 +52,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/Tag"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
 	        android:visibility="visible" />
 
 	    <Button
@@ -54,10 +61,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/Timer"
             android:visibility="visible"
+            android:background="@drawable/button_bg"
+            android:layout_margin="5dp"
             android:textSize="24dp" />
 
         <Button
@@ -67,7 +76,9 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/plate_button_draw"
-            android:drawableLeft="@drawable/erase"
+            android:text="@string/Clear"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
             android:visibility="invisible" />
 
         <com.ds.avare.animation.TwoButton
@@ -76,7 +87,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:textOff="@string/Pan"
-            android:background="@android:drawable/btn_default"
+            android:background="@drawable/button_small"
+            android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />
@@ -95,6 +107,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:text="AP"
             android:textSize="16sp"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:layout_weight="4"/>
 
         <Button
@@ -102,6 +116,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:layout_weight="20"/>
 
         <Button
@@ -109,6 +125,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:background="@drawable/button_bg_option"
+            android:layout_margin="5dp"
             android:layout_weight="6"/>
     </LinearLayout>
 
