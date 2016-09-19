@@ -2196,7 +2196,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="Expires">
-        <item>10</item>
         <item>30</item>
         <item>60</item>
         <item>120</item>
