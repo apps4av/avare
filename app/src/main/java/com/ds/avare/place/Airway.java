@@ -165,9 +165,15 @@ public class Airway extends Observable {
 					continue;
 				}
 				lastcoord = c;
-				String s = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
-						name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
-				ret.add(s);
+                // find a fix/navaid here.
+                String navaid = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord).getHashedName();
+
+                if(navaid == null) {
+                    // not found, add GPS
+                    navaid = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
+                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
+                }
+                ret.add(navaid);
 			}
 		}
 		else {
@@ -180,9 +186,16 @@ public class Airway extends Observable {
 					continue;
 				}
 				lastcoord = c;
-				String s = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
-						name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
-				ret.add(s);
+
+				// find a fix/navaid here.
+                String navaid = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord).getHashedName();
+                if(navaid == null) {
+                    // not found, add GPS
+                    navaid = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
+                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
+                }
+
+				ret.add(navaid);
 			}			
 		}
 

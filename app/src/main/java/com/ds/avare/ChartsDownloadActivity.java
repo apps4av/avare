@@ -37,6 +37,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.ThemedProgressDialog;
 
@@ -216,7 +217,7 @@ public class ChartsDownloadActivity extends AppCompatActivity {
             /*
              * See if we need to download a chart.
              * This will be done if charts do not exist.
-             * LocationActivity sends this intent to download chart at GPS location for the new
+             * LocationFragment sends this intent to download chart at GPS location for the new
              * user.
              */
             String chart = ChartsDownloadActivity.this.getIntent().getStringExtra(getString(R.string.download));
@@ -442,7 +443,7 @@ public class ChartsDownloadActivity extends AppCompatActivity {
                      * Throw a confirm dialog
                      */
                     String code = msg.getData().getString("code");
-                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog = new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this).create();
                     mAlertDialog.setMessage(getString(R.string.download) + " " + getString(R.string.Failed) + ": " + code);
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);
@@ -531,7 +532,7 @@ public class ChartsDownloadActivity extends AppCompatActivity {
                      * Throw a confirm dialog
                      */
                     
-                    mAlertDialog = new AlertDialog.Builder(ChartsDownloadActivity.this).create();
+                    mAlertDialog = new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this).create();
                     mAlertDialog.setMessage(getString(R.string.Delete) + " " + getString(R.string.Failed));
                     mAlertDialog.setCanceledOnTouchOutside(false);
                     mAlertDialog.setCancelable(false);

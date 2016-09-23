@@ -54,8 +54,10 @@ public class Plan implements Observer {
     private TrackShape mTrackShape;
 
     private String mEte;
+    private String mFuel;
     private double mDistance;
     private long mEteSec;
+    private float mFuelGallons;
     private double mBearing;
     private GpsParams mLastLocation;
     private Passage mPassage;
@@ -89,6 +91,7 @@ public class Plan implements Observer {
         mTrackShape = new TrackShape();
         mDistance = 0;
         mEteSec = 0;
+        mFuelGallons = 0;
         mLastLocation = null;
         mBearing = 0;
         mDeclination = 0;
@@ -99,6 +102,7 @@ public class Plan implements Observer {
             mPassed[i] = false;
         }
         mEte = "--:--";
+        mFuel = "-.-";
         mPassage = new Passage();
         mEarlyPass = false;
         mEarlyPassEvent = false;
@@ -148,7 +152,7 @@ public class Plan implements Observer {
      * 
      * @return
      */
-    public void remove(int rmId) {
+    public synchronized void remove(int rmId) {
         int num = getDestinationNumber() - 1;
         if (rmId > num || rmId < 0) {
             return;
@@ -225,7 +229,7 @@ public class Plan implements Observer {
      * 
      * @return
      */
-    public boolean appendDestination(Destination dest) {
+    public synchronized boolean appendDestination(Destination dest) {
 
         int n = getDestinationNumber();
         if (n >= MAX_DESTINATIONS) {
@@ -292,9 +296,10 @@ public class Plan implements Observer {
      * 
      * @param params
      */
-    public void updateLocation(GpsParams params) {
+    public synchronized void updateLocation(GpsParams params) {
         mDistance = 0;
         mEteSec = 0;
+        mFuelGallons = 0;
         mBearing = 0;
         mDeclination = params.getDeclinition();
         int num = getDestinationNumber();
@@ -317,6 +322,7 @@ public class Plan implements Observer {
             }
             mDistance = mDestination[np].getDistance();
             mEteSec = mDestination[np].getEteSec();
+            mFuelGallons = mDestination[np].getFuelGallons();
 
             /*
              * For all upcoming, add distance. Distance is from way point to way
@@ -331,6 +337,7 @@ public class Plan implements Observer {
                 mDestination[id].updateTo(p);
                 mDistance += mDestination[id].getDistance();
                 mEteSec += mDestination[id].getEteSec();
+                mFuelGallons += mDestination[id].getFuelGallons();
             }
 
         } else {
@@ -342,6 +349,7 @@ public class Plan implements Observer {
 
             mDistance = 0;
             mEteSec = 0;
+            mFuelGallons = 0;
             for (int id = 0; id < num; id++) {
                 /*
                  * For all upcoming, add distance. Distance is from way point to
@@ -350,6 +358,7 @@ public class Plan implements Observer {
                 if (!mPassed[id]) {
                     mDistance += mDestination[id].getDistance();
                     mEteSec += mDestination[id].getEteSec();
+                    mFuelGallons += mDestination[id].getFuelGallons();
                 }
             }
         }
@@ -370,7 +379,19 @@ public class Plan implements Observer {
 	        }
         }
         // ETE is sum of all ETE legs
-        mEte = Helper.calculateEte(0, 0, mEteSec, false);
+        if(mEteSec > 99999 || mEteSec < 0) {
+            mEte = "--.--";
+        }
+        else {
+            mEte = Helper.calculateEte(0, 0, mEteSec, false);
+        }
+        // Fuel is sum of all fuels, in increments of 0.1 gallons
+        if(mFuelGallons > 9999 || mFuelGallons < 0) { // That is a 1500 gallons in lbs
+            mFuel = "-.-";
+        }
+        else {
+            mFuel = String.valueOf((((float) Math.round(mFuelGallons * 10.f))) / 10.f);
+        }
         mLastLocation = params;
     }
 
@@ -385,7 +406,7 @@ public class Plan implements Observer {
          * For display purpose
          */
         return Helper.makeLine(mDistance, Preferences.distanceConversionUnit,
-                mEte, mBearing, mDeclination);
+                mEte, mBearing, mDeclination) + " " + mFuel;
     }
 
     /**
@@ -447,7 +468,7 @@ public class Plan implements Observer {
     /*
      * Get a list of coordinates forming this route on great circle
      */
-    public Coordinate[] getCoordinates() {
+    public synchronized Coordinate[] getCoordinates() {
         int num = getDestinationNumber();
 
         Coordinate[] c = null;

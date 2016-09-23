@@ -52,7 +52,9 @@ public class OptionButton extends AppCompatButton implements View.OnClickListene
             return;
         }
         CharSequence[] entries = ta.getTextArray(0);
+        @SuppressWarnings("ResourceType")
         CharSequence label = ta.getText(1);
+        ta.recycle();
         if(null == entries) {
             return;
         }
@@ -149,7 +151,7 @@ public class OptionButton extends AppCompatButton implements View.OnClickListene
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
         if(mLabel != null) {
             builder.setTitle(mLabel);
         }

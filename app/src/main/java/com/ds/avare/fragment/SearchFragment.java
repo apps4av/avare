@@ -36,6 +36,7 @@ import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.place.Destination;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.Observable;
@@ -137,7 +138,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
 
                     edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
 
-                    mAlertDialogEdit = new AlertDialog.Builder(getContext()).create();
+                    mAlertDialogEdit = new DecoratedAlertDialogBuilder(getContext()).create();
                     mAlertDialogEdit.setTitle(getString(R.string.Label));
                     mAlertDialogEdit.setCanceledOnTouchOutside(true);
                     mAlertDialogEdit.setCancelable(true);

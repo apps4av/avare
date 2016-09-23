@@ -79,6 +79,8 @@ public class Destination extends Observable {
      */
     private String mEte;
     private Long mEteSec;
+    private String mFuel;
+    private float mFuelGallons;
     private String mEta;
 
     private WindsAloft mWinds;
@@ -161,6 +163,8 @@ public class Destination extends Observable {
         mEte = new String("--:--");
         mEta = new String("--:--");
         mEteSec = Long.MAX_VALUE;
+        mFuel = "-.-";
+        mFuelGallons = Float.MAX_VALUE;
         mParams = new LinkedHashMap<String, String>();
         mFreq = new LinkedHashMap<String, String>();
         mAwos = new LinkedList<Awos> ();
@@ -193,6 +197,7 @@ public class Destination extends Observable {
         mTrackShape = new TrackShape();
         mEte = new String("--:--");
         mEta = new String("--:--");
+        mFuel = new String("-.-");
         mLond = lon;
         mLatd = lat;
         mParams = new LinkedHashMap<String, String>();
@@ -354,9 +359,13 @@ public class Destination extends Observable {
     	mEte = Helper.calculateEte(mDistance, mGroundSpeed, 0, true);
         if(mGroundSpeed == 0) {
             mEteSec = Long.MAX_VALUE;
+            mFuelGallons = Float.MAX_VALUE;
+            mFuel = "-.-";
         }
         else {
             mEteSec = (long)(mDistance / mGroundSpeed * 3600);
+            mFuelGallons = (float)mEteSec / 3600 * mPref.getFuelBurn();
+            mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
         }
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
@@ -371,6 +380,10 @@ public class Destination extends Observable {
 	public String getEte() {
 		return mEte;
 	}
+
+    public float getFuelGallons() {
+        return mFuelGallons;
+    }
 
     public String getCourse() {
         return String.valueOf(mCrs);
@@ -462,7 +475,11 @@ public class Destination extends Observable {
         DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
         locmDataBaseTask.execute(false, dbType);
 	}
-	
+
+    public String getFuel() {
+        return mFuel;
+    }
+
     /**
      * @author zkhan
      * Query for destination task

@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.ds.avare.R;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
 
@@ -165,7 +166,7 @@ public class TripFragment extends StorageServiceGpsListenerFragment {
                     now.add(Calendar.DAY_OF_MONTH, 1);
                     to.setText(sdf.format(now.getTime()));
 
-                    AlertDialog.Builder askd = new AlertDialog.Builder(getContext());
+                    DecoratedAlertDialogBuilder askd = new DecoratedAlertDialogBuilder(getContext());
                     askd.setView(findView);
                     askd.setCancelable(false);
                     mAlertDialog = askd.create();

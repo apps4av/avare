@@ -2,86 +2,26 @@
 
 <head>
 
+	<!-- Latest compiled and minified CSS -->
+	<script src="file:///android_asset/jquery.min.js"></script>
+	<script src="file:///android_asset/bootstrap.min.js"></script>
+	<script src="file:///android_asset/bootstrap-select.min.js"></script>
+	<script src="file:///android_asset/bootbox.min.js"></script>
+	<script src="file:///android_asset/toastr.min.js"></script>
+	<link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+	<link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+	<link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+	<style type="text/css">
+		button {color: black; height:40px;}
+		input {height:40px;}
+		.toast {opacity: 1 !important;}
+	</style>
 
-<style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-body {
-	color : #FFFFFF;
-	width: 800px;
-	background: #000000;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
+	<script type='text/javascript' >
 
-label {
-	color : #FF0000;
-	font-weight: bold; /* Make sure they're bold */
-	font-size : 20px;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
-
-input {
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-	width:200px;
-}
-
-p {
-	border: solid green;
-	border-radius: 1em;
-	width: 800px;
-	padding: 5px;
-}
-
-table { 
-	color: #333; /* Lighten up font color */
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-	width: 800px;
-	border-collapse: collapse; 
-	border-spacing: 0; 
-}
- 
-button {
-	width: 100px;
-} 
- 
-td, th { 
-	color : #FFFFFF;
-	border: 1px solid #CCC;
-	height: 30px; 
-	width: 110px;
-	padding: 5px;
-} /* Make cells a bit taller */
- 
-th {
-	background: #222222; /* Light grey background */
-	font-weight: bold; /* Make sure they're bold */
-}
- 
-td {
-	background: #111111; /* Lighter grey background */
-	text-align: left; /* Left our text */
-}
-
-.halfbutton {
-	width: 50px; // For two buttons in one row
-}
-
-.halfinput {
-	width : 100px;
-}
-
-.fullinput {
-	width : 200px;
-}
-
-
-.sublabel {
-	font-size : 15px;
-	color : #00FF00;
-}
-
-</style>
-
-<script type='text/javascript' >
+	toastr.options.timeOut = 2000;
 
 // set the table for faa plans
 //>Plan</th><th>State</th><th>Activate</th><th>Cancel</th><th>Close<
@@ -90,7 +30,7 @@ var CELL_FAA_STATE = 1;
 var CELL_FAA_LAST = 2;
 function set_faa_plans(plan) {
 	var plans = plan.split(",");
-	
+
 	// delete the table
 	var faa_plan_save = document.getElementById("save_table_faa");
 	for(var row = faa_plan_save.rows.length - 1; row >= 1; row--) {
@@ -106,16 +46,16 @@ function set_faa_plans(plan) {
 		// Insert new cells (<td> elements) at the positions of the "new" <tr> element:
 		cell[CELL_FAA_NAME] = row.insertCell(CELL_FAA_NAME);
 		cell[CELL_FAA_STATE] = row.insertCell(CELL_FAA_STATE);
-		
+
 		cell[CELL_FAA_NAME].textContent = plans[r + 1];
 		cell[CELL_FAA_STATE].textContent = plans[r + 2];
-		
+
 		var next = plans[r];
 		if(next == "1") {
 			cell[CELL_FAA_NAME].style.backgroundColor = "green";
 		}
 		else {
-			cell[CELL_FAA_NAME].style.backgroundColor = "#111111";
+			cell[CELL_FAA_NAME].style.backgroundColor = "black";
 		}
 
 		// set onclick on row
@@ -125,7 +65,7 @@ function set_faa_plans(plan) {
          	onclick_row(currentI);
       	}
    	})();
-   	
+
    	count++;
 	}
 }
@@ -140,252 +80,256 @@ function set_email(email) {
 	document.getElementById("email_id").innerHTML = "<b>" + email + "<b>";
 }
 
-// State change of plan like active
-function plan_state_change(row, action) {
-	var r = confirm("Do you want to " + action + " the plan?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.planChangeState(row, action);
-}
-
-
-// Set aircraft color
-function move_select_color(color) {
-	var colors = color.split("/");
-	
-	var sel1 = document.getElementById("aircraft_color_1");
-	for(var i = 0; i < sel1.length; i++) {
-		if(colors[0] == sel1.options[i].value) {
-			sel1.selectedIndex = i;
-			break;
-		}	
-	}
-
-	var sel2 = document.getElementById("aircraft_color_2");
-	for(var i = 0; i < sel2.length; i++) {
-		if(colors[1] == sel2.options[i].value) {
-			sel2.selectedIndex = i;
-			break;
-		}	
-	}
-
-}
 
 // fill a plan page from stored values
 function plan_fill(
-				flight_rule,
-				aircraft_id,
-				departure_point,
-				destination,
-				departure_date,
-				time_enroute,
-				alternate1,
-				alterante2,
-				aircraft_type,		
-				no_of_aircraft,
-				heavy,
-				aircraft_equip,		
-				true_airspeed,
-				altitude,
-				fuel_onboard,
-				pilot_info,
-				no_onboard,
-				aircraft_color,
+				aircraftId,
+				flightRule,
+				flightType,
+				noOfAircraft,
+				aircraftType,
+				wakeTurbulence,
+				aircraftEquipment,
+				departure,
+				departureDate,
+				cruisingSpeed,
+				level,
+				surveillanceEquipment,
 				route,
-				type_flight,				
-				remarks) {
+				otherInfo,
+				destination,
+				totalElapsedTime,
+				alternate1,
+				alternate2,
+				fuelEndurance,
+				peopleOnBoard,
+				aircraftColor,
+				supplementalRemarks,
+				pilotInCommand,
+				pilotInfo) {
 
-            document.getElementById("flight_rule").value = flight_rule;
-				document.getElementById("aircraft_id").value = aircraft_id;
-				document.getElementById("departure_point").value = departure_point;
-				document.getElementById("destination").value = destination;
-				document.getElementById("departure_date").value = departure_date;
-				document.getElementById("time_enroute").value = time_enroute;
-				document.getElementById("alternate1").value = alternate1;
-				document.getElementById("alterante2").value = alterante2;
-				document.getElementById("aircraft_type").value = aircraft_type;		
-				document.getElementById("no_of_aircraft").value = no_of_aircraft;
-				document.getElementById("heavy").checked = (heavy == "true") ? true : false;
-				document.getElementById("aircraft_equip").value = aircraft_equip;
-				document.getElementById("true_airspeed").value = true_airspeed;
-				document.getElementById("altitude").value = altitude;
-				document.getElementById("fuel_onboard").value = fuel_onboard;
-				document.getElementById("pilot_info").value = pilot_info;
-				document.getElementById("no_onboard").value = no_onboard;
-				move_select_color(aircraft_color);
-				document.getElementById("route").value = route;
-				document.getElementById("type_flight").value = type_flight;				
-				document.getElementById("remarks").value = remarks;
+				document.getElementById("icaoAircraftIdInput").value = aircraftId;
+
+				var sel1 = document.getElementById("icaoFlightTypeSelection");
+				for(var i = 0; i < sel1.length; i++) {
+					if(flightType == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#icaoFlightTypeSelection').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+
+				sel1 = document.getElementById("icaoFlightRuleSelection");
+				for(var i = 0; i < sel1.length; i++) {
+					if(flightRule == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#icaoFlightRuleSelection').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+				document.getElementById("icaoNoOfAircraftInput").value = noOfAircraft;
+				document.getElementById("icaoAircraftTypeInput").value = aircraftType;
+
+				sel1 = document.getElementById("icaoWakeTurbulenceSelection");
+				for(var i = 0; i < sel1.length; i++) {
+					if(wakeTurbulence == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#icaoWakeTurbulenceSelection').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+
+
+				document.getElementById("icaoAircraftEquipmentInput").value = aircraftEquipment;
+				document.getElementById("icaoDepartureInput").value = departure;
+				document.getElementById("icaoDepartureDateInput").value = departureDate;
+				document.getElementById("icaoCruisingSpeedInput").value = cruisingSpeed;
+				document.getElementById("icaoLevelInput").value = level;
+				document.getElementById("icaoSurveillanceEquipmentInput").value = surveillanceEquipment;
+				document.getElementById("icaoRouteInput").value = route;
+				document.getElementById("icaoOtherInfoInput").value = otherInfo;
+				document.getElementById("icaoDestinationInput").value = destination;
+				document.getElementById("icaoTotalEstimatedElapsedTimeInput").value = totalElapsedTime;
+				document.getElementById("icaoAlternate1Input").value = alternate1;
+				document.getElementById("icaoAlternate2Input").value = alternate2;
+				document.getElementById("icaoFuelEnduranceInput").value = fuelEndurance;
+				document.getElementById("icaoPeopleOnBoardInput").value = peopleOnBoard;
+				document.getElementById("icaoAircraftColorInput").value = aircraftColor;
+				document.getElementById("icaoSupplementalRemarksInput").value = supplementalRemarks;
+				document.getElementById("icaoPilotInCommandInput").value = pilotInCommand;
+				document.getElementById("icaoPilotInfoInput").value = pilotInfo;
+
+
 }
 
-// clear all form values
-function clearall() {
-            document.getElementById("flight_rule").value = "";
-				document.getElementById("aircraft_id").value = "";
-				document.getElementById("departure_point").value = "";
-				document.getElementById("destination").value = "";
-				document.getElementById("departure_date").value = "";
-				document.getElementById("time_enroute").value = "";
-				document.getElementById("alternate1").value = "";
-				document.getElementById("alterante2").value = "";
-				document.getElementById("aircraft_type").value = "";		
-				document.getElementById("no_of_aircraft").value = "";
-				document.getElementById("heavy").checked = false;
-				document.getElementById("aircraft_equip").value = "";
-				document.getElementById("true_airspeed").value = "";
-				document.getElementById("altitude").value = "";
-				document.getElementById("fuel_onboard").value = "";
-				document.getElementById("pilot_info").value = "";
-				document.getElementById("no_onboard").value = "";
-				document.getElementById("aircraft_color").value = "";
-				document.getElementById("route").value = "";
-				document.getElementById("type_flight").value = "";				
-				document.getElementById("remarks").value = "";
-}
 
 // function to call plan_fill
 function autofill() {
-	var r = confirm("Do you want to discard all fields, and let the app fill new ones in the form?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.fillPlan();
+
+	bootbox.confirm("Do you want to discard all fields, and let the app fill new ones in the form?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.fillPlan();
+		toastr.success('Filled from current Plan, and from Pilot & Aircraft Preferences');
+	});
 }
 
-
-function show_help() {
-	var help = document.getElementById("help");	
-	if(help.style.display == "none") {
-		help.style.display = "";
-	}
-	else {
-		help.style.display = "none";
-	}
+// State change of plan like active
+function plan_state_change(row, action) {
+	bootbox.confirm("Do you want to " + action + " the plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.planChangeState(row, action);
+	});
 }
-
-window.onload = show_help;
 
 
 function activate_plan() {
-	var r = confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate the selected plan?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.planChangeState("Activate", document.getElementById("activate_time").value);
+	bootbox.confirm("You are about to activate a flight plan with the FAA. Are you sure you want to activate the selected plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.planChangeState("Activate", document.getElementById("activate_time").value);
+	});
 }
 
 function close_plan() {
-	var r = confirm("You are about to close a flight plan with the FAA. Are you sure you want to close the selected plan?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.planChangeState("Close", document.getElementById("close_location").value);
+	bootbox.confirm("You are about to close a flight plan with the FAA. Are you sure you want to close the selected plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.planChangeState("Close", document.getElementById("close_location").value);
+	});
 }
 
 function cancel_plan() {
-	var r = confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel the selected plan?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.planChangeState("Cancel", "");
+	bootbox.confirm("You are about to cancel a flight plan with the FAA. Are you sure you want to cancel the selected plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.planChangeState("Cancel", "");
+	});
 }
 
 // file a plan
 function plan_file() {
 
-	var r = confirm("You are about to file a flight plan with the FAA. Are you sure you want to file this plan?");
-	if(r == false) {
-		return;	
-	}
+	bootbox.confirm("You are about to file a flight plan with the FAA. Are you sure you want to file this plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.filePlan(
+					document.getElementById("icaoAircraftIdInput").value,
+					document.getElementById("icaoFlightRuleSelection").value,
+					document.getElementById("icaoFlightTypeSelection").value,
+					document.getElementById("icaoNoOfAircraftInput").value,
+					document.getElementById("icaoAircraftTypeInput").value,
+					document.getElementById("icaoWakeTurbulenceSelection").value,
+					document.getElementById("icaoAircraftEquipmentInput").value,
+					document.getElementById("icaoDepartureInput").value,
+					document.getElementById("icaoDepartureDateInput").value,
+					document.getElementById("icaoCruisingSpeedInput").value,
+					document.getElementById("icaoLevelInput").value,
+					document.getElementById("icaoSurveillanceEquipmentInput").value,
+					document.getElementById("icaoRouteInput").value,
+					document.getElementById("icaoOtherInfoInput").value,
+					document.getElementById("icaoDestinationInput").value,
+					document.getElementById("icaoTotalEstimatedElapsedTimeInput").value,
+					document.getElementById("icaoAlternate1Input").value,
+					document.getElementById("icaoAlternate2Input").value,
+					document.getElementById("icaoFuelEnduranceInput").value,
+					document.getElementById("icaoPeopleOnBoardInput").value,
+					document.getElementById("icaoAircraftColorInput").value,
+					document.getElementById("icaoSupplementalRemarksInput").value,
+					document.getElementById("icaoPilotInCommandInput").value,
+					document.getElementById("icaoPilotInfoInput").value
+		);
+	});
 
-	AndroidWeather.filePlan(
-				document.getElementById("flight_rule").value,
-				document.getElementById("aircraft_id").value,
-				document.getElementById("departure_point").value,
-				document.getElementById("destination").value,
-				document.getElementById("departure_date").value,
-				document.getElementById("time_enroute").value,
-				document.getElementById("alternate1").value,
-				document.getElementById("alterante2").value,
-				document.getElementById("aircraft_type").value,		
-				document.getElementById("no_of_aircraft").value,
-				document.getElementById("heavy").checked ? "true" : "false",
-				document.getElementById("aircraft_equip").value,		
-				document.getElementById("true_airspeed").value,
-				document.getElementById("altitude").value,
-				document.getElementById("fuel_onboard").value,
-				document.getElementById("pilot_info").value,
-				document.getElementById("no_onboard").value,
-				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
-				document.getElementById("route").value,
-				document.getElementById("type_flight").value,				
-				document.getElementById("remarks").value
-    );
 }
 
-// fetch faa plans from internet 
+// fetch faa plans from internet
 function get_faa_plans() {
-	var r = confirm("Do you want to fetch or update your list of FAA filed plans from Internet?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.getPlans();
+	bootbox.confirm("Do you want to fetch or update your list of FAA filed plans from Internet?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.getPlans();
+	});
 }
 
 
 function get_briefing() {
-	var r = confirm("Get the briefing for the selected plan in email?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.getWeather();
+	bootbox.confirm("Get the briefing for the selected plan in email?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.getWeather();
+	});
 }
 
 function get_navlog() {
-	var r = confirm("Get the navigation log for the selected plan?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.getNavlog();
+	bootbox.confirm("Get the navigation log for the selected plan?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.getNavlog();
+	});
 }
 
 function load_plan() {
-	var r = confirm("Load the selected plan in the form?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.loadPlan();
+	bootbox.confirm("Load the selected plan in the form?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidWeather.loadPlan();
+	});
 }
 
 function amend_plan() {
-	var r = confirm("Amend the selected plan with information in the form?");
-	if(r == false) {
-		return;	
-	}
-	AndroidWeather.amendPlan(
-				document.getElementById("flight_rule").value,
-				document.getElementById("aircraft_id").value,
-				document.getElementById("departure_point").value,
-				document.getElementById("destination").value,
-				document.getElementById("departure_date").value,
-				document.getElementById("time_enroute").value,
-				document.getElementById("alternate1").value,
-				document.getElementById("alterante2").value,
-				document.getElementById("aircraft_type").value,		
-				document.getElementById("no_of_aircraft").value,
-				document.getElementById("heavy").checked ? "true" : "false",
-				document.getElementById("aircraft_equip").value,		
-				document.getElementById("true_airspeed").value,
-				document.getElementById("altitude").value,
-				document.getElementById("fuel_onboard").value,
-				document.getElementById("pilot_info").value,
-				document.getElementById("no_onboard").value,
-				document.getElementById("aircraft_color_1").value + "/" + document.getElementById("aircraft_color_2").value,
-				document.getElementById("route").value,
-				document.getElementById("type_flight").value,				
-				document.getElementById("remarks").value
-    );
+	bootbox.confirm("Amend the selected plan with information in the form?", function(result) {
+		if(result == false) {
+			return;
+		}
+			AndroidWeather.amendPlan(
+				document.getElementById("icaoAircraftIdInput").value,
+				document.getElementById("icaoFlightRuleSelection").value,
+				document.getElementById("icaoFlightTypeSelection").value,
+				document.getElementById("icaoNoOfAircraftInput").value,
+				document.getElementById("icaoAircraftTypeInput").value,
+				document.getElementById("icaoWakeTurbulenceSelection").value,
+				document.getElementById("icaoAircraftEquipmentInput").value,
+				document.getElementById("icaoDepartureInput").value,
+				document.getElementById("icaoDepartureDateInput").value,
+				document.getElementById("icaoCruisingSpeedInput").value,
+				document.getElementById("icaoLevelInput").value,
+				document.getElementById("icaoSurveillanceEquipmentInput").value,
+				document.getElementById("icaoRouteInput").value,
+				document.getElementById("icaoOtherInfoInput").value,
+				document.getElementById("icaoDestinationInput").value,
+				document.getElementById("icaoTotalEstimatedElapsedTimeInput").value,
+				document.getElementById("icaoAlternate1Input").value,
+				document.getElementById("icaoAlternate2Input").value,
+				document.getElementById("icaoFuelEnduranceInput").value,
+				document.getElementById("icaoPeopleOnBoardInput").value,
+				document.getElementById("icaoAircraftColorInput").value,
+				document.getElementById("icaoSupplementalRemarksInput").value,
+				document.getElementById("icaoPilotInCommandInput").value,
+				document.getElementById("icaoPilotInfoInput").value
+    		);
+	});
+}
+
+function clear_navlog(log) {
+	bootbox.confirm("Clear the navigation log?", function(result) {
+		if(result == false) {
+			return;
+		}
+		var navlog = document.getElementById("nav_log");
+		navlog.innerHTML = '';
+	});
 }
 
 function set_navlog(log) {
@@ -393,13 +337,49 @@ function set_navlog(log) {
 	navlog.innerHTML = log;
 }
 
-function clear_navlog(log) {
-	var r = confirm("Clear the navigation log?");
-	if(r == false) {
-		return;	
-	}
-	var navlog = document.getElementById("nav_log");
-	navlog.innerHTML = '';
+
+function setAircraftEquipment() {
+	var codes = ["N", "S", "A", "B", "C", "D", "E1", "E2", "E3", "F", "G", "H", "I", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "K", "L", "M1", "M2", "M3", "O", "R", "T", "U", "V", "W", "X", "Y", "Z"];
+	var text = "";
+	var reset = false;
+    var arrayLength = codes.length;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoAircraftEquipmentDialogCheckbox" + codes[i]);
+	    if(id.checked) {
+	        if(reset) {
+	            id.checked = false;
+	            continue;
+	        }
+	        text += id.value;
+	    	if(codes[i] == "N") {
+	    	    reset = true;
+	    	}
+	    }
+    }
+    var id = document.getElementById("icaoAircraftEquipmentInput");
+    id.value = text;
+}
+
+function setAircraftSurveillance() {
+	var codes = ["N", "A", "C", "E", "H", "I", "L", "P", "S", "X", "B1", "B2", "U1", "U2", "V1", "V2", "D1", "G1"];
+	var text = "";
+    var arrayLength = codes.length;
+	var reset = false;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoSurveillanceEquipmentDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        if(reset) {
+	            id.checked = false;
+	            continue;
+	        }
+	        text += id.value;
+	    	if(codes[i] == "N") {
+	    	    reset = true;
+	    	}
+	    }
+    }
+    var id = document.getElementById("icaoSurveillanceEquipmentInput");
+    id.value = text;
 }
 
 </script>
@@ -407,185 +387,700 @@ function clear_navlog(log) {
 </head>
 
 <body>
-	<h1>Filing/Briefing</h1>
-	<label class="sublabel">Warning! You MUST read all information under "Show Help" button below before proceeding.</label><br>
-		<p>
-		<label>File</label><br>
-			<table border="1">
-			<tr>
-				<td>Flight Rule<br><select id="flight_rule"><option>VFR</option><option>IFR</option></select></td>		
-				<td>Aircraft ID<br><input class="halfinput" id="aircraft_id"/></td>		
-				<td>Aircraft Type<br><input class="halfinput" id="aircraft_type"/></td>		
-				<td>Aircraft Equip<br><select id="aircraft_equip"><option>A</option><option>B</option><option>D</option><option>T</option><option>U</option><option>X</option><option>M</option><option>N</option><option>P</option><option>G</option><option>S</option><option>V</option><option>C</option><option>I</option><option>Y</option><option>H</option><option>L</option><option>W</option><option>Z</option></select></td>		
-				<td>No. of Aircraft<br><input class="halfinput" id="no_of_aircraft"/></td>
-				<td>Heavy<input class="halfbutton" type="checkbox" id="heavy"/></td>
-			</tr>	
-			<tr>
-				<td>True Airspeed (Knots)<br><input class="halfinput" id="true_airspeed"/></td>
-				<td>Altitude (FL)<br><input class="halfinput" id="altitude"/></td>
-				<td>Origin<br><input class="halfinput" id="departure_point"/></td>
-				<td>Date Time (Zulu)<br><input class="halfinput" id="departure_date"/></td>
-				<td>Time En route<br><input class="halfinput" id="time_enroute"/></td>
-				<td>Destination<br><input class="halfinput" id="destination"/></td>
-			</tr>
-			<tr>
-				<td>Fuel On Board<br><input class="halfinput" id="fuel_onboard"/></td>
-				<td>Alternate 1 (Optional)<br><input class="halfinput" id="alternate1"/></td>
-				<td>Alternate 2 (Optional)<br><input class="halfinput" id="alterante2"/></td>
-				<td>Aircraft Color<br>
-					<select class="halfbutton" id="aircraft_color_1">
-						<option value="A">Amber</option>
-						<option value="B">Blue</option>
-						<option value="BE">Beige</option> 
-						<option value="BK">Black</option> 
-						<option value="BR">Brown</option> 
-						<option value="G">Green</option> 
-						<option value="GD">Gold</option> 
-						<option value="GY">Gray</option> 
-						<option value="M">Maroon</option> 
-						<option value="O">Orange</option> 
-						<option value="P">Purple</option> 
-						<option value="PK">Pink</option> 
-						<option value="R">Red</option> 
-						<option value="S">Silver</option> 
-						<option value="TQ">Turquoise</option> 
-						<option value="T">Tan</option> 
-						<option value="V">Violet</option> 
-						<option value="W">White</option> 
-						<option value="Y">Yellow</option>
-					</select>
-					/
-					<select class="halfbutton" id="aircraft_color_2">
-						<option value="A">Amber</option>
-						<option value="B">Blue</option>
-						<option value="BE">Beige</option> 
-						<option value="BK">Black</option> 
-						<option value="BR">Brown</option> 
-						<option value="G">Green</option> 
-						<option value="GD">Gold</option> 
-						<option value="GY">Gray</option> 
-						<option value="M">Maroon</option> 
-						<option value="O">Orange</option> 
-						<option value="P">Purple</option> 
-						<option value="PK">Pink</option> 
-						<option value="R">Red</option> 
-						<option value="S">Silver</option> 
-						<option value="TQ">Turquoise</option> 
-						<option value="T">Tan</option> 
-						<option value="V">Violet</option> 
-						<option value="W">White</option> 
-						<option value="Y">Yellow</option>
-					</select>
-				</td>
-				<td>No. On Board<br><input class="halfinput" id="no_onboard"/></td>
-				<td>Type<br><input class="halfinput" id="type_flight" value="DOMESTIC" readonly/></td>
-			</tr>
-		<button onclick="autofill()">Prepare</button>
-		<button onclick="clearall()">Clear</button><br></br>
-		<table border="1">
-			<tr>
-				<td>Route (DCT for Direct)<br><input id="route"/></td>
-				<td>Remarks (Optional)<br><input id="remarks"/></td>
-				<td>Pilot Contact Info.<br><input id="pilot_info"/></td>
-			</tr>
-		</table>
-		<br>
-		<button onclick="plan_file()">File Plan</button><br>
-	</p>
-	<p>
-		<label>Filed Plans</label><br>
-		<button onclick="get_faa_plans()">Get Plans</button><br>
-		<table id="save_table_faa" border="1"><th>Plan</th><th>State</th></table></br>
-		<button onclick="load_plan()">Load</button><br></br>
-		<button onclick="amend_plan()">Amend</button><br></br>
-		<button onclick="cancel_plan()">Cancel</button><br></br>
-		<button onclick="activate_plan()">Activate</button>
-		<select id="activate_time" class="fullinput">
-			<option value="0">Departing Now</option>
-			<option value="5">Departing 5 minutes from now</option>
-			<option value="10">Departing 10 minutes from now</option>
-			<option value="15">Departing 15 minutes from now</option>
-			<option value="20">Departing 20 minutes from now</option>
-			<option value="25">Departing 25 minutes from now</option>
-			<option value="30">Departing 30 minutes from now</option>
-		</select>
-		<br></br>
-		<button onclick="close_plan()">Close</button>
-		<input id="close_location" class="fullinput" placeholder="Closing at location, e.g. BOS" />
-		<br></br>
-		<button onclick="get_briefing()">Get Email Briefing</button><br></br>
-		<button onclick="get_navlog()">Get Log</button>
-		<button onclick="clear_navlog()">Clear Log</button>
-		<a id="nav_log"></a>
-	</p>
-	<button onclick="show_help()">Show Help</button><br>
-	<br>
 
-	<a id="help">
-The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
-<br>
-To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers. 
-<br></br>
-<b>To Fill and File the Flight Plan Form</b>
-<ul>
-<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
-<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Aircraft Type as C172, No. of Aircraft as 1, True Airspeed in knots as 110, Altitude in flight level as 45, Origin as BOS, Date Time(Zulu) as 2015-01-31 22:30, Time En route as 1H30M, Destination as JFK, Fuel On Board as 2H45M, Alternate1 as TEB, Alternate2 as MMU, Aircraft Color as W/B, No. On Board as 2, Route as LWM, and Pilot Contact Info. as Charles L 202-267-8738.</li>
-<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
-<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
-</ul>
-<b>To Load a Plan</b>
-<ul>
-<li>Filed plans can be loaded in the filing form in any state.</li>
-<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
-<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
-</ul>
-<b>To Amend a Plan</b>
-<ul>
-<li>Filed plans can be amended when in PROPOSED state.</li>
-<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
-<li>Modify the form as needed.</li>
-<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
-</ul>
-<b>To Cancel the Filed Plan</b>
-<ul>
-<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
-<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
-</ul>
-<b>To Activate a Filed Plan</b>
-<ul>
-<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
-<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>Select the time from now when you will take off from the drop down next to the "Activate" button.</li>
-<li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
-</ul>
-<b>To Close an Active Plan</b>
-<ul>
-<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
-<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
-<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
-<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
-<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
-</ul>
-<b>To Get Plan Briefing</b>
-<ul>
-<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-<li>Press the "Get Email Briefing" button once.</li>
-<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
-<li>Note: Route corridor width of 50 NM is used.</li>
-</ul>
-</ul>
-<b>To Get Plan Navigation Log</b>
-<ul>
-<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
-<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-<li>Press the "Get Log" button once.</li>
-<li>The navigation log will appear at the bottom of the button.</li>
-<li>To clear the navigation log, press the "Clear Log" button.</li>
-</ul>
-	</a>
+
+<div class="modal fade" id="icaoSurveillanceEquipmentModal" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header alert-info">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Surveillance Equipment</h4>
+			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<ul class="list-group checked-list-box">
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonN">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonN"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="N"
+									   checked="checked" />
+								N = NIL
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonA">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonA"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="A" />
+								A = Mode A
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonC">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonC"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="C" />
+								C = Modes A and C
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonE">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonE"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="E" />
+								E = Mode S, ID, Alt and Squitter
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonH">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonH"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="H" />
+								H = Mode S, ID, Alt and Enhanced Surv
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonI">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonI"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="I" />
+								I = Mode S, ID no Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonL">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonL"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="L" />
+								L = Mode S, ID, Alt, Squitter and Enhanced Surv
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonP">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonP"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="P" />
+								P = Mode S, Alt no ID
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonS">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonS"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="S" />
+								S = Mode S, ID and Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonX">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonX"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="X" />
+								X = Mode S, no ID no Alt
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonB1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B1" />
+								B1 = ADS-B, Dedicated 1090 MHz Out
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonB2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B2" />
+								B2 = ADS-B, Dedicated 1090 MHz Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonU1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U1" />
+								U1 = ADS-B, UAT Out
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonU2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U2" />
+								U2 = ADS-B, UAT Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonV1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V1" />
+								V1 = ADS-B, VDL Mode 4 Out
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonV2">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV2"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V2" />
+								V2 = ADS-B, VDL Mode 4 Out and In
+							</label>
+						</li>
+						<li class="list-group-item">
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonD1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonD1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="D1" />
+								D1 = ADS-C, FANS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoSurveillanceEquipmentDialogRadioButtonG1">
+								<input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonG1"
+									   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="G1" />
+								G1 = ADS-C, ATN
+							</label>
+						</li>
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="helpModal" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header alert-info">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">WXB Help</h4>
+			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<div>
+						<u>You may need to disable Predictive Typing in Android Settings!</u><br>The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
+						<br>
+						To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers.
+						<br>
+						<b>To Fill and File the Flight Plan Form</b>
+						<ul>
+							<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
+							<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
+								Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Level as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
+								Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738.</li>
+							<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
+							<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
+						</ul>
+						<b>To Load a Plan</b>
+						<ul>
+							<li>Filed plans can be loaded in the filing form in any state.</li>
+							<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+							<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
+						</ul>
+						<b>To Amend a Plan</b>
+						<ul>
+							<li>Filed plans can be amended when in PROPOSED state.</li>
+							<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
+							<li>Modify the form as needed.</li>
+							<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
+						</ul>
+						<b>To Cancel the Filed Plan</b>
+						<ul>
+							<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
+							<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
+						</ul>
+						<b>To Activate a Filed Plan</b>
+						<ul>
+							<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
+							<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>Select the time from now when you will take off from the drop down next to the "Activate Now" button.</li>
+							<li>Press the "Activate Now" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+						</ul>
+						<b>To Close an Active Plan</b>
+						<ul>
+							<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
+							<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
+							<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
+							<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
+							<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
+						</ul>
+						<b>To Get Plan Briefing</b>
+						<ul>
+							<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+							<li>Press the "Get Email Briefing" button once.</li>
+							<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
+							<li>Note: Route corridor width of 50 NM is used.</li>
+						</ul>
+						<b>To Get Plan Navigation Log</b>
+						<ul>
+							<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
+							<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+							<li>Press the "Get Log" button once.</li>
+							<li>The navigation log will appear at the bottom of the button.</li>
+							<li>To clear the navigation log, press the "Clear Log" button.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="icaoAircraftEquipmentModal" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header alert-info">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Aircraft Equipment</h4>
+			</div>
+			<div class="modal-body">
+				<div style="overflow: auto;">
+					<ul class="list-group checked-list-box">
+
+						<li class="list-group-item">
+							<label for="icaoAircraftEquipmentDialogCheckboxN">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxN"
+									   value="N" />
+								N = NIL
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxS">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxS"
+									   value="S" />
+								S = (VOR, VHF RTF, ILS)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxA">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxA"
+									   value="A" />
+								A = GBAS Landing System
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxB">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxB"
+									   value="B" />
+								B = LPV (APV with SBAS)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxC">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxC"
+									   value="C" />
+								C = LORAN C
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxD">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxD"
+									   value="D" />
+								D = DME
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxE1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE1"
+									   value="E1" />
+								E1 = FMC WPR ACARS
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxE2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE2"
+									   value="E2" />
+								E2 = D-FIS ACARS
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxE3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE3"
+									   value="E3" />
+								E3 = PDC ACARS
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxF">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxF"
+									   value="F" />
+								F = ADF
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxG">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxG"
+									   value="G" />
+								G = GNSS
+							</label>
+
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxH">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxH"
+									   value="H" />
+								H = HF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxI">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxI"
+									   value="I" />
+								I = Inert'l Nav
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ1"
+									   value="J1" />
+								J1 = CPDLC ATN VDL Mode 2
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ2"
+									   value="J2" />
+								J2 = CPDLC FANS 1/A HFDL
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ3"
+									   value="J3" />
+								J3 = CPDLC FANS 1/A VDL Mode A
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ4">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ4"
+									   value="J4" />
+								J4 = CPDLC FANS 1/A VDL Mode 2
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ5">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ5"
+									   value="J5" />
+								J5 = CPDLC FANS 1/A SAT COM (INMARSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ6">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ6"
+									   value="J6" />
+								J6 = CPDLC FANS 1/A SAT COM (MTSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxJ7">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ7"
+									   value="J7" />
+								J7 = CPDLC FANS 1/A SAT COM (Iridium)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxK">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxK"
+									   value="K" />
+								K = MLS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxL">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxL"
+									   value="L" />
+								L = ILS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxM1">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM1"
+									   value="M1" />
+								M1 = ATC RTF SATCOM (INMARSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxM2">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM2"
+									   value="M2" />
+								M2 = ATC RTF (MTSAT)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxM3">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM3"
+									   value="M3" />
+								M3 = ATC RTF (Iridium)
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxO">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxO"
+									   value="O" />
+								O = VOR
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxR">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxR"
+									   value="R" />
+								R = PBN Approved
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxT">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxT"
+									   value="T" />
+								T = TACAN
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxU">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxU"
+									   value="U" />
+								U = UHF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxV">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxV"
+									   value="V" />
+								V = VHF RTF
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxW">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxW"
+									   value="W" />
+								W = RVSM
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxX">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxX"
+									   value="X" />
+								X = MNPS
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxY">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxY"
+									   value="Y" />
+								Y = VHF with 8.33 kHz channel spacing
+							</label>
+						</li>
+						<li class="list-group-item">
+
+							<label for="icaoAircraftEquipmentDialogCheckboxZ">
+								<input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxZ"
+									   value="Z" />
+								Z = Other (COM/, DAT/ or NAV/ in Field 18)
+							</label>
+						</li>
+						<li class="list-group-item">
+					</ul>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div class="table-responsive">
+	<table class = "table">
+		<th>Warning! You MUST read all information under <a onclick='$("#helpModal").modal()'><br><u>WXB Help</u></a> before proceeding.</th>
+	</table>
+	<table class="table">
+		<tr>
+			<td><h3 ><span class="label label-success">File an ICAO Plan</span></h3></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
+		</tr>
+		<tr>
+			<td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
+		</tr>
+		<tr>
+			<td>Flight Rule</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
+		</tr>
+		<tr>
+			<td>Flight Type</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
+		</tr>
+		<tr>
+			<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
+		</tr>
+		<tr>
+			<td>Aircraft Type</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
+		</tr>
+		<tr>
+			<td>Wake Turbulence</td><td><select class="selectpicker" data-mobile="true"  id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
+		</tr>
+		<tr>
+			<td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+		</tr>
+		<tr>
+			<td>Departure</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureInput"/></td>
+		</tr>
+		<tr>
+			<td>Departure Date&Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureDateInput"/></td>
+		</tr>
+		<tr>
+			<td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
+		</tr>
+		<tr>
+			<td>Level</td><td><input id="icaoLevelInput"/></td>
+		</tr>
+		<tr>
+			<td>Surveillance Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+		</tr>
+		<tr>
+			<td>Route</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoRouteInput"/></td>
+		</tr>
+		<tr>
+			<td>Other Info</td><td><input spellcheck="false" id="icaoOtherInfoInput"/></td>
+		</tr>
+		<tr>
+			<td>Destination</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDestinationInput"/></td>
+		</tr>
+		<tr>
+			<td>Total Elapsed Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoTotalEstimatedElapsedTimeInput"/></td>
+		</tr>
+		<tr>
+			<td>Alternate 1</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate1Input"/></td>
+		</tr>
+		<tr>
+			<td>Alternate 2</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate2Input"/></td>
+		</tr>
+		<tr>
+			<td>Fuel Endurance</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoFuelEnduranceInput"/></td>
+		</tr>
+		<tr>
+			<td>People On Board</td><td><input id="icaoPeopleOnBoardInput"/></td>
+		</tr>
+		<tr>
+			<td>Aircraft Color</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftColorInput"/></td>
+		</tr>
+		<tr>
+			<td>Supplemental Remarks</td><td><input spellcheck="false" id="icaoSupplementalRemarksInput"/></td>
+		</tr>
+		<tr>
+			<td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
+		</tr>
+		<tr>
+			<td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="plan_file()">File Plan</button>
+			</td>
+		</tr>
+	</table>
+	<table class="table">
+		<tr>
+			<td><h3><span class="label label-success">Filed Plans</span></h3></td>
+		</tr>
+	</table>
+	<table id="save_table_faa" class="table">
+		<th>Plan</th><th>State</th>
+	</table>
+	<table class="table">
+		<tr>
+			<td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="load_plan()">Load</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
+			<td><select class="selectpicker" data-mobile="true" id="activate_time">
+				<option value="0">Departing Now</option>
+				<option value="5">Departing 5 minutes from now</option>
+				<option value="10">Departing 10 minutes from now</option>
+				<option value="15">Departing 15 minutes from now</option>
+				<option value="20">Departing 20 minutes from now</option>
+				<option value="25">Departing 25 minutes from now</option>
+				<option value="30">Departing 30 minutes from now</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="get_navlog()">Get Log</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="clear_navlog()">Clear Log</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td>
+		</tr>
+		<tr>
+			<td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
+			<td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="At location, e.g. KBOS" /></td>
+		</tr>
+	</table>
+    <a id="nav_log"></a>
+    <br>
+</div>
+
+
 </body>
 
 </html>

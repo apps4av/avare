@@ -12,14 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adapters;
 
 
-import com.ds.avare.R;
-import com.ds.avare.R.drawable;
-import com.ds.avare.R.id;
-import com.ds.avare.R.layout;
-import com.ds.avare.place.Destination;
-import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.BitmapHolder;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +19,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.ds.avare.R;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.BitmapHolder;
 
 /**
  * @author zkhan
@@ -71,11 +68,11 @@ public class SearchAdapter extends ArrayAdapter<String> {
         mVORTACBitmapHolder = new BitmapHolder(mContext, R.drawable.vortac);
         mVORDMEBitmapHolder = new BitmapHolder(mContext, R.drawable.vordme);
         mAirportBitmapHolder = new BitmapHolder(mContext, R.drawable.airport);
-        mNoBitmapHolder = new BitmapHolder(mContext, R.drawable.no);
+        mNoBitmapHolder = new BitmapHolder(mContext, R.drawable.unknown);
         mFixBitmapHolder = new BitmapHolder(mContext, R.drawable.fix);
         mGeoBitmapHolder = new BitmapHolder(mContext, R.drawable.geo);
         mMapBitmapHolder = new BitmapHolder(mContext, R.drawable.maps);
-        mUDWBitmapHolder = new BitmapHolder(mContext, R.drawable.pushpin);
+        mUDWBitmapHolder = new BitmapHolder(mContext, android.R.drawable.ic_dialog_map);
     }
 
     @Override

@@ -1,0 +1,94 @@
+<html>
+<!--
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan
+-->
+
+<head>
+
+
+    <!-- Latest compiled and minified CSS -->
+    <script src="file:///android_asset/jquery.min.js"></script>
+    <script src="file:///android_asset/bootstrap.min.js"></script>
+    <script src="file:///android_asset/bootstrap-select.min.js"></script>
+    <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
+    <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+    <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+    <style type="text/css">
+        button {color: black; height:40px;}
+        input {height:40px;}
+        .toast {opacity: 1 !important;}
+        .container-fluid {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" >
+
+        toastr.options.timeOut = 2000;
+
+        // set data
+        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+            $("#airportName").text(airport);
+            $("#airportInfo").html(info);
+            $("#airportMetar").html(metar);
+            $("#airportTaf").html(taf);
+            $("#areaMets").html(mets);
+            $("#areaAirep").html(airep);
+            $("#airportPerformance").html(performance);
+            $("#areaTfr").html(tfr);
+            $("#areaSua").html(sua);
+            $("#areaWinds").html(winds);
+            $("#areaLayer").html(layer);
+            $("#buttonGroup").scrollIntoView();
+        }
+
+
+        function doAction(action) {
+            AndroidMap.doAction(action);
+        }
+
+    </script>
+
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="btn-group btn-group-justified" id="buttonGroup">
+        <a href="javascript:doAction('->D');" class="btn btn-success">->D</a>
+        <a href="javascript:doAction('+Plan');" class="btn btn-primary">+Plan</a>
+        <a href="javascript:doAction('Plate');" class="btn btn-primary">Plate</a>
+        <a href="javascript:doAction('A/FD');" class="btn btn-primary">A/FD</a>
+        <a href="javascript:doAction('X');" class="btn btn-danger">X</a>
+    </div>
+    <div style="margin-left : 5px">
+        <h4><span class="label label-success" id='airportName'></span></h4>
+        <hr>
+        <div id='airportInfo'></div>
+        <div id='airportMetar'></div>
+        <div id='airportTaf'></div>
+        <div id='airportPerformance'></div>
+        <div id='areaWinds'></div>
+        <div id='areaMets'></div>
+        <div id='areaAirep'></div>
+        <div id='areaTfr'></div>
+        <div id='areaSua'></div>
+        <div id='areaLayer'></div>
+    </div>
+</div>
+</body>
+</html>

@@ -23,6 +23,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.ds.avare.R;
@@ -35,6 +36,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.views.AfdView;
 
 import java.util.ArrayList;
@@ -60,7 +62,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
     private AlertDialog mAirportPopup;
     private ArrayList<String> mListViews;
     private ArrayList<String> mListAirports;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private String mDestString;
     private String mNearString;
 
@@ -99,7 +101,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(getContext());
                 int index = mService.getAfdIndex();
                 if(index >= mListViews.size()) {
                     index = 0;
@@ -127,7 +129,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     }
                 };
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(getContext());
                 int index = mListAirports.indexOf(mService.getLastAfdAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
                 mAirportPopup.show();
@@ -135,7 +137,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
             }
         });
 
-        mCenterButton = (Button) view.findViewById(R.id.airport_button_center);
+        mCenterButton = (ImageButton) view.findViewById(R.id.airport_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         mCenterButton.setOnClickListener(new OnClickListener() {

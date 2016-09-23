@@ -17,6 +17,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <Button
         android:id="@+id/folder_button_sdcard"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:text="@string/SDFolder"/>
@@ -25,6 +27,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/folder_button_external"
         android:layout_below="@+id/folder_button_sdcard"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:layout_width="fill_parent"
         android:text="@string/ExternalFolder"/>
     
@@ -32,6 +36,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:id="@+id/folder_button_internal"
 	    android:layout_below="@+id/folder_button_external"
 	    android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
 	    android:layout_width="fill_parent"
 	    android:text="@string/PrivateFolder"/>
 
@@ -39,7 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/folder_text_path"
         android:textSize="20sp"
         android:padding="10dp"
-        android:textColor="#FF0000"
+        android:textColor="#C04000"
         android:layout_below="@+id/folder_button_internal"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"/>

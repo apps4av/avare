@@ -21,13 +21,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/threed_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_my_location_white_24dp"
+        android:src="@android:drawable/ic_menu_mylocation"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_small"
+        />
 
     <Button
         android:id="@+id/threed_button_drawer"

@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.ds.avare.R;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.webinfc.WebAppPlanInterface;
 
@@ -263,7 +264,7 @@ public class PlanFragment extends StorageServiceGpsListenerFragment {
             }
             else if(msg.what == MESSAGE) {
                 // Show an important message
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(getContext());
                 builder.setMessage((String)msg.obj)
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {

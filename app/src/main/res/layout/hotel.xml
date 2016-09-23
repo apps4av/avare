@@ -116,7 +116,9 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_width="0dp"
                 android:layout_weight="1"
 		        android:layout_height="wrap_content"
-		        android:entries="@array/hotel_max_price">
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
+			   android:entries="@array/hotel_max_price">
 		   </com.ds.avare.utils.OptionButton>
 		
 		   <com.ds.avare.utils.OptionButton
@@ -124,6 +126,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
 		        android:entries="@array/hotel_min_stars">
 		   </com.ds.avare.utils.OptionButton>
 		   
@@ -132,6 +136,8 @@ Redistribution and use in source and binary forms, with or without modification,
 			     android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+                android:background="@drawable/button_bg_option"
+                android:layout_margin="5dp"
 			     android:entries="@array/hotel_max_radius">
 			</com.ds.avare.utils.OptionButton>
 		
@@ -187,6 +193,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+				android:background="@drawable/button_bg_option"
+				android:layout_margin="5dp"
 		        android:entries="@array/hotel_count_adults">
 		   </com.ds.avare.utils.OptionButton>
 		
@@ -194,6 +202,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:id="@+id/hotel_child_1"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
 		   </com.ds.avare.utils.OptionButton>
@@ -202,6 +212,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:id="@+id/hotel_child_2"
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
                  android:layout_weight="1"
 		        android:entries="@array/hotel_age_child">
 		   </com.ds.avare.utils.OptionButton>
@@ -257,6 +269,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
 		        android:entries="@array/hotel_age_child">
 		   </com.ds.avare.utils.OptionButton>
 		   
@@ -265,6 +279,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		        android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
 		        android:entries="@array/hotel_age_child">
 		   </com.ds.avare.utils.OptionButton>
 		   
@@ -273,6 +289,8 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_height="wrap_content"
                  android:layout_width="0dp"
                  android:layout_weight="1"
+			   android:background="@drawable/button_bg_option"
+			   android:layout_margin="5dp"
                 android:entries="@array/hotel_age_child">
            </com.ds.avare.utils.OptionButton>
 	   

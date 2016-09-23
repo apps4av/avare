@@ -31,8 +31,10 @@ Redistribution and use in source and binary forms, with or without modification,
 			    android:layout_height="wrap_content"
 			    android:layout_width="0dp"
 			    android:id="@+id/chart_download_button_dl"
-			    android:drawableLeft="@drawable/add"
+			    android:background="@drawable/button_bg"
+			    android:layout_margin="5dp"
 			    android:text="@string/Get"
+			    android:drawableLeft="@drawable/add"
 			    android:visibility="visible" />
 	
     	   <Button
@@ -40,7 +42,9 @@ Redistribution and use in source and binary forms, with or without modification,
 		       android:layout_height="wrap_content"
 		       android:layout_width="0dp"
 		       android:id="@+id/chart_download_button_update"
-               android:drawableLeft="@drawable/check_red"
+			   android:background="@drawable/button_bg"
+			   android:drawableLeft="@drawable/check_red"
+			   android:layout_margin="5dp"
 		       android:text="@string/update"
 		       android:visibility="visible" />
     	   
@@ -49,7 +53,9 @@ Redistribution and use in source and binary forms, with or without modification,
                android:layout_height="wrap_content"
                android:layout_width="0dp"
                android:id="@+id/chart_download_button_delete"
-               android:drawableLeft="@drawable/delete"
+			   android:background="@drawable/button_bg"
+			   android:layout_margin="5dp"
+			   android:drawableLeft="@drawable/delete"
                android:text="@string/Delete"
                android:visibility="visible" />
     	   	   

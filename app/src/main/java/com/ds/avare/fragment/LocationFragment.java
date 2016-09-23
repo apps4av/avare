@@ -29,21 +29,22 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import com.ds.avare.ChartsDownloadActivity;
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.adapters.PopoutAdapter;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
@@ -58,10 +59,12 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
-import com.ds.avare.utils.Tips;
 import com.ds.avare.views.LocationView;
+import com.ds.avare.webinfc.WebAppMapInterface;
 
 import java.io.File;
 import java.net.URI;
@@ -105,19 +108,16 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
      */
     private AlertDialog mGpsWarnDialog;
 
-    private Button mDestButton;
-    private Button mCenterButton;
+    private ImageButton mCenterButton;
     private Button mDrawClearButton;
-    private Button mCrossButton;
-    private Button mPlanButton;
-    private Button mPlatesButton;
-    private Button mAfdButton;
     private Button mDrawerButton;
-    private RelativeLayout mDestLayout;
     private TwoButton mDrawButton;
     private Bundle mExtras;
     private boolean mIsWaypoint;
     private String mAirportPressed;
+    private AlertDialog mAlertDialogDestination;
+    private WebAppMapInterface mInfc;
+
     private AppCompatSpinner mChartSpinnerBar;
     private AppCompatSpinner mLayerSpinnerBar;
     private AppCompatSpinner mChartSpinnerNav;
@@ -130,8 +130,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
     private Button mPlanNext;
 
     private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
-
-    private ExpandableListView mListPopout;
 
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
@@ -205,7 +203,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mDestination.addObserver(LocationFragment.this);
         showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find();
-        mDestLayout.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -218,22 +215,13 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mDestination.addObserver(LocationFragment.this);
         showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find();
-        mDestLayout.setVisibility(View.INVISIBLE);
     }
 
     public void onBackPressed() {
         /*
-         * Back button hides some controls
-         */
-        if(mDestLayout.getVisibility() == View.VISIBLE) {
-            mDestLayout.setVisibility(View.INVISIBLE);
-            return;
-        }
-
-        /*
          * And may exit
          */
-        mAlertDialogExit = new AlertDialog.Builder(getContext()).create();
+        mAlertDialogExit = new DecoratedAlertDialogBuilder(getContext()).create();
         mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
@@ -315,6 +303,113 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mLocationView = (LocationView) view.findViewById(R.id.location);
 
         /*
+         * Make a dialog to show destination info, when long pressed on it
+         */
+        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(getContext());
+        WebView wv = new WebView(getContext());
+        wv.loadUrl("file:///android_asset/map.html");
+
+        mInfc = new WebAppMapInterface(getContext(), wv, new GenericCallback() {
+            /*
+             * (non-Javadoc)
+             * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
+             */
+            @Override
+            public Object callback(Object o, Object o1) {
+
+                String param = (String) o;
+                String airport = (String) o;
+
+                mAlertDialogDestination.dismiss();
+
+                if (null == mAirportPressed) {
+                    return null;
+                }
+                if (mService == null) {
+                    return null;
+                }
+
+                if (param.equals("A/FD")) {
+                    /*
+                     * A/FD
+                     */
+                    if(!mAirportPressed.contains("&")) {
+                        mService.setLastAfdAirport(mAirportPressed);
+                        ((MainActivity) getContext()).showAfdViewAndCenter();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("Plate")) {
+                    /*
+                     * Plate
+                     */
+                    if(!mAirportPressed.contains("&")) {
+                        mService.setLastPlateAirport(mAirportPressed);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) getContext()).showPlatesViewAndCenter();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("+Plan")) {
+                    String type = Destination.BASE;
+                    if (mAirportPressed.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    planTo(mAirportPressed, type);
+                    mAirportPressed = null;
+                } else if (param.equals("->D")) {
+
+                    /*
+                     * On click, find destination that was pressed on in view
+                     * If button pressed was a destination go there, otherwise if none, then delete current dest
+                     */
+                    String dest = mAirportPressed;
+                    mAirportPressed = null;
+                    String type = Destination.BASE;
+                    if (dest.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    goTo(dest, type);
+                }
+                return null;
+            }
+        });
+        wv.addJavascriptInterface(mInfc, "AndroidMap");
+
+        wv.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+
+                return true;
+            }
+        });
+
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.getSettings().setBuiltInZoomControls(false);
+        // This is need on some old phones to get focus back to webview.
+        wv.setFocusable(true);
+        wv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                arg0.performClick();
+                arg0.requestFocus();
+                return false;
+            }
+        });
+        // Do not let selecting text
+        wv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
+            }
+        });
+        wv.setLongClickable(false);
+
+
+        alert.setView(wv);
+        mAlertDialogDestination = alert.create();
+        mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        /*
          * To be notified of some action in the view
          */
         mLocationView.setGestureCallback(new GestureInterface() {
@@ -388,44 +483,27 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             @Override
             public void gestureCallBack(int event, LongTouchDestination data) {
 
+                if (GestureInterface.TOUCH == event) {
+
+                }
+
                 if (GestureInterface.LONG_PRESS == event) {
+
+
+                    mInfc.setData(data);
+                    mAlertDialogDestination.show();
+
                     /*
                      * Show the popout
-                     */
-                    mAirportPressed = data.airport;
-                    if (mAirportPressed.contains("&")) {
-                        mPlatesButton.setEnabled(false);
-                        mAfdButton.setEnabled(false);
-                    } else {
-                        mPlatesButton.setEnabled(true);
-                        mAfdButton.setEnabled(true);
-                    }
-                    mCrossButton.setText(data.airport + "\n" + data.info);
-                    mDestLayout.setVisibility(View.VISIBLE);
-
-                    // This allows unsetting the destination that is same as current
-                    if (isSameDest(data.airport)) {
-                        mDestButton.setText(getString(R.string.Delete));
-                    } else {
-                        mDestButton.setText(getString(R.string.ShortDestination));
-                    }
-
-                    /*
                      * Now populate the pop out weather etc.
                      */
-                    PopoutAdapter p = new PopoutAdapter(getContext(), data);
-                    mListPopout.setAdapter(p);
+                    mAirportPressed = data.airport;
                 }
             }
 
         });
 
-        /*
-         * black pop out
-         */
-        mListPopout = (ExpandableListView) view.findViewById(R.id.location_list_popout);
-
-        mCenterButton = (Button) view.findViewById(R.id.location_button_center);
+        mCenterButton = (ImageButton) view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
         mCenterButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -453,18 +531,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
             }
         });
 
-        mCrossButton = (Button) view.findViewById(R.id.location_button_cross);
-        mCrossButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mDestLayout.setVisibility(View.INVISIBLE);
-            }
-
-        });
-
-        mDestLayout = (RelativeLayout) view.findViewById(R.id.location_popout_layout);
-
         mDrawerButton = (Button) view.findViewById(R.id.location_button_drawer);
         mDrawerButton.getBackground().setAlpha(255);
         mDrawerButton.setOnClickListener(
@@ -476,56 +542,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                 }
         );
 
-        mPlatesButton = (Button) view.findViewById(R.id.location_button_plate);
-        mPlatesButton.getBackground().setAlpha(255);
-        mPlatesButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mAirportPressed) {
-                    if (mService != null) {
-                        mService.setLastPlateAirport(mAirportPressed);
-                        mService.setLastPlateIndex(0);
-                        mDestLayout.setVisibility(View.INVISIBLE);
-                        ((MainActivity) getContext()).showPlatesViewAndCenter();
-                    }
-                    mAirportPressed = null;
-                }
-            }
-        });
-
-        mAfdButton = (Button) view.findViewById(R.id.location_button_afd);
-        mAfdButton.getBackground().setAlpha(255);
-        mAfdButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null != mAirportPressed) {
-                    if(mService != null) {
-                        mService.setLastAfdAirport(mAirportPressed);
-                        mDestLayout.setVisibility(View.INVISIBLE);
-                        ((MainActivity) getContext()).showAfdViewAndCenter();
-                        mAirportPressed = null;
-                    }
-                }
-            }
-        });
-
-
-        mPlanButton = (Button) view.findViewById(R.id.location_button_plan);
-        mPlanButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(null == mAirportPressed) {
-                    return;
-                }
-                String type = Destination.BASE;
-                if(mAirportPressed.contains("&")) {
-                    type = Destination.GPS;
-                }
-                planTo(mAirportPressed, type);
-                mAirportPressed = null;
-            }
-        });
-
         mDrawClearButton = (Button) view.findViewById(R.id.location_button_draw_clear);
         mDrawClearButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -535,39 +551,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                         mService.getDraw().clear();
                     }
                 }
-            }
-        });
-
-        /*
-         * Dest button
-         */
-        mDestButton = (Button) view.findViewById(R.id.location_button_dest);
-        mDestButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                /*
-                 * On click, find destination that was pressed on in view
-                 */
-                if (null == mAirportPressed) {
-                    return;
-                }
-                /*
-                 * If button pressed was a destination go there, otherwise if none, then delete current dest
-                 */
-                String dest = mAirportPressed;
-                mAirportPressed = null;
-                if (mDestButton.getText().toString().equals(getString(R.string.Delete))) {
-                    mService.setDestination(null);
-                    mDestLayout.setVisibility(View.INVISIBLE);
-                    mLocationView.invalidate();
-                    return;
-                }
-                String type = Destination.BASE;
-                if (dest.contains("&")) {
-                    type = Destination.GPS;
-                }
-                goTo(dest, type);
             }
         });
 
@@ -821,8 +804,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
     @Override
     public void onResume() {
         super.onResume();
-
-        mDestLayout.setVisibility(View.INVISIBLE);
 
         // Set visibility of the plan buttons
         setPlanButtonVis();

@@ -10,6 +10,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+
 /**
  * 
  * @author zkhan
@@ -24,7 +26,7 @@ public class Helper {
      * @param message
      */
     public static void showAlert(Context context, String title, String message) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+        DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(
                 context);
         alertDialogBuilder
             .setTitle(title)

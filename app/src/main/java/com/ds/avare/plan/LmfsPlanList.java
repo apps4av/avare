@@ -12,10 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.plan;
 
-import java.util.LinkedList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 
 /**
@@ -55,9 +55,9 @@ public class LmfsPlanList {
 		    	pl.setId(obj.getString("flightId"));
 		    	pl.currentState = obj.getString("currentState");
 		    	pl.versionStamp = obj.getString("versionStamp");
-		    	pl.aircraftIdentifier = obj.getString("aircraftIdentifier");
-		    	pl.destination = obj.getJSONObject("nasSummaryFields").getJSONObject("destination").getString("locationIdentifier");
-		    	pl.departure = obj.getJSONObject("nasSummaryFields").getJSONObject("departure").getString("locationIdentifier");
+		    	pl.aircraftId = obj.getString("aircraftIdentifier");
+		    	pl.destination = obj.getJSONObject("icaoSummaryFields").getJSONObject("destination").getString("locationIdentifier");
+		    	pl.departure = obj.getJSONObject("icaoSummaryFields").getJSONObject("departure").getString("locationIdentifier");
 		    	mPlans.add(pl);
 		    }
 		}

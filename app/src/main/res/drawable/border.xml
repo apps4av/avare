@@ -14,7 +14,7 @@ Redistribution and use in source and binary forms, with or without modification,
     android:shape="rectangle">
     <stroke
         android:width="2dip"
-        android:color="#FF00FF00" />
+        android:color="#FF71BC78" />
     
      <corners
         android:radius="5dp"/>

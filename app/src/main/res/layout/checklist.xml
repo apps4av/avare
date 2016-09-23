@@ -26,12 +26,15 @@ Redistribution and use in source and binary forms, with or without modification,
         <LinearLayout
         	android:layout_width="match_parent"
             android:layout_height="wrap_content"
+			android:background="#FF000000"
         	android:id="@+id/list_bottom_buttons"
             android:layout_alignParentBottom="true">
 	        <Button
 	            android:id="@+id/list_button_back"
 	            android:layout_alignParentLeft="true"
 	            android:layout_weight="0.5"
+				android:background="@drawable/button_bg"
+				android:layout_margin="5dp"
 	            android:text="@string/Previous"
 	            android:layout_height="wrap_content"
 	            android:layout_width="0dp"/>
@@ -40,6 +43,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	            android:id="@+id/list_button_forward"
 	            android:layout_alignParentRight="true"
 	            android:layout_weight="0.5"
+				android:background="@drawable/button_bg"
+				android:layout_margin="5dp"
 	            android:text="@string/Next"
 	            android:layout_height="wrap_content"
 	            android:layout_width="0dp"/>

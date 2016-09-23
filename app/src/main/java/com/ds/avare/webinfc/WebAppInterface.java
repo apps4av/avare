@@ -106,17 +106,17 @@ public class WebAppInterface {
 		int num = p.getDestinationNumber();
 		if(num >= 2) {
 			if(p.getDestination(num - 1).getType().equals(Destination.BASE)) {
-				destination = p.getDestination(num - 1).getID();
+				destination = "K" + p.getDestination(num - 1).getID(); // USA only
 			}
 			if(p.getDestination(0).getType().equals(Destination.BASE)) {
-				departure = p.getDestination(0).getID();
+				departure = "K" + p.getDestination(0).getID(); // USA only
 			}
 		}
 			
     	// find time remaining time based on true AS
 		double time = 0;
 		try {
-			time = p.getDistance() / Double.parseDouble(pl.speedKnots);
+			time = p.getDistance() / Double.parseDouble(pl.cruisingSpeed);
 		}
 		catch (Exception e) {
 		}
@@ -134,6 +134,9 @@ public class WebAppInterface {
 	        	if(type.equals(Destination.GPS) || type.equals(Destination.MAPS) || type.equals(Destination.UDW)) {
 	        		route += LmfsPlan.convertLocationToGpsCoords(p.getDestination(dest).getLocation()) + " ";
 	        	}
+				else if(type.equals(Destination.BASE)) {
+					route += "K" + p.getDestination(dest).getID() + " "; // USA
+				}
 	        	else {
 	        		route += p.getDestination(dest).getID() + " ";
 	        	}
@@ -145,27 +148,30 @@ public class WebAppInterface {
     	
     	// Fill form
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
-    	    	"'" +  checkNull(pl.flightRules)  + "'," +
-    			"'" +  checkNull(pl.aircraftIdentifier) + "'," +
+				"'" +  checkNull(pl.aircraftId) + "'," +
+    	    	"'" +  checkNull(pl.flightRule)  + "'," +
+				"'" +  checkNull(pl.flightType)  + "'," +
+				"'" +  checkNull(pl.noOfAircraft)  + "'," +
+				"'" +  checkNull(pl.aircraftType) + "'," +
+				"'" +  checkNull(pl.wakeTurbulence) + "'," +
+				"'" +  checkNull(pl.aircraftEquipment) + "'," +
     			"'" +  checkNull(departure) + "'," +
-    			"'" +  checkNull(destination) + "'," +
-    			"'" +  checkNull(LmfsPlan.getTimeFromInstance(departureInstant)) + "'," + 
-    			"'" +  checkNull(LmfsPlan.durationToTime(flightDuration)) + "'," +
-    			"'" +  checkNull(pl.altDestination1) + "'," + 
-    			"'" +  checkNull(pl.altDestination2) + "'," + 
-    			"'" +  checkNull(pl.aircraftType) + "'," +
-    			"'" +  checkNull(pl.numberOfAircraft) + "'," +
-    			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
-    			"'" +  checkNull(pl.aircraftEquipment) + "'," +
-    			"'" +  checkNull(pl.speedKnots) + "'," +
-                "'" +  checkNull(String.format(Locale.US, "%03d", p.getAltitude() / 100)) + "'," +
-    			"'" +  checkNull(LmfsPlan.durationToTime(fuelOnBoard)) + "'," +
-    			"'" +  checkNull(pl.pilotData) + "'," +
-    			"'" +  checkNull(pl.peopleOnBoard) + "'," + 
-    			"'" +  checkNull(pl.aircraftColor) + "'," +
-    			"'" +  checkNull(route) + "'," +
-    			"'" +  checkNull(pl.type) + "'," +
-    			"'" +  checkNull(pl.remarks) + "'"
+				"'" +  checkNull(LmfsPlan.getTimeFromInstance(departureInstant)) + "'," +
+				"'" +  checkNull(pl.cruisingSpeed) + "'," +
+				"'" +  checkNull(String.format(Locale.US, "%03d", p.getAltitude() / 100)) + "'," +
+				"'" +  checkNull(pl.surveillanceEquipment) + "'," +
+				"'" +  checkNull(route) + "'," +
+				"'" +  checkNull(pl.otherInfo) + "'," +
+				"'" +  checkNull(destination) + "'," +
+				"'" +  checkNull(LmfsPlan.durationToTime(flightDuration)) + "'," +
+				"'" +  checkNull(pl.alternate1) + "'," +
+				"'" +  checkNull(pl.alternate2) + "'," +
+				"'" +  checkNull(LmfsPlan.durationToTime(fuelOnBoard)) + "'," +
+				"'" +  checkNull(pl.peopleOnBoard) + "'," +
+				"'" +  checkNull(pl.aircraftColor) + "'," +
+				"'" +  checkNull(pl.supplementalRemarks) + "'," +
+    			"'" +  checkNull(pl.pilotInCommand) + "'," +
+				"'" +  checkNull(pl.pilotInfo) + "'"
     			));
     	mHandler.sendMessage(m);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -275,52 +281,58 @@ public class WebAppInterface {
      */
     @JavascriptInterface
     public void filePlan(
-    	String flightRules,
-    	String aircraftIdentifier,
-    	String departure,
-    	String destination,
-    	String departureInstant, 
-    	String flightDuration,
-    	String altDestination1, 
-    	String altDestination2, 
-    	String aircraftType,
-    	String numberOfAircraft,
-    	String heavyWakeTurbulence,
-    	String aircraftEquipment,
-    	String speedKnots, 
-    	String altitudeFL,
-    	String fuelOnBoard, 
-    	String pilotData,
-    	String peopleOnBoard, 
-    	String aircraftColor,
-    	String route,
-    	String type,
-    	String remarks) {
-        
+		String aircraftId,
+		String flightRule,
+		String flightType,
+		String noOfAircraft,
+		String aircraftType,
+		String wakeTurbulence,
+		String aircraftEquipment,
+		String departure,
+		String departureDate,
+		String cruisingSpeed,
+		String level,
+		String surveillanceEquipment,
+		String route,
+		String otherInfo,
+		String destination,
+		String totalElapsedTime,
+		String alternate1,
+		String alternate2,
+		String fuelEndurance,
+		String peopleOnBoard,
+		String aircraftColor,
+		String supplementalRemarks,
+		String pilotInCommand,
+		String pilotInfo) {
+
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	LmfsPlan pl = new LmfsPlan();
-    	pl.flightRules = flightRules.toUpperCase(Locale.getDefault());
-    	pl.aircraftIdentifier = aircraftIdentifier.toUpperCase(Locale.getDefault());
+		pl.aircraftId = aircraftId.toUpperCase(Locale.getDefault());
+    	pl.flightRule = flightRule.toUpperCase(Locale.getDefault());
+		pl.flightType = flightType.toUpperCase(Locale.getDefault());
+		pl.noOfAircraft = noOfAircraft;
+		pl.aircraftType = aircraftType.toUpperCase(Locale.getDefault());
+		pl.wakeTurbulence = wakeTurbulence;
+		pl.aircraftEquipment = aircraftEquipment.toUpperCase(Locale.getDefault());
     	pl.departure = departure.toUpperCase(Locale.getDefault());
-    	pl.destination = destination.toUpperCase(Locale.getDefault());
-    	pl.departureInstant = LmfsPlan.getInstanceFromTime(departureInstant);
-    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
-    	pl.altDestination1 = altDestination1.toUpperCase(Locale.getDefault());
-    	pl.altDestination2 = altDestination2.toUpperCase(Locale.getDefault());
-    	pl.aircraftType = aircraftType.toUpperCase(Locale.getDefault());
-    	pl.numberOfAircraft = numberOfAircraft;
-    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
-    	pl.aircraftEquipment = aircraftEquipment.toUpperCase(Locale.getDefault());
-    	pl.speedKnots = speedKnots; 
-    	pl.altitudeFL = altitudeFL;
-    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard); 
-    	pl.pilotData = pilotData.toUpperCase(Locale.getDefault());
-    	pl.peopleOnBoard = peopleOnBoard; 
-    	pl.aircraftColor = aircraftColor.toUpperCase(Locale.getDefault());
-    	pl.route = route.toUpperCase(Locale.getDefault());
-    	pl.type = type.toUpperCase(Locale.getDefault());
-    	pl.remarks = remarks.toUpperCase(Locale.getDefault());
- 
+		pl.departureDate = LmfsPlan.getInstanceFromTime(departureDate);
+		pl.cruisingSpeed = cruisingSpeed;
+		pl.level = level;
+		pl.surveillanceEquipment = surveillanceEquipment.toUpperCase(Locale.getDefault());
+		pl.route = route.toUpperCase(Locale.getDefault());
+		pl.otherInfo = otherInfo.toUpperCase(Locale.getDefault());
+		pl.destination = destination.toUpperCase(Locale.getDefault());
+    	pl.totalElapsedTime = LmfsPlan.getDurationFromInput(totalElapsedTime);
+    	pl.alternate1 = alternate1.toUpperCase(Locale.getDefault());
+    	pl.alternate2 = alternate2.toUpperCase(Locale.getDefault());
+    	pl.fuelEndurance = LmfsPlan.getDurationFromInput(fuelEndurance);
+		pl.peopleOnBoard = peopleOnBoard;
+		pl.aircraftColor = aircraftColor.toUpperCase(Locale.getDefault());
+		pl.supplementalRemarks = supplementalRemarks.toUpperCase(Locale.getDefault());
+		pl.pilotInCommand = pilotInCommand.toUpperCase(Locale.getDefault());
+		pl.pilotInfo = pilotInfo.toUpperCase(Locale.getDefault());
+
     	// Now file and show error messages
     	LmfsInterface infc = new LmfsInterface(mContext);
     	infc.fileFlightPlan(pl);
@@ -341,27 +353,30 @@ public class WebAppInterface {
      */
     @JavascriptInterface
     public void amendPlan(
-    	String flightRules,
-    	String aircraftIdentifier,
-    	String departure,
-    	String destination,
-    	String departureInstant, 
-    	String flightDuration,
-    	String altDestination1, 
-    	String altDestination2, 
-    	String aircraftType,
-    	String numberOfAircraft,
-    	String heavyWakeTurbulence,
-    	String aircraftEquipment,
-    	String speedKnots, 
-    	String altitudeFL,
-    	String fuelOnBoard, 
-    	String pilotData,
-    	String peopleOnBoard, 
-    	String aircraftColor,
-    	String route,
-    	String type,
-    	String remarks) {
+			String aircraftId,
+			String flightRule,
+			String flightType,
+			String noOfAircraft,
+			String aircraftType,
+			String wakeTurbulence,
+			String aircraftEquipment,
+			String departure,
+			String departureDate,
+			String cruisingSpeed,
+			String level,
+			String surveillanceEquipment,
+			String route,
+			String otherInfo,
+			String destination,
+			String totalElapsedTime,
+			String alternate1,
+			String alternate2,
+			String fuelEndurance,
+			String peopleOnBoard,
+			String aircraftColor,
+			String supplementalRemarks,
+			String pilotInCommand,
+			String pilotInfo) {
         
     	if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
     		return;
@@ -373,27 +388,30 @@ public class WebAppInterface {
     	}
     	
     	mHandler.sendEmptyMessage(MSG_BUSY);
-    	pl.flightRules = flightRules.toUpperCase(Locale.getDefault());
-    	pl.aircraftIdentifier = aircraftIdentifier.toUpperCase(Locale.getDefault());
-    	pl.departure = departure.toUpperCase(Locale.getDefault());
-    	pl.destination = destination.toUpperCase(Locale.getDefault());
-    	pl.departureInstant = LmfsPlan.getInstanceFromTime(departureInstant);
-    	pl.flightDuration = LmfsPlan.getDurationFromInput(flightDuration);
-    	pl.altDestination1 = altDestination1.toUpperCase(Locale.getDefault());
-    	pl.altDestination2 = altDestination2.toUpperCase(Locale.getDefault());
-    	pl.aircraftType = aircraftType.toUpperCase(Locale.getDefault());
-    	pl.numberOfAircraft = numberOfAircraft;
-    	pl.heavyWakeTurbulence = heavyWakeTurbulence;
-    	pl.aircraftEquipment = aircraftEquipment.toUpperCase(Locale.getDefault());
-    	pl.speedKnots = speedKnots;
-    	pl.altitudeFL = altitudeFL;
-    	pl.fuelOnBoard = LmfsPlan.getDurationFromInput(fuelOnBoard);
-    	pl.pilotData = pilotData.toUpperCase(Locale.getDefault());
-    	pl.peopleOnBoard = peopleOnBoard;
-    	pl.aircraftColor = aircraftColor.toUpperCase(Locale.getDefault());
-    	pl.route = route.toUpperCase(Locale.getDefault());
-    	pl.type = type.toUpperCase(Locale.getDefault());
-    	pl.remarks = remarks.toUpperCase(Locale.getDefault());
+		pl.aircraftId = aircraftId.toUpperCase(Locale.getDefault());
+		pl.flightRule = flightRule.toUpperCase(Locale.getDefault());
+		pl.flightType = flightType.toUpperCase(Locale.getDefault());
+		pl.noOfAircraft = noOfAircraft;
+		pl.aircraftType = aircraftType.toUpperCase(Locale.getDefault());
+		pl.wakeTurbulence = wakeTurbulence;
+		pl.aircraftEquipment = aircraftEquipment.toUpperCase(Locale.getDefault());
+		pl.departure = departure.toUpperCase(Locale.getDefault());
+		pl.departureDate = LmfsPlan.getInstanceFromTime(departureDate);
+		pl.cruisingSpeed = cruisingSpeed;
+		pl.level = level;
+		pl.surveillanceEquipment = surveillanceEquipment.toUpperCase(Locale.getDefault());
+		pl.route = route.toUpperCase(Locale.getDefault());
+		pl.otherInfo = otherInfo.toUpperCase(Locale.getDefault());
+		pl.destination = destination.toUpperCase(Locale.getDefault());
+		pl.totalElapsedTime = LmfsPlan.getDurationFromInput(totalElapsedTime);
+		pl.alternate1 = alternate1.toUpperCase(Locale.getDefault());
+		pl.alternate2 = alternate2.toUpperCase(Locale.getDefault());
+		pl.fuelEndurance = LmfsPlan.getDurationFromInput(fuelEndurance);
+		pl.peopleOnBoard = peopleOnBoard;
+		pl.aircraftColor = aircraftColor.toUpperCase(Locale.getDefault());
+		pl.supplementalRemarks = supplementalRemarks.toUpperCase(Locale.getDefault());
+		pl.pilotInCommand = pilotInCommand.toUpperCase(Locale.getDefault());
+		pl.pilotInfo = pilotInfo.toUpperCase(Locale.getDefault());
 
     	// Now file and show error messages
     	LmfsInterface infc = new LmfsInterface(mContext);
@@ -509,27 +527,30 @@ public class WebAppInterface {
 
     	// Fill form
     	Message m = mHandler.obtainMessage(MSG_FILL_FORM, (Object)(
-    	    	"'" +  checkNull(pl.flightRules)  + "'," +
-    			"'" +  checkNull(pl.aircraftIdentifier) + "'," +
-    			"'" +  checkNull(pl.departure) + "'," +
-    			"'" +  checkNull(pl.destination) + "'," +
-                        "'" + checkNull(LmfsPlan.getTimeFromInstance(pl.departureInstant)) + "'," +
-    			"'" +  checkNull(LmfsPlan.durationToTime(pl.flightDuration)) + "'," +
-    			"'" +  checkNull(pl.altDestination1) + "'," + 
-    			"'" +  checkNull(pl.altDestination2) + "'," + 
-    			"'" +  checkNull(pl.aircraftType) + "'," +
-    			"'" +  checkNull(pl.numberOfAircraft) + "'," +
-    			"'" +  checkNull(pl.heavyWakeTurbulence) + "'," +
-    			"'" +  checkNull(pl.aircraftEquipment) + "'," +
-    			"'" +  checkNull(pl.speedKnots) + "'," +
-    			"'" +  checkNull(pl.altitudeFL) + "'," +
-    			"'" +  checkNull(LmfsPlan.durationToTime(pl.fuelOnBoard)) + "'," + 
-    			"'" +  Helper.formatJsArgs(checkNull(pl.pilotData)) + "'," +
-    			"'" +  checkNull(pl.peopleOnBoard) + "'," + 
-    			"'" +  checkNull(pl.aircraftColor) + "'," +
-    			"'" +  checkNull(pl.route) + "'," +
-    			"'" +  checkNull(pl.type) + "'," +
-    			"'" +  Helper.formatJsArgs(checkNull(pl.remarks)) + "'"
+						"'" +  checkNull(pl.aircraftId) + "'," +
+						"'" +  checkNull(pl.flightRule)  + "'," +
+						"'" +  checkNull(pl.flightType)  + "'," +
+						"'" +  checkNull(pl.noOfAircraft)  + "'," +
+						"'" +  checkNull(pl.aircraftType) + "'," +
+						"'" +  checkNull(pl.wakeTurbulence) + "'," +
+						"'" +  checkNull(pl.aircraftEquipment) + "'," +
+						"'" +  checkNull(pl.departure) + "'," +
+						"'" +  checkNull(LmfsPlan.getTimeFromInstance(pl.departureDate)) + "'," +
+						"'" +  checkNull(pl.cruisingSpeed) + "'," +
+						"'" +  checkNull(pl.level) + "'," +
+						"'" +  checkNull(pl.surveillanceEquipment) + "'," +
+						"'" +  checkNull(pl.route) + "'," +
+						"'" +  Helper.formatJsArgs(checkNull(pl.otherInfo)) + "'," +
+						"'" +  checkNull(pl.destination) + "'," +
+						"'" +  checkNull(LmfsPlan.durationToTime(pl.totalElapsedTime)) + "'," +
+						"'" +  checkNull(pl.alternate1) + "'," +
+						"'" +  checkNull(pl.alternate2) + "'," +
+						"'" +  checkNull(LmfsPlan.durationToTime(pl.fuelEndurance)) + "'," +
+						"'" +  checkNull(pl.peopleOnBoard) + "'," +
+						"'" +  checkNull(pl.aircraftColor) + "'," +
+						"'" +  Helper.formatJsArgs(checkNull(pl.supplementalRemarks)) + "'," +
+						"'" +  Helper.formatJsArgs(checkNull(pl.pilotInCommand)) + "'," +
+						"'" +  Helper.formatJsArgs(checkNull(pl.pilotInfo)) + "'"
     			));
     	mHandler.sendMessage(m);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -574,7 +595,7 @@ public class WebAppInterface {
         		int i = 0;
         		// Sent out plans as text separated by commas like selected,name,state
         		for (LmfsPlan pl : mFaaPlans.getPlans()) {
-        			p += ((i == mFaaPlans.mSelectedIndex) ? "1" : "0") + "," + pl.departure + "-" + pl.destination + "-" + pl.aircraftIdentifier + "," + pl.currentState + ",";
+        			p += ((i == mFaaPlans.mSelectedIndex) ? "1" : "0") + "," + pl.departure + "-" + pl.destination + "-" + pl.aircraftId + "," + pl.currentState + ",";
         			i++;
         		}
         		String func = "javascript:set_faa_plans('" + p + "')";

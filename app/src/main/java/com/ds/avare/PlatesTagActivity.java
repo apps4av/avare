@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +39,7 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.PossibleEmail;
@@ -74,8 +74,8 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
     private Toast                        mToast;
     private Preferences                  mPref;
     private LinkedList<String>           mTags;
-    private boolean                     mTagged;
-    private android.support.v7.app.AlertDialog mAlertDialog;
+    private boolean                      mTagged;
+    private AlertDialog                  mAlertDialog;
     private Destination                  mDest;
     private String                       mName;
     private String                       mAirport;
@@ -147,7 +147,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
         /*
          * Store and show message
          */
-        mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+        mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
         mAlertDialog.setCancelable(false);
         mAlertDialog.setCanceledOnTouchOutside(false);
         mAlertDialog.setMessage(getString(R.string.Tagged));
@@ -473,7 +473,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
                     return;
                 }
                 
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
                 mAlertDialog.setMessage(getString(R.string.GeoShareText));
@@ -530,7 +530,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
 
                             @Override
                             protected void onPostExecute(Boolean result) {
-                                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                                 mAlertDialog.setCancelable(false);
                                 mAlertDialog.setCanceledOnTouchOutside(false);
                                 mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
@@ -591,7 +591,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
 
                 
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
                 mAlertDialog.setMessage(getString(R.string.GeoShareReportPrompt));
@@ -680,7 +680,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
 
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
                 mAlertDialog.setMessage(getString(R.string.ClearedPrompt));
@@ -782,7 +782,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
              * If the plate not tagged, show help
              */
             if(!mTagged) {
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
                 mAlertDialog.setMessage(getString(R.string.ToTag));
@@ -797,7 +797,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
                 mAlertDialog.show();
             }
             else {
-                mAlertDialog = new AlertDialog.Builder(PlatesTagActivity.this).create();
+                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
                 mAlertDialog.setCanceledOnTouchOutside(false);
                 mAlertDialog.setMessage(getString(R.string.AlreadyTagged));

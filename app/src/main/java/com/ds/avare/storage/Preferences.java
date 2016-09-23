@@ -1139,7 +1139,11 @@ public class Preferences {
     }
 
     public String getAircraftEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "A");
+        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
+    }
+
+    public String getAircraftSurveillanceEquipment() {
+        return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
     }
 
     public String getAircraftColorPrimary() {
@@ -1199,4 +1203,29 @@ public class Preferences {
     public boolean isTileSize256() {
         return mPref.getBoolean(mContext.getString(R.string.TileSize), false);
     }
+
+    public float getFuelBurn() {
+        try {
+            return (Float.parseFloat(mPref.getString(mContext.getString(R.string.FuelRateLabel), "10")));
+        } catch (Exception x) {
+            return 10;
+        }
+    }
+
+    public boolean removeB1Plate() {
+        return mPref.getBoolean(mContext.getString(R.string.b1plate), false);
+    }
+    public boolean removeB2Plate() {
+        return mPref.getBoolean(mContext.getString(R.string.b2plate), false);
+    }
+    public boolean removeB3Plate() {
+        return mPref.getBoolean(mContext.getString(R.string.b3plate), false);
+    }
+    public boolean removeB1Map() {
+        return mPref.getBoolean(mContext.getString(R.string.b1map), false);
+    }
+
+
 }
+
+

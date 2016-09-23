@@ -26,12 +26,16 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/Nearest2000"
+            android:background="@drawable/button_bg"
+            android:layout_margin="5dp"
             android:layout_weight="0.25"/>
         <Button
             android:id="@+id/nearest_button_4000"
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_bg"
+            android:layout_margin="5dp"
             android:text="@string/Nearest4000"
             android:layout_weight="0.25"/>
         <Button
@@ -39,6 +43,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_bg"
+            android:layout_margin="5dp"
             android:text="@string/Nearest6000"
             android:layout_weight="0.25"/>
         <Button
@@ -46,6 +52,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_bg"
+            android:layout_margin="5dp"
             android:text="@string/Nearest100LL"
             android:layout_weight="0.25"/>
     </LinearLayout>
@@ -58,58 +66,57 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/> 
         
-        <Button
-            android:id="@+id/nearest_button_dest"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_gr"
-            android:gravity="left|center"
-            android:drawableLeft="@drawable/direct"
-            android:text="@string/Destination"
-            android:minWidth="140dp"
-            android:visibility="invisible" />
+    <Button
+        android:id="@+id/nearest_button_dest"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/nearest_button_4"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:text="@string/Destination"
+        android:visibility="invisible" />
 
-        <Button
-            android:id="@+id/nearest_button_gr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:gravity="left|center"
-            android:drawableLeft="@drawable/glide"
-            android:text="@string/GlideRatio"
-            android:minWidth="140dp"
-            android:layout_above="@+id/nearest_button_3"
-            android:visibility="invisible" />
+    <Button
+        android:id="@+id/nearest_button_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:layout_above="@+id/nearest_button_3"
+        android:visibility="invisible" />
 
-        
-        <Button
-            android:id="@+id/nearest_button_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/nearest_button_2"
-            android:visibility="invisible" />
-        
-        <Button
-            android:id="@+id/nearest_button_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_above="@+id/nearest_button_plates"
-            android:layout_alignParentLeft="true"
-            android:visibility="invisible" />
-        
-        <Button
-            android:id="@+id/nearest_button_plates"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left|center"
-            android:drawableLeft="@drawable/plates"
-            android:text="@string/Plates"
-            android:minWidth="140dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:visibility="invisible" />            
+
+    <Button
+        android:id="@+id/nearest_button_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:layout_above="@+id/nearest_button_2"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/nearest_button_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:layout_above="@+id/nearest_button_plates"
+        android:layout_alignParentLeft="true"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/nearest_button_plates"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Plates"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:visibility="invisible" />
     
 </RelativeLayout>

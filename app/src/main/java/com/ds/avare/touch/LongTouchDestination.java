@@ -12,12 +12,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.touch;
 
-import java.util.LinkedList;
-
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
+
+import java.util.LinkedList;
 
 /**
  * Works with LongTouchGesture
@@ -36,8 +36,5 @@ public class LongTouchDestination {
     public String sua;
     public String layer;
     public LinkedList<Airep> airep;
-    public LinkedList<String> freq;
     public String performance;
-    public String fuel;
-	public String ratings;
 }

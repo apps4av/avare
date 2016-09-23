@@ -132,6 +132,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
+    <string name="PlusPlan">&quot;+Plan&quot;</string>
     <string name="PlanSet">&quot; added to the plan&quot;</string>
     <string name="PlanNoset">&quot; not added to the plan&quot;</string>
     <string name="PlanPrompt">&quot;Enter waypoints of plan e.g. KLAX KSBA GVO&quot;</string>
@@ -166,7 +167,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WeatherPlan">&quot;You must create a plan in Plan screen to get the latest Plan weather&quot;</string>
     <string name="NotamsPlan">&quot;You must create a plan in Plan screen to get NOTAMS&quot;</string>
     <string name="WeatherBrowser">&quot;You do not seem to have a web browser to open the weather data.&quot;</string>
-    <string name="NotamsBrowser">&quot;You do not seem to have a web browser to open the NOTAMS data.&quot;</string>
     <string name="SimulationMode">&quot;Simulation&quot;</string>
     <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
@@ -492,6 +492,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftEquipment">Aircraft Equipment</string>
     <string name="AircraftEquipmentSummary">Aircraft equipment code for filing</string>
 
+    <string name="AircraftSurveillance">Aircraft Surveillance</string>
+    <string name="AircraftSurveillanceSummary">Aircraft surveillance equipment code for filing</string>
+
     <string name="AircraftTAS">Aircraft TAS</string>
     <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
 
@@ -501,6 +504,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GlideRatioLabel">&quot;Aircraft Glide Ratio&quot;</string>
     <string name="GlideRatioSummary">&quot;Aircraft glide ratio (glide distance in feet for every foot of altitude)&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
+
+    <string name="FuelRateLabel">Aircraft Fuel Burn Rate</string>
+    <string name="FuelRateSummary">Aircraft fuel burn rate per hour</string>
 
     <string name="SelectAirportToShow">&quot;Select an Airport&quot;</string>
     <string name="SelectPlateToShow">&quot;Select a Plate&quot;</string>
@@ -545,8 +551,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DeclareEmergency">Declare Emergency?</string>
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n4.Send SMS to Emergency Contact</string>
     <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
+    <string name="Menu">Menu</string>
 
     <string name="RegisterActivityPreferenceKey">REGISTER_ACTIVITY_PREFERENCE_KEY</string>
     <string name="SyncActivityPreferenceKey">SYNC_ACTIVITY_PREFERENCE_KEY</string>
+
+    <string name="b1map">Remove Button 1 in Map (Restart Required)</string>
+    <string name="b1plate">Remove Button 1 in Plate (Restart Required)</string>
+    <string name="b2plate">Remove Button 2 in Plate (Restart Required)</string>
+    <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
+    <string name="UIConfiguration">UI Configuration</string>
 
 </resources>

@@ -14,7 +14,13 @@ Redistribution and use in source and binary forms, with or without modification,
     android:shape="rectangle">
     <stroke
         android:width="1dip"
-        android:color="#AAAAAA" />
-    <gradient android:startColor="#5C5C5C" android:centerColor="#424242"
-        android:endColor="#222222" android:angle="-90" />
+        android:color="#000000" />
+    <gradient android:startColor="#000000" android:centerColor="#000000"
+        android:endColor="#000000" android:angle="-90" />
+    <size
+        android:width="80dp"
+        android:height="40dp"/>
+    <corners
+        android:radius="10dp"/>
+
 </shape>

@@ -13,14 +13,17 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.webinfc;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
@@ -37,17 +40,14 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.location.Location;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * 
@@ -62,8 +62,6 @@ public class WebAppPlanInterface implements Observer {
     private CreateTask mCreateTask;
     private WeatherTask mWeatherTask;
     private Thread mWeatherThread;
-	private NotamsTask mNotamsTask;
-	private Thread mNotamsThread;
     private LinkedHashMap<String, String> mSavedPlans;
     private GenericCallback mCallback;
     private Context mContext;
@@ -419,7 +417,7 @@ public class WebAppPlanInterface implements Observer {
 
     /**
      * 
-     * @param num
+     * @param
      */
     @JavascriptInterface
     public void deleteWaypoint() {
@@ -506,7 +504,7 @@ public class WebAppPlanInterface implements Observer {
 
     /**
      * 
-     * @param index
+     * @param name
      */
     @JavascriptInterface
     public void loadPlan(String name) {
@@ -545,7 +543,7 @@ public class WebAppPlanInterface implements Observer {
 
     /**
      * 
-     * @param index
+     * @param
      */
     @JavascriptInterface
     public void loadPlanReverse(String name) {
@@ -612,7 +610,7 @@ public class WebAppPlanInterface implements Observer {
     }
     /**
      * 
-     * @param num
+     * @param
      */
     @JavascriptInterface
     public void saveDelete(String name) {
@@ -704,7 +702,7 @@ public class WebAppPlanInterface implements Observer {
 					Math.round(Helper.getMagneticHeading(d.getBearing() + d.getWCA(), d.getDeclination())) + "," +
     				Math.round(d.getDistance()) + "," +
     				d.getEte() +  "," +
-    				d.getID() + "," + d.getType() + "::::";
+    				d.getID() + "," + d.getType() + "," + d.getFuel() + "::::";
     	}
     	// add total
     	plans += plan.toString();
@@ -735,21 +733,6 @@ public class WebAppPlanInterface implements Observer {
         mWeatherThread = new Thread(mWeatherTask);
         mWeatherThread.start();
     }
-
-	/**
-	 * Get NOTAMS form Internet
-	 */
-	@JavascriptInterface
-	public void getNotams() {
-		if(null != mNotamsTask && mNotamsTask.running) {
-			return;
-		}
-
-		mNotamsTask = new NotamsTask();
-		mNotamsTask.running = true;
-		mNotamsThread = new Thread(mNotamsTask);
-		mNotamsThread.start();
-	}
 
 	/**
      * Create a plan, guessing the types
@@ -1012,88 +995,6 @@ public class WebAppPlanInterface implements Observer {
         }
     };
 
-	/**
-	 * @author zkhan
-	 *
-	 */
-	private class NotamsTask implements Runnable {
-
-		private boolean running = true;
-
-		/* (non-Javadoc)
-         */
-		@Override
-		public void run() {
-
-			Thread.currentThread().setName("NOTAMs");
-
-			mHandler.sendEmptyMessage(MSG_BUSY);
-
-			if(null == mService) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
-			}
-
-			int num = mService.getPlan().getDestinationNumber();
-			if(num < 2) {
-                /*
-                 * Not a route.
-                 */
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
-			}
-			String planf = "";
-			for(int i = 0; i < num; i++) {
-				Destination d = mService.getPlan().getDestination(i);
-				if(d.getType().equals(Destination.BASE)) {
-					planf += "K" + d.getID() + ",";
-				}
-			}
-			if(planf.equals("")) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsPlan));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
-			}
-			planf = planf.replaceAll(",$", "");
-
-			String ret = NetworkHelper.getNotams(planf);
-			if(ret == null) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsError));
-				mHandler.sendMessage(m);
-				mHandler.sendEmptyMessage(MSG_NOTBUSY);
-				running = false;
-				return;
-			}
-
-			// Write notams to download folder
-			String fpath = getNotamsFileName(planf);
-			Helper.writeFile(ret, fpath);
-			// Send to browser.
-			Intent i = new Intent(Intent.ACTION_VIEW);
-			File file = new File(fpath);
-			Uri uri = Uri.fromFile(file);
-			i.setDataAndType(uri, "*/*");
-			try {
-				mContext.startActivity(i);
-			}
-			catch(Exception e) {
-				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.NotamsBrowser));
-				mHandler.sendMessage(m);
-			}
-			mHandler.sendEmptyMessage(MSG_NOTBUSY);
-
-			running = false;
-		}
-	}
-    
     /**
      * @author zkhan
      *
@@ -1114,43 +1015,25 @@ public class WebAppPlanInterface implements Observer {
             String Pirep = "";
             String Metar = "";
             String Taf = "";
+            String notams = "";
 
             String miles = "30";
             String planf = "";
+            String plann = "";
             String plan = "";
             if(null == mService) {
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
                 running = false;
                 return;
             }
 
             int num = mService.getPlan().getDestinationNumber();
-            if(num < 2) {
-                /*
-                 * Not a route.
-                 */
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-                running = false;
-                return;
-            }
             for(int i = 0; i < num; i++) {
                 Location l = mService.getPlan().getDestination(i).getLocation();
                 planf += l.getLongitude() + "," + l.getLatitude() + ";";
                 plan += mService.getPlan().getDestination(i).getID() + "(" +
                         mService.getPlan().getDestination(i).getType() + ") ";
             }
-            if(planf.equals("")) {
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherPlan));
-            	mHandler.sendMessage(m);
-            	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-                running = false;
-                return;
-            }                
-            
+
             /*
              *  Get PIREP
              */
@@ -1179,7 +1062,7 @@ public class WebAppPlanInterface implements Observer {
                 for(int i = 0; i < outm.length; i++) {
                     String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
                     String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                     Taf += "<b><font size='5' color='white'>" + vals[0] + "</b><br>";
                     Taf += "<font size='5' color='white'>" + taf + "<br></br>";
                 }
@@ -1214,38 +1097,37 @@ public class WebAppPlanInterface implements Observer {
             	return;
             }
 
-            String nam = "";
-            /*
-             * NAM MOS exists for airports only
-             */
-            for(int ap = 0; ap < num; ap++) {
-                Destination d = mService.getPlan().getDestination(ap);
-                if(d != null) {
-                    if(d.getType().equals(Destination.BASE)) {
-                        nam += NetworkHelper.getNAMMET(d.getID()); 
-                    }
-                }
-            }
+			// NOTAMS
+			num = mService.getPlan().getDestinationNumber();
+			plann = "";
+			for(int i = 0; i < num; i++) {
+				Destination d = mService.getPlan().getDestination(i);
+				if(d.getType().equals(Destination.BASE)) {
+					plann += "K" + d.getID() + ",";
+				}
+			}
+			if(!plann.equals("")) {
+				plann = plann.replaceAll(",$", "");
+				notams = NetworkHelper.getNotams(plann);
+				if(notams == null) {
+					notams = mContext.getString(R.string.NotamsError);
+				}
+			}
 
-            if(!running) {
-            	return;
-            }
-
-            plan = "<font size='5' color='white'>" + plan + "</font><br></br>";
+			plan = "<font size='5' color='white'>" + plan + "</font><br>";
             plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
-            Metar = "<font size='6' color='white'>METARs</font><br></br>" + Metar; 
+            Metar = "<h3><font size='6' color='white'>METARs</font><br></h3>" + Metar;
             Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
-            Taf = "<font size='6' color='white'>TAFs</font><br></br>" + Taf; 
+            Taf = "<h3><font size='6' color='white'>TAFs</font><br></h3>" + Taf;
             Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
-            Pirep = "<font size='6' color='white'>PIREPs</font><br></br>" + Pirep; 
+            Pirep = "<h3><font size='6' color='white'>PIREPs</font><br></h3>" + Pirep;
             Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-            nam = "<font size='6' color='white'>Forecast</font><br></br>" +  
-                    WeatherHelper.getNamMosLegend() + nam;
-            nam = "<form>" + nam.replaceAll("'", "\"") + "</form>";
+			notams = "<h3><font size='6' color='white'>NOTAMS</font><br></h3>" + notams;
 
             String time = NetworkHelper.getVersion("", "weather", null);
-            String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + nam;
-            
+            String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;
+
+
             // Read weather template
             String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
@@ -1281,17 +1163,6 @@ public class WebAppPlanInterface implements Observer {
     	
     	return file + ".html";
     }
-
-	/**
-	 * Make a file where NOTAMS is put
-	 * @return
-	 */
-	private String getNotamsFileName(String plan) {
-		String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/avare_notams_";
-
-		// Get time in format usable as file
-		return file + plan.replace(",", "_") + ".html";
-	}
 
 	/**
      * 

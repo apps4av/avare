@@ -10,81 +10,31 @@ Redistribution and use in source and binary forms, with or without modification,
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-authors: zkhan 
+authors: zkhan
 -->
 
 <head>
 
-<style>
+    <!-- Latest compiled and minified CSS -->
+    <script src="file:///android_asset/jquery.min.js"></script>
+    <script src="file:///android_asset/bootstrap.min.js"></script>
+    <script src="file:///android_asset/bootstrap-select.min.js"></script>
+    <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
+    <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+    <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+    <style type="text/css">
+        button {color: black; height:40px;}
+        input {height:40px;}
+        .toast {opacity: 1 !important;}
+    </style>
 
-body {
-	color : #FFFFFF;
-	width: 800px;
-	background: #000000;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-label {
-	color : #FF0000;
-	font-weight: bold; /* Make sure they're bold */
-	font-size : 20px;
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-}
+    <script type="text/javascript" >
 
-p {
-	border: solid green;
-	border-radius: 1em;
-	width: 800px;
-	padding: 5px;
-}
-
-table { 
-	color: #333; /* Lighten up font color */
-	font-family: Helvetica, Arial, sans-serif; /* Nicer font */
-	width: 800px;
-	border-collapse: collapse; 
-	border-spacing: 0; 
-}
- 
-button {
-	width: 100px;
-} 
- 
-td, th { 
-	color : #FFFFFF;
-	border: 1px solid #CCC;
-	height: 30px; 
-	width: 110px;
-	padding: 5px;
-} /* Make cells a bit taller */
- 
-th {
-	background: #222222; /* Light grey background */
-	font-weight: bold; /* Make sure they're bold */
-}
- 
-td {
-	background: #111111; /* Lighter grey background */
-	text-align: left; /* Left our text */
-}
-
-.halfbutton {
-	width: 50px; // For two buttons in one row
-}
-
-.tdhlong {
-	width: 600px;
-}
-
-.sublabel {
-	font-size : 15px;
-	color : #00FF00;
-}
-
-
-</style>
-
-<script type="text/javascript" >
+	toastr.options.timeOut = 2000;
 
 var CELL_TEXT = 0;
 var CELL_LAST = 1;
@@ -102,8 +52,8 @@ function list_setname(name) {
 function onclick_row(row) {
 	AndroidList.moveTo(row - 1);
 }
-	
-	
+
+
 // Set list line
 function set_list_line(row, next, text) {
 	// rows here are 1 indexed
@@ -114,7 +64,7 @@ function set_list_line(row, next, text) {
 		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "green";
 	}
 	else {
-		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "#111111";
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "black";
 	}
 
 	list_table.rows[row].cells[CELL_TEXT].textContent = text;
@@ -125,7 +75,7 @@ function set_list_line(row, next, text) {
           onclick_row(currentI);
       }
    })();
-		
+
 }
 
 // add a item to the list
@@ -138,7 +88,6 @@ function list_add(text) {
 
 	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
 	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
-	cell[CELL_TEXT].className = "tdhlong";
 
 	cell[CELL_TEXT].textContent = text;
 }
@@ -152,24 +101,62 @@ function list_clear() {
 	}
 }
 
+// delete current item
+function list_delete_item() {
+
+	bootbox.confirm("Delete Selected?", function(result) {
+		if(result == false) {
+			return;
+		}
+        AndroidList.deleteItem();
+	});
+}
+
+// delete the list
+function save_delete(row) {
+
+	bootbox.confirm("Delete Saved?", function(result) {
+		if(result == false) {
+			return;
+		}
+    	var list_save = document.getElementById("save_table");
+	    AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	    toastr.success('List deleted');
+	});
+
+}
+
 // remove the entire list
 function list_discard() {
-	// call Android
-	var r = confirm("Delete List?");
-	if(r == true) {
+
+	bootbox.confirm("Clear List?", function(result) {
+		if(result == false) {
+			return;
+		}
 		AndroidList.discardList();
-	}
+	});
+
 }
 
 // import the entire list from file
 function list_import() {
 	// call Android
 	var path = document.getElementById("import_input");
-	var r = confirm("Delete List then Import?");
-	if(r == true) {
-		AndroidList.importFromFile(path.value);
-		path.value = "";
+	if(path.value == "") {
+		toastr.error('Please specify a valid path');
+		return;
 	}
+
+	bootbox.confirm("Delete List then Import?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidList.importFromFile(path.value);
+		document.getElementById("list_name").scrollIntoView();
+		$("#saveModal").modal('hide');
+	    toastr.info('Importing list from ' + path.value);
+		path.value = "";
+	});
 }
 
 // Add a line to list
@@ -177,7 +164,7 @@ function add_list_item() {
 	var item = document.getElementById("item_input");
 	AndroidList.addToList(item.value);
 	// clear when added
-	item.value = "";	
+	item.value = "";
 }
 
 // move up current item
@@ -190,14 +177,6 @@ function list_movedown_item() {
 	AndroidList.moveDownItem();
 }
 
-// delete current item
-function list_delete_item() {
-    var r = confirm("Delete Selected?");
-    if(r == false) {
-        return; 
-    }   
-    AndroidList.deleteItem();
-}
 
 var CELL_SAVE_NAME = 0;
 var CELL_SAVE_LOAD = 1;
@@ -208,16 +187,8 @@ var CELL_SAVE_LAST = 3;
 function save_load(row) {
 	var list_save = document.getElementById("save_table");
 	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
-}
-
-// delete the list
-function save_delete(row) {
-	var r = confirm("Delete Saved?");
-	if(r == false) {
-		return;	
-	}
-	var list_save = document.getElementById("save_table");
-	AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("list_name").scrollIntoView();
+	$("#saveModal").modal('hide');
 }
 
 // add the current list to saved list
@@ -225,9 +196,11 @@ function save_list_add() {
 	var name = document.getElementById("save_name").value;
 
 	if(name == "") {
-		return 
-	}	
+		toastr.error('Please specify a valid name');
+		return;
+	}
 	AndroidList.saveList(name);
+	toastr.success('List saved to ' + name);
 }
 
 // clear the entire save list
@@ -239,37 +212,18 @@ function save_clear() {
 	}
 }
 
-// List table can be long. Hide it when asked or toggle it to show/hide
-function save_hide(toggle) {
-	var list_save = document.getElementById("save_table");
-	for(var row = list_save.rows.length - 1; row >= 1; row--) {
-			if(toggle) {
-				if(list_save.rows[row].style.display == "none") {
-					list_save.rows[row].style.display = "";			
-				}
-				else {
-					list_save.rows[row].style.display = "none";
-				}
-			}
-			else {
-					list_save.rows[row].style.display = "none";
-			}
-	}
-}
-
 
 // Sets buttons on each row
 function set_buttons_save() {
-
 	// Set buttons for each entry in list
 	var list_save = document.getElementById("save_table");
 	for(var i = 1; i < list_save.rows.length; i++) {
-		list_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML = 
-			"<button onclick='save_load(" + i.toString() + ")'>Load</button>";
-		list_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML = 
-			"<button onclick='save_delete(" + i.toString() + ")'>Delete</button>";
+		list_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML =
+			"<button class='btn btn-block' onclick='save_load(" + i.toString() + ")'>LD</button>";
+		list_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML =
+			"<button class='btn btn-block' onclick='save_delete(" + i.toString() + ")'>Del</button>";
 	}
-	
+
 		// clear save input
 	document.getElementById("save_name").value = "";
 }
@@ -290,100 +244,133 @@ function save_add(name) {
 	cell[CELL_SAVE_NAME].textContent = name;
 
 	set_buttons_save();
-	
-	save_hide(false);
+
 }
 
 
-function show_help() {
-	var help = document.getElementById("help");	
-	if(help.style.display == "none") {
-		help.style.display = "";
-	}
-	else {
-		help.style.display = "none";
-	}
-}
-
-window.onload = show_help;
 
 </script>
 
 </head>
 
 <body>
-	<p>
-		<label id="list_name">List[]</label><br>
-		<button onclick="list_discard()">Delete All</button>
-		<button onclick="list_delete_item()">Delete</button>
-		<br></br>
-		<table id="list_table" border="1"><th class="tdhlong">Item</th></table>
-		<br>
-		<button onclick="list_moveup_item()">Up</button>
-		<button onclick="list_movedown_item()">Down</button>
-		<br></br>
-		<label class="sublabel" >Add To List</label>
-		<br>
-		<input id="item_input" placeholder="Mixture Full Rich."></input>
-		<button onclick="add_list_item()">Add</button>
-		<br></br>
-		<label class="sublabel" >Import A File</label><br>
-		<input id="import_input" placeholder="/sdcard/list.txt"></input>
-		<button onclick="list_import()">Import</button>
-		<br></br>
-		<label class="sublabel" >Save List</label><br>		
-		<input id="save_name" placeholder="Current List Name"/></input><button onclick="save_list_add()">Save</button>
-		<br>
-	</p>
-	<p>
-		<label>Saved Lists</label><br>
-		<button onclick="save_hide(true)">Show Lists</button><br>
-		<table id="save_table" border="1"><th>Name</th><th>Load</th><th>Delete</th></table>
-	</p>
-	<button onclick="show_help()">Show Help</button><br>
-	<a id="help">
-The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off. 
-<br>
-<b>To Create a List Line by Line</b>
-<ul>
-<li>This is not a recommended method for long lists.</li>
-<li>Clear the current list by pressing "Delete All"</li>
-<li>Enter a text item in the "Add To List" box, then press Add. The entered text will appear in the list at the end.</li>
-<li>Touch the added item in the list to move the green bar to it.</li>
-<li>Move the item to the desired sequence by pressing the Up or Down button several times.</li>
-<li>If a wrong item is added by mistake, it can be deleted by touching the item to move the green bar to it, then pressing the Delete button.</li>
-</ul>
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <td><h3 ><span class="label label-success">Load A List</span></h3></td>
+        </tr>
+        <tr>
+            <td><a onclick='$("#saveModal").modal()'><u><b>Saved Lists</b></u></a></td>
+        </tr>
+        <tr>
+            <td><h3 ><span id="list_name" class="label label-success">List[]</span></h3></td>
+        </tr>
+    </table>
+    <table class="table" id="list_table" ><th>List Item</th></table>
+    <table class="table">
+        <tr>
+            <td><button class="btn btn-block" onclick="list_discard()">Clr</button></td>
+            <td><button class="btn btn-block" onclick="list_delete_item()">Del</button></td>
+            <td><button class="btn btn-block" onclick="list_moveup_item()">Up</button></td>
+            <td><button class="btn btn-block" onclick="list_movedown_item()">Dn</button></td>
+        </tr>
+    </table>
+    <table class="table"><th>Add Item To List</th>
+        <tr>
+            <td><input id="item_input" spellcheck="false" placeholder="Mixture Full Rich."></td>
+            <td><button class="btn btn-block" onclick="add_list_item()">Add</button></td>
+        </tr>
+    </table>
+    <table class="table"><th>Save List</th>
+        <tr>
+            <td><input id="save_name" spellcheck="false" placeholder="Current List Name"/></td>
+            <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-4"><b><a onclick='$("#helpModal").modal()'><u>List Help</u></a></b></div><br>
 
-<b>To Save a List</b>
-<ul>
-<li>To save a list, enter the name to the left of "Save" button, and press the "Save" Button.</li>
-<li>Press the "Show Lists" button to confirm that the list was saved.</li>
-</ul>
+<div class="modal fade" id="saveModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header alert-info">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Saved Lists</h4>
+            </div>
+            <div class="modal-body" style="padding:1px;">
+                <table class="table" id="save_table" ><th>List</th></table>
+                <table class="table"><th>Import a Saved List File</th>
+                    <tr>
+                        <td><input id="import_input" spellcheck="false" placeholder="/sdcard/list.txt"></td>
+                        <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<b>To Load/Delete a Saved List</b>
-<ul>
-<li>Press the "Show Lists" button to show the saved lists. Note: The same button can be pressed to hide the saved lists.</li>
-<li>Press the "Load" button to load the list.</li>
-<li>You can delete a saved list by pressing the "Delete" button to the right of its name in the Saved Lists list.</li>
-</ul>
 
-<b>To Import a List from a File</b>
-<ul>
-<li>A long list can be entered in a single action by importing it from disk.</li>
-<li>Get the list prepared on the PC in text format.</li>
-<li>Put the list on your device in an every-application-accessible folder like /sdcard/Download, using PC-device USB connection.</li>
-<li>Enter the name/path of the file in "Import a List" box, for example /sdcard/Download/mylist.txt.</li>
-<li>Press the Import button.</li>
-<li>Be patient as the import can take up to a minute depending on the file size, and your device's capabilities.</li>
-<li>The imported list is shown after it is imported.</li>
-</ul>
+<div class="modal fade" id="helpModal" role="dialog">
+    <div class="modal-dialog">
 
-<b>To Use a List</b>
-<ul>
-<li>Simply press "Previous" and "Next" buttons to move the green bar to an item under consideration.</li>
-<li>Touch an item in the list to move the green bar to it. This is useful for skipping steps.</li>
-</ul>
-	</a>
-	
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header alert-info">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">List Help</h4>
+            </div>
+            <div class="modal-body">
+                <div style="overflow: auto;">
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off.
+                    <br>
+                    <b>To Create a List Line by Line</b>
+                    <ul>
+                        <li>This is not a recommended method for long lists.</li>
+                        <li>Clear the current list by pressing "Clr"</li>
+                        <li>Enter a text item in the "Add Item To List" box, then press Add. The entered text will appear in the list at the end.</li>
+                        <li>Touch the added item in the list to move the green bar to it.</li>
+                        <li>Move the item to the desired sequence by pressing the Up or Dn button several times.</li>
+                        <li>If a wrong item is added by mistake, it can be deleted by touching the item to move the green bar to it, then pressing the Del button.</li>
+                    </ul>
+
+                    <b>To Save a List</b>
+                    <ul>
+                        <li>To save a list, enter the name above the "Save" button, and press the "Save" Button.</li>
+                        <li>Press the "Show Lists" button to confirm that the list was saved.</li>
+                    </ul>
+
+                    <b>To Load/Delete a Saved List</b>
+                    <ul>
+                        <li>Press the "Saved Lists" link to show the saved lists.</li>
+                        <li>Press the "LD" button to load the list.</li>
+                        <li>You can delete a saved list by pressing the "Del" button to the right of its name in the Saved Lists list.</li>
+                    </ul>
+
+                    <b>To Import a List from a File</b>
+                    <ul>
+                        <li>A long list can be entered in a single action by importing it from disk.</li>
+                        <li>Get the list prepared on the PC in text format.</li>
+                        <li>Put the list on your device in an every-application-accessible folder like /sdcard/Download, using PC-device USB connection.</li>
+                        <li>Click on Saved Lists link.</li>
+                        <li>Enter the name/path of the file in "Import a Saved List File" box, for example /sdcard/Download/mylist.txt.</li>
+                        <li>Press the Import button.</li>
+                        <li>Be patient as the import can take up to a minute depending on the file size, and your device's capabilities.</li>
+                        <li>The imported list is shown after it is imported.</li>
+                    </ul>
+
+                    <b>To Use a List</b>
+                    <ul>
+                        <li>Simply press "Previous" and "Next" buttons to move the green bar to an item under consideration.</li>
+                        <li>Touch an item in the list to move the green bar to it. This is useful for skipping steps.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </body>
 </html>

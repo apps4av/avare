@@ -29,36 +29,39 @@ Redistribution and use in source and binary forms, with or without modification,
         
 	   <EditText
 	       android:id="@+id/platestag_text_input"
-	       android:layout_width="wrap_content"
+	       android:layout_width="120dp"
 	       android:layout_height="wrap_content"
-	       android:layout_margin="1dp"
+	       android:layout_margin="5dp"
 	       android:textSize="15sp"
 	       android:layout_alignParentTop="true"
            android:layout_alignParentLeft="true"	    
 	       android:hint="@string/PointName"/>
 	   <com.ds.avare.utils.OptionButton
 	       android:id="@+id/platestag_spinner"
-	       android:layout_width="wrap_content"
+	       android:layout_width="80dp"
            android:layout_height="wrap_content"
-           android:layout_margin="1dp"
+		   android:background="@drawable/button_bg"
+		   android:layout_margin="5dp"
            android:layout_alignParentTop="true"
            android:layout_toRightOf="@+id/platestag_text_input"       
 	       android:entries="@array/PointType"/>
 	   <Button
 	       android:id="@+id/platestag_button_tag"
            android:layout_below="@+id/platestag_spinner"
-	       android:layout_width="wrap_content"
+	       android:layout_width="120dp"
 	       android:layout_height="wrap_content"
-           android:layout_alignParentLeft="true"        
-	       android:layout_margin="1dp"
+           android:layout_alignParentLeft="true"
+		   android:background="@drawable/button_bg"
+		   android:layout_margin="5dp"
 	       android:text="@string/Geotag"/>
 	   	 <Button
 	       android:id="@+id/platestag_button_verify"
-	       android:layout_width="wrap_content"
+	       android:layout_width="80dp"
 	       android:layout_height="wrap_content"
            android:layout_below="@+id/platestag_spinner"
-           android:layout_toRightOf="@+id/platestag_button_tag"        
-	       android:layout_margin="1dp"
+           android:layout_toRightOf="@+id/platestag_button_tag"
+		 android:background="@drawable/button_bg"
+		 android:layout_margin="5dp"
 	       android:text="@string/Verify"/>
 	</RelativeLayout>
     
@@ -69,6 +72,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text="@string/Clear"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+		android:background="@drawable/button_small"
+		android:layout_margin="5dp"
         />
     
     <Button
@@ -78,6 +83,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text="@string/Share"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+		android:background="@drawable/button_small"
+		android:layout_margin="5dp"
         />
     
     <Button
@@ -85,7 +92,8 @@ Redistribution and use in source and binary forms, with or without modification,
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:text="@string/Report"
-       android:layout_margin="1dp"
+		android:background="@drawable/button_small"
+		android:layout_margin="5dp"
        android:layout_alignParentBottom="true"
        android:layout_alignParentRight="true"
        />

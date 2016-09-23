@@ -323,7 +323,7 @@ public class FolderPreferenceDialogFragment extends PreferenceDialogFragmentComp
             }
             mFileList = new Item[fList.length];
             for (int i = 0; i < fList.length; i++) {
-                mFileList[i] = new Item(fList[i], R.drawable.file_icon);
+                mFileList[i] = new Item(fList[i], android.R.drawable.alert_light_frame);
 
                 /*
                  * Convert into file mPath
@@ -335,17 +335,17 @@ public class FolderPreferenceDialogFragment extends PreferenceDialogFragmentComp
                  */
                 if(sel.isDirectory()) {
                     if (sel.canWrite()) {
-                        mFileList[i].icon = R.drawable.directory_icon;
+                        mFileList[i].icon = android.R.drawable.ic_menu_save;
                     } 
                     else {
-                        mFileList[i].icon = R.drawable.lock_pink;
+                        mFileList[i].icon = android.R.drawable.ic_lock_lock;
                     }
                 }
                 /*
                  * File is for information only
                  */
                 else {
-                    mFileList[i].icon = R.drawable.file_icon;                    
+                    mFileList[i].icon = android.R.drawable.alert_light_frame;
                 }
             }
 
@@ -354,7 +354,7 @@ public class FolderPreferenceDialogFragment extends PreferenceDialogFragmentComp
                 for (int i = 0; i < mFileList.length; i++) {
                     temp[i + 1] = mFileList[i];
                 }
-                temp[0] = new Item(mContext.getString(R.string.Up), R.drawable.directory_up);
+                temp[0] = new Item(mContext.getString(R.string.Up), android.R.drawable.ic_menu_revert);
                 mFileList = temp;
             }
         }
@@ -386,7 +386,7 @@ public class FolderPreferenceDialogFragment extends PreferenceDialogFragmentComp
                  *  add margin between image and text (support various screen
                  */
                 textView.setCompoundDrawablePadding(10);
-                textView.setTextColor(Color.GREEN);
+                textView.setTextColor(Color.parseColor("#FF71BC78"));
                 return view;
             }
         };

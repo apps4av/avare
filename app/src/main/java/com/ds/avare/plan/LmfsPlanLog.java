@@ -12,10 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.plan;
 
-import java.util.Locale;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 
 /**
@@ -89,7 +89,7 @@ public class LmfsPlanLog {
 			return;
 		}
     	mLog = 
-    			"<table border=\"1\"><th>WP</th><th>Wind/Temp</th><th>Leg</th><th>Remain</th><th>MC</th><th>MH</th><th>Time</th><th>Fuel</th>";
+    			"<table class=\"table\"><th>WP</th><th>Wind/Temp</th><th>Leg</th><th>Remain</th><th>MC</th><th>MH</th><th>Time</th><th>Fuel</th>";
 		try {
 			/*
 			 * Get all item logs".

@@ -18,7 +18,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/gdrive_button_save"
         android:textStyle="bold"
         android:text="@string/Backup"
-        android:layout_margin="10dp"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <Button
@@ -27,7 +28,8 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text="@string/Restore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
         android:layout_below="@id/gdrive_button_save"/>
     <TextView
         android:id="@+id/gdrive_text_log"

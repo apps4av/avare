@@ -87,12 +87,12 @@ public class WeatherHelper {
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n", "<br>");
         if(translate) {
-            weather = weather.replace(" FM", "<br></br>FM(From)<br>");
-            weather = weather.replace("BECMG", "<br></br>BECMG(Becoming)<br>");
+            weather = weather.replace(" FM", "</br>FM(From)<br>");
+            weather = weather.replace("BECMG", "</br>BECMG(Becoming)<br>");
         }
         else {
-            weather = weather.replace(" FM", "<br></br>FM");
-            weather = weather.replace("BECMG", "<br></br>BECMG");            
+            weather = weather.replace(" FM", "</br>FM");
+            weather = weather.replace("BECMG", "</br>BECMG");
         }
         return weather;
     }

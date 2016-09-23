@@ -262,6 +262,7 @@ public class LmfsInterface {
 		params.put("httpMethod", httpMethod);
 		params.put("briefingType", "EMAIL");
 		params.put("briefingEmailAddresses", PossibleEmail.get(mContext));
+		params.put("recipientEmailAddresses", PossibleEmail.get(mContext));
 		params.put("routeCorridorWidth", routeWidth);
 		if(translated) {
 			params.put("briefingPreferences", "{\"plainText\":true}");			

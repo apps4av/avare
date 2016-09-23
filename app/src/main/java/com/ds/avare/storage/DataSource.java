@@ -319,29 +319,15 @@ public class DataSource {
     }
 
     /**
-     * Fuel cost for an airport
-     * @param name
-     * @return
-     */
-    public LinkedList<String> findFuelCost(String name) {
-    	return dbHelper.findFuelCost(name);
-    }
-
-    /**
-     * 
-     * @param airport
-     * @return
-     */
-	public LinkedList<String> findRatings(String name) {
-    	return dbHelper.findRatings(name);
-	}
-
-    /**
      *
      * @param name
      * @param airport
      */
     public Coordinate findRunwayCoordinates(String name, String airport) {
         return dbHelper.findRunwayCoordinates(name, airport);
+    }
+
+    public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
+        return dbHelper.getNavaidOrFixFromCoordinate(c);
     }
 }
