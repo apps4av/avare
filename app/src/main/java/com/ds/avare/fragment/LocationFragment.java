@@ -105,11 +105,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
      */
     private AlertDialog mGpsWarnDialog;
 
-    /**
-     * Version related warnings
-     */
-    private AlertDialog mWarnDialog;
-
     private Button mDestButton;
     private Button mCenterButton;
     private Button mDrawClearButton;
@@ -291,20 +286,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                 }
             });
             mGpsWarnDialog.show();
-        }
-
-        if(mPref.showTips()) {
-            mWarnDialog = new AlertDialog.Builder(getContext()).create();
-            mWarnDialog.setTitle(getString(R.string.Tip));
-            mWarnDialog.setMessage(Tips.getTip(getContext(), mPref));
-            mWarnDialog.setCancelable(false);
-            mWarnDialog.setCanceledOnTouchOutside(false);
-            mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            mWarnDialog.show();
         }
 
         /*
@@ -883,7 +864,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         try {
             mAlertDialogDatabase.dismiss();
             mGpsWarnDialog.dismiss();
-            mWarnDialog.dismiss();
             mAlertDialogExit.dismiss();
         } catch (Exception e) { }
     }

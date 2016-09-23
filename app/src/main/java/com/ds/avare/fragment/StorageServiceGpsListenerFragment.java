@@ -133,7 +133,7 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
     }
 
     protected void showSnackbar(String message, int duration) {
-        if (isVisible()) {
+        if (isVisible() && mCoordinatorLayout != null && mCoordinatorLayout.getContext() != null) {
             // only show snackbar if fragment is visible
             Snackbar.make(mCoordinatorLayout, message, duration).show();
         }

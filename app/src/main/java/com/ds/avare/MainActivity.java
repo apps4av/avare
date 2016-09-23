@@ -56,6 +56,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
+import com.ds.avare.utils.Tips;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,10 @@ public class MainActivity extends AppCompatActivity implements
      * To go to emergency mode
      */
     private AlertDialog mSosDialog;
+    /**
+     * Version related warnings
+     */
+    private AlertDialog mWarnDialog;
 
     private Map<Integer, Integer> mTabIndexToNavItemIdMap = new HashMap<>();
 
@@ -177,6 +182,20 @@ public class MainActivity extends AppCompatActivity implements
         navHeaderText.setText(mPref.getRegisteredEmail());
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
+        if(mPref.showTips()) {
+            mWarnDialog = new AlertDialog.Builder(this).create();
+            mWarnDialog.setTitle(getString(R.string.Tip));
+            mWarnDialog.setMessage(Tips.getTip(this, mPref));
+            mWarnDialog.setCancelable(false);
+            mWarnDialog.setCanceledOnTouchOutside(false);
+            mWarnDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            mWarnDialog.show();
+        }
     }
 
     private void setupTabs(TabLayout tabLayout) {
@@ -347,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements
         // Kill dialogs
         try {
             mSosDialog.dismiss();
+            mWarnDialog.dismiss();
         } catch (Exception e) { }
     }
 
