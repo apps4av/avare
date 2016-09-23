@@ -48,8 +48,7 @@ public abstract class StorageServiceGpsListenerFragment extends Fragment {
             if (!mPref.isRegistered()) {
                 Intent intent = new Intent(getContext(), RegisterActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                // don't require registration when running debug apk
-                if (!BuildConfig.DEBUG) startActivity(intent);
+                startActivity(intent);
             }
 
             // We've bound to LocalService, cast the IBinder and get LocalService instance
