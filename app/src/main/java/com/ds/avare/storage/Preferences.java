@@ -1043,7 +1043,7 @@ public class Preferences {
     }
 
     public boolean getHideToolbar() {
-        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), false);
+        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), true);
     }
 
     public void setHideTabBar(boolean val) {
