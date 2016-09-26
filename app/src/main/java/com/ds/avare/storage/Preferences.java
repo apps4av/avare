@@ -347,7 +347,9 @@ public class Preferences {
     public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
-
+    public boolean isShowLabelMETARS() {
+        return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
+    }
     /**
      * @return
      */
