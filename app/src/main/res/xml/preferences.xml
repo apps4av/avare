@@ -226,6 +226,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/KeepScreenOn"
             android:summary="@string/KeepScreenOnSummary"
             android:title="@string/KeepScreenOnLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/ShowLabelMETARS"
+            android:summary="@string/ShowLabelMETARSSummary"
+            android:title="@string/ShowLabelMETARS" />
+
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="Portrait"
             android:entries="@array/Orientation"

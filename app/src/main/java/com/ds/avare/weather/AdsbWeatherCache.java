@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.weather;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -48,7 +49,7 @@ public class AdsbWeatherCache {
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
-    private Preferences mPref;
+    private static Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
     /**
@@ -142,9 +143,23 @@ public class AdsbWeatherCache {
             }
             float x = (float)ctx.origin.getOffsetX(m.lon);
             float y = (float)ctx.origin.getOffsetY(m.lat);
-            ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
-            ctx.paint.setAlpha(ctx.pref.showLayer());
-            ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
+            String text = m.flightCategory;
+            if (mPref.isShowLabelMETARS())
+            {
+                ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
+                        text, WeatherHelper.metarColor(m.flightCategory), (float)x, (float)y /* + ctx.textPaint.getTextSize()*/,255);
+            }
+            else
+            {
+                ctx.paint.setColor(0);//WeatherHelper.metarColor(m.flightCategory));
+                ctx.paint.setAlpha(ctx.pref.showLayer());
+                ctx.canvas.drawCircle(x, y, ctx.dip2pix * 9, ctx.paint);
+                ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
+                ctx.paint.setAlpha(ctx.pref.showLayer());
+                ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
+            }
+            /*
+            */
             ctx.paint.setAlpha(255);
         }
     }
