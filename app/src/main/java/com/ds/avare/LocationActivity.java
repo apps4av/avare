@@ -40,6 +40,8 @@ import android.widget.Toast;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
+import com.ds.avare.animation.ThreeButton;
+import com.ds.avare.animation.ThreeButton.ThreeClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -133,7 +135,7 @@ public class LocationActivity extends Activity implements Observer {
     private TwoButton mDrawButton;
     private Button mWebButton;
     private OptionButton mChartOption;
-    private OptionButton mLayerOption;
+    private ThreeButton mLayerOption;
     private Bundle mExtras;
     private boolean mIsWaypoint;
     private AnimateButton mAnimateTracks;
@@ -633,15 +635,25 @@ public class LocationActivity extends Activity implements Observer {
                 }
         );
 
-        mLayerOption = (OptionButton)view.findViewById(R.id.location_spinner_layer);
-        mLayerOption.setCallback(new GenericCallback() {
+        mLayerOption = (ThreeButton)view.findViewById(R.id.location_spinner_layer);
+        mLayerOption.setStateNames("No Layer","METAR","NEXRAD");
+//        mLayerOption.setStateString(mPref.getLayerType());
+        mLayerOption.setThreeClickListener(new ThreeClickListener() {
             @Override
-            public Object callback(Object o, Object o1) {
-                mPref.setLayerType(mLayerOption.getCurrentValue());
+            public void onClick(View v) {
+                mPref.setLayerType(mLayerOption.getStateString());
                 mLocationView.setLayerType(mPref.getLayerType());
-                return null;
-            };
-        });
+
+                }
+            });
+//        mLayerOption.setCallback(new GenericCallback() {
+//            @Override
+//            public Object callback(Object o, Object o1) {
+//                mPref.setLayerType(mLayerOption.getCurrentValue());
+//                mLocationView.setLayerType(mPref.getLayerType());
+//                return null;
+//            };
+//        });
 
         mCenterButton = (ImageButton)view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
@@ -1142,8 +1154,7 @@ public class LocationActivity extends Activity implements Observer {
             // Tell the fuel tank timer we need to know when it runs out
             mService.getFuelTimer().addObserver(mTankObserver);
             mService.getUpTimer().addObserver(mTimerObserver);
-
-            mLayerOption.setSelectedValue(mPref.getLayerType());
+            mLayerOption.setStateString(mPref.getLayerType());
             mLocationView.setLayerType(mPref.getLayerType());
 
         }
