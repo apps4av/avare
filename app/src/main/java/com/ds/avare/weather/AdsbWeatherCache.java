@@ -49,7 +49,7 @@ public class AdsbWeatherCache {
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
-    private static Preferences mPref;
+    private Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
     /**
