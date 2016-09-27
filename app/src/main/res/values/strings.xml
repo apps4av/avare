@@ -65,8 +65,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
     <string name="KeepScreenOn">&quot;Screen Timeout&quot;</string>
     <string name="KeepScreenOnLabel">&quot;Keep Screen On&quot;</string>
-    <string name="ShowLabelMETARS">&quot;Use Text for METARS&quot;</string>
-    <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
     <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
@@ -550,5 +548,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="b2plate">Remove Button 2 in Plate (Restart Required)</string>
     <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
     <string name="UIConfiguration">UI Configuration</string>
+
+    <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
+    <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
 
 </resources>
