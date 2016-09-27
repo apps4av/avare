@@ -158,4 +158,42 @@ public class ShadowedText {
         // We have the "where", now display the text
         draw(canvas, paint, text, shadowColor, x, y);
     }
+    /***
+     * Draw the shadowed text using the "sector" as a reference around the center position specified
+     * by x and y
+     * @param canvas
+     * @param paint
+     * @param text
+     * @param shadowColor
+     * @param x
+     * @param y
+     * @param alpha
+     */
+    public void drawAlpha(Canvas canvas, Paint paint, String text, int shadowColor, float x, float y, int alpha) {
+
+        // If nothing to draw, then get out of here now
+        if((null == text) || 0 == text.length()) {
+            return;
+        }
+
+        // How big is the text we are about to draw
+        paint.getTextBounds(text, 0, text.length(), mTextSize);
+
+        // Calculate the size of the shadow
+        mShadowBox.bottom = mTextSize.bottom + YMARGIN + y - (mTextSize.top / 2);
+        mShadowBox.top    = mTextSize.top    - YMARGIN + y - (mTextSize.top / 2);
+        mShadowBox.left   = mTextSize.left   - XMARGIN + x - (mTextSize.right / 2);
+        mShadowBox.right  = mTextSize.right  + XMARGIN + x - (mTextSize.right / 2);
+
+        // Set our shadow paint color and transparency
+        mShadowPaint.setColor(shadowColor);
+        mShadowPaint.setAlpha(alpha);
+
+        // Draw the background
+        canvas.drawRoundRect(mShadowBox, SHADOWRECTRADIUS, SHADOWRECTRADIUS, mShadowPaint);
+
+        // Draw the text over it
+        canvas.drawText(text,  x - (mTextSize.right / 2), y - (mTextSize.top / 2), paint);
+    }
+
 }
