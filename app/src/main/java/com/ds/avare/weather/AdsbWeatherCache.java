@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.weather;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -48,7 +49,7 @@ public class AdsbWeatherCache {
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
-    private Preferences mPref;
+    private static Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
     /**
@@ -144,9 +145,11 @@ public class AdsbWeatherCache {
             float y = (float)ctx.origin.getOffsetY(m.lat);
             String text = m.flightCategory;
             if (ctx.pref.isShowLabelMETARS()) {
-                if(m.flightCategory.equals(""))
-                ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
-                        text, WeatherHelper.metarColor(m.flightCategory), x, y, 255);
+                //if(m.flightCategory.equals(""))
+				// If the metar color is white, do not draw the metar
+                if (WeatherHelper.metarColor(m.flightCategory) != 0xffffffff) {
+                    ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
+                            text, WeatherHelper.metarColor(m.flightCategory), (float) x, (float) y, ctx.pref.showLayer());
             }
             else {
                 ctx.paint.setColor(0);
