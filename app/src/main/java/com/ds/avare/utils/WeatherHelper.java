@@ -19,7 +19,7 @@ public class WeatherHelper {
         
     /**
      * 
-     * @param TAF
+     * @param type
      * @return
      */
     public static int metarColor(String type) {
@@ -44,7 +44,7 @@ public class WeatherHelper {
     
     /**
      * 
-     * @param TAF
+     * @param type
      * @return
      */
     public static String metarColorString(String type) {

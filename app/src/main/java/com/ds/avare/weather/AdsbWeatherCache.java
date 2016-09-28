@@ -144,14 +144,13 @@ public class AdsbWeatherCache {
             float x = (float)ctx.origin.getOffsetX(m.lon);
             float y = (float)ctx.origin.getOffsetY(m.lat);
             String text = m.flightCategory;
-            if (mPref.isShowLabelMETARS())
-            {
+            if (ctx.pref.isShowLabelMETARS()) {
+                if(m.flightCategory.equals(""))
                 ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
-                        text, WeatherHelper.metarColor(m.flightCategory), (float)x, (float)y /* + ctx.textPaint.getTextSize()*/,255);
+                        text, WeatherHelper.metarColor(m.flightCategory), x, y, 255);
             }
-            else
-            {
-                ctx.paint.setColor(0);//WeatherHelper.metarColor(m.flightCategory));
+            else {
+                ctx.paint.setColor(0);
                 ctx.paint.setAlpha(ctx.pref.showLayer());
                 ctx.canvas.drawCircle(x, y, ctx.dip2pix * 9, ctx.paint);
                 ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
