@@ -1200,6 +1200,9 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
 
+    public boolean getAutoStartTracking() {
+        return (mPref.getBoolean(mContext.getString(R.string.prefAutoStartTracking), false));
+    }
 
 }
 

@@ -1010,7 +1010,6 @@ public class LocationActivity extends Activity implements Observer {
                                 Uri.fromFile(new File(fileURI.getPath())));
                         startActivity(emailIntent);
                     } catch (Exception e) {
-
                     }
                     break;
 
@@ -1145,6 +1144,9 @@ public class LocationActivity extends Activity implements Observer {
 
             mLayerOption.setSelectedValue(mPref.getLayerType());
             mLocationView.setLayerType(mPref.getLayerType());
+
+            // auto start tracking
+            startTracks();
 
         }
 
@@ -1460,6 +1462,18 @@ public class LocationActivity extends Activity implements Observer {
         Handler h = new Handler();
         for(int ms = 500; ms <= 5000; ms+=500) {
         	h.postDelayed(r, ms);
+        }
+    }
+
+    private void startTracks() {
+        if(mPref.getAutoStartTracking()) {
+            // if service available and not currently logging
+            if(mService!=null && !mService.getTracks()) {
+                // Start the track log
+                setTrackState(true);
+                // update button
+                mTracksButton.setChecked(true);
+            }
         }
     }
 }
