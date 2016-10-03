@@ -42,8 +42,15 @@ authors: zkhan
         toastr.options.timeOut = 2000;
 
         // set data
-        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+        function setData(airport, nameEdit, isStatic, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
             $("#airportName").text(airport);
+            $("#nameEdit").val(nameEdit);
+            if (isStatic) {
+                $("#nameEditDiv").hide();
+            } else {
+                $("#nameEditDiv").show();
+                $("#nameEdit").focus();
+            }
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
             $("#airportTaf").html(taf);
@@ -62,6 +69,11 @@ authors: zkhan
             AndroidMap.doAction(action);
         }
 
+        function doRenameAction(action) {
+            AndroidMap.doAction(action + "`" + $("#nameEdit").val());
+        }
+
+
     </script>
 
 
@@ -70,14 +82,18 @@ authors: zkhan
 <div class="container-fluid">
     <div class="btn-group btn-group-justified" id="buttonGroup">
         <a href="javascript:doAction('->D');" class="btn btn-primary">->D</a>
-        <a href="javascript:doAction('+Plan');" class="btn btn-primary">+Plan</a>
+        <a href="javascript:doRenameAction('+Plan');" class="btn btn-primary">+Plan</a>
         <a href="javascript:doAction('Plate');" class="btn btn-primary">Plate</a>
         <a href="javascript:doAction('A/FD');" class="btn btn-primary">A/FD</a>
         <a href="javascript:doAction('X');" class="btn btn-danger">X</a>
     </div>
     <div style="margin-left : 5px">
-        <h4><span class="label label-success" id='airportName'></span></h4>
+        <div id='nameEditDiv'>
+            <input id='nameEdit' type="text" autofocus onfocus="this.select();" onmouseup="return false;"/>
+            <a href="javascript:doRenameAction('Rename');" class="btn btn-success">Name</a>
+        </div>
         <hr>
+        <h4><div id='airportNameDiv'><span class="label label-success" id='airportName'></span></div></h4>
         <div id='airportInfo'></div>
         <div id='airportMetar'></div>
         <div id='airportTaf'></div>
