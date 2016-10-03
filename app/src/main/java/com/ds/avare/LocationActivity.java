@@ -1371,6 +1371,10 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Save the current track log
+        if(mService!=null && mService.getTracks()) {
+            setTrackState(false);
+        }
     }
 
     /**
