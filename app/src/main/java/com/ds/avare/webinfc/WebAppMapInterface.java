@@ -167,6 +167,8 @@ public class WebAppMapInterface {
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
                         Helper.formatJsArgs(data.airport) + "','" +
+                        Helper.formatJsArgs(data.airport) + "'," + // nameEdit
+                        Helper.formatJsArgs(data.airport.contains("&") ? "false" : "true") + ",'" + // isStatic
                         "<font color=\"yellow\">Position " + "</font>" + Helper.formatJsArgs(data.info) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +
