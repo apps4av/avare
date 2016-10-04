@@ -76,6 +76,7 @@ public class KMLRecorder {
 	 */
 	private Config			mConfig;				// Configuration record passed in at start() call
 	private BufferedWriter  mTracksFile;			// File handle to use for writing the data
+	private long		    mTracksFileFlushed = 0; // last time the tracks file was flushed
     private File            mFile;					// core file handler
     private LinkedList<GpsParams> mPositionHistory; // Stored GPS points 
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
@@ -303,7 +304,7 @@ public class KMLRecorder {
     		// File closed means nothing to do
     		return;
     	}
-		
+
 		if((gpsParams.getSpeed() < mConfig.mStartSpeed)) {
 			// Not going fast enough yet to record
 			return;
@@ -343,6 +344,12 @@ public class KMLRecorder {
 			mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
 											  gpsParams.getLatitude() + "," + 
 											 (gpsParams.getAltitude() * .3048) + "\n");
+			// flush the file every minute or so
+			long now=(new Date()).getTime();
+			if(now-mTracksFileFlushed>60000) {
+				mTracksFileFlushed=now;
+				mTracksFile.flush();;
+			}
 
 			// Add this position to our linked list for possible display
 			// on the charts
