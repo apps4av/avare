@@ -272,6 +272,23 @@ public class Plan implements Observer {
     }
 
     /*
+     * Find a destination using lat/lon coordinates
+     */
+    public Destination findDestinationByLocation(double lonToFind, double latToFind) {
+        /*
+         *
+         */
+        for (int id = 0; id < getDestinationNumber(); id++) {
+            Location loc = mDestination[id].getLocation();
+            double lon = loc.getLongitude();
+            double lat = loc.getLatitude();
+            if (Helper.isSameGPSLocation(lon, lat, lonToFind, latToFind))
+                return mDestination[id];
+        }
+        return null;
+    }
+
+    /*
      * If passed
      */
     public boolean isPassed(int id) {

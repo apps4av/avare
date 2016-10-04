@@ -776,6 +776,13 @@ public class Destination extends Observable {
     /**
      * @return
      */
+    public void setID(String name) {
+        mName = name.toUpperCase(Locale.getDefault());;
+    }
+
+    /**
+     * @return
+     */
     public LinkedList<Runway> getRunways() {
         return(mRunways);
     }

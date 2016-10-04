@@ -470,6 +470,8 @@ public class LocationActivity extends Activity implements Observer {
                     String type = Destination.BASE;
                     if (dest.contains("&")) {
                         type = Destination.GPS;
+                        dest = (newName.isEmpty() && newName != mAirportPressed)
+                                ? dest : newName + "@" + dest;
                     }
                     goTo(dest, type);
                 } else if (action.equals("Rename")) {
@@ -1005,6 +1007,9 @@ public class LocationActivity extends Activity implements Observer {
                 Destination destToRename = plan.findDestinationByLocation(lon, lat);
                 if (destToRename != null) {
                     destToRename.setID(newName+"@"+mAirportPressed);
+                    mToast.setText(getString(R.string.LabelChanged)+" "+newName);
+                    mToast.show();
+
                 }
             }
         }
