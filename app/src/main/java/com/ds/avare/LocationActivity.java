@@ -1145,8 +1145,6 @@ public class LocationActivity extends Activity implements Observer {
             mLayerOption.setSelectedValue(mPref.getLayerType());
             mLocationView.setLayerType(mPref.getLayerType());
 
-            // auto start tracking
-            startTracks();
 
         }
 
@@ -1371,10 +1369,6 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Save the current track log
-        if(mService!=null && mService.getTracks()) {
-            setTrackState(false);
-        }
     }
 
     /**
@@ -1469,15 +1463,4 @@ public class LocationActivity extends Activity implements Observer {
         }
     }
 
-    private void startTracks() {
-        if(mPref.getAutoStartTracking()) {
-            // if service available and not currently logging
-            if(mService!=null && !mService.getTracks()) {
-                // Start the track log
-                setTrackState(true);
-                // update button
-                mTracksButton.setChecked(true);
-            }
-        }
-    }
 }
