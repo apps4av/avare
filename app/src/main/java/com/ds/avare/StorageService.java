@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2016, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,7 @@ import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
 import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.ShadowedText;
+import com.ds.avare.utils.TimeConstants;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
 
@@ -252,6 +253,10 @@ public class StorageService extends Service {
     // Timer for count up
     private UpTimer mUpTimer;
 
+
+    // Last time location was updated
+    private long mLastLocationUpdate;
+
     public String getOverrideListName() {
         return mOverrideListName;
     }
@@ -335,7 +340,8 @@ public class StorageService extends Service {
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mCheckLists = null;
-        
+        mLastLocationUpdate = 0;
+
         mCap = new DrawCapLines(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
         
         mInfoLines = new InfoLines(this);
@@ -448,7 +454,13 @@ public class StorageService extends Service {
                      */
                     return;
                 }
-                
+
+                long diff = System.currentTimeMillis() - mLastLocationUpdate;
+                // Do not overwhelm as GPS can send a lot of position updates per second
+                if(diff < TimeConstants.ONE_SECOND) {
+                    return;
+                }
+
                 LinkedList<GpsInterface> list = extracted();
                 Iterator<GpsInterface> it = list.iterator();
                 while (it.hasNext()) {
@@ -504,6 +516,8 @@ public class StorageService extends Service {
                     // Calculate course line deviation - this must be AFTER the destination update
                     // since the CDI uses the destination in its calculations
                     getCDI().calcDeviation(mDestination, getPlan());
+
+                    mLastLocationUpdate = System.currentTimeMillis();
                 }
             }
 
