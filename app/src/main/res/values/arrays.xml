@@ -1940,12 +1940,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <integer-array name="AirSigColor">
         <item>0xFFFFFFFF</item>
         <item>0x00000000</item>
-        <item>0xFF800080</item>
-        <item>0xFF0000FF</item>
+        <item>0xFFFF4D77</item>
+        <item>0xFF4172FF</item>
         <item>0xFF00FF00</item>
         <item>0xFF66FFFF</item>
-        <item>0xFF7F0000</item>
-        <item>0xFFFFA500</item>
+        <item>0xFFFFFD74</item>
+        <item>0xFFA85056</item>
     </integer-array>
     
 	<string-array name="TimerRingSizeValues">

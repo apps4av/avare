@@ -1207,10 +1207,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Set MET tfr
                          */
-                        String txt = cshape.getTextIfTouched(lon, lat);
-                        if(null != txt) {
-                            textMets += txt + "\n--\n";
-                        }
+                        textMets += cshape.getHTMLMetOnTouch(mContext, mets.get(i), lon, lat);
                     }
                 }
             }            
