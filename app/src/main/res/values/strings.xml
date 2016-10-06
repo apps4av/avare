@@ -552,4 +552,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
     <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
 
+    <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
+    <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>
+    <string name="Rate">&quot;Rate Now&quot;</string>
+    <string name="MaybeLater">&quot;Maybe Later&quot;</string>
+    <string name="NeverAsk">&quot;Never Rate&quot;</string>
+
 </resources>
