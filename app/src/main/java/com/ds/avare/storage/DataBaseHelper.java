@@ -28,6 +28,7 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
@@ -1974,7 +1975,56 @@ public class DataBaseHelper  {
         return metar;        
     }
 
-    
+    /**
+     *  Return metar closest to the input coordinates using query on weather.metars table
+     *  We query in a bounded 100mi wide/tall lat/lon box then sort based on distance from the input
+     *  see also http://stackoverflow.com/questions/3695224/sqlite-getting-nearest-locations-with-latitude-and-longitude#
+     * @param lat of the central point
+     * @param lon of the central point
+     * @return
+     */
+    public Metar getClosestMETAR(Double lat, Double lon) {
+
+        Metar metar = null;
+        Double radius = 50.;
+        Coordinate top = Projection.findStaticPoint(lon,lat,0, radius),
+                bottom = Projection.findStaticPoint(lon,lat,180, radius),
+                left   = Projection.findStaticPoint(lon,lat,270,radius),
+                right  = Projection.findStaticPoint(lon,lat,90,radius);
+        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)),2);
+        String qry =
+                "select * from metars where 1=1"+
+        " and latitude < "+top.getLatitude()+
+        " and latitude > "+bottom.getLatitude()+
+        " and longitude < "+right.getLongitude()+
+        " and longitude > "+left.getLongitude()+
+        " order by (("+lat+" - latitude) * ("+lat+" - latitude) + ("+lon+" - longitude) * ("+lon+" - longitude) * "+fudge+")"
+                        +";";
+
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    metar = new Metar();
+                    metar.rawText = cursor.getString(0);
+                    metar.time = cursor.getString(1);
+                    metar.stationId = cursor.getString(2);
+                    metar.flightCategory = cursor.getString(3);
+                    if (!cursor.isNull(4) && !cursor.isNull(5)) {
+                        metar.distance = Projection.getStaticDistance(lon, lat, cursor.getDouble(4), cursor.getDouble(5));
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closesWeather(cursor);
+        return metar;
+    }
+
     /**
      * 
      * @param lon

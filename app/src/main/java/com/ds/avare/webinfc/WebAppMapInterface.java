@@ -26,6 +26,8 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.Airep;
 
+import java.util.Locale;
+
 /**
  * 
  * @author zkhan
@@ -94,7 +96,8 @@ public class WebAppMapInterface {
 
                 String metar = "";
                 if(data.metar != null) {
-                    metar = WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
+                    metar = (data.metar.distance>0 ? String.format(Locale.getDefault(), "<font color=\"yellow\">(%.0f%s)</font> ", data.metar.distance, Preferences.distanceConversionUnit) : "");
+                    metar += WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
                     metar = "<hr><font color=\"yellow\">METAR </font>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\">" + metar +  "</font>";
                 }
 

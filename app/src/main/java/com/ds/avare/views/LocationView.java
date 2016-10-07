@@ -1233,7 +1233,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(isCancelled()) {
                     return "";
                 }
-            
+                if (metar==null) { // in no metar on the field, try to find a nearby metar
+                    metar = mService.getDBResource().getClosestMETAR(lat,lon);
+                    if(isCancelled()) {
+                        return "";
+                    }
+                }
+
                 runways = mService.getDBResource().findRunways(airport);
                 if(isCancelled()) {
                     return "";
