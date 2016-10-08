@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import com.ds.avare.weather.Metar;
+
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -296,6 +298,15 @@ public class WeatherHelper {
 
 
         return weather;
+    }
+
+    public enum DistantMetarFormat { NoStationId, WithStationId }
+    public static String formatDistantMetar(Metar metar, DistantMetarFormat format, String airport) {
+        String station = format == DistantMetarFormat.WithStationId ? metar.stationId+" " : "";
+        return metar.distance > 0 ?
+                String.format(Locale.getDefault(),
+                        "<font color=\"yellow\">(%s%s %s)</font> ", station, metar.position, airport)
+                : "";
     }
 
     /**

@@ -2014,6 +2014,11 @@ public class DataBaseHelper  {
                     metar.flightCategory = cursor.getString(3);
                     if (!cursor.isNull(4) && !cursor.isNull(5)) {
                         metar.distance = Projection.getStaticDistance(lon, lat, cursor.getDouble(4), cursor.getDouble(5));
+
+                        GeomagneticField gmf = new GeomagneticField(lat.floatValue(), lon.floatValue(), 0, System.currentTimeMillis());
+                        Projection p = new Projection(cursor.getDouble(4), cursor.getDouble(5), lon, lat);
+                        metar.position =  Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " +
+                                p.getGeneralDirectionFrom(-gmf.getDeclination());
                     }
                 }
             }

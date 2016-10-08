@@ -1233,7 +1233,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(isCancelled()) {
                     return "";
                 }
-                if (metar==null) { // in no metar on the field, try to find a nearby metar
+                if (metar==null) { // in no metar on the field, try to find the closest metar
                     metar = mService.getDBResource().getClosestMETAR(lat,lon);
                     if(isCancelled()) {
                         return "";
