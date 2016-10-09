@@ -336,6 +336,15 @@ public class WeatherHelper {
                 : "";
     }
 
+    public enum DistantMetarFormat { NoStationId, WithStationId }
+    public static String formatDistantMetar(Metar metar, DistantMetarFormat format, String airport) {
+        String station = format == DistantMetarFormat.WithStationId ? metar.stationId+" " : "";
+        return metar.distance > 0 ?
+                String.format(Locale.getDefault(),
+                        "<font color=\"yellow\">(%s%s %s)</font> ", station, metar.position, airport)
+                : "";
+    }
+
     /**
      * Color code winds
      * @param weather
