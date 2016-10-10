@@ -164,6 +164,10 @@ public class WebAppMapInterface {
                     winds += "@ 39000 ft: " + WeatherHelper.decodeWind(data.wa.w39k);
                 }
 
+                String navaids = "";
+                navaids = "<hr><font color=\"yellow\">Position From Navaids</font><br>";
+                navaids += data.navaids;
+
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
                         Helper.formatJsArgs(data.airport) + "','" +
@@ -176,7 +180,8 @@ public class WebAppMapInterface {
                         Helper.formatJsArgs(mets) + "','" +
                         Helper.formatJsArgs(performance) + "','" +
                         Helper.formatJsArgs(winds) + "','" +
-                        Helper.formatJsArgs(layer) +
+                        Helper.formatJsArgs(layer) + "','" +
+                        Helper.formatJsArgs(navaids) +
                         "')";
 
 

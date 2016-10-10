@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2016, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,32 +10,51 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.touch;
+package com.ds.avare.place;
 
-import com.ds.avare.weather.Airep;
-import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
+import com.ds.avare.position.Coordinate;
 
-import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Works with LongTouchGesture
- * @author zkhan
- *
+/*
+ * Created by pasniak on 10/9/2016.
  */
-public class LongTouchDestination {
 
-    public String airport;
-    public String info;
-    public String tfr;
-    public String mets;
-    public Taf taf;
-    public WindsAloft wa;
-    public Metar metar;
-    public String sua;
-    public String layer;
-    public LinkedList<Airep> airep;
-    public String performance;
-    public String navaids;
+public class NavAid {
+
+    private String mLocationId;
+    private String mFacilityName;
+    private String mType;
+    private Coordinate mCoords;
+
+    public String getLocationId() {
+        return mLocationId;
+    }
+
+    private static final Pattern FrequencyPattern = Pattern.compile("(\\d.+)");
+
+    public String getFrequency() {
+        Matcher m = FrequencyPattern.matcher(mFacilityName);
+        return m.find() ? m.group(1) : "";
+    }
+
+    public String getLongName() {
+        return FrequencyPattern.split(mFacilityName)[0];
+    }
+
+    public String getType() {
+        return mType;
+    }
+    public Coordinate getCoords() {
+        return mCoords;
+    }
+
+    public NavAid(String location, String type, String facility, Coordinate coords) {
+        mLocationId = location;
+        mType = type;
+        mFacilityName = facility;
+        mCoords = coords;
+    }
+
 }

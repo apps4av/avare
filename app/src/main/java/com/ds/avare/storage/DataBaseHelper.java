@@ -23,11 +23,13 @@ import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
@@ -47,6 +49,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.Vector;
 
 /**
  * @author zkhan, jlmcgraw
@@ -2516,21 +2519,41 @@ public class DataBaseHelper  {
 
     /**
      * 
-     * @param name
+     * @param lat
+     * @param lon
      * @return
      */
-    public Coordinate findNavaid(String name) {
-    	Coordinate coord = null;
-	    String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
-	    /*
-	     * NAV
-	     */
+    public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
+
+        Double radius = 40.; // reception radius of VORs on low altitude
+        Coordinate top = Projection.findStaticPoint(lon,lat,0, radius),
+                bottom = Projection.findStaticPoint(lon,lat,180, radius),
+                left   = Projection.findStaticPoint(lon,lat,270,radius),
+                right  = Projection.findStaticPoint(lon,lat,90,radius);
+        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)),2);
+        String qry = "select * from " + TABLE_NAV
+                + " where Type != 'VOT' "+
+                " and ARPlatitude < "+top.getLatitude()+
+                " and ARPlatitude > "+bottom.getLatitude()+
+                " and ARPlongitude < "+right.getLongitude()+
+                " and ARPlongitude > "+left.getLongitude()+
+                " order by (("+lat+" - ARPlatitude) * ("+lat+" - ARPlatitude) + ("+lon+" - ARPlongitude) * ("+lon+" - ARPlongitude) * "+fudge+")"
+                +" limit 3;"; // we need 2 coordinates for a fix; get 3 in case we hit NDB
+
 	    Cursor cursor = doQuery(qry, getMainDb());
-	    
-	    try {
+
+        Vector result = null;
+        try {
 	        if(cursor != null) {
 	            if(cursor.moveToFirst()) {
-	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+                    result = new Vector<>();
+                    do {
+                        String locationId = cursor.getString(LOCATION_ID_COL);
+                        Coordinate coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+                        String name = cursor.getString(FACILITY_NAME_COL);
+                        String type = cursor.getString(TYPE_COL);
+                        result.add(new NavAid(locationId, type, name, coord));
+                    } while (cursor.moveToNext());
 	            }
 	        }
 	    }
@@ -2539,30 +2562,59 @@ public class DataBaseHelper  {
 
 	    closes(cursor);
 
-	    if(null != coord) {
-	    	return coord;
-	    }
-	    
-	    qry = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
+	    return result;
+    }
+
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public Coordinate findNavaid(String name) {
+        Coordinate coord = null;
+        String qry = "select * from " + TABLE_NAV + " where " + LOCATION_ID_DB + "=='" + name + "' and Type != 'VOT' limit 1;";
+	    /*
+	     * NAV
+	     */
+        Cursor cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+
+        if(null != coord) {
+            return coord;
+        }
+
+        qry = "select * from " + TABLE_FIX + " where " + LOCATION_ID_DB + "=='" + name + "' limit 1;";
 	    /*
 	     * Fix
 	     */
-	    cursor = doQuery(qry, getMainDb());
-	    
-	    try {
-	        if(cursor != null) {
-	            if(cursor.moveToFirst()) {
-	            	coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
-	            }
-	        }
-	    }
-	    catch (Exception e) {
-	    }
+        cursor = doQuery(qry, getMainDb());
 
-	    return coord;
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        return coord;
     }
 
-    
+
     /**
      * Find all coordinates of a airway
      * @param name

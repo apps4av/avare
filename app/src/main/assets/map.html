@@ -42,7 +42,7 @@ authors: zkhan
         toastr.options.timeOut = 2000;
 
         // set data
-        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer, navaids) {
             $("#airportName").text(airport);
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
@@ -54,6 +54,7 @@ authors: zkhan
             $("#areaSua").html(sua);
             $("#areaWinds").html(winds);
             $("#areaLayer").html(layer);
+            $("#areaNavaids").html(navaids);
             $("#buttonGroup").scrollIntoView();
         }
 
@@ -86,6 +87,7 @@ authors: zkhan
         <div id='areaMets'></div>
         <div id='areaAirep'></div>
         <div id='areaTfr'></div>
+        <div id='areaNavaids'></div>
         <div id='areaSua'></div>
         <div id='areaLayer'></div>
     </div>
