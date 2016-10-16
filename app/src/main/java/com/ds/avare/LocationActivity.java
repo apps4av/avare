@@ -1022,7 +1022,6 @@ public class LocationActivity extends Activity implements Observer {
                                 Uri.fromFile(new File(fileURI.getPath())));
                         startActivity(emailIntent);
                     } catch (Exception e) {
-
                     }
                     break;
 
@@ -1156,6 +1155,7 @@ public class LocationActivity extends Activity implements Observer {
             mService.getUpTimer().addObserver(mTimerObserver);
             mLayerOption.setStateString(mPref.getLayerType());
             mLocationView.setLayerType(mPref.getLayerType());
+
 
         }
 
@@ -1473,4 +1473,5 @@ public class LocationActivity extends Activity implements Observer {
         	h.postDelayed(r, ms);
         }
     }
+
 }

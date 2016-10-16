@@ -323,7 +323,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
     <string name="Geotag">&quot;Geotag&quot;</string>
     <string name="Tag">&quot;Tag&quot;</string>
-    <string name="ToTag">&quot;To geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.&quot;</string>
+    <string name="ToTag">&quot;Plates are already tagged for users, use Download menu Databases.\nTo geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.\nTo hide Tag button, use Preferences UI Configuration.&quot;</string>
     <string name="AlreadyTagged">&quot;This plate is already tagged and stored. Press clear to re-tag.&quot;</string>
     <string name="InvalidPoint">&quot;Invalid Point specified.&quot;</string>
     <string name="PointNotFound">&quot;The Point is not found, please verify that the point type and its name matches the point on the plate.&quot;</string>
@@ -556,5 +556,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
     <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
+
+    <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
+    <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>
+    <string name="Rate">&quot;Rate Now&quot;</string>
+    <string name="MaybeLater">&quot;Maybe Later&quot;</string>
+    <string name="NeverAsk">&quot;Never Rate&quot;</string>
 
 </resources>
