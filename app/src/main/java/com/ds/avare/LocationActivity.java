@@ -1145,6 +1145,7 @@ public class LocationActivity extends Activity implements Observer {
             mLayerOption.setSelectedValue(mPref.getLayerType());
             mLocationView.setLayerType(mPref.getLayerType());
 
+
         }
 
         /* (non-Javadoc)

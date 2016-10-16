@@ -56,7 +56,7 @@ public class AdsbWeatherCache {
     private HashMap<String, WindsAloft> mWinds;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
-    private static Preferences mPref;
+    private Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
     private static Context ourContext;
@@ -458,11 +458,11 @@ public class AdsbWeatherCache {
             float y = (float)ctx.origin.getOffsetY(m.lat);
             String text = m.flightCategory;
             // Draw the wind barb first, if it is enabled
-            if (mPref.isShowWindBarbs())
+            if (ctx.pref.isShowWindBarbs())
             {
                 drawWindBarb(ctx,x,y,m);
             }
-            if (mPref.isShowLabelMETARS())
+            if (ctx.pref.isShowLabelMETARS())
             {
                 // Do not draw unknown metars
                 if (WeatherHelper.metarColor(m.flightCategory) != 0xffffffff) {
@@ -472,7 +472,7 @@ public class AdsbWeatherCache {
             }
             else
             {
-                ctx.paint.setColor(0);//WeatherHelper.metarColor(m.flightCategory));
+                ctx.paint.setColor(Color.BLACK);
                 ctx.paint.setAlpha(ctx.pref.showLayer());
                 ctx.canvas.drawCircle(x, y, ctx.dip2pix * 9, ctx.paint);
                 ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
