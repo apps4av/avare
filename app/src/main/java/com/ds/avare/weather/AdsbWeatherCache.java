@@ -59,12 +59,11 @@ public class AdsbWeatherCache {
     private Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
-    private static Context ourContext;
+
     /**
      * 
      */
     public AdsbWeatherCache(Context context, StorageService service) {
-        ourContext = context;
         mPref = new Preferences(context);
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
@@ -418,7 +417,7 @@ public class AdsbWeatherCache {
         if (gusts != "") {
             Paint paint = new Paint();
             paint.setColor(Color.RED);
-            paint.setTypeface(Typeface.createFromAsset(ourContext.getAssets(), "LiberationMono-Bold.ttf"));
+            paint.setTypeface(Typeface.createFromAsset(ctx.context.getAssets(), "LiberationMono-Bold.ttf"));
             paint.setShadowLayer(0, 0, 0, 0);
             paint.setAlpha(0xff);
             paint.setStyle(Paint.Style.FILL);

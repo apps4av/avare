@@ -31,7 +31,7 @@ public class WeatherHelper {
         }
         else if(type.equals("IFR")) {
         	// red
-            return(0xffff2a00);                        
+            return(0xffff2a00);
         }
         else if(type.equals("MVFR")) {
         	// blue
