@@ -65,8 +65,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AreaNF">&quot;Nearest airports shown when GPS locked, and not in simulation&quot;</string>
     <string name="KeepScreenOn">&quot;Screen Timeout&quot;</string>
     <string name="KeepScreenOnLabel">&quot;Keep Screen On&quot;</string>
-    <string name="ShowLabelMETARS">&quot;Use Text for METARS&quot;</string>
-    <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
     <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
@@ -174,9 +172,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="noZoomIn">&quot;Cannot zoom in further&quot;</string>
     <string name="noZoomOut">&quot;Cannot zoom out further&quot;</string>
     <string name="Navigate">&quot;Navigate&quot;</string>
-    <string name="NEXName">&quot;NEXRAD&quot;</string>
-    <string name="METAR">&quot;METAR&quot;</string>
-    <string name="NoLayer">&quot;No Layer&quot;</string>
     <string name="NotAvailable">&quot;Not available&quot;</string>
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
@@ -556,6 +551,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
     <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
+
+    <string name="ShowWindBarbs">&quot;Show Wind Barbs on METARs&quot;</string>
+    <string name="ShowWindBarbsSummary">&quot;Choose to select the display of wind barbs on ADS-B METARs&quot;</string>
 
     <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
     <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>

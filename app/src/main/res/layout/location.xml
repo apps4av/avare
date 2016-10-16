@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:threebutton="http://schemsa.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
@@ -130,18 +129,17 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOff="@string/TracksOff"
             android:textOn="@string/TracksOn" />
 
-        <com.ds.avare.animation.ThreeButton
+        <com.ds.avare.utils.OptionButton
             android:id="@+id/location_spinner_layer"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/location_button_sim"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:background="@drawable/button_bg_option"
             android:layout_margin="5dp"
-            android:visibility="invisible"/>
-<!--            android:labelFor="@string/LayerSelect"
-            android:entries="@array/LayerType"/> -->
+            android:visibility="invisible"
+            android:labelFor="@string/LayerSelect"
+            android:entries="@array/LayerType"/>
 
         <com.ds.avare.animation.TwoButton
             android:id="@+id/location_button_sim"
