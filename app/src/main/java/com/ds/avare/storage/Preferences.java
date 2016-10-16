@@ -350,6 +350,9 @@ public class Preferences {
     public boolean isShowLabelMETARS() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
     }
+    public boolean isShowWindBarbs() {
+        return (mPref.getBoolean(mContext.getString(R.string.ShowWindBarbs), false));
+    }
     /**
      * @return
      */
