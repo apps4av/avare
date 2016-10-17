@@ -24,6 +24,8 @@ public class Metar {
     public String flightCategory;
     public double lon;
     public double lat;
+    public double distance; // distance to the metar (if no metar on the field)
+    public String position; // position of the metar source (if no metar on the field)
 
     public long timestamp;
 }

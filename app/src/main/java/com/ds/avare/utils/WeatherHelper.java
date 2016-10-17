@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import com.ds.avare.weather.Metar;
+
 import android.util.Pair;
 
 import java.util.LinkedList;
@@ -75,7 +77,8 @@ public class WeatherHelper {
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
-        weather = weather.replace("BECMG", "\nBECMG"); 
+        weather = weather.replace("TEMPO", "\nTEMPO");
+        weather = weather.replace("BECMG", "\nBECMG");
         return weather;
     }
     
@@ -90,10 +93,12 @@ public class WeatherHelper {
         weather = weather.replace("\n", "<br>");
         if(translate) {
             weather = weather.replace(" FM", "</br>FM(From)<br>");
+            weather = weather.replace("TEMPO", "</br>TEMPO(Temporarily)<br>");
             weather = weather.replace("BECMG", "</br>BECMG(Becoming)<br>");
         }
         else {
             weather = weather.replace(" FM", "</br>FM");
+            weather = weather.replace("TEMPO", "</br>TEMPO");
             weather = weather.replace("BECMG", "</br>BECMG");
         }
         return weather;
@@ -320,6 +325,24 @@ public class WeatherHelper {
         }
 
         return identAndTime + " " + weather;
+    }
+
+    public enum DistantMetarFormat { NoStationId, WithStationId }
+    public static String formatDistantMetar(Metar metar, DistantMetarFormat format, String airport) {
+        String station = format == DistantMetarFormat.WithStationId ? metar.stationId+" " : "";
+        return metar.distance > 0 ?
+                String.format(Locale.getDefault(),
+                        "<font color=\"yellow\">(%s%s %s)</font> ", station, metar.position, airport)
+                : "";
+    }
+
+    public enum DistantMetarFormat { NoStationId, WithStationId }
+    public static String formatDistantMetar(Metar metar, DistantMetarFormat format, String airport) {
+        String station = format == DistantMetarFormat.WithStationId ? metar.stationId+" " : "";
+        return metar.distance > 0 ?
+                String.format(Locale.getDefault(),
+                        "<font color=\"yellow\">(%s%s %s)</font> ", station, metar.position, airport)
+                : "";
     }
 
     /**
