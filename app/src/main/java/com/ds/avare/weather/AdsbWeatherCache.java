@@ -30,7 +30,6 @@ import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.DisplayUatTowerIcon;
 import com.ds.avare.utils.RateLimitedBackgroundQueue;
 import com.ds.avare.utils.WeatherHelper;
 
@@ -131,12 +130,6 @@ public class AdsbWeatherCache {
         return isInLat && isInLon;
     }
 
-    /**
-     * Draw UAT ADS-B towers
-     * @param ctx
-     * @param map
-     * @param shouldDraw
-     */
 
     public static void drawWindBarb(DrawingContext ctx, float x, float y, Metar m)
     {
