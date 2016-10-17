@@ -12,11 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.flight;
 
-import java.util.LinkedList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 /**
  * All lists get stored and get retrieved in JSON format
@@ -24,13 +24,15 @@ import org.json.JSONObject;
  *
  */
 public class Checklist {
-    
+
     private String mSteps;
     private String mName;
     private int mWorkingIndex;
-    
-    private static String DELIM = "::";
-    
+
+    private static final String DELIM = "::";
+    private static final String DELIM_PART = ":";
+    private static final String ESCAPED_DELIM_PART = "%:%";
+
     /**
      * 
      * @param name
@@ -79,6 +81,7 @@ public class Checklist {
      * @param step
      */
     public void addStep(String step) {
+        step = escapeDelimiterPart(step);
         mSteps += step.replaceAll(DELIM, "--") + DELIM;
     }
     
@@ -161,10 +164,25 @@ public class Checklist {
     		return new String[0];
     	}
         String tokens[] = mSteps.split(DELIM);
+
+        unescapeDelimiterPart(tokens);
+
         return tokens;
     }
-    
-    
+
+    // code to fix edge cases where part of the delimiter is at the beginning/end of token
+    private static void unescapeDelimiterPart(String[] tokens) {
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = unescapeDelimiterPart(tokens[i]);
+        }
+    }
+    private static String unescapeDelimiterPart(String token) {
+        return token.replace(ESCAPED_DELIM_PART, DELIM_PART);
+    }
+    private static String escapeDelimiterPart(String token) {
+        return token.replace(DELIM_PART, ESCAPED_DELIM_PART);
+    }
+
     /**
      * Get in JSON format
      * @return
