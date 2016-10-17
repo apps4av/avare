@@ -60,6 +60,12 @@ public class AdsbWeatherCache {
     private RateLimitedBackgroundQueue mMetarQueue;
 
 
+    private static final int MAX_BARBS = 6;
+    private static final int BARB_LENGTH = 50;
+    private static final int BARB_WIDTH = 12;
+    private static final int GUST_X = 13;
+    private static final int GUST_Y = 12;
+    private static final int BARB_OFFSET = 6;
     /**
      * 
      */
@@ -143,7 +149,7 @@ public class AdsbWeatherCache {
         // Wind 1-2, no barb
         // Wind 3-7, little barb
         // Wind 8-12, big barb
-        int barb[] = new int[6];
+        int barb[] = new int[MAX_BARBS];
         int yoffset;
         int i, found;
         int wind;
@@ -186,7 +192,7 @@ public class AdsbWeatherCache {
 
         // Zero the wind barb structure
 
-        for (i=0; i<6; i++)
+        for (i=0; i<MAX_BARBS; i++)
             barb[i] = 0;
 
         if ((wind>=3) && (wind <= 7))
@@ -372,7 +378,7 @@ public class AdsbWeatherCache {
             barb[2]=3;
         }
 
-        yoffset=50;
+        yoffset=BARB_LENGTH;
 
         // Set the color to black, and rotate the canvas to the wind angle
         ctx.paint.setColor(Color.BLACK);
@@ -380,16 +386,16 @@ public class AdsbWeatherCache {
         ctx.canvas.rotate(direction-90,x,y);
         // Draw the line if the wind is not 0
         if (wind >= 1)
-            ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*50),y,ctx.paint);
-        for (i=0; i<6; i++) {
+            ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*BARB_LENGTH),y,ctx.paint);
+        for (i=0; i<MAX_BARBS; i++) {
             switch(barb[i]){
                 case 1:
                     // A large barb
-                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+6)), y + (ctx.dip2pix * (12)), ctx.paint);
+                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/2))), y + (ctx.dip2pix * (BARB_WIDTH)), ctx.paint);
                     break;
                 case 2:
                     // A small barb
-                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+3)), y + (ctx.dip2pix * (6)), ctx.paint);
+                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/4))), y + (ctx.dip2pix * ( (BARB_WIDTH / 2))), ctx.paint);
                     break;
                 case 3:
                     // A filled triangle
@@ -400,17 +406,17 @@ public class AdsbWeatherCache {
                     paint.setAntiAlias(true);
                     Path path = new Path();
                     path.moveTo(x + (ctx.dip2pix * yoffset), y);
-                    path.lineTo(x + (ctx.dip2pix * (yoffset+6)), y + (ctx.dip2pix*12));
-                    path.lineTo(x + (ctx.dip2pix * (yoffset+12)), y );
+                    path.lineTo(x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/2))), y + (ctx.dip2pix*BARB_WIDTH));
+                    path.lineTo(x + (ctx.dip2pix * (yoffset+BARB_WIDTH)), y );
                     path.lineTo(x + (ctx.dip2pix * yoffset), y);
                     path.close();
                     ctx.canvas.drawPath(path, paint);
                     // Extend the wind barb line as well
-                    ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*62),y,ctx.paint);
+                    ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*(BARB_LENGTH+12)),y,ctx.paint);
                     break;
             }
 
-            yoffset -= 6;
+            yoffset -= BARB_OFFSET;
         }
         ctx.canvas.restore();
         // Draw the gust factor right below and to the right
@@ -426,8 +432,8 @@ public class AdsbWeatherCache {
             Rect mTextSize = new Rect();
             paint.getTextBounds(gusts, 0, gusts.length(), mTextSize);
 
-            gx = x + (ctx.dip2pix*13);
-            gy = y + (ctx.dip2pix*12);
+            gx = x + (ctx.dip2pix*GUST_X);
+            gy = y + (ctx.dip2pix*GUST_Y);
             ctx.canvas.drawText(gusts, gx, gy, paint);
             // Calculate the size of the shadow
 
