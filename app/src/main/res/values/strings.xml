@@ -552,6 +552,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
     <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
 
+    <string name="ShowWindBarbs">&quot;Show Wind Barbs on METARs&quot;</string>
+    <string name="ShowWindBarbsSummary">&quot;Choose to select the display of wind barbs on ADS-B METARs&quot;</string>
+
     <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
     <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>
     <string name="Rate">&quot;Rate Now&quot;</string>
