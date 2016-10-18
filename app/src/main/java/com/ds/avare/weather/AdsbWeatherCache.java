@@ -12,6 +12,12 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.weather;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -23,6 +29,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.RateLimitedBackgroundQueue;
 import com.ds.avare.utils.WeatherHelper;
 
@@ -51,6 +58,13 @@ public class AdsbWeatherCache {
     private Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
 
+
+    private static final int MAX_BARBS = 6;
+    private static final int BARB_LENGTH = 50;
+    private static final int BARB_WIDTH = 12;
+    private static final int GUST_X = 13;
+    private static final int GUST_Y = 12;
+    private static final int BARB_OFFSET = 6;
     /**
      * 
      */
@@ -122,6 +136,309 @@ public class AdsbWeatherCache {
         return isInLat && isInLon;
     }
 
+
+    public static void drawWindBarb(DrawingContext ctx, float x, float y, Metar m)
+    {
+        // Wind 1-2, no barb
+        // Wind 3-7, little barb
+        // Wind 8-12, big barb
+        int barb[] = new int[MAX_BARBS];
+        int yoffset;
+        int i, found;
+        int wind;
+        String gusts;
+        int direction;
+        String[] metarArray = m.rawText.split("\\s+");
+        String windString;
+        String windSub;
+        float gx, gy;
+
+        // Extract the winds and angle from the METAR string
+        found=0;
+        direction=0;
+        wind=0;
+        gusts="";
+
+        for (i=0; i<metarArray.length; i++)
+        {
+            if ((found==0) && (metarArray[i].endsWith("KT")))
+            {
+                found=1;
+                try {
+                    // We found the winds, lets process it
+                    windString = metarArray[i];
+
+                    windSub = windString.substring(0, 3);
+                    // Handle 'VRB'
+                    if (windSub.contains("VRB"))
+                        direction = 0;
+                    else
+                        direction = Integer.parseInt(windSub);
+                    wind = Integer.parseInt(windString.substring(3, 5));
+                    if (windString.contains("G")) {
+                        gusts = windString.substring(5, 8);
+                    } else {
+                        gusts = "";
+                    }
+                }
+                catch (Exception e) {
+                    // An exception was caught, quit and do not display a barb at all
+                    return;
+                }
+            }
+        }
+
+        // Zero the wind barb structure
+
+        for (i=0; i<MAX_BARBS; i++)
+            barb[i] = 0;
+
+        if ((wind>=3) && (wind <= 7))
+        {
+            //  __________
+            //          \
+            //
+            barb[1]=2;
+        }
+        if ((wind >= 8 ) && (wind <= 12))
+        {
+            //  __________
+            //            \
+            //             \
+            barb[0]=1;
+        }
+        if ((wind >= 13 ) && (wind <= 17))
+        {
+            //  __________
+            //           \\
+            //             \
+            barb[0]=1;
+            barb[1]=2;
+        }
+        if ((wind >= 18 ) && (wind <= 22))
+        {
+            //  __________
+            //           \\
+            //            \\
+            barb[0]=1;
+            barb[1]=1;
+        }
+        if ((wind >= 23 ) && (wind <= 27))
+        {
+            //  __________
+            //          \\\
+            //            \\
+            barb[0]=1;
+            barb[1]=1;
+            barb[2]=2;
+        }
+        if ((wind >= 28 ) && (wind <= 32))
+        {
+            //  __________
+            //          \\\
+            //           \\\
+            barb[0]=1;
+            barb[1]=1;
+            barb[2]=1;
+        }
+        if ((wind >= 33 ) && (wind <= 37))
+        {
+            //  __________
+            //         \\\\
+            //           \\\
+            barb[0]=1;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=2;
+        }
+        if ((wind >= 38 ) && (wind <= 42))
+        {
+            //  __________
+            //         \\\\
+            //          \\\\
+            barb[0]=1;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+        }
+        if ((wind >= 43 ) && (wind <= 47))
+        {
+            //  __________
+            //        \\\\\
+            //          \\\\
+            barb[0]=1;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+            barb[4]=2;
+        }
+        if ((wind >= 48 ) && (wind <= 52))
+        {
+            //  ____________
+            //          \  /
+            //           \/
+            barb[0]=3;
+        }
+        if ((wind >= 53 ) && (wind <= 57))
+        {
+            //  ____________
+            //         \\  /
+            //           \/
+            barb[0]=3;
+            barb[1]=2;
+        }
+        if ((wind >= 58 ) && (wind <= 62))
+        {
+            //  ____________
+            //         \\  /
+            //          \\/
+            barb[0]=3;
+            barb[1]=1;
+        }
+        if ((wind >= 63 ) && (wind <= 67))
+        {
+            //  ____________
+            //        \\\  /
+            //          \\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=2;
+        }
+        if ((wind >= 68 ) && (wind <= 72))
+        {
+            //  ____________
+            //        \\\  /
+            //         \\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+        }
+        if ((wind >= 73 ) && (wind <= 77))
+        {
+            //  ____________
+            //       \\\\  /
+            //         \\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=2;
+        }
+        if ((wind >= 78 ) && (wind <= 82))
+        {
+            //  ____________
+            //       \\\\  /
+            //        \\\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+        }
+        if ((wind >= 83 ) && (wind <= 87))
+        {
+            //  ____________
+            //      \\\\\  /
+            //        \\\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+            barb[4]=2;
+        }
+        if ((wind >= 88 ) && (wind <= 92))
+        {
+            //  ____________
+            //      \\\\\  /
+            //       \\\\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+            barb[4]=1;
+        }
+        if ((wind >= 93 ) && (wind <= 97))
+        {
+            //  ____________
+            //     \\\\\\  /
+            //       \\\\\/
+            barb[0]=3;
+            barb[1]=1;
+            barb[2]=1;
+            barb[3]=1;
+            barb[4]=1;
+            barb[5]=2;
+        }
+        if (wind >= 98)
+        {
+            //  ____________
+            //      \  /\  /
+            //       \/  \/
+            barb[0]=3;
+            barb[2]=3;
+        }
+
+        yoffset=BARB_LENGTH;
+
+        // Set the color to black, and rotate the canvas to the wind angle
+        ctx.paint.setColor(Color.BLACK);
+        ctx.canvas.save();
+        ctx.canvas.rotate(direction-90,x,y);
+        // Draw the line if the wind is not 0
+        if (wind >= 1)
+            ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*BARB_LENGTH),y,ctx.paint);
+        for (i=0; i<MAX_BARBS; i++) {
+            switch(barb[i]){
+                case 1:
+                    // A large barb
+                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/2))), y + (ctx.dip2pix * (BARB_WIDTH)), ctx.paint);
+                    break;
+                case 2:
+                    // A small barb
+                    ctx.canvas.drawLine(x + (ctx.dip2pix * yoffset), y, x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/4))), y + (ctx.dip2pix * ( (BARB_WIDTH / 2))), ctx.paint);
+                    break;
+                case 3:
+                    // A filled triangle
+                    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    paint.setStrokeWidth(1);
+                    paint.setColor(Color.BLACK);
+                    paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                    paint.setAntiAlias(true);
+                    Path path = new Path();
+                    path.moveTo(x + (ctx.dip2pix * yoffset), y);
+                    path.lineTo(x + (ctx.dip2pix * (yoffset+(BARB_WIDTH/2))), y + (ctx.dip2pix*BARB_WIDTH));
+                    path.lineTo(x + (ctx.dip2pix * (yoffset+BARB_WIDTH)), y );
+                    path.lineTo(x + (ctx.dip2pix * yoffset), y);
+                    path.close();
+                    ctx.canvas.drawPath(path, paint);
+                    // Extend the wind barb line as well
+                    ctx.canvas.drawLine(x,y,x+(ctx.dip2pix*(BARB_LENGTH+12)),y,ctx.paint);
+                    break;
+            }
+
+            yoffset -= BARB_OFFSET;
+        }
+        ctx.canvas.restore();
+        // Draw the gust factor right below and to the right
+        if (gusts != "") {
+            Paint paint = new Paint();
+            paint.setColor(Color.RED);
+            paint.setTypeface(Typeface.createFromAsset(ctx.context.getAssets(), "LiberationMono-Bold.ttf"));
+            paint.setShadowLayer(0, 0, 0, 0);
+            paint.setAlpha(0xff);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setAntiAlias(true);
+            // How big is the text we are about to draw
+            Rect mTextSize = new Rect();
+            paint.getTextBounds(gusts, 0, gusts.length(), mTextSize);
+
+            gx = x + (ctx.dip2pix*GUST_X);
+            gy = y + (ctx.dip2pix*GUST_Y);
+            ctx.canvas.drawText(gusts, gx, gy, paint);
+            // Calculate the size of the shadow
+
+
+        }
+
+    }
     /**
      * Draw metar map from ADSB
      * @param ctx
@@ -142,9 +459,31 @@ public class AdsbWeatherCache {
             }
             float x = (float)ctx.origin.getOffsetX(m.lon);
             float y = (float)ctx.origin.getOffsetY(m.lat);
-            ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
-            ctx.paint.setAlpha(ctx.pref.showLayer());
-            ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
+            String text = m.flightCategory;
+            // Draw the wind barb first, if it is enabled
+            if (ctx.pref.isShowWindBarbs())
+            {
+                drawWindBarb(ctx,x,y,m);
+            }
+            if (ctx.pref.isShowLabelMETARS())
+            {
+                // Do not draw unknown metars
+                if (WeatherHelper.metarColor(m.flightCategory) != 0xffffffff) {
+                    ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
+                            text, WeatherHelper.metarColor(m.flightCategory), (float) x, (float) y, ctx.pref.showLayer());
+                }
+            }
+            else
+            {
+                ctx.paint.setColor(Color.BLACK);
+                ctx.paint.setAlpha(ctx.pref.showLayer());
+                ctx.canvas.drawCircle(x, y, ctx.dip2pix * 9, ctx.paint);
+                ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
+                ctx.paint.setAlpha(ctx.pref.showLayer());
+                ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
+            }
+            /*
+            */
             ctx.paint.setAlpha(255);
         }
     }

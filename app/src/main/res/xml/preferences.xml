@@ -103,6 +103,16 @@ authors: zkhan, jlmcgraw
             android:key="@string/XlateWeather"
             android:summary="@string/XlateWeatherSummary"
             android:title="@string/XlateWeatherLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ShowLabelMETARS"
+            android:summary="@string/ShowLabelMETARSSummary"
+            android:title="@string/ShowLabelMETARS" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ShowWindBarbs"
+            android:summary="@string/ShowWindBarbsSummary"
+            android:title="@string/ShowWindBarbs" />
     </PreferenceScreen>
 
     <PreferenceScreen 
