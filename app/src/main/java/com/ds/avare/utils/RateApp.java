@@ -70,8 +70,8 @@ public class RateApp {
                         dialog.dismiss();
                     }
                 });
-                AlertDialog d = alert.create();
-                d.show();
+//                AlertDialog d = alert.create();
+//                d.show();
             }
         }
     }
