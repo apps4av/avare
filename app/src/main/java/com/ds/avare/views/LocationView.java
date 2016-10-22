@@ -1336,7 +1336,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.wa = wa;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.layer = layer;
-                mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getDeclinition()).toHtmlString(navaids);
+                //ideally we would pass altitude AGL for navaid reception calculations
+                mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
                 if(metar != null) {
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +

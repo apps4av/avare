@@ -107,6 +107,15 @@ public class DataBaseHelper  {
     public  static final String  LONGITUDE = "Longitude";
     private static final String  LONGITUDE_DB = "ARPLongitude";
     private static final int    LONGITUDE_COL = 2;
+    public  static final String  NAVAID_MAGNETIC_VARIATION = "Magnetic Variation";
+    private static final String  NAVAID_MAGNETIC_VARIATION_DB = "Variation";
+    private static final int    NAVAID_MAGNETIC_VARIATION_COL = 5;
+    public  static final String  NAVAID_CLASS = "Class";
+    private static final String  NAVAID_CLASS_DB = "Class";
+    private static final int    NAVAID_CLASS_COL = 6;
+    public  static final String  NAVAID_HIWAS = "HIWAS";
+    private static final String  NAVAID_HIWAS_DB = "HIWAS";
+    private static final int    NAVAID_HIWAS_COL = 7;
     public  static final String  FUEL_TYPES = "Fuel Types";
     private static final int    FUEL_TYPES_COL = 12;
     private static final int    CUSTOMS_COL = 13;
@@ -2525,20 +2534,20 @@ public class DataBaseHelper  {
      */
     public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
 
-        Double radius = 40.; // reception radius of VORs on low altitude
-        Coordinate top = Projection.findStaticPoint(lon,lat,0, radius),
-                bottom = Projection.findStaticPoint(lon,lat,180, radius),
-                left   = Projection.findStaticPoint(lon,lat,270,radius),
-                right  = Projection.findStaticPoint(lon,lat,90,radius);
-        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)),2);
+        final Double NAVAID_SEARCH_RADIUS = 150.; // 150 seems reasonable, it is VOR Line Of Sight at 18000
+        Coordinate top = Projection.findStaticPoint(lon, lat, 0, NAVAID_SEARCH_RADIUS),
+                bottom = Projection.findStaticPoint(lon, lat, 180, NAVAID_SEARCH_RADIUS),
+                left   = Projection.findStaticPoint(lon, lat, 270,NAVAID_SEARCH_RADIUS),
+                right  = Projection.findStaticPoint(lon, lat, 90, NAVAID_SEARCH_RADIUS);
+        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
         String qry = "select * from " + TABLE_NAV
-                + " where Type != 'VOT' "+
+                + " where Type != 'VOT' and type != 'NDB' "+
                 " and ARPlatitude < "+top.getLatitude()+
                 " and ARPlatitude > "+bottom.getLatitude()+
                 " and ARPlongitude < "+right.getLongitude()+
                 " and ARPlongitude > "+left.getLongitude()+
                 " order by (("+lat+" - ARPlatitude) * ("+lat+" - ARPlatitude) + ("+lon+" - ARPlongitude) * ("+lon+" - ARPlongitude) * "+fudge+")"
-                +" limit 3;"; // we need 2 coordinates for a fix; get 3 in case we hit NDB
+                +" limit 4;"; // we need 2 coordinates for a fix; get 3 in case we hit NDB
 
 	    Cursor cursor = doQuery(qry, getMainDb());
 
@@ -2546,14 +2555,24 @@ public class DataBaseHelper  {
         try {
 	        if(cursor != null) {
 	            if(cursor.moveToFirst()) {
-                    result = new Vector<>();
-                    do {
-                        String locationId = cursor.getString(LOCATION_ID_COL);
-                        Coordinate coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
-                        String name = cursor.getString(FACILITY_NAME_COL);
-                        String type = cursor.getString(TYPE_COL);
-                        result.add(new NavAid(locationId, type, name, coord));
-                    } while (cursor.moveToNext());
+                    // proper display of navaid radials requires historical magnetic variation
+                    if (cursor.getColumnCount() > NAVAID_MAGNETIC_VARIATION_COL) {
+                        result = new Vector<>();
+                        do {
+                            String locationId = cursor.getString(LOCATION_ID_COL);
+                            Coordinate coord = new Coordinate(cursor.getFloat(LONGITUDE_COL), cursor.getFloat(LATITUDE_COL));
+                            String name = cursor.getString(FACILITY_NAME_COL);
+                            String type = cursor.getString(TYPE_COL);
+
+                            int variation = cursor.getInt(NAVAID_MAGNETIC_VARIATION_COL);
+                            String navaidClass = cursor.getString(NAVAID_CLASS_COL);
+                            String hiwas = cursor.getString(NAVAID_HIWAS_COL);
+                            boolean hasHiwas = hiwas.equals("Y");
+
+                            result.add(new NavAid(locationId, type, name, coord, variation, navaidClass, hasHiwas));
+
+                        } while (cursor.moveToNext());
+                    }
 	            }
 	        }
 	    }

@@ -324,7 +324,7 @@ public class DataSource {
      *
      * @param lat
      * @param  lon
-     * @return vector of the closest navaids; the closest first
+     * @return vector of the closest navaids (excluding NDBs); the closest first
      */
     public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
         return  dbHelper.findNavaidsNearby(lat, lon);

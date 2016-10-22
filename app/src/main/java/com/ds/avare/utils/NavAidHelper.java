@@ -31,33 +31,71 @@ public class NavAidHelper {
 
     private double lonReference;
     private double latReference;
-    private double variation;
     private Context ctx;
+    private double altitudeReference;
 
-    public NavAidHelper(Context ctx, double lon0, double lat0, double variation) {
+    public NavAidHelper(Context ctx, double lon0, double lat0, double altitude) {
         this.lonReference = lon0;
         this.latReference = lat0;
-        this.variation = variation;
         this.ctx = ctx;
+        this.altitudeReference = altitude;
     }
 
-    private String getNavaidLocation(Coordinate navaidCoordinate) {
+    /** transcode reception at altitude table
+     * from https://nfdc.faa.gov/webContent/56DaySub/2016-11-10/Layout_Data/nav_rf.txt
+            L AN 0001 00577 N29     PROTECTED FREQUENCY ALTITUDE
+                          H=HIGH, L=LOW, T=TERMINAL
+
+                          CLASS     ALTITIUDE            MILES
+                          -----     ---------            -----
+                          T         12,000' AND BELOW      25
+                          L         BELOW 18,000'          40
+                          H         BELOW 18,000'          40
+                          H         WITHIN THE CONTER-     100
+                                    MINOUS 48 STATES
+                                    ONLY BETWEEN 14,500'
+                                    AND 17,999'
+                          H         18,000' FL 450         130
+                          H         ABOVE FL 450           100
+        */
+    private static boolean isVorReceived(double d, String vorClass, double agl)
+    {
+        return     (vorClass.equals("T") && agl < 12000 && d <= 25)
+                || (vorClass.equals("L") && agl < 18000 && d <= 40)
+                || (vorClass.equals("H") && agl < 18000 && d <= 40)
+                || (vorClass.equals("H") && 14500 < agl && agl <= 18000 && d <= 100)
+                || (vorClass.equals("H") && 18000 < agl && agl <= 45000 && d <= 130)
+                || (vorClass.equals("H") && 45000 < agl && d <= 100);
+    }
+
+    /** format distance to a particular navaid as a string */
+    private String getNavaidLocation(Coordinate navaidCoordinate, int navaidVariation, String navaidClass) {
         Projection p = new Projection(
                 navaidCoordinate.getLongitude(), navaidCoordinate.getLatitude(),
                 lonReference, latReference);
-        long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), variation));
-        return " on " + String.format(Locale.getDefault(), "%03d", radial) + ctx.getString(R.string.degree) + " radial " +
-                Math.round(p.getDistance()) + Preferences.distanceConversionUnit;
-
+        double distanceToNavAid = p.getDistance();
+        boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference)
+                || !("TLH".contains(navaidClass) || navaidClass.isEmpty());
+        long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), navaidVariation));
+        return " on " + String.format(Locale.getDefault(), "%03d", radial) + ctx.getString(R.string.degree) + " radial "
+                + (!isReceived ? "<font color='yellow'>" : "")
+                + Math.round(distanceToNavAid) + Preferences.distanceConversionUnit
+                + (!isReceived ? "</font>" : "")
+            ;
     }
 
+    /** format vector of navaids as a string */
     public String toHtmlString(Vector<NavAid> navaids) {
         String result = "";
-        for (NavAid na: navaids) {
-            result += (result != "" ? "<br>" : "") // order in Chart Supplement convention
-                    + na.getLongName() + " "+ na.getType() + " " + na.getFrequency() + " " + na.getLocationId()
-                    + " "+ getNavaidLocation(na.getCoords()) ;
+        if (navaids != null) {
+            for (NavAid na : navaids) {
+                result += (result != "" ? "<br>" : "") // fields' order same as Chart Supplement convention
+                        + na.getLongName() + " " + na.getType()
+                        + (na.hasHiwas() ? "<sup>(H)</sup>" : "")
+                        + " " + na.getFrequency() + " " + na.getLocationId()
+                        + " " + getNavaidLocation(na.getCoords(), na.getVariation(), na.getNavaidClass());
+            }
         }
-        return  result;
+        return result;
     }
 }
