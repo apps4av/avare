@@ -37,4 +37,5 @@ public class LongTouchDestination {
     public String layer;
     public LinkedList<Airep> airep;
     public String performance;
+    public String navaids;
 }
