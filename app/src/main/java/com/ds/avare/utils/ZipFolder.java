@@ -72,7 +72,7 @@ public class ZipFolder {
 
                     // put files starting from app's top level folder
                     FileInputStream fis = new FileInputStream(file);
-                    String filetoSave = file.getCanonicalPath().replace(folder + File.separator, "");
+                    String filetoSave = file.getPath().replace(folder + File.separator, "");
                     ZipEntry zipEntry = new ZipEntry(filetoSave);
                     zos.putNextEntry(zipEntry);
 
