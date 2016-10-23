@@ -57,7 +57,6 @@ Redistribution and use in source and binary forms, with or without modification,
            android:layout_width="fill_parent"
             android:layout_alignParentBottom="true"
            android:text="@string/Hotels"
-		   android:background="@drawable/button_bg"
 		   android:layout_margin="5dp"
 		   android:layout_height="wrap_content"/>
 	    
