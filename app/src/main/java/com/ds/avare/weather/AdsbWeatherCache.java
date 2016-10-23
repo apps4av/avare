@@ -424,6 +424,7 @@ public class AdsbWeatherCache {
         // Set the color to black, and rotate the canvas to the wind angle
         ctx.paint.setColor(Color.BLACK);
         ctx.canvas.save();
+        ctx.paint.setStrokeWidth(4);
         ctx.canvas.rotate(direction-90,x,y);
         // Draw the line if the wind is not 0
         if (wind >= 1)
@@ -441,7 +442,7 @@ public class AdsbWeatherCache {
                 case 3:
                     // A filled triangle
                     Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paint.setStrokeWidth(1);
+                    ctx.paint.setStrokeWidth(3);
                     paint.setColor(Color.BLACK);
                     paint.setStyle(Paint.Style.FILL_AND_STROKE);
                     paint.setAntiAlias(true);
