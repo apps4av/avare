@@ -47,7 +47,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@drawable/button_small"
             android:layout_above="@+id/location_button_draw_clear"
             android:drawableLeft="@drawable/ic_skip_next_black_24dp"
             android:visibility="invisible" />
@@ -67,9 +66,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_mylocation"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/button_small"
-            />
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/location_button_draw_clear"
@@ -79,7 +76,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/location_button_draw"
             android:text="@string/Clear"
-            android:background="@drawable/button_small"
             android:layout_margin="5dp"
             android:visibility="invisible" />        
         
@@ -91,7 +87,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:textOff="@string/Pan"
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
-            android:background="@drawable/button_small"
             android:layout_margin="5dp"
             android:textStyle="bold" />
 

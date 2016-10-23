@@ -28,7 +28,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:src="@android:drawable/ic_menu_mylocation"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/button_small"
         />
 
     <Button

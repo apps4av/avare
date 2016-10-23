@@ -4,4 +4,19 @@
     <color name="tabTextColor">#ffffffff</color>
     <color name="tabSelectedTextColor">#ff80cbc4</color>
     <color name="tabIndicatorColor">#ff80cbc4</color>
+
+    <color name="colorPrimary">#2196F3</color>
+
+    <!-- colorPrimaryDark is used for the status bar -->
+    <color name="colorPrimaryDark">#1976D2</color>
+
+    <color name="colorPrimaryLight">#BBDEFB</color>
+
+    <!-- colorAccent is used as the default value for colorControlActivated which is used to tint widgets -->
+    <!--<color name="colorAccent">#009688</color>-->
+    <color name="colorAccent">#D32F2F</color>
+
+    <color name="primaryText">#212121</color>
+
+    <color name="secondaryText">#727272</color>
 </resources>
