@@ -13,6 +13,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 
+import android.content.Context;
+import android.graphics.Color;
+
 import com.ds.avare.R;
 import com.ds.avare.weather.AirSigMet;
 
@@ -34,6 +37,32 @@ public class MetShape extends Shape {
         super(text, date);
     }
 
+    /**
+     * If this shape is touched, get color
+     * @param lon
+     * @param lat
+     * @return
+     */
+    public String getHTMLMetOnTouch(Context ctx, AirSigMet met, double lon, double lat) {
+        String txt = getTextIfTouched(lon, lat);
+        String ret = "";
+        if(null != txt) {
+            String typeArray[] = ctx.getResources().getStringArray(R.array.AirSig);
+            int colorArray[] = ctx.getResources().getIntArray(R.array.AirSigColor);
+            int color = 0;
+            String type = met.hazard + " " + met.reportType;
+            for(int j = 0; j < typeArray.length; j++) {
+                if(typeArray[j].equals(type)) {
+                    color = colorArray[j];
+                    break;
+                }
+            }
+            ret = "<font color='" + String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color)) + "'>" + txt + "</font>\n--\n";
+        }
+
+
+        return ret;
+    }
 
     /**
      *

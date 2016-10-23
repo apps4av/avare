@@ -40,6 +40,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.ThemedProgressDialog;
+import com.ds.avare.utils.RateApp;
 
 import java.io.File;
 
@@ -165,6 +166,7 @@ public class ChartsDownloadActivity extends AppCompatActivity {
             }
         });
 
+        RateApp.rateIt(this, mPref);
     }
             
     /** Defines callbacks for service binding, passed to bindService() */

@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import com.ds.avare.BuildConfig;
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.RegisterActivity;

@@ -167,6 +167,7 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Billings</item>
 		<item>Brownsville</item>
 		<item>Cape Lisburne</item>
+		<item>Caribbean1</item>
 		<item>Charlotte</item>
 		<item>Cheyenne</item>
 		<item>Chicago</item>
@@ -1602,11 +1603,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesSectional">
         <item>Albuquerque</item>
         <item>Anchorage</item>
-		<item>Atlanta</item>
+	 	<item>Atlanta</item>
 		<item>Bethel</item>
 		<item>Billings</item>
 		<item>Brownsville</item>
 		<item>CapeLisburne</item>
+		<item>Caribbean1</item>
 		<item>Charlotte</item>
 		<item>Cheyenne</item>
 		<item>Chicago</item>
@@ -1938,12 +1940,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <integer-array name="AirSigColor">
         <item>0xFFFFFFFF</item>
         <item>0x00000000</item>
-        <item>0xFF800080</item>
-        <item>0xFF0000FF</item>
-        <item>0xFF00FF00</item>
-        <item>0xFF66FFFF</item>
-        <item>0xFF7F0000</item>
-        <item>0xFFFFA500</item>
+        <item>0xFF9061B0</item> <!-- indigo -->
+        <item>0xFF4172FF</item> <!-- blue-->
+        <item>0xFFFB851D</item> <!-- orange-->
+        <item>0xFFFF70F0</item> <!-- magenta-->
+        <item>0xFFA85056</item> <!-- brown-->
+        <item>0xFFAAAAAA</item> <!-- grey-->
     </integer-array>
     
 	<string-array name="TimerRingSizeValues">

@@ -13,8 +13,8 @@ Redistribution and use in source and binary forms, with or without modification,
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ds.avare"
-    android:versionCode="281"
-    android:versionName="7.5.1"
+    android:versionCode="283"
+    android:versionName="7.5.3"
     android:installLocation="auto" >
 
     <!-- GCM requires a Google account. -->

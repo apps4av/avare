@@ -64,10 +64,11 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="@string/Timer"
+            android:alpha="0.8"
             android:visibility="visible"
             android:background="@drawable/button_bg"
             android:layout_margin="5dp"
-            android:textSize="24dp" />
+            android:textSize="20dp" />
 
         <Button
             android:id="@+id/plate_button_draw_clear"
