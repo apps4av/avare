@@ -27,6 +27,8 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipFolder {
 
+    private static final String SHARED_FOLDER = "shared_prefs";
+
     /**
      * Get list of all files
      * @param dir
@@ -54,7 +56,7 @@ public class ZipFolder {
          * TODO : Tracks
          */
 
-        String look1 = folder + File.separator + "shared_prefs";
+        String look1 = folder + File.separator + SHARED_FOLDER;
         List<File> fileList = new ArrayList<File>();
         getAllFiles(new File(look1), fileList);
 
@@ -68,11 +70,9 @@ public class ZipFolder {
             for (File file : fileList) {
                 if (!file.isDirectory()) { // we only zip files, not directories
 
-                    String tokens[] = file.getPath().split(File.separator);
-
                     // put files starting from app's top level folder
                     FileInputStream fis = new FileInputStream(file);
-                    String filetoSave = file.getPath().replace(folder + File.separator, "");
+                    String filetoSave = SHARED_FOLDER + File.separator + file.getName();
                     ZipEntry zipEntry = new ZipEntry(filetoSave);
                     zos.putNextEntry(zipEntry);
 
