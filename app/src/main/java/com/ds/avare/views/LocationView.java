@@ -545,6 +545,7 @@ public class LocationView extends View implements OnTouchListener {
             }
             else if (mLayerType.equals("METAR")) {
                 AdsbWeatherCache.drawMetars(ctx, mService.getAdsbWeather().getAllMetars(), null == mPointProjection);
+                AdsbWeatherCache.drawUATTowers(ctx, mService.getAdsbWeather().getAllUatTowers(), null == mPointProjection);
             }
         }
         else {
