@@ -181,8 +181,7 @@ public class WebAppMapInterface {
                         Helper.formatJsArgs(mets) + "','" +
                         Helper.formatJsArgs(performance) + "','" +
                         Helper.formatJsArgs(winds) + "','" +
-                        Helper.formatJsArgs(layer) + "','" +
-                        Helper.formatJsArgs(navaids) +
+                        Helper.formatJsArgs(layer) +
                         "')";
 
 
