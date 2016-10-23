@@ -166,8 +166,7 @@ public class WebAppMapInterface {
 
                 String navaids = "";
                 if (data.navaids != null) {
-                    navaids = "<hr><font color=\"yellow\">Position From Navaids</font><br>";
-                    navaids += data.navaids;
+                    data.airport += "<br>" + data.navaids;
                 }
 
                 mWebView.loadUrl("javascript:plan_clear()");

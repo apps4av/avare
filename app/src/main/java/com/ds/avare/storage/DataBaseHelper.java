@@ -2630,6 +2630,8 @@ public class DataBaseHelper  {
         catch (Exception e) {
         }
 
+        closes(cursor);
+
         return coord;
     }
 
