@@ -156,13 +156,7 @@ public class Preferences {
             val = "0";
         }
         if (val.equals("0")) {
-            return "http://69.163.195.165/new/";
-        }
-        else if (val.equals("1")) {
-            return "http://www.apps4av.org/new/";
-        }
-        else if (val.equals("2")) {
-            return "http://avare.kitepilot.net/new/";
+            return "http://avare.stratux.me/old/";
         }
         return ("");
     }

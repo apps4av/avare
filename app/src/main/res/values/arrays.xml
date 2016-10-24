@@ -1915,9 +1915,7 @@ Redistribution and use in source and binary forms, with or without modification,
         </string-array>       
     
     <string-array name="Server">
-        <item>Apps4av.org</item>
-        <item>Apps4av.org DNS</item>
-        <item>Kitepilot.net</item>
+        <item>avare.stratux.me</item>
     </string-array>
 
     <string-array name="ServerValues">
