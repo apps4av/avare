@@ -87,9 +87,6 @@
             android:id="@+id/nav_wxb"
             android:title="@string/WXB" />
         <item
-            android:id="@+id/nav_trip"
-            android:title="@string/Trip" />
-        <item
             android:id="@+id/nav_tools"
             android:title="@string/Tools" />
     </group>

@@ -918,10 +918,6 @@ public class Preferences {
             mTabs |= 1 << MainActivity.TAB_TOOLS;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-            mTabs |= 1 << MainActivity.TAB_TRIP;
-        }
-
         return mTabs;
     }
 
@@ -934,78 +930,78 @@ public class Preferences {
 
 
     /**
-     * Hotel settings save
+     *  settings save
      */
 
 
     /**
      * @return
      */
-    public int getHotelMaxPriceIndex() {
-        return mPref.getInt("HotelMaxPrice", 0);
+    public int getMaxPriceIndex() {
+        return mPref.getInt("MaxPrice", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelMinStarIndex() {
-        return mPref.getInt("HotelMinStar", 0);
+    public int getMinStarIndex() {
+        return mPref.getInt("MinStar", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelMaxDistanceIndex() {
-        return mPref.getInt("HotelMaxDistance", 0);
+    public int getMaxDistanceIndex() {
+        return mPref.getInt("MaxDistance", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelAdultsIndex() {
-        return mPref.getInt("HotelAdults", 0);
+    public int getAdultsIndex() {
+        return mPref.getInt("Adults", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelChildIndex(String id) {
-        return mPref.getInt("HotelChild" + id, 0);
+    public int getChildIndex(String id) {
+        return mPref.getInt("Child" + id, 0);
     }
 
     /**
      * @return
      */
-    public void setHotelMaxPriceIndex(int index) {
-        mPref.edit().putInt("HotelMaxPrice", index).commit();
+    public void setMaxPriceIndex(int index) {
+        mPref.edit().putInt("MaxPrice", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelMinStarIndex(int index) {
-        mPref.edit().putInt("HotelMinStar", index).commit();
+    public void setMinStarIndex(int index) {
+        mPref.edit().putInt("MinStar", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelMaxDistanceIndex(int index) {
-        mPref.edit().putInt("HotelMaxDistance", index).commit();
+    public void setMaxDistanceIndex(int index) {
+        mPref.edit().putInt("MaxDistance", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelAdultsIndex(int index) {
-        mPref.edit().putInt("HotelAdults", index).commit();
+    public void setAdultsIndex(int index) {
+        mPref.edit().putInt("Adults", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelChildIndex(String id, int index) {
-        mPref.edit().putInt("HotelChild" + id, index).commit();
+    public void setChildIndex(String id, int index) {
+        mPref.edit().putInt("Child" + id, index).commit();
     }
 
     /**

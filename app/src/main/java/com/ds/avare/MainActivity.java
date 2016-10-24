@@ -50,7 +50,6 @@ import com.ds.avare.navhandler.PlanNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.PlatesNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.ThreeDNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.ToolsNavigationItemSelectedHandler;
-import com.ds.avare.navhandler.TripNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.WxbNavigationItemSelectedHandler;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Emergency;
@@ -101,8 +100,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int TAB_THREE_D   = 6;
     public static final int TAB_CHECKLIST = 7;
     public static final int TAB_WXB       = 8;
-    public static final int TAB_TRIP      = 9;
-    public static final int TAB_TOOLS     = 10;
+    public static final int TAB_TOOLS     = 9;
 
     private static final Map<Integer, NavigationItemSelectedHandler> NAV_ITEM_HANDLERS = new HashMap<>();
 
@@ -116,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements
         NAV_ITEM_HANDLERS.put(R.id.nav_3d, new ThreeDNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_list, new ListNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_wxb, new WxbNavigationItemSelectedHandler());
-        NAV_ITEM_HANDLERS.put(R.id.nav_trip, new TripNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_tools, new ToolsNavigationItemSelectedHandler());
     }
 
@@ -242,11 +239,6 @@ public class MainActivity extends AppCompatActivity implements
         if (0 != (mPref.getTabs() & (1 << TAB_WXB))) {
             tabLayout.addTab(tabLayout.newTab().setText(R.string.WXB), tabIndex, false);
             mTabIndexToNavItemIdMap.put(tabIndex++, R.id.nav_wxb);
-        }
-
-        if (0 != (mPref.getTabs() & (1 << TAB_TRIP))) {
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.Trip), tabIndex, false);
-            mTabIndexToNavItemIdMap.put(tabIndex++, R.id.nav_trip);
         }
 
         if (0 != (mPref.getTabs() & (1 << TAB_TOOLS))) {
