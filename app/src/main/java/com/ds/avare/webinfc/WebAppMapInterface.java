@@ -166,7 +166,7 @@ public class WebAppMapInterface {
 
                 String navaids = "";
                 if (data.navaids != null) {
-                    data.airport += "<br>" + data.navaids;
+                    data.info += "<br>" + data.navaids;
                 }
 
                 mWebView.loadUrl("javascript:plan_clear()");
