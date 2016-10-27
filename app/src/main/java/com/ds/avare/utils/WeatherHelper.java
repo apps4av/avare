@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import android.util.Pair;
+
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -19,7 +21,7 @@ public class WeatherHelper {
         
     /**
      * 
-     * @param TAF
+     * @param type
      * @return
      */
     public static int metarColor(String type) {
@@ -44,7 +46,7 @@ public class WeatherHelper {
     
     /**
      * 
-     * @param TAF
+     * @param type
      * @return
      */
     public static String metarColorString(String type) {
@@ -99,7 +101,8 @@ public class WeatherHelper {
 
     /**
      * Color code weather type 
-     * @param weather
+     * @param weatherAll
+     * @param translate
      * @return
      */
     public static String formatTafHTML(String weatherAll, boolean translate) {
@@ -119,7 +122,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("MI", "<font color='#008aff'>MI" + (translate ? "(Shallow)" : "") + "<font color='white'>");
         weather = weather.replaceAll("BC", "<font color='#008aff'>BC" + (translate ? "(Patches)" : "") + "<font color='white'>");
         weather = weather.replaceAll("DR", "<font color='#008aff'>DR" + (translate ? "(Low Drifting)" : "") + "<font color='white'>");
-        weather = weather.replaceAll("BL", "<font color='#008aff'>BL" + (translate ? "(BLowing)" : "") + "<font color='white'>");
+        weather = weather.replaceAll("BL", "<font color='#008aff'>BL" + (translate ? "(Blowing)" : "") + "<font color='white'>");
         weather = weather.replaceAll("SH", "<font color='#008aff'>SH" + (translate ? "(Showers)" : "") + "<font color='white'>");
         weather = weather.replaceAll("TS", "<font color='#ff2a00'>TS" + (translate ? "(Thunderstorm)" : "") + "<font color='white'>");
         weather = weather.replaceAll("FZ", "<font color='#ff2a00'>FZ" + (translate ? "(Freezing)" : "") + "<font color='white'>");
@@ -163,11 +166,11 @@ public class WeatherHelper {
         weather = weather.replaceAll(" VC", "<font color='white'> VC" + (translate ? "(In Vicinity)" : "") + "<font color='white'>");
 
         weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
-        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear <12,000ft)" : "")); // see http://www.weather.gov/media/grb/misc/TAF_Card.pdf
         weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
         weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
         weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
-        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probibility%)" : ""));
+        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probability%)" : ""));
         weather = weather.replaceAll("VV", "<font color='#ff2a00'>VV" + (translate ? "(Vertical Visibility)" : "") + "<font color='white'>");
         weather = weather.replaceAll("CB", "<font color='#ff2a00'>CB" + (translate ? "(Cumulonimbus)" : "") + "<font color='white'>");
         weather = weather.replaceAll("WS", "<font color='#ff54f9'>WS" + (translate ? "(Wind Shear)" : "") + "<font color='white'>");
@@ -187,15 +190,37 @@ public class WeatherHelper {
     }
 
     /**
+     * Split string on the second space
+     * @param s
+     * @return pair of strings split
+     */
+    private static Pair splitOnSecondSpace(String s) {
+        int i = s.indexOf(' ', 1 + s.indexOf(' '));
+        String firstPart = s.substring(0, i);
+        String secondPart = s.substring(i+1);
+        return Pair.create(firstPart, secondPart);
+    }
+
+    /**
      * Color code winds
-     * @param weather
+     * @param weatherAll
+     * @param translate
      * @return
      */
     public static String formatMetarHTML(String weatherAll, boolean translate) {
         
         String strip[] = weatherAll.split("RMK");
-        String weather = strip[0];
-        
+
+        // a bit of a simplification but typically first 2 items are identifier and time; they need no translation
+        Pair<String,String> p = splitOnSecondSpace(strip[0]);
+        String identAndTime = p.first;
+        String weather = p.second;
+
+        /*
+         * Identifier
+         */
+        identAndTime = identAndTime.replaceAll("SPECI", "SPECI" + (translate ? "(Special/unscheduled)" : ""));
+
         /*
          * Remarks
          */
@@ -212,15 +237,14 @@ public class WeatherHelper {
         weather = weather.replaceAll("AUTO", "AUTO" + (translate ? "(Automated)" : ""));
         weather = weather.replaceAll("COR", "COR" + (translate ? "(Corrected)" : ""));
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
-        weather = weather.replaceAll("SPECI", "SPECI" + (translate ? "(Special)" : ""));
-        
+
         /*
          * Description
          */
         weather = weather.replaceAll("MI", "MI" + (translate ? "(Shallow)" : ""));
         weather = weather.replaceAll("BC", "BC" + (translate ? "(Patches)" : ""));
         weather = weather.replaceAll("DR", "DR" + (translate ? "(Low Drifting)" : ""));
-        weather = weather.replaceAll("BL", "BL" + (translate ? "(BLowing)" : ""));
+        weather = weather.replaceAll("BL", "BL" + (translate ? "(Blowing)" : ""));
         weather = weather.replaceAll("SH", "SH" + (translate ? "(Showers)" : ""));
         weather = weather.replaceAll("TS", "TS" + (translate ? "(Thunderstorm)" : ""));
         weather = weather.replaceAll("FZ", "FZ" + (translate ? "(Freezing)" : ""));
@@ -239,7 +263,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("UP", "UP" + (translate ? "(Unknown Precip.)" : ""));
 
         /*
-         * Obstruction
+         * Obscuration
          */
         weather = weather.replaceAll("BR", "BR" + (translate ? "(Mist)" : ""));
         weather = weather.replaceAll("FG", "FG" + (translate ? "(Fog)" : ""));
@@ -260,11 +284,11 @@ public class WeatherHelper {
         weather = weather.replaceAll(" VC", " VC" + (translate ? "(In Vicinity)" : ""));
 
         weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
-        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear <12,000ft)" : "")); // see http://www.faraim.org/aim/aim-4-03-14-494.html
         weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
         weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
         weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
-        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probibility%)" : ""));
+        weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probability%)" : ""));
         weather = weather.replaceAll("VV", "VV" + (translate ? "(Vertical Visibility)" : ""));
         weather = weather.replaceAll("CB", "CB" + (translate ? "(Cumulonimbus)" : ""));
         weather = weather.replaceAll("WS", "WS" + (translate ? "(Wind Shear)" : ""));
@@ -284,18 +308,18 @@ public class WeatherHelper {
             weather1 = weather1.replaceAll("SLP", "SLP" + (translate ? "(Sea Level Pressure)" : ""));
             weather1 = weather1.replaceAll("RVRNO","RVRNO" + (translate ? "(No RVR reported)" : ""));
             weather1 = weather1.replaceAll("NOSIG", "NOSIG" + (translate ? "(No Significant Change Expected)" : ""));
-            weather1 = weather1.replaceAll("TSNO", "TSNO" + (translate ? "(Thunderstom Info Not Available)" : ""));
+            weather1 = weather1.replaceAll("TSNO", "TSNO" + (translate ? "(Thunderstorm Info Not Available)" : ""));
             weather1 = weather1.replaceAll("PK WND", "PK WND" + (translate ? "(Peak Wind)" : ""));
             weather1 = weather1.replaceAll("WSHFT", "WSHFT" + (translate ? "(Wind Shift)" : ""));
             weather1 = weather1.replaceAll("VIS", "VIS" + (translate ? "(Visibility)" : ""));
-            weather1 = weather1.replaceAll("PRESFR", "PRESFR" + (translate ? "(Rapid Pressure Change)" : ""));
+            weather1 = weather1.replaceAll("PRESRR", "PRESFR" + (translate ? "(Pressure Raising Rapidly)" : ""));
+            weather1 = weather1.replaceAll("PRESFR", "PRESFR" + (translate ? "(Pressure Falling Rapidly)" : ""));
             weather1 = weather1.replaceAll("\\$", "\\$" + (translate ? "(Station Maintenance Needed)" : ""));
             
             weather += " RMK" + (translate ? "(Remark)" : " ") + weather1;
         }
 
-
-        return weather;
+        return identAndTime + " " + weather;
     }
 
     /**
@@ -623,7 +647,7 @@ public class WeatherHelper {
     /**
      * Returns density altitude for a field from its METAR and elevation
      * @param metar
-     * @param elevation
+     * @param elev
      * @return
      */
     public static String getDensityAltitude(String metar, String elev) {
@@ -701,7 +725,7 @@ public class WeatherHelper {
     /**
      * Returns best wind aligned runway from METAR
      * @param metar
-     * @param elevation
+     * @param runways
      * @return
      */
     public static String getBestRunway(String metar, LinkedList<String> runways) {

@@ -347,7 +347,9 @@ public class Preferences {
     public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
-
+    public boolean isShowLabelMETARS() {
+        return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
+    }
     /**
      * @return
      */
@@ -1198,6 +1200,13 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
 
+    public int getRateAskCount() {
+        return mPref.getInt("rateAskLastCount", 0);
+    }
+
+    public void setRateAskCount(int set) {
+        mPref.edit().putInt("rateAskLastCount", set).commit();
+    }
 
 }
 

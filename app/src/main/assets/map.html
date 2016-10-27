@@ -42,7 +42,7 @@ authors: zkhan
         toastr.options.timeOut = 2000;
 
         // set data
-        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer, navaids) {
             $("#airportName").text(airport);
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
@@ -54,6 +54,7 @@ authors: zkhan
             $("#areaSua").html(sua);
             $("#areaWinds").html(winds);
             $("#areaLayer").html(layer);
+            $("#areaNavaids").html(navaids);
             $("#buttonGroup").scrollIntoView();
         }
 
@@ -69,7 +70,7 @@ authors: zkhan
 <body>
 <div class="container-fluid">
     <div class="btn-group btn-group-justified" id="buttonGroup">
-        <a href="javascript:doAction('->D');" class="btn btn-primary">->D</a>
+        <a href="javascript:doAction('->D');" class="btn btn-success">->D</a>
         <a href="javascript:doAction('+Plan');" class="btn btn-primary">+Plan</a>
         <a href="javascript:doAction('Plate');" class="btn btn-primary">Plate</a>
         <a href="javascript:doAction('A/FD');" class="btn btn-primary">A/FD</a>
@@ -86,6 +87,7 @@ authors: zkhan
         <div id='areaMets'></div>
         <div id='areaAirep'></div>
         <div id='areaTfr'></div>
+        <div id='areaNavaids'></div>
         <div id='areaSua'></div>
         <div id='areaLayer'></div>
     </div>

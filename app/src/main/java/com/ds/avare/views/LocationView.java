@@ -36,6 +36,7 @@ import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
@@ -59,6 +60,7 @@ import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
+import com.ds.avare.utils.NavAidHelper;
 import com.ds.avare.utils.NavComments;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.AdsbWeatherCache;
@@ -75,6 +77,7 @@ import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * @author zkhan
@@ -1148,6 +1151,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private WindsAloft wa;
         private Metar metar;
         private String elev;
+        private Vector<NavAid> navaids;
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1207,10 +1211,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         /*
                          * Set MET tfr
                          */
-                        String txt = cshape.getTextIfTouched(lon, lat);
-                        if(null != txt) {
-                            textMets += txt + "\n--\n";
-                        }
+                        textMets += cshape.getHTMLMetOnTouch(mContext, mets.get(i), lon, lat);
                     }
                 }
             }            
@@ -1271,8 +1272,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(isCancelled()) {
                     return "";
                 }
-            }    
-            
+            }
+
+            navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
+
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
             return airport;
         }
@@ -1333,6 +1336,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 mLongTouchDestination.wa = wa;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.layer = layer;
+                //ideally we would pass altitude AGL for navaid reception calculations
+                mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
                 if(metar != null) {
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +

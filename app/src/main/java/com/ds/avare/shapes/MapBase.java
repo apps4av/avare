@@ -20,6 +20,9 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Created by zkhan on 9/1/15.
  */
@@ -46,7 +49,7 @@ public class MapBase {
 
     protected MapBase(Context context, int size, int tilesdim[]) {
 
-                /*
+        /*
          * Allocate mem for tiles.
          * Keep tiles for the life of activity
          */
@@ -98,6 +101,56 @@ public class MapBase {
      */
     public void forceReload() {
         clear();
+    }
+
+    /**
+     * Load tiles in CCW expanding spiral from center tile, just return indexes
+     * @return
+     */
+    private ArrayList<Integer> ccwSpiral(int m, int n) {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+
+        int matrix[] = new int[m * n];
+        for(int i = 0; i < m * n; i++) {
+            matrix[i] = i;
+        }
+
+        int left = 0;
+        int right = n - 1;
+        int top = 0;
+        int bottom = m - 1;
+
+        while(result.size() < m * n){
+            for(int j = left; j <= right; j++){
+                result.add(matrix[top * n + j]);
+            }
+            top++;
+
+            for(int i = top; i <= bottom; i++){
+                result.add(matrix[i * n + right]);
+            }
+            right--;
+
+            //prevent duplicate row
+            if(bottom < top)
+                break;
+
+            for(int j = right; j >= left; j--){
+                result.add(matrix[bottom * n + j]);
+            }
+            bottom--;
+
+            // prevent duplicate column
+            if(right < left)
+                break;
+
+            for(int i = bottom; i >= top; i--){
+                result.add(matrix[i * n + left]);
+            }
+            left++;
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     /**
