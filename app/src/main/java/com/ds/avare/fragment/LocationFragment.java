@@ -807,6 +807,15 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Save the current track log
+        if(mService!=null && mService.getTracks()) {
+            this.setTrackState(false);
+        }
+    }
+
     private void setTrackState(boolean bState) {
         URI fileURI = mService.setTracks(bState);
         /* The fileURI is returned when the tracks are closed off.
