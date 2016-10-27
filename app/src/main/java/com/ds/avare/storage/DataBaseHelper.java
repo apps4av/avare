@@ -116,6 +116,7 @@ public class DataBaseHelper  {
     public  static final String  NAVAID_HIWAS = "HIWAS";
     private static final String  NAVAID_HIWAS_DB = "HIWAS";
     private static final int    NAVAID_HIWAS_COL = 7;
+    private static final int    NAVAID_ELEVATION_COL = 8;
     public  static final String  FUEL_TYPES = "Fuel Types";
     private static final int    FUEL_TYPES_COL = 12;
     private static final int    CUSTOMS_COL = 13;
@@ -2568,8 +2569,10 @@ public class DataBaseHelper  {
                             String navaidClass = cursor.getString(NAVAID_CLASS_COL);
                             String hiwas = cursor.getString(NAVAID_HIWAS_COL);
                             boolean hasHiwas = hiwas.equals("Y");
+                            String elevationString = cursor.getString(NAVAID_ELEVATION_COL);
+                            double elevation = elevationString.isEmpty() ? 0 : Double.parseDouble(elevationString);
 
-                            result.add(new NavAid(locationId, type, name, coord, variation, navaidClass, hasHiwas));
+                            result.add(new NavAid(locationId, type, name, coord, variation, navaidClass, hasHiwas, elevation));
 
                         } while (cursor.moveToNext());
                     }

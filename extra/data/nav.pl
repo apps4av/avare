@@ -61,7 +61,8 @@ while (<FILE>) {
         $variation = $var * ($varl=='E' ? -1 : 1);
         $class = ltrim(substr($_, 281, 1));
         $hiwas = ltrim(substr($_, 800, 1));
-		print "$id,$lt,$ln,$type,$name,$variation,$class,$hiwas\n";
+        $elevation = ltrim(substr($_, 472, 7));
+		print "$id,$lt,$ln,$type,$name,$variation,$class,$hiwas,$elevation\n";
 	}
 }
 close(FILE);
