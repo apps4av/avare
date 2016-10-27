@@ -1218,7 +1218,8 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
         // mService is now valid, set the plan button vis
         setPlanButtonVis();
-
+        // auto start tracking
+        startTracks();
         mTracksCheckBox.setChecked(mService.getTracks());
     }
 
@@ -1286,4 +1287,13 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         spinner.setOnItemSelectedListener(selectedListener);
     }
 
+    private void startTracks() {
+        if(mPref.getAutoStartTracking()) {
+            // if service available and not currently logging
+            if(mService!=null && !mService.getTracks()) {
+                // Start the track log
+                setTrackState(true);
+            }
+        }
+    }
 }
