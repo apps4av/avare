@@ -17,9 +17,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.RunnableFuture;
 
 import android.annotation.SuppressLint;
 import android.os.Environment;
@@ -69,19 +74,140 @@ public class KMLRecorder {
 			mStartSpeed       = startSpeed;
 		}
 	}
+
+	/**
+	 * Writer class. This class will write the track history to disk
+	 */
+	private class Writer {
+		private static final long		WriteDelta = 300000;	// update the file this often (5min)
+		private String					mFolder;				// folder to store file in
+		private String 					mFilename;				// filename to use
+		private List<GpsParams> 		mList;					// list of gps positions
+		private int						mStartPosition;			// start position in history
+		private File 					mFile;					// file information
+		private long					mLastWrite;				// last time the file was written
+
+		/**
+		 * Writer constructor
+		 * @param folder			folder to write to
+		 * @param filename			filename to write to
+		 * @param list				list of gps coordinates
+         * @param startPosition		start position within list
+         */
+		public Writer(String folder,String filename,List<GpsParams> list,int startPosition) {
+			mFolder = folder;
+			mFilename = filename;
+			mList = list;
+			mStartPosition = startPosition;
+			initialise();
+		}
+
+		/**
+		 * Initialise the writer
+		 */
+		private void initialise() {
+			mLastWrite=System.currentTimeMillis();
+			try {
+				mFile = new File(mFolder, mFilename);
+				// Ensure the full path to the file area exists
+				File mDirPath = new File(mConfig.mFolder, "");
+				if (!mDirPath.exists()) {
+					mDirPath.mkdirs();
+				}
+
+				// If the file does not exist, then create it.
+				if (!mFile.exists()) {
+					mFile.createNewFile();    // Create the new file
+				}
+			}
+			catch(Exception e) {
+			}
+		}
+
+		/**
+		 * Write the file
+		 * @return the URI of the written file on success
+         */
+		public URI write() {
+			URI uri=null;
+
+			// File handling can throw some exceptions
+			try {
+				// Create a new writer, then a buffered writer for this file
+				FileWriter fileWriter = new FileWriter(mFile);
+				BufferedWriter tracksFile = new BufferedWriter(fileWriter, 8192);
+
+				// Write out the opening file prefix
+				tracksFile.write(KMLFILEPREFIX);			// Overall file prelude
+				tracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
+				for(int i=mStartPosition;i<mList.size();++i) {
+					GpsParams gpsParams=mList.get(mStartPosition);
+					tracksFile.write("\t\t\t\t\t" + gpsParams.getLongitude() + "," +
+							gpsParams.getLatitude() + "," +
+							(gpsParams.getAltitude() * .3048) + "\n");
+				}
+				tracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
+
+				for(int i=mStartPosition;i<mList.size();++i) {
+					GpsParams gpsParams=mList.get(mStartPosition);
+					String trackPoint = String.format(KMLTRACKPOINT,
+							i-mStartPosition,
+							new Date(gpsParams.getTime()).toString(),
+							gpsParams.getAltitude(),
+							gpsParams.getBearing(),
+							gpsParams.getSpeed(),
+							gpsParams.getLongitude(),
+							gpsParams.getLatitude(),
+							gpsParams.getLongitude(),
+							gpsParams.getLatitude(),
+							gpsParams.getAltitude() * .3048 /* meter per feet */
+					);
+					tracksFile.write(trackPoint);
+				}
+
+				// Close off the overall KML file now
+				tracksFile.write(KMLFILESUFFIX);	// The last of the file data
+
+				tracksFile.close();
+				// Return the URI on success
+				uri = mFile.toURI();
+
+			} catch (Exception e) { // Catch all exceptions here
+
+			}
+
+			return uri;
+		}
+
+		/**
+		 * New position update
+		 * @param gpsParams	position
+         */
+		public void newPosition(GpsParams gpsParams) {
+			long now=System.currentTimeMillis();
+			// greater than delta?
+			if(now-mLastWrite>=WriteDelta) {
+				mLastWrite=now;
+				// write in the background
+				(new Thread(new Runnable() {
+					public void run() {
+						write();
+					}
+				})).start();
+			}
+		}
+	}
 	
 	/**
 	 * Local runtime instance members. All item guaranteed to be zero or NULL
 	 * when created by the system
 	 */
 	private Config			mConfig;				// Configuration record passed in at start() call
-	private BufferedWriter  mTracksFile;			// File handle to use for writing the data
-    private File            mFile;					// core file handler
-    private LinkedList<GpsParams> mPositionHistory; // Stored GPS points 
-	private URI 			mFileURI;				// The URI of the file created for these datapoints
+	private List<GpsParams> mPositionHistory; 		// Stored GPS points
 	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
 	private GpsParams		mLastFix;				// the last time we wrote a position			
-	private CrumbsShape    mShape;
+	private CrumbsShape    	mShape;
+	private Writer			mWriter;				// file writer
 	
 	/**
 	 * Statics that all class instances share
@@ -160,7 +286,8 @@ public class KMLRecorder {
      * of gps points
      */
     public KMLRecorder(){
-    	mPositionHistory = new LinkedList<GpsParams>();
+    	mPositionHistory
+				= (List<GpsParams>) Collections.synchronizedList(new ArrayList<GpsParams>());
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
     }
@@ -170,7 +297,7 @@ public class KMLRecorder {
      * @return true if we are, false otherwise
      */
     public boolean isRecording() {
-    	return mTracksFile != null;
+    	return mWriter != null;
     }
     
     /**
@@ -178,42 +305,15 @@ public class KMLRecorder {
      * @return A URI of the file just closed
      */
 	public URI stop(){
+		URI uri=null;
 	    mShape.clearShape();
-    	if(mTracksFile != null) {
-    		// File operations can cause exceptions and we need to account for that
-    		try {
-    			mTracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
-    			if(mConfig.mUseDetailedPositionReporting) {
-	    			// Write out each track point of this flight as its own entry. This
-	    			// saves out more detail than just lat/long of the point.
-	    			for(int idx = mFlightStartIndex, max = mPositionHistory.size(); idx < max; idx++) {
-						GpsParams gpsParams = mPositionHistory.get(idx);
-						String trackPoint = String.format(KMLTRACKPOINT,
-								idx + 1,
-	    						new Date(gpsParams.getTime()).toString(),
-	    						gpsParams.getAltitude(),
-	    						gpsParams.getBearing(),
-	    						gpsParams.getSpeed(),
-	    						gpsParams.getLongitude(),
-	    						gpsParams.getLatitude(),
-	    						gpsParams.getLongitude(),
-	    						gpsParams.getLatitude(),
-	    						gpsParams.getAltitude() * .3048 /* meter per feet */
-	    						);
-						mTracksFile.write(trackPoint);
-	    			}
-    			}
-    			
-    			// Close off the overall KML file now
-        		mTracksFile.write(KMLFILESUFFIX);	// The last of the file data 
-    			mTracksFile.close();				// close the file
-    		} catch (IOException ioe) { }
-
-    		// Clear out our control objects
-    		mTracksFile = null;	// No track file anymore
-    		return mFileURI;	// return with the URI of the file we just closed
+    	if(mWriter != null) {
+			// write the last of the data
+    		uri=mWriter.write();
+			// clean up
+			mWriter=null;
     	}
-    	return null;
+    	return uri;
     }
     
 
@@ -236,52 +336,25 @@ public class KMLRecorder {
      */
     @SuppressLint("SimpleDateFormat")
 	public void start(Config config) {
+		// Build the file name based upon the current date/time
+		String fileName = new SimpleDateFormat(KMLFILENAMEFORMAT)
+								.format(Calendar.getInstance().getTime()) + KMLFILENAMEEXTENTION;
+
         mShape.clearShape();
     	mConfig = config;
-    	
-		// Build the file name based upon the current date/time
-		String fileName = new SimpleDateFormat(KMLFILENAMEFORMAT).format(Calendar.getInstance().getTime()) + KMLFILENAMEEXTENTION;
-    	mFile = new File(mConfig.mFolder, fileName);
-    	
-    	// File handling can throw some exceptions
-    	try {
-    		
-    		// Ensure the full path to the file area exists
-    		File mDirPath = new File(mConfig.mFolder, "");
-    		if(!mDirPath.exists()) {
-    			mDirPath.mkdirs();
-    		}
-    		
-    		// If the file does not exist, then create it. 
-        	if(!mFile.exists()){
-        		mFile.createNewFile();	// Create the new file
-        	}
 
-        	// Save off the URI of this file we just created. This value
-        	// is returned at the stop() method.
-        	mFileURI = mFile.toURI();
-        	
-        	// Create a new writer, then a buffered writer for this file
-        	FileWriter fileWriter = new FileWriter(mFile);
-    		mTracksFile = new BufferedWriter(fileWriter, 8192);
+		// If we are supposed to clear the linked list each time
+		// we start timing then do so now
+		if(mConfig.mClearListOnStart) {
+			clearPositionHistory();
+		}
 
-    		// Write out the opening file prefix
-    		mTracksFile.write(KMLFILEPREFIX);			// Overall file prelude
-    		mTracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
+		// Mark the starting entry of our history list. This is required in order
+		// to save off the individual points of our trip at close
+		mFlightStartIndex = mPositionHistory.size();
 
-            // If we are supposed to clear the linked list each time
-            // we start timing then do so now
-            if(mConfig.mClearListOnStart) {
-            	clearPositionHistory();
-            }
-            
-            // Mark the starting entry of our history list. This is required in order
-            // to save off the individual points of our trip at close
-            mFlightStartIndex = mPositionHistory.size();
-            
-    	} catch (Exception e) { // Catch all exceptions here
-
-    	}
+		// create a new writer
+		mWriter=new Writer(mConfig.mFolder,fileName,mPositionHistory,mFlightStartIndex);
     }
     
     /**
@@ -299,7 +372,8 @@ public class KMLRecorder {
      * @param gpsParams Current location information
      */
     public void setGpsParams(GpsParams gpsParams) {
-    	if(mTracksFile == null) {
+
+    	if(mWriter == null) {
     		// File closed means nothing to do
     		return;
     	}
@@ -338,21 +412,17 @@ public class KMLRecorder {
 			return;
 		}
 
-		// Write out the position. Convert the altitude from feet to meters for the KML file
-		try {
-			mTracksFile.write ("\t\t\t\t\t" + gpsParams.getLongitude() + "," + 
-											  gpsParams.getLatitude() + "," + 
-											 (gpsParams.getAltitude() * .3048) + "\n");
+		// Add this position to our linked list for possible display
+		// on the charts
+		mPositionHistory.add(GpsParams.copy(gpsParams));
+		mShape.updateShape(gpsParams);
 
-			// Add this position to our linked list for possible display
-			// on the charts
-			mPositionHistory.add(GpsParams.copy(gpsParams));
-			mShape.updateShape(gpsParams);
+		// update the writer
+		mWriter.newPosition(gpsParams);
 
-			// The data was saved correctly, update our last known position
-			mLastFix = gpsParams;
+		// Update our last known position
+		mLastFix = gpsParams;
 
-		} catch (Exception e) { }
 	}
     
     /**
