@@ -1228,6 +1228,10 @@ public class Preferences {
         mPref.edit().putInt("rateAskLastCount", set).commit();
     }
 
+    public boolean getAutoStartTracking() {
+        return (mPref.getBoolean(mContext.getString(R.string.prefAutoStartTracking), false));
+    }
+
 }
 
 

@@ -374,6 +374,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
+        <CheckBoxPreference
+            android:key="@string/prefAutoStartTracking"
+            android:title="@string/AutoStartTrackingLabel"
+            android:summary="@string/AutoStartTrackingSummary"/>
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/AutoPostTracksPrompts"
