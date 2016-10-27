@@ -69,12 +69,12 @@ public class NavAidHelper {
     }
 
     /** format distance to a particular navaid as a string */
-    private String getNavaidLocation(Coordinate navaidCoordinate, int navaidVariation, String navaidClass) {
+    private String getNavaidLocationAsHtml(Coordinate navaidCoordinate, int navaidVariation, String navaidClass, double navaidElevation) {
         Projection p = new Projection(
                 navaidCoordinate.getLongitude(), navaidCoordinate.getLatitude(),
                 lonReference, latReference);
         double distanceToNavAid = p.getDistance();
-        boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference)
+        boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference - navaidElevation)
                 || !("TLH".contains(navaidClass) || navaidClass.isEmpty());
         long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), navaidVariation));
         return " on " + String.format(Locale.getDefault(), "%03d", radial) + ctx.getString(R.string.degree) + " radial "
@@ -93,7 +93,7 @@ public class NavAidHelper {
                         + na.getLongName() + " " + na.getType()
                         + (na.hasHiwas() ? "<sup>(H)</sup>" : "")
                         + " " + na.getFrequency() + " " + na.getLocationId()
-                        + " " + getNavaidLocation(na.getCoords(), na.getVariation(), na.getNavaidClass());
+                        + " " + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation());
             }
         }
         return result;

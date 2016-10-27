@@ -30,6 +30,7 @@ public class NavAid {
     private int mVariation;
     private String mNavaidClass;
     private boolean mHiwas;
+    private double mElevation;
 
     public String getLocationId() {
         return mLocationId;
@@ -55,8 +56,9 @@ public class NavAid {
     public int getVariation() { return mVariation; }
     public String getNavaidClass() { return mNavaidClass; }
     public boolean hasHiwas() { return mHiwas; }
+    public double getElevation() { return mElevation;  }
 
-    public NavAid(String location, String type, String facility, Coordinate coords, int variation, String navaidClass, boolean hiwas) {
+    public NavAid(String location, String type, String facility, Coordinate coords, int variation, String navaidClass, boolean hiwas, double elevation) {
         mLocationId = location;
         mType = type;
         mFacilityName = facility;
@@ -64,6 +66,7 @@ public class NavAid {
         mVariation = variation;
         mNavaidClass = navaidClass;
         mHiwas = hiwas;
+        mElevation = elevation;
     }
 
 }
