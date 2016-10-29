@@ -403,7 +403,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mChartsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mChartSpinnerBar.performClick();
+                mChartSpinnerNav.performClick();
             }
         });
 
@@ -412,7 +412,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mLayersButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLayerSpinnerBar.performClick();
+                mLayerSpinnerNav.performClick();
             }
         });
 
