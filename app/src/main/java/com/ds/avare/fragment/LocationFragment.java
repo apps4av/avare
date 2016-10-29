@@ -399,10 +399,22 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         });
 
         mChartsButton = (ImageButton) view.findViewById(R.id.location_button_charts);
-        mChartsButton .getBackground().setAlpha(255);
+        mChartsButton.getBackground().setAlpha(255);
+        mChartsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChartSpinnerNav.performClick();
+            }
+        });
 
         mLayersButton = (ImageButton) view.findViewById(R.id.location_button_layers);
-        mLayersButton .getBackground().setAlpha(255);
+        mLayersButton.getBackground().setAlpha(255);
+        mLayersButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLayerSpinnerNav.performClick();
+            }
+        });
 
         mCenterButton = (ImageButton) view.findViewById(R.id.location_button_center);
         mCenterButton.getBackground().setAlpha(255);
