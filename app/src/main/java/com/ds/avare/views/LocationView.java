@@ -1085,7 +1085,6 @@ public class LocationView extends View implements OnTouchListener {
 
             mViewParams.getPan().setMove(moveX, moveY);
 
-            System.out.println("#@#@ --> settingXXX "+mViewParams.getScaleFactor());
             mPref.setZoomLevel(mViewParams.getScaleFactor());
 
             updateCoordinates();
