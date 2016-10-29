@@ -568,5 +568,16 @@ authors: zkhan, jlmcgraw
 
     </PreferenceScreen>
 
+    <PreferenceScreen
+        android:title="@string/Stratuvare"
+        android:icon="@android:drawable/ic_menu_zoom" >
+
+        <CheckBoxPreference
+            android:key="@string/prefPersistZoom"
+            android:summary="@string/PersistZoomSummary"
+            android:title="@string/PersistZoomLabel" />
+
+    </PreferenceScreen>
+
 
     </PreferenceScreen>

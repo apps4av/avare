@@ -275,6 +275,14 @@ public class LocationView extends View implements OnTouchListener {
         mDipToPix = Helper.getDpiToPix(context);
         mScaleDetector = new ScaleGestureDetector(context, new ComplexOnScaleGestureListener(mViewParams, this));
 
+        // set zoom level?
+        if(mPref.getPersistZoom()) {
+            float zoom=mPref.getZoomLevel();
+            if(zoom>=mViewParams.getMinScale()&&zoom<=mViewParams.getMaxScale()) {
+                mViewParams.setScaleFactor(zoom);
+                mViewParams.getScale().setScaleFactor(mViewParams.getScaleFactor());
+            }
+        }
     }
     
     /**
@@ -1076,6 +1084,8 @@ public class LocationView extends View implements OnTouchListener {
             mLastFocusY = focusY;
 
             mViewParams.getPan().setMove(moveX, moveY);
+
+            mPref.setZoomLevel(mViewParams.getScaleFactor());
 
             updateCoordinates();
             invalidate();
