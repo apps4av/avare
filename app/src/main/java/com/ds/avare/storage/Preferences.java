@@ -1034,11 +1034,15 @@ public class Preferences {
     }
 
     public boolean getHideTabBar() {
-        return mPref.getBoolean(mContext.getString(R.string.HideTabBar), false);
+        return mPref.getBoolean(mContext.getString(R.string.HideTabBar), true);
     }
 
     public boolean getHideToolbar() {
-        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), true);
+        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), false);
+    }
+
+    public boolean getHideDrawButton() {
+        return mPref.getBoolean(mContext.getString(R.string.HideDrawButton), true);
     }
 
     public void setHideTabBar(boolean val) {
@@ -1047,6 +1051,10 @@ public class Preferences {
 
     public void setHideToolbar(boolean val) {
         mPref.edit().putBoolean(mContext.getString(R.string.HideToolbar), val).apply();
+    }
+
+    public void setHideDrawButton(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideDrawButton), val).apply();
     }
 
     public boolean getPlanPassage() {

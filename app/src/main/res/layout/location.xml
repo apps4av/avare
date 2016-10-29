@@ -53,6 +53,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <ImageButton
             android:id="@+id/location_button_charts"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".75"
@@ -62,6 +63,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <ImageButton
             android:id="@+id/location_button_layers"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".75"
@@ -80,6 +82,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <ImageButton
             android:id="@+id/location_button_draw"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".75"
@@ -89,6 +92,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
         <ImageButton
             android:id="@+id/location_button_draw_clear"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".75"

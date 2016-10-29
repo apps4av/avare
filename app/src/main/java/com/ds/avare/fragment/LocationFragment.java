@@ -403,7 +403,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mChartsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mChartSpinnerNav.performClick();
+                mChartSpinnerBar.performClick();
             }
         });
 
@@ -412,7 +412,7 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mLayersButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLayerSpinnerNav.performClick();
+                mLayerSpinnerBar.performClick();
             }
         });
 
@@ -815,12 +815,23 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
         mPlanNext.setVisibility(planButtons);
     }
 
+    private void setChartsAndLayersButtonVisibility() {
+        mChartsButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+        mLayersButton.setVisibility(mPref.getHideToolbar() ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void setDrawButtonVisibility() {
+        mDrawButton.setVisibility(mPref.getHideDrawButton() ? View.INVISIBLE : View.VISIBLE);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         // Set visibility of the plan buttons
         setPlanButtonVis();
+        setChartsAndLayersButtonVisibility();
+        setDrawButtonVisibility();
 
         if (mService != null) {
             // Tell the fuel tank timer we need to know when it runs out
