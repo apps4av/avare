@@ -1229,9 +1229,22 @@ public class Preferences {
     }
 
     public boolean getAutoStartTracking() {
-        return (mPref.getBoolean(mContext.getString(R.string.prefAutoStartTracking), false));
+        return mPref.getBoolean(mContext.getString(R.string.prefAutoStartTracking), false);
     }
 
+    public boolean getPersistZoom() {
+        return mPref.getBoolean(mContext.getString(R.string.prefPersistZoom), false);
+    }
+
+    public float getZoomLevel() {
+        return mPref.getFloat(mContext.getString(R.string.prefZoomLevel),1.0f);
+    }
+
+    public void setZoomLevel(float zoom) {
+        SharedPreferences.Editor edit=mPref.edit();
+        edit.putFloat(mContext.getString(R.string.prefZoomLevel),zoom);
+        edit.commit();
+    }
 }
 
 

@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
 	<string name="lang"></string>
+    <string name="Stratuvare">&quot;Stratuvare&quot;</string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Download chart&quot;</string>
     <string name="MissingElevation">&quot;Download elevation chart&quot;</string>
@@ -546,6 +547,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TileSize">TileSize</string>
     <string name="TileSizeLabel">New Tile Size</string>
     <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
+    <string name="PersistZoomLabel">&quot;Remember zoom?&quot;</string>
+    <string name="PersistZoomSummary">&quot;Select to return to last zoom level when the application starts&quot;</string>
+    <string name="prefPersistZoom">PersistZoom</string>
+    <string name="prefZoomLevel">ZoomLevel</string>
 
     <string name="Developer">Developer Settings</string>
     <string name="DeclareEmergency">Declare Emergency?</string>
