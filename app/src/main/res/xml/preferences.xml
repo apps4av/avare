@@ -306,15 +306,20 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ShapeFileSummary"
             android:title="@string/ShapeFileLabel" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/HideTabBar"
             android:summary="@string/HideTabBarSummary"
             android:title="@string/HideTabBarLabel" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="@string/HideToolbar"
             android:summary="@string/HideToolbarSummary"
             android:title="@string/HideToolbarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/HideDrawButton"
+            android:summary="@string/HideDrawButtonSummary"
+            android:title="@string/HideDrawButtonLabel" />
         <PreferenceScreen
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"
