@@ -18,7 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 /***
  * This class is about the bottom are of the display panel that exists between the left,
@@ -78,7 +78,7 @@ public class NavComments {
 	public void draw(View view, Canvas canvas, Paint paint, ShadowedText shadowedText) {
         // Search for the spot on the screen to place the text
         View parent = (View) view.getParent();
-        Button mMenuButton = (Button)parent.findViewById(R.id.location_button_drawer);
+        ImageButton mMenuButton = (ImageButton) parent.findViewById(R.id.location_button_center);
 
         // If we found the position then get the rest of the measurements
         if(null != mMenuButton) {

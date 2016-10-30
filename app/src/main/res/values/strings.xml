@@ -74,6 +74,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="HideToolbar">&quot;Hide Toolbar&quot;</string>
     <string name="HideToolbarLabel">&quot;Hide Toolbar&quot;</string>
     <string name="HideToolbarSummary">&quot;Select to hide the top toolbar.&quot;</string>
+    <string name="HideDrawButton">&quot;Hide Draw Button&quot;</string>
+    <string name="HideDrawButtonLabel">&quot;Hide Draw Button&quot;</string>
+    <string name="HideDrawButtonSummary">&quot;Select to hide the draw button.&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
