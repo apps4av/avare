@@ -130,50 +130,52 @@ public class KMLRecorder {
          */
 		public URI write() {
 			URI uri=null;
+			// don't write an empty file
+			if(mList.size()>mStartPosition) {
+				// File handling can throw some exceptions
+				try {
+					// Create a new writer, then a buffered writer for this file
+					FileWriter fileWriter = new FileWriter(mFile);
+					BufferedWriter tracksFile = new BufferedWriter(fileWriter, 8192);
 
-			// File handling can throw some exceptions
-			try {
-				// Create a new writer, then a buffered writer for this file
-				FileWriter fileWriter = new FileWriter(mFile);
-				BufferedWriter tracksFile = new BufferedWriter(fileWriter, 8192);
+					// Write out the opening file prefix
+					tracksFile.write(KMLFILEPREFIX);            // Overall file prelude
+					tracksFile.write(KMLCOORDINATESHEADER);    // Open coordinates data
+					for (int i = mStartPosition; i < mList.size(); ++i) {
+						GpsParams gpsParams = mList.get(i - mStartPosition);
+						tracksFile.write("\t\t\t\t\t" + gpsParams.getLongitude() + "," +
+								gpsParams.getLatitude() + "," +
+								(gpsParams.getAltitude() * .3048) + "\n");
+					}
+					tracksFile.write(KMLCOORDINATESTRAILER);    // Close off the coordinates section
 
-				// Write out the opening file prefix
-				tracksFile.write(KMLFILEPREFIX);			// Overall file prelude
-				tracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
-				for(int i=mStartPosition;i<mList.size();++i) {
-					GpsParams gpsParams=mList.get(mStartPosition);
-					tracksFile.write("\t\t\t\t\t" + gpsParams.getLongitude() + "," +
-							gpsParams.getLatitude() + "," +
-							(gpsParams.getAltitude() * .3048) + "\n");
+					for (int i = mStartPosition; i < mList.size(); ++i) {
+						GpsParams gpsParams = mList.get(i - mStartPosition);
+						String trackPoint = String.format(KMLTRACKPOINT,
+								1 + i - mStartPosition,
+								new Date(gpsParams.getTime()).toString(),
+								gpsParams.getAltitude(),
+								gpsParams.getBearing(),
+								gpsParams.getSpeed(),
+								gpsParams.getLongitude(),
+								gpsParams.getLatitude(),
+								gpsParams.getLongitude(),
+								gpsParams.getLatitude(),
+								gpsParams.getAltitude() * .3048 /* meter per feet */
+						);
+						tracksFile.write(trackPoint);
+					}
+
+					// Close off the overall KML file now
+					tracksFile.write(KMLFILESUFFIX);    // The last of the file data
+
+					tracksFile.close();
+					// Return the URI on success
+					uri = mFile.toURI();
+
+				} catch (Exception e) { // Catch all exceptions here
+					System.out.println("Error: "+e);
 				}
-				tracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
-
-				for(int i=mStartPosition;i<mList.size();++i) {
-					GpsParams gpsParams=mList.get(mStartPosition);
-					String trackPoint = String.format(KMLTRACKPOINT,
-							i-mStartPosition,
-							new Date(gpsParams.getTime()).toString(),
-							gpsParams.getAltitude(),
-							gpsParams.getBearing(),
-							gpsParams.getSpeed(),
-							gpsParams.getLongitude(),
-							gpsParams.getLatitude(),
-							gpsParams.getLongitude(),
-							gpsParams.getLatitude(),
-							gpsParams.getAltitude() * .3048 /* meter per feet */
-					);
-					tracksFile.write(trackPoint);
-				}
-
-				// Close off the overall KML file now
-				tracksFile.write(KMLFILESUFFIX);	// The last of the file data
-
-				tracksFile.close();
-				// Return the URI on success
-				uri = mFile.toURI();
-
-			} catch (Exception e) { // Catch all exceptions here
-
 			}
 
 			return uri;
