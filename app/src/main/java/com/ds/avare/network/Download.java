@@ -12,6 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.network;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.NetworkHelper;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,16 +28,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.NetworkHelper;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 
 /**
  * 
@@ -57,7 +60,6 @@ public class Download {
        
     /**
      * 
-     * @param act
      */
     public Download(String root, Handler handler, int cycleAdjust, boolean is256) {
         mStop = false;
@@ -90,7 +92,7 @@ public class Download {
 
     /**
      * 
-     * @param url
+     * @param isStatic
      * @param path
      * @param filename
      */
@@ -282,7 +284,16 @@ public class Download {
                     int totalnum = 0;
 
                     mCode = "code corrupt zip file ";
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    Enumeration<? extends ZipEntry> ent = zipFile.entries();
+                    List list = Collections.list(ent);
+
+                    // sort for it affects cleanup logic
+                    Collections.sort(list, new Comparator<ZipEntry>() {
+                        public int compare(ZipEntry z1, ZipEntry z2) {
+                            return z1.getName().compareTo(z2.getName());
+                        }
+                    });
+                    Enumeration<? extends ZipEntry> entries = Collections.enumeration(list);
 
                     String lastName = "";
                     while(entries.hasMoreElements()) {
