@@ -167,7 +167,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Billings</item>
 		<item>Brownsville</item>
 		<item>Cape Lisburne</item>
-		<item>Caribbean1</item>
+		<item>Caribbean - 1</item>
+        <item>Caribbean - 2</item>
 		<item>Charlotte</item>
 		<item>Cheyenne</item>
 		<item>Chicago</item>
@@ -1608,7 +1609,8 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Billings</item>
 		<item>Brownsville</item>
 		<item>CapeLisburne</item>
-		<item>Caribbean1</item>
+        <item>Caribbean1</item>
+        <item>Caribbean2</item>
 		<item>Charlotte</item>
 		<item>Cheyenne</item>
 		<item>Chicago</item>

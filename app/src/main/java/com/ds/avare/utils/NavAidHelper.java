@@ -14,11 +14,9 @@ package com.ds.avare.utils;
 
 import android.content.Context;
 
-import com.ds.avare.R;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.Preferences;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -77,9 +75,9 @@ public class NavAidHelper {
         boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference - navaidElevation)
                 || !("TLH".contains(navaidClass) || navaidClass.isEmpty());
         long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), navaidVariation));
-        return " on " + String.format(Locale.getDefault(), "%03d", radial) + ctx.getString(R.string.degree) + " radial "
-                + (!isReceived ? "<font color='yellow'>" : "")
-                + Math.round(distanceToNavAid) + Preferences.distanceConversionUnit
+        return  (!isReceived ? "<font color='red'>" : "")
+                + String.format(Locale.getDefault(), "%03d", radial)
+                + Math.round(distanceToNavAid)
                 + (!isReceived ? "</font>" : "")
             ;
     }
@@ -90,10 +88,10 @@ public class NavAidHelper {
         if (navaids != null) {
             for (NavAid na : navaids) {
                 result += (result != "" ? "<br>" : "") // fields' order same as Chart Supplement convention
-                        + na.getLongName() + " " + na.getType()
-                        + (na.hasHiwas() ? "<sup>(H)</sup>" : "")
-                        + " " + na.getFrequency() + " " + na.getLocationId()
-                        + " " + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation());
+                        + na.getLocationId()
+                        + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation()) + " "
+                        + na.getFrequency()
+                        + (na.hasHiwas() ? "<sup>(H)</sup>" : "");
             }
         }
         return result;

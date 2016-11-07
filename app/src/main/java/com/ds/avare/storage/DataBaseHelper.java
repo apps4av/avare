@@ -2542,7 +2542,7 @@ public class DataBaseHelper  {
                 right  = Projection.findStaticPoint(lon, lat, 90, NAVAID_SEARCH_RADIUS);
         Double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
         String qry = "select * from " + TABLE_NAV
-                + " where Type != 'VOT' and type != 'NDB' "+
+                + " where Type == 'VOR' or type == 'VOR/DME' or type == 'VORTAC' "+
                 " and ARPlatitude < "+top.getLatitude()+
                 " and ARPlatitude > "+bottom.getLatitude()+
                 " and ARPlongitude < "+right.getLongitude()+

@@ -393,7 +393,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListAirports.size() == 0 || arePopupsShowing()) {
+                if (mListAirports == null || mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
 
