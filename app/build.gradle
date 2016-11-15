@@ -15,6 +15,15 @@ android {
 
 
     buildTypes {
+        all {
+            if(project.hasProperty("gradlePropertiesDataPassword")) {
+                buildConfigField 'String', 'PASSWORD', '"' + project.property("gradlePropertiesDataPassword") + '"'
+            }
+            else {
+                buildConfigField 'String', 'PASSWORD', '""'
+            }
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'

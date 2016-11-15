@@ -15,7 +15,9 @@ package com.ds.avare.network;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 
+import com.ds.avare.BuildConfig;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 
@@ -209,6 +211,9 @@ public class Download {
                 
                 File zfile = new File(zipfile);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                // Discourage server load by unverified entities
+                connection.setRequestProperty("Authorization", "Basic " +
+                        Base64.encodeToString((BuildConfig.APPLICATION_ID + ":" + BuildConfig.PASSWORD).getBytes(), Base64.NO_WRAP));
                 if(zfile.exists()) {
                     // if file exists, resume download
                     connection.setRequestProperty("Range", "bytes=" + (zfile.length()) + "-");
