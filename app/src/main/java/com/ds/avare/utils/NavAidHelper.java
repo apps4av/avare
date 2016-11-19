@@ -75,10 +75,11 @@ public class NavAidHelper {
         boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference - navaidElevation)
                 || !("TLH".contains(navaidClass) || navaidClass.isEmpty());
         long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), navaidVariation));
-        return  (!isReceived ? "<font color='red'>" : "")
-                + String.format(Locale.getDefault(), "%03d", radial)
+        final String LIGHT_RED = "#ff6666", LIGHT_GREEN = "#99ff66";
+        return  String.format(Locale.getDefault(), "%03d", radial)
+                + "<font color='" + (isReceived ? LIGHT_GREEN : LIGHT_RED) + "'>"
                 + Math.round(distanceToNavAid)
-                + (!isReceived ? "</font>" : "")
+                + "</font>"
             ;
     }
 
