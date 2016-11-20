@@ -13,6 +13,8 @@ package com.ds.avare.utils;
 
 import android.util.Pair;
 
+import com.ds.avare.weather.WindsAloft;
+
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -499,6 +501,29 @@ public class WeatherHelper {
             output = "<font color='#ff54f9'>" + original + "<font color='white'>";
         }
         return output;
+    }
+
+
+    public static String formatWindsHTML(WindsAloft wa, int upToAltitude) {
+        String winds = wa.station + wa.time + "<br>";
+        winds += "@ 03000 ft: " + WeatherHelper.decodeWind(wa.w3k) + "<br>";
+        if (upToAltitude <= 3) return winds;
+        winds += "@ 06000 ft: " + WeatherHelper.decodeWind(wa.w6k) + "<br>";
+        if (upToAltitude <= 6) return winds;
+        winds += "@ 09000 ft: " + WeatherHelper.decodeWind(wa.w9k) + "<br>";
+        if (upToAltitude <= 9) return winds;
+        winds += "@ 12000 ft: " + WeatherHelper.decodeWind(wa.w12k) + "<br>";
+        if (upToAltitude <= 12) return winds;
+        winds += "@ 18000 ft: " + WeatherHelper.decodeWind(wa.w18k) + "<br>";
+        if (upToAltitude <= 18) return winds;
+        winds += "@ 24000 ft: " + WeatherHelper.decodeWind(wa.w24k) + "<br>";
+        if (upToAltitude <= 24) return winds;
+        winds += "@ 30000 ft: " + WeatherHelper.decodeWind(wa.w30k) + "<br>";
+        if (upToAltitude <= 30) return winds;
+        winds += "@ 34000 ft: " + WeatherHelper.decodeWind(wa.w34k) + "<br>";
+        if (upToAltitude <= 34) return winds;
+        winds += "@ 39000 ft: " + WeatherHelper.decodeWind(wa.w39k);
+        return winds;
     }
 
     /**
