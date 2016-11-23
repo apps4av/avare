@@ -332,7 +332,7 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListAirports.size() == 0 || arePopupsShowing()) {
+                if (mListAirports.size() == 0 || mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
 

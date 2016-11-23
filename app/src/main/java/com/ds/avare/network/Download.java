@@ -21,7 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -282,7 +285,17 @@ public class Download {
                     int totalnum = 0;
 
                     mCode = "code corrupt zip file ";
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+                    Enumeration<? extends ZipEntry> ent = zipFile.entries();
+                    List list = Collections.list(ent);
+
+                    // sort for it affects cleanup logic
+                    Collections.sort(list, new Comparator<ZipEntry>() {
+                        public int compare(ZipEntry z1, ZipEntry z2) {
+                            return z1.getName().compareTo(z2.getName());
+                        }
+                    });
+                    Enumeration<? extends ZipEntry> entries = Collections.enumeration(list);
 
                     String lastName = "";
                     while(entries.hasMoreElements()) {
