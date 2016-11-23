@@ -24,6 +24,7 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindsAloftHelper;
 import com.ds.avare.weather.Airep;
 
 /**
@@ -152,7 +153,7 @@ public class WebAppMapInterface {
                 String winds = "";
                 if(data.wa != null) {
                     winds = "<hr><b><font color=\"yellow\">Winds/Temp. Aloft</font></b> ";
-                    winds += WeatherHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
+                    winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
                 }
 
                 String navaids = "";
