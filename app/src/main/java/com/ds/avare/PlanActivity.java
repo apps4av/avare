@@ -414,12 +414,16 @@ public class PlanActivity extends Activity {
     		else if(msg.what == UNSHOW_BUSY) {
     			mProgressBarSearch.setVisibility(View.INVISIBLE);
     		}
-    		else if(msg.what == ACTIVE) {
-    			mActivateButton.setText(getString(R.string.Active));
-    		}
-    		else if(msg.what == INACTIVE) {
-    			mActivateButton.setText(getString(R.string.Inactive));
-    		}
+            else if(msg.what == ACTIVE) {
+                if (mActivateButton.getText().equals(R.string.Inactive)) {
+                    mActivateButton.setText(getString(R.string.Active));
+                }
+            }
+            else if(msg.what == INACTIVE) {
+                if (mActivateButton.getText().equals(R.string.Active)) {
+                    mActivateButton.setText(getString(R.string.Inactive));
+                }
+            }
     		else if(msg.what == MESSAGE) {
     			// Show an important message
     			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
