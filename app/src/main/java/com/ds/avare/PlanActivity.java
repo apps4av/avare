@@ -415,12 +415,12 @@ public class PlanActivity extends Activity {
     			mProgressBarSearch.setVisibility(View.INVISIBLE);
     		}
             else if(msg.what == ACTIVE) {
-                if (mActivateButton.getText().equals(R.string.Inactive)) {
+                if (mActivateButton.getText().equals(getString(R.string.Inactive))) {
                     mActivateButton.setText(getString(R.string.Active));
                 }
             }
             else if(msg.what == INACTIVE) {
-                if (mActivateButton.getText().equals(R.string.Active)) {
+                if (mActivateButton.getText().equals(getString(R.string.Active))) {
                     mActivateButton.setText(getString(R.string.Inactive));
                 }
             }
