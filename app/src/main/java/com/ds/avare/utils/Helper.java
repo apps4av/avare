@@ -700,15 +700,14 @@ public class Helper {
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(millis) + "_UTC";
     }
-    
+
+    static private final TimeZone mTimeZone = new GregorianCalendar().getTimeZone();
     /**
      * 
      * @return
      */
     public static long getMillisGMT() {
-        Calendar calendar = new GregorianCalendar();
-        TimeZone mTimeZone = calendar.getTimeZone();
-        int offset = mTimeZone.getOffset(System.currentTimeMillis());  
+        int offset = mTimeZone.getOffset(System.currentTimeMillis());
         return System.currentTimeMillis() - offset;
     }
 
