@@ -15,19 +15,9 @@ android {
 
 
     buildTypes {
-        all {
-            if(project.hasProperty("gradlePropertiesDataPassword")) {
-                buildConfigField 'String', 'PASSWORD', '"' + project.property("gradlePropertiesDataPassword") + '"'
-            }
-            else {
-                buildConfigField 'String', 'PASSWORD', '""'
-            }
-        }
-
         release {
             minifyEnabled true
-            shrinkResources false
-            proguardFiles.add(file("proguard-rules.txt"))
+            shrinkResources true
         }
     }
 }
