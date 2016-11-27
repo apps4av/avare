@@ -12,6 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.network;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
+import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.NetworkHelper;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,13 +34,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.NetworkHelper;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 
 /**
  * 
@@ -60,7 +60,6 @@ public class Download {
        
     /**
      * 
-     * @param act
      */
     public Download(String root, Handler handler, int cycleAdjust, boolean is256) {
         mStop = false;
@@ -93,7 +92,7 @@ public class Download {
 
     /**
      * 
-     * @param url
+     * @param isStatic
      * @param path
      * @param filename
      */

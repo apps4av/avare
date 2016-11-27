@@ -44,3 +44,73 @@ After Checkout is complete, press the Android Studio Toolbar button "Sync Projec
 
 RUNNING:
 Run in Android Studio on Emulator, or an actual device.
+
+TEST EVERY CYCLE:
+
+Check 1: Server
+---------------
+
+1. Look at new data on server and chmod a+r all files, chmod g+w all files, and see nothing stands out in size of file
+
+2. Verify that number of files are same as number of files in last cycle (use command ls -la | wc -l)
+
+Check 2: Databases
+------------------
+
+1. Clear data of app, go through registration and before download for database, go to preferences and change cycle to next, then check "show all bases"
+
+2. Download database
+
+3. Go to simulation mode
+
+4. Find BOS
+
+5. See text A/FD is correct (runways appear, freqencies appear, all fields look filled properly)
+
+6. Go to Map and verify runways extensions are drawn correctly
+
+7. Go to Plan and create a plan KBOS BOS V16 CMK, verify V16 is converetd to fixes and all are identified
+
+8. Verify that OPLA airport is found and its A/FD from OUR-AP is correct
+
+9. Go to Map, see charts (Sectional, TAC, WAC, IFR low, IFR high, IFR area) show in fully zoomed out, note no cut-off edges, no missing areas, no lines
+
+10. Pan to go to Alaska, then to Caribbean and see there is no odd missing areas
+
+Check 3: Full data
+------------------
+
+1. Download following: Plates Georeference Info, NewYork sectional, Boston TAC, CF-19 WAC, IFR Low NE, IFR Hi NE, IFR area ANC, Canada ADs, Minimums T/A, Plates MA, VFR area Canada, VFR area MA, A/FD NE, Elevation NE, Boston Heli, Grand Canyon
+
+2. Find airport BOS
+
+3. Go to Map, see charts (Sectional, TAC, WAC, IFR low, IFR high) show fully zoomed in, out, and intermediate. Note no cut-off edges, no missing areas, no lines, aircraft on center of airport
+
+4. Find airport ANC
+
+5. Go to Map, see charts (IFR area) show fully zoomed in, out, and intermediate. Note no cut-off edges, no missing areas, no lines, aircraft on center of airport
+
+6. Find airport GCN
+
+7. Go to Map, see charts (Heli/Other) for grand canyon, show fully zoomed in, out, and intermediate. Note no cut-off edges, no missing areas, no lines, aircraft on center of airport
+
+8. Find airport BOS
+
+9. Go to Map, see charts (Heli/Other) for boston heli, show fully zoomed in, out, and intermediate. Note no cut-off edges, no missing areas, no lines, aircraft on center of airport
+
+10. Find airport BVY
+
+11. Go to A/FD, and see graphical A/FD has correct date and is correctly showing BVY on it
+
+12. Go to Plate, and see Airport Diagram with georef and correct date, Area plate with georef, t/o and dep minimums with correct date and airport, and see some approach plates with correct date and georef info
+
+13. In Plate see if AP button for some approach plates is green and loads correctly to Plan
+
+14. Find airport CYVR
+
+15. Go to plate and see that airport diagram shows in Plates, area plate with georef shows as well
+
+16. Find airport BOS, go to 3D and see all obstacles are showing
+
+
+

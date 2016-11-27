@@ -257,10 +257,14 @@ public class PlanFragment extends StorageServiceGpsListenerFragment {
                 mProgressBarSearch.setVisibility(View.INVISIBLE);
             }
             else if(msg.what == ACTIVE) {
-                mActivateButton.setText(getString(R.string.Active));
+                if (mActivateButton.getText().equals(getString(R.string.Inactive))) {
+                    mActivateButton.setText(getString(R.string.Active));
+                }
             }
             else if(msg.what == INACTIVE) {
-                mActivateButton.setText(getString(R.string.Inactive));
+                if (mActivateButton.getText().equals(getString(R.string.Active))) {
+                    mActivateButton.setText(getString(R.string.Inactive));
+                }
             }
             else if(msg.what == MESSAGE) {
                 // Show an important message
