@@ -558,4 +558,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="MaybeLater">&quot;Maybe Later&quot;</string>
     <string name="NeverAsk">&quot;Never Rate&quot;</string>
 
+    <string name="WindsAloftCeiling">&quot;Show Winds Aloft Up To Altitude&quot;</string>
+    <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
+
 </resources>
