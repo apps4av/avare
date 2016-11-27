@@ -303,7 +303,7 @@ public class PlanActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see android.app.Activity#onStart()
      */
     @Override
@@ -329,7 +329,6 @@ public class PlanActivity extends Activity {
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
 		mWebView.requestFocus();
-        mWebView.resumeTimers(); // resume plan pooling in JS (plan_poll_timer)
     }
 
     /*
@@ -354,7 +353,6 @@ public class PlanActivity extends Activity {
         if(mTimer != null) {
         	mTimer.cancel();
         }
-        mWebView.pauseTimers(); // suspend plan pooling in JS (plan_poll_timer)
     }
 
     /*
