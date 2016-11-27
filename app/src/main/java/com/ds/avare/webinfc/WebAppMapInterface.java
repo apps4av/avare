@@ -164,6 +164,11 @@ public class WebAppMapInterface {
                     winds += "@ 39000 ft: " + WeatherHelper.decodeWind(data.wa.w39k);
                 }
 
+                String navaids = "";
+                if (data.navaids != null) {
+                    data.info += "<br>" + data.navaids;
+                }
+
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
                         Helper.formatJsArgs(data.airport) + "','" +

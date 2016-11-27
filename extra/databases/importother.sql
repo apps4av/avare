@@ -13,7 +13,7 @@ CREATE TABLE airportdiags(LocationID Text, tfwA float, tfwB float, tfwC float, t
 
 .import aptdiags.csv airportdiags
 
-CREATE TABLE nav(LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,FacilityName Text);
+CREATE TABLE nav(LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,FacilityName Text,Variation TinyInt,Class Text,Hiwas Text,Elevation Text);
 
 .import nav.csv nav
 

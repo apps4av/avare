@@ -45,12 +45,9 @@ var CELL_HEADING = 5;
 var CELL_FUEL = 6;
 var CELL_LAST = 7;
 
-var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
-
 // load plan from Android then display every second
-function loadplan() {
+function loadplan(str) {
 	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102° 10.1";
-	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
 	plan_setname(plans[0]);

@@ -18,6 +18,7 @@ import android.content.Context;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
@@ -32,6 +33,7 @@ import com.ds.avare.weather.WindsAloft;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Vector;
 
 /**
  * @author zkhan, jlmcgraw
@@ -316,6 +318,16 @@ public class DataSource {
      */
     public Coordinate findNavaid(String name) {
         return  dbHelper.findNavaid(name);    	
+    }
+
+    /**
+     *
+     * @param lat
+     * @param  lon
+     * @return vector of the closest navaids (excluding NDBs); the closest first
+     */
+    public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
+        return  dbHelper.findNavaidsNearby(lat, lon);
     }
 
     /**
