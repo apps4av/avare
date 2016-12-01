@@ -85,16 +85,24 @@ public class NavAidHelper {
 
     /** format vector of navaids as a string */
     public String toHtmlString(Vector<NavAid> navaids) {
-        String result = "";
+        String result = "<table>";
         if (navaids != null) {
             for (NavAid na : navaids) {
-                result += (result != "" ? "<br>" : "") // fields' order same as Chart Supplement convention
-                        + na.getLocationId()
-                        + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation()) + " "
-                        + na.getFrequency()
-                        + (na.hasHiwas() ? "<sup>(H)</sup>" : "");
+                result +=
+                        "<tr>" // fields' order same as Chart Supplement convention
+                            + "<td>"
+                                + na.getLocationId()
+                                + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation())
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + na.getFrequency()
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + (na.hasHiwas() ? "HIWAS" : "")
+                            + "</td>"
+                        + "</tr>";
             }
         }
-        return result;
+        return result + "</table>";
     }
 }
