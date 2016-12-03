@@ -13,7 +13,10 @@ package com.ds.avare.utils;
 
 import android.util.Pair;
 
+import com.ds.avare.weather.Metar;
+
 import java.util.LinkedList;
+import java.util.Locale;
 
 
 public class WeatherHelper {
@@ -74,7 +77,8 @@ public class WeatherHelper {
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
-        weather = weather.replace("BECMG", "\nBECMG"); 
+        weather = weather.replace("TEMPO", "\nTEMPO");
+        weather = weather.replace("BECMG", "\nBECMG");
         return weather;
     }
     
@@ -89,10 +93,12 @@ public class WeatherHelper {
         weather = weather.replace("\n", "<br>");
         if(translate) {
             weather = weather.replace(" FM", "</br>FM(From)<br>");
+            weather = weather.replace("TEMPO", "</br>TEMPO(Temporarily)<br>");
             weather = weather.replace("BECMG", "</br>BECMG(Becoming)<br>");
         }
         else {
             weather = weather.replace(" FM", "</br>FM");
+            weather = weather.replace("TEMPO", "</br>TEMPO");
             weather = weather.replace("BECMG", "</br>BECMG");
         }
         return weather;
@@ -173,19 +179,40 @@ public class WeatherHelper {
         weather = weather.replaceAll("VV", "<font color='#ff2a00'>VV" + (translate ? "(Vertical Visibility)" : "") + "<font color='white'>");
         weather = weather.replaceAll("CB", "<font color='#ff2a00'>CB" + (translate ? "(Cumulonimbus)" : "") + "<font color='white'>");
         weather = weather.replaceAll("WS", "<font color='#ff54f9'>WS" + (translate ? "(Wind Shear)" : "") + "<font color='white'>");
-        
+
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
         weather = weather.replaceAll("QNH", "QNH" + (translate ? "(Minimum Altimeter)" : ""));
         weather = weather.replaceAll("INS", "INS" + (translate ? "(Inches)" : ""));
 
         for(int i = 1 ; i < strip.length; i++) {
-            
+
             String weather1 = strip[i];
-            
+
             weather += " RMK" + (translate ? "(Remark) " : " ") + weather1;
         }
 
         return weather;
+    }
+
+    public enum DistantMetarFormat { NoStationId, WithStationId }
+
+    /**
+     * @param metar
+     * @param format
+     * @param airport
+     * @return the metar decorated with the metar's position off airport name, if that metar is
+     *         from a different field; for example for 3GV we'd print:
+     *          METAR (8nm SW of 3GV)
+     */
+    public static String formatDistantMetarHeader(Metar metar, DistantMetarFormat format, String airport) {
+        String stationId = format == DistantMetarFormat.WithStationId ?
+                "using " + metar.stationId + " "
+                : "";
+        return metar.distance > 0 ?
+                String.format(Locale.getDefault(),
+                        "<font color=\"red\">(%s%s %s)</font> ",
+                        stationId, metar.position, airport)
+                : "";
     }
 
     /**
@@ -219,6 +246,7 @@ public class WeatherHelper {
          * Identifier
          */
         identAndTime = identAndTime.replaceAll("SPECI", "SPECI" + (translate ? "(Special/unscheduled)" : ""));
+
 
         /*
          * Remarks
@@ -320,6 +348,7 @@ public class WeatherHelper {
 
         return identAndTime + " " + weather;
     }
+
 
     /**
      * Color code winds
@@ -609,8 +638,8 @@ public class WeatherHelper {
         
         String wind = "";
         double dir = 0;
-        double spd0 = 0;
-        double spd1 = 0;
+        double windspeed = 0;
+        double gustspeed = 0;
         
         boolean windset = false;
         
@@ -632,11 +661,11 @@ public class WeatherHelper {
                     }
                     dir = Double.parseDouble(tmp);
                     // next 2 digits are speed
-                    spd0 = Double.parseDouble(wind.substring(3, 5));
+                    windspeed = Double.parseDouble(wind.substring(3, 5));
                     // could be gusting
                     if(wind.contains("G")) {
                         // gusting to
-                        spd1 = Double.parseDouble(wind.substring(6, 8));
+                        gustspeed = Double.parseDouble(wind.substring(6, 8));
                     }
                     windset = true;
                     continue;
@@ -646,45 +675,42 @@ public class WeatherHelper {
         catch (Exception e) {
         }
         
-        double head1 = 0;
-        double head0 = 0;
-        double cross1 = 0;
-        double cross0 = 0;
+        double headgusts = 0;
+        double headwind = 0;
+        double crossgusts = 0;
+        double crosswind = 0;
         
         if(windset) {
             /*
-             * Find best wind aligned runway
+             * Find best wind-aligned runway name
              */
-            double maxW = -1E10;
-            String best = "";
+            double maxWind = -1E10;
+            String best_description = "";
             for(String s : runways) {
-                String run[] = s.split(",");
+                String runway_name_and_heading[] = s.split(",");
                 try {
-                    double rhead = Double.parseDouble(run[1]);
+                    double rwy_heading = runway_name_and_heading.length == 2
+                            ? Double.parseDouble(runway_name_and_heading[1])  // parse rwy heading
+                            : Double.parseDouble(runway_name_and_heading[0])*10; // parse rwy name - case of private fields which have no heading info
                     // find cross and head wind components
                     // aviation formulary
-                    head0 = spd0 * Math.cos(Math.toRadians(dir - rhead));
-                    if(head0 > maxW) {
+                    headwind = windspeed * Math.cos(Math.toRadians(dir - rwy_heading));
+                    if(headwind > maxWind) {
                         // find runway with max headwind component
-                        maxW = head0;
-                        cross0 = spd0 * Math.sin(Math.toRadians(dir - rhead));
-                        if(spd1 != 0) {
-                            head1 = spd1 * Math.cos(Math.toRadians(dir - rhead));
-                            cross1 = spd1 * Math.sin(Math.toRadians(dir - rhead));
+                        maxWind = headwind;
+                        crosswind = windspeed * Math.sin(Math.toRadians(dir - rwy_heading));
+                        if(gustspeed != 0) {
+                            headgusts = gustspeed * Math.cos(Math.toRadians(dir - rwy_heading));
+                            crossgusts = gustspeed * Math.sin(Math.toRadians(dir - rwy_heading));
                         }
-                        best = run[0];
-                        best += "\n " + Math.abs((int)head0);
-                        if(spd1 != 0) {
-                            best += "G" + Math.abs((int)head1);
-                        }
-                        // T = tail, H = head, L = left, R = right
-                        best += (head0 < 0 ? "KT Tail" : "KT Head");
-                        best += "\n " + Math.abs((int)cross0);
-                        if(spd1 != 0) {
-                            best += "G" + Math.abs((int)cross1);
-                        }
-                        
-                        best += (cross0 < 0 ? "KT Left X" : "KT Right X");
+                        best_description = runway_name_and_heading[0] // rwy name
+                                         + "\n " + Math.abs((int)headwind)
+                                         + (gustspeed != 0 ? "G" + Math.abs((int)headgusts) : "")
+                                         // T = tail, H = head, L = left, R = right
+                                         + (headwind < 0 ? "KT Tail" : "KT Head")
+                                         + "\n " + Math.abs((int)crosswind)
+                                         + (gustspeed != 0 ? "G" + Math.abs((int)crossgusts) : "")
+                                         + (crosswind < 0 ? "KT Left X" : "KT Right X");
                     }
                 }
                 catch (Exception e) {
@@ -692,7 +718,7 @@ public class WeatherHelper {
                 }
                 
             }
-            return best;
+            return best_description;
         }
 
         return "";

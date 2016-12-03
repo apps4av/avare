@@ -89,14 +89,24 @@ public class WebAppMapInterface {
                     String split[] = data.taf.rawText.split(data.taf.stationId, 2);
                     // Do not color code airport name
                     if(split.length == 2) {
-                        taf = "<hr><b><font color=\"yellow\">TAF </font></b>" + data.taf.stationId + " " + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                        taf = "<hr><b><font color=\"yellow\">TAF </font></b><br>";
+                        taf += data.taf.stationId;
+                        taf += WeatherHelper.formatVisibilityHTML(
+                                WeatherHelper.formatTafHTML(
+                                        WeatherHelper.formatWindsHTML(
+                                                WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()),
+                                                mPref.isWeatherTranslated()),
+                                        mPref.isWeatherTranslated()));
                     }
                 }
 
                 String metar = "";
                 if(data.metar != null) {
-                    metar = WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
-                    metar = "<hr><b><font color=\"yellow\">METAR </font></b>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\">" + metar +  "</font>";
+                    metar = WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.NoStationId, data.airport);
+                    metar += "<br>";
+                    metar += WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
+                    metar = "<hr><b><font color=\"yellow\">METAR </font>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\"></b>" + metar +  "</font>";
                 }
 
                 String airep = "";
@@ -146,6 +156,9 @@ public class WebAppMapInterface {
                 if(data.performance != null) {
                     if(!data.performance.equals("")) {
                         performance = "<hr><b><font color=\"yellow\">Performance</font></b> ";
+                        performance += WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.WithStationId, data.airport);
+                        performance += "<br>";
                         performance += data.performance.replace("\n", "<br>");
                     }
                 }

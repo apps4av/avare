@@ -74,7 +74,7 @@ public class WindsAloft {
      */
     public void updateStationWithLocation(double lon0, double lat0, double variation) {
         Projection p = new Projection(lon, lat, lon0, lat0);
-        station += "(" +
+        station = "(" + station + " " +
                 Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " + 
                 p.getGeneralDirectionFrom(variation)+ ")";
 

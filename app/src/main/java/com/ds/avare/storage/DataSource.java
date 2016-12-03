@@ -219,12 +219,22 @@ public class DataSource {
     }
 
     /**
-     * 
+     *
      * @param station
      * @return
      */
     public Metar getMETAR(String station) {
-        return dbHelper.getMETAR(station);          
+        return dbHelper.getMETAR(station);
+    }
+
+    /**
+     *
+     * @param lat
+     * @param lon
+     * @return
+     */
+    public Metar getClosestMETAR(Double lat, Double lon) {
+        return dbHelper.getClosestMETAR(lat, lon);
     }
 
     /**

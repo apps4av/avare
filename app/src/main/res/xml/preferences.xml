@@ -108,6 +108,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShowLabelMETARS"
             android:summary="@string/ShowLabelMETARSSummary"
             android:title="@string/ShowLabelMETARS" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="5"
+            android:key="@string/NearestMETARRadius"
+            android:summary="@string/NearestMETARRadiusSummary"
+            android:title="@string/NearestMETARRadiusLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="39"
             android:entries="@array/WindsAloftAltitude"
