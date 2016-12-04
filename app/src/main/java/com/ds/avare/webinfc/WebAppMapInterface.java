@@ -163,7 +163,7 @@ public class WebAppMapInterface {
 
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
-                        Helper.formatJsArgs(data.airport) + "','" +
+                        Helper.formatJsArgs(data.destinationName) + "','" +
                         "<b><font color=\"yellow\">Position </font></b>" + Helper.formatJsArgs(data.info) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +

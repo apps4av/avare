@@ -26,7 +26,8 @@ import java.util.LinkedList;
  */
 public class LongTouchDestination {
 
-    public String airport;
+    public String destinationName;
+    public String destinationType;
     public String info;
     public String tfr;
     public String mets;
