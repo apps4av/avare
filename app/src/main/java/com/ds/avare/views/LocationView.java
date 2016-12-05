@@ -1280,11 +1280,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
 
-            // if we are on the navaid set this as destination
-            for (NavAid n: navaids) {
-                if (Projection.getStaticDistance(lat, lon,n.getCoords().getLatitude(), n.getCoords().getLongitude()) < 0.5) {
-                    type = Destination.NAVAID;
-                    destination = n.getLocationId();
+            // if user pressed on a navaid, set this as destination unless she pressed on an airport
+            if (type != Destination.BASE) {
+                for (NavAid n : navaids) {
+                    double navaidDistance = Projection.getStaticDistance(lat, lon,
+                            n.getCoords().getLatitude(), n.getCoords().getLongitude());
+                    if (navaidDistance < Preferences.NAVAID_TOUCH_DISTANCE) {
+                        type = Destination.NAVAID;
+                        destination = n.getLocationId();
+                    }
                 }
             }
 
