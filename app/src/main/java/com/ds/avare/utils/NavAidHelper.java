@@ -75,25 +75,34 @@ public class NavAidHelper {
         boolean isReceived = isVorReceived(distanceToNavAid, navaidClass, altitudeReference - navaidElevation)
                 || !("TLH".contains(navaidClass) || navaidClass.isEmpty());
         long radial = Math.round(Helper.getMagneticHeading(p.getBearing(), navaidVariation));
-        return  (!isReceived ? "<font color='red'>" : "")
-                + String.format(Locale.getDefault(), "%03d", radial)
+        final String LIGHT_RED = "#ff6666", LIGHT_GREEN = "#99ff66";
+        return  String.format(Locale.getDefault(), "%03d", radial)
+                + "<font color='" + (isReceived ? LIGHT_GREEN : LIGHT_RED) + "'>"
                 + Math.round(distanceToNavAid)
-                + (!isReceived ? "</font>" : "")
+                + "</font>"
             ;
     }
 
     /** format vector of navaids as a string */
     public String toHtmlString(Vector<NavAid> navaids) {
-        String result = "";
+        String result = "<table>";
         if (navaids != null) {
             for (NavAid na : navaids) {
-                result += (result != "" ? "<br>" : "") // fields' order same as Chart Supplement convention
-                        + na.getLocationId()
-                        + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation()) + " "
-                        + na.getFrequency()
-                        + (na.hasHiwas() ? "<sup>(H)</sup>" : "");
+                result +=
+                        "<tr>" // fields' order same as Chart Supplement convention
+                            + "<td>"
+                                + na.getLocationId()
+                                + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation())
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + na.getFrequency()
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + (na.hasHiwas() ? "HIWAS" : "")
+                            + "</td>"
+                        + "</tr>";
             }
         }
-        return result;
+        return result + "</table>";
     }
 }

@@ -1234,7 +1234,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(isCancelled()) {
                     return "";
                 }
-            
+                if (metar==null) { // in no metar on the field, try to find the closest metar
+                    metar = mService.getDBResource().getClosestMETAR(lat,lon);
+                    if(isCancelled()) {
+                        return "";
+                    }
+                }
+
                 runways = mService.getDBResource().findRunways(airport);
                 if(isCancelled()) {
                     return "";
@@ -1339,12 +1345,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 //ideally we would pass altitude AGL for navaid reception calculations
                 mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
                 if(metar != null) {
+                    String bestRunway = WeatherHelper.getBestRunway(metar.rawText, runways);
                     mLongTouchDestination.performance =
                             WeatherHelper.getMetarTime(metar.rawText) + "\n" +
                             mContext.getString(R.string.DensityAltitude) + " " +
                             WeatherHelper.getDensityAltitude(metar.rawText, elev) + "\n" +
-                            mContext.getString(R.string.BestRunway) + " " +
-                            WeatherHelper.getBestRunway(metar.rawText, runways);
+                                    (!bestRunway.isEmpty() ?
+                                    (mContext.getString(R.string.BestRunway) + " " + bestRunway) : "");
                 }
                 
                 // If the long press event has already occurred, we need to do the gesture callback here

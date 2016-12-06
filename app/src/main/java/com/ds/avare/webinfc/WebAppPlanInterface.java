@@ -84,7 +84,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_ERROR = 15;
     private static final int MSG_PREV_HIDE = 16;
     private static final int MSG_NEXT_HIDE = 17;
-    private static final int MSG_PLAN_COUNT = 18;
+    private static final int MSG_TIMER_LOAD = 18;
+    private static final int MSG_PLAN_COUNT = 19;
     		
     private static final int MAX_PLANS_SHOWN = 5;
     
@@ -117,7 +118,8 @@ public class WebAppPlanInterface implements Observer {
      * 
      */
     public void timer() {
-    	
+        mHandler.sendEmptyMessage(MSG_TIMER_LOAD);
+
     	Plan plan = mService.getPlan();
 
     	// If we are in sim mode, then send a message
@@ -676,8 +678,7 @@ public class WebAppPlanInterface implements Observer {
     /** 
      * JS polls every second to get all plan data.
      */
-    @JavascriptInterface
-    public String getPlanData() {
+    private String getPlanData() {
     	Plan plan = mService.getPlan();
     	
         /*
@@ -953,6 +954,10 @@ public class WebAppPlanInterface implements Observer {
         	else if (MSG_TIMER == msg.what) {
         		plan.simulate();
         	}
+            else if (MSG_TIMER_LOAD == msg.what) {
+                String func = "javascript:loadplan('" + Helper.formatJsArgs(getPlanData()) + "')";
+                mWebView.loadUrl(func);
+            }
         	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
             	String func = "javascript:save_clear()";
             	mWebView.loadUrl(func);

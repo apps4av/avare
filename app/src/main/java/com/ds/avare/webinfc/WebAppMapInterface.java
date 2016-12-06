@@ -24,6 +24,7 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindsAloftHelper;
 import com.ds.avare.weather.Airep;
 
 /**
@@ -88,14 +89,24 @@ public class WebAppMapInterface {
                     String split[] = data.taf.rawText.split(data.taf.stationId, 2);
                     // Do not color code airport name
                     if(split.length == 2) {
-                        taf = "<hr><b><font color=\"yellow\">TAF </font></b>" + data.taf.stationId + " " + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                        taf = "<hr><b><font color=\"yellow\">TAF </font></b><br>";
+                        taf += data.taf.stationId;
+                        taf += WeatherHelper.formatVisibilityHTML(
+                                WeatherHelper.formatTafHTML(
+                                        WeatherHelper.formatWindsHTML(
+                                                WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()),
+                                                mPref.isWeatherTranslated()),
+                                        mPref.isWeatherTranslated()));
                     }
                 }
 
                 String metar = "";
                 if(data.metar != null) {
-                    metar = WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
-                    metar = "<hr><b><font color=\"yellow\">METAR </font></b>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\">" + metar +  "</font>";
+                    metar = WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.NoStationId, data.airport);
+                    metar += "<br>";
+                    metar += WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
+                    metar = "<hr><b><font color=\"yellow\">METAR </font>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\"></b>" + metar +  "</font>";
                 }
 
                 String airep = "";
@@ -145,6 +156,9 @@ public class WebAppMapInterface {
                 if(data.performance != null) {
                     if(!data.performance.equals("")) {
                         performance = "<hr><b><font color=\"yellow\">Performance</font></b> ";
+                        performance += WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.WithStationId, data.airport);
+                        performance += "<br>";
                         performance += data.performance.replace("\n", "<br>");
                     }
                 }
@@ -152,16 +166,7 @@ public class WebAppMapInterface {
                 String winds = "";
                 if(data.wa != null) {
                     winds = "<hr><b><font color=\"yellow\">Winds/Temp. Aloft</font></b> ";
-                    winds += data.wa.station + data.wa.time + "<br>";
-                    winds += "@ 03000 ft: " + WeatherHelper.decodeWind(data.wa.w3k) + "<br>";
-                    winds += "@ 06000 ft: " + WeatherHelper.decodeWind(data.wa.w6k) + "<br>";
-                    winds += "@ 09000 ft: " + WeatherHelper.decodeWind(data.wa.w9k) + "<br>";
-                    winds += "@ 12000 ft: " + WeatherHelper.decodeWind(data.wa.w12k) + "<br>";
-                    winds += "@ 18000 ft: " + WeatherHelper.decodeWind(data.wa.w18k) + "<br>";
-                    winds += "@ 24000 ft: " + WeatherHelper.decodeWind(data.wa.w24k) + "<br>";
-                    winds += "@ 30000 ft: " + WeatherHelper.decodeWind(data.wa.w30k) + "<br>";
-                    winds += "@ 34000 ft: " + WeatherHelper.decodeWind(data.wa.w34k) + "<br>";
-                    winds += "@ 39000 ft: " + WeatherHelper.decodeWind(data.wa.w39k);
+                    winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
                 }
 
                 String navaids = "";
