@@ -63,6 +63,7 @@ import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
 import com.ds.avare.views.LocationView;
+import com.ds.avare.views.LongPressedDestination;
 import com.ds.avare.webinfc.WebAppMapInterface;
 
 import java.io.File;
@@ -144,7 +145,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateHelp;
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
-    private String mAirportPressed;
+    private LongPressedDestination mDestinationPressed;
     private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
 
@@ -492,7 +493,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the popout
                      * Now populate the pop out weather etc.
                      */
-                    mAirportPressed = data.airport;
+                    mDestinationPressed = new LongPressedDestination(data.destinationName, data.destinationType) ;
 
                 }
             }
@@ -896,7 +897,7 @@ public class LocationActivity extends Activity implements Observer {
 
                     mAlertDialogDestination.dismiss();
 
-                    if (null == mAirportPressed) {
+                    if (null == mDestinationPressed) {
                         return null;
                     }
                     if (mService == null) {
@@ -907,41 +908,32 @@ public class LocationActivity extends Activity implements Observer {
                         /*
                          * A/FD
                          */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastAfdAirport(mAirportPressed);
+                        if (mDestinationPressed.getType() == Destination.BASE) {
+                            mService.setLastAfdAirport(mDestinationPressed.getName());
                             ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
                         }
-                        mAirportPressed = null;
+                        mDestinationPressed = null;
                     } else if (param.equals("Plate")) {
                         /*
                          * Plate
                          */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastPlateAirport(mAirportPressed);
+                        if (mDestinationPressed.getType() == Destination.BASE) {
+                            mService.setLastPlateAirport(mDestinationPressed.getName());
                             mService.setLastPlateIndex(0);
                             ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
                         }
-                        mAirportPressed = null;
+                        mDestinationPressed = null;
                     } else if (param.equals("+Plan")) {
-                        String type = Destination.BASE;
-                        if (mAirportPressed.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        planTo(mAirportPressed, type);
-                        mAirportPressed = null;
+                        planTo(mDestinationPressed.getName(), mDestinationPressed.getType());
+                        mDestinationPressed = null;
                     } else if (param.equals("->D")) {
 
                         /*
                          * On click, find destination that was pressed on in view
                          * If button pressed was a destination go there, otherwise if none, then delete current dest
                          */
-                        String dest = mAirportPressed;
-                        mAirportPressed = null;
-                        String type = Destination.BASE;
-                        if (dest.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        goTo(dest, type);
+                        goTo(mDestinationPressed.getName(), mDestinationPressed.getType());
+                        mDestinationPressed = null;
                     }
                     return null;
                 }

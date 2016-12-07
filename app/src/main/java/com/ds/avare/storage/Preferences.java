@@ -64,6 +64,7 @@ public class Preferences {
     public static final int MAX_AREA_AIRPORTS = 20;
 
     public static final double MIN_TOUCH_MOVEMENT_SQ_DISTANCE = 0.001;
+    public static final double NAVAID_TOUCH_DISTANCE = .5;
 
     /*
      * Max memory and max screen size it will support
@@ -1208,6 +1209,13 @@ public class Preferences {
         mPref.edit().putInt("rateAskLastCount", set).commit();
     }
 
+    public int getWindsAloftCeiling() {
+        try {
+           return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
+        } catch (Exception x) {
+            return 39;
+        }
+    }
 }
 
 

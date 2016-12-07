@@ -1138,7 +1138,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @author zkhan
      *
      */
-    private class ClosestAirportTask extends AsyncTask<Object, String, String> {
+    private class ClosestAirportTask extends AsyncTask<Object, String, LongPressedDestination> {
         private Double lon;
         private Double lat;
         private String tfr = "";
@@ -1157,13 +1157,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          * @see android.os.AsyncTask#doInBackground(Params[])
          */     
         @Override
-        protected String doInBackground(Object... vals) {           
+        protected LongPressedDestination doInBackground(Object... vals) {
             Thread.currentThread().setName("Closest");
             if(null == mService) {
                 return null;
             }
 
-            String airport = null;
+            String destination = "", type = "";
             lon = (Double)vals[0];
             lat = (Double)vals[1];
             
@@ -1176,7 +1176,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             
             if(isCancelled())
-                return "";
+                return null;
                        
             /*
              * Get TFR tfr if touched on its top
@@ -1216,33 +1216,37 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
             }            
 
-            airport = mService.getDBResource().findClosestAirportID(lon, lat);
+            final String airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(isCancelled()) {
-                return "";
+                return null;
             }
 
             if(null == airport) {
-                airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
+                type = Destination.GPS;
+                destination = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
             else {
+                type = Destination.BASE;
+                destination = airport;
+
                 taf = mService.getDBResource().getTAF(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 metar = mService.getDBResource().getMETAR(airport);   
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
             
                 runways = mService.getDBResource().findRunways(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 elev = mService.getDBResource().findElev(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
 
             }
@@ -1253,41 +1257,55 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             if(!mPref.useAdsbWeather()) {              
                 aireps = mService.getDBResource().getAireps(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 wa = mService.getDBResource().getWindsAloft(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 sua = mService.getDBResource().getSua(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
 
                 if(mLayer != null) {
                     layer = mLayer.getDate();
                 }
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
             }
 
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
 
+            // if user pressed on a navaid, set this as destination unless she pressed on an airport
+            if (type != Destination.BASE) {
+                for (NavAid n : navaids) {
+                    double navaidDistance = Projection.getStaticDistance(lat, lon,
+                            n.getCoords().getLatitude(), n.getCoords().getLongitude());
+                    if (navaidDistance < Preferences.NAVAID_TOUCH_DISTANCE) {
+                        type = Destination.NAVAID;
+                        destination = n.getLocationId();
+                    }
+                }
+            }
+
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
-            return airport;
+
+            return new LongPressedDestination(destination, type);
         }
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
-        protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjection && null != airport) {
+        protected void onPostExecute(LongPressedDestination destination) {
+            if(null != mGestureCallBack && null != mPointProjection && null != destination) {
                 mLongTouchDestination = new LongTouchDestination();
-                mLongTouchDestination.airport = airport;
+                mLongTouchDestination.destinationName = destination.getName(); // here we assign destination name
+                mLongTouchDestination.destinationType = destination.getType();
                 mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
@@ -1303,8 +1321,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
 
                 if(mPref.useAdsbWeather()) {
-                    taf = mService.getAdsbWeather().getTaf(airport);
-                    metar = mService.getAdsbWeather().getMETAR(airport);                    
+                    taf = mService.getAdsbWeather().getTaf(destination.getName()); // MAYBE SHOULD MAKE THIS CONDITIONAL ON TYPE?
+                    metar = mService.getAdsbWeather().getMETAR(destination.getName());
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
                     layer = mService.getAdsbWeather().getNexrad().getDate();
