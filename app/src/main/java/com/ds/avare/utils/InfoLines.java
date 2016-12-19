@@ -832,7 +832,7 @@ public class InfoLines {
             case ID_FLD_SPP: {
                 if (mService != null && mService.getExtendedGpsParams() != null) {
                     return Helper.centerString(String.format(Locale.getDefault(),
-                            "%.0f%s", mService.getExtendedGpsParams().getSpeedProjection(),
+                            "%.0f%s", mService.getExtendedGpsParams().getSpeedTrend(),
                             Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
                 }
                 break;
@@ -842,7 +842,7 @@ public class InfoLines {
                     return " "
                             + Helper.correctConvertHeading(Math.round((Helper
                             .getMagneticHeading(mService.getExtendedGpsParams()
-                                    .getBearingProjection(), mService.getGpsParams()
+                                    .getBearingTrend(), mService.getGpsParams()
                                     .getDeclinition())))) + '\u00B0';
                 }
                 break;
@@ -850,7 +850,7 @@ public class InfoLines {
             case ID_FLD_MSP: {
                 if (mService != null && mService.getExtendedGpsParams() != null) {
                     return Helper.centerString(Helper
-                            .calculateAltitudeFromMSL((float) mService.getExtendedGpsParams().getAltitudeProjection()), MAX_FIELD_SIZE_IN_CHARS);
+                            .calculateAltitudeFromMSL((float) mService.getExtendedGpsParams().getAltitudeTrend()), MAX_FIELD_SIZE_IN_CHARS);
                 }
                 break;
             }

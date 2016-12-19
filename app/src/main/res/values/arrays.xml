@@ -2035,9 +2035,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>Flight Path Required</item>
         <item>Fuel Tank Switch Timer</item>
         <item>Count Up Timer</item>
-        <item>Ground Speed Projection</item>
-        <item>Track Projection</item>
-        <item>MSL Altitude Projection</item>
+        <item>Ground Speed Trend</item>
+        <item>Track Trend</item>
+        <item>MSL Altitude Trend</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -2067,9 +2067,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	    <item>FPR deg</item>
         <item>Fuel Time</item>
         <item>Timer</item>
-        <item>Ground Speed P</item>
-        <item>Track P</item>
-        <item>MSL ft P</item>
+        <item>Ground Speed T</item>
+        <item>Track T</item>
+        <item>MSL ft T</item>
 	</string-array>
 
 	<string-array name="DisplayIconValues">

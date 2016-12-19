@@ -21,7 +21,7 @@ package com.ds.avare.gps;
  */
 public class ExtendedGpsParams {
 
-    private static final double PROJECTION = 6.0; // standard way
+    private static final double TREND_SECONDS = 6.0; // standard way
 
     private double mLastAltitude;
     private double mLastBearing;
@@ -102,22 +102,22 @@ public class ExtendedGpsParams {
     public double getSpeedRateOfChange() {
         return mDiffSpeed;
     }
-    public double getBearingProjection() {
+    public double getBearingTrend() {
         if(mLastBearing == Double.MAX_VALUE) {
             return 0;
         }
-        return mLastBearing + mDiffBearing * PROJECTION;
+        return mLastBearing + mDiffBearing * TREND_SECONDS;
     }
-    public double getAltitudeProjection() {
+    public double getAltitudeTrend() {
         if(mLastAltitude == Double.MAX_VALUE) {
             return 0;
         }
-        return mLastAltitude + mDiffAltitude * PROJECTION;
+        return mLastAltitude + mDiffAltitude * TREND_SECONDS;
     }
-    public double getSpeedProjection() {
+    public double getSpeedTrend() {
         if(mLastSpeed == Double.MAX_VALUE) {
             return 0;
         }
-        return mLastSpeed + mDiffSpeed * PROJECTION;
+        return mLastSpeed + mDiffSpeed * TREND_SECONDS;
     }
 }
