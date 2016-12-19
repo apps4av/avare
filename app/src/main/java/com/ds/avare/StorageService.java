@@ -26,6 +26,7 @@ import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
+import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -94,6 +95,8 @@ public class StorageService extends Service {
      * Store this
      */
     private GpsParams mGpsParams;
+    private ExtendedGpsParams mGpsParamsExtended;
+
     /**
      * Store this
      */
@@ -326,6 +329,7 @@ public class StorageService extends Service {
         mShapeFetcher.parse();
         mGameTFRs = new GameTFR();
         mGameTFRs.loadGames(this);
+        mGpsParamsExtended = new ExtendedGpsParams();
 
         mTimer = new Timer();
         TimerTask gpsTime = new UpdateTask();
@@ -480,6 +484,8 @@ public class StorageService extends Service {
                         mGps.updateTimeout();
                     }
                     setGpsParams(new GpsParams(location));
+                    mGpsParamsExtended.setParams(mGpsParams);
+
                     mLocation = location;
                     mLocationSem.unlock();
                     mArea.updateLocation(getGpsParams());
@@ -723,6 +729,13 @@ public class StorageService extends Service {
      */
     public GpsParams getGpsParams() {
         return mGpsParams;
+    }
+
+    /**
+     * @return
+     */
+    public ExtendedGpsParams getExtendedGpsParams() {
+        return mGpsParamsExtended;
     }
 
     /**
