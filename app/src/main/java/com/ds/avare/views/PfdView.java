@@ -38,7 +38,12 @@ import com.ds.avare.utils.Helper;
 public class PfdView extends View {
 
     /*
-     * Satellite view
+     * PFD View.
+     *
+     * Its easier to draw if cartesian coordinates are used in percentage. Use x() and y() functions to draw.
+     *
+     * All fixed numbers are found through layout percentages.
+     *
      */
     private Paint            mPaint;
     private Context          mContext;
@@ -50,7 +55,6 @@ public class PfdView extends View {
     private BitmapHolder     mSpeedTapeBitmapHolder;
     private BitmapHolder     mAltitudeTapeBitmapHolder;
     private BitmapHolder     mVsiTapeBitmapHolder;
-    private BitmapHolder     mCompassBitmapHolder;
     private float            mWidth;
     private float            mHeight;
     private float            mSpeed;
@@ -59,11 +63,18 @@ public class PfdView extends View {
     private float            mAltitudeChange;
     private float            mVsi;
     private RectF            mRollRectf;
+    private float            mYaw;
+    private float            mTurnTrend;
 
 
     private static final float SPEED_TEN = 4f;
     private static final float ALTITUDE_THOUSAND = 4f;
     private static final float PITCH_DEGREE = 4f;
+
+    /**
+     * PAn the whole drawing up with this fraction of screen to utilize maximum screen
+     */
+    private static final float Y_PAN = 0.125f;
 
     /**
      *
@@ -81,6 +92,8 @@ public class PfdView extends View {
         mAltitude = 0;
         mAltitudeChange = 0;
         mVsi = 0;
+        mYaw = 0;
+        mTurnTrend = 0;
         mPath = new Path();
     }
 
@@ -120,7 +133,7 @@ public class PfdView extends View {
      */
     private float y(float yval) {
         float yperc = mHeight / 200f;
-        return mHeight / 2f - yval * yperc;
+        return mHeight / 2f - yval * yperc - mHeight * Y_PAN;
     }
 
     /**
@@ -176,10 +189,8 @@ public class PfdView extends View {
         if(mVsiTapeBitmapHolder != null) {
             mVsiTapeBitmapHolder.recycle();
         }
-        if(mCompassBitmapHolder != null) {
-            mCompassBitmapHolder.recycle();
-        }
 
+        // Create bitmaps for tapes for easier drawing
         mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-65) - x(-95)), (int)(y(-35) - y(35)));
         mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-90), y(35));
 
@@ -188,9 +199,6 @@ public class PfdView extends View {
 
         mVsiTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-95) - y(-45)));
         mVsiTapeBitmapHolder.getTransform().setTranslate(x(55), y(-45));
-
-        mCompassBitmapHolder = new BitmapHolder((int)(x(45) - x(-45)), (int)(y(-45) - y(45)));
-        mCompassBitmapHolder.getTransform().setTranslate(x(-50), y(-40));
 
     }
 
@@ -213,7 +221,9 @@ public class PfdView extends View {
             canvas.drawLine(x(-100), y(-100), x(100), y(100), mPaint);
             canvas.drawLine(x(-100), y(100), x(100), y(-100), mPaint);
             mPaint.setColor(Color.WHITE);
-            canvas.drawText(mError, x(-90), y(0), mPaint);
+            if(mError != null) {
+                canvas.drawText(mError, x(-90), y(0), mPaint);
+            }
             return;
         }
 
@@ -226,7 +236,7 @@ public class PfdView extends View {
         Paint.Style style = mPaint.getStyle();
 
         canvas.rotate(mRoll, x(0), y(0));
-        canvas.translate(0, y(100f - mPitch * PITCH_DEGREE));
+        canvas.translate(0, y(0) - y(mPitch * PITCH_DEGREE));
 
         mPaint.setColor(Color.BLUE);
         canvas.drawRect(x(-400), y(PITCH_DEGREE * 90), x(400), y(0), mPaint);
@@ -515,21 +525,79 @@ public class PfdView extends View {
          * Compass
          */
 
-        mPaint.setColor(Color.WHITE);
-        Canvas compassCanvas = mCompassBitmapHolder.getCanvas();
-        w = mCompassBitmapHolder.getWidth();
-        h = mCompassBitmapHolder.getHeight();
-        compassCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        // arrow
+        mPath.reset();
+        mPath.moveTo(x(-5), y(-60));
+        mPath.lineTo(x(0), y(-65));
+        mPath.lineTo(x(5), y(-60));
+        canvas.drawPath(mPath, mPaint);
 
-        compassCanvas.save();
+        // rate of turn
+        canvas.save();
 
-        mPaint.setColor(Color.WHITE);
+        // half standrad rate, 9 degrees in 6 seconds
+        canvas.rotate(-18, x(0), y(-95));
+        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
 
+        // standrad rate, 18 degrees in 6 seconds
+        canvas.rotate(9, x(0), y(-95));
+        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
 
-        compassCanvas.restore();
+        // standrad rate, 18 degrees in 6 seconds
+        canvas.rotate(18, x(0), y(-95));
+        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
 
-        canvas.drawBitmap(mCompassBitmapHolder.getBitmap(), mCompassBitmapHolder.getTransform(), mPaint);
+        // half standrad rate, 9 degrees in 6 seconds
+        canvas.rotate(9, x(0), y(-95));
+        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
 
+        canvas.restore();
+
+        //draw 12, 30 degree marks.
+        canvas.save();
+
+        canvas.rotate(-mYaw, x(0), y(-95));
+
+        float offset = (mPaint.descent() + mPaint.ascent()) / 2;
+
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("N", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("3", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("6", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("E", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("12", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("15", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("S", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("21", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("24", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("W", x(0) + offset, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("30", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
+        canvas.drawText("33", x(0) + offset * 2, y(-75), mPaint);
+        canvas.rotate(30, x(0), y(-95));
+        
+        canvas.restore();
 
     }
 
@@ -539,6 +607,10 @@ public class PfdView extends View {
 
     public void setRoll(float roll) {
         mRoll = roll;
+    }
+
+    public void setYaw(float yaw) {
+        mYaw = yaw;
     }
 
     public void setError(String error) {
@@ -584,6 +656,14 @@ public class PfdView extends View {
         }
         if(mAltitudeChange < -1000) {
             mAltitudeChange = -1000;
+        }
+
+        mTurnTrend = (float)eparams.getDiffBearingTrend();
+        if(mTurnTrend > 30) {
+            mTurnTrend = 30;
+        }
+        if(mTurnTrend < -30) {
+            mTurnTrend = -30;
         }
     }
 }

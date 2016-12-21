@@ -103,6 +103,7 @@ public class PfdActivity extends Activity {
 
             mPfdView.setPitch(-(float)pitch);
             mPfdView.setRoll(-(float)roll - angle);
+            mPfdView.setYaw((float)yaw);
             mPfdView.invalidate();
         }
     };
