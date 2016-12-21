@@ -562,5 +562,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="PFD">PFD</string>
     <string name="NoSensor">Sensors required for PFD are not available on this device.</string>
     <string name="OnlyPortrait">Only portrait mode is supported.</string>
+    <string name="VerticalPfd">VerticalPfd</string>
+    <string name="VerticalPfdLabel">PFD Vertical Mount</string>
+    <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
 
 </resources>

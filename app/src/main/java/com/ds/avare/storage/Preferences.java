@@ -1212,6 +1212,9 @@ public class Preferences {
         mPref.edit().putInt("rateAskLastCount", set).commit();
     }
 
+    public boolean isVerticalPfd() {
+        return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
+    }
 }
 
 

@@ -93,9 +93,11 @@ public class Orientation implements SensorEventListener {
                 if (Sensor.TYPE_ROTATION_VECTOR == event.sensor.getType()) {
                     SensorManager.getRotationMatrixFromVector(q, event.values);
 
-                    SensorManager.remapCoordinateSystem(q,
-                            SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                            q);
+                    if(mPref.isVerticalPfd()) {
+                        SensorManager.remapCoordinateSystem(q,
+                                SensorManager.AXIS_X, SensorManager.AXIS_Z,
+                                q);
+                    }
 
                     SensorManager.getOrientation(q, mOrientationTmps);
                     if (mOrientationCallback != null) {

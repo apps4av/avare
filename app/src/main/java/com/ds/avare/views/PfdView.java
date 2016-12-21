@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -50,7 +51,6 @@ public class PfdView extends View {
     private BitmapHolder     mAltitudeTapeBitmapHolder;
     private BitmapHolder     mVsiTapeBitmapHolder;
     private BitmapHolder     mCompassBitmapHolder;
-    private BitmapHolder     mArcBitmapHolder;
     private float            mWidth;
     private float            mHeight;
     private float            mSpeed;
@@ -58,6 +58,7 @@ public class PfdView extends View {
     private float            mAltitude;
     private float            mAltitudeChange;
     private float            mVsi;
+    private RectF            mRollRectf;
 
 
     private static final float SPEED_TEN = 4f;
@@ -159,6 +160,12 @@ public class PfdView extends View {
         if(h < w) {
             return;
         }
+
+
+        // prealloc rectangles for clip
+        float r = y(0) - y(70);
+        mRollRectf = new RectF(x(0) - r, y(0) - r, x(0) + r, y(0) + r);
+
         // Create speed and tape bitmapholders.
         if(mSpeedTapeBitmapHolder != null) {
             mSpeedTapeBitmapHolder.recycle();
@@ -172,24 +179,19 @@ public class PfdView extends View {
         if(mCompassBitmapHolder != null) {
             mCompassBitmapHolder.recycle();
         }
-        if(mArcBitmapHolder != null) {
-            mArcBitmapHolder.recycle();
-        }
 
-        mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-65) - x(-95)), (int)(y(-40) - y(40)));
-        mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-95), y(40));
+        mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-65) - x(-95)), (int)(y(-35) - y(35)));
+        mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-90), y(35));
 
-        mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-40) - y(40)));
-        mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(60), y(40));
+        mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-35) - y(35)));
+        mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(55), y(35));
 
         mVsiTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-95) - y(-45)));
-        mVsiTapeBitmapHolder.getTransform().setTranslate(x(60), y(-45));
+        mVsiTapeBitmapHolder.getTransform().setTranslate(x(55), y(-45));
 
         mCompassBitmapHolder = new BitmapHolder((int)(x(45) - x(-45)), (int)(y(-45) - y(45)));
         mCompassBitmapHolder.getTransform().setTranslate(x(-50), y(-40));
 
-        mArcBitmapHolder = new BitmapHolder((int)(x(95) - x(-95)), (int)(y(40) - y(95)));
-        mArcBitmapHolder.getTransform().setTranslate(x(-95), y(100));
     }
 
     /* (non-Javadoc)
@@ -197,7 +199,6 @@ public class PfdView extends View {
      */
     @Override
     public void onDraw(Canvas canvas) {
-
         /*
          * Now draw the target cross hair
          */
@@ -207,7 +208,7 @@ public class PfdView extends View {
         /**
          * Cross on error
          */
-        if(mError != null) {
+        if(mError != null || mWidth > mHeight) {
             mPaint.setColor(Color.RED);
             canvas.drawLine(x(-100), y(-100), x(100), y(100), mPaint);
             canvas.drawLine(x(-100), y(100), x(100), y(-100), mPaint);
@@ -217,9 +218,13 @@ public class PfdView extends View {
         }
 
         /*
-         * draw pitch / yaw
+         * draw pitch / roll
          */
         canvas.save();
+
+
+        Paint.Style style = mPaint.getStyle();
+
         canvas.rotate(mRoll, x(0), y(0));
         canvas.translate(0, y(100f - mPitch * PITCH_DEGREE));
 
@@ -229,10 +234,8 @@ public class PfdView extends View {
         mPaint.setColor(0xFFD2691E);
         canvas.drawRect(x(-400), y(0), x(400), y(-PITCH_DEGREE * 90), mPaint);
 
-
+        //center attitude degrees
         mPaint.setColor(Color.WHITE);
-
-        //center att
         canvas.drawLine(x(-150), y(0), x(150), y(0), mPaint);
 
         // 2.5 degree lines
@@ -256,6 +259,78 @@ public class PfdView extends View {
         }
 
         canvas.restore();
+        canvas.save();
+
+        canvas.rotate(mRoll, x(0), y(0));
+
+        //draw roll arc
+        mPaint.setColor(Color.WHITE);
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawArc(mRollRectf, 210, 120, false, mPaint);
+        mPaint.setStyle(style);
+
+        // degree ticks
+        //60
+        canvas.rotate(-60, x(0), y(0));
+        canvas.drawLine(x(0), y(75), x(0), y(70), mPaint);
+
+        //45
+        canvas.rotate(15, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        //30
+        canvas.rotate(15, x(0), y(0));
+        canvas.drawLine(x(0), y(75), x(0), y(70), mPaint);
+
+        //20
+        canvas.rotate(10, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        //10
+        canvas.rotate(10, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        // center arrow
+        canvas.rotate(10, x(0), y(0));
+        mPath.reset();
+        mPath.moveTo(x(-7), y(75));
+        mPath.lineTo(x(0), y(70));
+        mPath.lineTo(x(7), y(75));
+        canvas.drawPath(mPath, mPaint);
+
+        //10
+        canvas.rotate(10, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        //20
+        canvas.rotate(10, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        //30
+        canvas.rotate(10, x(0), y(0));
+        canvas.drawLine(x(0), y(75), x(0), y(70), mPaint);
+
+        //45
+        canvas.rotate(15, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        //60
+        canvas.rotate(15, x(0), y(0));
+        canvas.drawLine(x(0), y(73), x(0), y(70), mPaint);
+
+        canvas.rotate(-60, x(0), y(0));
+
+        canvas.restore();
+
+        //bank arrow
+        mPath.reset();
+        mPath.moveTo(x(7), y(65));
+        mPath.lineTo(x(0), y(70));
+        mPath.lineTo(x(-7), y(65));
+        canvas.drawPath(mPath, mPaint);
+        // turn coord
+        canvas.drawRect(x(-7), y(64), x(7), y(62), mPaint);
+
 
         // draw airplane wings
         mPaint.setColor(Color.YELLOW);
@@ -321,7 +396,6 @@ public class PfdView extends View {
         stCanvas.drawText("" + Math.round(Math.abs(mSpeed)), x(-85, w), y(-5, h), mPaint);
 
         // boundary
-        Paint.Style style = mPaint.getStyle();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
         stCanvas.drawRect(x(-100, w), y(100, h), x(100, w), y(-100, h), mPaint);
@@ -451,47 +525,11 @@ public class PfdView extends View {
 
         mPaint.setColor(Color.WHITE);
 
+
         compassCanvas.restore();
 
         canvas.drawBitmap(mCompassBitmapHolder.getBitmap(), mCompassBitmapHolder.getTransform(), mPaint);
 
-        /**
-         * ARC
-         */
-
-        mPaint.setColor(Color.WHITE);
-        Canvas arcCanvas = mArcBitmapHolder.getCanvas();
-        w = mArcBitmapHolder.getWidth();
-        h = mArcBitmapHolder.getHeight();
-        arcCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-
-        // top arrow
-        mPath.reset();
-        mPath.moveTo(x(-7, w), y(95, h));
-        mPath.lineTo(x(0, w), y(75, h));
-        mPath.lineTo(x(7, w), y(95, h));
-        arcCanvas.drawPath(mPath, mPaint);
-
-        //arc
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(Color.WHITE);
-        arcCanvas.drawCircle(x(0, w), y(-100, h), y(-100, h) -y(75, h), mPaint);
-        mPaint.setStyle(style);
-
-
-        arcCanvas.save();
-        arcCanvas.rotate(mRoll, x(0, w), y(-100, h));
-
-        // low arrow
-        mPath.reset();
-        mPath.moveTo(x(7, w), y(55, h));
-        mPath.lineTo(x(0, w), y(75, h));
-        mPath.lineTo(x(-7, w), y(55, h));
-        arcCanvas.drawPath(mPath, mPaint);
-
-        arcCanvas.restore();
-
-        canvas.drawBitmap(mArcBitmapHolder.getBitmap(), mArcBitmapHolder.getTransform(), mPaint);
 
     }
 
