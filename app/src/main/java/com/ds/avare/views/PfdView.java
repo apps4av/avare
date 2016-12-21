@@ -49,6 +49,8 @@ public class PfdView extends View {
     private BitmapHolder     mSpeedTapeBitmapHolder;
     private BitmapHolder     mAltitudeTapeBitmapHolder;
     private BitmapHolder     mVsiTapeBitmapHolder;
+    private BitmapHolder     mCompassBitmapHolder;
+    private BitmapHolder     mArcBitmapHolder;
     private float            mWidth;
     private float            mHeight;
     private float            mSpeed;
@@ -167,13 +169,27 @@ public class PfdView extends View {
         if(mVsiTapeBitmapHolder != null) {
             mVsiTapeBitmapHolder.recycle();
         }
+        if(mCompassBitmapHolder != null) {
+            mCompassBitmapHolder.recycle();
+        }
+        if(mArcBitmapHolder != null) {
+            mArcBitmapHolder.recycle();
+        }
 
         mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-65) - x(-95)), (int)(y(-40) - y(40)));
         mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-95), y(40));
+
         mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-40) - y(40)));
         mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(60), y(40));
+
         mVsiTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-95) - y(-45)));
         mVsiTapeBitmapHolder.getTransform().setTranslate(x(60), y(-45));
+
+        mCompassBitmapHolder = new BitmapHolder((int)(x(45) - x(-45)), (int)(y(-45) - y(45)));
+        mCompassBitmapHolder.getTransform().setTranslate(x(-50), y(-40));
+
+        mArcBitmapHolder = new BitmapHolder((int)(x(95) - x(-95)), (int)(y(40) - y(95)));
+        mArcBitmapHolder.getTransform().setTranslate(x(-95), y(100));
     }
 
     /* (non-Javadoc)
@@ -220,17 +236,18 @@ public class PfdView extends View {
         canvas.drawLine(x(-150), y(0), x(150), y(0), mPaint);
 
         // 2.5 degree lines
-        for(float c = -90; c <= 90; c += 2.5) {
+        float degrees = (float)Math.floor(mPitch / 10f) * 10f;
+        for(float c = (degrees); c <= (degrees + 20); c += 2.5) {
             canvas.drawLine(x(-2), y(c * PITCH_DEGREE), x(2), y(c * PITCH_DEGREE), mPaint);
         }
 
         // 5 degree lines
-        for(float c = -90; c <= 90; c += 5) {
+        for(float c = (degrees); c <= (degrees + 20); c += 5) {
             canvas.drawLine(x(-4), y(c * PITCH_DEGREE), x(4), y(c * PITCH_DEGREE), mPaint);
         }
 
         // 10 degree lines
-        for(float c = -90; c <= 90; c += 10) {
+        for(float c = (degrees); c <= (degrees + 20); c += 10) {
             canvas.drawLine(x(-8), y(c * PITCH_DEGREE), x(8), y(c * PITCH_DEGREE), mPaint);
             if(c == 0) {
                 continue;
@@ -419,6 +436,62 @@ public class PfdView extends View {
         vtCanvas.restore();
 
         canvas.drawBitmap(mVsiTapeBitmapHolder.getBitmap(), mVsiTapeBitmapHolder.getTransform(), mPaint);
+
+        /**
+         * Compass
+         */
+
+        mPaint.setColor(Color.WHITE);
+        Canvas compassCanvas = mCompassBitmapHolder.getCanvas();
+        w = mCompassBitmapHolder.getWidth();
+        h = mCompassBitmapHolder.getHeight();
+        compassCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        compassCanvas.save();
+
+        mPaint.setColor(Color.WHITE);
+
+        compassCanvas.restore();
+
+        canvas.drawBitmap(mCompassBitmapHolder.getBitmap(), mCompassBitmapHolder.getTransform(), mPaint);
+
+        /**
+         * ARC
+         */
+
+        mPaint.setColor(Color.WHITE);
+        Canvas arcCanvas = mArcBitmapHolder.getCanvas();
+        w = mArcBitmapHolder.getWidth();
+        h = mArcBitmapHolder.getHeight();
+        arcCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        // top arrow
+        mPath.reset();
+        mPath.moveTo(x(-7, w), y(95, h));
+        mPath.lineTo(x(0, w), y(75, h));
+        mPath.lineTo(x(7, w), y(95, h));
+        arcCanvas.drawPath(mPath, mPaint);
+
+        //arc
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        arcCanvas.drawCircle(x(0, w), y(-100, h), y(-100, h) -y(75, h), mPaint);
+        mPaint.setStyle(style);
+
+
+        arcCanvas.save();
+        arcCanvas.rotate(mRoll, x(0, w), y(-100, h));
+
+        // low arrow
+        mPath.reset();
+        mPath.moveTo(x(7, w), y(55, h));
+        mPath.lineTo(x(0, w), y(75, h));
+        mPath.lineTo(x(-7, w), y(55, h));
+        arcCanvas.drawPath(mPath, mPaint);
+
+        arcCanvas.restore();
+
+        canvas.drawBitmap(mArcBitmapHolder.getBitmap(), mArcBitmapHolder.getTransform(), mPaint);
 
     }
 
