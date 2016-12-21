@@ -161,6 +161,14 @@ public class BitmapHolder {
     }
 
     /**
+     *
+     * @return
+     */
+    public Canvas getCanvas() {
+        return mCanvas;
+    }
+
+    /**
      * 
      * @param pref
      * @param name

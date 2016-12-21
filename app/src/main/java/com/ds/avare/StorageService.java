@@ -945,7 +945,7 @@ public class StorageService extends Service {
      *
      * @param o
      */
-    public void registerOrientationListener(OrientationInterface o) {
+    public boolean registerOrientationListener(OrientationInterface o) {
         /*
          * If first listener, start orientation
          */
@@ -955,6 +955,7 @@ public class StorageService extends Service {
         synchronized(mOrientationCallbacks) {
             mOrientationCallbacks.add(o);
         }
+        return mOrientation.isSensorAvailable();
     }
 
     /**

@@ -108,16 +108,30 @@ public class ExtendedGpsParams {
         }
         return mLastBearing + mDiffBearing * TREND_SECONDS;
     }
+    public double getDiffBearingTrend() {
+        return mDiffBearing * TREND_SECONDS;
+    }
     public double getAltitudeTrend() {
         if(mLastAltitude == Double.MAX_VALUE) {
             return 0;
         }
         return mLastAltitude + mDiffAltitude * TREND_SECONDS;
     }
+    public double getDiffAltitudeTrend() {
+        return mDiffAltitude * TREND_SECONDS;
+    }
     public double getSpeedTrend() {
         if(mLastSpeed == Double.MAX_VALUE) {
             return 0;
         }
-        return mLastSpeed + mDiffSpeed * TREND_SECONDS;
+        // speed cannot be below 0
+        double out = mLastSpeed + mDiffSpeed * TREND_SECONDS;
+        if(out < 0) {
+            out = 0;
+        }
+        return out;
+    }
+    public double getDiffSpeedTrend() {
+        return mDiffSpeed * TREND_SECONDS;
     }
 }

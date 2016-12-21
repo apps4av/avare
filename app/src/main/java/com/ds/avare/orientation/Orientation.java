@@ -36,7 +36,8 @@ public class Orientation implements SensorEventListener {
     private Context mContext;
     private OrientationInterface mOrientationCallback;
     private SensorManager mManager;
-    private boolean mStarted;
+    private float[] mOrientationTmps;
+    private boolean mIsAvailable;
 
     /**
      * Calls back with orientation
@@ -47,23 +48,26 @@ public class Orientation implements SensorEventListener {
         mPref = new Preferences(ctx);
         mContext = ctx;
         mOrientationCallback = callback;
-        mStarted = false;
+        mOrientationTmps = new float[3];
+        mIsAvailable = false;
     }
 
     /**
      * Start getting orientation
      */
-    public boolean start() {
+    public void start() {
+
+
         mManager = (SensorManager)mContext.getSystemService(SENSOR_SERVICE);
         List<Sensor> typedSensors = mManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
         if ((typedSensors == null) || (typedSensors.size() <= 0)) {
-            return false;
+            mIsAvailable = false;
         }
         else {
             mManager.registerListener(this, typedSensors.get(0),
-                    SensorManager.SENSOR_DELAY_UI);
+                    SensorManager.SENSOR_DELAY_GAME);
+            mIsAvailable = true;
         }
-        return true;
     }
 
     /**
@@ -73,6 +77,7 @@ public class Orientation implements SensorEventListener {
         if(null != mManager) {
             mManager.unregisterListener(this);
         }
+        mIsAvailable = false;
     }
 
 
@@ -81,37 +86,35 @@ public class Orientation implements SensorEventListener {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             float q[] = new float[16];
-            float[] orientationTmps = new float[3];
 
             if(0 == msg.what) {
-                SensorEvent event;
-                event = (SensorEvent)msg.obj;
-                if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+                SensorEvent event = (SensorEvent)msg.obj;
+
+                if (Sensor.TYPE_ROTATION_VECTOR == event.sensor.getType()) {
                     SensorManager.getRotationMatrixFromVector(q, event.values);
 
-                    SensorManager
-                            .remapCoordinateSystem(q,
-                                    SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                                    q);
+                    SensorManager.remapCoordinateSystem(q,
+                            SensorManager.AXIS_X, SensorManager.AXIS_Z,
+                            q);
 
-                    SensorManager.getOrientation(q, orientationTmps);
-
-                    if(mOrientationCallback != null) {
+                    SensorManager.getOrientation(q, mOrientationTmps);
+                    if (mOrientationCallback != null) {
                         mOrientationCallback.onSensorChanged(
-                                Math.toDegrees(orientationTmps[0]),
-                                Math.toDegrees(orientationTmps[1]),
-                                Math.toDegrees(orientationTmps[2]));
+                                Math.toDegrees(mOrientationTmps[0]),
+                                Math.toDegrees(mOrientationTmps[1]),
+                                Math.toDegrees(mOrientationTmps[2]));
                     }
                 }
             }
         }
     };
 
+    public boolean isSensorAvailable() {
+        return mIsAvailable;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        /*
-         * Handler
-         */
         Message msg = mHandler.obtainMessage();
         msg.what = 0;
         msg.obj = event;

@@ -54,11 +54,12 @@ public class MainActivity extends TabActivity {
     public static final int tabFind = 3;
     public static final int tabPlan = 4;
     public static final int tabNear = 5;
-    public static final int tabThreeD = 6;
-    public static final int tabChecklist = 7;
-    public static final int tabWXB = 8;
-    public static final int tabTrip = 9;
-    public static final int tabTools = 10;
+    public static final int tabPfd = 6;
+    public static final int tabThreeD = 7;
+    public static final int tabChecklist = 8;
+    public static final int tabWXB = 9;
+    public static final int tabTrip = 10;
+    public static final int tabTools = 11;
     
     @Override
     /**
@@ -111,6 +112,10 @@ public class MainActivity extends TabActivity {
 
         if(0 != (tabItems & (1 << tabNear))) {
         	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
+        }
+
+        if(0 != (tabItems & (1 << tabPfd))) {
+            setupTab(new TextView(this), getString(R.string.PFD), new Intent(this, PfdActivity.class), getIntent());
         }
 
         if(0 != (tabItems & (1 << tabThreeD))) {

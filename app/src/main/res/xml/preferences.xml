@@ -458,6 +458,11 @@ authors: zkhan, jlmcgraw
                 android:title="@string/Near" />
             <CheckBoxPreference
                 android:defaultValue="true"
+                android:key="@string/prefTabPfd"
+                android:summary="@string/PfdSummary"
+                android:title="@string/PFD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
                 android:key="@string/prefTabThreeD"
                 android:summary="@string/ThreeDSummary"
                 android:title="@string/ThreeD" />

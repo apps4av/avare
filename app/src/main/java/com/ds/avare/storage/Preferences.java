@@ -918,6 +918,10 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabTrip;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
+            mTabs |= 1 << MainActivity.tabPfd;
+        }
+
         return mTabs;
     }
 
