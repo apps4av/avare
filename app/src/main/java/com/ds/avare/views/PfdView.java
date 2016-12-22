@@ -596,7 +596,7 @@ public class PfdView extends View {
         mPaint.setColor(Color.WHITE);
         canvas.drawLine(x(0), y(-105), x(0), y(-85), mPaint);
 
-        //draw altitude
+        //draw heading
         mPaint.setColor(Color.BLACK);
         canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
         mPaint.setStyle(Paint.Style.STROKE);
@@ -606,7 +606,7 @@ public class PfdView extends View {
         canvas.drawText(Math.round((mYaw + 360) % 360) + "\u00B0", x(-10), y(-56), mPaint);
 
 
-        // draw raet of turn arc.
+        // draw rate of turn arc.
         mPaint.setStrokeWidth(4 * mDpi);
         mPaint.setColor(Color.MAGENTA);
         mPaint.setStyle(Paint.Style.STROKE);
@@ -638,6 +638,15 @@ public class PfdView extends View {
         canvas.drawLine(x(mCdi * 5), y(-105), x(mCdi * 5), y(-85), mPaint);
         canvas.restore();
 
+
+        //draw course
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(x(45), y(-70), x(71), y(-78), mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        canvas.drawRect(x(45), y(-70), x(71), y(-78), mPaint);
+        mPaint.setStyle(style);
+        canvas.drawText(Math.round((mTo + 360) % 360) + "\u00B0", x(48), y(-76), mPaint);
 
         // Warning.
         mPaint.setColor(Color.YELLOW);
