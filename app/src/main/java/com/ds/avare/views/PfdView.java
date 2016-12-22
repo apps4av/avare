@@ -512,6 +512,11 @@ public class PfdView extends View {
         canvas.drawPath(mPath, mPaint);
         mPaint.setStyle(style);
 
+        // text on VSI
+        canvas.drawText("1", x(90), y(11 * VSI_FIVE), mPaint);
+        canvas.drawText("2", x(90), y(21 * VSI_FIVE), mPaint);
+        canvas.drawText("1", x(90), y(-9 * VSI_FIVE), mPaint);
+        canvas.drawText("2", x(90), y(-19 * VSI_FIVE), mPaint);
 
         /**
          * Compass
