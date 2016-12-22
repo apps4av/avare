@@ -37,7 +37,10 @@ public class Orientation implements SensorEventListener {
     private OrientationInterface mOrientationCallback;
     private SensorManager mManager;
     private float[] mOrientationTmps;
+    private double[] mGravityTemps;
     private boolean mIsAvailable;
+    private final double ALPHA = 0.8;
+    private double mAcceleration = 0;
 
     /**
      * Calls back with orientation
@@ -49,6 +52,7 @@ public class Orientation implements SensorEventListener {
         mContext = ctx;
         mOrientationCallback = callback;
         mOrientationTmps = new float[3];
+        mGravityTemps = new double[3];
         mIsAvailable = false;
     }
 
@@ -60,6 +64,15 @@ public class Orientation implements SensorEventListener {
 
         mManager = (SensorManager)mContext.getSystemService(SENSOR_SERVICE);
         List<Sensor> typedSensors = mManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+        if ((typedSensors == null) || (typedSensors.size() <= 0)) {
+            mIsAvailable = false;
+        }
+        else {
+            mManager.registerListener(this, typedSensors.get(0),
+                    SensorManager.SENSOR_DELAY_GAME);
+            mIsAvailable = true;
+        }
+        typedSensors = mManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
         if ((typedSensors == null) || (typedSensors.size() <= 0)) {
             mIsAvailable = false;
         }
@@ -90,6 +103,17 @@ public class Orientation implements SensorEventListener {
             if(0 == msg.what) {
                 SensorEvent event = (SensorEvent)msg.obj;
 
+                if (Sensor.TYPE_ACCELEROMETER == event.sensor.getType()) {
+
+                    // Isolate the force of gravity with the low-pass filter.
+                    mGravityTemps[0] = ALPHA * mGravityTemps[0] + (1 - ALPHA) * event.values[0];
+                    mGravityTemps[1] = ALPHA * mGravityTemps[1] + (1 - ALPHA) * event.values[1];
+                    mGravityTemps[2] = ALPHA * mGravityTemps[2] + (1 - ALPHA) * event.values[2];
+
+                    // Remove the gravity contribution with the high-pass filter, return acceleration in X
+                    mAcceleration = event.values[0] - mGravityTemps[0];
+                }
+
                 if (Sensor.TYPE_ROTATION_VECTOR == event.sensor.getType()) {
                     SensorManager.getRotationMatrixFromVector(q, event.values);
 
@@ -104,7 +128,8 @@ public class Orientation implements SensorEventListener {
                         mOrientationCallback.onSensorChanged(
                                 Math.toDegrees(mOrientationTmps[0]),
                                 Math.toDegrees(mOrientationTmps[1]),
-                                Math.toDegrees(mOrientationTmps[2]));
+                                Math.toDegrees(mOrientationTmps[2]),
+                                mAcceleration);
                     }
                 }
             }

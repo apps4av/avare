@@ -581,12 +581,12 @@ public class StorageService extends Service {
             }
 
             @Override
-            public void onSensorChanged(double yaw, double pitch, double roll) {
+            public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
                 LinkedList<OrientationInterface> list = extracted();
                 Iterator<OrientationInterface> it = list.iterator();
                 while (it.hasNext()) {
                     OrientationInterface infc = it.next();
-                    infc.onSensorChanged(yaw, pitch, roll);
+                    infc.onSensorChanged(yaw, pitch, roll, acceleration);
                 }
             }
         };

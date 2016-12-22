@@ -92,7 +92,7 @@ public class PfdActivity extends Activity {
     private OrientationInterface mOrientationInfc = new OrientationInterface() {
 
         @Override
-        public void onSensorChanged(double yaw, double pitch, double roll) {
+        public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
             int rotation = mWindowService.getDefaultDisplay().getRotation();
 
             // Fix rotation by sensor
@@ -114,6 +114,7 @@ public class PfdActivity extends Activity {
             mPfdView.setPitch(-(float)pitch);
             mPfdView.setRoll(-(float)roll - angle);
             mPfdView.setYaw((float)yaw);
+            mPfdView.setAcceleration(acceleration);
             mPfdView.invalidate();
         }
     };

@@ -50,6 +50,7 @@ public class PfdView extends View {
     private float            mDpi;
     private float            mPitch;
     private float            mRoll;
+    private float            mAcceleration;
     private String           mError;
     private Path             mPath;
     private BitmapHolder     mSpeedTapeBitmapHolder;
@@ -96,6 +97,7 @@ public class PfdView extends View {
         mVsi = 0;
         mYaw = 0;
         mTurnTrend = 0;
+        mAcceleration = 0;
         mCdi = 0;
         mPath = new Path();
     }
@@ -337,8 +339,8 @@ public class PfdView extends View {
         mPath.lineTo(x(0), y(70));
         mPath.lineTo(x(-7), y(65));
         canvas.drawPath(mPath, mPaint);
-        // turn coord
-        canvas.drawRect(x(-7), y(64), x(7), y(62), mPaint);
+        // inclinometer
+        canvas.drawRect(x(-7 + mAcceleration), y(64), x(7 + mAcceleration), y(62), mPaint);
 
 
         // draw airplane wings
@@ -530,7 +532,6 @@ public class PfdView extends View {
         mPath.lineTo(x(5), y(-60));
         canvas.drawPath(mPath, mPaint);
 
-        // rate of turn
         canvas.save();
 
         // half standrad rate, 9 degrees in 6 seconds
@@ -671,6 +672,16 @@ public class PfdView extends View {
         //mYaw = yaw; //unstable, use GPS track instead
     }
 
+    public void setAcceleration(double acceleration) {
+        mAcceleration = (float)acceleration;
+        if(mAcceleration > 2 * 9.8) { //+- 2Gs, see proper inclinometer
+            mAcceleration = 2 * 9.8f;
+        }
+        if(mAcceleration < -2 * 9.8) { // 2Gs side to side
+            mAcceleration = -2 * 9.8f;
+        }
+    }
+
     public void setError(String error) {
         mError = error;
         invalidate();
@@ -739,4 +750,5 @@ public class PfdView extends View {
         }
 
     }
+
 }
