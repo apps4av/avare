@@ -54,7 +54,6 @@ public class PfdView extends View {
     private Path             mPath;
     private BitmapHolder     mSpeedTapeBitmapHolder;
     private BitmapHolder     mAltitudeTapeBitmapHolder;
-    private BitmapHolder     mVsiTapeBitmapHolder;
     private float            mWidth;
     private float            mHeight;
     private float            mSpeed;
@@ -62,13 +61,14 @@ public class PfdView extends View {
     private float            mAltitude;
     private float            mAltitudeChange;
     private float            mVsi;
-    private RectF            mRollRectf;
+    private RectF            mRectf;
     private float            mYaw;
     private float            mTurnTrend;
 
 
     private static final float SPEED_TEN = 4f;
     private static final float ALTITUDE_THOUSAND = 4f;
+    private static final float VSI_FIVE = 1.5f;
     private static final float PITCH_DEGREE = 4f;
 
     /**
@@ -84,7 +84,7 @@ public class PfdView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
-        mPaint.setTextSize(getResources().getDimension(R.dimen.distanceRingNumberTextSize));
+        mPaint.setTextSize(getResources().getDimension(R.dimen.pfdTextSize));
         mDpi = Helper.getDpiToPix(context);
         mPitch = 0;
         mSpeed = 0;
@@ -176,8 +176,7 @@ public class PfdView extends View {
 
 
         // prealloc rectangles for clip
-        float r = y(0) - y(70);
-        mRollRectf = new RectF(x(0) - r, y(0) - r, x(0) + r, y(0) + r);
+        mRectf = new RectF(0, 0, 0, 0);
 
         // Create speed and tape bitmapholders.
         if(mSpeedTapeBitmapHolder != null) {
@@ -186,19 +185,12 @@ public class PfdView extends View {
         if(mAltitudeTapeBitmapHolder != null) {
             mAltitudeTapeBitmapHolder.recycle();
         }
-        if(mVsiTapeBitmapHolder != null) {
-            mVsiTapeBitmapHolder.recycle();
-        }
-
         // Create bitmaps for tapes for easier drawing
-        mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-65) - x(-95)), (int)(y(-35) - y(35)));
-        mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-90), y(35));
+        mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-50) - x(-80)), (int)(y(-35) - y(35)));
+        mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-80), y(35));
 
-        mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-35) - y(35)));
-        mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(55), y(35));
-
-        mVsiTapeBitmapHolder = new BitmapHolder((int)(x(95) - x(60)), (int)(y(-95) - y(-45)));
-        mVsiTapeBitmapHolder.getTransform().setTranslate(x(55), y(-45));
+        mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(85) - x(50)), (int)(y(-35) - y(35)));
+        mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(50), y(35));
 
     }
 
@@ -276,7 +268,9 @@ public class PfdView extends View {
         //draw roll arc
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawArc(mRollRectf, 210, 120, false, mPaint);
+        float r = y(0) - y(70);
+        mRectf.set(x(0) - r, y(0) - r, x(0) + r, y(0) + r);
+        canvas.drawArc(mRectf, 210, 120, false, mPaint);
         mPaint.setStyle(style);
 
         // degree ticks
@@ -470,62 +464,56 @@ public class PfdView extends View {
 
 
         mPaint.setColor(Color.WHITE);
-        Canvas vtCanvas = mVsiTapeBitmapHolder.getCanvas();
-        w = mVsiTapeBitmapHolder.getWidth();
-        h = mVsiTapeBitmapHolder.getHeight();
-        vtCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
         //lines
-        vtCanvas.drawLine(x(-100, w), y(5 * ALTITUDE_THOUSAND, h), x(-85, w), y(5 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(10 * ALTITUDE_THOUSAND, h), x(-70, w), y(10 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(15 * ALTITUDE_THOUSAND, h), x(-85, w), y(15 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(20 * ALTITUDE_THOUSAND, h), x(-70, w), y(20 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(-5 * ALTITUDE_THOUSAND, h), x(-85, w), y(-5 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(-10 * ALTITUDE_THOUSAND, h), x(-70, w), y(-10 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(-15 * ALTITUDE_THOUSAND, h), x(-85, w), y(-15 * ALTITUDE_THOUSAND, h), mPaint);
-        vtCanvas.drawLine(x(-100, w), y(-20 * ALTITUDE_THOUSAND, h), x(-70, w), y(-20 * ALTITUDE_THOUSAND, h), mPaint);
+        canvas.drawLine(x(90), y(5   * VSI_FIVE), x(85), y(5   * VSI_FIVE), mPaint);
+        canvas.drawLine(x(95), y(10  * VSI_FIVE), x(85), y(10  * VSI_FIVE), mPaint);
+        canvas.drawLine(x(90), y(15  * VSI_FIVE), x(85), y(15  * VSI_FIVE), mPaint);
+        canvas.drawLine(x(90), y(-5  * VSI_FIVE), x(85), y(-5  * VSI_FIVE), mPaint);
+        canvas.drawLine(x(95), y(-10 * VSI_FIVE), x(85), y(-10 * VSI_FIVE), mPaint);
+        canvas.drawLine(x(90), y(-15 * VSI_FIVE), x(85), y(-15 * VSI_FIVE), mPaint);
+
 
 
         // boundary
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
         mPath.reset();
-        mPath.moveTo(x(-100, w) , y(100, h));
-        mPath.lineTo(x(100, w), y(100, h));
-        mPath.lineTo(x(-90, w), y(0, h));
-        mPath.lineTo(x(100, w), y(-100, h));
-        mPath.lineTo(x(-100, w), y(-100, h));
-        mPath.lineTo(x(-100, w), y(100, h));
-        vtCanvas.drawPath(mPath, mPaint);
+        mPath.moveTo(x(85), y(20 * VSI_FIVE));
+        mPath.lineTo(x(98), y(20 * VSI_FIVE));
+        mPath.lineTo(x(98), y(5 * VSI_FIVE));
+        mPath.lineTo(x(85), y(0 * VSI_FIVE));
+        mPath.lineTo(x(98), y(-5 * VSI_FIVE));
+        mPath.lineTo(x(98), y(-20 * VSI_FIVE));
+        mPath.lineTo(x(85), y(-20 * VSI_FIVE));
+        canvas.drawPath(mPath, mPaint);
         mPaint.setStyle(style);
 
-        vtCanvas.save();
-
-        vtCanvas.translate(x(-100, w), y(100f + mVsi / 100f * ALTITUDE_THOUSAND, h));
 
         // value
         mPaint.setColor(Color.BLACK);
 
+        float offs = mVsi / 100f * VSI_FIVE;
         mPath.reset();
-        mPath.moveTo(x(95, w) , y(15, h));
-        mPath.lineTo(x(-60, w), y(15, h));
-        mPath.lineTo(x(-90, w), y(0, h));
-        mPath.lineTo(x(-60, w), y(-15, h));
-        mPath.lineTo(x(95, w), y(-15, h));
-        vtCanvas.drawPath(mPath, mPaint);
-
+        mPath.moveTo(x(85), y(0 * VSI_FIVE + offs));
+        mPath.lineTo(x(92), y(2.5f * VSI_FIVE + offs));
+        mPath.lineTo(x(98), y(2.5f * VSI_FIVE + offs));
+        mPath.lineTo(x(98), y(-2.5f * VSI_FIVE + offs));
+        mPath.lineTo(x(92), y(-2.5f * VSI_FIVE + offs));
+        mPath.lineTo(x(85), y(0 * VSI_FIVE + offs));
+        canvas.drawPath(mPath, mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        vtCanvas.drawText(Math.round(mVsi) + "", x(-65, w), y(-7.5f, h), mPaint);
+        canvas.drawPath(mPath, mPaint);
+        mPaint.setStyle(style);
 
-        vtCanvas.restore();
-
-        canvas.drawBitmap(mVsiTapeBitmapHolder.getBitmap(), mVsiTapeBitmapHolder.getTransform(), mPaint);
 
         /**
          * Compass
          */
 
         // arrow
+        mPaint.setColor(Color.WHITE);
         mPath.reset();
         mPath.moveTo(x(-5), y(-60));
         mPath.lineTo(x(0), y(-65));
@@ -599,6 +587,48 @@ public class PfdView extends View {
         
         canvas.restore();
 
+        //draw altitude
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
+        mPaint.setStyle(style);
+        canvas.drawText(Math.round((mYaw + 360) % 360) + "\u00B0", x(-10), y(-56), mPaint);
+
+        //draw airplane
+        offs = -23f;
+        mPaint.setColor(Color.WHITE);
+        mPath.reset();
+        mPath.moveTo(x(0),   y(-65 + offs));
+        mPath.lineTo(x(-1),  y(-67 + offs));
+        mPath.lineTo(x(-1),  y(-70 + offs));
+        mPath.lineTo(x(-10), y(-70 + offs));
+        mPath.lineTo(x(-1),  y(-72 + offs));
+        mPath.lineTo(x(-1),  y(-76 + offs));
+        mPath.lineTo(x(-4),  y(-76 + offs));
+        mPath.lineTo(x(-1),  y(-77 + offs));
+        mPath.lineTo(x(1),   y(-77 + offs));
+        mPath.lineTo(x(4),   y(-76 + offs));
+        mPath.lineTo(x(1),   y(-76 + offs));
+        mPath.lineTo(x(1),   y(-72 + offs));
+        mPath.lineTo(x(10),  y(-70 + offs));
+        mPath.lineTo(x(1),   y(-70 + offs));
+        mPath.lineTo(x(1),   y(-67 + offs));
+        mPath.lineTo(x(0),   y(-65 + offs));
+        canvas.drawPath(mPath, mPaint);
+
+
+        // draw raet of turn arc.
+        mPaint.setStrokeWidth(4 * mDpi);
+        mPaint.setColor(Color.MAGENTA);
+        mPaint.setStyle(Paint.Style.STROKE);
+        r = y(-95) - y(-65);
+        mRectf = new RectF(x(0) - r, y(-95) - r, x(0) + r, y(-95) + r);
+        canvas.drawArc(mRectf, -90, mTurnTrend, false, mPaint);
+        mPaint.setStyle(style);
+        mPaint.setStrokeWidth(2 * mDpi);
+
     }
 
     public void setPitch(float pitch) {
@@ -610,7 +640,7 @@ public class PfdView extends View {
     }
 
     public void setYaw(float yaw) {
-        mYaw = yaw;
+        //mYaw = yaw; unstable, use GPS track instead
     }
 
     public void setError(String error) {
@@ -665,5 +695,10 @@ public class PfdView extends View {
         if(mTurnTrend < -30) {
             mTurnTrend = -30;
         }
+
+
+        // ideally derive from gyro
+        mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
+
     }
 }
