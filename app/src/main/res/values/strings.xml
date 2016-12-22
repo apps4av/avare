@@ -565,5 +565,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerticalPfd">VerticalPfd</string>
     <string name="VerticalPfdLabel">PFD Vertical Mount</string>
     <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
+    <string name="SeeHelp">See Help.</string>
 
 </resources>

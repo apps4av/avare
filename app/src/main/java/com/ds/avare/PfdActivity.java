@@ -66,7 +66,17 @@ public class PfdActivity extends Activity {
 
         @Override
         public void locationCallback(Location location) {
-            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams());
+
+            double bearing = 0;
+            double cdi = mService.getCDI().getDeviation();
+            if(!mService.getCDI().isLeft()) {
+                cdi = -cdi;
+            }
+            if(mService.getDestination() != null) {
+                bearing = mService.getDestination().getBearing();
+            }
+            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi);
+
         }
 
         @Override

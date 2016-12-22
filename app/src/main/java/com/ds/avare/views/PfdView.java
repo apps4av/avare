@@ -64,6 +64,8 @@ public class PfdView extends View {
     private RectF            mRectf;
     private float            mYaw;
     private float            mTurnTrend;
+    private float            mTo;
+    private float            mCdi;
 
 
     private static final float SPEED_TEN = 4f;
@@ -94,6 +96,7 @@ public class PfdView extends View {
         mVsi = 0;
         mYaw = 0;
         mTurnTrend = 0;
+        mCdi = 0;
         mPath = new Path();
     }
 
@@ -240,25 +243,27 @@ public class PfdView extends View {
         mPaint.setColor(Color.WHITE);
         canvas.drawLine(x(-150), y(0), x(150), y(0), mPaint);
 
-        // 2.5 degree lines
-        float degrees = (float)Math.floor(mPitch / 10f) * 10f;
-        for(float c = (degrees); c <= (degrees + 20); c += 2.5) {
-            canvas.drawLine(x(-2), y(c * PITCH_DEGREE), x(2), y(c * PITCH_DEGREE), mPaint);
-        }
+        // degree lines
+        float degrees = ((float)Math.round((mPitch + 1.25) / 2.5f) * 2.5f);
+        float offset = (mPaint.descent() + mPaint.ascent()) / 2;
 
-        // 5 degree lines
-        for(float c = (degrees); c <= (degrees + 20); c += 5) {
-            canvas.drawLine(x(-4), y(c * PITCH_DEGREE), x(4), y(c * PITCH_DEGREE), mPaint);
-        }
-
-        // 10 degree lines
-        for(float c = (degrees); c <= (degrees + 20); c += 10) {
-            canvas.drawLine(x(-8), y(c * PITCH_DEGREE), x(8), y(c * PITCH_DEGREE), mPaint);
-            if(c == 0) {
-                continue;
+        for(float d = -12.5f; d <= 12.5f; d += 2.5) {
+            float inc = degrees + d;
+            if (0 == inc % 10f) {
+                canvas.drawLine(x(-12), y(inc * PITCH_DEGREE), x(12), y(inc * PITCH_DEGREE), mPaint);
+                if(0 == inc) {
+                    continue;
+                }
+                canvas.drawText(" " + Math.round(Math.abs(inc)), x(12), y(inc * PITCH_DEGREE) - offset, mPaint);
             }
-            canvas.drawText(" " + Math.round(Math.abs(c)), x(8), y(c * PITCH_DEGREE), mPaint);
+            if (0 == inc % 5f) {
+                canvas.drawLine(x(-4), y(inc * PITCH_DEGREE), x(4), y(inc * PITCH_DEGREE), mPaint);
+            }
+            else {
+                canvas.drawLine(x(-2), y(inc * PITCH_DEGREE), x(2), y(inc * PITCH_DEGREE), mPaint);
+            }
         }
+
 
         canvas.restore();
         canvas.save();
@@ -546,7 +551,7 @@ public class PfdView extends View {
 
         canvas.rotate(-mYaw, x(0), y(-95));
 
-        float offset = (mPaint.descent() + mPaint.ascent()) / 2;
+        offset = (mPaint.descent() + mPaint.ascent()) / 2;
 
         canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
         canvas.drawText("N", x(0) + offset, y(-75), mPaint);
@@ -587,6 +592,10 @@ public class PfdView extends View {
         
         canvas.restore();
 
+        // airplane
+        mPaint.setColor(Color.WHITE);
+        canvas.drawLine(x(0), y(-105), x(0), y(-85), mPaint);
+
         //draw altitude
         mPaint.setColor(Color.BLACK);
         canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
@@ -595,28 +604,6 @@ public class PfdView extends View {
         canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
         mPaint.setStyle(style);
         canvas.drawText(Math.round((mYaw + 360) % 360) + "\u00B0", x(-10), y(-56), mPaint);
-
-        //draw airplane
-        offs = -23f;
-        mPaint.setColor(Color.WHITE);
-        mPath.reset();
-        mPath.moveTo(x(0),   y(-65 + offs));
-        mPath.lineTo(x(-1),  y(-67 + offs));
-        mPath.lineTo(x(-1),  y(-70 + offs));
-        mPath.lineTo(x(-10), y(-70 + offs));
-        mPath.lineTo(x(-1),  y(-72 + offs));
-        mPath.lineTo(x(-1),  y(-76 + offs));
-        mPath.lineTo(x(-4),  y(-76 + offs));
-        mPath.lineTo(x(-1),  y(-77 + offs));
-        mPath.lineTo(x(1),   y(-77 + offs));
-        mPath.lineTo(x(4),   y(-76 + offs));
-        mPath.lineTo(x(1),   y(-76 + offs));
-        mPath.lineTo(x(1),   y(-72 + offs));
-        mPath.lineTo(x(10),  y(-70 + offs));
-        mPath.lineTo(x(1),   y(-70 + offs));
-        mPath.lineTo(x(1),   y(-67 + offs));
-        mPath.lineTo(x(0),   y(-65 + offs));
-        canvas.drawPath(mPath, mPaint);
 
 
         // draw raet of turn arc.
@@ -627,7 +614,34 @@ public class PfdView extends View {
         mRectf = new RectF(x(0) - r, y(-95) - r, x(0) + r, y(-95) + r);
         canvas.drawArc(mRectf, -90, mTurnTrend, false, mPaint);
         mPaint.setStyle(style);
+
+        // CDI
+
+        canvas.save();
+        canvas.rotate((mTo - mYaw + 360) % 360, x(0), y(-95));
+        //draw dots for displacement.
+        mPaint.setColor(Color.WHITE);
+
+        for(float i = 0; i < 25; i += 5) {
+            canvas.drawCircle(x(-5 - i), y(-95), 8, mPaint);
+            canvas.drawCircle(x( 5 + i), y(-95), 8, mPaint);
+        }
+        mPaint.setColor(Color.MAGENTA);
+        canvas.drawLine(x(0), y(-115), x(0), y(-105), mPaint); // three to break up CDI
+        canvas.drawLine(x(0), y(-85), x(0), y(-80), mPaint);
+        mPath.reset();
+        mPath.moveTo(x(0), y(-75));
+        mPath.lineTo(x(-5), y(-80));
+        mPath.lineTo(x(5), y(-80));
+        canvas.drawPath(mPath, mPaint);
         mPaint.setStrokeWidth(2 * mDpi);
+        canvas.drawLine(x(mCdi * 5), y(-105), x(mCdi * 5), y(-85), mPaint);
+        canvas.restore();
+
+
+        // Warning.
+        mPaint.setColor(Color.YELLOW);
+        canvas.drawText(mContext.getString(R.string.SeeHelp), x(-95), y(-45), mPaint);
 
     }
 
@@ -640,7 +654,7 @@ public class PfdView extends View {
     }
 
     public void setYaw(float yaw) {
-        //mYaw = yaw; unstable, use GPS track instead
+        //mYaw = yaw; //unstable, use GPS track instead
     }
 
     public void setError(String error) {
@@ -648,7 +662,7 @@ public class PfdView extends View {
         invalidate();
     }
 
-    public void setParams(GpsParams params, ExtendedGpsParams eparams) {
+    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi) {
         /**
          * Assign and limit numbers
          */
@@ -699,6 +713,16 @@ public class PfdView extends View {
 
         // ideally derive from gyro
         mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
+
+        mTo = (float)(bearing + params.getDeclinition() + 360) % 360f;
+
+        mCdi = (float)cdi; // CDI is in miles, each tick is 1 miles enroute
+        if(mCdi > 5) {
+            mCdi = 5;
+        }
+        if(mCdi < -5) {
+            mCdi = -5;
+        }
 
     }
 }
