@@ -91,13 +91,16 @@ public class NavAidHelper {
 
                 result += "<tr><td>";
 
-                result += // fields' order same as Chart Supplement convention
+                result += // fields order same as Chart Supplement convention
                         na.getLocationId()
                         + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation()) + " "
                         + "</td><td>&nbsp;"
                         + na.getFrequency()
                         + "</td><td>&nbsp;"
-                        + (na.hasHiwas() ? "HIWAS" : "");
+                        + (na.hasHiwas() ? "HIWAS" : ""
+                        + "</td><td>&nbsp;"
+                        + MorseCodeGenerator.getInstance().getCodeHtml(na.getLocationId())
+                        );
 
                 result += "</td></tr>";
             }
