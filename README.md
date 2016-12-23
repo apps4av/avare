@@ -112,5 +112,5 @@ Check 3: Full data
 
 16. Find airport BOS, go to 3D and see all obstacles are showing
 
-
+17. Click on airport KBED, verify VOR radials BOS313015, make sure SUA R4102A, and 4102B show with altitude, TX/RX frequencies, and Note.
 
