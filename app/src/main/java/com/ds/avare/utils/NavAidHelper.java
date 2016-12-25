@@ -97,10 +97,9 @@ public class NavAidHelper {
                         + "</td><td>&nbsp;"
                         + na.getFrequency()
                         + "</td><td>&nbsp;"
-                        + (na.hasHiwas() ? "HIWAS" : ""
+                        + (na.hasHiwas() ? "(H)" : "")
                         + "</td><td>&nbsp;"
-                        + MorseCodeGenerator.getInstance().getCodeHtml(na.getLocationId())
-                        );
+                        + MorseCodeGenerator.getInstance().getCodeHtml(na.getLocationId());
 
                 result += "</td></tr>";
             }

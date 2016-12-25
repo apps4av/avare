@@ -67,10 +67,19 @@ public class PfdActivity extends Activity {
         @Override
         public void locationCallback(Location location) {
 
+            if(mService == null) {
+                return;
+            }
+            if(mService.getGpsParams() == null || mService.getExtendedGpsParams() == null) {
+                return;
+            }
             double bearing = 0;
-            double cdi = mService.getCDI().getDeviation();
-            if(!mService.getCDI().isLeft()) {
-                cdi = -cdi;
+            double cdi = 0;
+            if(mService.getCDI() != null) {
+                cdi = mService.getCDI().getDeviation();
+                if (!mService.getCDI().isLeft()) {
+                    cdi = -cdi;
+                }
             }
             if(mService.getDestination() != null) {
                 bearing = mService.getDestination().getBearing();

@@ -238,7 +238,7 @@ public class PfdView extends View {
         mPaint.setColor(Color.BLUE);
         canvas.drawRect(x(-400), y(PITCH_DEGREE * 90), x(400), y(0), mPaint);
 
-        mPaint.setColor(0xFFD2691E);
+        mPaint.setColor(0xFF826644);
         canvas.drawRect(x(-400), y(0), x(400), y(-PITCH_DEGREE * 90), mPaint);
 
         //center attitude degrees
@@ -497,6 +497,13 @@ public class PfdView extends View {
         mPaint.setStyle(style);
 
 
+        // text on VSI
+        canvas.drawText("1", x(90), y(11 * VSI_FIVE), mPaint);
+        canvas.drawText("2", x(90), y(21 * VSI_FIVE), mPaint);
+        canvas.drawText("1", x(90), y(-9 * VSI_FIVE), mPaint);
+        canvas.drawText("2", x(90), y(-19 * VSI_FIVE), mPaint);
+
+
         // value
         mPaint.setColor(Color.BLACK);
 
@@ -514,11 +521,11 @@ public class PfdView extends View {
         canvas.drawPath(mPath, mPaint);
         mPaint.setStyle(style);
 
-        // text on VSI
-        canvas.drawText("1", x(90), y(11 * VSI_FIVE), mPaint);
-        canvas.drawText("2", x(90), y(21 * VSI_FIVE), mPaint);
-        canvas.drawText("1", x(90), y(-9 * VSI_FIVE), mPaint);
-        canvas.drawText("2", x(90), y(-19 * VSI_FIVE), mPaint);
+        // VSI hundreds
+        int hvsi = (int)((Math.abs(mVsi) %1000f) / 100f);
+        canvas.drawText(hvsi + "", x(90), y(0 * VSI_FIVE + offs) - (mPaint.descent() + mPaint.ascent()) / 2,
+                mPaint);
+
 
         /**
          * Compass
@@ -617,7 +624,7 @@ public class PfdView extends View {
         mPaint.setColor(Color.MAGENTA);
         mPaint.setStyle(Paint.Style.STROKE);
         r = y(-95) - y(-65);
-        mRectf = new RectF(x(0) - r, y(-95) - r, x(0) + r, y(-95) + r);
+        mRectf.set(x(0) - r, y(-95) - r, x(0) + r, y(-95) + r);
         canvas.drawArc(mRectf, -90, mTurnTrend, false, mPaint);
         mPaint.setStyle(style);
 
@@ -629,8 +636,8 @@ public class PfdView extends View {
         mPaint.setColor(Color.WHITE);
 
         for(float i = 0; i < 25; i += 5) {
-            canvas.drawCircle(x(-5 - i), y(-95), 8, mPaint);
-            canvas.drawCircle(x( 5 + i), y(-95), 8, mPaint);
+            canvas.drawCircle(x(-5 - i), y(-95), 12, mPaint);
+            canvas.drawCircle(x( 5 + i), y(-95), 12, mPaint);
         }
         mPaint.setColor(Color.MAGENTA);
         canvas.drawLine(x(0), y(-115), x(0), y(-105), mPaint); // three to break up CDI

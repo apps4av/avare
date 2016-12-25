@@ -98,8 +98,10 @@ public class MorseCodeGenerator {
             if (code.isEmpty()) {
                 continue;
             }
-            out += " &nbsp;" + code;
+            out += code + "&nbsp;";
         }
+        out = out.replace("-", "&#8211;");
+        out = out.replace(".", "&#8226;");
         return out;
     }
 
