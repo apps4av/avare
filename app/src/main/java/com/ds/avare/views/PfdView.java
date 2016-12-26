@@ -17,7 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -26,7 +25,7 @@ import android.view.View;
 import com.ds.avare.R;
 import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.instruments.VNAV;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -51,10 +50,7 @@ public class PfdView extends View {
     private float            mPitch;
     private float            mRoll;
     private float            mAcceleration;
-    private String           mError;
     private Path             mPath;
-    private BitmapHolder     mSpeedTapeBitmapHolder;
-    private BitmapHolder     mAltitudeTapeBitmapHolder;
     private float            mWidth;
     private float            mHeight;
     private float            mSpeed;
@@ -67,12 +63,14 @@ public class PfdView extends View {
     private float            mTurnTrend;
     private float            mTo;
     private float            mCdi;
+    private float            mVdi;
 
 
-    private static final float SPEED_TEN = 4f;
-    private static final float ALTITUDE_THOUSAND = 4f;
+    private static final float SPEED_TEN = 1.5f;
+    private static final float ALTITUDE_THOUSAND = 1.5f;
     private static final float VSI_FIVE = 1.5f;
     private static final float PITCH_DEGREE = 4f;
+    private static final float VDI_DEGREE = 30f;
 
     /**
      * PAn the whole drawing up with this fraction of screen to utilize maximum screen
@@ -99,6 +97,7 @@ public class PfdView extends View {
         mTurnTrend = 0;
         mAcceleration = 0;
         mCdi = 0;
+        mVdi = 3;
         mPath = new Path();
     }
 
@@ -151,25 +150,6 @@ public class PfdView extends View {
         return mWidth / 2f + xval * xperc;
     }
 
-    /**
-     * Xform 0,0 in center, and (100, 100) on top right, and (-100, -100) on bottom left
-     * @param yval
-     * @return
-     */
-    private float y(float yval, float height) {
-        float yperc = height / 200f;
-        return height / 2f - yval * yperc;
-    }
-
-    /**
-     * Xform 0,0 in center, and (100, 100) on top right, and (-100, -100) on bottom left
-     * @param xval
-     * @return
-     */
-    private float x(float xval, float width) {
-        float xperc = width / 200f;
-        return width / 2f + xval * xperc;
-    }
 
     @Override
     public void onSizeChanged (int w, int h, int oldw, int oldh) {
@@ -182,20 +162,6 @@ public class PfdView extends View {
 
         // prealloc rectangles for clip
         mRectf = new RectF(0, 0, 0, 0);
-
-        // Create speed and tape bitmapholders.
-        if(mSpeedTapeBitmapHolder != null) {
-            mSpeedTapeBitmapHolder.recycle();
-        }
-        if(mAltitudeTapeBitmapHolder != null) {
-            mAltitudeTapeBitmapHolder.recycle();
-        }
-        // Create bitmaps for tapes for easier drawing
-        mSpeedTapeBitmapHolder = new BitmapHolder((int)(x(-50) - x(-80)), (int)(y(-35) - y(35)));
-        mSpeedTapeBitmapHolder.getTransform().setTranslate(x(-80), y(35));
-
-        mAltitudeTapeBitmapHolder = new BitmapHolder((int)(x(85) - x(50)), (int)(y(-35) - y(35)));
-        mAltitudeTapeBitmapHolder.getTransform().setTranslate(x(50), y(35));
 
     }
 
@@ -213,14 +179,12 @@ public class PfdView extends View {
         /**
          * Cross on error
          */
-        if(mError != null || mWidth > mHeight) {
+        if(mWidth > mHeight) {
             mPaint.setColor(Color.RED);
             canvas.drawLine(x(-100), y(-100), x(100), y(100), mPaint);
             canvas.drawLine(x(-100), y(100), x(100), y(-100), mPaint);
             mPaint.setColor(Color.WHITE);
-            if(mError != null) {
-                canvas.drawText(mError, x(-90), y(0), mPaint);
-            }
+            canvas.drawText(mContext.getString(R.string.OnlyPortrait), x(-90), y(0), mPaint);
             return;
         }
 
@@ -345,8 +309,8 @@ public class PfdView extends View {
 
         // draw airplane wings
         mPaint.setColor(Color.YELLOW);
-        canvas.drawRect(x(-50), y(1), x(-20), y(-1), mPaint);
-        canvas.drawRect(x(20), y(1), x(50), y(-1), mPaint);
+        canvas.drawRect(x(-45), y(1), x(-20), y(-1), mPaint);
+        canvas.drawRect(x(20), y(1), x(45), y(-1), mPaint);
 
         // draw airplane triangle
         mPath.reset();
@@ -356,18 +320,13 @@ public class PfdView extends View {
         mPath.lineTo(x(15), y(-10));
         canvas.drawPath(mPath, mPaint);
 
-
         /**
          * Speed tape
-         *
          */
         mPaint.setColor(Color.WHITE);
-        Canvas stCanvas = mSpeedTapeBitmapHolder.getCanvas();
-        float w = mSpeedTapeBitmapHolder.getWidth();
-        float h = mSpeedTapeBitmapHolder.getHeight();
-        stCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        stCanvas.save();
-        stCanvas.translate(0, y(100f - mSpeed * SPEED_TEN, h));
+        canvas.save();
+        canvas.clipRect(x(-80), y(35), x(-50), y(-35));
+        canvas.translate(0, y(0) - y(mSpeed * SPEED_TEN));
 
         // lines, just draw + - 30
         float tens = Math.round(mSpeed / 10f) * 10f;
@@ -375,95 +334,90 @@ public class PfdView extends View {
             if(c < 0) {
                 continue; // no negative speed
             }
-            stCanvas.drawLine(x(50, w), y(c * SPEED_TEN, h), x(100, w), y(c * SPEED_TEN, h), mPaint);
-            stCanvas.drawText("" + Math.round(Math.abs(c)), x(-90, w), y(c * SPEED_TEN, h), mPaint);
+            canvas.drawLine(x(-50), y(c * SPEED_TEN), x(-55), y(c * SPEED_TEN), mPaint);
+            canvas.drawText("" + Math.round(Math.abs(c)), x(-75), y(c * SPEED_TEN), mPaint);
         }
         for(float c = tens - 30; c <= tens + 30; c += 5) {
             if(c < 0) {
                 continue; // no negative speed
             }
-            stCanvas.drawLine(x(75, w), y(c * SPEED_TEN, h), x(100, w), y(c * SPEED_TEN, h), mPaint);
+            canvas.drawLine(x(-50), y(c * SPEED_TEN), x(-53), y(c * SPEED_TEN), mPaint);
         }
 
-        stCanvas.restore();
+        canvas.restore();
 
         // trend
         mPaint.setColor(Color.MAGENTA);
-        stCanvas.drawRect(x(80, w), y(mSpeedChange * SPEED_TEN, h), x(95, w), y(0, h), mPaint);
+        canvas.drawRect(x(-53), y(mSpeedChange * SPEED_TEN), x(-50), y(0), mPaint);
 
         // value
         mPaint.setColor(Color.BLACK);
 
-
         mPath.reset();
-        mPath.moveTo(x(-95, w) , y(10, h));
-        mPath.lineTo(x(60, w), y(10, h));
-        mPath.lineTo(x(95, w), y(0, h));
-        mPath.lineTo(x(60, w), y(-10, h));
-        mPath.lineTo(x(-95, w), y(-10, h));
-        stCanvas.drawPath(mPath, mPaint);
+        mPath.moveTo(x(-80), y(3));
+        mPath.lineTo(x(-55), y(3));
+        mPath.lineTo(x(-50), y(0));
+        mPath.lineTo(x(-55), y(-3));
+        mPath.lineTo(x(-80), y(-3));
+        canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(Color.WHITE);
-        stCanvas.drawText("" + Math.round(Math.abs(mSpeed)), x(-85, w), y(-5, h), mPaint);
+        canvas.drawText("" + Math.round(Math.abs(mSpeed)), x(-75), y(-2), mPaint);
 
         // boundary
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        stCanvas.drawRect(x(-100, w), y(100, h), x(100, w), y(-100, h), mPaint);
+        canvas.drawRect(x(-80), y(35), x(-50), y(-35), mPaint);
         mPaint.setStyle(style);
-
-        canvas.drawBitmap(mSpeedTapeBitmapHolder.getBitmap(), mSpeedTapeBitmapHolder.getTransform(), mPaint);
-
 
         /**
          * Altitude tape
-         *
          */
         mPaint.setColor(Color.WHITE);
-        Canvas atCanvas = mAltitudeTapeBitmapHolder.getCanvas();
-        w = mAltitudeTapeBitmapHolder.getWidth();
-        h = mAltitudeTapeBitmapHolder.getHeight();
-        atCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        atCanvas.save();
-        atCanvas.translate(0, y(100f - mAltitude * ALTITUDE_THOUSAND / 10f, h)); // alt is dealt in 10's of feet
+        canvas.save();
+        canvas.clipRect(x(35), y(35), x(85), y(-35));
+        canvas.translate(0, y(0) - y(mAltitude * ALTITUDE_THOUSAND / 10f)); // alt is dealt in 10's of feet
 
         // lines, just draw + and - 300 ft.
         float hundreds = Math.round(mAltitude / 100f) * 100f;
         for(float c = (hundreds - 300) / 10f; c <= (hundreds + 300) / 10f; c += 10) {
-            atCanvas.drawLine(x(-100, w), y(c * ALTITUDE_THOUSAND, h), x(-70, w), y(c * ALTITUDE_THOUSAND, h), mPaint);
-            atCanvas.drawText(Math.round(c) + "0", x(-65, w), y(c * ALTITUDE_THOUSAND, h), mPaint);
+            canvas.drawLine(x(50), y(c * ALTITUDE_THOUSAND), x(55), y(c * ALTITUDE_THOUSAND), mPaint);
+            canvas.drawText(Math.round(c) + "0", x(55), y(c * ALTITUDE_THOUSAND), mPaint);
         }
         for(float c = (hundreds - 300) / 10f; c <= (hundreds + 300) / 10f; c += 2) {
-            atCanvas.drawLine(x(-100, w), y(c * ALTITUDE_THOUSAND, h), x(-90, w), y(c * ALTITUDE_THOUSAND, h), mPaint);
+            canvas.drawLine(x(50), y(c * ALTITUDE_THOUSAND), x(53), y(c * ALTITUDE_THOUSAND), mPaint);
         }
-
-        atCanvas.restore();
+        canvas.restore();
 
         // trend
         mPaint.setColor(Color.MAGENTA);
-        atCanvas.drawRect(x(-95, w), y(mAltitudeChange * ALTITUDE_THOUSAND / 10f, h), x(-80, w), y(0, h), mPaint);
+        if(mAltitudeChange > 0) {
+            canvas.drawRect(x(50), y(mAltitudeChange * ALTITUDE_THOUSAND / 10f), x(52), y(0), mPaint);
+        }
+        else {
+            canvas.drawRect(x(50), y(0), x(52), y(mAltitudeChange * ALTITUDE_THOUSAND / 10f), mPaint);
+        }
 
         // value
         mPaint.setColor(Color.BLACK);
 
         mPath.reset();
-        mPath.moveTo(x(95, w) , y(10, h));
-        mPath.lineTo(x(-60, w), y(10, h));
-        mPath.lineTo(x(-95, w), y(0, h));
-        mPath.lineTo(x(-60, w), y(-10, h));
-        mPath.lineTo(x(95, w), y(-10, h));
-        atCanvas.drawPath(mPath, mPaint);
+        mPath.moveTo(x(50), y(0));
+        mPath.lineTo(x(55), y(3));
+        mPath.lineTo(x(85), y(3));
+        mPath.lineTo(x(85), y(-3));
+        mPath.lineTo(x(55), y(-3));
+        canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(Color.WHITE);
-        atCanvas.drawText(Math.round(mAltitude) + "", x(-65, w), y(-5, h), mPaint);
+        canvas.drawText(Math.round(mAltitude) + "", x(55), y(-2), mPaint);
 
         // boundary
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        atCanvas.drawRect(x(-100, w), y(100, h), x(100, w), y(-100, h), mPaint);
+        canvas.drawRect(x(50), y(35), x(85), y(-35), mPaint);
         mPaint.setStyle(style);
 
-        canvas.drawBitmap(mAltitudeTapeBitmapHolder.getBitmap(), mAltitudeTapeBitmapHolder.getTransform(), mPaint);
 
         /**
          * VSI tape
@@ -636,8 +590,8 @@ public class PfdView extends View {
         mPaint.setColor(Color.WHITE);
 
         for(float i = 0; i < 25; i += 5) {
-            canvas.drawCircle(x(-5 - i), y(-95), 12, mPaint);
-            canvas.drawCircle(x( 5 + i), y(-95), 12, mPaint);
+            canvas.drawCircle(x(-5 - i), y(-95), y(0) - y(1), mPaint);
+            canvas.drawCircle(x( 5 + i), y(-95), y(0) - y(1), mPaint);
         }
         mPaint.setColor(Color.MAGENTA);
         canvas.drawLine(x(0), y(-115), x(0), y(-105), mPaint); // three to break up CDI
@@ -665,6 +619,38 @@ public class PfdView extends View {
         mPaint.setColor(Color.YELLOW);
         canvas.drawText(mContext.getString(R.string.SeeHelp), x(-95), y(-45), mPaint);
 
+        /*
+         * draw VDI
+         */
+        // boundary
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        canvas.drawRect(x(45), y(25), x(50), y(-25), mPaint);
+        canvas.drawLine(x(45), y(0), x(50), y(0), mPaint);
+        mPaint.setStyle(style);
+
+        //draw bars in 10s
+        canvas.drawCircle(x(47.5f), y((float)VNAV.BAR_DEGREES * 4 * VDI_DEGREE), y(0) - y(1), mPaint);
+        canvas.drawCircle(x(47.5f), y((float)VNAV.BAR_DEGREES * 2 * VDI_DEGREE), y(0) - y(1), mPaint);
+        canvas.drawCircle(x(47.5f), y(-(float)VNAV.BAR_DEGREES * 2 * VDI_DEGREE), y(0) - y(1), mPaint);
+        canvas.drawCircle(x(47.5f), y(-(float)VNAV.BAR_DEGREES * 4 * VDI_DEGREE), y(0) - y(1), mPaint);
+
+        //draw VDI circle
+        if(mVdi >= VNAV.HI) {
+            mPaint.setColor(Color.MAGENTA);
+        }
+        else if(mVdi <= VNAV.LOW) {
+            mPaint.setColor(Color.MAGENTA);
+        }
+        else {
+            mPaint.setColor(Color.CYAN);
+        }
+        float val = 3f - mVdi;
+        canvas.drawCircle(x(47.5f), y(val * VDI_DEGREE), y(0) - y(1), mPaint);
+        mPaint.setColor(Color.WHITE);
+
+        canvas.drawText("G", x(45), y(26), mPaint);
+
     }
 
     public void setPitch(float pitch) {
@@ -689,12 +675,7 @@ public class PfdView extends View {
         }
     }
 
-    public void setError(String error) {
-        mError = error;
-        invalidate();
-    }
-
-    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi) {
+    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi, double vdi) {
         /**
          * Assign and limit numbers
          */
@@ -727,11 +708,11 @@ public class PfdView extends View {
         }
 
         mAltitudeChange = (float)eparams.getDiffAltitudeTrend();
-        if(mAltitudeChange > 1000) {
-            mAltitudeChange = 1000;
+        if(mAltitudeChange > 200) {
+            mAltitudeChange = 200;
         }
-        if(mAltitudeChange < -1000) {
-            mAltitudeChange = -1000;
+        if(mAltitudeChange < -200) {
+            mAltitudeChange = -200;
         }
 
         mTurnTrend = (float)eparams.getDiffBearingTrend();
@@ -756,6 +737,14 @@ public class PfdView extends View {
             mCdi = -5;
         }
 
+        // degrees
+        mVdi = (float)vdi;
+        if(mVdi > 3.8f) {
+            mVdi = 3.8f;
+        }
+        if(mVdi < 2.2f) {
+            mVdi = 2.2f;
+        }
     }
 
 }

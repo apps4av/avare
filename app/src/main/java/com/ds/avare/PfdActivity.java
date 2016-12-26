@@ -22,10 +22,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.orientation.OrientationInterface;
@@ -42,7 +40,6 @@ public class PfdActivity extends Activity {
      * Service that keeps state even when activity is dead
      */
     private StorageService mService;
-    private WindowManager mWindowService;
 
     /**
      * App preferences
@@ -75,6 +72,11 @@ public class PfdActivity extends Activity {
             }
             double bearing = 0;
             double cdi = 0;
+            double vdi = 0;
+
+            if(mService.getVNAV() != null) {
+                vdi = mService.getVNAV().getGlideSlope();
+            }
             if(mService.getCDI() != null) {
                 cdi = mService.getCDI().getDeviation();
                 if (!mService.getCDI().isLeft()) {
@@ -84,8 +86,8 @@ public class PfdActivity extends Activity {
             if(mService.getDestination() != null) {
                 bearing = mService.getDestination().getBearing();
             }
-            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi);
-
+            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi, vdi);
+            mPfdView.postInvalidate();
         }
 
         @Override
@@ -102,29 +104,11 @@ public class PfdActivity extends Activity {
 
         @Override
         public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
-            int rotation = mWindowService.getDefaultDisplay().getRotation();
-
-            // Fix rotation by sensor
-            int angle = 0;
-            if (Surface.ROTATION_0 == rotation) {
-                mPfdView.setError(null);
-                angle = 0;
-            } else if(Surface.ROTATION_180 == rotation) {
-                mPfdView.setError(getString(R.string.OnlyPortrait));
-                angle = 180;
-            } else if(Surface.ROTATION_90 == rotation) {
-                mPfdView.setError(getString(R.string.OnlyPortrait));
-                angle = 90;
-            } else if(Surface.ROTATION_270 == rotation) {
-                mPfdView.setError(getString(R.string.OnlyPortrait));
-                angle = 270;
-            }
-
             mPfdView.setPitch(-(float)pitch);
-            mPfdView.setRoll(-(float)roll - angle);
+            mPfdView.setRoll(-(float)roll);
             mPfdView.setYaw((float)yaw);
             mPfdView.setAcceleration(acceleration);
-            mPfdView.invalidate();
+            mPfdView.postInvalidate();
         }
     };
 
@@ -150,8 +134,6 @@ public class PfdActivity extends Activity {
         mPref = new Preferences(this);
 
         mContext = this;
-
-        mWindowService = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.pfd, null);
@@ -181,12 +163,7 @@ public class PfdActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            if(!mService.registerOrientationListener(mOrientationInfc)) {
-                mPfdView.setError(getString(R.string.NoSensor));
-            }
-            else {
-                mPfdView.setError(null);
-            }
+            mService.registerOrientationListener(mOrientationInfc);
         }
 
         /* (non-Javadoc)
@@ -213,7 +190,6 @@ public class PfdActivity extends Activity {
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        mPfdView.setError(null);
     }
 
     /* (non-Javadoc)
