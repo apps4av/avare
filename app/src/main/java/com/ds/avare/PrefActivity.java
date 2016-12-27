@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
+import com.ds.avare.fragment.PreferenceFragment;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -23,15 +24,20 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
+
+import java.util.Stack;
 
 /**
  * 
  * @author zkhan
  *
  */
-public class PrefActivity extends PreferenceActivity {
+public class PrefActivity extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     private StorageService mService;
+    private Stack<PreferenceScreen> mPreferenceScreenStack;
 
     /*
      * Start GPS
@@ -58,11 +64,15 @@ public class PrefActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);
-        super.onCreate(savedInstanceState); 
+        super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
-        mService = null;        
+
+        PreferenceFragment fragment = new PreferenceFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.preference_container, fragment, PreferenceFragment.TAG).commit();
+
+        mService = null;
+        mPreferenceScreenStack = new Stack<>();
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -134,4 +144,22 @@ public class PrefActivity extends PreferenceActivity {
             mService.getExternalPlanMgr().forceReload(); // Reload plans too
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mPreferenceScreenStack.size() > 0) {
+            PreferenceScreen preferenceScreen = mPreferenceScreenStack.pop();
+            PreferenceFragment fragment = (PreferenceFragment) getSupportFragmentManager().findFragmentByTag(PreferenceFragment.TAG);
+            fragment.setPreferenceScreen(preferenceScreen);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragment, PreferenceScreen preferenceScreen) {
+        mPreferenceScreenStack.push(preferenceFragment.getPreferenceScreen());
+        return true;
+    }
+
 }

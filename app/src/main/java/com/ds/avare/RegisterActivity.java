@@ -13,14 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
@@ -48,7 +48,7 @@ import java.util.Random;
  * @author zkhan
  *
  */
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends AppCompatActivity {
     
     private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;

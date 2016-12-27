@@ -448,13 +448,8 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
-        Preferences p = new Preferences(act.getApplicationContext()); 
-        if(p.isNightMode()) {
-            act.setTheme(android.R.style.Theme_Black);
-        }
-        else {
-            act.setTheme(android.R.style.Theme_Light);            
-        }
+        Preferences p = new Preferences(act.getApplicationContext());
+        act.setTheme(p.isNightMode() ? R.style.AppThemeDark : R.style.AppTheme);
     }
     
     /**

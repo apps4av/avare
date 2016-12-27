@@ -156,13 +156,7 @@ public class Preferences {
             val = "0";
         }
         if (val.equals("0")) {
-            return "http://69.163.195.165/new/";
-        }
-        else if (val.equals("1")) {
-            return "http://www.apps4av.org/new/";
-        }
-        else if (val.equals("2")) {
-            return "http://avare.kitepilot.net/new/";
+            return "http://avare.stratux.me/old/";
         }
         return ("");
     }
@@ -350,6 +344,9 @@ public class Preferences {
     public boolean isShowLabelMETARS() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
     }
+    public boolean isShowWindBarbs() {
+        return (mPref.getBoolean(mContext.getString(R.string.ShowWindBarbs), false));
+    }
     /**
      * @return
      */
@@ -420,6 +417,13 @@ public class Preferences {
      */
     public boolean isNightMode() {
         return (mPref.getBoolean(mContext.getString(R.string.NightMode), false));
+    }
+
+    /**
+     * @return
+     */
+    public boolean isTFRShading() {
+        return (mPref.getBoolean(mContext.getString(R.string.TFRShading), false));
     }
 
     /**
@@ -879,47 +883,43 @@ public class Preferences {
         long mTabs = 1;
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlates), true)) {
-            mTabs |= 1 << MainActivity.tabPlates;
+            mTabs |= 1 << MainActivity.TAB_PLATES;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabAFD), true)) {
-            mTabs |= 1 << MainActivity.tabAFD;
+            mTabs |= 1 << MainActivity.TAB_AFD;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
-            mTabs |= 1 << MainActivity.tabFind;
+            mTabs |= 1 << MainActivity.TAB_FIND;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
-            mTabs |= 1 << MainActivity.tabThreeD;
+            mTabs |= 1 << MainActivity.TAB_THREE_D;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {
-            mTabs |= 1 << MainActivity.tabPlan;
+            mTabs |= 1 << MainActivity.TAB_PLAN;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-            mTabs |= 1 << MainActivity.tabWXB;
+            mTabs |= 1 << MainActivity.TAB_WXB;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
-            mTabs |= 1 << MainActivity.tabNear;
+            mTabs |= 1 << MainActivity.TAB_NEAR;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
-            mTabs |= 1 << MainActivity.tabChecklist;
+            mTabs |= 1 << MainActivity.TAB_CHECKLIST;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
-        }
-
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-            mTabs |= 1 << MainActivity.tabTrip;
+            mTabs |= 1 << MainActivity.TAB_TOOLS;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
-            mTabs |= 1 << MainActivity.tabPfd;
+            mTabs |= 1 << MainActivity.TAB_PFD;
         }
 
         return mTabs;
@@ -934,78 +934,78 @@ public class Preferences {
 
 
     /**
-     * Hotel settings save
+     *  settings save
      */
 
 
     /**
      * @return
      */
-    public int getHotelMaxPriceIndex() {
-        return mPref.getInt("HotelMaxPrice", 0);
+    public int getMaxPriceIndex() {
+        return mPref.getInt("MaxPrice", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelMinStarIndex() {
-        return mPref.getInt("HotelMinStar", 0);
+    public int getMinStarIndex() {
+        return mPref.getInt("MinStar", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelMaxDistanceIndex() {
-        return mPref.getInt("HotelMaxDistance", 0);
+    public int getMaxDistanceIndex() {
+        return mPref.getInt("MaxDistance", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelAdultsIndex() {
-        return mPref.getInt("HotelAdults", 0);
+    public int getAdultsIndex() {
+        return mPref.getInt("Adults", 0);
     }
 
     /**
      * @return
      */
-    public int getHotelChildIndex(String id) {
-        return mPref.getInt("HotelChild" + id, 0);
+    public int getChildIndex(String id) {
+        return mPref.getInt("Child" + id, 0);
     }
 
     /**
      * @return
      */
-    public void setHotelMaxPriceIndex(int index) {
-        mPref.edit().putInt("HotelMaxPrice", index).commit();
+    public void setMaxPriceIndex(int index) {
+        mPref.edit().putInt("MaxPrice", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelMinStarIndex(int index) {
-        mPref.edit().putInt("HotelMinStar", index).commit();
+    public void setMinStarIndex(int index) {
+        mPref.edit().putInt("MinStar", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelMaxDistanceIndex(int index) {
-        mPref.edit().putInt("HotelMaxDistance", index).commit();
+    public void setMaxDistanceIndex(int index) {
+        mPref.edit().putInt("MaxDistance", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelAdultsIndex(int index) {
-        mPref.edit().putInt("HotelAdults", index).commit();
+    public void setAdultsIndex(int index) {
+        mPref.edit().putInt("Adults", index).commit();
     }
 
     /**
      * @return
      */
-    public void setHotelChildIndex(String id, int index) {
-        mPref.edit().putInt("HotelChild" + id, index).commit();
+    public void setChildIndex(String id, int index) {
+        mPref.edit().putInt("Child" + id, index).commit();
     }
 
     /**
@@ -1031,6 +1031,34 @@ public class Preferences {
 
     public boolean getPlanControl() {
         return mPref.getBoolean(mContext.getString(R.string.prefPlanControl), false);
+    }
+
+    public boolean setPlanControl(boolean planControl) {
+        return mPref.edit().putBoolean(mContext.getString(R.string.prefPlanControl), planControl).commit();
+    }
+
+    public boolean getHideTabBar() {
+        return mPref.getBoolean(mContext.getString(R.string.HideTabBar), true);
+    }
+
+    public boolean getHideToolbar() {
+        return mPref.getBoolean(mContext.getString(R.string.HideToolbar), false);
+    }
+
+    public boolean getHideDrawButton() {
+        return mPref.getBoolean(mContext.getString(R.string.HideDrawButton), true);
+    }
+
+    public void setHideTabBar(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideTabBar), val).apply();
+    }
+
+    public void setHideToolbar(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideToolbar), val).apply();
+    }
+
+    public void setHideDrawButton(boolean val) {
+        mPref.edit().putBoolean(mContext.getString(R.string.HideDrawButton), val).apply();
     }
 
     public boolean getPlanPassage() {
@@ -1210,6 +1238,24 @@ public class Preferences {
 
     public void setRateAskCount(int set) {
         mPref.edit().putInt("rateAskLastCount", set).commit();
+    }
+
+    public boolean getAutoStartTracking() {
+        return mPref.getBoolean(mContext.getString(R.string.prefAutoStartTracking), false);
+    }
+
+    public boolean getPersistZoom() {
+        return mPref.getBoolean(mContext.getString(R.string.prefPersistZoom), false);
+    }
+
+    public float getZoomLevel() {
+        return mPref.getFloat(mContext.getString(R.string.prefZoomLevel),1.0f);
+    }
+
+    public void setZoomLevel(float zoom) {
+        SharedPreferences.Editor edit = mPref.edit();
+        edit.putFloat(mContext.getString(R.string.prefZoomLevel), zoom);
+        edit.commit();
     }
 
     public boolean isVerticalPfd() {

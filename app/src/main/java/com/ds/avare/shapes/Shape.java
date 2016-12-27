@@ -14,6 +14,7 @@ package com.ds.avare.shapes;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Coordinate;
@@ -84,7 +85,7 @@ public abstract class Shape {
 
     /**
      * 
-     * @param coords
+     * @param
      */
     public void add(double lon, double lat, boolean issep) {
     	add(lon,lat,issep, 0);
@@ -183,10 +184,35 @@ public abstract class Shape {
                     paint.setColor(color);
                 }
             }
-        } else {
+        } else if (this instanceof TFRShape) {
+
             /*
              * Draw the shape segment by segment
              */
+            if(getNumCoords() > 0) {
+                Path path = new Path();
+
+                float pts[] = new float[(getNumCoords()) * 4];
+                int i = 0;
+                int coord = 0;
+                float x1 = (float) origin.getOffsetX(mCoords.get(coord).getLongitude());
+                float y1 = (float) origin.getOffsetY(mCoords.get(coord).getLatitude());
+                float x2;
+                float y2;
+
+                path.moveTo(x1, y1);
+
+                for (coord = 1; coord < getNumCoords(); coord++) {
+                    x2 = (float) origin.getOffsetX(mCoords.get(coord).getLongitude());
+                    y2 = (float) origin.getOffsetY(mCoords.get(coord).getLatitude());
+
+                    path.lineTo(x2, y2);
+                }
+
+                path.close();
+                c.drawPath(path, paint);
+            }
+        } else {
             if(getNumCoords() > 0) {
                 float pts[] = new float[(getNumCoords()) * 4];
                 int i = 0;

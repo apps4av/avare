@@ -41,7 +41,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_delete"
-        android:background="@drawable/button_bg"
         android:layout_margin="5dp"
         android:text="@string/PlusPlan"
         android:visibility="invisible" />
@@ -53,7 +52,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_note"
         android:text="@string/Delete"
-        android:background="@drawable/button_bg"
         android:layout_margin="5dp"
         android:visibility="invisible" />    
     
@@ -64,7 +62,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:layout_height="wrap_content"
         android:layout_above="@+id/search_button_plates"
 	    android:text="@string/Label"
-        android:background="@drawable/button_bg"
         android:layout_margin="5dp"
 	    android:visibility="invisible" />
         
@@ -75,7 +72,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Plates"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/button_bg"
         android:layout_margin="5dp"
         android:visibility="invisible" />      
     

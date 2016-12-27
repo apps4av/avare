@@ -34,7 +34,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_alignParentLeft="true"
                 android:layout_weight="0.33"
                 android:text="@string/Previous"
-                android:background="@drawable/button_bg"
                 android:layout_margin="5dp"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>
@@ -43,7 +42,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:id="@+id/plan_button_activate"
                 android:layout_alignParentRight="true"
                 android:layout_weight="0.33"
-                android:background="@drawable/button_bg"
                 android:layout_margin="5dp"
                 android:text="@string/Inactive"
                 android:layout_height="wrap_content"
@@ -54,7 +52,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_alignParentRight="true"
                 android:layout_weight="0.33"
                 android:text="@string/Next"
-                android:background="@drawable/button_bg"
                 android:layout_margin="5dp"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"/>

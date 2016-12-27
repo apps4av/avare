@@ -4,11 +4,11 @@ All rights reserved.
 */
 package com.ds.avare.message;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.AlertDialog;
 
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 

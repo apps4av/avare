@@ -21,27 +21,23 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>
 
-    <com.ds.avare.utils.OptionButton
-        android:id="@+id/threed_spinner_chart"
-        android:layout_width="wrap_content"
-        android:background="@drawable/button_bg_option"
-        android:layout_margin="5dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:labelFor="@string/ChartTypeLabel"
-        />
-
     <ImageButton
         android:id="@+id/threed_button_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_small"
-        android:layout_margin="5dp"
         android:src="@android:drawable/ic_menu_mylocation"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
 
+    <Button
+        android:id="@+id/threed_button_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:alpha=".8"
+        android:drawableLeft="@drawable/ic_menu_black_24dp" />
 
     <TextView
         android:id="@+id/threed_text"
@@ -51,8 +47,9 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textColor="#7FFFFFFF"
         android:textSize="12dp"
         android:layout_margin="10dp"
-        android:layout_above="@+id/threed_button_center"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        />
 
     <com.ds.avare.views.GlassView
         android:layout_width="fill_parent"

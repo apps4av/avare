@@ -15,10 +15,10 @@ authors: zkhan, jlmcgraw
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceScreen 
+    <PreferenceScreen
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
-        <com.ds.avare.utils.FolderPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:key="@string/Maps"
             android:summary="@string/MapsSummary"
             android:title="@string/MapsLabel" />
@@ -36,7 +36,7 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-        <com.ds.avare.utils.FolderPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
             android:title="@string/UDWLabel" />
@@ -108,17 +108,24 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShowLabelMETARS"
             android:summary="@string/ShowLabelMETARSSummary"
             android:title="@string/ShowLabelMETARS" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ShowWindBarbs"
+            android:summary="@string/ShowWindBarbsSummary"
+            android:title="@string/ShowWindBarbs" />
     </PreferenceScreen>
 
     <PreferenceScreen 
         android:title="@string/prefAppStateCategoryTitle" 
         android:icon="@android:drawable/ic_menu_mapmode" >
-        <com.ds.avare.utils.RegisterActivityPreference
+        <com.ds.avare.utils.GenericDialogPreference
             android:summary="@string/onlineSummary"
-            android:title="@string/online" />
-        <com.ds.avare.utils.SyncActivityPreference
+            android:title="@string/online"
+            android:key="@string/RegisterActivityPreferenceKey" />
+        <com.ds.avare.utils.GenericDialogPreference
             android:summary="@string/syncSummary"
-            android:title="@string/sync" />
+            android:title="@string/sync"
+            android:key="@string/SyncActivityPreferenceKey" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/LeaveRunning"
@@ -248,6 +255,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/NightMode"
             android:summary="@string/NightModeSummary"
             android:title="@string/NightModeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/TFRShading"
+            android:summary="@string/TFRShadingSummary"
+            android:title="@string/TFRShadingLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="100000"
             android:entries="@array/ADSBTrafficFilterAltitude"
@@ -298,6 +310,71 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShapeFile"
             android:summary="@string/ShapeFileSummary"
             android:title="@string/ShapeFileLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/HideTabBar"
+            android:summary="@string/HideTabBarSummary"
+            android:title="@string/HideTabBarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/HideToolbar"
+            android:summary="@string/HideToolbarSummary"
+            android:title="@string/HideToolbarLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/HideDrawButton"
+            android:summary="@string/HideDrawButtonSummary"
+            android:title="@string/HideDrawButtonLabel" />
+        <PreferenceScreen
+	        android:title="@string/TabBarTitle" 
+            android:summary="@string/TabBarSummary"
+	        android:icon="@android:drawable/ic_menu_manage" >
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlates"
+		            android:summary="@string/PlatesSummary"
+		            android:title="@string/Plates" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabAFD"
+		            android:summary="@string/AFDSummary"
+		            android:title="@string/AFD" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabFind"
+		            android:summary="@string/FindSummary"
+		            android:title="@string/Find" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabPlan"
+		            android:summary="@string/PlanSummary"
+		            android:title="@string/Plan" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabNear"
+                    android:summary="@string/NearSummary"
+                    android:title="@string/Near" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabThreeD"
+                    android:summary="@string/ThreeDSummary"
+                    android:title="@string/ThreeD" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/prefTabChecklist"
+                    android:summary="@string/ChecklistSummary"
+                    android:title="@string/List" />
+		        <CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabWX"
+		            android:summary="@string/WXSummary"
+		            android:title="@string/WXB" />
+				<CheckBoxPreference
+		            android:defaultValue="true"
+		            android:key="@string/prefTabTools"
+		            android:summary="@string/GPSSummary"
+		            android:title="@string/Tools" />
+			</PreferenceScreen>
         </PreferenceScreen>
 
 	<PreferenceScreen 
@@ -307,6 +384,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
+        <CheckBoxPreference
+            android:key="@string/prefAutoStartTracking"
+            android:title="@string/AutoStartTrackingLabel"
+            android:summary="@string/AutoStartTrackingSummary"/>
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/AutoPostTracksPrompts"
@@ -486,11 +567,6 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabTools"
                 android:summary="@string/GPSSummary"
                 android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabTrip"
-                android:summary="@string/TripSummary"
-                android:title="@string/Trip" />
         </PreferenceScreen>
 
     </PreferenceScreen>
@@ -504,6 +580,17 @@ authors: zkhan, jlmcgraw
             android:key="@string/TileSize"
             android:summary="@string/TileSizeSummary"
             android:title="@string/TileSizeLabel" />
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:title="@string/Stratuvare"
+        android:icon="@android:drawable/ic_menu_zoom" >
+
+        <CheckBoxPreference
+            android:key="@string/prefPersistZoom"
+            android:summary="@string/PersistZoomSummary"
+            android:title="@string/PersistZoomLabel" />
 
     </PreferenceScreen>
 

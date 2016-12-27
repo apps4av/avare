@@ -36,9 +36,8 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:src="@android:drawable/ic_menu_mylocation"
                 android:layout_centerInParent="true"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/button_small"
                 android:layout_margin="5dp"
-                 />
+                />
 
         </RelativeLayout>
 
@@ -67,7 +66,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:background="@drawable/button_bg_option"
                 android:layout_margin="5dp"
                 android:layout_weight="0.8"/>
 
@@ -75,7 +73,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:id="@+id/airport_button_airports"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_bg_option"
                 android:layout_margin="5dp"
                 android:textSize="16sp"
                 android:layout_weight="0.2" />

@@ -5,11 +5,15 @@ All rights reserved.
 
 package com.ds.avare.utils;
 
+import com.ds.avare.BuildConfig;
 import com.ds.avare.storage.Preferences;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zkhan
@@ -24,13 +28,14 @@ public class PossibleEmail {
      * @return
      */
     public static String[] getAll(Context ctx) {
-        try{
+        try {
             Account[] accounts = AccountManager.get(ctx).getAccounts();
-            String emails[] = new String[accounts.length];
-            for(int i = 0; i < emails.length; i++) {
-            	emails[i] = accounts[i].name;
+            List<String> emails = new ArrayList<>();
+            if (BuildConfig.DEBUG) emails.add("debug@email.com");
+            for (int i = 0; i < accounts.length; i++) {
+                emails.add(accounts[i].name);
             }
-            return emails;
+            return emails.toArray(new String[0]);
         }
         catch(Exception e) {
             e.printStackTrace();
