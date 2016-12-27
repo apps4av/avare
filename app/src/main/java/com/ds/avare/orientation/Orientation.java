@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.MovingAverage;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class Orientation implements SensorEventListener {
     private double[] mGravityTemps;
     private boolean mIsAvailable;
     private final double ALPHA = 0.8;
-    private double mAcceleration = 0;
+    private MovingAverage mMovingAverageA;
 
     /**
      * Calls back with orientation
@@ -54,6 +55,7 @@ public class Orientation implements SensorEventListener {
         mOrientationTmps = new float[3];
         mGravityTemps = new double[3];
         mIsAvailable = false;
+        mMovingAverageA = new MovingAverage(20);
     }
 
     /**
@@ -111,7 +113,7 @@ public class Orientation implements SensorEventListener {
                     mGravityTemps[2] = ALPHA * mGravityTemps[2] + (1 - ALPHA) * event.values[2];
 
                     // Remove the gravity contribution with the high-pass filter, return acceleration in X
-                    mAcceleration = event.values[0] - mGravityTemps[0];
+                    mMovingAverageA.add(event.values[0] - mGravityTemps[0]);
                 }
 
                 if (Sensor.TYPE_ROTATION_VECTOR == event.sensor.getType()) {
@@ -129,7 +131,7 @@ public class Orientation implements SensorEventListener {
                                 Math.toDegrees(mOrientationTmps[0]),
                                 Math.toDegrees(mOrientationTmps[1]),
                                 Math.toDegrees(mOrientationTmps[2]),
-                                mAcceleration);
+                                mMovingAverageA.get());
                     }
                 }
             }
