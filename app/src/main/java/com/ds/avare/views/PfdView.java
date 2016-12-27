@@ -348,7 +348,12 @@ public class PfdView extends View {
 
         // trend
         mPaint.setColor(Color.MAGENTA);
-        canvas.drawRect(x(-53), y(mSpeedChange * SPEED_TEN), x(-50), y(0), mPaint);
+        if(mSpeedChange > 0) {
+            canvas.drawRect(x(-53), y(mSpeedChange * SPEED_TEN), x(-50), y(0), mPaint);
+        }
+        else {
+            canvas.drawRect(x(-53), y(0), x(-50), y(mSpeedChange * SPEED_TEN), mPaint);
+        }
 
         // value
         mPaint.setColor(Color.BLACK);

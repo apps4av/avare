@@ -16,6 +16,8 @@ package com.ds.avare.gps;
  * Created by zkhan on 12/19/16.
  */
 
+import com.ds.avare.utils.MovingAverage;
+
 /**
  * Find rate information not available in standard GPS location interface.
  */
@@ -32,6 +34,10 @@ public class ExtendedGpsParams {
     private double mDiffBearing;
     private double mDiffSpeed;
 
+    private MovingAverage mMovingAverageAltitudeChange;
+    private MovingAverage mMovingAverageSpeedChange;
+    private MovingAverage mMovingAverageBearingChange;
+
     public ExtendedGpsParams() {
         mLastAltitude = Double.MAX_VALUE;
         mLastBearing = Double.MAX_VALUE;
@@ -40,6 +46,9 @@ public class ExtendedGpsParams {
         mDiffAltitude = 0;
         mDiffBearing = 0;
         mDiffSpeed = 0;
+        mMovingAverageAltitudeChange = new MovingAverage(3);
+        mMovingAverageSpeedChange = new MovingAverage(3);
+        mMovingAverageBearingChange = new MovingAverage(3);
     }
 
     /**
@@ -91,47 +100,36 @@ public class ExtendedGpsParams {
         mLastSpeed = p.getSpeed();
         mLastBearing = p.getBearing();
         mLastTime = p.getTime();
+
+        mMovingAverageAltitudeChange.add(mDiffAltitude);
+        mMovingAverageSpeedChange.add(mDiffSpeed);
+        mMovingAverageBearingChange.add(mDiffBearing);
     }
 
-    public double getBearingRateOfChange() {
-        return mDiffBearing;
-    }
     public double getAltitudeRateOfChange() {
-        return mDiffAltitude;
-    }
-    public double getSpeedRateOfChange() {
-        return mDiffSpeed;
+        return mMovingAverageAltitudeChange.get();
     }
     public double getBearingTrend() {
-        if(mLastBearing == Double.MAX_VALUE) {
-            return 0;
-        }
-        return mLastBearing + mDiffBearing * TREND_SECONDS;
+        return mLastBearing + mMovingAverageBearingChange.get() * TREND_SECONDS;
     }
     public double getDiffBearingTrend() {
-        return mDiffBearing * TREND_SECONDS;
+        return mMovingAverageBearingChange.get() * TREND_SECONDS;
     }
     public double getAltitudeTrend() {
-        if(mLastAltitude == Double.MAX_VALUE) {
-            return 0;
-        }
-        return mLastAltitude + mDiffAltitude * TREND_SECONDS;
+        return mLastAltitude + mMovingAverageAltitudeChange.get() * TREND_SECONDS;
     }
     public double getDiffAltitudeTrend() {
-        return mDiffAltitude * TREND_SECONDS;
+        return mMovingAverageAltitudeChange.get() * TREND_SECONDS;
     }
     public double getSpeedTrend() {
-        if(mLastSpeed == Double.MAX_VALUE) {
-            return 0;
-        }
         // speed cannot be below 0
-        double out = mLastSpeed + mDiffSpeed * TREND_SECONDS;
+        double out = mLastSpeed + mMovingAverageSpeedChange.get() * TREND_SECONDS;
         if(out < 0) {
             out = 0;
         }
         return out;
     }
     public double getDiffSpeedTrend() {
-        return mDiffSpeed * TREND_SECONDS;
+        return mMovingAverageSpeedChange.get() * TREND_SECONDS;
     }
 }
