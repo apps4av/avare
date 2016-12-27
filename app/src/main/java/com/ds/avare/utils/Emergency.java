@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.telephony.SmsManager;
 
 import com.ds.avare.R;
@@ -80,27 +79,14 @@ public class Emergency {
         service.setOverrideListName(checklist);
 
         // Find airport with min length then go to it
-        AsyncTask<Void, Void, Void> atask = new AsyncTask<Void, Void, Void>() {
-            Airport[] ap;
-
-            @Override
-            protected Void doInBackground(Void... v) {
-                ap = service.getDBResource().findClosestAirports(params.getLongitude(), params.getLatitude(), pref.getLongestRunway());
-                return null;
+        if(service.getArea() != null) {
+            Airport a = service.getArea().getAirport(0);
+            if(a != null) {
+                Destination d = new Destination(a.getId(), Destination.BASE, pref, service);
+                d.find();
+                service.setDestination(d);
             }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                // closests airport with minimum runway length
-                if (ap != null) {
-                    Destination d = new Destination(ap[0].getId(), Destination.BASE, pref, service);
-                    service.setDestination(d);
-                    d.find();
-                }
-            }
-        };
-        atask.execute();
-
+        }
 
         return ret;
     }

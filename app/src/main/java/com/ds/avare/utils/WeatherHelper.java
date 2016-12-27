@@ -682,8 +682,12 @@ public class WeatherHelper {
                     String t = tokens[i].split("/")[0];
                     if(t.startsWith("M")) {
                         t = t.substring(1);
+                        temp = Double.parseDouble(t);
+                        temp = -temp;
                     }
-                    temp = Double.parseDouble(t);
+                    else {
+                        temp = Double.parseDouble(t);
+                    }
                     tmpset = true;
                     continue;
                 }

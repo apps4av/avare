@@ -376,6 +376,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
     <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
+    <string name="TripSummary">&quot;Travel display.&quot;</string>
+    <string name="PfdSummary">&quot;PFD display.&quot;</string>
 
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
     <string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
@@ -386,6 +388,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
+    <string name="prefTabTrip">&quot;prefTabTrip&quot;</string>
+    <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -581,5 +585,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Rate">&quot;Rate Now&quot;</string>
     <string name="MaybeLater">&quot;Maybe Later&quot;</string>
     <string name="NeverAsk">&quot;Never Rate&quot;</string>
+    <string name="PFD">PFD</string>
+    <string name="NoSensor">Sensors required for PFD are not available on this device.</string>
+    <string name="OnlyPortrait">Only portrait mode is supported.</string>
+    <string name="VerticalPfd">VerticalPfd</string>
+    <string name="VerticalPfdLabel">PFD Vertical Mount</string>
+    <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
+    <string name="SeeHelp">See Help.</string>
 
 </resources>

@@ -26,6 +26,7 @@ import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
+import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
@@ -40,6 +41,8 @@ import com.ds.avare.instruments.VNAV;
 import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.ShapeFetcher;
 import com.ds.avare.network.TFRFetcher;
+import com.ds.avare.orientation.Orientation;
+import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
@@ -94,6 +97,8 @@ public class StorageService extends Service {
      * Store this
      */
     private GpsParams mGpsParams;
+    private ExtendedGpsParams mGpsParamsExtended;
+
     /**
      * Store this
      */
@@ -136,6 +141,7 @@ public class StorageService extends Service {
      * GPS
      */
     private Gps mGps;
+    Orientation mOrientation;
 
     /**
      * Store this
@@ -175,6 +181,11 @@ public class StorageService extends Service {
      * A list of GPS listeners
      */
     private LinkedList<GpsInterface> mGpsCallbacks;
+
+    /*
+ * A list of GPS listeners
+ */
+    private LinkedList<OrientationInterface> mOrientationCallbacks;
 
     /*
      * A diagram bitmap
@@ -326,11 +337,13 @@ public class StorageService extends Service {
         mShapeFetcher.parse();
         mGameTFRs = new GameTFR();
         mGameTFRs.loadGames(this);
+        mGpsParamsExtended = new ExtendedGpsParams();
 
         mTimer = new Timer();
         TimerTask gpsTime = new UpdateTask();
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
+        mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mDiagramBitmap = null;
         mAfdIndex = 0;
         mOverrideListName = null;
@@ -347,7 +360,7 @@ public class StorageService extends Service {
         mInfoLines = new InfoLines(this);
 
         mShadowedText = new ShadowedText(getApplicationContext());
-        
+
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
 
@@ -480,6 +493,8 @@ public class StorageService extends Service {
                         mGps.updateTimeout();
                     }
                     setGpsParams(new GpsParams(location));
+                    mGpsParamsExtended.setParams(mGpsParams);
+
                     mLocation = location;
                     mLocationSem.unlock();
                     mArea.updateLocation(getGpsParams());
@@ -551,6 +566,31 @@ public class StorageService extends Service {
             }
         };
         mGps = new Gps(this, intf);
+
+                /*
+         * Start GPS, and call all activities registered to listen to GPS
+         */
+        OrientationInterface ointf = new OrientationInterface() {
+
+            /**
+             *
+             * @return
+             */
+            private LinkedList<OrientationInterface> extracted() {
+                return (LinkedList<OrientationInterface>)mOrientationCallbacks.clone();
+            }
+
+            @Override
+            public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
+                LinkedList<OrientationInterface> list = extracted();
+                Iterator<OrientationInterface> it = list.iterator();
+                while (it.hasNext()) {
+                    OrientationInterface infc = it.next();
+                    infc.onSensorChanged(yaw, pitch, roll, acceleration);
+                }
+            }
+        };
+        mOrientation = new Orientation(this, ointf);
     }
         
     /* (non-Javadoc)
@@ -577,6 +617,11 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
+
+        if(mOrientation != null) {
+            mOrientation.stop();
+        }
+
         super.onDestroy();
         
         System.runFinalizersOnExit(true);
@@ -723,6 +768,13 @@ public class StorageService extends Service {
      */
     public GpsParams getGpsParams() {
         return mGpsParams;
+    }
+
+    /**
+     * @return
+     */
+    public ExtendedGpsParams getExtendedGpsParams() {
+        return mGpsParamsExtended;
     }
 
     /**
@@ -886,6 +938,46 @@ public class StorageService extends Service {
                 mCounter = 0;
                 mIsGpsOn = false;                
             }            
+        }
+    }
+
+    /**
+     *
+     * @param o
+     */
+    public boolean registerOrientationListener(OrientationInterface o) {
+        /*
+         * If first listener, start orientation
+         */
+        if(mOrientationCallbacks.isEmpty()) {
+            mOrientation.start();
+        }
+        synchronized(mOrientationCallbacks) {
+            mOrientationCallbacks.add(o);
+        }
+        return mOrientation.isSensorAvailable();
+    }
+
+    /**
+     *
+     * @param o
+     */
+    public void unregisterOrientationListener(OrientationInterface o) {
+
+        boolean isempty = false;
+
+        synchronized(mOrientationCallbacks) {
+            mOrientationCallbacks.remove(o);
+            isempty = mOrientationCallbacks.isEmpty();
+        }
+
+        /*
+         * If no listener, relinquish orientation control
+         */
+        if(isempty) {
+            synchronized(this) {
+                mOrientation.stop();
+            }
         }
     }
 

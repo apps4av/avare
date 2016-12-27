@@ -17,6 +17,7 @@ authors: jlmcgraw
     <dimen name="TextSize">30sp</dimen>
     <dimen name="runwayNumberTextSize">25sp</dimen>
     <dimen name="distanceRingNumberTextSize">16sp</dimen>
+    <dimen name="pfdTextSize">16sp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>

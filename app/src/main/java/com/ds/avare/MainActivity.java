@@ -46,6 +46,7 @@ import com.ds.avare.navhandler.ListNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.MapNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.NavigationItemSelectedHandler;
 import com.ds.avare.navhandler.NearNavigationItemSelectedHandler;
+import com.ds.avare.navhandler.PfdNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.PlanNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.PlatesNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.ThreeDNavigationItemSelectedHandler;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
      * To go to emergency mode
      */
     private AlertDialog mSosDialog;
+
     /**
      * Version related warnings
      */
@@ -97,10 +99,11 @@ public class MainActivity extends AppCompatActivity implements
     public static final int TAB_FIND      = 3;
     public static final int TAB_PLAN      = 4;
     public static final int TAB_NEAR      = 5;
-    public static final int TAB_THREE_D   = 6;
-    public static final int TAB_CHECKLIST = 7;
-    public static final int TAB_WXB       = 8;
-    public static final int TAB_TOOLS     = 9;
+    public static final int TAB_PFD       = 6;
+    public static final int TAB_THREE_D   = 7;
+    public static final int TAB_CHECKLIST = 8;
+    public static final int TAB_WXB       = 9;
+    public static final int TAB_TOOLS     = 10;
 
     private static final Map<Integer, NavigationItemSelectedHandler> NAV_ITEM_HANDLERS = new HashMap<>();
 
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements
         NAV_ITEM_HANDLERS.put(R.id.nav_find, new FindNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_plan, new PlanNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_near, new NearNavigationItemSelectedHandler());
+        NAV_ITEM_HANDLERS.put(R.id.nav_pfd, new PfdNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_3d, new ThreeDNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_list, new ListNavigationItemSelectedHandler());
         NAV_ITEM_HANDLERS.put(R.id.nav_wxb, new WxbNavigationItemSelectedHandler());
@@ -224,6 +228,11 @@ public class MainActivity extends AppCompatActivity implements
         if (0 != (mPref.getTabs() & (1 << TAB_NEAR))) {
             tabLayout.addTab(tabLayout.newTab().setText(R.string.Near), tabIndex, false);
             mTabIndexToNavItemIdMap.put(tabIndex++, R.id.nav_near);
+        }
+
+        if (0 != (mPref.getTabs() & (1 << TAB_PFD))) {
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.PFD), tabIndex, false);
+            mTabIndexToNavItemIdMap.put(tabIndex++, R.id.nav_pfd);
         }
 
         if (0 != (mPref.getTabs() & (1 << TAB_THREE_D))) {
