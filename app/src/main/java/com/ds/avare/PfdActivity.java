@@ -118,7 +118,7 @@ public class PfdActivity extends Activity {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
+//        ((MainActivity) this.getParent()).showMapTab();
     }
 
     /* (non-Javadoc)

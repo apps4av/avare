@@ -919,7 +919,7 @@ public class Preferences {
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
-            mTabs |= 1 << MainActivity.tabPfd;
+            mTabs |= 1 << MainActivity.TAB_PFD;
         }
 
         return mTabs;
