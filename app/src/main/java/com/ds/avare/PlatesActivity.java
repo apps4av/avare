@@ -493,18 +493,17 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             String name = mListPlates.get(pos);
 
             mPlatesView.setParams(null, true);
-            mMatrix = getMatrix(name);
+            float m[] = getMatrix(name);
+            mService.setMatrix(null); // to small to show on map
             if(name.startsWith(AD)) {
-                mPlatesView.setParams(mMatrix, true);
-                mService.setMatrix(null); // to small to show on map
+                mPlatesView.setParams(m, true);
             }
             else if(name.startsWith(AREA)) {
-                mPlatesView.setParams(mMatrix, false);
-                mService.setMatrix(null); // to small to show on map
+                mPlatesView.setParams(m, false);
             }
             else {
-                mPlatesView.setParams(mMatrix, false);
-                mService.setMatrix(mMatrix); // save for other activities that want to show plate
+                mPlatesView.setParams(m, false);
+                mService.setMatrix(m); // save for other activities that want to show plate
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
