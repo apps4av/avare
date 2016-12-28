@@ -530,7 +530,6 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
                      */
 
                     String dplates[] = new File(mapFolder + "/plates/" + airport).list(filter);
-                    String aplates[] = new File(mapFolder + "/area/" + airport).list(filter);
                     String mins[] = mService.getDBResource().findMinimums(airport);
 
                     TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
@@ -538,12 +537,6 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
                         for(String plate : dplates) {
                             String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
                             plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
-                        }
-                    }
-                    if (aplates != null) {
-                        for(String plate : aplates) {
-                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
-                            plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
                         }
                     }
                     if(mins != null) {
@@ -680,7 +673,7 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
             /*
              * Airport diagram must be first
              */
-            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
+            String[] type = {AD, "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
 
             for(int i = 0; i < type.length; i++) {
                 if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
@@ -718,7 +711,7 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
      * @return
      */
     public static boolean doesAirportHavePlates(String mapFolder, String id) {
-        return new File(mapFolder + "/plates/" + id).exists() || new File(mapFolder + "/area/" + id).exists();
+        return new File(mapFolder + "/plates/" + id).exists();
     }
 
     /**

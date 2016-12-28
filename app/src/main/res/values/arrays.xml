@@ -23,7 +23,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR High Enroute Charts</item>
         <item>IFR Area Charts</item>
         <item>Plates/d-TPP/ADs</item>
-        <item>VFR Area Plates</item>
         <item>A/FD Images</item>
         <item>Terrain</item>
         <item>Topographic Maps</item>
@@ -274,60 +273,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>Wyoming</item>
 		<item>Others</item>
 	</string-array>
-    <string-array name="resNameVFRAreaPlate">
-        <item>VFR Area Canada</item>
-    	<item>VFR Area Alabama</item>
-        <item>VFR Area Alaska</item>
-        <item>VFR Area Arizona</item>
-        <item>VFR Area Arkansas</item>
-        <item>VFR Area California</item>
-        <item>VFR Area Colorado</item>
-        <item>VFR Area Connecticut</item>
-        <item>VFR Area Delaware</item>
-        <item>VFR Area Florida</item>
-        <item>VFR Area Georgia</item>
-        <item>VFR Area Hawaii</item>
-        <item>VFR Area Idaho</item>
-        <item>VFR Area Illinois</item>
-        <item>VFR Area Indiana</item>
-        <item>VFR Area Iowa</item>
-        <item>VFR Area Kansas</item>
-        <item>VFR Area Kentucky</item>
-        <item>VFR Area Louisiana</item>
-        <item>VFR Area Maine</item>
-        <item>VFR Area Maryland</item>
-        <item>VFR Area Massachusetts</item>
-        <item>VFR Area Michigan</item>
-        <item>VFR Area Minnesota</item>
-        <item>VFR Area Mississippi</item>
-        <item>VFR Area Missouri</item>
-        <item>VFR Area Montana</item>
-        <item>VFR Area Nebraska</item>
-        <item>VFR Area Nevada</item>
-        <item>VFR Area New Hampshire</item>
-        <item>VFR Area New Jersey</item>
-        <item>VFR Area New Mexico</item>
-        <item>VFR Area New York</item>
-        <item>VFR Area North Carolina</item>
-        <item>VFR Area North Dakota</item>
-        <item>VFR Area Ohio</item>
-        <item>VFR Area Oklahoma</item>
-        <item>VFR Area Oregon</item>
-        <item>VFR Area Pennsylvania</item>
-        <item>VFR Area Puerto Rico</item>
-        <item>VFR Area Rhode Island</item>
-        <item>VFR Area South Carolina</item>
-        <item>VFR Area South Dakota</item>
-        <item>VFR Area Tennessee</item>
-        <item>VFR Area Texas</item>
-        <item>VFR Area Utah</item>
-        <item>VFR Area Vermont</item>
-        <item>VFR Area Virginia</item>
-        <item>VFR Area Washington</item>
-        <item>VFR Area West Virginia</item>
-        <item>VFR Area Wisconsin</item>
-        <item>VFR Area Wyoming</item>
-    </string-array>
     <string-array name="resNameTerrain">
         <item>Elevation NE</item>
         <item>Elevation NC</item>
@@ -1716,61 +1661,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>WI</item>
 		<item>WY</item>
 		<item>XX</item>
-    </string-array>
-    
-    <string-array name="resFilesVFRAreaPlate">
-        <item>AreaCN</item>
-    	<item>AreaAL</item>
-        <item>AreaAK</item>
-        <item>AreaAZ</item>
-        <item>AreaAR</item>
-        <item>AreaCA</item>
-        <item>AreaCO</item>
-        <item>AreaCT</item>
-        <item>AreaDE</item>
-        <item>AreaFL</item>
-        <item>AreaGA</item>
-        <item>AreaHI</item>
-        <item>AreaID</item>
-        <item>AreaIL</item>
-        <item>AreaIN</item>
-        <item>AreaIA</item>
-        <item>AreaKS</item>
-        <item>AreaKY</item>
-        <item>AreaLA</item>
-        <item>AreaME</item>
-        <item>AreaMD</item>
-        <item>AreaMA</item>
-        <item>AreaMI</item>
-        <item>AreaMN</item>
-        <item>AreaMS</item>
-        <item>AreaMO</item>
-        <item>AreaMT</item>
-        <item>AreaNE</item>
-        <item>AreaNV</item>
-        <item>AreaNH</item>
-        <item>AreaNJ</item>
-        <item>AreaNM</item>
-        <item>AreaNY</item>
-        <item>AreaNC</item>
-        <item>AreaND</item>
-        <item>AreaOH</item>
-        <item>AreaOK</item>
-        <item>AreaOR</item>
-        <item>AreaPA</item>
-        <item>AreaPR</item>
-        <item>AreaRI</item>
-        <item>AreaSC</item>
-        <item>AreaSD</item>
-        <item>AreaTN</item>
-        <item>AreaTX</item>
-        <item>AreaUT</item>
-        <item>AreaVT</item>
-        <item>AreaVA</item>
-        <item>AreaWA</item>
-        <item>AreaWV</item>
-        <item>AreaWI</item>
-        <item>AreaWY</item>  
     </string-array>
     
     <string-array name="resFilesTerrain">

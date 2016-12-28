@@ -65,15 +65,14 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_IFRHE = 6;
     private static final int GROUP_IFRA = 7;
     private static final int GROUP_PLATE = 8;
-    private static final int GROUP_VFRA = 9;
-    private static final int GROUP_AFD = 10;
-    private static final int GROUP_TERRAIN = 11;
-    private static final int GROUP_TOPO = 12;
-    private static final int GROUP_HELI = 13;
-    private static final int GROUP_ONC = 14;
-    private static final int GROUP_TPC = 15;
-    private static final int GROUP_MISC = 16;
-    private static final int GROUP_NUM = 17;
+    private static final int GROUP_AFD = 9;
+    private static final int GROUP_TERRAIN = 10;
+    private static final int GROUP_TOPO = 11;
+    private static final int GROUP_HELI = 12;
+    private static final int GROUP_ONC = 13;
+    private static final int GROUP_TPC = 14;
+    private static final int GROUP_MISC = 15;
+    private static final int GROUP_NUM = 16;
     
     /**
      * @param context
@@ -105,7 +104,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_ONC] = context.getResources().getStringArray(R.array.resNameONC);
         mChildren[GROUP_TPC] = context.getResources().getStringArray(R.array.resNameTPC);
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
-        mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
         mChildren[GROUP_MISC] = context.getResources().getStringArray(R.array.resNameMisc);
 
         /*
@@ -127,7 +125,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
         mChildrenFiles[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
-        mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         mChildrenFiles[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
 
         /*
@@ -150,7 +147,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
         mVers[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
-        mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         mVers[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
 
         /*
@@ -172,7 +168,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_ONC] = new int[mVers[GROUP_ONC].length];
         mChecked[GROUP_TPC] = new int[mVers[GROUP_TPC].length];
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
-        mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
         mChecked[GROUP_MISC] = new int[mVers[GROUP_MISC].length];
 
         /*
