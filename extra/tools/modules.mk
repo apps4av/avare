@@ -19,7 +19,6 @@ export MODULES	=	\
 	plates \
 	minimums \
 	canads \
-	databases \
-	area
+	databases 
 
 
