@@ -395,7 +395,7 @@ public class AirportActivity extends Activity implements Observer {
                     mService.loadDiagram(null);
                     mAfdView.setBitmap(null);
                 }
-                
+                mService.setMatrix(null);
                 mService.setAfdIndex(pos);
             }
         }

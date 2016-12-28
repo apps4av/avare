@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
-import com.ds.avare.PlatesActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
@@ -653,10 +652,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             BitmapHolder b = mService.getDiagram();
 
             if(b == null || b.getBitmap() == null) {
-                return;
-            }
-            if( b.getName() == null || b.getName().contains(PlatesActivity.AREA) || b.getName().contains(PlatesActivity.AD)) {
-                // airport dias are too small to overlay
                 return;
             }
 

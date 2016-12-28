@@ -93,7 +93,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
 
-    public static final String AD = "AIRPORT-DIAGRAM";
+    public static final String AD = Destination.AD;
     public static final String AREA = "AREA";
 
     /*
@@ -494,13 +494,18 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 
             mPlatesView.setParams(null, true);
             mMatrix = getMatrix(name);
-            if(name.startsWith(Destination.AD)) {
+            if(name.startsWith(AD)) {
                 mPlatesView.setParams(mMatrix, true);
+                mService.setMatrix(null); // to small to show on map
+            }
+            else if(name.startsWith(AREA)) {
+                mPlatesView.setParams(mMatrix, false);
+                mService.setMatrix(null); // to small to show on map
             }
             else {
                 mPlatesView.setParams(mMatrix, false);
+                mService.setMatrix(mMatrix); // save for other activities that want to show plate
             }
-            mService.setMatrix(mMatrix); // save for other activities that want to show plate
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
         }
