@@ -78,6 +78,9 @@
             android:id="@+id/nav_near"
             android:title="@string/Near" />
         <item
+            android:id="@+id/nav_pfd"
+            android:title="@string/PFD" />
+        <item
             android:id="@+id/nav_3d"
             android:title="@string/ThreeD" />
         <item

@@ -918,6 +918,10 @@ public class Preferences {
             mTabs |= 1 << MainActivity.TAB_TOOLS;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
+            mTabs |= 1 << MainActivity.TAB_PFD;
+        }
+
         return mTabs;
     }
 
@@ -1249,9 +1253,13 @@ public class Preferences {
     }
 
     public void setZoomLevel(float zoom) {
-        SharedPreferences.Editor edit=mPref.edit();
-        edit.putFloat(mContext.getString(R.string.prefZoomLevel),zoom);
+        SharedPreferences.Editor edit = mPref.edit();
+        edit.putFloat(mContext.getString(R.string.prefZoomLevel), zoom);
         edit.commit();
+    }
+
+    public boolean isVerticalPfd() {
+        return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
     }
 }
 

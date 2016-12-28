@@ -213,6 +213,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/EarlyPassTimer"
             android:summary="@string/EarlyPassTimerSummary"
             android:title="@string/EarlyPassTimerLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/VerticalPfd"
+            android:summary="@string/VerticalPfdSummary"
+            android:title="@string/VerticalPfdLabel" />
     </PreferenceScreen>
         
     <PreferenceScreen 
@@ -537,6 +542,11 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabNear"
                 android:summary="@string/NearSummary"
                 android:title="@string/Near" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabPfd"
+                android:summary="@string/PfdSummary"
+                android:title="@string/PFD" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="@string/prefTabThreeD"

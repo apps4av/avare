@@ -12,13 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.instruments;
 
-import com.ds.avare.gps.GpsParams;
-import com.ds.avare.place.Destination;
-import com.ds.avare.storage.Preferences;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Destination;
+import com.ds.avare.storage.Preferences;
 
 /***
  * Implementation of a Vertical Approach Slope Indicator
@@ -46,8 +46,11 @@ public class VNAV {
 	final int mColorHigh = Color.rgb(0xEE, 0xEE, 0x00); // YELLOW
 	final int mColorOn   = Color.BLACK;
 	
-	private static final double BAR_DEGREES = 0.14f;
+	public static final double BAR_DEGREES = 0.14f;
 	public static final double APPROACH_DISTANCE = 15;
+
+	public static final double HI = 3.7;
+	public static final double LOW = 2.3;
 
 	/***
 	 * Course Deviation Indicator
@@ -235,13 +238,17 @@ public class VNAV {
 		// Anything less/equal to 2.3 pegs at the bottom
 		// all others scale in between based upon instrument height
 		double fullDeflection = mInstHeight / 2 - mBarHeight * 1.5;
-		if(mGlideSlope >= 3.7) {
+		if(mGlideSlope >= HI) {
 			mDspOffset = -(int)fullDeflection;
-		} else if(mGlideSlope <= 2.3) {
+		} else if(mGlideSlope <= LOW) {
 			mDspOffset = (int)fullDeflection;
 		} else {
 			mDspOffset = -(int)((((mGlideSlope - 3) / BAR_DEGREES)) * (fullDeflection / ((mBarCount - 1) / 2)));
 		}
 		mShow = true;
+	}
+
+	public double getGlideSlope() {
+		return  mGlideSlope;
 	}
 }

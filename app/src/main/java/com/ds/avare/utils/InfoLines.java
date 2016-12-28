@@ -111,7 +111,10 @@ public class InfoLines {
     static final int ID_FLD_FPR = 16;
     static final int ID_FLD_FUL = 17;
     static final int ID_FLD_TMR = 18;
-    static final int ID_FLD_MAX = 19;
+    static final int ID_FLD_SPP = 19;
+    static final int ID_FLD_HDP = 20;
+    static final int ID_FLD_MSP = 21;
+    static final int ID_FLD_MAX = 22;
     static final String NOVALUE = "     ";
 
     static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -295,28 +298,29 @@ public class InfoLines {
         // Each field processes the gesture differently.
         switch (mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx]) {
 
-        case ID_FLD_FUL: {
-            if (mService != null) {
-                if(null != mService.getFuelTimer()) {
-                	mService.getFuelTimer().toggleState();
+            case ID_FLD_FUL: {
+                if (mService != null) {
+                    if(null != mService.getFuelTimer()) {
+                        mService.getFuelTimer().toggleState();
+                    }
                 }
+                break;
             }
-            break;
-        }
-        case ID_FLD_TMR: {
-            if (mService != null) {
-                if(null != mService.getUpTimer()) {
-                    mService.getUpTimer().toggleState();
+            case ID_FLD_TMR: {
+                if (mService != null) {
+                    if(null != mService.getUpTimer()) {
+                        mService.getUpTimer().toggleState();
+                    }
                 }
+                break;
             }
-            break;
         }
-        } }
+    }
 
-        
+
      /***
      * A LONG_PRESS gesture over one of the display fields
-     * 
+     *
      * @param infoLineFieldLoc
      *            the field to receive the gesture
      */
@@ -328,56 +332,56 @@ public class InfoLines {
         // Each field processes the gesture differently.
         switch (mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx]) {
 
-        // Odometer - reset the value to zero
-        case ID_FLD_ODO: {
-            if (mService != null) {
-                Odometer odometer = mService.getOdometer();
-                if (odometer != null) {
-                    odometer.reset();
+            // Odometer - reset the value to zero
+            case ID_FLD_ODO: {
+                if (mService != null) {
+                    Odometer odometer = mService.getOdometer();
+                    if (odometer != null) {
+                        odometer.reset();
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        // Hobbs flight meter - reset it to zero
-        case ID_FLD_HOB: {
-            if (mService != null) {
-                mService.getFlightTimer().reset();
-            }
-            break;
-        }
-
-        // Current destination - clear it out.
-        case ID_FLD_DST: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                    mService.setDestination(null);
+            // Hobbs flight meter - reset it to zero
+            case ID_FLD_HOB: {
+                if (mService != null) {
+                    mService.getFlightTimer().reset();
                 }
+                break;
             }
-            break;
-        }
-        
-        case ID_FLD_FUL: {
-        	if(null != mService) {
-        		if(null != mService.getFuelTimer()) {
-        			mService.getFuelTimer().reset();
-        		}
-        	}
-        	break;
-        }
 
-        case ID_FLD_TMR: {
-            if(null != mService) {
-                if(null != mService.getUpTimer()) {
-                    mService.getUpTimer().reset();
+            // Current destination - clear it out.
+            case ID_FLD_DST: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        mService.setDestination(null);
+                    }
                 }
+                break;
             }
-            break;
-        }
+
+            case ID_FLD_FUL: {
+                if(null != mService) {
+                    if(null != mService.getFuelTimer()) {
+                        mService.getFuelTimer().reset();
+                    }
+                }
+                break;
+            }
+
+            case ID_FLD_TMR: {
+                if(null != mService) {
+                    if(null != mService.getUpTimer()) {
+                        mService.getUpTimer().reset();
+                    }
+                }
+                break;
+            }
 
 
             default:
-            break;
+                break;
         }
         return;
     }
@@ -401,18 +405,18 @@ public class InfoLines {
      * to make sure the field and selected index values are sane
      * @param iLFL collection of field information locations
      * @param nSelected the index of the selected item
-     * @return true/false 
+     * @return true/false
      */
     boolean rangeCheck(InfoLineFieldLoc iLFL, int nSelected) {
     	// Check that the row index is valid
         if ((iLFL.mRowIdx < 0) || (iLFL.mRowIdx >= mFieldLines.length))
             return false;
-        
+
         // And now the column (field) index
         if ((iLFL.mFieldIdx < 0)
                 || (iLFL.mFieldIdx >= mFieldLines[iLFL.mRowIdx].length))
             return false;
-        
+
         // If the selected index is larger than our collection of
         // possibles, then fail
         if (nSelected >= iLFL.mOptions.length) {
@@ -423,7 +427,7 @@ public class InfoLines {
 
     /***
      * This method draws the top two lines of the display.
-     * 
+     *
      * @param canvas
      * @param aPaint
      *            for what text to use
@@ -450,7 +454,7 @@ public class InfoLines {
         if(mService != null && mService.getGpsParams() != null) {
             mAltitude = (float) mService.getGpsParams().getAltitude();
         }
-        
+
         // Draw the shadowed background on the top 2 lines if we are configured
         // to do so
         if (mPref.isShowBackground()) {
@@ -522,7 +526,7 @@ public class InfoLines {
     /***
      * Calculate the quantity and size of that we can display with the given
      * display width and paint.
-     * 
+     *
      * @param aPaint
      * @param aDisplayWidth
      */
@@ -537,7 +541,7 @@ public class InfoLines {
         // In what direction is the display used  ?
     	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
     						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
-        	
+
         // Fetch the NULL field to figure out how large it is
         String strField = getDisplayFieldValue(ID_FLD_NUL, false) + " ";
         float charWidths[] = new float[strField.length()];
@@ -595,7 +599,7 @@ public class InfoLines {
 
     /***
      * Return a string that represents the value of the desired field
-     * 
+     *
      * @param aField
      *            which type of field is being requested
      * @param aTitle
@@ -603,229 +607,254 @@ public class InfoLines {
      * @return string display value for that field
      */
     private String getDisplayFieldValue(int aField, boolean aTitle) {
-    	
+
     	// If we are being requested to return the title, then look
     	// it up in the resource string array
         if (aTitle == true) {
-        	
+
         	// Local time is special, get the identifier of the local
         	// timezone
             if (aField == ID_FLD_LT) {
                 return Calendar.getInstance().getTimeZone().getID();
             }
 
-            // Ensure the index is valid in our array and return 
+            // Ensure the index is valid in our array and return
             // with that item
             if (mFieldTitles.length > aField) {
                 return mFieldTitles[aField];
             }
-            
+
             // Invalid request
             return NOVALUE;
         }
 
         // Return the string value of a specific field
         switch (aField) {
-        case ID_FLD_VSI: {
-            if (mService != null) {
-            	if (mService.getVSI() != null) {
-            		double vsi = mService.getVSI().getValue();
-            		return String.format(Locale.getDefault(), "%+05.0f", vsi);
-            	}
+            case ID_FLD_VSI: {
+                if (mService != null) {
+                    if (mService.getVSI() != null) {
+                        double vsi = mService.getVSI().getValue();
+                        return String.format(Locale.getDefault(), "%+05.0f", vsi);
+                    }
+                }
+                break;
             }
-        }
 
-        case ID_FLD_SPD: {
-            if (mService != null && mService.getGpsParams() != null) {
-                return Helper.centerString(String.format(Locale.getDefault(),
-                        "%.0f%s", mService.getGpsParams().getSpeed(),
-                        Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
+            case ID_FLD_SPD: {
+                if (mService != null && mService.getGpsParams() != null) {
+                    return Helper.centerString(String.format(Locale.getDefault(),
+                            "%.0f%s", mService.getGpsParams().getSpeed(),
+                            Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
+                }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_HOB: {
-            if (mService != null) {
-                return ""
-                        + mService.getFlightTimer()
-                                .getValue();
+            case ID_FLD_HOB: {
+                if (mService != null) {
+                    return ""
+                            + mService.getFlightTimer()
+                                    .getValue();
+                }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_HDG: {
-            if (mService != null && mService.getGpsParams() != null) {
-                return " "
-                        + Helper.correctConvertHeading(Math.round((Helper
-                                .getMagneticHeading(mService.getGpsParams()
-                                        .getBearing(), mService.getGpsParams()
-                                        .getDeclinition())))) + '\u00B0';
-            }
-            break;
-        }
-
-        case ID_FLD_BRG: {
-            if (mService != null && mService.getGpsParams() != null) {
-                if (mService.getDestination() != null) {
+            case ID_FLD_HDG: {
+                if (mService != null && mService.getGpsParams() != null) {
                     return " "
                             + Helper.correctConvertHeading(Math.round((Helper
-                                    .getMagneticHeading(mService
-                                            .getDestination().getBearing(),
-                                            mService.getGpsParams()
-                                                    .getDeclinition()))))
-                            + '\u00B0';
+                                    .getMagneticHeading(mService.getGpsParams()
+                                            .getBearing(), mService.getGpsParams()
+                                            .getDeclinition())))) + '\u00B0';
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_DST: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                    String name = mService
-                            .getDestination().getID();
-                    if (name.contains("&")) { // Change a direct coordinate to
-                                              // GPS
-                        name = Destination.GPS;
-                    } else if (name.length() > 5) { // Truncate name if larger
-                                                    // than 5 chars
-                        name = name.substring(0, 4);
+            case ID_FLD_BRG: {
+                if (mService != null && mService.getGpsParams() != null) {
+                    if (mService.getDestination() != null) {
+                        return " "
+                                + Helper.correctConvertHeading(Math.round((Helper
+                                        .getMagneticHeading(mService
+                                                .getDestination().getBearing(),
+                                                mService.getGpsParams()
+                                                        .getDeclinition()))))
+                                + '\u00B0';
                     }
-                    return Helper.centerString(name, MAX_FIELD_SIZE_IN_CHARS);
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_DIS: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                	double distance = mService.getDestination()
-                            .getDistance();
-                	String fmtString = distance >= 100 ? "%.0f%s" : "%4.1f%s";
-
-                	return Helper.centerString(String.format(
-                            Locale.getDefault(), 
-                            fmtString, // (distance) + "%s", // "%.0f%s", 
-                            distance,
-                            Preferences.distanceConversionUnit),
-                            MAX_FIELD_SIZE_IN_CHARS);
+            case ID_FLD_DST: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        String name = mService
+                                .getDestination().getID();
+                        if (name.contains("&")) { // Change a direct coordinate to
+                                                  // GPS
+                            name = Destination.GPS;
+                        } else if (name.length() > 5) { // Truncate name if larger
+                                                        // than 5 chars
+                            name = name.substring(0, 4);
+                        }
+                        return Helper.centerString(name, MAX_FIELD_SIZE_IN_CHARS);
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_ETE: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                    return ""
-                            + mService.getDestination().getEte();
+            case ID_FLD_DIS: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        double distance = mService.getDestination()
+                                .getDistance();
+                        String fmtString = distance >= 100 ? "%.0f%s" : "%4.1f%s";
+
+                        return Helper.centerString(String.format(
+                                Locale.getDefault(),
+                                fmtString, // (distance) + "%s", // "%.0f%s",
+                                distance,
+                                Preferences.distanceConversionUnit),
+                                MAX_FIELD_SIZE_IN_CHARS);
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_ETA: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                    return ""
-                            + mService.getDestination().getEta();
+            case ID_FLD_ETE: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        return ""
+                                + mService.getDestination().getEte();
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_LT: {
-            Calendar localTime = Calendar.getInstance();
-            return String.format(Locale.getDefault(), "%02d:%02d",
-                    localTime.get(Calendar.HOUR_OF_DAY),
-                    localTime.get(Calendar.MINUTE));
-        }
-
-        case ID_FLD_GMT: {
-            Calendar localTime = Calendar.getInstance();
-            localTime.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return String.format(Locale.getDefault(), "%02d:%02d",
-                    localTime.get(Calendar.HOUR_OF_DAY),
-                    localTime.get(Calendar.MINUTE));
-        }
-
-        case ID_FLD_MSL: {
-            return Helper.centerString(Helper
-                    .calculateAltitudeFromMSL(mAltitude), MAX_FIELD_SIZE_IN_CHARS);
-        }
-
-        // If we have a destination set that is a BASE,
-        // calculate the vertical speed required to reach the destination
-        case ID_FLD_VSR: {
-            if (mService != null && mService.getGpsParams() != null) {
-                Destination destination = mService.getDestination();
-                if (destination != null) {
-                    return destination.getVerticalSpeedTo(mService
-                            .getGpsParams());
+            case ID_FLD_ETA: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        return ""
+                                + mService.getDestination().getEta();
+                    }
                 }
+                break;
             }
-            break;
-        }
-        
-        // If we have a destination set that is a BASE,
-        // calculate the flight path required to reach the destination
-        case ID_FLD_FPR: {
-            if (mService != null && mService.getGpsParams() != null) {
-                Destination destination = mService.getDestination();
-                if (destination != null) {
-                    return destination.getFlightPathRequired(mService
-                            .getGpsParams());
-                }
-            }
-            break;
-        }        
 
-        case ID_FLD_ODO: {
-            if (mService != null) {
-                Odometer odometer = mService.getOdometer();
-                if (odometer != null) {
-                    double value = odometer.getValue();
-                    return String.format(Locale.getDefault(),
-                            getFmtString(value), value);
-                }
+            case ID_FLD_LT: {
+                Calendar localTime = Calendar.getInstance();
+                return String.format(Locale.getDefault(), "%02d:%02d",
+                        localTime.get(Calendar.HOUR_OF_DAY),
+                        localTime.get(Calendar.MINUTE));
             }
-            break;
-        }
 
-        case ID_FLD_CDI: {
-            if (mService != null) {
-                if (mService.getDestination() != null) {
-                    CDI cdi = mService.getCDI();
-                    if (cdi != null) {
-                        double value = cdi.getDeviation();
+            case ID_FLD_GMT: {
+                Calendar localTime = Calendar.getInstance();
+                localTime.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return String.format(Locale.getDefault(), "%02d:%02d",
+                        localTime.get(Calendar.HOUR_OF_DAY),
+                        localTime.get(Calendar.MINUTE));
+            }
+
+            case ID_FLD_MSL: {
+                return Helper.centerString(Helper
+                        .calculateAltitudeFromMSL(mAltitude), MAX_FIELD_SIZE_IN_CHARS);
+            }
+
+            // If we have a destination set that is a BASE,
+            // calculate the vertical speed required to reach the destination
+            case ID_FLD_VSR: {
+                if (mService != null && mService.getGpsParams() != null) {
+                    Destination destination = mService.getDestination();
+                    if (destination != null) {
+                        return destination.getVerticalSpeedTo(mService
+                                .getGpsParams());
+                    }
+                }
+                break;
+            }
+
+            // If we have a destination set that is a BASE,
+            // calculate the flight path required to reach the destination
+            case ID_FLD_FPR: {
+                if (mService != null && mService.getGpsParams() != null) {
+                    Destination destination = mService.getDestination();
+                    if (destination != null) {
+                        return destination.getFlightPathRequired(mService
+                                .getGpsParams());
+                    }
+                }
+                break;
+            }
+
+            case ID_FLD_ODO: {
+                if (mService != null) {
+                    Odometer odometer = mService.getOdometer();
+                    if (odometer != null) {
+                        double value = odometer.getValue();
                         return String.format(Locale.getDefault(),
                                 getFmtString(value), value);
                     }
                 }
+                break;
             }
-            break;
-        }
 
-        case ID_FLD_FUL: {
-            if (null != mService) {
-                if (null != mService.getFuelTimer()) {
-                        return mService.getFuelTimer().getDisplay();
+            case ID_FLD_CDI: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        CDI cdi = mService.getCDI();
+                        if (cdi != null) {
+                            double value = cdi.getDeviation();
+                            return String.format(Locale.getDefault(),
+                                    getFmtString(value), value);
+                        }
                     }
                 }
+                break;
             }
-            break;
-        case ID_FLD_TMR: {
-            if (null != mService) {
-                if (null != mService.getUpTimer()) {
-                    return mService.getUpTimer().getDisplay();
+
+            case ID_FLD_FUL: {
+                if (null != mService) {
+                    if (null != mService.getFuelTimer()) {
+                            return mService.getFuelTimer().getDisplay();
+                    }
                 }
+                break;
+            }
+
+            case ID_FLD_TMR: {
+                if (null != mService) {
+                    if (null != mService.getUpTimer()) {
+                        return mService.getUpTimer().getDisplay();
+                    }
+                }
+                break;
+            }
+            case ID_FLD_SPP: {
+                if (mService != null && mService.getExtendedGpsParams() != null) {
+                    return Helper.centerString(String.format(Locale.getDefault(),
+                            "%.0f%s", mService.getExtendedGpsParams().getSpeedTrend(),
+                            Preferences.speedConversionUnit), MAX_FIELD_SIZE_IN_CHARS);
+                }
+                break;
+            }
+            case ID_FLD_HDP: {
+                if (mService != null && mService.getExtendedGpsParams() != null && mService.getGpsParams() != null) {
+                    return " "
+                            + Helper.correctConvertHeading(Math.round((Helper
+                            .getMagneticHeading(mService.getExtendedGpsParams()
+                                    .getBearingTrend(), mService.getGpsParams()
+                                    .getDeclinition())))) + '\u00B0';
+                }
+                break;
+            }
+            case ID_FLD_MSP: {
+                if (mService != null && mService.getExtendedGpsParams() != null) {
+                    return Helper.centerString(Helper
+                            .calculateAltitudeFromMSL((float) mService.getExtendedGpsParams().getAltitudeTrend()), MAX_FIELD_SIZE_IN_CHARS);
+                }
+                break;
             }
         }
-        break;
-        }
-
-
         return NOVALUE;
     }
 
@@ -852,7 +881,7 @@ public class InfoLines {
 
     /***
      * Create the configuration string for the current settings
-     * 
+     *
      * @return string that represents the current format of the fields
      */
     private String buildConfigString() {

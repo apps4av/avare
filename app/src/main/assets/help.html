@@ -50,7 +50,21 @@
 
 
 <h3>Avare Releases</h3>
- <b>7.5.6</b><br>
+ <b>7.6.3</b><br>
+ <ul>
+  <li>Improved PFD</li>
+  <li>Better Morse Code</li>
+ </ul>
+ <b>7.6.2</b><br>
+ <ul>
+  <li>Added PFD (See Help)</li>
+  <li>Added trends for GS, VS, and rate of turn.</li>
+ </ul>
+ <b>7.6.1</b><br>
+ <ul>
+  <li>Bug fixes</li>
+ </ul>
+ <b>7.5.9</b><br>
  <ul>
   <li>Bug fixes</li>
   <li>Caribbean Charts</li>
@@ -495,6 +509,16 @@
  you wish the NEXRAD to be displayed, and the latest NEXRAD will display
  on the Map screen.<br>
  <br>
+ • <span style="font-weight: bold;">PFD</span><br>
+ PFD shows a glass cockpit like setup for learning purposes. It should in no way be used in IMC.
+ Use Preferences->Instrumentation->PFD Vertical Mount setting to change the device orientation for proper operation. The feature only works in portrait mode horizontal or vertical.
+ If using in flight, you must understand that the following limitations make it extremely unreliable:
+ 1. It uses fusion on internal gyroscopes, compass, and accelerometers for pitch and roll. Cheap gyroscopes in mobile devices, if available, are not to aviation standards.
+ The calibration of these gyroscopes are through internal accelerometers, which cause excessive acceleration errors in pitch.
+ 2. Heading is obtained from GPS track, and is ground track. Similarly rate of turn is from ground track, not from a gyroscope. Wind will cause deviations from correct value.
+ 3. No pressure transducers are available, hence VSI, altimeter, and airspeed indicators are obtained from GPS. In fact the ASI gauge is ground speed, not airspeed.
+ 4. Glide slope works to airports only.
+ <br>
  • <span style="font-weight: bold;">ADS-B</span><br>
  You will need an ADS-B receiver, and will need to install the Avare
  External IO module from the Play store. Then, in Preferences, enable
@@ -515,6 +539,13 @@
  Types of error in the AGL include wrong MSL reported by the GPS, and
  quantization errors in the elevation charts.<br>
  <br>
+
+ • <span style="font-weight: bold;">Six Second Trends</span><br>
+ The top of the Map screen text lines can be configured to show speed, track, and altitude trends.
+ These trends show speed, track, and altitude six seconds from now, if current flight characteristics are maintained.
+ <br>
+ <br>
+
  • <span style="font-weight: bold;">Vertical Descent / Climb Rate</span><br>
  Avare displays the optimum descent and climb rate to a destination,
  near the destination in feet per minute (fpm). If the destination is an

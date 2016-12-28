@@ -17,5 +17,6 @@ authors: jlmcgraw
     <dimen name="TextSize">35sp</dimen>
     <dimen name="runwayNumberTextSize">25sp</dimen>
     <dimen name="distanceRingNumberTextSize">16sp</dimen>
+    <dimen name="pfdTextSize">25sp</dimen>
 
 </resources>
