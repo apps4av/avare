@@ -120,7 +120,9 @@ public class StorageService extends Service {
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
-    
+
+    private float[] mMatrix;
+
 	/*
      * Last location and its sem for sending NMEA to the world
      */
@@ -874,7 +876,23 @@ public class StorageService extends Service {
     public BitmapHolder getDiagram() {
        return mDiagramBitmap; 
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public float[] getMatrix() {
+        return mMatrix;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public void setMatrix(float[] matrix) {
+        mMatrix = matrix;
+    }
+
     /**
      * @author zkhan
      *

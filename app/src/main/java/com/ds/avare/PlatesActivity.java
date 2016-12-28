@@ -94,7 +94,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private TimerObserver mTimerObserver;
 
     public static final String AD = "AIRPORT-DIAGRAM";
-    
+    public static final String AREA = "AREA";
+
     /*
      * For GPS taxi
      */
@@ -492,12 +493,14 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             String name = mListPlates.get(pos);
 
             mPlatesView.setParams(null, true);
+            mMatrix = getMatrix(name);
             if(name.startsWith(Destination.AD)) {
-                mPlatesView.setParams(getMatrix(name), true);
+                mPlatesView.setParams(mMatrix, true);
             }
             else {
-                mPlatesView.setParams(getMatrix(name), false);                            
+                mPlatesView.setParams(mMatrix, false);
             }
+            mService.setMatrix(mMatrix); // save for other activities that want to show plate
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
         }
@@ -637,6 +640,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
+                mService.setMatrix(null);
                 
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);

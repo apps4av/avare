@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 
+import com.ds.avare.PlatesActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
@@ -648,7 +649,49 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             return;
         }
 
-        if(ctx.pref.useAdsbWeather()) {
+        if(mLayerType.equals("Plate")) {
+            BitmapHolder b = mService.getDiagram();
+
+            if(b == null || b.getBitmap() == null) {
+                return;
+            }
+            if( b.getName() == null || b.getName().contains(PlatesActivity.AREA) || b.getName().contains(PlatesActivity.AD)) {
+                // airport dias are too small to overlay
+                return;
+            }
+
+            // find georef info
+            float[] matrix = mService.getMatrix();
+            if(null == matrix) {
+                return;
+            }
+
+            //draw
+            float dx = matrix[0];
+            float dy = matrix[1];
+            float lonTopLeft = matrix[2];
+            float latTopLeft = matrix[3];
+            float lonBottomRight = lonTopLeft + b.getBitmap().getWidth() / dx;
+            float latBottomRight = latTopLeft + b.getBitmap().getHeight() / dy;
+
+
+            float x0 = (float)mOrigin.getOffsetX(lonTopLeft);
+            float y0 = (float)mOrigin.getOffsetY(latTopLeft);
+            float x1 = (float)mOrigin.getOffsetX(lonBottomRight);
+            float y1 = (float)mOrigin.getOffsetY(latBottomRight);
+
+            float scalex = (x1 - x0) / b.getBitmap().getWidth();
+            float scaley = (y1 - y0) / b.getBitmap().getHeight();
+
+            b.getTransform().setScale(scalex, scaley);
+            b.getTransform().postTranslate(x0, y0);
+
+            mPaint.setAlpha(mPref.showLayer());
+            canvas.drawBitmap(b.getBitmap(), b.getTransform(), mPaint);
+            mPaint.setAlpha(mPref.showLayer());
+
+        }
+        else if(ctx.pref.useAdsbWeather()) {
             if (mLayerType.equals("NEXRAD")) {
                 NexradBitmap.draw(ctx, mService.getAdsbWeather().getNexrad(),
                         mService.getAdsbWeather().getNexradConus(), null == mPointProjection);
