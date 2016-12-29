@@ -64,7 +64,7 @@ public class Preferences {
     public static final int MAX_AREA_AIRPORTS = 20;
 
     public static final double MIN_TOUCH_MOVEMENT_SQ_DISTANCE = 0.001;
-    public static final double NAVAID_TOUCH_DISTANCE = .5;
+    public static final double NAVAID_TOUCH_DISTANCE = 1.0;
 
     /*
      * Max memory and max screen size it will support

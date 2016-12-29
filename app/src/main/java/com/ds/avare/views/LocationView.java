@@ -1159,6 +1159,8 @@ public class LocationView extends View implements OnTouchListener {
          */     
         @Override
         protected LongPressedDestination doInBackground(Object... vals) {
+
+
             Thread.currentThread().setName("Closest");
             if(null == mService) {
                 return null;
@@ -1289,12 +1291,14 @@ public class LocationView extends View implements OnTouchListener {
 
             // if user pressed on a navaid, set this as destination unless she pressed on an airport
             if (type != Destination.BASE) {
+                double minDistance = 100.0;
                 for (NavAid n : navaids) {
                     double navaidDistance = Projection.getStaticDistance(lat, lon,
                             n.getCoords().getLatitude(), n.getCoords().getLongitude());
-                    if (navaidDistance < Preferences.NAVAID_TOUCH_DISTANCE) {
+                    if (navaidDistance < (Preferences.NAVAID_TOUCH_DISTANCE / mViewParams.getScaleFactor()) && navaidDistance < minDistance ) {
                         type = Destination.NAVAID;
                         destination = n.getLocationId();
+                        minDistance = navaidDistance;
                     }
                 }
             }
