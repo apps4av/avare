@@ -49,7 +49,7 @@ public class PfdView extends View {
     private float            mDpi;
     private float            mPitch;
     private float            mRoll;
-    private float            mAcceleration;
+    private float            mInclinometer;
     private Path             mPath;
     private float            mWidth;
     private float            mHeight;
@@ -95,7 +95,7 @@ public class PfdView extends View {
         mVsi = 0;
         mYaw = 0;
         mTurnTrend = 0;
-        mAcceleration = 0;
+        mInclinometer = 0;
         mCdi = 0;
         mVdi = 3;
         mPath = new Path();
@@ -303,8 +303,8 @@ public class PfdView extends View {
         mPath.lineTo(x(0), y(70));
         mPath.lineTo(x(-7), y(65));
         canvas.drawPath(mPath, mPaint);
-        // inclinometer
-        canvas.drawRect(x(-7 + mAcceleration), y(64), x(7 + mAcceleration), y(62), mPaint);
+        // inclinometer, displace +-20 of screen from +- 10 degrees
+        canvas.drawRect(x(-7 + mInclinometer * 2), y(64), x(7 + mInclinometer * 2), y(62), mPaint);
 
 
         // draw airplane wings
@@ -671,13 +671,25 @@ public class PfdView extends View {
     }
 
     public void setAcceleration(double acceleration) {
-        mAcceleration = (float)acceleration;
-        if(mAcceleration > 2 * 9.8) { //+- 2Gs, see proper inclinometer
-            mAcceleration = 2 * 9.8f;
+        double a = acceleration;
+        if(a > 9.8) {
+            a = 9.8;
         }
-        if(mAcceleration < -2 * 9.8) { // 2Gs side to side
-            mAcceleration = -2 * 9.8f;
+        if(a < -9.8) {
+            a = -9.8;
         }
+        // mgsin(0) pendulum displacement, find 0
+        a = a / 9.8f;
+        double angle = Math.toDegrees(Math.asin(a));
+        // limit angle +-10 degrees, judging from actual instrument circle
+        if(angle > 10) {
+            angle = 10;
+        }
+        if(angle < -10) {
+            angle = -10;
+        }
+
+        mInclinometer = (float)angle;
     }
 
     public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi, double vdi) {

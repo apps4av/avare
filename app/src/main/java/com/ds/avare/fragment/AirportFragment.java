@@ -349,6 +349,8 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     mAfdView.setBitmap(null);
                 }
 
+                // TODO: maybe not necessary when using fragments
+                mService.setMatrix(null);
                 mService.setAfdIndex(pos);
             }
         }

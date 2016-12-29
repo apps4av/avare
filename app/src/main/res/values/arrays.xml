@@ -2074,6 +2074,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>No Layer</item>
         <item>METAR</item>
         <item>NEXRAD</item>
+        <item>Plate</item>
     </string-array>
 
     <string-array name="ACColor">

@@ -90,7 +90,8 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
     private TimerObserver mTimerObserver;
     private com.ds.avare.touch.Constants.TouchMode mTouchMode = com.ds.avare.touch.Constants.TouchMode.PAN_MODE;
 
-    public static final String AD = "AIRPORT-DIAGRAM";
+    public static final String AD = Destination.AD;
+    public static final String AREA = "AREA";
 
     /*
      * For GPS taxi
@@ -420,11 +421,18 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
             String name = mListPlates.get(pos);
 
             mPlatesView.setParams(null, true);
-            if(name.startsWith(Destination.AD)) {
-                mPlatesView.setParams(getMatrix(name), true);
+            float m[] = getMatrix(name);
+            mService.setMatrix(null); // to small to show on map
+            if(name.startsWith(AD)) {
+                mPlatesView.setParams(m, true);
+            }
+            else if(name.startsWith(AREA)) {
+                mPlatesView.setParams(m, false);
             }
             else {
-                mPlatesView.setParams(getMatrix(name), false);
+                mPlatesView.setParams(m, false);
+                mService.setMatrix(m); // save for other activities that want to show plate
+                // TODO: above might not be necessary now that we're using fragments
             }
             mPlatesButton.setText(name);
             mService.setLastPlateIndex(pos);
@@ -557,7 +565,8 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
                  * GPS taxi for this airport?
                  */
                 mMatrix = mService.getDBResource().findDiagramMatrix(airport);
-
+                mService.setMatrix(null);
+                
                 String oldAirport = mAirportButton.getText().toString();
                 mAirportButton.setText(airport);
 
