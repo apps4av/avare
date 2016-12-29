@@ -16,7 +16,6 @@ import android.util.Pair;
 import com.ds.avare.weather.Metar;
 
 import java.util.LinkedList;
-import java.util.Locale;
 
 
 public class WeatherHelper {
