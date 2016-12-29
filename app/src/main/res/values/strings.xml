@@ -254,7 +254,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
     <string name="Layer">LayerTransparency</string>
     <string name="LayerSelect">&quot;Select Layer Type&quot;</string>
-    <string name="LayerSummary">&quot;Select how transparent a NEXRAD/METAR layer should be&quot;</string>
+    <string name="LayerSummary">&quot;Select how transparent a Map layer should be&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
     <string name="AndLoad">&quot;and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>

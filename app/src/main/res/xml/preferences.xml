@@ -79,13 +79,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/Expires"
             android:summary="@string/ExpiresSummary"
             android:title="@string/ExpiresLabel" />
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="255"
-            android:entries="@array/Opacity"
-            android:entryValues="@array/OpacityValues"
-            android:key="@string/Layer"
-            android:summary="@string/LayerSummary"
-            android:title="@string/LayerLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ADSBWeather"
@@ -337,57 +330,64 @@ authors: zkhan, jlmcgraw
             android:key="@string/HideDrawButton"
             android:summary="@string/HideDrawButtonSummary"
             android:title="@string/HideDrawButtonLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="255"
+            android:entries="@array/Opacity"
+            android:entryValues="@array/OpacityValues"
+            android:key="@string/Layer"
+            android:summary="@string/LayerSummary"
+            android:title="@string/LayerLabel" />
         <PreferenceScreen
 	        android:title="@string/TabBarTitle" 
             android:summary="@string/TabBarSummary"
 	        android:icon="@android:drawable/ic_menu_manage" >
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabPlates"
-		            android:summary="@string/PlatesSummary"
-		            android:title="@string/Plates" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabAFD"
-		            android:summary="@string/AFDSummary"
-		            android:title="@string/AFD" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabFind"
-		            android:summary="@string/FindSummary"
-		            android:title="@string/Find" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabPlan"
-		            android:summary="@string/PlanSummary"
-		            android:title="@string/Plan" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabNear"
-                    android:summary="@string/NearSummary"
-                    android:title="@string/Near" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabThreeD"
-                    android:summary="@string/ThreeDSummary"
-                    android:title="@string/ThreeD" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="@string/prefTabChecklist"
-                    android:summary="@string/ChecklistSummary"
-                    android:title="@string/List" />
-		        <CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabWX"
-		            android:summary="@string/WXSummary"
-		            android:title="@string/WXB" />
-				<CheckBoxPreference
-		            android:defaultValue="true"
-		            android:key="@string/prefTabTools"
-		            android:summary="@string/GPSSummary"
-		            android:title="@string/Tools" />
-			</PreferenceScreen>
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabPlates"
+                android:summary="@string/PlatesSummary"
+                android:title="@string/Plates" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabAFD"
+                android:summary="@string/AFDSummary"
+                android:title="@string/AFD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabFind"
+                android:summary="@string/FindSummary"
+                android:title="@string/Find" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabPlan"
+                android:summary="@string/PlanSummary"
+                android:title="@string/Plan" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabNear"
+                android:summary="@string/NearSummary"
+                android:title="@string/Near" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabThreeD"
+                android:summary="@string/ThreeDSummary"
+                android:title="@string/ThreeD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabChecklist"
+                android:summary="@string/ChecklistSummary"
+                android:title="@string/List" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabWX"
+                android:summary="@string/WXSummary"
+                android:title="@string/WXB" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabTools"
+                android:summary="@string/GPSSummary"
+                android:title="@string/Tools" />
         </PreferenceScreen>
+    </PreferenceScreen>
 
 	<PreferenceScreen 
     	    android:title="@string/prefTracksCategoryTitle" 

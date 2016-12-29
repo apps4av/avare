@@ -81,7 +81,8 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
 
     public static final String TAG = "LocationFragment";
 
-    public static final String[] LAYER_TYPES = new String[] { "No Layer", "METAR", "NEXRAD" };
+    // TODO: This should be coming from strings.xml, not hard-coded here
+    public static final String[] LAYER_TYPES = new String[] { "No Layer", "METAR", "NEXRAD", "Plate" };
 
     /**
      * This view display location on the map.
