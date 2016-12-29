@@ -599,7 +599,4 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WindsAloftCeiling">&quot;Winds/Temp. Aloft Filter&quot;</string>
     <string name="WindsAloftCeilingSummary">&quot;Select Winds/Temperature Aloft upper limit altitude (thousands of feet)&quot;</string>
 
-    <string name="WindsAloftCeiling">&quot;Winds/Temp. Aloft Filter&quot;</string>
-    <string name="WindsAloftCeilingSummary">&quot;Select Winds/Temperature Aloft upper limit altitude (thousands of feet)&quot;</string>
-
 </resources>
