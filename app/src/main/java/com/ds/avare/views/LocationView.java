@@ -1204,7 +1204,7 @@ public class LocationView extends View implements OnTouchListener {
                 if (metar==null) { // in no metar on the field, try to find the closest metar
                     metar = mService.getDBResource().getClosestMETAR(lat,lon);
                     if(isCancelled()) {
-                        return "";
+                        return null;
                     }
                 }
 

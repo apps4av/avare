@@ -103,7 +103,7 @@ public class WebAppMapInterface {
                 String metar = "";
                 if(data.metar != null) {
                     metar = WeatherHelper.formatDistantMetarHeader(
-                                data.metar, WeatherHelper.DistantMetarFormat.NoStationId, data.airport);
+                                data.metar, WeatherHelper.DistantMetarFormat.NoStationId, data.destinationName);
                     metar += "<br>";
                     metar += WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
                     metar = "<hr><b><font color=\"yellow\">METAR </font>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\"></b>" + metar +  "</font>";
@@ -157,7 +157,7 @@ public class WebAppMapInterface {
                     if(!data.performance.equals("")) {
                         performance = "<hr><b><font color=\"yellow\">Performance</font></b> ";
                         performance += WeatherHelper.formatDistantMetarHeader(
-                                data.metar, WeatherHelper.DistantMetarFormat.WithStationId, data.airport);
+                                data.metar, WeatherHelper.DistantMetarFormat.WithStationId, data.destinationName);
                         performance += "<br>";
                         performance += data.performance.replace("\n", "<br>");
                     }
