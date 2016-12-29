@@ -52,6 +52,8 @@ import java.util.TimeZone;
  */
 public class Helper {
 
+    private static Calendar mCalendar = new GregorianCalendar();
+
     // All elevation is calculated in feet
     // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
     public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
@@ -686,23 +688,22 @@ public class Helper {
     		return true;
     	return false;
     }
-    
+
     /**
-     * 
+     *
      */
     public static String millisToGMT(long millis) {
         SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(millis) + "_UTC";
     }
-    
+
     /**
      * 
      * @return
      */
     public static long getMillisGMT() {
-        Calendar calendar = new GregorianCalendar();
-        TimeZone mTimeZone = calendar.getTimeZone();
+        TimeZone mTimeZone = mCalendar.getTimeZone();
         int offset = mTimeZone.getOffset(System.currentTimeMillis());  
         return System.currentTimeMillis() - offset;
     }

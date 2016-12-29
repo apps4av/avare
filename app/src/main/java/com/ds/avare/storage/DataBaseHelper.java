@@ -1987,7 +1987,55 @@ public class DataBaseHelper  {
         return metar;        
     }
 
-    
+    /**
+     *  Return metar closest to the input coordinates using query on weather.metars table
+     *  We query in a bounded 100mi wide/tall lat/lon box then sort based on distance from the input
+     *  see also http://stackoverflow.com/questions/3695224/sqlite-getting-nearest-locations-with-latitude-and-longitude#
+     * @param lat of the central point
+     * @param lon of the central point
+     * @return
+     */
+    public Metar getClosestMETAR(Double lat, Double lon) {
+
+        Metar metar = null;
+        final int searchRadius = mPref.getClosestMetarSearchRadius();
+        if( searchRadius == 0 ) return null;
+        SquareBoxSearchHelper squareBoxSearchHelper = new SquareBoxSearchHelper(lat, lon, searchRadius);
+
+        String qry =
+                "select * from metars where 1=1 "
+                        + squareBoxSearchHelper.getWhereClause("latitude", "longitude")
+                        +";";
+
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    metar = new Metar();
+                    metar.rawText = cursor.getString(0);
+                    metar.time = cursor.getString(1);
+                    metar.stationId = cursor.getString(2);
+                    metar.flightCategory = cursor.getString(3);
+                    if (!cursor.isNull(4) && !cursor.isNull(5)) {
+                        metar.distance = Projection.getStaticDistance(lon, lat, cursor.getDouble(4), cursor.getDouble(5));
+
+                        GeomagneticField gmf = new GeomagneticField(lat.floatValue(), lon.floatValue(), 0, System.currentTimeMillis());
+                        Projection p = new Projection(cursor.getDouble(4), cursor.getDouble(5), lon, lat);
+                        metar.position =  Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " +
+                                p.getGeneralDirectionFrom(-gmf.getDeclination());
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closesWeather(cursor);
+        return metar;
+    }
+
     /**
      * 
      * @param lon
@@ -2536,18 +2584,10 @@ public class DataBaseHelper  {
     public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
 
         final Double NAVAID_SEARCH_RADIUS = 150.; // 150 seems reasonable, it is VOR Line Of Sight at 18000
-        Coordinate top = Projection.findStaticPoint(lon, lat, 0, NAVAID_SEARCH_RADIUS),
-                bottom = Projection.findStaticPoint(lon, lat, 180, NAVAID_SEARCH_RADIUS),
-                left   = Projection.findStaticPoint(lon, lat, 270,NAVAID_SEARCH_RADIUS),
-                right  = Projection.findStaticPoint(lon, lat, 90, NAVAID_SEARCH_RADIUS);
-        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        SquareBoxSearchHelper squareBoxSearchHelper = new SquareBoxSearchHelper(lat, lon, NAVAID_SEARCH_RADIUS);
         String qry = "select * from " + TABLE_NAV
-                + " where Type == 'VOR' or type == 'VOR/DME' or type == 'VORTAC' "+
-                " and ARPlatitude < "+top.getLatitude()+
-                " and ARPlatitude > "+bottom.getLatitude()+
-                " and ARPlongitude < "+right.getLongitude()+
-                " and ARPlongitude > "+left.getLongitude()+
-                " order by (("+lat+" - ARPlatitude) * ("+lat+" - ARPlatitude) + ("+lon+" - ARPlongitude) * ("+lon+" - ARPlongitude) * "+fudge+")"
+                + " where Type == 'VOR' or type == 'VOR/DME' or type == 'VORTAC' "
+                + squareBoxSearchHelper.getWhereClause("ARPlatitude", "ARPlongitude")
                 +" limit 4;"; // we need 2 coordinates for a fix; get 3 in case we hit NDB
 
 	    Cursor cursor = doQuery(qry, getMainDb());
@@ -2812,4 +2852,32 @@ public class DataBaseHelper  {
         return ret;
     }
 
+    private class SquareBoxSearchHelper {
+        private double lat, lon;
+        private Coordinate top;
+        private Coordinate bottom;
+        private Coordinate left;
+        private Coordinate right;
+        private double fudge;
+
+        public SquareBoxSearchHelper(double lat, double lon, double search_radius) {
+            this.lat = lat; this.lon = lon;
+            top = Projection.findStaticPoint(lon, lat, 0, search_radius);
+            bottom = Projection.findStaticPoint(lon, lat, 180, search_radius);
+            left = Projection.findStaticPoint(lon, lat, 270, search_radius);
+            right = Projection.findStaticPoint(lon, lat, 90, search_radius);
+            fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        }
+
+        public String getWhereClause(String latField, String lonField) {
+            return " and "+latField+" < "+top.getLatitude()+
+                   " and "+latField+" > "+bottom.getLatitude()+
+                   " and "+lonField+" < "+right.getLongitude()+
+                   " and "+lonField+" > "+left.getLongitude()+
+                   " order by (("    +lat+" - "+latField+") * ("+lat+" - "+latField
+                             +") + ("+lon+" - "+lonField+") * ("+lon+" - "+lonField
+                             +") * "+fudge+")";
+        }
+
+    }
 }

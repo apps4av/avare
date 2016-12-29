@@ -113,6 +113,18 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShowWindBarbs"
             android:summary="@string/ShowWindBarbsSummary"
             android:title="@string/ShowWindBarbs" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="5"
+            android:key="@string/NearestMETARRadius"
+            android:summary="@string/NearestMETARRadiusSummary"
+            android:title="@string/NearestMETARRadiusLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="39"
+            android:entries="@array/WindsAloftAltitude"
+            android:entryValues="@array/WindsAloftAltitude"
+            android:key="@string/WindsAloftCeiling"
+            android:summary="@string/WindsAloftCeilingSummary"
+            android:title="@string/WindsAloftCeiling" />
     </PreferenceScreen>
 
     <PreferenceScreen 

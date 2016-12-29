@@ -50,6 +50,10 @@
 
 
 <h3>Avare Releases</h3>
+ <b>7.6.4</b><br>
+ <ul>
+  <li>Show METAR/Performance based on METAR of a nearby field</li>
+ </ul>
  <b>7.6.3</b><br>
  <ul>
   <li>Improved PFD</li>
@@ -215,19 +219,37 @@
  <p style="padding-left: 30px;">To temporarily hide your notes/drawings and return to
   normal Map functioning (Pan mode), just tap the Draw (Pan) button again.</p>
 
- <p>•<b>Long-press</b> any point on the chart (with GPS
-  acquired) to display text at the top of the screen giving
-  approximate compass direction and distance<b>From</b>,
-  followed by exact GPS bearing<b>To</b>, that point in relation to
-  your GPS location. Very handy when contacting ATC or making CTAF
-  calls!</p>
+ <p>•<b>Long-press</b> any point on the chart to display a page containing:
+ <li style="padding-left: 30px;"><b>Action</b> buttons row:
+  <b>->D</b> sets up the point as Destination,
+  <b>+Plan</b> adds the point to the Plan,
+  <b>Plate</b> displays airport's plates,
+  <b>A/FD</b> displays a synthetic Chart Supplement page (the top dropdown opens scanned Chart Supplement),
+  <b>X</b> to close the page.</li>
+ <li style="padding-left: 30px;"><b>Airport FAA code</b> or <b>GPS coordinates</b> of the point
+  in <i>[name@]lat&lon</i> format; <i>name</i> is optional,</li>
+ <li style="padding-left: 30px;"><b>Position</b>: distance, compass direction and GPS bearing <b><u>FROM</u></b> the point,
+  followed by GPS bearing from your position <b><u>TO</u></b> the point, as well as <b>NavAids</b> (VOR) locations in format (VORName)(BearingFrom)(Distance).
+  Useful when contacting ATC or making CTAF calls.</li>
 
- <p style="padding-left: 30px;"><b>Note:</b> The current <b>Destination</b> used
-  by Avare for various features can be set after a long-press on the chart. Just tap either
-  the button that pops out containing the name or coordinates of the location you pressed;
-  or the button that pops out containing the word "Plan" to send that Destination to the flight plan.
+ <br>If the point is an airport, weather is downloaded/not expired:
+ <li style="padding-left: 30px;">the airport's <b>METAR</b>
+  or the closest METAR found in a airport's radius (configurable in Preferences/Weather),</li>
+ <li style="padding-left: 30px;"><b>Performance</b> data for use at the airport:
+  density altitude, the best runway and its head/cross winds calculated using the METAR winds,</li>
+ <li style="padding-left: 30px;">the airport's <b>TAF</b>,
+ <li style="padding-left: 30px;"><b>Winds/Temp. Aloft</b> forecast reported by the closest meteorological station,</li>
+
+ <br>For all points:
+ <li style="padding-left: 30px;">nearby <b>Pireps</b></li>
+ <li style="padding-left: 30px;">nearby <b>Special Use Airspace</b> (SUA),</li>
+ <li style="padding-left: 30px;"><b>data source</b> for the weather and SUA:
+  data downloaded from internet or data retrieved with ADSB,</li>
+ <li style="padding-left: 30px;"><b>data timestamp</b>.</li>
+ </p>
+
   <a name="0.1_Find"></a>
- </p><p>•The "<b>Find</b>" button in the bottom Menu
+ <p>•The "<b>Find</b>" button in the bottom Menu
   activates a search box for a <span style="text-decoration: underline;">4-digit</span>
   Destination Airport code (or Navaid code, Fix code, etc.)
   that Avare uses to display a course, bearing, etc. This

@@ -89,19 +89,22 @@ public class NavAidHelper {
         if (navaids != null) {
             for (NavAid na : navaids) {
 
-                result += "<tr><td>";
-
-                result += // fields order same as Chart Supplement convention
-                        na.getLocationId()
-                        + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation()) + " "
-                        + "</td><td>&nbsp;"
-                        + na.getFrequency()
-                        + "</td><td>&nbsp;"
-                        + (na.hasHiwas() ? "(H)" : "")
-                        + "</td><td>&nbsp;"
-                        + MorseCodeGenerator.getInstance().getCodeHtml(na.getLocationId());
-
-                result += "</td></tr>";
+                result +=
+                        "<tr>" // fields' order same as Chart Supplement convention
+                            + "<td>"
+                                + na.getLocationId()
+                                + getNavaidLocationAsHtml(na.getCoords(), na.getVariation(), na.getNavaidClass(), na.getElevation())
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + na.getFrequency()
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + (na.hasHiwas() ? "(H)" : "")
+                            + "</td>"
+                            + "<td>&nbsp;"
+                                + MorseCodeGenerator.getInstance().getCodeHtml(na.getLocationId())
+                            + "</td>"
+                        + "</tr>";
             }
         }
         return result + "</table>";

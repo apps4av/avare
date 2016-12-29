@@ -2056,6 +2056,20 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>100000</item>
     </string-array>
 
+    <string-array name="WindsAloftAltitude">
+        <item>3</item>
+        <item>6</item>
+        <item>9</item>
+        <item>12</item>
+        <item>18</item>
+        <item>24</item>
+        <item>30</item>
+        <item>24</item>
+        <item>34</item>
+        <item>39</item>
+    </string-array>
+
+
     <string-array name="LayerType">
         <item>No Layer</item>
         <item>METAR</item>
@@ -2157,6 +2171,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
         <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
         <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>
+        <item>&quot;You can shorten the Winds Aloft list by selecting Winds Aloft Ceiling in Weather preferences&quot;</item>
     </string-array>
 
 </resources>
