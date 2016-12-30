@@ -16,6 +16,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -25,7 +26,12 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.utils.WindsAloftHelper;
+import com.ds.avare.views.LongPressedDestination;
 import com.ds.avare.weather.Airep;
+
+import org.json.JSONArray;
+
+import java.util.Iterator;
 
 /**
  * 
@@ -84,6 +90,18 @@ public class WebAppMapInterface {
 
 
                 LongTouchDestination data = (LongTouchDestination)msg.obj;
+
+                String locs_json = "[";
+                Iterator<LongPressedDestination> iter = data.locations.iterator();
+                while(iter.hasNext()){
+                    LongPressedDestination loc = iter.next();
+                    locs_json += loc.toJSON();
+                    if( iter.hasNext() ) locs_json += ",";
+                }
+
+                locs_json += "]";
+                Log.d("JSON locations", locs_json);
+
                 String taf = "";
                 if(data.taf != null) {
                     String split[] = data.taf.rawText.split(data.taf.stationId, 2);
@@ -176,7 +194,7 @@ public class WebAppMapInterface {
 
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
-                        Helper.formatJsArgs(data.destinationName) + "','" +
+                        Helper.formatJsArgs(locs_json) + "','" +
                         "<b><font color=\"yellow\">Position </font></b>" + Helper.formatJsArgs(data.info) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +

@@ -36,6 +36,7 @@ import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.fragment.PfdFragment;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
@@ -403,9 +404,16 @@ public class LocationView extends View implements OnTouchListener {
                 if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
                     double lon = mOrigin.getLongitudeOf(e.getX());
                     double lat = mOrigin.getLatitudeOf(e.getY());
-                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor());
-                    mDragStartedX = e.getX();
-                    mDragStartedY = e.getY();
+
+                    if( mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor()) > -1 ) {
+                        mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor());
+                        mDragStartedX = e.getX();
+                        mDragStartedY = e.getY();
+                    } else {
+                        startClosestAirportTask(e.getX(), e.getY());
+                    }
+                } else {
+                    startClosestAirportTask(e.getX(), e.getY());
                 }
                 
             }
@@ -416,7 +424,7 @@ public class LocationView extends View implements OnTouchListener {
             mDoCallbackWhenDone = false;
             mDownFocusPoint = getFocusPoint(e);
 
-            startClosestAirportTask(e.getX(), e.getY());
+            //startClosestAirportTask(e.getX(), e.getY());
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE) {
 
@@ -1153,6 +1161,7 @@ public class LocationView extends View implements OnTouchListener {
         private Metar metar;
         private String elev;
         private Vector<NavAid> navaids;
+        private LinkedList<LongPressedDestination> locations;
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1160,6 +1169,7 @@ public class LocationView extends View implements OnTouchListener {
         @Override
         protected LongPressedDestination doInBackground(Object... vals) {
 
+            locations = new LinkedList<LongPressedDestination>();
 
             Thread.currentThread().setName("Closest");
             if(null == mService) {
@@ -1229,6 +1239,7 @@ public class LocationView extends View implements OnTouchListener {
                 destination = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
             else {
+                locations.add(new LongPressedDestination("" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon), Destination.GPS));
                 type = Destination.BASE;
                 destination = airport;
 
@@ -1290,18 +1301,31 @@ public class LocationView extends View implements OnTouchListener {
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
 
             // if user pressed on a navaid, set this as destination unless she pressed on an airport
-            if (type != Destination.BASE) {
-                double minDistance = 100.0;
+//            if (type != Destination.BASE) {
+                double minDistance = 6.0;
+                double closest = 10.0;
                 for (NavAid n : navaids) {
                     double navaidDistance = Projection.getStaticDistance(lat, lon,
                             n.getCoords().getLatitude(), n.getCoords().getLongitude());
-                    if (navaidDistance < (Preferences.NAVAID_TOUCH_DISTANCE / mViewParams.getScaleFactor()) && navaidDistance < minDistance ) {
-                        type = Destination.NAVAID;
-                        destination = n.getLocationId();
-                        minDistance = navaidDistance;
+                    if ( navaidDistance < (minDistance / mViewParams.getScaleFactor()) ) {
+
+                        if (navaidDistance < (Preferences.NAVAID_TOUCH_DISTANCE / mViewParams.getScaleFactor()) && navaidDistance < closest && type != Destination.BASE ) {
+                            // If there was already a VOR, move it
+                            if( type == Destination.NAVAID ) {
+                                locations.add(new LongPressedDestination(destination, type));
+                            }
+
+                            type = Destination.NAVAID;
+                            destination = n.getLocationId();
+                            closest = navaidDistance;
+
+                        } else {
+                            locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID));
+                        }
+
                     }
                 }
-            }
+//            }
 
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
 
@@ -1320,6 +1344,11 @@ public class LocationView extends View implements OnTouchListener {
                 mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
+
+//                LinkedList<LongPressedDestination> locations = new LinkedList<LongPressedDestination>();
+//                locations.add(destination);
+//                mLongTouchDestination.locations = locations;
+
 
                 /*
                  * Clear old weather
@@ -1365,6 +1394,7 @@ public class LocationView extends View implements OnTouchListener {
                 mLongTouchDestination.wa = wa;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.layer = layer;
+                mLongTouchDestination.locations = locations;
                 //ideally we would pass altitude AGL for navaid reception calculations
                 mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
                 if(metar != null) {

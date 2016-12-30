@@ -18,4 +18,12 @@ public class LongPressedDestination {
     public String getType() {
         return type;
     }
+
+    public String toJSON() {
+        String json = "{";
+        json += "\"name\":\"" + this.name + "\",";
+        json += "\"type\":\"" + this.type + "\"";
+        json += "}";
+        return json;
+    }
 }

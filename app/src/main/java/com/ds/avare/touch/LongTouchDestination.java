@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.touch;
 
+import com.ds.avare.views.LongPressedDestination;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
@@ -39,4 +40,5 @@ public class LongTouchDestination {
     public LinkedList<Airep> airep;
     public String performance;
     public String navaids;
+    public LinkedList<LongPressedDestination> locations;
 }

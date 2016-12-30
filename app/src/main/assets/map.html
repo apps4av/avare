@@ -42,8 +42,41 @@ authors: zkhan
         toastr.options.timeOut = 2000;
 
         // set data
-        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
-            $("#airportName").text(airport);
+        function setData(locations, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+
+            // Parse the data out
+            locations = JSON.parse(locations);
+
+            // Find the DOM element and clear it out
+            locElement = document.getElementById("locations");
+            while( locElement.firstChild) {
+                locElement.removeChild(locElement.firstChild);
+            }
+
+            // Add all the new locations
+            for( var i = 0; i < locations.length; i++ ) {
+                var el = document.createElement("span");
+                el.className = "label label-success";
+                var el2 = document.createElement("h4");
+                console.log(locations[i].type);
+
+                var el3 = document.createElement("img");
+                el3.setAttribute("height","16");
+                if( locations[i].type == "Base" ) {
+                    el3.setAttribute("src","airport.png");
+                } else if ( locations[i].type == "Navaid" ) {
+                    el3.setAttribute("src","vor.png");
+                } else {
+                    el3.setAttribute("src","unknown.png");
+                }
+                el.appendChild(el3);
+
+                var el4 = document.createTextNode(locations[i].name);
+                el.appendChild(el4);
+                el2.appendChild(el);
+                document.getElementById("locations").appendChild(el2);
+            }
+
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
             $("#airportTaf").html(taf);
@@ -76,7 +109,7 @@ authors: zkhan
         <a href="javascript:doAction('X');" class="btn btn-danger">X</a>
     </div>
     <div style="margin-left : 5px">
-        <h4><span class="label label-success" id='airportName'></span></h4>
+        <div id='locations'></div>
         <hr>
         <div id='airportInfo'></div>
         <div id='airportMetar'></div>
