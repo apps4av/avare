@@ -53,6 +53,7 @@ import com.ds.avare.navhandler.ThreeDNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.ToolsNavigationItemSelectedHandler;
 import com.ds.avare.navhandler.WxbNavigationItemSelectedHandler;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.touch.LongPressedDestination;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
@@ -473,6 +474,14 @@ public class MainActivity extends AppCompatActivity implements
         AirportFragment fragment = (AirportFragment) getSupportFragmentManager().findFragmentByTag(AirportFragment.TAG);
         if (fragment != null && fragment.getAfdView() != null) {
             fragment.getAfdView().center();
+        }
+    }
+
+    // Callback to show the location dialog with a given location selected
+    public void showLocationDialog(LongPressedDestination location) {
+        LocationFragment fragment = (LocationFragment) getSupportFragmentManager().findFragmentByTag(LocationFragment.TAG);
+        if (fragment != null ) {
+            fragment.showLocationPopup(location);
         }
     }
 

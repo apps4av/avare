@@ -26,12 +26,20 @@ authors: zkhan
     <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
     <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
     <style type="text/css">
-        button {color: black; height:40px;}
         input {height:40px;}
         .toast {opacity: 1 !important;}
         .container-fluid {
             padding-right: 0px;
             padding-left: 0px;
+        }
+        .locationButton {
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .selectedLocation {
+            text-align: center;
+            font-weight: bold;
+            font-size: 250%;
         }
     </style>
 
@@ -41,42 +49,65 @@ authors: zkhan
 
         toastr.options.timeOut = 2000;
 
+        // These will hold the currently selected location information
+        var this_location;
+        var this_type;
+
         // set data
-        function setData(locations, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+        function setData(selectedLocation, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer, nearbyLocations) {
 
             // Parse the data out
-            locations = JSON.parse(locations);
+            nearbyLocations = JSON.parse(nearbyLocations);
+            selectedLocation = JSON.parse(selectedLocation);
+
+            // Set the selected location information
+            this_location = selectedLocation.name;
+            this_type = selectedLocation.type;
 
             // Find the DOM element and clear it out
-            locElement = document.getElementById("locations");
+            locElement = document.getElementById("nearbyLocations");
             while( locElement.firstChild) {
                 locElement.removeChild(locElement.firstChild);
             }
 
-            // Add all the new locations
-            for( var i = 0; i < locations.length; i++ ) {
-                var el = document.createElement("span");
-                el.className = "label label-success";
-                var el2 = document.createElement("h4");
-                console.log(locations[i].type);
+            // Create buttons for all nearby locations
+            if( nearbyLocations.length > 0 ) {
 
-                var el3 = document.createElement("img");
-                el3.setAttribute("height","16");
-                if( locations[i].type == "Base" ) {
-                    el3.setAttribute("src","airport.png");
-                } else if ( locations[i].type == "Navaid" ) {
-                    el3.setAttribute("src","vor.png");
-                } else {
-                    el3.setAttribute("src","unknown.png");
+                // Add all the new locations
+                for( var i = 0; i < nearbyLocations.length; i++ ) {
+                    // The top-level container/button
+                    var el = document.createElement("button");
+                    el.setAttribute("onclick","javascript:changeLocation('" + nearbyLocations[i].name + "','" + nearbyLocations[i].type + "');");
+                    el.className = "locationButton btn-group btn btn-info";
+
+                    // Pick the type image indicator to use and add it
+                    var el3 = document.createElement("img");
+                    el3.setAttribute("height","16");
+                    if( nearbyLocations[i].type == "Base" ) {
+                        el3.setAttribute("src","airport.png");
+                    } else if ( nearbyLocations[i].type == "Navaid" ) {
+                        el3.setAttribute("src","vor.png");
+                    } else {
+                        el3.setAttribute("src","unknown.png");
+                    }
+                    el.appendChild(el3);
+
+                    // Add the name
+                    var el4 = document.createTextNode(nearbyLocations[i].name);
+                    el.appendChild(el4);
+
+                    // Add the location to the 2nd line
+                    var el5 = document.createElement("br");
+                    el.appendChild(el5);
+                    el.appendChild(document.createTextNode(Number(nearbyLocations[i].distance).toFixed(1) + "nm"));
+
+                    // Add the button to the page
+                    document.getElementById("nearbyLocations").appendChild(el);
+
                 }
-                el.appendChild(el3);
-
-                var el4 = document.createTextNode(locations[i].name);
-                el.appendChild(el4);
-                el2.appendChild(el);
-                document.getElementById("locations").appendChild(el2);
             }
 
+            $("#selectedLocation").text(this_location);
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
             $("#airportTaf").html(taf);
@@ -91,8 +122,12 @@ authors: zkhan
         }
 
 
-        function doAction(action) {
-            AndroidMap.doAction(action);
+        function doAction(action, location, type) {
+            AndroidMap.doAction(action, location, type);
+        }
+
+        function changeLocation(location, type) {
+            AndroidMap.changeLocation(location, type);
         }
 
     </script>
@@ -101,15 +136,16 @@ authors: zkhan
 </head>
 <body>
 <div class="container-fluid">
+    <div class="selectedLocation" id="selectedLocation"></div>
     <div class="btn-group btn-group-justified" id="buttonGroup">
-        <a href="javascript:doAction('->D');" class="btn btn-success">->D</a>
-        <a href="javascript:doAction('+Plan');" class="btn btn-primary">+Plan</a>
-        <a href="javascript:doAction('Plate');" class="btn btn-primary">Plate</a>
-        <a href="javascript:doAction('A/FD');" class="btn btn-primary">A/FD</a>
-        <a href="javascript:doAction('X');" class="btn btn-danger">X</a>
+        <a href="javascript:doAction('->D', this_location, this_type);" class="btn btn-success">->D</a>
+        <a href="javascript:doAction('+Plan', this_location, this_type);" class="btn btn-primary">+Plan</a>
+        <a href="javascript:doAction('Plate', this_location, this_type);" class="btn btn-primary">Plate</a>
+        <a href="javascript:doAction('A/FD', this_location, this_type);" class="btn btn-primary">A/FD</a>
+        <a href="javascript:doAction('X', this_location, this_type);" class="btn btn-danger">X</a>
     </div>
     <div style="margin-left : 5px">
-        <div id='locations'></div>
+        <div id='nearbyLocations'></div>
         <hr>
         <div id='airportInfo'></div>
         <div id='airportMetar'></div>

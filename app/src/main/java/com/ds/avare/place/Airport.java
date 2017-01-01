@@ -28,6 +28,15 @@ import com.ds.avare.utils.Helper;
 public class Airport {
 
     private String mId;
+
+    public double getLon() {
+        return mLon;
+    }
+
+    public double getLat() {
+        return mLat;
+    }
+
     private double mLon;
     private double mLat;
     private double mVariation;

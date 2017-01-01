@@ -24,7 +24,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatSpinner;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,8 +44,6 @@ import android.widget.ImageButton;
 import com.ds.avare.ChartsDownloadActivity;
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
-import com.ds.avare.animation.TwoButton;
-import com.ds.avare.animation.TwoButton.TwoClickListener;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsParams;
@@ -64,7 +61,7 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines.InfoLineFieldLoc;
 import com.ds.avare.views.LocationView;
-import com.ds.avare.views.LongPressedDestination;
+import com.ds.avare.touch.LongPressedDestination;
 import com.ds.avare.webinfc.WebAppMapInterface;
 
 import java.io.File;
@@ -117,7 +114,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
     private ImageButton mDrawButton;
     private Bundle mExtras;
     private boolean mIsWaypoint;
-    private LongPressedDestination mDestinationPressed;
     private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
 
@@ -389,12 +385,6 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                         mInfc.setData(data);
                     }
                     mAlertDialogDestination.show();
-
-                    /*
-                     * Show the popout
-                     * Now populate the pop out weather etc.
-                     */
-                    mDestinationPressed = new LongPressedDestination(data.destinationName, data.destinationType) ;
                 }
             }
 
@@ -608,48 +598,44 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                 @Override
                 public Object callback(Object o, Object o1) {
 
-                    String param = (String) o;
-                    String airport = (String) o;
+                    int action = (int) o;
+                    LongPressedDestination dest = (LongPressedDestination) o1;
 
                     mAlertDialogDestination.dismiss();
 
-                    if (null == mDestinationPressed) {
-                        return null;
-                    }
                     if (mService == null) {
                         return null;
                     }
 
-                    if (param.equals("A/FD")) {
+                    if (action == WebAppMapInterface.MSG_AFD) {
                         /*
                          * A/FD
                          */
-                        if (mDestinationPressed.getType() == Destination.BASE) {
-                            mService.setLastAfdAirport(mDestinationPressed.getName());
+                        if (dest.getType().equals(Destination.BASE)) {
+                            mService.setLastAfdAirport(dest.getName());
                             ((MainActivity) getContext()).showAfdViewAndCenter();
                         }
-                        mDestinationPressed = null;
-                    } else if (param.equals("Plate")) {
+                    } else if (action == WebAppMapInterface.MSG_PLATE) {
                         /*
                          * Plate
                          */
-                        if (mDestinationPressed.getType() == Destination.BASE) {
-                            mService.setLastPlateAirport(mDestinationPressed.getName());
+                        if (dest.getType().equals(Destination.BASE)) {
+                            mService.setLastPlateAirport(dest.getName());
                             mService.setLastPlateIndex(0);
                             ((MainActivity) getContext()).showPlatesViewAndCenter();
                         }
-                        mDestinationPressed = null;
-                    } else if (param.equals("+Plan")) {
-                        planTo(mDestinationPressed.getName(), mDestinationPressed.getType());
-                        mDestinationPressed = null;
-                    } else if (param.equals("->D")) {
-
+                    } else if (action == WebAppMapInterface.MSG_PLAN) {
                         /*
-                         * On click, find destination that was pressed on in view
-                         * If button pressed was a destination go there, otherwise if none, then delete current dest
+                         * Plan
                          */
-                        goTo(mDestinationPressed.getName(), mDestinationPressed.getType());
-                        mDestinationPressed = null;
+                        planTo(dest.getName(), dest.getType());
+                    } else if (action == WebAppMapInterface.MSG_DIRECT) {
+                        /*
+                         * Direct To
+                         */
+                        goTo(dest.getName(), dest.getType());
+                    } else if (action == WebAppMapInterface.MSG_CHANGE_LOCATION) {
+                        ((MainActivity) getContext()).showLocationDialog(dest);
                     }
                     return null;
                 }
@@ -1162,6 +1148,11 @@ public class LocationFragment extends StorageServiceGpsListenerFragment implemen
                     public void onNothingSelected(AdapterView<?> parent) { }
                 }
         );
+    }
+
+    // Callback to show the location info popup on LocationView
+    public void showLocationPopup(LongPressedDestination location) {
+        mLocationView.showLocationModal(location);
     }
 
     @Override
