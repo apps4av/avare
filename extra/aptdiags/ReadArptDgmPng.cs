@@ -1,5 +1,6 @@
-//+++2015-07-02
-//    Copyright (C) 2013, 2014, 2015, Mike Rieker, Beverly, MA USA
+//+++2017-01-01
+//    Copyright (C) 2013, 2014, 2015, 2017, Mike Rieker, Beverly, MA USA
+//    www.outerworldapps.com
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//---2015-07-02
+//
+//    http://www.gnu.org/licenses/gpl-2.0.html
+//---2017-01-01
 
 /**
  *  Read an airport diagram .PNG file and find the lat/lon marks and correlate them to pixel number.
@@ -33,7 +36,7 @@
  *        -sDEVICE=pngalpha -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -r300x300 -dFirstPage=1 -dLastPage=1 \
  *        -sOutputFile=<pngname> <pdfname>
  *
- *    mono --debug ReadArptDgmPng.exe -verbose aptdiags_300_20150108/BPT.png \
+ *    mono --debug ReadArptDgmPng.exe -verbose datums/aptplates_20160303/pngtemp/006/21ad.png.p1 \
  *        -csvoutfile BPT.csv -csvoutid BPT
  */
 
@@ -416,6 +419,9 @@ public class ReadArptDgmPng {
         badStrings["FRG:73^24.5'"]   = "73^24.5'W";
         badStrings["FRG:73^25.0'"]   = "73^25.0'W";
         badStrings["GTB:44^05'N"]    = "--";
+        badStrings["HDC:90^25.5'N"]  = "90^25.5'W";
+        badStrings["HDC:90^25.0'N"]  = "90^25.0'W";
+        badStrings["HDC:90^24.5'N"]  = "90^24.5'W";
         badStrings["HRT:86^41W"]     = "86^41'W";
         badStrings["LNS:40^07.0'W"]  = "40^07.0'N";
         badStrings["LNS:40^07.5'W"]  = "40^07.5'N";
@@ -423,6 +429,8 @@ public class ReadArptDgmPng {
         badStrings["MBL:44^16.0\"N"] = "44^16.0'N";
         badStrings["MCN:31^41.5'N"]  = "32^41.5'N";
         badStrings["MSY:90^16'W"]    = "90^17'W";
+        badStrings["OGS:75^27'N"]    = "75^27'W";
+        badStrings["OGS:75^28'N"]    = "75^28'W";
         badStrings["OZR:85^42'30\""] = "85^42'30\"W";
         badStrings["PAH:88^46.0'N"]  = "88^46.0'W";
         badStrings["PAH:88^46.5'N"]  = "88^46.5'W";
@@ -444,10 +452,13 @@ public class ReadArptDgmPng {
         badStrings["SAV:2^08'N"]     = "32^08'N";
         badStrings["SEE:16^58.0'W"]  = "116^58.0'W";
         badStrings["TVL:8^54.5'N"]   = "38^54.5'N";
+        badStrings["VPS:586^31'W"]   = "86^31'W";
         badStrings["WRB:83^36'"]     = "83^36'W";
 
         // simply misread strings
+        badStrings["BDR:1^09.5'N"]   = "41^09.5'N";
         badStrings["BPT:96^01.0'W"]  = "94^01.0'W";
+        badStrings["EOD:87^28.S"]    = "87^28.5'W";
         badStrings["NSI:33^1S"]      = "33^15'N";
         badStrings["NSI:33'^14'N"]   = "33^14'N";
         badStrings["POB:^10'N"]      = "35^10'N";
@@ -460,6 +471,7 @@ public class ReadArptDgmPng {
          */
         notsquare["HLR"] = 1.094;
         notsquare["NYG"] = 0.664;
+        notsquare["ADQ"] = 0.944;
 
         /*
          * Some charts just have one latitude or longitude line.
