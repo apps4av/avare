@@ -5,12 +5,8 @@ package com.ds.avare.touch;
  */
 public class LongPressedDestination implements Comparable<LongPressedDestination> {
     private String name, type;
-
-    public double getDistance() {
-        return distance;
-    }
-
     private double distance;
+    private String weatherColor = "#ffffff";
 
     public LongPressedDestination(String name, String type) {
         this.name = name;
@@ -23,6 +19,15 @@ public class LongPressedDestination implements Comparable<LongPressedDestination
         this.type = type;
         this.distance = distance;
     }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setWeatherColor(String weatherColor) {
+        this.weatherColor = weatherColor;
+    }
+
     public String getName() {
         return name;
     }
@@ -35,7 +40,8 @@ public class LongPressedDestination implements Comparable<LongPressedDestination
         String json = "{";
         json += "\"name\":\"" + this.name + "\",";
         json += "\"type\":\"" + this.type + "\",";
-        json += "\"distance\":\"" + this.distance + "\"";
+        json += "\"distance\":\"" + this.distance + "\",";
+        json += "\"weatherColor\":\"" + this.weatherColor + "\"";
         json += "}";
         return json;
     }

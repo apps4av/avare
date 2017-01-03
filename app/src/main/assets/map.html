@@ -35,11 +35,21 @@ authors: zkhan
         .locationButton {
             margin-right: 10px;
             display: inline-block;
+            padding: 5px;
+            background: none;
+            border: 2px solid;
         }
         .selectedLocation {
             text-align: center;
             font-weight: bold;
             font-size: 250%;
+        }
+        .badge-outline {
+            color: lightgray;
+            border: 0px;
+            background-color: rgba(255,255,255,0.15);;
+            font-weight: normal !important;
+            vertical-align: top;
         }
     </style>
 
@@ -66,9 +76,8 @@ authors: zkhan
 
             // Find the DOM element and clear it out
             locElement = document.getElementById("nearbyLocations");
-            while( locElement.firstChild) {
-                locElement.removeChild(locElement.firstChild);
-            }
+
+            locElement.innerHTML = "<b><font color='yellow'>Nearby</font></b> (dist from " + this_location + ")<br>";
 
             // Create buttons for all nearby locations
             if( nearbyLocations.length > 0 ) {
@@ -76,34 +85,42 @@ authors: zkhan
                 // Add all the new locations
                 for( var i = 0; i < nearbyLocations.length; i++ ) {
                     // The top-level container/button
-                    var el = document.createElement("button");
-                    el.setAttribute("onclick","javascript:changeLocation('" + nearbyLocations[i].name + "','" + nearbyLocations[i].type + "');");
-                    el.className = "locationButton btn-group btn btn-info";
+                    var button = document.createElement("button");
+                    button.setAttribute("onclick","javascript:changeLocation('" + nearbyLocations[i].name + "','" + nearbyLocations[i].type + "');");
+                    button.className = "locationButton btn-group btn";
+                    button.style.borderColor = nearbyLocations[i].weatherColor;
 
                     // Pick the type image indicator to use and add it
-                    var el3 = document.createElement("img");
-                    el3.setAttribute("height","16");
+                    var locationIcon = document.createElement("img");
+                    locationIcon.setAttribute("height","16");
                     if( nearbyLocations[i].type == "Base" ) {
-                        el3.setAttribute("src","airport.png");
+                        locationIcon.setAttribute("src","airport.png");
+                        button.appendChild(locationIcon);
                     } else if ( nearbyLocations[i].type == "Navaid" ) {
-                        el3.setAttribute("src","vor.png");
-                    } else {
-                        el3.setAttribute("src","unknown.png");
+                        locationIcon.setAttribute("src","vor.png");
+                        button.appendChild(locationIcon);
                     }
-                    el.appendChild(el3);
 
                     // Add the name
-                    var el4 = document.createTextNode(nearbyLocations[i].name);
-                    el.appendChild(el4);
+                    var locationButtonName = nearbyLocations[i].name;
+                    if( nearbyLocations[i].type == "GPS" ) {
+                        var coords = nearbyLocations[i].name.split("&");
+                        locationButtonName = Number(coords[0]).toFixed(2) + "&" + Number(coords[1]).toFixed(2);
+                    }
+                    var locationName = document.createTextNode(locationButtonName);
+                    button.appendChild(locationName);
 
                     // Add the location to the 2nd line
-                    var el5 = document.createElement("br");
-                    el.appendChild(el5);
-                    el.appendChild(document.createTextNode(Number(nearbyLocations[i].distance).toFixed(1) + "nm"));
+                    var spacer = document.createElement("br");
+                    button.appendChild(spacer);
+
+                    var locationDist = document.createElement("span");
+                    locationDist.className = "badge badge-outline pull-right";
+                    locationDist.appendChild(document.createTextNode("(" + Number(nearbyLocations[i].distance).toFixed(1) + "nm)"));
+                    button.appendChild(locationDist);
 
                     // Add the button to the page
-                    document.getElementById("nearbyLocations").appendChild(el);
-
+                    document.getElementById("nearbyLocations").appendChild(button);
                 }
             }
 
@@ -145,7 +162,7 @@ authors: zkhan
         <a href="javascript:doAction('X', this_location, this_type);" class="btn btn-danger">X</a>
     </div>
     <div style="margin-left : 5px">
-        <div id='nearbyLocations'></div>
+        <div id='nearbyLocations' style="margin-top: 20px"><b><font color="yellow">Nearby</font></b><br></div>
         <hr>
         <div id='airportInfo'></div>
         <div id='airportMetar'></div>

@@ -249,13 +249,21 @@ public class Helper {
     }
 
     /**
-     * 
+     *
      * @param lonlat
      */
     public static double truncGeo(double lonlat) {
-        lonlat *= 10000;
+        return truncGeo(lonlat, 4);
+    }
+
+    /**
+     *
+     * @param lonlat
+     */
+    public static double truncGeo(double lonlat, int places) {
+        lonlat *= Math.pow(10, places);
         lonlat = Math.round(lonlat);
-        lonlat /= 10000;
+        lonlat /= Math.pow(10, places);
         return lonlat;
     }
     

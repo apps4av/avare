@@ -1235,7 +1235,8 @@ public class LocationView extends View implements OnTouchListener {
                         a.getLon(), a.getLat());
 
                 // Don't add the airport if it's already the set destination
-                if ( navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&
+                // For now, don't limit the distance
+                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/
                         !(a.getId().equals(destination) && type.equals(Destination.BASE)) ) {
 
                     locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance));
@@ -1250,7 +1251,8 @@ public class LocationView extends View implements OnTouchListener {
             for (NavAid n : navaids) {
                 double navaidDistance = Projection.getStaticDistance(lon, lat,
                         n.getCoords().getLongitude(), n.getCoords().getLatitude());
-                if ( navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&
+                // For now, don't limit based on distance
+                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/
                         !( n.getLocationId().equals(destination) && type.equals(Destination.NAVAID)) )
                 {
                     locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance));
@@ -1263,6 +1265,28 @@ public class LocationView extends View implements OnTouchListener {
             // Sort and truncate
             Collections.sort(locations);
             if( locations.size() > Preferences.MAX_NEARBY_POINTS ) locations = new ArrayList<LongPressedDestination>(locations.subList(0, Preferences.MAX_NEARBY_POINTS));
+
+            // Get the METARs for the airports in the list
+            for( LongPressedDestination nearbyLoc: locations) {
+                if( nearbyLoc.getType() == Destination.BASE ) {
+                    metar = mService.getDBResource().getMETAR(nearbyLoc.getName());
+                    if (isCancelled()) {
+                        return null;
+                    }
+                    if (metar == null) { // in no metar on the field, try to find the closest metar
+                        metar = mService.getDBResource().getClosestMETAR(lat, lon);
+                        if (isCancelled()) {
+                            return null;
+                        }
+                    }
+                    if( metar != null ) {
+                        nearbyLoc.setWeatherColor(WeatherHelper.metarColorString(metar.flightCategory));
+                    }
+                }
+            }
+
+            if(isCancelled())
+                return null;
 
             // If not a set dest, figure out which to use
             int indexToUse = 0;
