@@ -1183,7 +1183,7 @@ public class LocationView extends View implements OnTouchListener {
             String destination = "", type = "";
             lon = (Double)vals[0];
             lat = (Double)vals[1];
-            
+
             // if the user is moving instead of doing a long press, give them a chance
             // to cancel us before we start doing anything
             try {
@@ -1224,7 +1224,7 @@ public class LocationView extends View implements OnTouchListener {
             // Collect nearby points
             // Coords (if not a set dest)
             if( setDest == null ) {
-                locations.add(new LongPressedDestination("" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon), Destination.GPS));
+                locations.add(new LongPressedDestination("" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon), Destination.GPS, 0.0, lat, lon));
             }
             // Airports
             Airport[] airports = mService.getDBResource().findClosestAirports(lon, lat, "0");
@@ -1239,7 +1239,7 @@ public class LocationView extends View implements OnTouchListener {
                 if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/
                         !(a.getId().equals(destination) && type.equals(Destination.BASE)) ) {
 
-                    locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance));
+                    locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance, a.getLat(), a.getLon()));
                 }
             }
 
@@ -1255,7 +1255,7 @@ public class LocationView extends View implements OnTouchListener {
                 if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/
                         !( n.getLocationId().equals(destination) && type.equals(Destination.NAVAID)) )
                 {
-                    locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance));
+                    locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance, n.getCoords().getLatitude(), n.getCoords().getLongitude()));
                 }
             }
 
@@ -1302,6 +1302,18 @@ public class LocationView extends View implements OnTouchListener {
                 LongPressedDestination thisDest = locations.remove(indexToUse);
                 type = thisDest.getType();
                 destination = thisDest.getName();
+                lat = thisDest.getLat();
+                lon = thisDest.getLon();
+
+                // If we're changing the destination, get the new distances
+                if( indexToUse > 0 ) {
+                    for( int i = 0; i < locations.size(); i++) {
+                        LongPressedDestination dest = locations.get(i);
+                        double navaidDistance = Projection.getStaticDistance(lon, lat,
+                                dest.getLon(), dest.getLat());
+                        dest.setDistance(navaidDistance);
+                    }
+                }
             }
 
             if(isCancelled())
