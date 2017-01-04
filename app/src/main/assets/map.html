@@ -74,10 +74,12 @@ authors: zkhan
             this_location = selectedLocation.name;
             this_type = selectedLocation.type;
 
+            locHeader = document.getElementById("nearbyHeader");
+            locHeader.innerHTML = "<b><font color='yellow'>Nearby</font></b> (dist from " + this_location + ")";
+
             // Find the DOM element and clear it out
             locElement = document.getElementById("nearbyLocations");
-
-            locElement.innerHTML = "<b><font color='yellow'>Nearby</font></b> (dist from " + this_location + ")<br>";
+            locElement.innerHTML = "";
 
             // Create buttons for all nearby locations
             if( nearbyLocations.length > 0 ) {
@@ -99,6 +101,9 @@ authors: zkhan
                     } else if ( nearbyLocations[i].type == "Navaid" ) {
                         locationIcon.setAttribute("src","vor.png");
                         button.appendChild(locationIcon);
+                    } else if ( nearbyLocations[i].type == "Fix" ) {
+                        locationIcon.setAttribute("src","fix.png");
+                        button.appendChild(locationIcon);
                     }
 
                     // Add the name
@@ -115,8 +120,8 @@ authors: zkhan
                     button.appendChild(spacer);
 
                     var locationDist = document.createElement("span");
-                    locationDist.className = "badge badge-outline pull-right";
-                    locationDist.appendChild(document.createTextNode("(" + Number(nearbyLocations[i].distance).toFixed(1) + "nm)"));
+                    locationDist.className = "badge badge-outline";
+                    locationDist.appendChild(document.createTextNode(Number(nearbyLocations[i].distance).toFixed(1) + "nm"));
                     button.appendChild(locationDist);
 
                     // Add the button to the page
@@ -125,6 +130,15 @@ authors: zkhan
             }
 
             $("#selectedLocation").text(this_location);
+
+            if(this_type == "Base") {
+                var weather = document.createElement("span");
+                weather.className = "badge badge-outline pull-right";
+                weather.style = "background: " + selectedLocation.weatherColor;
+                weather.innerHTML = this_location;
+                //document.getElementById("selectedLocation").appendChild(weather);
+            }
+
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
             $("#airportTaf").html(taf);
@@ -162,7 +176,8 @@ authors: zkhan
         <a href="javascript:doAction('X', this_location, this_type);" class="btn btn-danger">X</a>
     </div>
     <div style="margin-left : 5px">
-        <div id='nearbyLocations' style="margin-top: 20px"><b><font color="yellow">Nearby</font></b><br></div>
+        <div id='nearbyHeader' style="margin-top: 20px;"></div>
+        <div id='nearbyLocations' style="overflow-x: auto; white-space: nowrap;"></div>
         <hr>
         <div id='airportInfo'></div>
         <div id='airportMetar'></div>

@@ -40,6 +40,7 @@ import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -61,6 +62,7 @@ import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongPressedDestination;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.GenericCallback;
@@ -1262,25 +1264,52 @@ public class LocationView extends View implements OnTouchListener {
             if(isCancelled())
                 return null;
 
+            // Fixes
+            ArrayList<Fix> fixes = mService.getDBResource().findClosestFixes(lat, lon);
+            for (Fix fix : fixes) {
+                double navaidDistance = Projection.getStaticDistance(lon, lat,
+                        fix.getLon(), fix.getLat());
+                // For now, don't limit based on distance
+                // Don't add RNAV WP or Mil Rep fix types
+                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/
+                        !( fix.getId().equals(destination) && type.equals(Destination.FIX)) &&
+                        !(fix.getType().equals("YRNAV-WP") || fix.getType().equals("YMIL-REP-PT") || fix.getType().equals("NAWY-INTXN")))
+                {
+                    locations.add(new LongPressedDestination(fix.getId(), Destination.FIX, navaidDistance, fix.getLat(), fix.getLon()));
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
             // Sort and truncate
             Collections.sort(locations);
             if( locations.size() > Preferences.MAX_NEARBY_POINTS ) locations = new ArrayList<LongPressedDestination>(locations.subList(0, Preferences.MAX_NEARBY_POINTS));
 
-            // Get the METARs for the airports in the list
-            for( LongPressedDestination nearbyLoc: locations) {
-                if( nearbyLoc.getType() == Destination.BASE ) {
-                    metar = mService.getDBResource().getMETAR(nearbyLoc.getName());
-                    if (isCancelled()) {
-                        return null;
-                    }
-                    if (metar == null) { // in no metar on the field, try to find the closest metar
-                        metar = mService.getDBResource().getClosestMETAR(lat, lon);
-                        if (isCancelled()) {
-                            return null;
+            // Only get weather if it's new or we're using ADSB weather
+            boolean isWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
+            boolean useAdsbWeather = mPref.useAdsbWeather();
+            if( !isWeatherOld || useAdsbWeather) {
+                // Get the METARs for the airports in the list if the weather is new enough
+                for (LongPressedDestination nearbyLoc : locations) {
+                    if (nearbyLoc.getType() == Destination.BASE) {
+                        if( useAdsbWeather ) {
+                            metar = mService.getAdsbWeather().getMETAR(nearbyLoc.getName());
+                        } else {
+                            metar = mService.getDBResource().getMETAR(nearbyLoc.getName());
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            if (metar == null) { // in no metar on the field, try to find the closest metar
+                                metar = mService.getDBResource().getClosestMETAR(lat, lon);
+                                if (isCancelled()) {
+                                    return null;
+                                }
+                            }
                         }
-                    }
-                    if( metar != null ) {
-                        nearbyLoc.setWeatherColor(WeatherHelper.metarColorString(metar.flightCategory));
+                        if (metar != null) {
+                            nearbyLoc.setWeatherColor(WeatherHelper.metarColorString(metar.flightCategory));
+                        }
                     }
                 }
             }
@@ -1294,13 +1323,13 @@ public class LocationView extends View implements OnTouchListener {
                 for( int i = 0; i < locations.size(); i++) {
                     LongPressedDestination dest = locations.get(i);
                     if( dest.getDistance() < ((Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor() ) / 5) ) {
-                        if( type.equals("") || type.equals(Destination.GPS) || type.equals(Destination.NAVAID) ) {
+                        if( type.equals("") || type.equals(Destination.GPS) || type.equals(Destination.NAVAID) || type.equals(Destination.FIX) ) {
                             indexToUse = i;
+                            type = dest.getType();
                         }
                     }
                 }
                 LongPressedDestination thisDest = locations.remove(indexToUse);
-                type = thisDest.getType();
                 destination = thisDest.getName();
                 lat = thisDest.getLat();
                 lon = thisDest.getLon();

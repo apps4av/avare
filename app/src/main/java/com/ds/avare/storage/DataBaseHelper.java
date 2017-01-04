@@ -23,6 +23,7 @@ import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -32,6 +33,7 @@ import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
 import com.ds.avare.touch.LongPressedDestination;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -441,6 +443,42 @@ public class DataBaseHelper  {
 
 
 
+    public ArrayList<Fix> findClosestFixes(double lat, double lon){
+
+        Cursor cursor;
+        ArrayList<Fix> points = new ArrayList<Fix>();
+
+        // Find FIX here first
+        String qry = "select * from " + TABLE_FIX ;
+
+        qry += " order by ((" +
+                lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" +
+                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC " +
+                " limit " + Preferences.MAX_AREA_AIRPORTS * 2 + ";";
+        /*
+         * NAV
+         */
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        points.add(new Fix(cursor.getString(LOCATION_ID_COL).trim(),
+                                cursor.getFloat(LATITUDE_COL),
+                                cursor.getFloat(LONGITUDE_COL),
+                                cursor.getString(TYPE_COL)));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+        return points;
+    }
 
     public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
 
