@@ -129,15 +129,11 @@ authors: zkhan
                 }
             }
 
-            $("#selectedLocation").text(this_location);
-
-            if(this_type == "Base") {
-                var weather = document.createElement("span");
-                weather.className = "badge badge-outline pull-right";
-                weather.style = "background: " + selectedLocation.weatherColor;
-                weather.innerHTML = this_location;
-                //document.getElementById("selectedLocation").appendChild(weather);
-            }
+            // Set the location name and color
+            locElement = document.getElementById("selectedLocation");
+            locElement.innerHTML = this_location;
+            locElement.style.color = selectedLocation.weatherColor;
+            console.log(selectedLocation.weatherColor);
 
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
