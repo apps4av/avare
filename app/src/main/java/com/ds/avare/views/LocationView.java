@@ -1232,18 +1232,20 @@ public class LocationView extends View implements OnTouchListener {
 
             // Airports
             Airport[] airports = mService.getDBResource().findClosestAirports(lon, lat, "0");
-            for( Airport a: airports ){
-                if( a == null ) break;
+            if( airports != null ) {
+                for (Airport a : airports) {
+                    if (a == null) break;
 
-                double navaidDistance = Projection.getStaticDistance(lon, lat,
-                        a.getLon(), a.getLat());
+                    double navaidDistance = Projection.getStaticDistance(lon, lat,
+                            a.getLon(), a.getLat());
 
-                // Don't add the airport if it's already the set destination
-                // For now, don't limit the distance
-                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
-                        !(a.getId().equals(setDest.getName()) && setDest.getType().equals(Destination.BASE)) ) {
+                    // Don't add the airport if it's already the set destination
+                    // For now, don't limit the distance
+                    if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
+                            !(a.getId().equals(setDest.getName()) && setDest.getType().equals(Destination.BASE))) {
 
-                    locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance, a.getLat(), a.getLon()));
+                        locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance, a.getLat(), a.getLon()));
+                    }
                 }
             }
 
@@ -1252,14 +1254,15 @@ public class LocationView extends View implements OnTouchListener {
 
             // Navaids
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
-            for (NavAid n : navaids) {
-                double navaidDistance = Projection.getStaticDistance(lon, lat,
-                        n.getCoords().getLongitude(), n.getCoords().getLatitude());
-                // For now, don't limit based on distance
-                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
-                        !( n.getLocationId().equals(setDest.getName()) && setDest.getType().equals(Destination.NAVAID)) )
-                {
-                    locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance, n.getCoords().getLatitude(), n.getCoords().getLongitude()));
+            if( navaids != null) {
+                for (NavAid n : navaids) {
+                    double navaidDistance = Projection.getStaticDistance(lon, lat,
+                            n.getCoords().getLongitude(), n.getCoords().getLatitude());
+                    // For now, don't limit based on distance
+                    if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
+                            !(n.getLocationId().equals(setDest.getName()) && setDest.getType().equals(Destination.NAVAID))) {
+                        locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance, n.getCoords().getLatitude(), n.getCoords().getLongitude()));
+                    }
                 }
             }
 
