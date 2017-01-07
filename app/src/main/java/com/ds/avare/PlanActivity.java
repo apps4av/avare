@@ -303,7 +303,7 @@ public class PlanActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see android.app.Activity#onStart()
      */
     @Override
@@ -329,6 +329,7 @@ public class PlanActivity extends Activity {
         getApplicationContext().bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
 		mWebView.requestFocus();
+        mWebView.resumeTimers(); // resume plan pooling in JS (plan_poll_timer)
     }
 
     /*
@@ -353,6 +354,7 @@ public class PlanActivity extends Activity {
         if(mTimer != null) {
         	mTimer.cancel();
         }
+        mWebView.pauseTimers(); // suspend plan pooling in JS (plan_poll_timer)
     }
 
     /*
@@ -414,12 +416,16 @@ public class PlanActivity extends Activity {
     		else if(msg.what == UNSHOW_BUSY) {
     			mProgressBarSearch.setVisibility(View.INVISIBLE);
     		}
-    		else if(msg.what == ACTIVE) {
-    			mActivateButton.setText(getString(R.string.Active));
-    		}
-    		else if(msg.what == INACTIVE) {
-    			mActivateButton.setText(getString(R.string.Inactive));
-    		}
+            else if(msg.what == ACTIVE) {
+                if (mActivateButton.getText().equals(getString(R.string.Inactive))) {
+                    mActivateButton.setText(getString(R.string.Active));
+                }
+            }
+            else if(msg.what == INACTIVE) {
+                if (mActivateButton.getText().equals(getString(R.string.Active))) {
+                    mActivateButton.setText(getString(R.string.Inactive));
+                }
+            }
     		else if(msg.what == MESSAGE) {
     			// Show an important message
     			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);

@@ -930,6 +930,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawMap(Canvas canvas) {
 
+        long startnow = android.os.SystemClock.uptimeMillis();
+
         if(mService == null) {
             return;
         }
@@ -992,6 +994,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawStatusLines(canvas);
       	drawEdgeMarkers(canvas); // Must be after the infolines
       	drawNavComments(canvas);
+
+        long endnow = android.os.SystemClock.uptimeMillis();
+        long executionTime = (endnow - startnow);
+        //Log.d("TIMING", "drawMap execution time: " + executionTime + " ms");
     }    
 
     /**

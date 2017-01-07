@@ -681,8 +681,7 @@ public class WebAppPlanInterface implements Observer {
     	Plan plan = mService.getPlan();
     	
         /*
-         * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
-         * things might have changed.
+         * Now update HTML with latest plan stuff, do this every second (see plan_poll_timer)
          */
     	int passed = plan.findNextNotPassed();
     	int numDest = plan.getDestinationNumber();
@@ -696,7 +695,7 @@ public class WebAppPlanInterface implements Observer {
     	// make a :: separated plan list, then add totals to it
     	for(int num = 0; num < numDest; num++) {
     		Destination d = plan.getDestination(num);
-    		plans += 
+    		plans +=
     				(passed == num ? 1 : 0) + "," +
     				Math.round(Helper.getMagneticHeading(d.getBearing(), d.getDeclination())) + "," +
 					Math.round(Helper.getMagneticHeading(d.getBearing() + d.getWCA(), d.getDeclination())) + "," +
