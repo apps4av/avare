@@ -17,9 +17,8 @@ import com.ds.avare.R;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 /***
  * This class is about the bottom are of the display panel that exists between the left,
@@ -63,7 +62,7 @@ public class NavComments {
 	
 	/***
 	 * Set the text of what is displayed on the right side
-	 * @param leftComment string to display at right bottom
+	 * @param rightComment string to display at right bottom
 	 */
 	public void setRight(String rightComment) {
 		mRightComment = rightComment;
@@ -77,17 +76,16 @@ public class NavComments {
 	 * @param shadowedText Object to draw the text and shadow
 	 */
 	public void draw(View view, Canvas canvas, Paint paint, ShadowedText shadowedText) {
-		
-		// Search for the spot on the screen to place the text
-	 	View parent = (View) view.getParent();
-        Button mMenuButton = (Button)parent.findViewById(R.id.location_button_menu);
-        
+        // Search for the spot on the screen to place the text
+        View parent = (View) view.getParent();
+        ImageButton mMenuButton = (ImageButton) parent.findViewById(R.id.location_button_center);
+
         // If we found the position then get the rest of the measurements
         if(null != mMenuButton) {
-        	
+
         	// the left text is centered on the left side 
             int leftX = view.getWidth() / 4; 
-	        
+
         	// the right text is centered on the rightside 
             int rightX = view.getWidth() / 4 * 3; 
 

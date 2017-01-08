@@ -23,6 +23,7 @@ import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -31,6 +32,8 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
+import com.ds.avare.touch.LongPressedDestination;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -40,11 +43,13 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -302,8 +307,6 @@ public class DataBaseHelper  {
     
     /**
      * Find airports in an particular area
-     * @param name
-     * @param params
      */
     public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
 
@@ -440,6 +443,42 @@ public class DataBaseHelper  {
 
 
 
+    public ArrayList<Fix> findClosestFixes(double lat, double lon){
+
+        Cursor cursor;
+        ArrayList<Fix> points = new ArrayList<Fix>();
+
+        // Find FIX here first
+        String qry = "select * from " + TABLE_FIX ;
+
+        qry += " order by ((" +
+                lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" +
+                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC " +
+                " limit " + Preferences.MAX_AREA_AIRPORTS * 2 + ";";
+        /*
+         * NAV
+         */
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        points.add(new Fix(cursor.getString(LOCATION_ID_COL).trim(),
+                                cursor.getFloat(LATITUDE_COL),
+                                cursor.getFloat(LONGITUDE_COL),
+                                cursor.getString(TYPE_COL)));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+        return points;
+    }
 
     public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
 
@@ -498,7 +537,6 @@ public class DataBaseHelper  {
     /**
      * Search with I am feeling lucky. Best guess
      * @param name
-     * @param params
      */
     public  StringPreference searchOne(String name) {
         
@@ -617,7 +655,6 @@ public class DataBaseHelper  {
     /**
      * 
      * @param name
-     * @param params
      */
     private StringPreference searchRadial(String name) {
         int len = name.length();
@@ -1235,7 +1272,6 @@ public class DataBaseHelper  {
     /**
      * Find all frequencies based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findFrequencies(String name) {
@@ -1378,7 +1414,6 @@ public class DataBaseHelper  {
     /**
      * Find all runways based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findRunways(String name) {
@@ -1423,7 +1458,6 @@ public class DataBaseHelper  {
      * Find runway coordinate on its name, and airport name
      * @param name
      * @param airport
-     * @param params
      * @return
      */
     public Coordinate findRunwayCoordinates(String name, String airport) {
@@ -1460,7 +1494,6 @@ public class DataBaseHelper  {
     /**
      * Find elevation based on its name
      * @param name
-     * @param params
      * @return
      */
     public String findElev(String name) {
@@ -1491,14 +1524,11 @@ public class DataBaseHelper  {
         closes(cursor);
         return elev;
     }
-    
+
     /**
      * Find the closets tiles to current position
      * @param lon
      * @param lat
-     * @param offset
-     * @param p
-     * @param names
      * @return
      */
     public String findClosestAirportID(double lon, double lat) {
@@ -1519,14 +1549,14 @@ public class DataBaseHelper  {
         }
 
         qry += "dist < " + Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE + " order by dist limit 1;";
-        
+
         Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;
 
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
-                    
+
                     ret = new String(cursor.getString(0));
                 }
             }
@@ -1987,7 +2017,55 @@ public class DataBaseHelper  {
         return metar;        
     }
 
-    
+    /**
+     *  Return metar closest to the input coordinates using query on weather.metars table
+     *  We query in a bounded 100mi wide/tall lat/lon box then sort based on distance from the input
+     *  see also http://stackoverflow.com/questions/3695224/sqlite-getting-nearest-locations-with-latitude-and-longitude#
+     * @param lat of the central point
+     * @param lon of the central point
+     * @return
+     */
+    public Metar getClosestMETAR(Double lat, Double lon) {
+
+        Metar metar = null;
+        final int searchRadius = mPref.getClosestMetarSearchRadius();
+        if( searchRadius == 0 ) return null;
+        SquareBoxSearchHelper squareBoxSearchHelper = new SquareBoxSearchHelper(lat, lon, searchRadius);
+
+        String qry =
+                "select * from metars where 1=1 "
+                        + squareBoxSearchHelper.getWhereClause("latitude", "longitude")
+                        +";";
+
+        Cursor cursor = doQueryWeather(qry, getWeatherDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+
+                    metar = new Metar();
+                    metar.rawText = cursor.getString(0);
+                    metar.time = cursor.getString(1);
+                    metar.stationId = cursor.getString(2);
+                    metar.flightCategory = cursor.getString(3);
+                    if (!cursor.isNull(4) && !cursor.isNull(5)) {
+                        metar.distance = Projection.getStaticDistance(lon, lat, cursor.getDouble(4), cursor.getDouble(5));
+
+                        GeomagneticField gmf = new GeomagneticField(lat.floatValue(), lon.floatValue(), 0, System.currentTimeMillis());
+                        Projection p = new Projection(cursor.getDouble(4), cursor.getDouble(5), lon, lat);
+                        metar.position =  Math.round(p.getDistance()) + Preferences.distanceConversionUnit + " " +
+                                p.getGeneralDirectionFrom(-gmf.getDeclination());
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closesWeather(cursor);
+        return metar;
+    }
+
     /**
      * 
      * @param lon
@@ -2034,7 +2112,6 @@ public class DataBaseHelper  {
 
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
@@ -2075,7 +2152,6 @@ public class DataBaseHelper  {
     
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<AirSigMet> getAirSigMets() {
@@ -2536,18 +2612,10 @@ public class DataBaseHelper  {
     public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
 
         final Double NAVAID_SEARCH_RADIUS = 150.; // 150 seems reasonable, it is VOR Line Of Sight at 18000
-        Coordinate top = Projection.findStaticPoint(lon, lat, 0, NAVAID_SEARCH_RADIUS),
-                bottom = Projection.findStaticPoint(lon, lat, 180, NAVAID_SEARCH_RADIUS),
-                left   = Projection.findStaticPoint(lon, lat, 270,NAVAID_SEARCH_RADIUS),
-                right  = Projection.findStaticPoint(lon, lat, 90, NAVAID_SEARCH_RADIUS);
-        Double fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        SquareBoxSearchHelper squareBoxSearchHelper = new SquareBoxSearchHelper(lat, lon, NAVAID_SEARCH_RADIUS);
         String qry = "select * from " + TABLE_NAV
-                + " where Type == 'VOR' or type == 'VOR/DME' or type == 'VORTAC' "+
-                " and ARPlatitude < "+top.getLatitude()+
-                " and ARPlatitude > "+bottom.getLatitude()+
-                " and ARPlongitude < "+right.getLongitude()+
-                " and ARPlongitude > "+left.getLongitude()+
-                " order by (("+lat+" - ARPlatitude) * ("+lat+" - ARPlatitude) + ("+lon+" - ARPlongitude) * ("+lon+" - ARPlongitude) * "+fudge+")"
+                + " where Type == 'VOR' or type == 'VOR/DME' or type == 'VORTAC' "
+                + squareBoxSearchHelper.getWhereClause("ARPlatitude", "ARPlongitude")
                 +" limit 4;"; // we need 2 coordinates for a fix; get 3 in case we hit NDB
 
 	    Cursor cursor = doQuery(qry, getMainDb());
@@ -2812,4 +2880,32 @@ public class DataBaseHelper  {
         return ret;
     }
 
+    private class SquareBoxSearchHelper {
+        private double lat, lon;
+        private Coordinate top;
+        private Coordinate bottom;
+        private Coordinate left;
+        private Coordinate right;
+        private double fudge;
+
+        public SquareBoxSearchHelper(double lat, double lon, double search_radius) {
+            this.lat = lat; this.lon = lon;
+            top = Projection.findStaticPoint(lon, lat, 0, search_radius);
+            bottom = Projection.findStaticPoint(lon, lat, 180, search_radius);
+            left = Projection.findStaticPoint(lon, lat, 270, search_radius);
+            right = Projection.findStaticPoint(lon, lat, 90, search_radius);
+            fudge = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        }
+
+        public String getWhereClause(String latField, String lonField) {
+            return " and "+latField+" < "+top.getLatitude()+
+                   " and "+latField+" > "+bottom.getLatitude()+
+                   " and "+lonField+" < "+right.getLongitude()+
+                   " and "+lonField+" > "+left.getLongitude()+
+                   " order by (("    +lat+" - "+latField+") * ("+lat+" - "+latField
+                             +") + ("+lon+" - "+lonField+") * ("+lon+" - "+lonField
+                             +") * "+fudge+")";
+        }
+
+    }
 }

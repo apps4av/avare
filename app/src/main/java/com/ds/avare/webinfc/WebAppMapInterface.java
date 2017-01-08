@@ -16,6 +16,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -24,7 +25,11 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindsAloftHelper;
+import com.ds.avare.touch.LongPressedDestination;
 import com.ds.avare.weather.Airep;
+
+import java.util.Iterator;
 
 /**
  * 
@@ -37,8 +42,14 @@ public class WebAppMapInterface {
     private Preferences mPref;
     private GenericCallback mCallback;
 
-    private static final int MSG_SET_DATA = 1;
-    private static final int MSG_ACTION = 2;
+    public static final int MSG_SET_DATA = 1;
+    public static final int MSG_ACTION = 2;
+    public static final int MSG_CHANGE_LOCATION = 3;
+    public static final int MSG_DIRECT = 4;
+    public static final int MSG_PLAN = 5;
+    public static final int MSG_PLATE = 6;
+    public static final int MSG_AFD = 7;
+
 
     /**
      * Instantiate the interface and set the context
@@ -54,13 +65,29 @@ public class WebAppMapInterface {
      * Do something on a button press
      */
     @JavascriptInterface
-    public void doAction(String action) {
+    public void doAction(String action, String loc, String type) {
         Message m = mHandler.obtainMessage();
-        m.obj = action;
-        m.what = MSG_ACTION;
+        switch (action) {
+            case "A/FD": m.what = MSG_AFD;
+                break;
+            case "Plate": m.what = MSG_PLATE;
+                break;
+            case "+Plan": m.what = MSG_PLAN;
+                break;
+            case "->D": m.what = MSG_DIRECT;
+                break;
+        }
+        m.obj = new LongPressedDestination(loc, type);
         mHandler.sendMessage(m);
     }
 
+    @JavascriptInterface
+    public void changeLocation(String loc, String type) {
+        Message m = mHandler.obtainMessage();
+        m.obj = new LongPressedDestination(loc, type);
+        m.what = MSG_CHANGE_LOCATION;
+        mHandler.sendMessage(m);
+    }
 
     public void setData(LongTouchDestination data) {
         Message m = mHandler.obtainMessage();
@@ -83,19 +110,39 @@ public class WebAppMapInterface {
 
 
                 LongTouchDestination data = (LongTouchDestination)msg.obj;
+
+                String locs_json = "[";
+                Iterator<LongPressedDestination> iter = data.locations.iterator();
+                while(iter.hasNext()){
+                    LongPressedDestination loc = iter.next();
+                    locs_json += loc.toJSON();
+                    if( iter.hasNext() ) locs_json += ",";
+                }
+                locs_json += "]";
+
                 String taf = "";
                 if(data.taf != null) {
                     String split[] = data.taf.rawText.split(data.taf.stationId, 2);
                     // Do not color code airport name
                     if(split.length == 2) {
-                        taf = "<hr><b><font color=\"yellow\">TAF </font></b>" + data.taf.stationId + " " + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                        taf = "<hr><b><font color=\"yellow\">TAF </font></b><br>";
+                        taf += data.taf.stationId;
+                        taf += WeatherHelper.formatVisibilityHTML(
+                                WeatherHelper.formatTafHTML(
+                                        WeatherHelper.formatWindsHTML(
+                                                WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()),
+                                                mPref.isWeatherTranslated()),
+                                        mPref.isWeatherTranslated()));
                     }
                 }
 
                 String metar = "";
                 if(data.metar != null) {
-                    metar = WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
-                    metar = "<hr><b><font color=\"yellow\">METAR </font></b>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\">" + metar +  "</font>";
+                    metar = WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.NoStationId, data.destination.getName());
+                    metar += "<br>";
+                    metar += WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
+                    metar = "<hr><b><font color=\"yellow\">METAR </font>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\"></b>" + metar +  "</font>";
                 }
 
                 String airep = "";
@@ -145,6 +192,9 @@ public class WebAppMapInterface {
                 if(data.performance != null) {
                     if(!data.performance.equals("")) {
                         performance = "<hr><b><font color=\"yellow\">Performance</font></b> ";
+                        performance += WeatherHelper.formatDistantMetarHeader(
+                                data.metar, WeatherHelper.DistantMetarFormat.WithStationId, data.destination.getName());
+                        performance += "<br>";
                         performance += data.performance.replace("\n", "<br>");
                     }
                 }
@@ -152,16 +202,7 @@ public class WebAppMapInterface {
                 String winds = "";
                 if(data.wa != null) {
                     winds = "<hr><b><font color=\"yellow\">Winds/Temp. Aloft</font></b> ";
-                    winds += data.wa.station + data.wa.time + "<br>";
-                    winds += "@ 03000 ft: " + WeatherHelper.decodeWind(data.wa.w3k) + "<br>";
-                    winds += "@ 06000 ft: " + WeatherHelper.decodeWind(data.wa.w6k) + "<br>";
-                    winds += "@ 09000 ft: " + WeatherHelper.decodeWind(data.wa.w9k) + "<br>";
-                    winds += "@ 12000 ft: " + WeatherHelper.decodeWind(data.wa.w12k) + "<br>";
-                    winds += "@ 18000 ft: " + WeatherHelper.decodeWind(data.wa.w18k) + "<br>";
-                    winds += "@ 24000 ft: " + WeatherHelper.decodeWind(data.wa.w24k) + "<br>";
-                    winds += "@ 30000 ft: " + WeatherHelper.decodeWind(data.wa.w30k) + "<br>";
-                    winds += "@ 34000 ft: " + WeatherHelper.decodeWind(data.wa.w34k) + "<br>";
-                    winds += "@ 39000 ft: " + WeatherHelper.decodeWind(data.wa.w39k);
+                    winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
                 }
 
                 String navaids = "";
@@ -171,7 +212,7 @@ public class WebAppMapInterface {
 
                 mWebView.loadUrl("javascript:plan_clear()");
                 String func = "javascript:setData('" +
-                        Helper.formatJsArgs(data.airport) + "','" +
+                        Helper.formatJsArgs(data.destination.toJSON()) + "','" +
                         "<b><font color=\"yellow\">Position </font></b>" + Helper.formatJsArgs(data.info) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +
@@ -181,15 +222,17 @@ public class WebAppMapInterface {
                         Helper.formatJsArgs(mets) + "','" +
                         Helper.formatJsArgs(performance) + "','" +
                         Helper.formatJsArgs(winds) + "','" +
-                        Helper.formatJsArgs(layer) +
+                        Helper.formatJsArgs(layer) + "','" +
+                        Helper.formatJsArgs(locs_json) +
                         "')";
 
 
 
                 mWebView.loadUrl(func);
             }
-            else if (MSG_ACTION == msg.what) {
-                mCallback.callback((String)msg.obj, null);
+            else {
+                LongPressedDestination dest = (LongPressedDestination)msg.obj;
+                mCallback.callback(msg.what, dest);
             }
         }
     };

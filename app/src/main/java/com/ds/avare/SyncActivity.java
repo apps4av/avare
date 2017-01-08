@@ -17,7 +17,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -25,6 +24,7 @@ import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -57,7 +57,7 @@ import java.io.OutputStream;
  * Note: Testing indicates that Internet connection is not required for Google Drive load/store.
  * The API seems to be caching and taking care of uploads / sync when Internet connection becomes available.
  */
-public class SyncActivity extends Activity implements ConnectionCallbacks,  OnConnectionFailedListener {
+public class SyncActivity extends AppCompatActivity implements ConnectionCallbacks,  OnConnectionFailedListener {
 
     private static final int REQUEST_CODE_OPENER = 1;
     private static final int REQUEST_CODE_CREATOR = 2;

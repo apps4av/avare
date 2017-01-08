@@ -334,6 +334,20 @@ public class IHelperService extends Service {
                             object.getString("location"), object.getString("data"),
                             mService.getDBResource());
                 }
+                if ((type.equals("PIREP")) || (type.equals("WINDS")) || (type.equals("TAF")) ||
+                        (type.equals("TAF.AMD")) || (type.equals("METAR")) || (type.equals("SPECI") ||
+                        (type.equals("nexrad")))) {
+                    // Check here to see if it is an uplink type, and if so, extract the UAT tower location
+                    double lon, lat;
+                    int tisid;
+                    /*
+                     * Put METAR
+                     */
+                    lon = object.getDouble("towerlon");
+                    lat = object.getDouble("towerlat");
+                    tisid = object.getInt("tisid");
+                    mService.getAdsbWeather().putUatTower(object.getLong("time"), lon, lat, tisid);
+                }
 
             } catch (JSONException e) {
                 return;

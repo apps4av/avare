@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <resources>
 	<string name="lang"></string>
+    <string name="Stratuvare">&quot;Stratuvare&quot;</string>
     <string name="title_activity_main">&quot;Avare&quot;</string>
     <string name="MissingMaps">&quot;Download chart&quot;</string>
     <string name="MissingElevation">&quot;Download elevation chart&quot;</string>
@@ -45,6 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="desc">&quot;Image/Chart&quot;</string>
     <string name="Destination">&quot;Destination&quot;</string>
     <string name="Settings">&quot;Preferences&quot;</string>
+    <string name="Downloads">&quot;Downloads&quot;</string>
     <string name="Downloading">&quot;Downloading&quot;</string>
     <string name="download">&quot;Download&quot;</string>
     <string name="Failed">&quot;Failed&quot;</string>
@@ -66,6 +68,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="KeepScreenOn">&quot;Screen Timeout&quot;</string>
     <string name="KeepScreenOnLabel">&quot;Keep Screen On&quot;</string>
     <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
+    <string name="HideTabBar">&quot;Hide Tab Bar&quot;</string>
+    <string name="HideTabBarLabel">&quot;Hide Tab Bar&quot;</string>
+    <string name="HideTabBarSummary">&quot;Select to hide the bottom tab bar.&quot;</string>
+    <string name="HideToolbar">&quot;Hide Toolbar&quot;</string>
+    <string name="HideToolbarLabel">&quot;Hide Toolbar&quot;</string>
+    <string name="HideToolbarSummary">&quot;Select to hide the top toolbar.&quot;</string>
+    <string name="HideDrawButton">&quot;Hide Draw Button&quot;</string>
+    <string name="HideDrawButtonLabel">&quot;Hide Draw Button&quot;</string>
+    <string name="HideDrawButtonSummary">&quot;Select to hide the draw button.&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
     <string name="longitude">&quot;'W&quot;</string>
@@ -118,6 +129,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightMode">&quot;Night Mode&quot;</string>
     <string name="NightModeLabel">&quot;Night Mode&quot;</string>
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
+    <string name="TFRShading">&quot;TFR Shading&quot;</string>
+    <string name="TFRShadingLabel">&quot;TFR Shading&quot;</string>
+    <string name="TFRShadingSummary">&quot;Select to enable TFR shading (may significantly impact performance)&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
@@ -216,6 +230,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoPostTracksTitle">&quot;Send tracks file to &quot;</string>
     <string name="AutoPostTracksSubject">&quot;Avare flight tracking data - &quot;</string>
     <string name="prefAutoPostTracks">AutoPostTracks</string>
+    <string name="AutoStartTrackingLabel">&quot;Auto Start Tracking&quot;</string>
+    <string name="AutoStartTrackingSummary">&quot;Select to automatically turn tracking on when the application starts&quot;</string>
+    <string name="prefAutoStartTracking">AutoStartTracking</string>
     <string name="AutoPostTracksLabel">&quot;Automatic Track Post&quot;</string>
     <string name="AutoPostTracksSummary">&quot;Select what to do with the KML tracks file when closed&quot;</string>
     <string name="AutoPostTracksDialogText">&quot;The tracks file %s has been saved&quot;</string>
@@ -389,7 +406,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ScreenBrightness">Screen Brightness</string>
     <string name="InternalGpsStatus">Internal GPS Status</string>
     <string name="LatitudeLongitude">Latitude,Longitude</string>
-    <string name="Trip">Trip</string>
     <string name="Provider">Location Povider</string>
     <string name="Time">Current Time</string>
     <string name="AltitudeAccuracy">Altitude Accuracy</string>
@@ -397,7 +413,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AvailableMem">Available Memory</string>
     <string name="ScreenSize">Screen Size</string>
     <string name="MapSize">Map Size</string>
-    <string name="Hotels">Hotels</string>
+    <string name="s">s</string>
     <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
     <string name="AddPlan">Add To Plan</string>
     <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
@@ -538,12 +554,19 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TileSize">TileSize</string>
     <string name="TileSizeLabel">New Tile Size</string>
     <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
+    <string name="PersistZoomLabel">&quot;Remember zoom?&quot;</string>
+    <string name="PersistZoomSummary">&quot;Select to return to last zoom level when the application starts&quot;</string>
+    <string name="prefPersistZoom">PersistZoom</string>
+    <string name="prefZoomLevel">ZoomLevel</string>
 
     <string name="Developer">Developer Settings</string>
     <string name="DeclareEmergency">Declare Emergency?</string>
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n4.Send SMS to Emergency Contact</string>
     <string name="SMSFailed">SMS Send Failed! This device cannot send SMS, or Avare is not allowed to send one.</string>
     <string name="Menu">Menu</string>
+
+    <string name="RegisterActivityPreferenceKey">REGISTER_ACTIVITY_PREFERENCE_KEY</string>
+    <string name="SyncActivityPreferenceKey">SYNC_ACTIVITY_PREFERENCE_KEY</string>
 
     <string name="b1map">Remove Button 1 in Map (Restart Required)</string>
     <string name="b1plate">Remove Button 1 in Plate (Restart Required)</string>
@@ -553,6 +576,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
     <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
+
+    <string name="ShowWindBarbs">&quot;Show Wind Barbs on METARs&quot;</string>
+    <string name="ShowWindBarbsSummary">&quot;Choose to select the display of wind barbs on ADS-B METARs&quot;</string>
 
     <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
     <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>
@@ -566,5 +592,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerticalPfdLabel">PFD Vertical Mount</string>
     <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
     <string name="SeeHelp">See Help.</string>
+
+    <string name="NearestMETARRadius">&quot;NearestMETARRadius&quot;</string>
+    <string name="NearestMETARRadiusLabel">&quot;Nearest METAR Search Radius&quot;</string>
+    <string name="NearestMETARRadiusSummary">&quot;Select the distance to the nearest METAR station reported when METAR is unavailable on a field.&quot;</string>
+    <string name="WindsAloftCeiling">&quot;Winds/Temp. Aloft Filter&quot;</string>
+    <string name="WindsAloftCeilingSummary">&quot;Select Winds/Temperature Aloft upper limit altitude (thousands of feet)&quot;</string>
 
 </resources>

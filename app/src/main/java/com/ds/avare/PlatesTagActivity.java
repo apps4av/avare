@@ -12,8 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,6 +22,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -59,7 +59,7 @@ import java.util.Observer;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlatesTagActivity extends Activity implements Observer {
+public class PlatesTagActivity extends AppCompatActivity implements Observer {
     private PlatesTagView                mPlatesView;
     private StorageService               mService;
     private PixelCoordinate              mPoint[];
@@ -74,7 +74,7 @@ public class PlatesTagActivity extends Activity implements Observer {
     private Toast                        mToast;
     private Preferences                  mPref;
     private LinkedList<String>           mTags;
-    private boolean                     mTagged;
+    private boolean                      mTagged;
     private AlertDialog                  mAlertDialog;
     private Destination                  mDest;
     private String                       mName;

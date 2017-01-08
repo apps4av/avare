@@ -284,6 +284,7 @@ public class Download {
                     int totalnum = 0;
 
                     mCode = "code corrupt zip file ";
+
                     Enumeration<? extends ZipEntry> ent = zipFile.entries();
                     List list = Collections.list(ent);
 

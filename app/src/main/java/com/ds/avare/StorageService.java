@@ -504,7 +504,7 @@ public class StorageService extends Service {
 
                     // Adjust the flight timer
                     getFlightTimer().setSpeed(mGpsParams.getSpeed());
-                    
+
                     // Tell the KML recorder a new point to potentially plot
                     getKMLRecorder().setGpsParams(mGpsParams);
                     

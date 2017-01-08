@@ -1,6 +1,11 @@
 package com.ds.avare.adsb;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+
 import android.util.SparseArray;
 
 import com.ds.avare.IHelperService;
@@ -12,7 +17,9 @@ import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.threed.data.Vector4d;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.TrafficIcon;
 
 public class Traffic {
 
@@ -24,7 +31,7 @@ public class Traffic {
     public float mHeading;
     public String mCallSign;
     private long mLastUpdate;
-    
+    private static BitmapHolder mTrafficBitmap;
 
     public static final double TRAFFIC_ALTITUDE_DIFF_DANGEROUS = 1000; //ft 300m required minimum
     
@@ -113,6 +120,7 @@ public class Traffic {
 
     public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw) {
 
+        mTrafficBitmap = TrafficIcon.getDisplayIcon(ctx.context);
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
 
         /*
@@ -152,18 +160,20 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
-            String text = t.mCallSign + ":";
+            // JAJ: was ';'
+            String text = t.mCallSign;
+            String text2 = "";
 
             if(altitude <= IHelperService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
                 diff = (int)t.mAltitude;
-                text += diff + "PrA'"; // show that this is pressure altitude
+                text2 = diff + "PrA'"; // show that this is pressure altitude
                 // do not filter when own PA is not known
             }
             else {
                 // Own PA is known, show height difference
                 diff = (int)(t.mAltitude - altitude);
-                text += (diff > 0 ? "+" : "") + diff + "'";
+                text2 += (diff > 0 ? "+" : "") + diff + "'";
                 // filter
                 if(Math.abs(diff) > filterAltitude) {
                     continue;
@@ -175,11 +185,38 @@ public class Traffic {
             /*
              * Draw outline to show it clearly
              */
-            ctx.paint.setColor((~color) | 0xFF000000);
-            ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
+//            ctx.paint.setColor((~color) | 0xFF000000);ee
+//            ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
 
-            ctx.paint.setColor(color);
-            ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+//            ctx.paint.setColor(color);
+//            ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+            ctx.paint.setColor(Color.DKGRAY);
+            ctx.paint.setAlpha(0x7f);
+            ctx.canvas.drawCircle(x,y,(ctx.dip2pix*16),ctx.paint);
+            ctx.paint.setColor(Color.BLUE);
+            ctx.paint.setAlpha(0xff);
+
+            Origin mOrigin = new Origin();
+
+                if(null != mTrafficBitmap ) {
+
+            /*
+             * Rotate and move to a panned location
+             */
+                Paint paint = new Paint();
+                    mTrafficBitmap.getTransform().setTranslate(
+                            x - mTrafficBitmap.getWidth() / 2,
+                            y - (mTrafficBitmap.getHeight() / 2 ));
+                    mTrafficBitmap.getTransform().postRotate(t.mHeading, x, y);
+//                    paint.setColorFilter(new PorterDuffColorFilter(Color.BLUE, PorterDuff.Mode.ADD));
+
+
+                    ctx.canvas.drawBitmap(mTrafficBitmap.getBitmap(), mTrafficBitmap.getTransform(), paint);
+                }
+
+            ctx.paint.setShadowLayer(0, 0, 0, 0);
+            ctx.paint.setColor(Color.BLUE);
+
             /*
              * Show a barb for heading with length based on speed
              * Vel can be 0 to 4096 knots (practically it can be 0 to 500 knots), so set from length 0 to 100 pixels (1/5)
@@ -207,6 +244,8 @@ public class Traffic {
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
                     text, Color.BLACK, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
 
+            ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
+                    text2, Color.BLACK, (float)x, (float)y + radius + (ctx.textPaint.getTextSize()*2));
 
             if (true == bRotated) {
                 ctx.canvas.restore();

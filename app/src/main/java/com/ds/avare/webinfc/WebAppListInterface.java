@@ -19,9 +19,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
-import com.ds.avare.PlanActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
+import com.ds.avare.fragment.PlanFragment;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -485,10 +485,10 @@ public class WebAppListInterface {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.SHOW_BUSY, null);
         	}
         }
     };

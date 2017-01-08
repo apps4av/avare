@@ -25,10 +25,10 @@ import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
-import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
+import com.ds.avare.fragment.PlanFragment;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
@@ -84,7 +84,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_ERROR = 15;
     private static final int MSG_PREV_HIDE = 16;
     private static final int MSG_NEXT_HIDE = 17;
-    private static final int MSG_PLAN_COUNT = 18;
+    private static final int MSG_TIMER_LOAD = 18;
+    private static final int MSG_PLAN_COUNT = 19;
     		
     private static final int MAX_PLANS_SHOWN = 5;
     
@@ -117,7 +118,8 @@ public class WebAppPlanInterface implements Observer {
      * 
      */
     public void timer() {
-    	
+        mHandler.sendEmptyMessage(MSG_TIMER_LOAD);
+
     	Plan plan = mService.getPlan();
 
     	// If we are in sim mode, then send a message
@@ -676,8 +678,7 @@ public class WebAppPlanInterface implements Observer {
     /** 
      * JS polls every second to get all plan data.
      */
-    @JavascriptInterface
-    public String getPlanData() {
+    private String getPlanData() {
     	Plan plan = mService.getPlan();
     	
         /*
@@ -953,6 +954,10 @@ public class WebAppPlanInterface implements Observer {
         	else if (MSG_TIMER == msg.what) {
         		plan.simulate();
         	}
+            else if (MSG_TIMER_LOAD == msg.what) {
+                String func = "javascript:loadplan('" + Helper.formatJsArgs(getPlanData()) + "')";
+                mWebView.loadUrl(func);
+            }
         	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
             	String func = "javascript:save_clear()";
             	mWebView.loadUrl(func);
@@ -962,16 +967,16 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
+        		mCallback.callback(PlanFragment.SHOW_BUSY, null);
         	}
         	else if(MSG_ACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.ACTIVE, null);
+        		mCallback.callback(PlanFragment.ACTIVE, null);
         	}
         	else if(MSG_INACTIVE == msg.what) {
-        		mCallback.callback((Object)PlanActivity.INACTIVE, null);
+        		mCallback.callback(PlanFragment.INACTIVE, null);
         	}
            	else if(MSG_SAVE_HIDE == msg.what) {	
             	String func = "javascript:save_hide(" + (String)msg.obj + ")";
@@ -990,7 +995,7 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	
-        		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
+        		mCallback.callback(PlanFragment.MESSAGE, msg.obj);
         	}
         }
     };

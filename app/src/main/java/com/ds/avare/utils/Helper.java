@@ -52,6 +52,8 @@ import java.util.TimeZone;
  */
 public class Helper {
 
+    private static Calendar mCalendar = new GregorianCalendar();
+
     // All elevation is calculated in feet
     // ranges -364 to 20150 feet (hence 20150 in 3D is +z)
     public static final double ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE     = 24.5276170372963 * Preferences.heightConversion;
@@ -247,13 +249,21 @@ public class Helper {
     }
 
     /**
-     * 
+     *
      * @param lonlat
      */
     public static double truncGeo(double lonlat) {
-        lonlat *= 10000;
+        return truncGeo(lonlat, 4);
+    }
+
+    /**
+     *
+     * @param lonlat
+     */
+    public static double truncGeo(double lonlat, int places) {
+        lonlat *= Math.pow(10, places);
         lonlat = Math.round(lonlat);
-        lonlat /= 10000;
+        lonlat /= Math.pow(10, places);
         return lonlat;
     }
     
@@ -448,13 +458,8 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
-        Preferences p = new Preferences(act.getApplicationContext()); 
-        if(p.isNightMode()) {
-            act.setTheme(android.R.style.Theme_Black);
-        }
-        else {
-            act.setTheme(android.R.style.Theme_Light);            
-        }
+        Preferences p = new Preferences(act.getApplicationContext());
+        act.setTheme(p.isNightMode() ? R.style.AppThemeDark : R.style.AppTheme);
     }
     
     /**
@@ -691,23 +696,22 @@ public class Helper {
     		return true;
     	return false;
     }
-    
+
     /**
-     * 
+     *
      */
     public static String millisToGMT(long millis) {
         SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(millis) + "_UTC";
     }
-    
+
     /**
      * 
      * @return
      */
     public static long getMillisGMT() {
-        Calendar calendar = new GregorianCalendar();
-        TimeZone mTimeZone = calendar.getTimeZone();
+        TimeZone mTimeZone = mCalendar.getTimeZone();
         int offset = mTimeZone.getOffset(System.currentTimeMillis());  
         return System.currentTimeMillis() - offset;
     }

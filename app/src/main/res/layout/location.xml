@@ -22,73 +22,13 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"/>
 
         <Button
-            android:id="@+id/location_button_pref"
-            android:textStyle="bold"
-            android:layout_above="@+id/location_button_dl"
-            android:text="@string/Settings"
-            android:background="@drawable/button_bg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:visibility="invisible" />
-
-         <Button
-            android:id="@+id/location_button_dl"
-            android:textStyle="bold"
-            android:layout_above="@+id/location_button_sos"
-            android:text="@string/download"
-             android:background="@drawable/button_bg"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dp"
-            android:visibility="invisible" />
-
-         <Button
-            android:id="@+id/location_button_sos"
-            android:textStyle="bold"
-             android:background="@drawable/button_bg"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_margin="5dp"
-            android:layout_above="@+id/location_button_help"
-            android:text="@string/SOS"
-            android:visibility="invisible" />
-         
-         <Button
-            android:id="@+id/location_button_help"
-            android:textStyle="bold"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:background="@drawable/button_bg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/Help"
-            android:visibility="invisible" />
-        
-        <Button
-            android:id="@+id/location_button_menu"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/button_small"
-            android:layout_margin="5dp"
-            android:text="@string/Menu"
-            android:visibility="visible" />
-
-        <Button
             android:id="@+id/plan_prev"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_pause"
-            android:background="@drawable/button_small"
-            android:drawableLeft="@android:drawable/ic_media_previous"
-            android:src="@android:drawable/ic_media_play"
-            android:layout_margin="5dp"
+            android:drawableLeft="@drawable/ic_skip_previous_black_24dp"
             android:visibility="invisible" />
 
         <ImageButton
@@ -98,9 +38,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_above="@+id/plan_next"
-            android:background="@drawable/button_small"
-            android:src="@android:drawable/ic_media_play"
-            android:layout_margin="5dp"
+            android:src="@drawable/ic_play_arrow_black_24dp"
             android:visibility="invisible" />
 
         <Button
@@ -109,97 +47,58 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@drawable/button_small"
             android:layout_above="@+id/location_button_draw_clear"
-            android:drawableLeft="@android:drawable/ic_media_next"
-            android:src="@android:drawable/ic_media_play"
-            android:layout_margin="5dp"
+            android:drawableLeft="@drawable/ic_skip_next_black_24dp"
             android:visibility="invisible" />
 
-        <com.ds.avare.animation.TwoButton
-            android:id="@+id/location_button_tracks"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_above="@+id/location_spinner_layer"
+        <ImageButton
+            android:id="@+id/location_button_charts"
             android:visibility="invisible"
-            android:textStyle="bold"
-            android:background="@drawable/button_bg_option"
-            android:layout_margin="5dp"
-            android:textOff="@string/TracksOff"
-            android:textOn="@string/TracksOn" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha=".75"
+            android:src="@drawable/ic_map_white_24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true" />
 
-        <com.ds.avare.utils.OptionButton
-            android:id="@+id/location_spinner_layer"
-            android:layout_alignParentRight="true"
-            android:layout_above="@+id/location_button_sim"
+        <ImageButton
+            android:id="@+id/location_button_layers"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_bg_option"
-            android:layout_margin="5dp"
-            android:visibility="invisible"
-            android:labelFor="@string/LayerSelect"
-            android:entries="@array/LayerType"/>
-
-        <com.ds.avare.animation.TwoButton
-            android:id="@+id/location_button_sim"
-            android:visibility="invisible"
-            android:layout_above="@+id/location_spinner_chart"
-            android:layout_alignParentRight="true"
-            android:textOff="@string/Navigate"
-            android:textOn="@string/SimulationMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_bg_option"
-            android:layout_margin="5dp"
-            android:textStyle="bold"/>
+            android:alpha=".75"
+            android:src="@drawable/ic_layers_white_24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/location_button_charts" />
 
         <ImageButton
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:alpha=".75"
+            android:src="@drawable/ic_my_location_white_24dp"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/button_small"
-            android:layout_margin="5dp"
-            android:src="@android:drawable/ic_menu_mylocation" />
+            android:layout_centerHorizontal="true" />
 
-        <Button
-            android:id="@+id/location_button_draw_clear"
-            android:textStyle="bold"
-            android:layout_alignParentBottom="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/location_button_draw"
-            android:text="@string/Clear"
-            android:background="@drawable/button_small"
-            android:layout_margin="5dp"
-            android:visibility="invisible" />        
-        
-        <com.ds.avare.animation.TwoButton
+        <ImageButton
             android:id="@+id/location_button_draw"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:textOff="@string/Pan"
-            android:layout_width="wrap_content"
-            android:textOn="@string/Draw"
-            android:background="@drawable/button_small"
-            android:layout_margin="5dp"
-            android:textStyle="bold" />
-
-        <com.ds.avare.utils.OptionButton
-            android:id="@+id/location_spinner_chart"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
             android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_bg_option"
-            android:layout_margin="5dp"
-            android:labelFor="@string/ChartTypeLabel"
-            />
+            android:alpha=".75"
+            android:src="@drawable/ic_gesture_white_24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true" />
+
+        <ImageButton
+            android:id="@+id/location_button_draw_clear"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha=".75"
+            android:src="@drawable/ic_clear_white_24dp"
+            android:layout_above="@+id/location_button_draw"
+            android:layout_alignParentRight="true" />
 
 </RelativeLayout>
 
