@@ -17,6 +17,7 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -26,7 +27,7 @@ import java.util.LinkedList;
  */
 public class LongTouchDestination {
 
-    public String airport;
+    public LongPressedDestination destination;
     public String info;
     public String tfr;
     public String mets;
@@ -38,4 +39,5 @@ public class LongTouchDestination {
     public LinkedList<Airep> airep;
     public String performance;
     public String navaids;
+    public ArrayList<LongPressedDestination> locations;
 }

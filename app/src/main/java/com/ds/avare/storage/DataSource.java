@@ -18,18 +18,21 @@ import android.content.Context;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -338,6 +341,10 @@ public class DataSource {
      */
     public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
         return  dbHelper.findNavaidsNearby(lat, lon);
+    }
+
+    public ArrayList<Fix> findClosestFixes(Double lat, Double lon) {
+        return dbHelper.findClosestFixes(lat, lon);
     }
 
     /**

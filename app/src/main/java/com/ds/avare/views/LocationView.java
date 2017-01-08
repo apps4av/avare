@@ -37,8 +37,10 @@ import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
@@ -58,7 +60,9 @@ import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.BasicOnScaleGestureListener;
 import com.ds.avare.touch.GestureInterface;
+import com.ds.avare.touch.LongPressedDestination;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.GenericCallback;
@@ -75,6 +79,9 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -403,9 +410,16 @@ public class LocationView extends View implements OnTouchListener {
                 if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
                     double lon = mOrigin.getLongitudeOf(e.getX());
                     double lat = mOrigin.getLatitudeOf(e.getY());
-                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor());
-                    mDragStartedX = e.getX();
-                    mDragStartedY = e.getY();
+
+                    if( mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor()) > -1 ) {
+                        mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mViewParams.getScale().getScaleFactor());
+                        mDragStartedX = e.getX();
+                        mDragStartedY = e.getY();
+                    } else {
+                        startClosestAirportTask(e.getX(), e.getY());
+                    }
+                } else {
+                    startClosestAirportTask(e.getX(), e.getY());
                 }
                 
             }
@@ -416,7 +430,7 @@ public class LocationView extends View implements OnTouchListener {
             mDoCallbackWhenDone = false;
             mDownFocusPoint = getFocusPoint(e);
 
-            startClosestAirportTask(e.getX(), e.getY());
+            //startClosestAirportTask(e.getX(), e.getY());
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE) {
 
@@ -1139,7 +1153,7 @@ public class LocationView extends View implements OnTouchListener {
      * @author zkhan
      *
      */
-    private class ClosestAirportTask extends AsyncTask<Object, String, String> {
+    private class ClosestAirportTask extends AsyncTask<Object, String, LongPressedDestination> {
         private Double lon;
         private Double lat;
         private String tfr = "";
@@ -1153,21 +1167,24 @@ public class LocationView extends View implements OnTouchListener {
         private Metar metar;
         private String elev;
         private Vector<NavAid> navaids;
+        private ArrayList<LongPressedDestination> locations;
 
         /* (non-Javadoc)
+         * @param vals[0] longitude of point to find. mutually exclusive with vals[2]
+         * @param vals[1] latitude of point to find. mutually exclusive with vals[2]
+         * @param vals[2] LongPressedDestination of destination to look up.
          * @see android.os.AsyncTask#doInBackground(Params[])
          */     
         @Override
-        protected String doInBackground(Object... vals) {           
+        protected LongPressedDestination doInBackground(Object... vals) {
+
+            locations = new ArrayList<LongPressedDestination>();
+
             Thread.currentThread().setName("Closest");
             if(null == mService) {
                 return null;
             }
 
-            String airport = null;
-            lon = (Double)vals[0];
-            lat = (Double)vals[1];
-            
             // if the user is moving instead of doing a long press, give them a chance
             // to cancel us before we start doing anything
             try {
@@ -1177,8 +1194,144 @@ public class LocationView extends View implements OnTouchListener {
             }
             
             if(isCancelled())
-                return "";
-                       
+                return null;
+
+            // If a set destination was passed in, we'll use it. Get its GPS coords and if it's a
+            //  base get the weather for it. Otherwise parse out the GPS data and add it as a location
+            LongPressedDestination setDest = null;
+            if( vals.length > 2 ) {
+                setDest = (LongPressedDestination)vals[2];
+
+                if( setDest.getType().equals(Destination.GPS) ) {
+                    String[] coords = setDest.getName().split("&");
+                    lat = Double.parseDouble(coords[0]);
+                    lon = Double.parseDouble(coords[1]);
+                } else {
+                    String loc = mService.getDBResource().findLonLat(setDest.getName(), setDest.getType());
+                    if (loc != null) {
+                        String[] coords = loc.split(",");
+                        lon = Double.parseDouble(coords[0]);
+                        lat = Double.parseDouble(coords[1]);
+                    } else
+                        return null;
+
+                    if( setDest.getType().equals(Destination.BASE)) {
+                        setLocationWeather(setDest);
+                    }
+                }
+            } else {
+                lon = (Double)vals[0];
+                lat = (Double)vals[1];
+                locations.add(new LongPressedDestination("" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon), Destination.GPS, 0.0, lat, lon));
+            }
+
+            if(isCancelled())
+                return null;
+
+            // Collect nearby points
+
+            // Airports
+            Airport[] airports = mService.getDBResource().findClosestAirports(lon, lat, "0");
+            if( airports != null ) {
+                for (Airport a : airports) {
+                    if (a == null) break;
+
+                    double navaidDistance = Projection.getStaticDistance(lon, lat,
+                            a.getLon(), a.getLat());
+
+                    // Don't add the airport if it's already the set destination
+                    // For now, don't limit the distance
+                    if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
+                            !(a.getId().equals(setDest.getName()) && setDest.getType().equals(Destination.BASE))) {
+
+                        locations.add(new LongPressedDestination(a.getId(), Destination.BASE, navaidDistance, a.getLat(), a.getLon()));
+                    }
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
+            // Navaids
+            navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
+            if( navaids != null) {
+                for (NavAid n : navaids) {
+                    double navaidDistance = Projection.getStaticDistance(lon, lat,
+                            n.getCoords().getLongitude(), n.getCoords().getLatitude());
+                    // For now, don't limit based on distance
+                    if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ setDest == null ||
+                            !(n.getLocationId().equals(setDest.getName()) && setDest.getType().equals(Destination.NAVAID))) {
+                        locations.add(new LongPressedDestination(n.getLocationId(), Destination.NAVAID, navaidDistance, n.getCoords().getLatitude(), n.getCoords().getLongitude()));
+                    }
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
+            // Fixes
+            ArrayList<Fix> fixes = mService.getDBResource().findClosestFixes(lat, lon);
+            for (Fix fix : fixes) {
+                double navaidDistance = Projection.getStaticDistance(lon, lat,
+                        fix.getLon(), fix.getLat());
+                // For now, don't limit based on distance
+                // Don't add RNAV WP or Mil Rep fix types
+                if ( /*navaidDistance < (Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor()) &&*/ ( setDest == null ||
+                        !( fix.getId().equals(setDest.getName()) && setDest.getType().equals(Destination.FIX))) &&
+                        !(fix.getType().equals("YRNAV-WP") || fix.getType().equals("YMIL-REP-PT") || fix.getType().equals("NAWY-INTXN")))
+                {
+                    locations.add(new LongPressedDestination(fix.getId(), Destination.FIX, navaidDistance, fix.getLat(), fix.getLon()));
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
+            // Sort and truncate
+            Collections.sort(locations);
+            if( locations.size() > Preferences.MAX_NEARBY_POINTS ) locations = new ArrayList<LongPressedDestination>(locations.subList(0, Preferences.MAX_NEARBY_POINTS));
+
+            // Get the METARs for the airports in the list if the weather is new enough
+            for (LongPressedDestination nearbyLoc : locations) {
+                if (nearbyLoc.getType() == Destination.BASE) {
+                    setLocationWeather(nearbyLoc);
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
+            // If not a set dest, figure out which to use
+            int indexToUse = 0;
+            if( setDest == null ) {
+                String currentType = "";
+                for( int i = 0; i < locations.size(); i++) {
+                    LongPressedDestination dest = locations.get(i);
+                    if( dest.getDistance() < ((Preferences.NEARBY_TOUCH_DISTANCE / mViewParams.getScaleFactor() ) / 5) ) {
+                        if( currentType.equals("") || currentType.equals(Destination.GPS) || currentType.equals(Destination.NAVAID) || currentType.equals(Destination.FIX) ) {
+                            indexToUse = i;
+                            currentType = dest.getType();
+                        }
+                    }
+                }
+                setDest = locations.remove(indexToUse);
+                lat = setDest.getLat();
+                lon = setDest.getLon();
+
+                // If we're changing the destination, get the new distances
+                if( indexToUse > 0 ) {
+                    for( int i = 0; i < locations.size(); i++) {
+                        LongPressedDestination dest = locations.get(i);
+                        double navaidDistance = Projection.getStaticDistance(lon, lat,
+                                dest.getLon(), dest.getLat());
+                        dest.setDistance(navaidDistance);
+                    }
+                }
+            }
+
+            if(isCancelled())
+                return null;
+
             /*
              * Get TFR tfr if touched on its top
              */
@@ -1217,41 +1370,38 @@ public class LocationView extends View implements OnTouchListener {
                 }
             }            
 
-            airport = mService.getDBResource().findClosestAirportID(lon, lat);
             if(isCancelled()) {
-                return "";
+                return null;
             }
 
-            if(null == airport) {
-                airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
-            }
-            else {
+            if( setDest.getType().equals(Destination.BASE) ){
+                final String airport = setDest.getName();
+
                 taf = mService.getDBResource().getTAF(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 metar = mService.getDBResource().getMETAR(airport);   
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 if (metar==null) { // in no metar on the field, try to find the closest metar
                     metar = mService.getDBResource().getClosestMETAR(lat,lon);
                     if(isCancelled()) {
-                        return "";
+                        return null;
                     }
                 }
 
                 runways = mService.getDBResource().findRunways(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 elev = mService.getDBResource().findElev(airport);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
-
             }
             
             /*
@@ -1260,41 +1410,40 @@ public class LocationView extends View implements OnTouchListener {
             if(!mPref.useAdsbWeather()) {              
                 aireps = mService.getDBResource().getAireps(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 wa = mService.getDBResource().getWindsAloft(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
                 
                 sua = mService.getDBResource().getSua(lon, lat);
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
 
                 if(mLayer != null) {
                     layer = mLayer.getDate();
                 }
                 if(isCancelled()) {
-                    return "";
+                    return null;
                 }
             }
 
-            navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
-
             mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
-            return airport;
+
+            return setDest;
         }
         
         /* (non-Javadoc)
          * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
          */
         @Override
-        protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjection && null != airport) {
+        protected void onPostExecute(LongPressedDestination destination) {
+            if(null != mGestureCallBack && null != mPointProjection && null != destination) {
                 mLongTouchDestination = new LongTouchDestination();
-                mLongTouchDestination.airport = airport;
+                mLongTouchDestination.destination = destination; // here we assign destination name
                 mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
                         "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
                         Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
@@ -1310,8 +1459,8 @@ public class LocationView extends View implements OnTouchListener {
                  */
 
                 if(mPref.useAdsbWeather()) {
-                    taf = mService.getAdsbWeather().getTaf(airport);
-                    metar = mService.getAdsbWeather().getMETAR(airport);                    
+                    taf = mService.getAdsbWeather().getTaf(destination.getName()); // MAYBE SHOULD MAKE THIS CONDITIONAL ON TYPE?
+                    metar = mService.getAdsbWeather().getMETAR(destination.getName());
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
                     layer = mService.getAdsbWeather().getNexrad().getDate();
@@ -1343,6 +1492,7 @@ public class LocationView extends View implements OnTouchListener {
                 mLongTouchDestination.wa = wa;
                 mLongTouchDestination.sua = sua;
                 mLongTouchDestination.layer = layer;
+                mLongTouchDestination.locations = locations;
                 //ideally we would pass altitude AGL for navaid reception calculations
                 mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
                 if(metar != null) {
@@ -1361,6 +1511,31 @@ public class LocationView extends View implements OnTouchListener {
                 }
             }
             invalidate();
+        }
+
+
+        private void setLocationWeather(LongPressedDestination dest ) {
+
+            // Only get weather if it's new or we're using ADSB weather
+            boolean isWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
+            boolean useAdsbWeather = mPref.useAdsbWeather();
+
+            // Return if the weather is old and we're not using ADSB
+            if( isWeatherOld && !useAdsbWeather) return;
+
+            Metar metar;
+            if( useAdsbWeather ) {
+                metar = mService.getAdsbWeather().getMETAR(dest.getName());
+            } else {
+                metar = mService.getDBResource().getMETAR(dest.getName());
+
+                if (metar == null) { // in no metar on the field, try to find the closest metar
+                    metar = mService.getDBResource().getClosestMETAR(dest.getLat(), dest.getLon());
+                }
+            }
+            if (metar != null) {
+                dest.setWeatherColor(WeatherHelper.metarColorString(metar.flightCategory));
+            }
         }
         
     }
@@ -1522,6 +1697,11 @@ public class LocationView extends View implements OnTouchListener {
         }
     }
 
+    public void showLocationModal(LongPressedDestination dest) {
+        mDoCallbackWhenDone = true;
+        mClosestTask = new ClosestAirportTask();
+        mClosestTask.execute(null, null, dest);
+    }
 
     private void startClosestAirportTask(double x, double y) {
         // We won't be doing the airport long press under certain circumstances

@@ -23,6 +23,7 @@ import com.ds.avare.R;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -31,6 +32,8 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
+import com.ds.avare.touch.LongPressedDestination;
+import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
@@ -40,11 +43,13 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -302,8 +307,6 @@ public class DataBaseHelper  {
     
     /**
      * Find airports in an particular area
-     * @param name
-     * @param params
      */
     public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
 
@@ -440,6 +443,42 @@ public class DataBaseHelper  {
 
 
 
+    public ArrayList<Fix> findClosestFixes(double lat, double lon){
+
+        Cursor cursor;
+        ArrayList<Fix> points = new ArrayList<Fix>();
+
+        // Find FIX here first
+        String qry = "select * from " + TABLE_FIX ;
+
+        qry += " order by ((" +
+                lon + " - " + LONGITUDE_DB + ") * (" + lon + "- " + LONGITUDE_DB +") + (" +
+                lat + " - " + LATITUDE_DB + ") * (" + lat + "- " + LATITUDE_DB + ")) ASC " +
+                " limit " + Preferences.MAX_AREA_AIRPORTS * 2 + ";";
+        /*
+         * NAV
+         */
+        cursor = doQuery(qry, getMainDb());
+
+        try {
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do {
+                        points.add(new Fix(cursor.getString(LOCATION_ID_COL).trim(),
+                                cursor.getFloat(LATITUDE_COL),
+                                cursor.getFloat(LONGITUDE_COL),
+                                cursor.getString(TYPE_COL)));
+                    }
+                    while(cursor.moveToNext());
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        closes(cursor);
+        return points;
+    }
 
     public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
 
@@ -498,7 +537,6 @@ public class DataBaseHelper  {
     /**
      * Search with I am feeling lucky. Best guess
      * @param name
-     * @param params
      */
     public  StringPreference searchOne(String name) {
         
@@ -617,7 +655,6 @@ public class DataBaseHelper  {
     /**
      * 
      * @param name
-     * @param params
      */
     private StringPreference searchRadial(String name) {
         int len = name.length();
@@ -1235,7 +1272,6 @@ public class DataBaseHelper  {
     /**
      * Find all frequencies based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findFrequencies(String name) {
@@ -1378,7 +1414,6 @@ public class DataBaseHelper  {
     /**
      * Find all runways based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findRunways(String name) {
@@ -1423,7 +1458,6 @@ public class DataBaseHelper  {
      * Find runway coordinate on its name, and airport name
      * @param name
      * @param airport
-     * @param params
      * @return
      */
     public Coordinate findRunwayCoordinates(String name, String airport) {
@@ -1460,7 +1494,6 @@ public class DataBaseHelper  {
     /**
      * Find elevation based on its name
      * @param name
-     * @param params
      * @return
      */
     public String findElev(String name) {
@@ -1491,14 +1524,11 @@ public class DataBaseHelper  {
         closes(cursor);
         return elev;
     }
-    
+
     /**
      * Find the closets tiles to current position
      * @param lon
      * @param lat
-     * @param offset
-     * @param p
-     * @param names
      * @return
      */
     public String findClosestAirportID(double lon, double lat) {
@@ -1519,14 +1549,14 @@ public class DataBaseHelper  {
         }
 
         qry += "dist < " + Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE + " order by dist limit 1;";
-        
+
         Cursor cursor = doQuery(qry, getMainDb());
         String ret = null;
 
         try {
             if(cursor != null) {
                 if(cursor.moveToFirst()) {
-                    
+
                     ret = new String(cursor.getString(0));
                 }
             }
@@ -2082,7 +2112,6 @@ public class DataBaseHelper  {
 
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
@@ -2123,7 +2152,6 @@ public class DataBaseHelper  {
     
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<AirSigMet> getAirSigMets() {

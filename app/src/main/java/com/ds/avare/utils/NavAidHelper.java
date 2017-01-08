@@ -88,7 +88,6 @@ public class NavAidHelper {
         String result = "<table>";
         if (navaids != null) {
             for (NavAid na : navaids) {
-
                 result +=
                         "<tr>" // fields' order same as Chart Supplement convention
                             + "<td>"
