@@ -17,10 +17,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
@@ -273,19 +277,20 @@ public class Helper {
     }
     
 
+    private static final float[] sInvertMatrix = {
+        -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+                0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
+                0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
+                1.0f,  1.0f,  1.0f,  1.0f,  0.0f
+    };
+    private static final ColorFilter sInvertFilter = new ColorMatrixColorFilter(new ColorMatrix(sInvertMatrix));
+
     /**
      * 
      * @param paint
      */
     public static void invertCanvasColors(Paint paint) {
-       float mx [] = {
-                -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-                0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
-                0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f 
-       };
-       ColorMatrix cm = new ColorMatrix(mx);
-       paint.setColorFilter(new ColorMatrixColorFilter(cm));
+       paint.setColorFilter(sInvertFilter);
     }
 
     /**
@@ -295,6 +300,18 @@ public class Helper {
         double altitude = msl;
         return(String.format(Locale.getDefault(), "%d", (int)altitude));
     }
+
+    private static final int NIGHT_RED = Color.rgb(255, 160, 160);
+    private static final ColorFilter sDarkenFilter = new PorterDuffColorFilter(	NIGHT_RED, PorterDuff.Mode.MULTIPLY);
+
+    /**
+     *
+     * @param paint
+     */
+    public static void darkenCanvasColors(Paint paint) {
+        paint.setColorFilter(sDarkenFilter);
+    }
+
 
     /**
      * @return

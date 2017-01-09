@@ -153,9 +153,11 @@ public abstract class Shape {
                 float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
                 float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());;
 
+                int dayNightColor = night ? Color.MAGENTA : Color.BLACK;
+
                 if(drawTrack) {
 	                paint.setStrokeWidth(width + 4);
-	                paint.setColor(night? Color.WHITE : Color.BLACK);
+	                paint.setColor(dayNightColor);
 	                c.drawLine(x1, y1, x2, y2, paint);
 	                paint.setStrokeWidth(width);
 
@@ -169,14 +171,14 @@ public abstract class Shape {
                 }
 
 				if(mCoords.get(coord + 1).isSeparate()) {
-                    paint.setColor(night? Color.WHITE : Color.BLACK);
+                    paint.setColor(dayNightColor);
                     c.drawCircle(x2, y2, width + 8, paint);
                     paint.setColor(Color.GREEN);
                     c.drawCircle(x2, y2, width + 6, paint);
                     paint.setColor(color);
                 }
                 if(mCoords.get(coord).isSeparate()) {
-                    paint.setColor(night? Color.WHITE : Color.BLACK);
+                    paint.setColor(dayNightColor);
                     c.drawCircle(x1, y1, width + 8, paint);
                     paint.setColor(Color.GREEN);
                     c.drawCircle(x1, y1, width + 6, paint);

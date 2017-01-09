@@ -323,7 +323,6 @@ public class Tile {
         int index = Integer.parseInt(ctx.pref.getChartType());
 
         String type = Boundaries.getChartType(index);
-        boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
         float scaleFactor = ctx.scale.getScaleFactor();
         float scaleCorrected = ctx.scale.getScaleCorrected();
 
@@ -346,11 +345,17 @@ public class Tile {
             }
 
 
+            boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
             if(IFRinv) {
                 /*
                  * IFR charts invert color at night
                  */
                 Helper.invertCanvasColors(ctx.paint);
+            }
+
+            boolean VFRnight = ctx.pref.isNightMode() && (type.equals("Sectional") || type.equals("TAC") || type.equals("WAC"));
+            if (VFRnight) {
+                Helper.darkenCanvasColors(ctx.paint);
             }
 
             /*
