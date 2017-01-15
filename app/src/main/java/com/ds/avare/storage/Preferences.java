@@ -716,7 +716,7 @@ public class Preferences {
     }
 
     /**
-     * @param value
+     * @param registered
      */
     public void setRegistered(boolean registered) {
         mPref.edit().putBoolean(mContext.getString(R.string.register), registered).commit();
@@ -1214,6 +1214,10 @@ public class Preferences {
 
     public boolean isVerticalPfd() {
         return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
+    }
+
+    public boolean isFullScreen() {
+        return mPref.getBoolean(mContext.getString(R.string.FullScreen), false);
     }
 }
 
