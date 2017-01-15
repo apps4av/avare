@@ -137,7 +137,8 @@ public class MainActivity extends TabActivity {
         if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
         }
-        
+
+        Helper.addFullScreenVisibilityChangeListener(mTabHost);
     }
     
     /**
@@ -196,6 +197,15 @@ public class MainActivity extends TabActivity {
             }
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if(hasFocus) {
+            Helper.activateFullScreenFlags(getWindow().getDecorView());
+        }
     }
     
     /**
