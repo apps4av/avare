@@ -29,6 +29,7 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.FullScreenHandler;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -44,6 +45,7 @@ public class MainActivity extends TabActivity {
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
     Preferences mPref;
+    FullScreenHandler fsHandler;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -137,7 +139,9 @@ public class MainActivity extends TabActivity {
         if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
         }
-        
+
+        fsHandler = new FullScreenHandler(mPref.isFullScreen());
+        fsHandler.addFullScreenVisibilityChangeListener(mTabHost);
     }
     
     /**
@@ -196,6 +200,15 @@ public class MainActivity extends TabActivity {
             }
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if(hasFocus) {
+            fsHandler.activateFullScreenFlags(getWindow().getDecorView());
+        }
     }
     
     /**

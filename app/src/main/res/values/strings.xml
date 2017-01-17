@@ -347,6 +347,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GeoCode">&quot;GeoPassword&quot;</string>
     <string name="GeoCodeSummary">&quot;Enter a password if you want to share your Geo. Referenced plates (obtain the password from Apps4Av)&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
+    <string name="FullScreen">Full Screen</string>
+    <string name="FullScreenSummary">Hide navigation and status bars (KitKat and newer; requires restart)</string>
+    <string name="FullScreenLabel">Full Screen</string>
+
+
+
 
     <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>

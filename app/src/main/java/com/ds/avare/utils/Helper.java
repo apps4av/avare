@@ -13,7 +13,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -21,8 +23,10 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.os.Build;
 import android.text.format.Time;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.ds.avare.R;
@@ -888,6 +892,5 @@ public class Helper {
         p[1] = pc_y + c_y;
         return p;
     }
-
 }
 
