@@ -371,6 +371,19 @@ public class SearchActivity extends Activity implements Observer {
          * For searching, start search on every new key press
          */
         mSearchText = (EditText)view.findViewById(R.id.search_edit_text);
+
+        if(mPref.isFullScreen()) {
+            //add a 24 dip padding to top and bottom of search box
+            float pixels = 24 * Helper.getDpiToPix(getApplicationContext());
+            int pixelsCeiling = (int)Math.ceil((double)pixels);
+
+            mSearchText.setPadding(
+                    mSearchText.getPaddingLeft(),
+                    pixelsCeiling,
+                    mSearchText.getPaddingRight(),
+                    pixelsCeiling);
+        }
+
         mSearchText.addTextChangedListener(new TextWatcher() { 
             @Override
             public void afterTextChanged(Editable arg0) {
