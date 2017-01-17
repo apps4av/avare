@@ -130,12 +130,32 @@ public class InternetWeatherCache {
                     if(asm.severity.equals("NONE")) {
                         continue;
                     }
-                    asm.shape = new MetShape(
-                            asm.timeFrom + "-" + asm.timeTo + "\n" +
-                            asm.hazard + "\n" +
-                            asm.reportType + "\n" +
-                            asm.severity + "\n" +
-                            asm.rawText, mDate);
+
+                    StringBuilder b = new StringBuilder();
+                    b.append(asm.reportType);
+                    b.append(" ");
+                    b.append(asm.hazard);
+                    if(!asm.severity.equals("")) {
+                        b.append(" ");
+                        b.append(asm.severity);
+                    }
+                    b.append("\n");
+                    if(!asm.minFt.equals("")) {
+                        b.append(asm.minFt);
+                        b.append(" to ");
+                    }
+                    if(!asm.maxFt.equals("")) {
+                        b.append(asm.maxFt);
+                        b.append(" ft MSL");
+                    }
+                    b.append("\n");
+                    b.append(asm.timeFrom);
+                    b.append(" to \n");
+                    b.append(asm.timeTo);
+                    b.append("\n::\n");
+                    b.append(asm.rawText);
+
+                    asm.shape = new MetShape(b.toString(), mDate);
                     String tokens[] = asm.points.split("[;]");
                     for(int j = 0; j < tokens.length; j++) {
                         String point[] = tokens[j].split("[:]");
