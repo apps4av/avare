@@ -137,7 +137,15 @@ public class MainActivity extends TabActivity {
         if(0 != (tabItems & (1 << tabTools))) {
         	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
         }
-        
+
+        // Hide keyboard from another tab
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            public void onTabChanged(String tabId) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+            }
+        });
+
     }
     
     /**
