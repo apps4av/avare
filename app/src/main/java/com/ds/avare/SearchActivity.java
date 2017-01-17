@@ -210,6 +210,7 @@ public class SearchActivity extends Activity implements Observer {
                     mSearchText.setText("");
                 }
                 mSelected = null;
+                hideMenu();
             }
             
         });
@@ -438,9 +439,19 @@ public class SearchActivity extends Activity implements Observer {
         mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
     }
-        
-        
-    
+
+
+    /**
+     *
+     */
+    private void hideMenu() {
+        mAnimatePlan.stopAndHide();
+        mAnimatePlates.stopAndHide();
+        mAnimateSelect.stopAndHide();
+        mAnimateEdit.stopAndHide();
+    }
+
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      * 
