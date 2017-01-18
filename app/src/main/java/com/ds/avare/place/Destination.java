@@ -97,6 +97,7 @@ public class Destination extends Observable {
     private double mLatd;
 
     private String mAfdFound[];
+    private String mWindString;
     
     private Preferences mPref;
     
@@ -162,6 +163,7 @@ public class Destination extends Observable {
         mPref = pref;
         mEte = new String("--:--");
         mEta = new String("--:--");
+        mWindString = "-";
         mEteSec = Long.MAX_VALUE;
         mFuel = "-.-";
         mFuelGallons = Float.MAX_VALUE;
@@ -319,6 +321,7 @@ public class Destination extends Observable {
         mGroundSpeed = speed;
         mWca = 0;
         mCrs = mBearing;
+        mWindString = "-";
         if(mPref.isSimulationMode()) {
             double ws = 0;
             double wd = 0;
@@ -326,6 +329,7 @@ public class Destination extends Observable {
                 double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
                 ws = winds[0];
                 wd = winds[1];
+                mWindString = String.format(Locale.getDefault(), "%03d@%03d", Math.round(wd) , Math.round(ws));
             }
 
             // in sim mode, do planning with winds
@@ -523,7 +527,6 @@ public class Destination extends Observable {
                 parseGps(mName, mDestType);
             }
 
-            mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
 
 	        if(mDestType.equals(UDW)){
 	        	Waypoint p = mService.getUDWMgr().get(mName);
@@ -540,7 +543,8 @@ public class Destination extends Observable {
 		            mLooking = false;
 		            mDbType = UDW;
 		            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-		        	return true;
+                    mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                    return true;
 	        	}
 	        	return false;
 	        }
@@ -571,7 +575,8 @@ public class Destination extends Observable {
 	                 */
 	                mName += "@" + mLatd + "&" + mLond;
 	            }
-	            return true;
+                mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                return true;
 	        }
 
             if(null == mDataSource) {
@@ -627,7 +632,6 @@ public class Destination extends Observable {
 	                if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
 	                    return false;  
 	                }
-
 	            }
                 /*
                  * Common stuff
@@ -643,6 +647,7 @@ public class Destination extends Observable {
                 mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
                 addTime();
                 mName += "@" + mLatd + "&" + mLond;
+                mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
                 return true;                    
 	        }
 	        
@@ -689,6 +694,17 @@ public class Destination extends Observable {
                     }
                 }
 	        }
+
+            try {
+                // Find winds
+                mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
+                mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
+            }
+            catch (Exception e) {
+                return false;
+                // Bad find
+            }
 
             return(!mParams.isEmpty());
         }
@@ -958,4 +974,9 @@ public class Destination extends Observable {
 	public double getDeclination() {
 		return mDeclination;
 	}
+
+
+    public String getWinds() {
+        return mWindString;
+    }
 }

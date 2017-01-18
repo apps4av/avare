@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="295"
-    android:versionName="7.6.5"
+    android:versionCode="296"
+    android:versionName="7.6.6"
     android:installLocation="auto">
 
     <!-- GCM requires a Google account. -->
