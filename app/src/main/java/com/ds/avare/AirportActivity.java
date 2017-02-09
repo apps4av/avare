@@ -38,6 +38,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
@@ -466,7 +467,7 @@ public class AirportActivity extends Activity implements Observer {
             }
             else {
                 viewPos = 0;
-                mDestination = new Destination(airport, Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, airport, Destination.BASE);
                 mService.setLastAfdDestination(mDestination);
                 mDestination.addObserver(AirportActivity.this);
                 mToast.setText(getString(R.string.Searching) + " " + mDestination.getID());

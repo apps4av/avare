@@ -17,9 +17,11 @@ import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.Helper;
 
 import java.util.LinkedList;
 
@@ -176,7 +178,7 @@ public class Cifp {
                     String rw = wp.replace("RW", "");
                     Coordinate c = service.getDBResource().findRunwayCoordinates(rw, mAirport);
                     if(c != null) {
-                        Destination d = new Destination(service, c.getLongitude(), c.getLatitude());
+                        Destination d = DestinationFactory.build(service, Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
                         service.getPlan().appendDestination(d);
                     }
                 }
@@ -194,7 +196,7 @@ public class Cifp {
                     /*
                      * Add each
                      */
-                    Destination d = new Destination(id, type, pref, service);
+                    Destination d = DestinationFactory.build(service, id, type);
                     d.find(dbtype);
                     service.getPlan().appendDestination(d);
                 }

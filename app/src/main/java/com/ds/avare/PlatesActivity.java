@@ -41,6 +41,7 @@ import com.ds.avare.instruments.FuelTimer;
 import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
@@ -93,7 +94,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
 
-    public static final String AD = Destination.AD;
+    public static final String AD = "AIRPORT-DIAGRAM";
     public static final String AREA = "AREA";
 
     /*
@@ -587,7 +588,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             mPlateFound = null;
             if(null != airport) {
                 
-                mDest = new Destination(airport, Destination.BASE, mPref, mService);
+                mDest = DestinationFactory.build(mService, airport, Destination.BASE);
                 mDest.addObserver(PlatesActivity.this);
                 mDest.find();
 

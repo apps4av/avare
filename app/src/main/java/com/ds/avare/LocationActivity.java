@@ -49,6 +49,7 @@ import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -285,7 +286,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     private void goTo(String dst, String type) {
         mIsWaypoint = false;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -298,7 +299,7 @@ public class LocationActivity extends Activity implements Observer {
      */
     private void planTo(String dst, String type) {
         mIsWaypoint = true;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -1133,7 +1134,7 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     addr = StringPreference.formatAddressName(addr);
 
-                    mDestination = new Destination(addr, Destination.MAPS, mPref, mService);
+                    mDestination = DestinationFactory.build(mService, addr, Destination.MAPS);
                     mDestination.addObserver(LocationActivity.this);
                     mToast.setText(getString(R.string.Searching) + " " + addr);
                     mToast.show();

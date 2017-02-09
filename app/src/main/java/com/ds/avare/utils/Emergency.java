@@ -19,6 +19,7 @@ import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
 
 import java.text.SimpleDateFormat;
@@ -82,7 +83,7 @@ public class Emergency {
         if(service.getArea() != null) {
             Airport a = service.getArea().getAirport(0);
             if(a != null) {
-                Destination d = new Destination(a.getId(), Destination.BASE, pref, service);
+                Destination d = DestinationFactory.build(service, a.getId(), Destination.BASE);
                 d.find();
                 service.setDestination(d);
             }

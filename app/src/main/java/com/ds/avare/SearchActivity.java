@@ -43,6 +43,7 @@ import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
@@ -128,7 +129,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -142,7 +143,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -248,7 +249,7 @@ public class SearchActivity extends Activity implements Observer {
                              * Edit and save description field
                              */
                             
-                            mPref.modifyARecent(mSelected, edit.getText().toString());
+                            mPref.modifyARecent(mSelected, edit.getText().toString().toUpperCase());
                             initList();
                             mSelected = null;
                             dialog.dismiss();

@@ -31,6 +31,7 @@ import com.ds.avare.StorageService;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
@@ -471,7 +472,7 @@ public class WebAppPlanInterface implements Observer {
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	Destination d = new Destination(id, type, mPref, mService);
+    	Destination d = DestinationFactory.build(mService, id, type);
     	d.addObserver(this);
     	d.find(subtype);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -846,7 +847,7 @@ public class WebAppPlanInterface implements Observer {
 	        	/*
 	        	 * Add each
 	        	 */
-	        	Destination d = new Destination(id, type, mPref, mService);
+	        	Destination d = DestinationFactory.build(mService, id, type);
 	        	d.addObserver(WebAppPlanInterface.this);
 	        	d.find(dbtype);
             }
