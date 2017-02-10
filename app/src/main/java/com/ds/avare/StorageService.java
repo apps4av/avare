@@ -57,6 +57,7 @@ import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
@@ -120,6 +121,7 @@ public class StorageService extends Service {
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
+    private LinkedList<Obstacle> mObstacles;
 
     private float[] mMatrix;
 
@@ -423,10 +425,7 @@ public class StorageService extends Service {
         mFuelTimer = new FuelTimer(getApplicationContext());
         mUpTimer = new UpTimer();
 
-        /*
-         * Monitor TFR every hour.
-         */
-        mTimer.scheduleAtFixedRate(gpsTime, 0, 60 * 1000);
+        mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
         
         /*
          * Start GPS, and call all activities registered to listen to GPS
@@ -910,8 +909,11 @@ public class StorageService extends Service {
              */
             synchronized(this) {
                 mCounter++;
-                if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2)) {
+                if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2 * 60)) {
                     mGps.stop();
+                }
+                if(null != mGpsParams) {
+                    mObstacles = mImageDataSource.findObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), (int) mGpsParams.getAltitude());
                 }
             }
 
@@ -1256,4 +1258,8 @@ public class StorageService extends Service {
 	public DrawCapLines getCap() {
 		return mCap;
 	}
+
+    public LinkedList<Obstacle> getObstacles() {
+        return mObstacles;
+    }
 }

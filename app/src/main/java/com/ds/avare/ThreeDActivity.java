@@ -55,8 +55,6 @@ import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
 
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -84,14 +82,9 @@ public class ThreeDActivity extends Activity {
 
     private GlassView mGlassView;
 
-
-    private Vector4d mObstacles[];
-
     /**
      * For performing periodic activities.
      */
-    private Timer mTimer;
-    private UpdateTask mTimerTask;
     private Location mLocation;
     private long mTime;
 
@@ -110,7 +103,6 @@ public class ThreeDActivity extends Activity {
     private static final int MESSAGE_INIT = 0;
     private static final int MESSAGE_TEXT = 1;
     private static final int MESSAGE_ERROR = 2;
-    private static final int MESSAGE_OBSTACLES = 3;
     private static final int MESSAGE_AGL = 4;
 
     /**
@@ -396,8 +388,20 @@ public class ThreeDActivity extends Activity {
                             Traffic.draw(mService, mAreaMapper, mRenderer);
 
                             // Draw obstacles
-                            if (mObstacles != null && mObstacles.length != 0) {
-                                mRenderer.setObstacles(mObstacles);
+                            if(mService != null) {
+                                LinkedList<Obstacle> obs = mService.getObstacles();
+                                if (null != obs) {
+
+                                    Vector4d obstacles[] = new Vector4d[obs.size()];
+                                    int count = 0;
+                                    for (Obstacle ob : obs) {
+                                        obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
+                                    }
+
+                                    if (obstacles != null && obstacles.length != 0) {
+                                        mRenderer.setObstacles(obstacles);
+                                    }
+                                }
                             }
 
                             // Our position
@@ -561,11 +565,6 @@ public class ThreeDActivity extends Activity {
             mGlSurfaceView.onResume();
         }
 
-        // Periodic not time critical activities
-        mTimer = new Timer();
-        mTimerTask = new UpdateTask();
-        mTimer.schedule(mTimerTask, 0, 1000);
-
     }
 
     /* (non-Javadoc)
@@ -587,7 +586,6 @@ public class ThreeDActivity extends Activity {
         if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
-        mTimer.cancel();
     }
 
     @Override
@@ -607,41 +605,9 @@ public class ThreeDActivity extends Activity {
             else if (msg.what == MESSAGE_ERROR) {
                 mGlassView.setStatus((String) msg.obj);
             }
-            else if (msg.what == MESSAGE_OBSTACLES) {
-                mObstacles = (Vector4d[]) msg.obj;
-            }
             else if (msg.what == MESSAGE_AGL) {
                 mGlassView.setAgl((String) msg.obj);
             }
         }
     };
-
-    /**
-     * Do stuff in background
-     */
-    private class UpdateTask extends TimerTask {
-
-        @Override
-        public void run() {
-
-            Thread.currentThread().setName("Background");
-
-            if (null == mService || null == mService.getDBResource() || mAreaMapper == null || mAreaMapper.getGpsParams() == null) {
-                return;
-            }
-            LinkedList<Obstacle> obs = null;
-            obs = mService.getDBResource().findObstacles(mAreaMapper.getGpsParams().getLongitude(),
-                    mAreaMapper.getGpsParams().getLatitude(), 0);
-
-            Vector4d obstacles[] = new Vector4d[obs.size()];
-            int count = 0;
-            for (Obstacle ob : obs) {
-                obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
-            }
-            Message m = mHandler.obtainMessage();
-            m.what = MESSAGE_OBSTACLES;
-            m.obj = obstacles;
-            mHandler.sendMessage(m);
-        }
-    }
 }

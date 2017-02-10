@@ -350,6 +350,15 @@ public class Preferences {
     public boolean isShowLabelMETARS() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean showObstacles() {
+        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+    }
+
     /**
      * @return
      */
