@@ -101,6 +101,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/ShowLabelMETARS"
             android:summary="@string/ShowLabelMETARSSummary"
             android:title="@string/ShowLabelMETARS" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="39"
+            android:entries="@array/WindsAloftAltitude"
+            android:entryValues="@array/WindsAloftAltitude"
+            android:key="@string/WindsAloftCeiling"
+            android:summary="@string/WindsAloftCeilingSummary"
+            android:title="@string/WindsAloftCeiling" />
     </PreferenceScreen>
 
     <PreferenceScreen 

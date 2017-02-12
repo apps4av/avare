@@ -570,4 +570,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ObstaclesSummary">Show obstacles on map</string>
     <string name="ObstaclesLabel">Show Obstacles</string>
 
+    <string name="WindsAloftCeiling">&quot;Show Winds Aloft Up To Altitude&quot;</string>
+    <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
+
 </resources>
