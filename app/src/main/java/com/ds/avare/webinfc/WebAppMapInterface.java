@@ -24,6 +24,7 @@ import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindsAloftHelper;
 import com.ds.avare.weather.Airep;
 
 /**
@@ -152,16 +153,7 @@ public class WebAppMapInterface {
                 String winds = "";
                 if(data.wa != null) {
                     winds = "<hr><b><font color=\"yellow\">Winds/Temp. Aloft</font></b> ";
-                    winds += data.wa.station + data.wa.time + "<br>";
-                    winds += "@ 03000 ft: " + WeatherHelper.decodeWind(data.wa.w3k) + "<br>";
-                    winds += "@ 06000 ft: " + WeatherHelper.decodeWind(data.wa.w6k) + "<br>";
-                    winds += "@ 09000 ft: " + WeatherHelper.decodeWind(data.wa.w9k) + "<br>";
-                    winds += "@ 12000 ft: " + WeatherHelper.decodeWind(data.wa.w12k) + "<br>";
-                    winds += "@ 18000 ft: " + WeatherHelper.decodeWind(data.wa.w18k) + "<br>";
-                    winds += "@ 24000 ft: " + WeatherHelper.decodeWind(data.wa.w24k) + "<br>";
-                    winds += "@ 30000 ft: " + WeatherHelper.decodeWind(data.wa.w30k) + "<br>";
-                    winds += "@ 34000 ft: " + WeatherHelper.decodeWind(data.wa.w34k) + "<br>";
-                    winds += "@ 39000 ft: " + WeatherHelper.decodeWind(data.wa.w39k);
+                    winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
                 }
 
                 String navaids = "";
