@@ -35,8 +35,12 @@ import java.util.Locale;
      * @return formatted HTML table row
      */
     private static String formatWindRow(String alt, String wind) {
-        DirSpeedTemp w = parseWindAndTemperature(wind);
-        return (w.IsNull) ? "" : tr(td(alt) + td(w.Dir) + td(w.Speed) + td(w.Temp));
+        try {
+            DirSpeedTemp w = parseWindAndTemperature(wind);
+            return (w.IsNull) ? tr("") : tr(td(alt) + td(w.Dir) + td(w.Speed) + td(w.Temp));
+        } catch (Exception x) {
+            return tr("");
+        }
     }
 
     //nbsp is used here to nicely space out cells in the row 
