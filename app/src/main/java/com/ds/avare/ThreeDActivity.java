@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ConfigurationInfo;
-import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -41,6 +40,7 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Obstacle;
+import com.ds.avare.shapes.SubTile;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
@@ -285,8 +285,8 @@ public class ThreeDActivity extends Activity {
                                     mHandler.sendMessage(m);
                                 }
 
-                                Tile tm;
-                                Tile te;
+                                SubTile tm;
+                                SubTile te;
 
                                 /*
                                  * Set tiles on new location.
@@ -295,12 +295,12 @@ public class ThreeDActivity extends Activity {
                                 int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
                                 int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
                                 if (mZoomE > mZoomM) {
-                                    tm = new Tile(mContext, mPref, lon, lat, 0, mPref.getChartType3D());
-                                    te = new Tile(mContext, mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                    tm = new SubTile(mContext, mPref, lon, lat, 0, mPref.getChartType3D());
+                                    te = new SubTile(mContext, mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
                                 }
                                 else {
-                                    tm = new Tile(mContext, mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new Tile(mContext, mPref, lon, lat, 0, "6");
+                                    tm = new SubTile(mContext, mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new SubTile(mContext, mPref, lon, lat, 0, "6");
                                 }
 
                                 mAreaMapper.setMapTile(tm);
@@ -322,9 +322,9 @@ public class ThreeDActivity extends Activity {
                                             if(mTempBitmap != null) {
                                                 mTempBitmap.recycle();
                                             }
-                                            mTempBitmap = new BitmapHolder((String)params[0], Bitmap.Config.ARGB_8888);
+                                            mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
+                                            mAreaMapper.getElevationTile().load(mTempBitmap, mPref.mapsFolder());
                                             mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
-                                            mTempBitmap.recycle();
                                             // load tiles for map/texture
                                             if(mPref.getChartType3D().equals("6")) {
                                                 // Show palette when elevation is chosen for height guidance
@@ -332,10 +332,10 @@ public class ThreeDActivity extends Activity {
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
-                                                mTempBitmap = new BitmapHolder((String) params[1]);
+                                                mAreaMapper.getMapTile().load(mTempBitmap, mPref.mapsFolder());
                                                 mRenderer.setAltitude(256); // this tells shader to skip palette for texture
                                             }
-                                            return (Float)params[2];
+                                            return (Float)mAreaMapper.getTerrainRatio();
                                         }
 
                                         @Override
@@ -372,10 +372,7 @@ public class ThreeDActivity extends Activity {
                                                     });
                                         }
                                     };
-                                    mLoadTask.execute(
-                                            mPref.mapsFolder() + "/" + mAreaMapper.getElevationTile().getName(),
-                                            mPref.mapsFolder() + "/" + mAreaMapper.getMapTile().getName(),
-                                            mAreaMapper.getTerrainRatio());
+                                    mLoadTask.execute();
                                 }
                             }
 
