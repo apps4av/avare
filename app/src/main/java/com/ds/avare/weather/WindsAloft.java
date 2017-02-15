@@ -141,10 +141,15 @@ public class WindsAloft {
         }
 
         // interpolate wind
-        WindsAloftHelper.DirSpeed wind1 = WindsAloftHelper.DirSpeed.parseFrom(wstring1);
-        WindsAloftHelper.DirSpeed wind2 = WindsAloftHelper.DirSpeed.parseFrom(wstring2);
-        wind[0] = ((double)wind2.Speed - (double)wind1.Speed) * fac + wind1.Speed;
-        wind[1] = (((double)wind2.Dir - (double)wind1.Dir) * fac + wind1.Dir) % 360;
+        try {
+            WindsAloftHelper.DirSpeed wind1 = WindsAloftHelper.DirSpeed.parseFrom(wstring1);
+            WindsAloftHelper.DirSpeed wind2 = WindsAloftHelper.DirSpeed.parseFrom(wstring2);
+            wind[0] = ((double) wind2.Speed - (double) wind1.Speed) * fac + wind1.Speed;
+            wind[1] = (((double) wind2.Dir - (double) wind1.Dir) * fac + wind1.Dir) % 360;
+        } catch(NumberFormatException e) {
+            wind[0] = 0;
+            wind[1] = 0;
+        }
 
         return wind;
     }

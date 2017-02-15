@@ -5,21 +5,36 @@ import com.ds.avare.weather.WindsAloft;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.xmlunit.matchers.EvaluateXPathMatcher;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.ds.avare.test.HtmlAsserts.assertCellCount;
+import static com.ds.avare.test.HtmlAsserts.assertCells;
+import static com.ds.avare.test.HtmlAsserts.assertRowCount;
+import static junit.framework.Assert.assertEquals;
 
 
 /**
  * Created by pasniak on 2/12/2017.
+ * tests all public interfaces of WindsAloftHelper:
+ *  formatWindsHTML
+ *  DirSpeed.parseFrom
  */
 public class WindsAloftHelperTest {
 
     @Before
     public void setUp() throws Exception {
         wa = new WindsAloft();
+    }
+
+    @Test
+    public void testDirSpeedInterface() throws Exception {
+        WindsAloftHelper.DirSpeed wind = WindsAloftHelper.DirSpeed.parseFrom("1430");
+        assertEquals(wind.Dir, 140);
+        assertEquals(wind.Speed, 30);
+    }
+
+    @Test (expected=NumberFormatException.class)
+    public void testDirSpeedInterfaceGarbage() throws Exception {
+        WindsAloftHelper.DirSpeed.parseFrom("garbage");
     }
 
     @Test
@@ -80,9 +95,9 @@ public class WindsAloftHelperTest {
     @Test
     public void TestFullTableUpTo18() throws Exception {
         SetupFullTable();
-        String result = WindsAloftHelper.formatWindsHTML(wa, 18);
+        String result = WindsAloftHelper.formatWindsHTML(wa, 18); // up to w18k
 
-        assertRowCount(result, 5);
+        assertRowCount(result, 5); // 5 rows (3,6,9,12,18) up to w18k
         assertCellCount(result, 5*4);
     }
 
@@ -91,13 +106,13 @@ public class WindsAloftHelperTest {
         SetupFullTable();
         String result = WindsAloftHelper.formatWindsHTML(wa, 39);
 
-        assertRowCount(result, 9);
+        assertRowCount(result, 9); // all 9 rows
         assertCellCount(result, 9*4);
     }
 
     @Test
     public void testGarbage() throws Exception {
-        wa.w3k = "absdkfj";
+        wa.w3k = "garbage";
         wa.w6k = "1212--"; // garbage temperature, parsing fails
         wa.w9k = "12345678";
         String result = WindsAloftHelper.formatWindsHTML(wa, 9);
@@ -105,34 +120,5 @@ public class WindsAloftHelperTest {
         assertRowCount(result, 3);
     }
 
-    ///this is needed to make html fragments parsable
-    private static String html(String c) { return "<html>"+c+"</html>"; }
-    private static String xml(String x) { return "<?xml version=\"1.0\"?>\n" +
-            "<!DOCTYPE html [\n" +
-            "    <!ENTITY nbsp \"&#160;\">\n" +
-            "]>\n" + x;}
-
-    ///see https://github.com/xmlunit/xmlunit
-    private static void assertTdEndsWith(String result, int tr, int td, String end) {
-        assertThat(result, EvaluateXPathMatcher.hasXPath("//html/table/tr["+tr+"]/td["+td+"]/text()",
-                endsWith(end)));
-    }
-    private static void assertCells (String result, int row, String c[]) {
-        String resultXml = xml(html(result));
-        assertTdEndsWith(resultXml,row,1,c[0]);
-        assertTdEndsWith(resultXml,row,2,c[1]);
-        assertTdEndsWith(resultXml,row,3,c[2]);
-        if (c.length==4) assertTdEndsWith(resultXml,row,4,c[3]);
-    }
-    private static void assertRowCount (String result, int count) {
-        String resultXml = xml(html(result));
-        assertThat(resultXml, EvaluateXPathMatcher.hasXPath("count(//html/table/tr)",
-                is(Integer.toString(count))));
-    }
-    private static void assertCellCount (String result, int count) {
-        String resultXml = xml(html(result));
-        assertThat(resultXml, EvaluateXPathMatcher.hasXPath("count(//html/table/tr/td)",
-                is(Integer.toString(count))));
-    }
     private WindsAloft wa;
 }
