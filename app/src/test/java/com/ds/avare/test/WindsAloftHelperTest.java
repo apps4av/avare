@@ -25,6 +25,7 @@ public class WindsAloftHelperTest {
         wa = new WindsAloft();
     }
 
+    // test winds/temps parsing
     @Test
     public void testDirSpeedInterface() throws Exception {
         WindsAloftHelper.DirSpeed wind = WindsAloftHelper.DirSpeed.parseFrom("1430");
@@ -32,11 +33,29 @@ public class WindsAloftHelperTest {
         assertEquals(wind.Speed, 30);
     }
 
+    @Test
+    public void testDirSpeedInterfaceWithTemps() throws Exception {
+        WindsAloftHelper.DirSpeed wind = WindsAloftHelper.DirSpeed.parseFrom("1212+00");
+        assertEquals(wind.Dir, 120);
+        assertEquals(wind.Speed, 12);
+    }
+
+    @Test (expected=StringIndexOutOfBoundsException.class)
+    public void testDirSpeedInterfaceWithBadData1() throws Exception {
+        WindsAloftHelper.DirSpeed wind = WindsAloftHelper.DirSpeed.parseFrom("+00");
+    }
+
+    @Test (expected=StringIndexOutOfBoundsException.class)
+    public void testDirSpeedInterfaceWithBadData2() throws Exception {
+        WindsAloftHelper.DirSpeed wind = WindsAloftHelper.DirSpeed.parseFrom("+");
+    }
+
     @Test (expected=NumberFormatException.class)
     public void testDirSpeedInterfaceGarbage() throws Exception {
         WindsAloftHelper.DirSpeed.parseFrom("garbage");
     }
 
+    // test output table formatting
     @Test
     public void testEmpty3000() throws Exception {
         wa.w3k = "";
@@ -66,17 +85,23 @@ public class WindsAloftHelperTest {
     @Test
     public void testLightAndVariable() throws Exception {
         wa.w3k = "9900";
-        String result = WindsAloftHelper.formatWindsHTML(wa, 3);
+        wa.w6k = "9900-01";
+
+        String result = WindsAloftHelper.formatWindsHTML(wa, 6);
 
         assertCells(result, 1, new String[] {"3000", "0°", "0kt"});
+        assertCells(result, 2, new String[] {"6000", "0°", "0kt", "-1C"});
     }
+
 
     @Test
     public void testAbove100kt() throws Exception {
         wa.w3k = "780061";
-        String result = WindsAloftHelper.formatWindsHTML(wa, 3);
+        wa.w6k = "850459";
+        String result = WindsAloftHelper.formatWindsHTML(wa, 6);
 
         assertCells(result, 1, new String[] {"3000", "280°", "100kt", "-61C"});
+        assertCells(result, 2, new String[] {"6000", "350°", "104kt", "-59C"});
     }
 
     private void SetupFullTable() {
@@ -115,9 +140,10 @@ public class WindsAloftHelperTest {
         wa.w3k = "garbage";
         wa.w6k = "1212--"; // garbage temperature, parsing fails
         wa.w9k = "12345678";
-        String result = WindsAloftHelper.formatWindsHTML(wa, 9);
+        wa.w12k = "+00"; // short string
+        String result = WindsAloftHelper.formatWindsHTML(wa, 12);
 
-        assertRowCount(result, 3);
+        assertRowCount(result, 4);
     }
 
     private WindsAloft wa;

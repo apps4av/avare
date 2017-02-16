@@ -140,13 +140,13 @@ public class WindsAloft {
             fac = 0;
         }
 
-        // interpolate wind
+        // interpolate wind; if any of input winds has bad data, assume zero wind
         try {
-            WindsAloftHelper.DirSpeed wind1 = WindsAloftHelper.DirSpeed.parseFrom(wstring1);
-            WindsAloftHelper.DirSpeed wind2 = WindsAloftHelper.DirSpeed.parseFrom(wstring2);
+            WindsAloftHelper.DirSpeed wind1 = WindsAloftHelper.DirSpeed.parseFrom(wstring1),
+                                      wind2 = WindsAloftHelper.DirSpeed.parseFrom(wstring2);
             wind[0] = ((double) wind2.Speed - (double) wind1.Speed) * fac + wind1.Speed;
             wind[1] = (((double) wind2.Dir - (double) wind1.Dir) * fac + wind1.Dir) % 360;
-        } catch(NumberFormatException e) {
+        } catch (Exception e) {
             wind[0] = 0;
             wind[1] = 0;
         }

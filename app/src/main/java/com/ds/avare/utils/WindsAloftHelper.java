@@ -136,7 +136,7 @@ import java.util.Locale;
          * @param wind
          * @return
          */
-        public static DirSpeed parseFrom(String wind) throws NumberFormatException {
+        public static DirSpeed parseFrom(String wind) throws NumberFormatException, StringIndexOutOfBoundsException {
             return new DirSpeed(wind);
         }
     }
