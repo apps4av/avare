@@ -2282,6 +2282,19 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Y</item>
     </string-array>
 
+    <string-array name="WindsAloftAltitude">
+        <item>3</item>
+        <item>6</item>
+        <item>9</item>
+        <item>12</item>
+        <item>18</item>
+        <item>24</item>
+        <item>30</item>
+        <item>24</item>
+        <item>34</item>
+        <item>39</item>
+    </string-array>
+
     <string-array name="Tips">
         <item>&quot;Android OS since 5.0 does not allow apps (other than system apps) to store data on SD cards&quot;</item>
         <item>&quot;Read help file, or search a topic in it before contacting our support&quot;</item>

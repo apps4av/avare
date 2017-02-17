@@ -1224,6 +1224,14 @@ public class Preferences {
     public boolean isVerticalPfd() {
         return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
     }
+
+    public int getWindsAloftCeiling() {
+        try {
+           return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
+        } catch (Exception x) {
+            return 39;
+        }
+    }
 }
 
 
