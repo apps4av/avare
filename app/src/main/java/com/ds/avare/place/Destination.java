@@ -22,7 +22,6 @@ import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
 import com.ds.avare.weather.WindsAloft;
@@ -386,12 +385,6 @@ public class Destination extends Observable {
         return(null);
     }
 
-    /**
-     * @return
-     */
-    public BitmapHolder getBitmap() {
-        return(mService.getDiagram());
-    }
 
     /**
      * @return

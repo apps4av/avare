@@ -651,7 +651,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         if(mLayerType.equals("Plate")) {
-            BitmapHolder b = mService.getDiagram();
+            BitmapHolder b = mService.getPlateDiagram();
 
             if(b == null || b.getBitmap() == null) {
                 return;

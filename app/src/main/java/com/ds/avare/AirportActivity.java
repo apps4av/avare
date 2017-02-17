@@ -380,8 +380,13 @@ public class AirportActivity extends Activity implements Observer {
                 }
                 mViewButton.setText(mListViews.get(pos));
                 if(pos > 0) {
-                    mService.loadDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
-                    mAfdView.setBitmap(mService.getDiagram());
+                    if(mService.getAfdDiagram() == null ||
+                            mService.getAfdDiagram().getName() == null ||
+                            (!mService.getAfdDiagram().getName().equals(afd[pos - 1] + Preferences.IMAGE_EXTENSION))) {
+                        mService.loadAfdDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
+                    }
+
+                    mAfdView.setBitmap(mService.getAfdDiagram());
                     /*
                      * Show graphics
                      */
@@ -393,10 +398,9 @@ public class AirportActivity extends Activity implements Observer {
                     mAirportView.setVisibility(View.VISIBLE);                            
                     mAfdView.setVisibility(View.INVISIBLE);
                     mCenterButton.setVisibility(View.INVISIBLE);
-                    mService.loadDiagram(null);
+                    mService.loadAfdDiagram(null);
                     mAfdView.setBitmap(null);
                 }
-                mService.setMatrix(null);
                 mService.setAfdIndex(pos);
             }
         }

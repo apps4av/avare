@@ -110,12 +110,12 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             return(mMatrix);            
         }
 
-        if(mService != null && mService.getDiagram() != null && mService.getDiagram().getName() != null) {
+        if(mService != null && mService.getPlateDiagram() != null && mService.getPlateDiagram().getName() != null) {
             
             /*
              * If the user has already tagged a plate, load its matrix
              */
-            String aname = PlatesTagActivity.getNameFromPath(mService.getDiagram().getName());
+            String aname = PlatesTagActivity.getNameFromPath(mService.getPlateDiagram().getName());
             if(aname != null) {
                 float ret[];
                 
@@ -448,8 +448,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mService != null && mService.getDiagram() != null) {
-                    String name = mService.getDiagram().getName();
+                if(mService != null && mService.getPlateDiagram() != null) {
+                    String name = mService.getPlateDiagram().getName();
                     if(name != null) {
                         String tokens[] = name.split("/");
                         String aname = tokens[tokens.length - 1];
@@ -489,8 +489,13 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             if(pos >= mPlateFound.length) {
                 pos = 0;
             }
-            mService.loadDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
-            mPlatesView.setBitmap(mService.getDiagram());
+
+            if(mService.getPlateDiagram() == null
+                    || mService.getPlateDiagram().getName() == null
+                    || (!mService.getPlateDiagram().getName().equals(mPlateFound[pos] + Preferences.IMAGE_EXTENSION))) {
+                mService.loadPlateDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
+            }
+            mPlatesView.setBitmap(mService.getPlateDiagram());
             String name = mListPlates.get(pos);
 
             mPlatesView.setParams(null, true);

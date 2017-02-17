@@ -194,8 +194,13 @@ public class StorageService extends Service {
     /*
      * A diagram bitmap
      */
-    private BitmapHolder mDiagramBitmap;                            
-        
+    private BitmapHolder mAfdDiagramBitmap;
+
+    /*
+     * A
+     */
+    private BitmapHolder mPlateDiagramBitmap;
+
     /**
      * Local binding as this runs in same thread
      */
@@ -348,7 +353,8 @@ public class StorageService extends Service {
         mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
-        mDiagramBitmap = null;
+        mAfdDiagramBitmap = null;
+        mPlateDiagramBitmap = null;
         mAfdIndex = 0;
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
@@ -604,9 +610,13 @@ public class StorageService extends Service {
          */
         mTiles.recycleBitmaps();
 
-        if(null != mDiagramBitmap) {
-            mDiagramBitmap.recycle();
-            mDiagramBitmap = null;
+        if(null != mAfdDiagramBitmap) {
+            mAfdDiagramBitmap.recycle();
+            mAfdDiagramBitmap = null;
+        }
+        if(null != mPlateDiagramBitmap) {
+            mPlateDiagramBitmap.recycle();
+            mPlateDiagramBitmap = null;
         }
         mTiles = null;
         
@@ -846,19 +856,38 @@ public class StorageService extends Service {
      * 
      * @param name
      */
-    public void loadDiagram(String name) {
-        if(mDiagramBitmap != null) {
+    public void loadAfdDiagram(String name) {
+        if(mAfdDiagramBitmap != null) {
             /*
              * Clean old one first
              */
-            mDiagramBitmap.recycle();
-            mDiagramBitmap = null;
+            mAfdDiagramBitmap.recycle();
+            mAfdDiagramBitmap = null;
             System.gc();
         }
         if(null != name) {
-            mDiagramBitmap = new BitmapHolder(name);            
+            mAfdDiagramBitmap = new BitmapHolder(name);
         }
     }
+
+    /**
+     *
+     * @param name
+     */
+    public void loadPlateDiagram(String name) {
+        if(mPlateDiagramBitmap != null) {
+            /*
+             * Clean old one first
+             */
+            mPlateDiagramBitmap.recycle();
+            mPlateDiagramBitmap = null;
+            System.gc();
+        }
+        if(null != name) {
+            mPlateDiagramBitmap = new BitmapHolder(name);
+        }
+    }
+
 
     /**
      *
@@ -872,8 +901,16 @@ public class StorageService extends Service {
      * 
      * @return
      */
-    public BitmapHolder getDiagram() {
-       return mDiagramBitmap; 
+    public BitmapHolder getPlateDiagram() {
+       return mPlateDiagramBitmap;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public BitmapHolder getAfdDiagram() {
+        return mAfdDiagramBitmap;
     }
 
     /**
