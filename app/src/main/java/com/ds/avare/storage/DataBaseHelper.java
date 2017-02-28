@@ -60,8 +60,9 @@ public class DataBaseHelper  {
     /**
      * Cache this class to sqlite
      */
-    private SQLiteDatabase mDataBase; 
+    private SQLiteDatabase mDataBase;
     private SQLiteDatabase mDataBaseProcedures;
+    private SQLiteDatabase mDataBaseObstacles;
     private SQLiteDatabase mDataBasePlates;
     private SQLiteDatabase mDataBaseGeoPlates;
     private SQLiteDatabase mDataBaseWeather;
@@ -86,6 +87,7 @@ public class DataBaseHelper  {
     private Integer mUsersGeoPlates;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
+    private Integer mUsersObstacles;
     private Integer mUsersGameTFRs;
 
     
@@ -164,7 +166,7 @@ public class DataBaseHelper  {
      */
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
-        mUsers = mUsersWeather = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersGameTFRs = 0;
+        mUsers = mUsersWeather = mUsersPlates = mUsersGeoPlates = mUsersProcedures = mUsersObstacles = mUsersGameTFRs = 0;
         mContext = context;
     }
 
@@ -302,8 +304,6 @@ public class DataBaseHelper  {
     
     /**
      * Find airports in an particular area
-     * @param name
-     * @param params
      */
     public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
 
@@ -497,8 +497,6 @@ public class DataBaseHelper  {
 
     /**
      * Search with I am feeling lucky. Best guess
-     * @param name
-     * @param params
      */
     public  StringPreference searchOne(String name) {
         
@@ -617,7 +615,6 @@ public class DataBaseHelper  {
     /**
      * 
      * @param name
-     * @param params
      */
     private StringPreference searchRadial(String name) {
         int len = name.length();
@@ -1235,7 +1232,6 @@ public class DataBaseHelper  {
     /**
      * Find all frequencies based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findFrequencies(String name) {
@@ -1378,7 +1374,6 @@ public class DataBaseHelper  {
     /**
      * Find all runways based on its name
      * @param name
-     * @param params
      * @return
      */
     public LinkedList<String> findRunways(String name) {
@@ -1423,7 +1418,6 @@ public class DataBaseHelper  {
      * Find runway coordinate on its name, and airport name
      * @param name
      * @param airport
-     * @param params
      * @return
      */
     public Coordinate findRunwayCoordinates(String name, String airport) {
@@ -1460,7 +1454,6 @@ public class DataBaseHelper  {
     /**
      * Find elevation based on its name
      * @param name
-     * @param params
      * @return
      */
     public String findElev(String name) {
@@ -1496,9 +1489,6 @@ public class DataBaseHelper  {
      * Find the closets tiles to current position
      * @param lon
      * @param lat
-     * @param offset
-     * @param p
-     * @param names
      * @return
      */
     public String findClosestAirportID(double lon, double lat) {
@@ -1587,6 +1577,94 @@ public class DataBaseHelper  {
         return ret;
     }
 
+
+    /**
+     *
+     * @param statement
+     * @return
+     */
+    private Cursor doQueryObstacles(String statement, String name) {
+        Cursor c = null;
+
+        String path = mPref.mapsFolder() + "/" + name;
+        if(!(new File(path).exists())) {
+            return null;
+        }
+
+        /*
+         *
+         */
+        synchronized(mUsersObstacles) {
+            if(mDataBaseObstacles == null) {
+                mUsersObstacles = 0;
+                try {
+
+                    mDataBaseObstacles = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
+                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+                }
+                catch(RuntimeException e) {
+                    mDataBaseObstacles = null;
+                }
+            }
+            if(mDataBaseObstacles == null) {
+                return c;
+            }
+            mUsersObstacles++;
+        }
+
+        /*
+         * In case we fail
+         */
+
+        if(mDataBaseObstacles == null) {
+            return c;
+        }
+
+        if(!mDataBaseObstacles.isOpen()) {
+            return c;
+        }
+
+        /*
+         * Find with sqlite query
+         */
+        try {
+            c = mDataBaseObstacles.rawQuery(statement, null);
+        }
+        catch (Exception e) {
+            c = null;
+        }
+
+        return c;
+    }
+
+    /**
+     * Close database
+     */
+    private void closesObstacles(Cursor c) {
+        try {
+            if(null != c) {
+                c.close();
+            }
+        }
+        catch (Exception e) {
+
+        }
+
+        synchronized(mUsersObstacles) {
+            mUsersObstacles--;
+            if((mDataBaseObstacles != null) && (mUsersObstacles <= 0)) {
+                try {
+                    mDataBaseObstacles.close();
+                }
+                catch (Exception e) {
+                }
+                mDataBaseObstacles = null;
+                mUsersObstacles = 0;
+            }
+        }
+    }
+
+
     public String findObstacle(String height, Destination dest) {
 
         String ret = null;
@@ -1602,7 +1680,7 @@ public class DataBaseHelper  {
         String qry = "select * from " + TABLE_OBSTACLES + " where Height =='" + height + "' and " + 
                 "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
                 "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
-        Cursor cursor = doQuery(qry, getMainDb());
+        Cursor cursor = doQueryObstacles(qry, "obs.db");
 
         try {
             if(cursor != null) {
@@ -1613,7 +1691,7 @@ public class DataBaseHelper  {
         }
         catch (Exception e) {
         }
-        closes(cursor);
+        closesObstacles(cursor);
         return ret;
     }
 
@@ -1811,7 +1889,7 @@ public class DataBaseHelper  {
          * Find obstacles at below or higher in lon/lat radius
          * We ignore all obstacles 500 AGL below in our script
          */
-        Cursor cursor = doQuery(qry, getMainDb());
+        Cursor cursor = doQueryObstacles(qry, "obs.db");
         
         try {
             if(cursor != null) {
@@ -1823,7 +1901,7 @@ public class DataBaseHelper  {
         catch (Exception e) {
         }
         
-        closes(cursor);
+        closesObstacles(cursor);
         return list;
     }
 
@@ -2034,7 +2112,6 @@ public class DataBaseHelper  {
 
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
@@ -2075,7 +2152,6 @@ public class DataBaseHelper  {
     
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<AirSigMet> getAirSigMets() {

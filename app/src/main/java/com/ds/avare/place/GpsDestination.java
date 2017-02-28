@@ -60,7 +60,6 @@ public class GpsDestination extends Destination {
             locmDataBaseTask.execute();
         }
 
-        found();
     }
 
 
@@ -78,6 +77,12 @@ public class GpsDestination extends Destination {
             mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            found();
+        }
+
 
     }
 }

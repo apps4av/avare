@@ -60,8 +60,6 @@ public class UDWDestination extends Destination {
             DataBaseTask locmDataBaseTask = new DataBaseTask();
             locmDataBaseTask.execute();
         }
-
-        found();
     }
 
 
@@ -79,6 +77,12 @@ public class UDWDestination extends Destination {
             mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            found();
+        }
+
     }
 
     @Override
