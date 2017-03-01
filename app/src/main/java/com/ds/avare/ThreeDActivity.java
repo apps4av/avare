@@ -323,16 +323,23 @@ public class ThreeDActivity extends Activity {
                                                 mTempBitmap.recycle();
                                             }
                                             mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
-                                            mAreaMapper.getElevationTile().load(mTempBitmap, mPref.mapsFolder());
-                                            mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
+                                            if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                                mVertices = null;
+                                            }
+                                            else {
+                                                mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
+                                            }
                                             // load tiles for map/texture
                                             if(mPref.getChartType3D().equals("6")) {
                                                 // Show palette when elevation is chosen for height guidance
+                                                mAreaMapper.getMapTile(); // clear flag
                                                 mTempBitmap = new BitmapHolder(mContext, R.drawable.palette);
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
-                                                mAreaMapper.getMapTile().load(mTempBitmap, mPref.mapsFolder());
+                                                if(!mAreaMapper.getMapTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                                    mTempBitmap.recycle();
+                                                }
                                                 mRenderer.setAltitude(256); // this tells shader to skip palette for texture
                                             }
                                             return (Float)mAreaMapper.getTerrainRatio();

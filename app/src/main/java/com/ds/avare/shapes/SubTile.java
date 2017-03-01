@@ -179,8 +179,10 @@ public class SubTile extends Tile {
          */
     public boolean load(BitmapHolder bh, String mapsFolder) {
 
+        boolean ret = false;
+
         if(mLocation < 0) {
-            return false;
+            return ret;
         }
 
         int[][][] tiles = whatAreMyNeighbors(locRow(mLocation), locCol(mLocation));
@@ -194,12 +196,13 @@ public class SubTile extends Tile {
 
                 if(b.getBitmap() != null) {
                     bh.drawInBitmap(b, null, dst);
+                    ret = true;
                 }
                 b.recycle();
             }
         }
 
-        return true;
+        return ret;
     }
 
 
