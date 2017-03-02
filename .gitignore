@@ -24,7 +24,9 @@ local.properties
 *.iml
 /.idea/
 /out
-
+.gradle
+app/build/*
+build/intermediates/*
 # required to GCM
 private_data.xml
 

@@ -34,7 +34,7 @@ import com.ds.avare.utils.Helper;
  * for consumption by GoogleEarth.
  * 
  * @author Ron
- *
+ * @author annerajb
  */
 public class KMLRecorder {
 	
