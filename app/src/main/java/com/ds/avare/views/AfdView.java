@@ -19,16 +19,13 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
@@ -37,20 +34,22 @@ import com.ds.avare.utils.Helper;
  * @author zkhan
  *
  */
-public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
+public class AfdView extends View implements OnTouchListener {
 	
 
     private Scale                        mScale;
     private Pan                          mPan;
 	private Paint                        mPaint;
-    private MultiTouchController<Object> mMultiTouchC;
-    private PointInfo                    mCurrTouchPoint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private Preferences                  mPref;
     
-    private static final double MAX_AFD_SCALE = 8;
-    
+    private static final float MAX_AFD_SCALE = 8;
+    private float mScaleFactor          = 1.f;
+    private boolean                     mScaling;
+
+    private ScaleGestureDetector mScaleDetector;
+
     /**
      * 
      * @param context
@@ -61,8 +60,6 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         mPan = new Pan();
         mScale = new Scale(MAX_AFD_SCALE);
         setOnTouchListener(this);
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new PointInfo();
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mPref = new Preferences(context);
@@ -73,8 +70,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      * @param context
      */
 	public AfdView(Context context) {
-		super(context);
-		setup(context);
+        this(context, null, 0);
 	}
 
     /**
@@ -82,8 +78,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      * @param context
      */
     public AfdView(Context context, AttributeSet set) {
-        super(context, set);
-        setup(context);
+        this(context, set, 0);
     }
 
     /**
@@ -93,6 +88,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     public AfdView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
         setup(context);
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
     /* (non-Javadoc)
@@ -100,69 +96,19 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        mGestureDetector.onTouchEvent(e);
-        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
+        boolean retVal = mGestureDetector.onTouchEvent(e);
+        retVal = mScaleDetector.onTouchEvent(e) || retVal;
+        return retVal;
     }
 
     /**
-     * @param name
+     * @param
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
         postInvalidate();
     }
 
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return mBitmap;
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
-     */
-    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
-        objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public void selectObject(Object obj, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
-            mPan.setMove(newObjPosAndScale.getXOff(), newObjPosAndScale.getYOff());
-        }
-        else {
-            /*
-             * Clamp scaling.
-             */
-            mScale.setScaleFactor(newObjPosAndScale.getScale());
-        }
-        invalidate();
-        return true;
-    }
-
-    /**
-     * @param touchPoint
-     */
-    private void touchPointChanged(PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        invalidate();
-    }
-    
     /**
      * Center to the location
      */
@@ -212,19 +158,71 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         Helper.restoreCanvasColors(mPaint);
     }
 
-    /**
-     * @author zkhan
-     *
-     */
+    // Class to handle multi-touch scale gestures
+    private class ScaleListener
+            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        /**
+         * This is the active focal point in terms of the viewport. Could be a local
+         * variable but kept here to minimize per-frame allocations.
+         */
+        private float lastFocusX;
+        private float lastFocusY;
+
+        // Detects that new pointers are going down.
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            mScaling = true;
+            lastFocusX = scaleGestureDetector.getFocusX();
+            lastFocusY = scaleGestureDetector.getFocusY();
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            mScaling = false;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+
+            float scaleFactor = detector.getScaleFactor();
+            mScaleFactor *= scaleFactor;
+            mScaleFactor = Math.min(mScaleFactor, MAX_AFD_SCALE);
+            mScale.setScaleFactor(mScaleFactor);
+
+            float focusX = detector.getFocusX();
+            float focusY = detector.getFocusY();
+
+            float moveX = mPan.getMoveX() + ((focusX - lastFocusX) / mScaleFactor);
+            float moveY = mPan.getMoveY() + ((focusY - lastFocusY) / mScaleFactor);
+            lastFocusX = focusX;
+            lastFocusY = focusY;
+
+            mPan.setMove(moveX, moveY);
+
+            invalidate();
+
+            return true;
+        }
+    }
+
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
         @Override
-        public void onLongPress(MotionEvent e) {
-            
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+            // Don't pan/draw if multi-touch scaling is under way
+            if( mScaling ) return false;
+
+            float moveX = mPan.getMoveX() - (distanceX) / mScale.getScaleFactor();
+            float moveY = mPan.getMoveY() - (distanceY) / mScale.getScaleFactor();
+            mPan.setMove(moveX, moveY);
+
+            invalidate();
+            return true;
         }
+
     }
 
 }
