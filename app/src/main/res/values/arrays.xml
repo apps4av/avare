@@ -35,7 +35,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
-        <item>Plates Georeference Info.</item>
     </string-array>
      
     <string-array name="resNameWeather">
@@ -1478,7 +1477,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resFilesDatabase">
         <item>databases</item>
-        <item>geoplates</item>
     </string-array>
     
     <string-array name="resFilesWeather">
@@ -2312,7 +2310,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
         <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
         <item>&quot;If the app. is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
-        <item>&quot;To get geo-referenced plates, make sure to download them under Database->Plates Georeference Info&quot;</item>
         <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
         <item>&quot;You can hide non essential UI buttons and tabs from Preferences under UI Configuration&quot;</item>
         <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>

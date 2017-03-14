@@ -862,26 +862,6 @@ public class Preferences {
     }
 
 
-    /**
-     * @return
-     */
-    public String getGeotags() {
-        return mPref.getString(mContext.getString(R.string.Geotag), "");
-    }
-
-    /**
-     * @return
-     */
-    public String getGeoCode() {
-        return mPref.getString(mContext.getString(R.string.GeoCode), "");
-    }
-
-    /**
-     * @param tags
-     */
-    public void setGeotags(String tags) {
-        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
-    }
 
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {
@@ -1205,9 +1185,6 @@ public class Preferences {
     }
     public boolean removeB2Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b2plate), false);
-    }
-    public boolean removeB3Plate() {
-        return mPref.getBoolean(mContext.getString(R.string.b3plate), false);
     }
     public boolean removeB1Map() {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);

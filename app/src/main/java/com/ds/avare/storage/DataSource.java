@@ -80,7 +80,6 @@ public class DataSource {
      * 
      * @param lon
      * @param lat
-     * @param airports
      */
     public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
         return dbHelper.findClosestAirports(lon, lat, minRunwayLength);        
@@ -108,24 +107,6 @@ public class DataSource {
     /**
      * 
      * @param name
-     * @return
-     */
-    public float[] findGeoPlateMatrix(String name) {
-        return dbHelper.findGeoPlateMatrix(name);
-    }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    public HashMap<String, float[]> findPlatesMatrix(String name) {
-        return dbHelper.findPlatesMatrix(name);        
-    }
-
-    /**
-     * 
-     * @param name
      * @param params
      * @return
      */
@@ -136,7 +117,6 @@ public class DataSource {
     /**
      * 
      * @param name
-     * @param params
      * @return
      */
     public StringPreference searchOne(String name) {
@@ -201,8 +181,6 @@ public class DataSource {
 
     /**
      * 
-     * @param name
-     * @param type
      * @return
      */
     public String findObstacle(String height, Destination dest) {
@@ -229,7 +207,6 @@ public class DataSource {
 
     /**
      * 
-     * @param station
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
@@ -238,7 +215,6 @@ public class DataSource {
 
     /**
      * 
-     * @param station
      * @return
      */
     public WindsAloft getWindsAloft(double lon, double lat) {
@@ -291,9 +267,6 @@ public class DataSource {
     
     /**
      * 
-     * @param name
-     * @param type
-     * @param runway
      * @return
      */
     public LinkedList<Cifp> findProcedure(String name, String approach) {
@@ -302,9 +275,6 @@ public class DataSource {
     
     /**
      * 
-     * @param name
-     * @param type
-     * @param runway
      * @return
      */
     public LinkedList<Coordinate> findAirway(String name) {
