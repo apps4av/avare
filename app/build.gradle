@@ -30,6 +30,5 @@ dependencies {
     compile 'ch.acra:acra:4.7.0'
     compile 'org.xmlunit:xmlunit-core:2.3.0'
     compile 'org.xmlunit:xmlunit-matchers:2.3.0'
-    compile 'com.drewnoakes:metadata-extractor:2.10.1'
     testCompile 'junit:junit:4.12'
 }

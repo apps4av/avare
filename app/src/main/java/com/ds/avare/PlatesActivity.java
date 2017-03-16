@@ -47,7 +47,7 @@ import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
-import com.ds.avare.utils.ExifReader;
+import com.ds.avare.utils.PngCommentReader;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PlatesView;
 
@@ -138,10 +138,10 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                  * EXIF
                  */
                 if(name.startsWith(AREA)) {
-                    ret = ExifReader.readPlate(mPref.mapsFolder() + "/area/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/area/" + aname);
                 }
                 else {
-                    ret = ExifReader.readPlate(mPref.mapsFolder() + "/plates/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/plates/" + aname);
                 }
                 if(null != ret) {
                     return ret;
