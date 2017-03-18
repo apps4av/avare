@@ -249,8 +249,8 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                                             // load tiles for map/texture
                                             if(mPref.getChartType3D().equals("6")) {
                                                 // Show palette when elevation is chosen for height guidance
-                                                mTempBitmap = new BitmapHolder(getContext(), R.drawable.palette);
                                                 mAreaMapper.getMapTile(); // clear flag
+                                                mTempBitmap = new BitmapHolder(getContext(), R.drawable.palette);
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
