@@ -31,6 +31,7 @@ import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
@@ -76,7 +77,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                  * On click, find destination that was pressed on in view
                  */
                 Button b = (Button)v;
-                mDestination = new Destination(b.getText().toString(), Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, b.getText().toString(), Destination.BASE);
                 mDestination.addObserver(NearestFragment.this);
                 showSnackbar(getString(R.string.Searching) + " " + b.getText().toString(), Snackbar.LENGTH_SHORT);
                 mDestination.find();
@@ -120,7 +121,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
                 mDestination.addObserver(NearestFragment.this);
                 showSnackbar(getString(R.string.Searching), Snackbar.LENGTH_SHORT);
                 mDestination.find();
@@ -145,7 +146,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
                 mDestination.addObserver(NearestFragment.this);
                 showSnackbar(getString(R.string.Searching), Snackbar.LENGTH_SHORT);
                 mDestination.find();
@@ -170,7 +171,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
                 mDestination.addObserver(NearestFragment.this);
                 showSnackbar(getString(R.string.Searching), Snackbar.LENGTH_SHORT);
                 mDestination.find();
@@ -195,7 +196,7 @@ public class NearestFragment extends StorageServiceGpsListenerFragment implement
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = new Destination(a.getId(), Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
                 mDestination.addObserver(NearestFragment.this);
                 showSnackbar(getString(R.string.Searching), Snackbar.LENGTH_SHORT);
                 mDestination.find();

@@ -349,6 +349,15 @@ public class Preferences {
     public boolean isShowWindBarbs() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowWindBarbs), false));
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean showObstacles() {
+        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+    }
+
     /**
      * @return
      */

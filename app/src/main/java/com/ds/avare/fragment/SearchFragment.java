@@ -35,6 +35,7 @@ import com.ds.avare.R;
 import com.ds.avare.adapters.SearchAdapter;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 
@@ -116,6 +117,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
                     mSearchText.setText("");
                 }
                 mSelected = null;
+                hideMenu();
             }
         });
 
@@ -149,7 +151,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
                              * Edit and save description field
                              */
 
-                            mPref.modifyARecent(mSelected, edit.getText().toString());
+                            mPref.modifyARecent(mSelected, edit.getText().toString().toUpperCase());
                             initList();
                             mSelected = null;
                             dialog.dismiss();
@@ -336,6 +338,16 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
         mAnimateEdit = new AnimateButton(getContext(), mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
     }
 
+    /**
+     *
+     */
+    private void hideMenu() {
+        mAnimatePlan.stopAndHide();
+        mAnimatePlates.stopAndHide();
+        mAnimateSelect.stopAndHide();
+        mAnimateEdit.stopAndHide();
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -407,7 +419,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(SearchFragment.this);
         showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find(dbType);
@@ -420,7 +432,7 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
-        mDestination = new Destination(dst, type, mPref, mService);
+        mDestination = DestinationFactory.build(mService, dst, type);
         mDestination.addObserver(SearchFragment.this);
         showSnackbar(getString(R.string.Searching) + " " + dst, Snackbar.LENGTH_SHORT);
         mDestination.find(dbType);

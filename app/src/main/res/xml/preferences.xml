@@ -265,6 +265,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/TFRShading"
             android:summary="@string/TFRShadingSummary"
             android:title="@string/TFRShadingLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/Obstacles"
+            android:summary="@string/ObstaclesSummary"
+            android:title="@string/ObstaclesLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="100000"
             android:entries="@array/ADSBTrafficFilterAltitude"

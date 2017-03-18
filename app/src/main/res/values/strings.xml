@@ -592,6 +592,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerticalPfdLabel">PFD Vertical Mount</string>
     <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
     <string name="SeeHelp">See Help.</string>
+    <string name="Obstacles">Obstacles</string>
+    <string name="ObstaclesSummary">Show obstacles on map</string>
+    <string name="ObstaclesLabel">Show Obstacles</string>
 
     <string name="NearestMETARRadius">&quot;NearestMETARRadius&quot;</string>
     <string name="NearestMETARRadiusLabel">&quot;Nearest METAR Search Radius&quot;</string>

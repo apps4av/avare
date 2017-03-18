@@ -13,32 +13,23 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
-import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.userDefinedWaypoints.UDWMgr;
-import com.ds.avare.userDefinedWaypoints.Waypoint;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
 import com.ds.avare.weather.WindsAloft;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 
@@ -52,11 +43,8 @@ public class Destination extends Observable {
     /**
      * 
      */
-    private String mName;
-    /**
-     * Cache it for database query from async task
-     */
-    private DataSource mDataSource;
+    protected String mName;
+
     /**
      * 
      */
@@ -72,7 +60,7 @@ public class Destination extends Observable {
     /**
      * If a destination is found?
      */
-    private boolean mFound;
+    protected boolean mFound;
     /**
      * ETE to destination
      * ETA at destination
@@ -83,188 +71,87 @@ public class Destination extends Observable {
     private float mFuelGallons;
     private String mEta;
 
-    private WindsAloft mWinds;
+    protected WindsAloft mWinds;
 
     /*
      * Track to dest.
      */
-    TrackShape mTrackShape;
+    protected TrackShape mTrackShape;
         
     /*
      * Its lon/lat
      */
-    private double mLond;
-    private double mLatd;
+    protected double mLond;
+    protected double mLatd;
 
-    private String mAfdFound[];
+    private String mWindString;
     
-    private Preferences mPref;
+    protected Preferences mPref;
     
-    private StorageService mService;
-    
-    private boolean mLooking;
-    private boolean mInited;
+    protected StorageService mService;
+
+    protected boolean mLooking;
+    protected boolean mInited;
     
     private double mDeclination;
 
     /*
      * This is where destination was set.
      */
-    private double mLonInit;
-    private double mLatInit;
-    
-    private String mDestType;
-    private String mDbType;
-    private String mCmt;
-    private LinkedList<Runway> mRunways;
-    private LinkedHashMap <String, String>mFreq;
-    private LinkedList<Awos> mAwos;
-    
+    protected double mLonInit;
+    protected double mLatInit;
+
+    protected String mDestType;
+    protected String mDbType;
+
     public static final String GPS = "GPS";
     public static final String MAPS = "Maps";
     public static final String BASE = "Base";
     public static final String FIX = "Fix";
     public static final String NAVAID = "Navaid";
-    public static final String AD = "AIRPORT-DIAGRAM";
     public static final String UDW = "UDW";
-    
+
     /**
      * Contains all info in a hash map for the destination
      * Dozens of parameters in a linked map because simple map would rearrange the importance
      */
-    private LinkedHashMap <String, String>mParams;
-    
-    public String getCmt() {
-    	return mCmt;
-    }
+    protected LinkedHashMap <String, String>mParams;
 
-    /**
-     *
-     * @param name
-     * @param type
-     * @param pref
-     * @param service
-     */
-	public Destination(String name, String type, Preferences pref, StorageService service) {
-	    GpsParams params = service.getGpsParams();
-	    mInited = false;
-	    if(null != params) {
-    	    mLonInit = params.getLongitude();
-            mLatInit = params.getLatitude();
-            mInited = true;
-	    }
-        mDbType = "";
-        mFound = mLooking = false;
-        mRunways = new LinkedList<Runway>();
-        mService = service;
-        mDataSource = mService.getDBResource(); 
-        mTrackShape = new TrackShape();
-        mPref = pref;
-        mEte = new String("--:--");
-        mEta = new String("--:--");
-        mEteSec = Long.MAX_VALUE;
-        mFuel = "-.-";
-        mFuelGallons = Float.MAX_VALUE;
-        mParams = new LinkedHashMap<String, String>();
-        mFreq = new LinkedHashMap<String, String>();
-        mAwos = new LinkedList<Awos> ();
-        mAfdFound = null;
-	    mName = name.toUpperCase(Locale.getDefault());
-	    mDestType = type;
-    	mLond = mLatd = 0;
-	}
-
-    /**
-     * Simple GPS destination. No db query required
-     */
-    public Destination(StorageService service, double lon, double lat) {
-        GpsParams params = service.getGpsParams();
+    public Destination(StorageService service, String name) {
         mPref = new Preferences(service.getApplicationContext());
-        if(null != params) {
-            mLonInit = params.getLongitude();
-            mLatInit = params.getLatitude();
-        }
-        else {
-            mLonInit = lon;
-            mLatInit = lat;            
-        }
-        mInited = true;
         mService = service;
-        mDbType = GPS;
-        mFound = true;
-        mLooking = false;
-        mRunways = new LinkedList<Runway>();
         mTrackShape = new TrackShape();
         mEte = new String("--:--");
         mEta = new String("--:--");
         mFuel = new String("-.-");
-        mLond = lon;
-        mLatd = lat;
         mParams = new LinkedHashMap<String, String>();
-        mFreq = new LinkedHashMap<String, String>();
-        mAwos = new LinkedList<Awos> ();
-        mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-        mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-        mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
-        addTime();
-        mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-        mAfdFound = null;
-        mName = Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
-        mDestType = GPS;
+
+        mEteSec = Long.MAX_VALUE;
+        mFuelGallons = Float.MAX_VALUE;
+
+        mWindString = "-";
+
+        mFound = false;
+        mLooking = false;
+
+        GpsParams params = service.getGpsParams();
+
+        mName = name.toUpperCase(Locale.getDefault());
+
+        mInited = false;
+
+        mLond = 0;
+        mLatd = 0;
+
+        if(null != params) {
+            mLonInit = params.getLongitude();
+            mLatInit = params.getLatitude();
+            mInited = true;
+        }
+
     }
 
 
-	/**
-	 * 
-	 * @param name
-	 * @param type
-	 */
-	private void parseGps(String name, String type) {
-        /*
-         * GPS
-         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
-         * get the x&y part, then parse them to lon=y lat=x
-         */
-        if(name.contains("&")) {
-            String token[] = new String[2];
-            token[1] = token[0] = name;
-            if(name.contains("@")) {
-                /*
-                 * This could be the geo point from maps
-                 */
-                token = name.split("@");
-            }
-            /*
-             * This is lon/lat destination
-             */
-            String tokens[] = token[1].split("&");
-            
-            try {
-                mLond = Double.parseDouble(tokens[1]);
-                mLatd = Double.parseDouble(tokens[0]);
-            }
-            catch (Exception e) {
-                /*
-                 * Bad input from user on GPS
-                 */
-                mName = "";
-                mDestType = "";
-                return;
-            }
-            
-            /*
-             * Sane input
-             */
-            if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
-                mName = "";
-                mDestType = "";
-                return;             
-            }
-            mName = token[0];
-            mDestType = type;
-        }
-	}
-	
 	/**
 	 * 
 	 * @return
@@ -319,6 +206,7 @@ public class Destination extends Observable {
         mGroundSpeed = speed;
         mWca = 0;
         mCrs = mBearing;
+        mWindString = "-";
         if(mPref.isSimulationMode()) {
             double ws = 0;
             double wd = 0;
@@ -326,6 +214,7 @@ public class Destination extends Observable {
                 double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
                 ws = winds[0];
                 wd = winds[1];
+                mWindString = String.format(Locale.getDefault(), "%03d@%03d", Math.round(wd) , Math.round(ws));
             }
 
             // in sim mode, do planning with winds
@@ -373,13 +262,50 @@ public class Destination extends Observable {
     	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, mGroundSpeed);
 	}
 
-	/**
-	 * 
-	 * @return
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
 	 */
-	public String getEte() {
-		return mEte;
+	@Override
+	public String toString() {
+	    /*
+	     * For display purpose
+	     */
+		if(!mFound) {
+			return(mName + "? ");
+		}
+		else {
+			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEte, mBearing, mDeclination); 
+		}
 	}
+
+
+    protected void found() {
+        TwilightCalculator calc = new TwilightCalculator();
+        calc.calculateTwilight(mLatd, mLond);
+        mParams.put("Sunrise", calc.getSunrise());
+        mParams.put("Sunset", calc.getSunset());
+        /*
+         * Anyone watching if destination found?
+         */
+        mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
+        // Save last known good location
+        mPref.setLastLocation(getLocation().getLongitude(), getLocation().getLatitude());
+
+        mLooking = false;
+        Destination.this.setChanged();
+        Destination.this.notifyObservers(Boolean.valueOf(mFound));
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public String getEte() {
+        return mEte;
+    }
 
     public float getFuelGallons() {
         return mFuelGallons;
@@ -406,338 +332,18 @@ public class Destination extends Observable {
     }
 
     /**
-	 * 
-	 * @return
-	 */
-	public String getEta() {
-		return mEta;
-	}
-
-	/**
-	 * 
-	 */
-	private void addTime() {
-        TwilightCalculator calc = new TwilightCalculator();
-        calc.calculateTwilight(mLatd, mLond);
-        mParams.put("Sunrise", calc.getSunrise());
-        mParams.put("Sunset", calc.getSunset());
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-	    /*
-	     * For display purpose
-	     */
-		if(!mFound) {
-			return(mName + "? ");
-		}
-		else {
-			return Helper.makeLine(mDistance, Preferences.distanceConversionUnit, mEte, mBearing, mDeclination); 
-		}
-	}
-
-	   /**
-     * Database  query to find destination
+     *
+     * @return
      */
-    public void findGuessType() {
-        /*
-         * Do in background as database queries are disruptive
-         */
-        mLooking = true;
-        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(true, "");
+    public String getEta() {
+        return mEta;
     }
-    
-    /**
-     * Database  query to find destination
-     */
-    public void find() {
-        /*
-         * Do in background as database queries are disruptive
-         */
-        mLooking = true;
-        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(false, "");
-    }
-
-	/**
-	 * Database  query to find destination
-	 * @param dbType
-	 */
-	public void find(String dbType) {
-	    /*
-	     * Do in background as database queries are disruptive
-	     */
-        mLooking = true;
-        DataBaseLocationTask locmDataBaseTask = new DataBaseLocationTask();
-        locmDataBaseTask.execute(false, dbType);
-	}
 
     public String getFuel() {
         return mFuel;
     }
 
-    /**
-     * @author zkhan
-     * Query for destination task
-     */
-    private class DataBaseLocationTask extends AsyncTask<Object, Void, Boolean> {
 
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPreExecute()
-         */
-        @Override
-        protected void onPreExecute() {        	
-        }
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */
-        @Override
-        protected Boolean doInBackground(Object... vals) {
-
-            Thread.currentThread().setName("Destination");
-
-            Boolean guess = (Boolean)vals[0];
-            String dbType = (String)vals[1];
-            
-            /*
-             * If we dont know type, find with a guess.
-             */
-            if(guess) {
-                StringPreference s = mService.getDBResource().searchOne(mName);
-                if(null == s) {
-                    return false;
-                }
-                mDestType = s.getType();
-                mName = s.getId();
-            }
-
-            /*
-             * If GPS/Maps, parse
-             */
-            if(mName.contains("&")) {
-                parseGps(mName, mDestType);
-            }
-
-            mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
-
-	        if(mDestType.equals(UDW)){
-	        	Waypoint p = mService.getUDWMgr().get(mName);
-	        	if(null != p) {
-	        		mLatd = p.getLat();
-	        		mLond = p.getLon();
-	        		mCmt  = p.getCmt();
-		            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-		            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-		            mParams.put(DataBaseHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
-		            addTime();
-		            mAfdFound = null;
-		            mFound = true;
-		            mLooking = false;
-		            mDbType = UDW;
-		            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-		        	return true;
-	        	}
-	        	return false;
-	        }
-
-	        if(mDestType.equals(GPS)) {
-	            /*
-	             * For GPS coordinates, simply put parsed lon/lat in params
-	             * No need to query database
-	             */
-	            mParams = new LinkedHashMap<String, String>();
-	            mFreq = new LinkedHashMap<String, String>();
-	            mAwos = new LinkedList<Awos> ();
-	            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-	            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-	            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
-	            addTime();
-	            mAfdFound = null;
-	            mFound = true;
-	            mLooking = false;
-	            mDbType = GPS;
-	            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-	            if(!isGPSValid(mName)) {
-	                mFound = false;
-	            }
-	            if(!mName.contains("&")) {
-	                /*
-	                 * This comes from MAPS to GPS for user edited
-	                 */
-	                mName += "@" + mLatd + "&" + mLond;
-	            }
-	            return true;
-	        }
-
-            if(null == mDataSource) {
-                return false;
-            }
-	            
-
-	        /*
-	         * For Google maps address, if we have already geo decoded it using internet,
-	         * then no need to do again because internet may not be available on flight.
-	         * It could be coming from storage and not google maps.
-	         */
-	        if(mDestType.equals(MAPS)) {
-
-	            if(mLond == 0 && mLatd == 0) {
-	                /*
-	                 * We have already decomposed it?
-	                 * No.
-	                 */
-	                String strAddress = mName;
-	                
-	                Geocoder coder = new Geocoder(mService);
-	                Address location = null;
-
-	                /*
-	                 * Decompose
-	                 */
-	                try {
-	                    List<Address> address = coder.getFromLocationName(strAddress, 1);
-	                    if (address != null) {
-	                        location = address.get(0);
-	                    }
-	                }
-	                catch (Exception e) {
-	                    return false;
-	                }
-	                
-	                if(null == location) {
-	                    return false;
-	                }
-	                                        
-	                /*
-	                 * Decomposed it
-	                 * 
-	                 */
-	                try {
-    	                mLond = Helper.truncGeo(location.getLongitude());
-    	                mLatd = Helper.truncGeo(location.getLatitude());
-	                }
-	                catch (Exception e) {
-	                    
-	                }
-	                if((!Helper.isLatitudeSane(mLatd)) || (!Helper.isLongitudeSane(mLond))) {
-	                    return false;  
-	                }
-
-	            }
-                /*
-                 * Common stuff
-                 */
-                mParams = new LinkedHashMap<String, String>();
-                mFreq = new LinkedHashMap<String, String>();
-                mAwos = new LinkedList<Awos> ();
-                mAfdFound = null;
-                mDbType = mDestType;
-                mParams.put(DataBaseHelper.TYPE, mDestType);
-                mParams.put(DataBaseHelper.FACILITY_NAME, mName);
-                mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-                mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-                addTime();
-                mName += "@" + mLatd + "&" + mLond;
-                return true;                    
-	        }
-	        
-	        /*
-	         * For all others, find in DB
-	         */
-	        mDataSource.findDestination(mName, mDestType, dbType, mParams, mRunways, mFreq, mAwos);
-
-	        if(mDestType.equals(BASE)) {
-
-                /*
-                 * Find A/FD
-                 */
-                mAfdFound = null;
-                final LinkedList<String> afdName = mDataSource.findAFD(mName);
-                if(afdName.size() > 0) {
-                    FilenameFilter filter = new FilenameFilter() {
-                        public boolean accept(File directory, String fileName) {
-                            boolean match = false;
-                            for(final String name : afdName) {
-                                match |= fileName.matches(name + Preferences.IMAGE_EXTENSION) ||
-                                        fileName.matches(name + "-[0-9]+" + Preferences.IMAGE_EXTENSION);
-                            }
-                            return match;
-                        }
-                    };
-                    String afd[] = null;
-                    afd = new File(mPref.mapsFolder() + "/afd/").list(filter);
-                    if(null != afd) {
-                        java.util.Arrays.sort(afd);
-                        int len1 = afd.length;
-                        String tmp1[] = new String[len1];
-                        for(int count = 0; count < len1; count++) {
-                            /*
-                             * Add A/FD
-                             */
-                            String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[count] = mPref.mapsFolder() + "/afd/" +
-                                    tokens[0];             
-                        }
-                        if(len1 > 0) {
-                            mAfdFound = tmp1;
-                        }
-                    }
-                }
-	        }
-
-            return(!mParams.isEmpty());
-        }
-        
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(Boolean result) {
-        	/*
-        	 * This runs on UI
-        	 */
-            mFound = result;
-            if(mDbType.equals(GPS) || mDbType.equals(UDW) || mDbType.equals(MAPS)) {
-                /*
-                 * These dont come from db so dont assign from params.
-                 */
-            }
-            else {
-    			if(mFound) {
-                    mDbType = mParams.get(DataBaseHelper.TYPE);
-                    try {
-            		    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
-            		    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
-                    }
-                    catch(Exception e) {
-                        mFound = false;
-                    }
-    			}
-            }
-            /**
-             * 
-             */
-            addTime();
-
-			/*
-			 * Anyone watching if destination found?
-			 */
-            mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
-			Destination.this.setChanged();
-            Destination.this.notifyObservers(Boolean.valueOf(mFound));
-            // Save last known good location
-            mPref.setLastLocation(getLocation().getLongitude(), getLocation().getLatitude());
-
-            mLooking = false;
-	    }
-    }
-    
     /**
      * @return
      */
@@ -756,7 +362,7 @@ public class Destination extends Observable {
      * @return
      */
     public String[] getAfd() {
-        return(mAfdFound);
+        return(null);
     }
 
     /**
@@ -777,7 +383,7 @@ public class Destination extends Observable {
      * @return
      */
     public LinkedList<Runway> getRunways() {
-        return(mRunways);
+        return(null);
     }
 
     /**
@@ -798,7 +404,7 @@ public class Destination extends Observable {
      * @return
      */
     public LinkedHashMap<String, String> getFrequencies() {
-        return(mFreq);
+        return(null);
     }
 
     /**
@@ -854,8 +460,7 @@ public class Destination extends Observable {
     }
 
 	public LinkedList<Awos> getAwos() {
-		return(mAwos);
-		
+		return(null);
 	} 
 
 	/***
@@ -929,27 +534,6 @@ public class Destination extends Observable {
 
 	    return -Math.round(altAbove / time);
 	}
-	
-	/**
-	 * Find if a GPS dst is valid
-	 * @return
-	 */
-	public static boolean isGPSValid(String dst) {
-        if(dst.contains("&")) {
-            String tokens[] = dst.split("&");
-            
-            try {
-                double lon = Double.parseDouble(tokens[1]);
-                double lat = Double.parseDouble(tokens[0]);
-                if((Helper.isLatitudeSane(lat)) && (Helper.isLongitudeSane(lon))) {
-                    return true;
-                }
-            }
-            catch (Exception e) {
-            }
-        }
-	    return false;
-	}
 
 	/**
 	 * Get declination
@@ -958,4 +542,24 @@ public class Destination extends Observable {
 	public double getDeclination() {
 		return mDeclination;
 	}
+
+
+    public String getWinds() {
+        return mWindString;
+    }
+
+
+    public void find() {}
+
+    public void findGuessType() {
+
+    }
+
+    public void find(String dbType) {
+
+    }
+
+    public String getCmt() {
+        return null;
+    }
 }

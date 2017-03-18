@@ -97,6 +97,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Low Enroute SC</item>
         <item>IFR Low Enroute SW</item>
         <item>IFR Low Enroute AK</item>
+        <item>IFR Low Enroute HI</item>
     </string-array>
         
     <string-array name="resNameWAC">
@@ -1440,6 +1441,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ELUS_SC</item>
         <item>ELUS_SW</item>
         <item>ELUS_AK</item>
+        <item>ELUS_HI</item>
     </string-array>
 
     <string-array name="resFilesIFRHE">

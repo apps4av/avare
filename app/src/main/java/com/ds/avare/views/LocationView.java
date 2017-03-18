@@ -42,6 +42,7 @@ import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Fix;
 import com.ds.avare.place.NavAid;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
@@ -109,7 +110,7 @@ public class LocationView extends View implements OnTouchListener {
     private BitmapHolder               mRunwayBitmap;
     private BitmapHolder               mLineBitmap;
     private BitmapHolder               mLineHeadingBitmap;
-    
+    private BitmapHolder               mObstacleBitmap;
     /**
      * Gesture like long press, double touch outside of multi-touch
      */
@@ -273,6 +274,7 @@ public class LocationView extends View implements OnTouchListener {
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
+        mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
@@ -680,6 +682,18 @@ public class LocationView extends View implements OnTouchListener {
         mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
     }
 
+    private void drawObstacles(Canvas canvas, DrawingContext ctx) {
+        if(mPref.showObstacles()) {
+            LinkedList<Obstacle> obs = mService.getObstacles();
+            if((obs != null) && (null == mPointProjection)) {
+                mPaint.setShadowLayer(0, 0, 0, 0);
+                for (Obstacle o : obs) {
+                    BitmapHolder.rotateBitmapIntoPlace(mObstacleBitmap, 0, o.getLongitude(), o.getLatitude(), false, mOrigin);
+                    canvas.drawBitmap(mObstacleBitmap.getBitmap(), mObstacleBitmap.getTransform(), mPaint);
+                }
+            }
+        }
+    }
 
     /**
      *
@@ -894,6 +908,7 @@ public class LocationView extends View implements OnTouchListener {
         drawDrawing(canvas, ctx);
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
+        drawObstacles(canvas, ctx);
         drawTFR(canvas, ctx);
         drawGameTFRs(ctx);
         drawShapes(canvas, ctx);

@@ -566,16 +566,16 @@ public class Plan implements Observer {
 
             Destination d;
             if (null != airport) {
-                d = new Destination(airport, Destination.BASE, pref, mService);
+                d = DestinationFactory.build(mService, airport, Destination.BASE);
             } else {
-                d = new Destination(mService, lon, lat);
+                d = DestinationFactory.build(mService, Helper.getGpsAddress(lon, lat), Destination.GPS);
             }
             d.addObserver(this);
             d.find();
         } else {
 
             // replace
-            mDestination[id] = new Destination(mService, lon, lat);
+            mDestination[id] = DestinationFactory.build(mService,Helper.getGpsAddress(lon, lat), Destination.GPS);
 
             mTrackShape.updateShapeFromPlan(getCoordinates());
         }
@@ -912,7 +912,7 @@ public class Plan implements Observer {
                 } else {
                     num = i;
                 }
-                mDestination[num] = new Destination(id, type, mPref, mService);
+                mDestination[num] = DestinationFactory.build(mService, id, type);
                 mDestination[num].find(dbtype);
             } catch (Exception e) {
                 continue;

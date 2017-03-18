@@ -31,6 +31,7 @@ import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.fragment.PlanFragment;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
@@ -473,7 +474,7 @@ public class WebAppPlanInterface implements Observer {
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	Destination d = new Destination(id, type, mPref, mService);
+    	Destination d = DestinationFactory.build(mService, id, type);
     	d.addObserver(this);
     	d.find(subtype);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -697,13 +698,17 @@ public class WebAppPlanInterface implements Observer {
     	// make a :: separated plan list, then add totals to it
     	for(int num = 0; num < numDest; num++) {
     		Destination d = plan.getDestination(num);
-    		plans += 
-    				(passed == num ? 1 : 0) + "," +
-    				Math.round(Helper.getMagneticHeading(d.getBearing(), d.getDeclination())) + "," +
-					Math.round(Helper.getMagneticHeading(d.getBearing() + d.getWCA(), d.getDeclination())) + "," +
-    				Math.round(d.getDistance()) + "," +
-    				d.getEte() +  "," +
-    				d.getID() + "," + d.getType() + "," + d.getFuel() + "::::";
+    		plans += (passed == num ? 1 : 0) + "," +
+                    Math.round(Helper.getMagneticHeading(d.getBearing(), d.getDeclination())) + "," +
+                    Math.round(Helper.getMagneticHeading(d.getBearing() + d.getWCA(), d.getDeclination())) + "," +
+                    Math.round(d.getDistance()) + "," +
+                    Math.round(d.getGroundSpeed()) + "," +
+                    d.getEte() +  "," +
+                    d.getID() + "," +
+                    d.getType() + "," +
+                    d.getFuel() + "," +
+                    d.getWinds() +
+                    "::::";
     	}
     	// add total
     	plans += plan.toString();
@@ -843,7 +848,7 @@ public class WebAppPlanInterface implements Observer {
 	        	/*
 	        	 * Add each
 	        	 */
-	        	Destination d = new Destination(id, type, mPref, mService);
+	        	Destination d = DestinationFactory.build(mService, id, type);
 	        	d.addObserver(WebAppPlanInterface.this);
 	        	d.find(dbtype);
             }

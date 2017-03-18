@@ -31,6 +31,7 @@ import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.place.Runway;
 import com.ds.avare.storage.DataBaseHelper;
@@ -420,7 +421,7 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
             }
             else {
                 viewPos = 0;
-                mDestination = new Destination(airport, Destination.BASE, mPref, mService);
+                mDestination = DestinationFactory.build(mService, airport, Destination.BASE);
                 mService.setLastAfdDestination(mDestination);
                 mDestination.addObserver(AirportFragment.this);
                 showSnackbar(getString(R.string.Searching) + " " + mDestination.getID(), Snackbar.LENGTH_SHORT);

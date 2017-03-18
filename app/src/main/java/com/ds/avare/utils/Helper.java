@@ -893,5 +893,51 @@ public class Helper {
         return p;
     }
 
+    public static String getGpsAddress(double lon, double lat) {
+        return Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
+    }
+
+
+    public static String decodeGpsAddress(String name, double coords[]) {
+
+        /*
+         * GPS
+         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
+         * get the x&y part, then parse them to lon=y lat=x
+         */
+        if(name.contains("&")) {
+            String token[] = new String[2];
+            token[1] = token[0] = name;
+            if(name.contains("@")) {
+                /*
+                 * This could be the geo point from maps
+                 */
+                token = name.split("@");
+            }
+            /*
+             * This is lon/lat destination
+             */
+            String tokens[] = token[1].split("&");
+
+            try {
+                coords[0] = Double.parseDouble(tokens[1]);
+                coords[1] = Double.parseDouble(tokens[0]);
+            }
+            catch (Exception e) {
+                return null;
+            }
+
+            /*
+             * Sane input
+             */
+            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+                return null;
+            }
+
+            return token[0];
+
+        }
+        return null;
+    }
 }
 
