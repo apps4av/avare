@@ -741,11 +741,11 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
             /*
              * Get proc name
              */
-            if(null == mService.getDiagram()) {
+            if(null == mService.getPlateDiagram()) {
                 mTagged = false;
                 return;                
             }
-            mName = getNameFromPath(mService.getDiagram().getName());
+            mName = getNameFromPath(mService.getPlateDiagram().getName());
             if(mName != null) {
                 mAirport = mName.split("/")[0];
             }
@@ -754,7 +754,7 @@ public class PlatesTagActivity extends AppCompatActivity implements Observer {
                 return;
             }
             
-            mPlatesView.setBitmap(mService.getDiagram());
+            mPlatesView.setBitmap(mService.getPlateDiagram());
 
             
             /*

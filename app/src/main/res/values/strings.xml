@@ -599,7 +599,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NearestMETARRadius">&quot;NearestMETARRadius&quot;</string>
     <string name="NearestMETARRadiusLabel">&quot;Nearest METAR Search Radius&quot;</string>
     <string name="NearestMETARRadiusSummary">&quot;Select the distance to the nearest METAR station reported when METAR is unavailable on a field.&quot;</string>
-    <string name="WindsAloftCeiling">&quot;Winds/Temp. Aloft Filter&quot;</string>
-    <string name="WindsAloftCeilingSummary">&quot;Select Winds/Temperature Aloft upper limit altitude (thousands of feet)&quot;</string>
+    <string name="WindsAloftCeiling">&quot;Show Winds Aloft Up To Altitude&quot;</string>
+    <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
 
 </resources>

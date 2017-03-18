@@ -14,7 +14,6 @@ package com.ds.avare.fragment;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
-import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -43,6 +42,7 @@ import com.ds.avare.R;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Obstacle;
+import com.ds.avare.shapes.SubTile;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.AreaMapper;
@@ -56,8 +56,6 @@ import com.ds.avare.views.GlassView;
 import com.ds.avare.views.ThreeDSurfaceView;
 
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author zkhan
@@ -81,8 +79,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
     /**
      * For performing periodic activities.
      */
-    private Timer mTimer;
-    private UpdateTask mTimerTask;
     private Location mLocation;
     private long mTime;
 
@@ -101,7 +97,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
     private static final int MESSAGE_INIT = 0;
     private static final int MESSAGE_TEXT = 1;
     private static final int MESSAGE_ERROR = 2;
-    private static final int MESSAGE_OBSTACLES = 3;
     private static final int MESSAGE_AGL = 4;
 
     @Override
@@ -207,8 +202,8 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                                     mHandler.sendMessage(m);
                                 }
 
-                                Tile tm;
-                                Tile te;
+                                SubTile tm;
+                                SubTile te;
 
                                 /*
                                  * Set tiles on new location.
@@ -217,12 +212,12 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                                 int mZoomM = Tile.getMaxZoom(getContext(), mPref.getChartType3D());
                                 int mZoomE = Tile.getMaxZoom(getContext(), "6");  // 6 is elevation tile index
                                 if (mZoomE > mZoomM) {
-                                    tm = new Tile(getContext(), mPref, lon, lat, 0, mPref.getChartType3D());
-                                    te = new Tile(getContext(), mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                    tm = new SubTile(getContext(), mPref, lon, lat, 0, mPref.getChartType3D());
+                                    te = new SubTile(getContext(), mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
                                 }
                                 else {
-                                    tm = new Tile(getContext(), mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new Tile(getContext(), mPref, lon, lat, 0, "6");
+                                    tm = new SubTile(getContext(), mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new SubTile(getContext(), mPref, lon, lat, 0, "6");
                                 }
 
                                 mAreaMapper.setMapTile(tm);
@@ -244,20 +239,27 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                                             if(mTempBitmap != null) {
                                                 mTempBitmap.recycle();
                                             }
-                                            mTempBitmap = new BitmapHolder((String)params[0], Bitmap.Config.ARGB_8888);
-                                            mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
-                                            mTempBitmap.recycle();
+                                            mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
+                                            if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                                mVertices = null;
+                                            }
+                                            else {
+                                                mVertices = Map.genTerrainFromBitmap(mTempBitmap.getBitmap());
+                                            }
                                             // load tiles for map/texture
                                             if(mPref.getChartType3D().equals("6")) {
                                                 // Show palette when elevation is chosen for height guidance
                                                 mTempBitmap = new BitmapHolder(getContext(), R.drawable.palette);
+                                                mAreaMapper.getMapTile(); // clear flag
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
-                                                mTempBitmap = new BitmapHolder((String) params[1]);
+                                                if(!mAreaMapper.getMapTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                                    mTempBitmap.recycle();
+                                                }
                                                 mRenderer.setAltitude(256); // this tells shader to skip palette for texture
                                             }
-                                            return (Float)params[2];
+                                            return (Float)mAreaMapper.getTerrainRatio();
                                         }
 
                                         @Override
@@ -294,10 +296,7 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                                                     });
                                         }
                                     };
-                                    mLoadTask.execute(
-                                            mPref.mapsFolder() + "/" + mAreaMapper.getElevationTile().getName(),
-                                            mPref.mapsFolder() + "/" + mAreaMapper.getMapTile().getName(),
-                                            mAreaMapper.getTerrainRatio());
+                                    mLoadTask.execute();
                                 }
                             }
 
@@ -310,8 +309,20 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
                             Traffic.draw(mService, mAreaMapper, mRenderer);
 
                             // Draw obstacles
-                            if (mObstacles != null && mObstacles.length != 0) {
-                                mRenderer.setObstacles(mObstacles);
+                            if(mService != null) {
+                                LinkedList<Obstacle> obs = mService.getObstacles();
+                                if (null != obs) {
+
+                                    Vector4d obstacles[] = new Vector4d[obs.size()];
+                                    int count = 0;
+                                    for (Obstacle ob : obs) {
+                                        obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
+                                    }
+
+                                    if (obstacles != null && obstacles.length != 0) {
+                                        mRenderer.setObstacles(obstacles);
+                                    }
+                                }
                             }
 
                             // Our position
@@ -447,11 +458,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
             mGlSurfaceView.onResume();
         }
 
-        // Periodic not time critical activities
-        mTimer = new Timer();
-        mTimerTask = new UpdateTask();
-        mTimer.schedule(mTimerTask, 0, 1000);
-
         setDrawerButtonVisibility();
     }
 
@@ -462,7 +468,6 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
         if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
-        mTimer.cancel();
     }
 
     @Override
@@ -539,42 +544,10 @@ public class ThreeDFragment extends StorageServiceGpsListenerFragment {
             else if (msg.what == MESSAGE_ERROR) {
                 mGlassView.setStatus((String) msg.obj);
             }
-            else if (msg.what == MESSAGE_OBSTACLES) {
-                mObstacles = (Vector4d[]) msg.obj;
-            }
             else if (msg.what == MESSAGE_AGL) {
                 mGlassView.setAgl((String) msg.obj);
             }
         }
     };
-
-    /**
-     * Do stuff in background
-     */
-    private class UpdateTask extends TimerTask {
-
-        @Override
-        public void run() {
-
-            Thread.currentThread().setName("Background");
-
-            if (null == mService || null == mService.getDBResource() || mAreaMapper == null || mAreaMapper.getGpsParams() == null) {
-                return;
-            }
-            LinkedList<Obstacle> obs = null;
-            obs = mService.getDBResource().findObstacles(mAreaMapper.getGpsParams().getLongitude(),
-                    mAreaMapper.getGpsParams().getLatitude(), 0);
-
-            Vector4d obstacles[] = new Vector4d[obs.size()];
-            int count = 0;
-            for (Obstacle ob : obs) {
-                obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
-            }
-            Message m = mHandler.obtainMessage();
-            m.what = MESSAGE_OBSTACLES;
-            m.obj = obstacles;
-            mHandler.sendMessage(m);
-        }
-    }
 
 }

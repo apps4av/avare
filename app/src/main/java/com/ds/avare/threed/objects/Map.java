@@ -10,10 +10,10 @@ package com.ds.avare.threed.objects;
 
 import android.graphics.Bitmap;
 
+import com.ds.avare.shapes.SubTile;
 import com.ds.avare.threed.Constants;
 import com.ds.avare.threed.data.VertexArrayShort;
 import com.ds.avare.threed.programs.TextureShaderProgram;
-import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
 import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
@@ -21,8 +21,8 @@ import static android.opengl.GLES20.glDrawArrays;
 
 public class Map {
 
-    private static final int ROWS = BitmapHolder.HEIGHT;
-    private static final int COLS = BitmapHolder.WIDTH;
+    private static final int ROWS = SubTile.DIM;
+    private static final int COLS = SubTile.DIM;
 
     public static final int COMPONENTS = 2;
     private static final int STRIDE = COMPONENTS * Constants.BYTES_PER_SHORT;

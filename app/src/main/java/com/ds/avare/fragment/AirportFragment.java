@@ -333,8 +333,13 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                 }
                 mViewButton.setText(mListViews.get(pos));
                 if(pos > 0) {
-                    mService.loadDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
-                    mAfdView.setBitmap(mService.getDiagram());
+                    if(mService.getAfdDiagram() == null ||
+                            mService.getAfdDiagram().getName() == null ||
+                            (!mService.getAfdDiagram().getName().equals(afd[pos - 1] + Preferences.IMAGE_EXTENSION))) {
+                        mService.loadAfdDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
+                    }
+
+                    mAfdView.setBitmap(mService.getAfdDiagram());
                     /*
                      * Show graphics
                      */
@@ -346,12 +351,9 @@ public class AirportFragment extends StorageServiceGpsListenerFragment implement
                     mAirportView.setVisibility(View.VISIBLE);
                     mAfdView.setVisibility(View.INVISIBLE);
                     mCenterButton.setVisibility(View.INVISIBLE);
-                    mService.loadDiagram(null);
+                    mService.loadAfdDiagram(null);
                     mAfdView.setBitmap(null);
                 }
-
-                // TODO: maybe not necessary when using fragments
-                mService.setMatrix(null);
                 mService.setAfdIndex(pos);
             }
         }

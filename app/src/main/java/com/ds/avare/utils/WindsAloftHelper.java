@@ -1,7 +1,5 @@
 package com.ds.avare.utils;
 
-import android.util.Pair;
-
 import com.ds.avare.weather.WindsAloft;
 
 import java.util.Locale;
@@ -17,7 +15,7 @@ import java.util.Locale;
      * @return HTML fragment with a table containing decoded Winds Aloft up to up to altitude
      */
     public static String formatWindsHTML(WindsAloft wa, int upToAltitude) {
-        String header = wa.station + "<br>" + wa.time + "<br>";
+        String header = p(wa.station) + p(wa.time);
         String winds;
         winds =  (upToAltitude > 0) ? formatWindRow("3000", wa.w3k) : "";
         winds += (upToAltitude > 3) ? formatWindRow("6000", wa.w6k) : "";
@@ -37,11 +35,16 @@ import java.util.Locale;
      * @return formatted HTML table row
      */
     private static String formatWindRow(String alt, String wind) {
-        DirSpeedTemp w = parseWindAndTemperature(wind);
-        return (w.IsNull) ? tr("") : tr(td(alt) + td(w.Dir) + td(w.Speed) + td(w.Temp));
+        try {
+            DirSpeedTemp w = parseWindAndTemperature(wind);
+            return (w.IsNull) ? tr("") : tr(td(alt) + td(w.Dir) + td(w.Speed) + td(w.Temp));
+        } catch (Exception x) {
+            return tr("");
+        }
     }
 
     //nbsp is used here to nicely space out cells in the row 
+    private static String p(String c) { return "<p>"+c+"</p>"; }
     private static String td(String c) { return "<td align='right'>&nbsp;"+c+"</td>"; }
     private static String tr(String r) { return "<tr>"+r+"</tr>"; }
     private static String table(String t) { return "<table>"+t+"</table>"; }
@@ -77,9 +80,10 @@ import java.util.Locale;
      * @param ds Direction and Speed
      * @return (direction, speed) strings pair
      */
-    private static Pair<String,String> formatDirAndSpeed(DirSpeed ds) {
-        return new Pair(String.format(Locale.getDefault(), "%03d°", ds.Dir),
-                String.format(Locale.getDefault(), "%dkt", ds.Speed));
+    private static String[] formatDirAndSpeed(DirSpeed ds) {
+        String formattedDirection = String.format(Locale.getDefault(), "%03d°", ds.Dir);
+        String formattedSpeed = String.format(Locale.getDefault(), "%dkt", ds.Speed);
+        return new String[] { formattedDirection, formattedSpeed };
     }
 
 
@@ -87,9 +91,9 @@ import java.util.Locale;
         final public String Dir, Speed, Temp;
         final boolean IsNull;
 
-        private DirSpeedTemp(Pair<String,String> wind, String t)
+        private DirSpeedTemp(String wind[], String t)
         {
-            Dir = wind.first; Speed = wind.second; Temp = t;
+            Dir = wind[0]; Speed = wind[1]; Temp = t;
             IsNull = false;
         }
         private DirSpeedTemp() {
@@ -132,7 +136,7 @@ import java.util.Locale;
          * @param wind
          * @return
          */
-        public static DirSpeed parseFrom(String wind) {
+        public static DirSpeed parseFrom(String wind) throws NumberFormatException, StringIndexOutOfBoundsException {
             return new DirSpeed(wind);
         }
     }

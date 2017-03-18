@@ -150,7 +150,6 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
                             /*
                              * Edit and save description field
                              */
-
                             mPref.modifyARecent(mSelected, edit.getText().toString().toUpperCase());
                             initList();
                             mSelected = null;

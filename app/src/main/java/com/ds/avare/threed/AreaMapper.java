@@ -15,10 +15,9 @@ package com.ds.avare.threed;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Epsg900913;
-import com.ds.avare.shapes.Tile;
+import com.ds.avare.shapes.SubTile;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.threed.data.Vector4d;
-import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -28,8 +27,8 @@ public class AreaMapper {
 
     private GpsParams mGpsParams;
 
-    private Tile mElevationTile;
-    private Tile mMapTile;
+    private SubTile mElevationTile;
+    private SubTile mMapTile;
 
     private float mRatio;
 
@@ -64,8 +63,8 @@ public class AreaMapper {
         double dlon = -(lonc - lon);
         double y = (dlat / py); // pixels from center
         double x = (dlon / px); // pixels from center
-        double ynorm = y / ((double)BitmapHolder.HEIGHT) * 2;
-        double xnorm = x / ((double)BitmapHolder.WIDTH) * 2;
+        double ynorm = y / ((double)SubTile.DIM) * 2;
+        double xnorm = x / ((double)SubTile.DIM) * 2;
 
         double alt = Helper.findPixelFromElevationNormalized(altitude) * mRatio;
 
@@ -81,7 +80,7 @@ public class AreaMapper {
      */
     public double getXForLon(double lon) {
         if(mMapTile != null) {
-            return mMapTile.getOffsetX(lon) + BitmapHolder.WIDTH / 2;
+            return mMapTile.getOffsetX(lon) + SubTile.DIM / 2;
         }
         return -1;
     }
@@ -93,7 +92,7 @@ public class AreaMapper {
      */
     public double getYForLat(double lat) {
         if(mMapTile != null) {
-            return mMapTile.getOffsetY(lat) + BitmapHolder.HEIGHT / 2;
+            return mMapTile.getOffsetY(lat) + SubTile.DIM / 2;
         }
         return -1;
     }
@@ -113,7 +112,7 @@ public class AreaMapper {
     }
 
 
-    public void setMapTile(Tile tile) {
+    public void setMapTile(SubTile tile) {
         // Location & OpenGL sync
         synchronized (this) {
             if (mMapTile == null || (!tile.getName().equals(mMapTile.getName()))) {
@@ -123,8 +122,8 @@ public class AreaMapper {
         }
     }
 
-    public Tile getMapTile() {
-        Tile t;
+    public SubTile getMapTile() {
+        SubTile t;
         // Location & OpenGL sync
         synchronized (this) {
             mNewMapTile = false;
@@ -133,7 +132,7 @@ public class AreaMapper {
         return t;
     }
 
-    public void setElevationTile(Tile tile) {
+    public void setElevationTile(SubTile tile) {
         // Location & OpenGL sync
         synchronized (this) {
             if (mElevationTile == null || (!tile.getName().equals(mElevationTile.getName()))) {
@@ -148,8 +147,8 @@ public class AreaMapper {
         }
     }
 
-    public  Tile getElevationTile() {
-        Tile t;
+    public  SubTile getElevationTile() {
+        SubTile t;
         // Location & OpenGL sync
         synchronized (this) {
             mNewElevationTile = false;

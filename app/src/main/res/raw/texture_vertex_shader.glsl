@@ -11,8 +11,8 @@ attribute float a_S1;
 varying vec2 v_TextureCoordinates;
 
 const float ONE_OVER_64  = 0.015625;
-const float ONE_OVER_512 = 0.001953125;
-const float ONE_OVER_256 = 0.00390625;
+const float ONE_OVER_384 = 0.002604167;
+const float ONE_OVER_192 = 0.005208333;
 
 void main()                    
 {
@@ -30,7 +30,7 @@ void main()
     // map coordinates
     //-1,1    1,1
     //-1,-1   1,-1
-    vec4 ap = vec4(col * ONE_OVER_256 - 1.0, row * -ONE_OVER_256 + 1.0, ht, 1.0);
+    vec4 ap = vec4(col * ONE_OVER_192 - 1.0, row * -ONE_OVER_192 + 1.0, ht, 1.0);
 
     // texture coordinates
     // 0,0   0,1
@@ -40,7 +40,7 @@ void main()
     float refHt = u_Normal * (u_Height * u_Slope + u_Intercept);
     float refHt1000 = u_Normal * ((u_Height - 13.0) * u_Slope + u_Intercept); // 1000 ft = 24 * 12 * 3.28
     if(u_Height > 255.0) {
-        at = vec2(col * ONE_OVER_512, row * ONE_OVER_512); // map texture
+        at = vec2(col * ONE_OVER_384, row * ONE_OVER_384); // map texture
     }
     else if(ht >= refHt) {
         at = vec2(ht - refHt + 0.25, 0.125); // shades of red, below

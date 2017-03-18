@@ -15,6 +15,7 @@ package com.ds.avare.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -23,6 +24,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.storage.Preferences;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author zkhan
@@ -333,6 +335,44 @@ public class BitmapHolder {
             mName = null;
         }
     }
+
+    /**
+     * @param name
+     * Get bitmap from a diagram / plate file
+     */
+    public BitmapHolder(String name, Bitmap.Config type, Rect r) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = type;
+        opt.inSampleSize = 1;
+
+        if(!(new File(name).exists())) {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+            return;
+        }
+
+
+        try {
+            BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(name, false);
+            mBitmap = decoder.decodeRegion(r, opt);
+        }
+        catch(OutOfMemoryError e) {
+        }
+        catch (IOException e) {
+        }
+        if(null != mBitmap) {
+            mWidth = mBitmap.getWidth();
+            mHeight = mBitmap.getHeight();
+            mName = name;
+        }
+        else {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+        }
+    }
+
 
     /**
      * @param context

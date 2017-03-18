@@ -32,7 +32,13 @@ public class SubTile extends Tile {
     public static final int DIM = 384;
 
 
-    private int mLocationCurrent = -1;
+    private double mLatSub = -1;
+    private double mLonSub = -1;
+
+    private String mNameSub = "";
+
+    private int mLocation = -1;
+
 
     // to divide 512 x 512 tiles to a 3x3 array of 128x128 tiles
     // 8x8 neighbor table where main tile top left (row = 0, col = 0) starts at [2][2] in it, and has 9 tiles for which neighbors apply
@@ -61,12 +67,13 @@ public class SubTile extends Tile {
 
     public SubTile(Context ctx, Preferences pref, double lon, double lat, double zoom, String index) {
         super(ctx, pref, lon, lat, zoom, index);
+        calculate(lon, lat);
     }
 
     // tells which sub tile (128) I am on based on x, y pixel location
     public static int whereAmI(int x, int y) {
-        int x0 = (x / 128) * 128;
-        int y0 = (y / 128) * 128;
+        int x0 = ((x / 128) * 128);
+        int y0 = ((y / 128) * 128);
         for(int i = 0; i < 16; i++) {
             if(y0 == dims[i][0] && x0 == dims[i][1]) {
                 return i;
@@ -79,8 +86,8 @@ public class SubTile extends Tile {
         Rect ret = new Rect();
         ret.top = dims[location][0];
         ret.left = dims[location][1];
-        ret.bottom = dims[location][0] + 128 - 1;
-        ret.right = dims[location][1] + 128 - 1;
+        ret.bottom = dims[location][0] + 128;
+        ret.right = dims[location][1] + 128;
         return ret;
     }
 
@@ -88,8 +95,8 @@ public class SubTile extends Tile {
         Rect ret = new Rect();
         ret.top = row * 128;
         ret.left = col * 128;
-        ret.bottom = ret.top + 128 - 1;
-        ret.right = ret.left + 128 - 1;;
+        ret.bottom = ret.top + 128;
+        ret.right = ret.left + 128;;
         return ret;
     }
 
@@ -144,32 +151,100 @@ public class SubTile extends Tile {
         return neighbors;
     }
 
+    private void calculate(double lon, double lat) {
+        mLocation = whereAmI((int) super.getOffsetX(lon) + BitmapHolder.WIDTH / 2, (int) super.getOffsetY(lat) + BitmapHolder.HEIGHT / 2);
 
-    public boolean load(BitmapHolder bh, String mapsFolder, double lon, double lat) {
-        int location = whereAmI((int)super.getOffsetX(lon) + BitmapHolder.WIDTH / 2, (int)super.getOffsetY(lat) + BitmapHolder.HEIGHT / 2);
+//      | | | | |
+//      | | | | |
+//      | | | | |
+//      | | | | |
+        Rect s = whatAreMyDims(mLocation);
 
-        if(location == mLocationCurrent || location < 0) {
-            return false;
+
+        // find center lat/lon of subtile
+        double x = s.left - BitmapHolder.WIDTH / 2 + 128 / 2;
+        double y = s.top - BitmapHolder.HEIGHT / 2 + 128 / 2;
+        mLatSub = super.getLatitude() + getPy() * y;
+        mLonSub = super.getLongitude() + getPx() * x;
+
+        mNameSub = super.getName() + "_" + mLocation;
+    }
+
+
+        /**
+         * Load image
+         * @param bh
+         * @param mapsFolder
+         * @return
+         */
+    public boolean load(BitmapHolder bh, String mapsFolder) {
+
+        boolean ret = false;
+
+        if(mLocation < 0) {
+            return ret;
         }
 
-        int[][][] tiles = whatAreMyNeighbors(locRow(location), locCol(location));
+        int[][][] tiles = whatAreMyNeighbors(locRow(mLocation), locCol(mLocation));
 
-        for(int col = 0; col < 3; col++) {
-            for(int row = 0; row < 3; row++) {
+        for(int row = 0; row < 3; row++) {
+            for(int col = 0; col < 3; col++) {
                 // load tiles and draw in main bitmap
-                // this could be optimized in android 4.0 by just-decode-bounds
-                BitmapHolder b = new BitmapHolder(mapsFolder + "/" + super.getTileNeighbor(tiles[row][col][1], tiles[row][col][0]), Bitmap.Config.ARGB_8888);
                 Rect src = whatAreMyDims(tiles[row][col][2]);
                 Rect dst = whatAreMyDims(row, col);
+                BitmapHolder b = new BitmapHolder(mapsFolder + "/" + super.getTileNeighbor(tiles[row][col][1], -tiles[row][col][0]), Bitmap.Config.ARGB_8888, src);
+
                 if(b.getBitmap() != null) {
-                    bh.drawInBitmap(b, src, dst);
+                    bh.drawInBitmap(b, null, dst);
+                    ret = true;
                 }
                 b.recycle();
             }
         }
 
-        mLocationCurrent = location;
+        return ret;
+    }
 
-        return true;
+
+    @Override
+    public double getLatitude() {
+        return mLatSub;
+    }
+
+    @Override
+    public double getLongitude() {
+        return mLonSub;
+    }
+
+    @Override
+    public double getOffsetX(double lon) {
+
+        double px = getPx();
+
+        if(px != 0) {
+            return(lon - mLonSub) / px;
+        }
+        else {
+            return(0);
+        }
+    }
+
+    @Override
+    public double getOffsetY(double lat) {
+
+        double py = getPy();
+
+        if(py != 0) {
+            return (lat - mLatSub) / py;
+        }
+        else {
+            return(0);
+        }
+    }
+
+
+    @Override
+    public String getName() {
+        return mNameSub;
     }
 }

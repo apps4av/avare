@@ -111,6 +111,7 @@ public class LocationView extends View implements OnTouchListener {
     private BitmapHolder               mLineBitmap;
     private BitmapHolder               mLineHeadingBitmap;
     private BitmapHolder               mObstacleBitmap;
+
     /**
      * Gesture like long press, double touch outside of multi-touch
      */
@@ -275,7 +276,6 @@ public class LocationView extends View implements OnTouchListener {
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
         mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
-
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         // We're going to give the user twice the slop as normal
@@ -566,7 +566,7 @@ public class LocationView extends View implements OnTouchListener {
         }
 
         if(mLayerType.equals("Plate")) {
-            BitmapHolder b = mService.getDiagram();
+            BitmapHolder b = mService.getPlateDiagram();
 
             if(b == null || b.getBitmap() == null) {
                 return;
