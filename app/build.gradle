@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 10
-        targetSdkVersion 23
+        targetSdkVersion 25
     }
 
     dependencies {
