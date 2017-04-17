@@ -258,10 +258,11 @@ public class Destination extends Observable {
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, mGroundSpeed);
+    	mEta = Helper.calculateEta(sCalendar, mDistance, mGroundSpeed);
 	}
 
-
+    // static cal to avoid instantiation on every update
+    static final Calendar sCalendar = Calendar.getInstance();
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
