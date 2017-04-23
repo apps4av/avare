@@ -594,7 +594,7 @@ public class WebAppPlanInterface implements Observer {
     private void setFilteredSize() {
     	// re-calc the size of our plan list based upon the filter
     	mFilteredSize = 0;
-    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
+    	Iterator<String> it = mSavedPlans.keySet().iterator();
     	while(true == it.hasNext()){
     		String planName = it.next();
     		if(true == containsIgnoreCase(planName, mPlanFilter)) {
@@ -943,7 +943,6 @@ public class WebAppPlanInterface implements Observer {
 	private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Plan plan = mService.getPlan();
         	if(MSG_CLEAR_PLAN == msg.what) {
         		mWebView.loadUrl("javascript:plan_clear()");
         	}
@@ -956,6 +955,7 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if (MSG_TIMER == msg.what) {
+				Plan plan = mService.getPlan();
         		plan.simulate();
         	}
         	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
