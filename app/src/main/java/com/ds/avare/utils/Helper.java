@@ -44,9 +44,11 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * 
+ *
  * @author zkhan
  *
  */
@@ -127,20 +129,20 @@ public class Helper {
 	    // Extract the hours
 	    ete.hour  = (int)(eteTotal / 3600);	// take whole int value as the hours
 	    eteTotal -= (ete.hour * 3600);		// Remove the hours that we extracted
-	    
+
 	    // Convert what's left to fractional minutes
         ete.minute = (int)(eteTotal / 60);	// Get the int value as the minutes now
         eteTotal  -= (ete.minute * 60);		// remove the minutes we just extracted
 
         // What's left is the remaining seconds 
         ete.second = Math.round((int)eteTotal);	// round as appropriate
-        
+
         // Account for the seconds being 60
         if(ete.second >= 60) { ete.minute++; ete.second -= 60; }
-        
+
         // account for the minutes being 60
         if(ete.minute >= 60) { ete.hour++; ete.minute -= 60; }
-        
+
         // Time object is good to go now
         return ete;
 	}
@@ -172,7 +174,7 @@ public class Helper {
         int eteHr  = eteRaw.hour;
         int eteMin = eteRaw.minute;
         int eteSecond = eteRaw.second;
-        
+
         // Hours greater than 99 are not displayable
         if(eteHr > 99) {
             return "XX:XX";
@@ -235,7 +237,7 @@ public class Helper {
     }
 
     /**
-     * 
+     *
      * @param lonlat
      */
     public static double truncGeo(double lonlat) {
@@ -244,9 +246,9 @@ public class Helper {
         lonlat /= 10000;
         return lonlat;
     }
-    
+
     /**
-     * Same as query for a location in DatabaseHelper.findClosestAirportID() 
+     * Same as query for a location in DatabaseHelper.findClosestAirportID()
      * @param lon
      * @param lat
      * @param lon1
@@ -259,10 +261,10 @@ public class Helper {
         }
         return false;
     }
-    
+
 
     /**
-     * 
+     *
      * @param paint
      */
     public static void invertCanvasColors(Paint paint) {
@@ -270,7 +272,7 @@ public class Helper {
                 -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
                 0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
                 0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f 
+                1.0f,  1.0f,  1.0f,  1.0f,  0.0f
        };
        ColorMatrix cm = new ColorMatrix(mx);
        paint.setColorFilter(new ColorMatrixColorFilter(cm));
@@ -301,33 +303,33 @@ public class Helper {
     }
 
     /**
-     * 
+     *
      * @param paint
      */
     public static void restoreCanvasColors(Paint paint) {
        paint.setColorFilter(null);
     }
-    
+
     /**
-     * 
+     *
      * @param lon
      * @return
      */
     public static boolean isLongitudeSane(double lon) {
         return (lon < 180) && (lon > -180);
     }
-    
+
     /**
-     * 
+     *
      * @param lat
      * @return
      */
     public static boolean isLatitudeSane(double lat) {
-        return (lat > -90) && (lat < 90); 
+        return (lat > -90) && (lat < 90);
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public static String makeLine(double value, String unit, String eta, double heading, double variation) {
@@ -335,20 +337,20 @@ public class Helper {
         if(eta == null) {
             eta = "     ";
         }
-        String ret = 
+        String ret =
                 valTrunc + unit + " " +  eta + " " +
                         Helper.correctConvertHeading(Math.round(getMagneticHeading(heading, variation))) + '\u00B0';
-        return ret; 
+        return ret;
     }
-    
+
     public static String makeLine2(double distance, String unit, String genDirection, double heading, double variation) {
-        return String.format(Locale.getDefault(), "%3d", (Math.round(distance))) + 
-        			unit + " " + genDirection + " BRG " + 
+        return String.format(Locale.getDefault(), "%3d", (Math.round(distance))) +
+        			unit + " " + genDirection + " BRG " +
         			Helper.correctConvertHeading(Math.round(getMagneticHeading(heading, variation))) + '\u00B0';
     }
 
     /**
-     * 
+     *
      * @param heading
      * @return
      */
@@ -359,14 +361,14 @@ public class Helper {
         }
         return ret;
     }
-    
+
     /**
-     * 
+     *
      * @param val
      * @return
      */
     public static String removeLeadingZeros(String val) {
-        return val.replaceFirst("^0+(?!$)", ""); 
+        return val.replaceFirst("^0+(?!$)", "");
     }
 
 /***
@@ -396,7 +398,7 @@ public class Helper {
     	return strEmpty.substring(0,  leading) + input + strEmpty.substring(0,  trailing);
     }
     /**
-     * 
+     *
      * @param variation
      * @return
      */
@@ -406,16 +408,16 @@ public class Helper {
             return 0;
         }
         else {
-            var = Double.parseDouble(variation.substring(0, 2));            
+            var = Double.parseDouble(variation.substring(0, 2));
             if(variation.contains("E")) {
-                var = -var;                 
+                var = -var;
             }
         }
         return var;
     }
 
     /**
-     * 
+     *
      * @param variation
      * @return
      */
@@ -436,24 +438,24 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
-        Preferences p = new Preferences(act.getApplicationContext()); 
+        Preferences p = new Preferences(act.getApplicationContext());
         if(p.isNightMode()) {
             act.setTheme(android.R.style.Theme_Black);
         }
         else {
-            act.setTheme(android.R.style.Theme_Light);            
+            act.setTheme(android.R.style.Theme_Light);
         }
     }
-    
+
     /**
      * Set common features of all activities in the framework
      * @param act
      */
     public static void setOrientationAndOn(Activity act) {
-        
+
         Preferences pref = new Preferences(act.getApplicationContext());
         if(pref.isKeepScreenOn()) {
-            act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
+            act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
         String orn = pref.getOrientation();
@@ -478,9 +480,9 @@ public class Helper {
          */
         act.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
-    
+
     /**
-     * 
+     *
      * @param f
      */
     public static void deleteDir(File f) {
@@ -493,12 +495,12 @@ public class Helper {
             f.delete();
         }
         catch (Exception e) {
-            
+
         }
     }
 
     /**
-     * 
+     *
      * @param heading
      * @param variation
      * @return
@@ -506,10 +508,10 @@ public class Helper {
     public static double getMagneticHeading(double heading, double variation) {
         return (heading + variation + 360) % 360;
     }
-    
+
 
     /**
-     * 
+     *
      * @param filename
      */
     private static String readFromFile(String filename) {
@@ -518,7 +520,7 @@ public class Helper {
         try {
             if(file.exists()) {
                 b = new byte[(int)file.length()];
-                InputStream fi = new FileInputStream(file);              
+                InputStream fi = new FileInputStream(file);
                 fi.read(b);
                 fi.close();
             }
@@ -526,7 +528,7 @@ public class Helper {
         catch (Exception e) {
             return null;
         }
-        
+
         if(null != b) {
             return new String(b);
         }
@@ -553,7 +555,7 @@ public class Helper {
     }
 
     /**
-     * 
+     *
      * @param ctx
      * @return
      */
@@ -599,7 +601,7 @@ public class Helper {
                     if(null != shape) {
                         shape.makePolygon();
                         shapeList.add(shape);
-                    }                                 
+                    }
                     shape = new TFRShape(tokens[id].replace(
                             "TFR:: ", "@ " + time.toString()).
                             replace("Top", "\n" + "Top      ").
@@ -616,7 +618,7 @@ public class Helper {
                             Double.parseDouble(tokens[id]), false);
                 }
                 catch (Exception e) {
-                    
+
                 }
                 id++;
             }
@@ -625,30 +627,30 @@ public class Helper {
                 shapeList.add(shape);
             }
         }
-        
+
         return shapeList;
-    }  
+    }
 
     /**
-     * 
+     *
      * @param freq
      * @return
      */
     public static boolean isFrequencyUHF(double freq) {
         return freq > 136;
     }
-    
-    
+
+
     /**
      *  Converts 1 dip (device independent pixel) into its equivalent physical pixels
      */
     public static float getDpiToPix(Context ctx) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, 
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
                 ctx.getResources().getDisplayMetrics());
     }
 
     /** Calculate the absolute angular difference between the two headings
-     * 
+     *
      * @param hdg angle 1 in degrees (typically the heading)
      * @param brg angle 2 in degrees (typically the bearing)
      * @return difference between hdg and brg in degrees
@@ -679,29 +681,29 @@ public class Helper {
     		return true;
     	return false;
     }
-    
+
     /**
-     * 
+     *
      */
     public static String millisToGMT(long millis) {
         SimpleDateFormat df = new SimpleDateFormat("MM_dd_yyyy_hh_mm", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(millis) + "_UTC";
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public static long getMillisGMT() {
         Calendar calendar = new GregorianCalendar();
         TimeZone mTimeZone = calendar.getTimeZone();
-        int offset = mTimeZone.getOffset(System.currentTimeMillis());  
+        int offset = mTimeZone.getOffset(System.currentTimeMillis());
         return System.currentTimeMillis() - offset;
     }
 
     /**
-     * Take the speed returned from gpsParams.getSpeed() which has been converted to 
+     * Take the speed returned from gpsParams.getSpeed() which has been converted to
      * a value to be displayed and change it to knots.
      * Sometimes we just want knots.
      * @return
@@ -709,7 +711,7 @@ public class Helper {
     public static double getSpeedInKnots(double displayedSpeed) {
         return displayedSpeed * Preferences.MS_TO_KT / Preferences.speedConversion; // m/s to knots
     }
- 
+
     /***
      * Downsize the bitmap to at most the indicated ratio of the max specified size
      * @param bm Bitmap to resize
@@ -724,23 +726,23 @@ public class Helper {
     	if(null == bm) {
     		return bm;
     	}
-    	
+
     	// Get current size and h:w ratio
     	int height = bm.getHeight();
     	int width = bm.getWidth();
-    	
+
     	// ensure bitmap size is valid
     	if(0 == height || 0 == width) {
     		return bm;
     	}
-    	
+
     	// What is the height to width ratio - will always be > 0 at this point
     	double ratio = height / width;
-    	
+
     	// Figure out new max size
     	int newHeight = (int) (Math.min(maxX,  maxY) * maxRatio);
     	int newWidth = (int) (newHeight / ratio);
-    	
+
     	// If we don't need to downsize, then return with the original
     	if(newHeight >= height && newWidth >= width) {
     		return bm;
@@ -749,20 +751,20 @@ public class Helper {
     	// Calculate the scaling factors in both the x and y direction
     	float scaleWidth = ((float) newWidth) / width;
     	float scaleHeight = ((float) newHeight) / height;
-    	 
+
     	// create a matrix for the manipulation
     	Matrix matrix = new Matrix();
-    	 
+
     	// resize the bit map
     	matrix.postScale(scaleWidth, scaleHeight);
-    	 
+
     	// recreate the new Bitmap, allowing for failure
     	try {
     		Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
     		return resizedBitmap;
     	} catch (Exception e ) { return bm; }
 	}
-    
+
     /**
      * Read a file, used for reading weather file from assets
      * @param fileName
@@ -785,7 +787,7 @@ public class Helper {
 	        }
 	    }
 	    catch (Exception e) {
-	    } 
+	    }
 	    finally {
 	        try {
 	            if (isr != null) {
@@ -797,21 +799,21 @@ public class Helper {
 	            if (input != null) {
 	                input.close();
 	            }
-	        } 
+	        }
 	        catch (Exception e2) {
 	        }
 	    }
 	    return returnString.toString();
 	}
 
-    
+
     /**
      * Write to file in given folder
      * @param fcontent
      * @return
      */
     public static boolean writeFile(String fcontent, String path){
-    	
+
     	/*
     	 * Write file contents to file path
     	 */
@@ -826,11 +828,11 @@ public class Helper {
             bw.write(fcontent);
             bw.close();
             return true;
-        } 
+        }
         catch (Exception e) {
             return false;
         }
-    }    
+    }
 
     /**
      * Avoid ' in JS function calls
@@ -843,7 +845,7 @@ public class Helper {
     	}
     	return args.replace("'", "\\'");
     }
-    
+
     /**
      * Get HMTL file location for webview
      * @param context
@@ -881,15 +883,41 @@ public class Helper {
         return Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
     }
 
+    public static final Pattern ICAO_GPS_PATTERN = Pattern.compile("(\\d\\d)(\\d\\d)(\\d\\d)?([NS])/?(\\d\\d\\d)(\\d\\d)(\\d\\d)?([EW])");
 
     public static String decodeGpsAddress(String name, double coords[]) {
-
         /*
-         * GPS
-         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
-         * get the x&y part, then parse them to lon=y lat=x
+         * This is SkyVector or iFlightPlanner GPS destination format (ICAO)
          */
-        if(name.contains("&")) {
+        Matcher m = ICAO_GPS_PATTERN.matcher(name);
+        if(m.matches()) {
+            try {
+                int i = 1;
+                double  lat_deg = Double.parseDouble(m.group(1)),
+                        lat_min = Double.parseDouble(m.group(2)),
+                        lat_sec = m.group(3) != null ? Double.parseDouble(m.group(3)) : 0,
+                        lat_south = m.group(4).equalsIgnoreCase("S") ? -1 : 1,
+                        lon_deg = Double.parseDouble(m.group(5)),
+                        lon_min = Double.parseDouble(m.group(6)),
+                        lon_sec = m.group(7) != null ? Double.parseDouble(m.group(7)) : 0,
+                        lon_west = m.group(8).equalsIgnoreCase("W") ? -1 : 1
+                                ;
+                coords[0] = lon_west * truncGeo(lon_deg + lon_min/60.0 + lon_sec/(60.0*60.0));
+                coords[1] = lat_south * truncGeo(lat_deg + lat_min/60.0 + lat_sec/(60.0*60.0));
+            }
+            catch (Exception e) {
+                return null;
+            }
+            /*
+             * Sane input
+             */
+            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+                return null;
+            }
+
+            return "";
+        }
+        else if(name.contains("&")) {
             String token[] = new String[2];
             token[1] = token[0] = name;
             if(name.contains("@")) {
