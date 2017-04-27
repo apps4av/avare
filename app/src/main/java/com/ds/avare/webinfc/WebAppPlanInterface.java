@@ -594,7 +594,7 @@ public class WebAppPlanInterface implements Observer {
     private void setFilteredSize() {
     	// re-calc the size of our plan list based upon the filter
     	mFilteredSize = 0;
-    	Iterator<String> it = mSavedPlans.keySet().iterator();
+		Iterator<String> it = mSavedPlans.keySet().iterator();
     	while(true == it.hasNext()){
     		String planName = it.next();
     		if(true == containsIgnoreCase(planName, mPlanFilter)) {
