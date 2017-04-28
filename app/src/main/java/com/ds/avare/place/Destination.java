@@ -258,7 +258,7 @@ public class Destination extends Observable {
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(new CalendarHelper(), mDistance, mGroundSpeed);
+    	mEta = Helper.calculateEta(CalendarHelper.getInstance(), mDistance, mGroundSpeed);
 	}
 
 

@@ -10,19 +10,28 @@ import static java.util.Calendar.MINUTE;
  */
 
 public class CalendarHelper {
-    final private Calendar calendar;
+    private static CalendarHelper mInstance = null; // singleton
 
-    public CalendarHelper() {
-        calendar = Calendar.getInstance();
+
+    private Calendar mCalendar;
+
+    private CalendarHelper() {
+        mCalendar = Calendar.getInstance();
+    }
+
+    public static CalendarHelper getInstance() {
+        if(null == mInstance) {
+            mInstance = new CalendarHelper();
+        }
+        return mInstance;
     }
 
     public int getHour()
     {
-        return calendar.get(HOUR_OF_DAY);
+        return mCalendar.get(HOUR_OF_DAY);
     }
     public int getMinute()
     {
-        return calendar.get(MINUTE);
+        return mCalendar.get(MINUTE);
     }
 }
-
