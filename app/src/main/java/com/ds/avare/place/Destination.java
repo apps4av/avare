@@ -22,11 +22,11 @@ import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.CalendarHelper;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
 import com.ds.avare.weather.WindsAloft;
 
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -258,9 +258,8 @@ public class Destination extends Observable {
 
     	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
     	// the timezone at that location
-    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, mGroundSpeed);
+    	mEta = Helper.calculateEta(new CalendarHelper(), mDistance, mGroundSpeed);
 	}
-
 
 
 	/* (non-Javadoc)
