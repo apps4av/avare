@@ -24,6 +24,9 @@ android {
     lintOptions {
         abortOnError false // for Travis CI
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -31,6 +34,7 @@ dependencies {
     compile 'org.xmlunit:xmlunit-core:2.3.0'
     compile 'org.xmlunit:xmlunit-matchers:2.3.0'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.4.0'
     testCompile 'org.powermock:powermock-module-junit4:1.7.0RC2'
     testCompile 'org.powermock:powermock-api-mockito2:1.7.0RC2'
     testCompile 'org.powermock:powermock-classloading-xstream:1.7.0RC2'

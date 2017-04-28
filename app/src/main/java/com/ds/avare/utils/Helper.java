@@ -181,30 +181,22 @@ public class Helper {
         // If hours is non zero then return HH:MM
         if(eteHr > 0) {
 	        // Format the hours and minutes en router
-	        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
-	        String min = String.format(Locale.getDefault(), "%02d", eteMin);
-	
-	        // Build the string for return
-	        return hr + ":" + min;
+            return String.format(Locale.getDefault(), "%02d:%02d", eteHr, eteMin);
         }
 
         // Hours is zero, so return MM.SS
-        String min = String.format(Locale.getDefault(), "%02d", eteMin);
-        String sec = String.format(Locale.getDefault(), "%02d", eteSecond);
+        return String.format(Locale.getDefault(), "%02d.%02d", eteMin, eteSecond);
 
-        // Build the string for return
-        return min + "." + sec;
-        
     }
 
     /***
 	 * Fetch the estimate current time of arrival at the destination
-	 * @param timeZone - The timezone at the destination
+	 * @param calendar - The calendar at the destination
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
 	 * @return String - "HH:MM" current time at the target
      */
-    public static String calculateEta(TimeZone timeZone, double distance, double speed) {
+    public static String calculateEta(CalendarHelper calendar, double distance, double speed) {
 
         // If no speed, then return an empty display string
         if(0 == speed ){
@@ -229,8 +221,8 @@ public class Helper {
         }
 
         // Get the current local time hours and minutes
-        int etaHr = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int etaMin = Calendar.getInstance().get(Calendar.MINUTE);
+        int etaHr = calendar.getHour();
+        int etaMin = calendar.getMinute();
 
         // Add in our ETE to the current time, accounting for rollovers
         etaMin += eteMin;	// Add the estimated minutes enroute to "now"
@@ -239,11 +231,7 @@ public class Helper {
         while(etaHr > 23) { etaHr -= 24; }	// account for midnight rollover
 
         // Format the hours and minutes
-        String strHr = String.format(Locale.getDefault(), "%02d", etaHr);
-        String strMn = String.format(Locale.getDefault(), "%02d", etaMin);
-
-        // Build string of return
-        return strHr + ":" + strMn;
+        return String.format(Locale.getDefault(), "%02d:%02d", etaHr, etaMin);
     }
 
     /**
