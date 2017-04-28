@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 10
-        targetSdkVersion 23
+        targetSdkVersion 25
     }
 
     dependencies {
@@ -37,4 +37,7 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.4.0'
     testCompile 'org.powermock:powermock-module-junit4:1.7.0RC2'
     testCompile 'org.powermock:powermock-api-mockito2:1.7.0RC2'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
+    testCompile 'org.robolectric:robolectric:3.3.2'
 }

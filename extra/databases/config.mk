@@ -15,11 +15,12 @@
 output:
 	# Do it
 	${CHDIR} ${BUILD_DIR} && \
-		${REMOVE} main.db databases.zip ; \
+		${REMOVE} main.db obs.db databases.zip ; \
 		sqlite3 main.db < ${MODULE_DIR}/importother.sql ; \
-		zip databases.zip main.db
+		sqlite3 obs.db < ${MODULE_DIR}/importobs.sql ; \
+		zip databases.zip main.db obs.db
 
 clean:
 	${CHDIR} ${BUILD_DIR} && \
-		${REMOVE} main.db databases.zip
+		${REMOVE} main.db obs.db databases.zip
 

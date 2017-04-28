@@ -21,9 +21,6 @@ CREATE TABLE fix(LocationID Text,ARPLatitude float,ARPLongitude float,Type Text,
 
 .import fix.csv fix
 
-CREATE TABLE obs(ARPLatitude float,ARPLongitude float,Height float);
-.import dof.csv obs 
-
 CREATE TABLE afd(LocationID Text,File Text);
 
 .import afd.csv afd
