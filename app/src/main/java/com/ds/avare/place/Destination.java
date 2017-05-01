@@ -256,9 +256,9 @@ public class Destination extends Observable {
             mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
         }
 
-    	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
-    	// the timezone at that location
-    	mEta = Helper.calculateEta(CalendarHelper.getInstance(), mDistance, mGroundSpeed);
+    	// Calculate the time of arrival at our destination based on the system time
+        // We SHOULD be taking in to account the timezone at that location
+    	mEta = Helper.calculateEta(CalendarHelper.getInstance(System.currentTimeMillis()), mDistance, mGroundSpeed);
 	}
 
 

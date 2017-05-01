@@ -87,7 +87,7 @@ public class DestinationTest {
         when(mockCalendar.getHour()).thenReturn(12);
         when(mockCalendar.getMinute()).thenReturn(0);
         mockStatic(CalendarHelper.class);
-        whenNew(CalendarHelper.class).withNoArguments().thenReturn(mockCalendar);
+        when(CalendarHelper.getInstance(any(long.class))).thenReturn(mockCalendar);
 
         // mock GPS location
         final Location loc1 = mock(Location.class);
