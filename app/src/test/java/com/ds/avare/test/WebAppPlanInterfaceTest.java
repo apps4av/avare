@@ -1,7 +1,6 @@
 package com.ds.avare.test;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.webkit.WebView;
 
 import com.ds.avare.AvareApplication;
@@ -11,7 +10,9 @@ import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.webinfc.WebAppPlanInterface;
+import com.google.common.io.Files;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -58,13 +60,21 @@ public class WebAppPlanInterfaceTest {
     private StorageService mStorageService;
     private WebAppPlanInterface mWebAppPlanInterface;
     private WebView mWebView;
+    private static MainActivity mMain;
 
     @Before
     public void setUp() throws IOException {
+        mMain = Robolectric.setupActivity(MainActivity.class);
         String cachedBuildFilePath = downloadDatabaseZip(); // download database to the build cache
         unzipDb(cachedBuildFilePath, "main.db"); // unzip main db to the test directory
         prepStorageService();
         setupWebView();
+    }
+
+    @After
+    public void tearDown() {
+        deleteDb();
+        System.out.println();
     }
 
     @Test
@@ -179,23 +189,32 @@ public class WebAppPlanInterfaceTest {
             return null;
         }
     }
-    @NonNull
+
     private String downloadDatabaseZip() throws IOException {
+        final String cycleUrl = "http://www.apps4av.org/new/version.php";
+        final String currentCycle = new Scanner(new URL(cycleUrl).openStream(), "UTF-8").useDelimiter("\\A").next();
+        if (currentCycle.isEmpty()) { throw new IOException("Unable to get cycle from "+cycleUrl); }
         Preferences mPref = new Preferences(mCtx);
-        final URL website = new URL(mPref.getRoot() + "/1704/databases.zip");
+        final URL website = new URL(mPref.getRoot() + currentCycle + "/databases.zip");
         final String fileName = "databases.zip";
-        final String avareAppDir = System.getProperty("user.dir", "./"); // sth like S:\Projects\avare\app
-        final String cachedBuildFilePath = new File(avareAppDir).getAbsolutePath() + SLASH + "build" + SLASH + "tmp" + SLASH + fileName;
+        final String avareAppDir = System.getProperty("user.dir", "./"); // sth like C:\Users\Michal\StudioProjects\avare\app\build\tmp\1705\databases.zip
+        final String cachedBuildFilePath = new File(avareAppDir).getAbsolutePath()
+            + SLASH + "build" + SLASH + "tmp" + SLASH + currentCycle + SLASH + fileName;
         if (!org.codehaus.plexus.util.FileUtils.fileExists(cachedBuildFilePath)) {
-            System.out.println ("Download " + website);
+            System.out.println ("Creating dir " + cachedBuildFilePath);
+            Files.createParentDirs(new File(cachedBuildFilePath));
+            System.out.println ("Downloading " + website);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
             FileOutputStream fos = new FileOutputStream(cachedBuildFilePath);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            long n = fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            System.out.println ("Downloaded " + n + " bytes to " + cachedBuildFilePath);
+        } else {
+            System.out.println ("Using " + cachedBuildFilePath);
         }
         return cachedBuildFilePath;
     }
     private static void unzipDb(String cachedBuildFilePath, String unzipFileName) throws IOException {
-        final String roboTestDir = Robolectric.setupActivity(MainActivity.class).getFilesDir().getPath();
+        final String roboTestDir = mMain.getFilesDir().getPath();
         final File activityFilesDir = new File(roboTestDir);
         final ZipFile zip = new ZipFile(cachedBuildFilePath);
         final Enumeration zipFileEntries = zip.entries();
@@ -207,6 +226,7 @@ public class WebAppPlanInterfaceTest {
         }
     }
     private static void unzipFile(ZipFile zip, ZipEntry e, String unzipFileName, File toDirectory) throws IOException {
+        System.out.println ("Unzip " + unzipFileName + " to " + toDirectory);
         BufferedInputStream bis = new BufferedInputStream(zip.getInputStream(e));
         FileOutputStream fos = new FileOutputStream(toDirectory + SLASH + unzipFileName);
         int got;
@@ -216,6 +236,23 @@ public class WebAppPlanInterfaceTest {
             fos.write(buffer, 0, got);
         }
     }
+
+    private static void deleteDb() {
+        final String roboTestDir = mMain.getFilesDir().getPath();
+        final File activityFilesDir = new File(roboTestDir);
+        System.out.println ("Del " + roboTestDir);
+        deleteDir(activityFilesDir);
+    }
+    private static void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                deleteDir(f);
+            }
+        }
+        file.delete();
+    }
+
     private void setupWebView() {
         mWebView = new WebView(mCtx);
         mWebAppPlanInterface = new WebAppPlanInterface(mCtx, mWebView, new MyGenericCallback());
