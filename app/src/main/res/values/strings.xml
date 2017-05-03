@@ -515,8 +515,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
     <string name="UIConfiguration">UI Configuration</string>
 
-    <string name="ShowLabelMETARS">&quot;Use Label for METARs&quot;</string>
-    <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled METAR indicators&quot;</string>
+    <string name="ShowLabelMETARS">&quot;Label for ADSB METARs&quot;</string>
+    <string name="ShowLabelMETARSSummary">&quot;Select to choose between circles or labeled ADSB METAR indicators&quot;</string>
 
     <string name="RatingTitle">&quot;Please Rate Avare&quot;</string>
     <string name="RatingMessage">&quot;If you like Avare, please rate it on play store. Thank you!&quot;</string>
