@@ -22,4 +22,4 @@ licenses:
     - 'google-gdk-license-.+'
 
 script:
-    bash gradlew test --continue
+    bash gradlew test --continue --stacktrace
