@@ -884,7 +884,9 @@ public class Helper {
     }
 
 
-    public static final Pattern ICAO_GPS_PATTERN = Pattern.compile("(\\d\\d)(\\d\\d)(\\d\\d)?([NS])/?(\\d\\d\\d)(\\d\\d)(\\d\\d)?([EW])");
+    public static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
+            "(\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([NS])/?"+
+                    "(\\d\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([EW])");
 
     public static String decodeGpsAddress(String name, double coords[]) {
         /*
@@ -896,12 +898,16 @@ public class Helper {
                 int i = 1;
                 double  lat_deg = Double.parseDouble(m.group(1)),
                         lat_min = Double.parseDouble(m.group(2)),
-                        lat_sec = m.group(3) != null ? Double.parseDouble(m.group(3)) : 0,
-                        lat_south = m.group(4).equalsIgnoreCase("S") ? -1 : 1,
-                        lon_deg = Double.parseDouble(m.group(5)),
-                        lon_min = Double.parseDouble(m.group(6)),
-                        lon_sec = m.group(7) != null ? Double.parseDouble(m.group(7)) : 0,
-                        lon_west = m.group(8).equalsIgnoreCase("W") ? -1 : 1
+                        lat_sec = m.group(3) != null ?
+                                Double.parseDouble(m.group(3)
+                                        + (m.group(4) != null ? ("."+m.group(4)) : "")) : 0,
+                        lat_south = m.group(5).equalsIgnoreCase("S") ? -1 : 1,
+                        lon_deg = Double.parseDouble(m.group(6)),
+                        lon_min = Double.parseDouble(m.group(7)),
+                        lon_sec = m.group(8) != null ?
+                                Double.parseDouble(m.group(8)
+                                        + (m.group(9) != null ? ("."+m.group(9)) : "")) : 0,
+                        lon_west = m.group(10).equalsIgnoreCase("W") ? -1 : 1
                                 ;
                 coords[0] = lon_west * truncGeo(lon_deg + lon_min/60.0 + lon_sec/(60.0*60.0));
                 coords[1] = lat_south * truncGeo(lat_deg + lat_min/60.0 + lat_sec/(60.0*60.0));
