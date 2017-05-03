@@ -49,7 +49,7 @@ public class HelperTest {
     public void testPerfOfCalculateEta() throws Exception {
         // 644ms on my PC
         // was 900ms when Calendar.getInstance() is called twice
-        CalendarHelper ch = CalendarHelper.getInstance();
+        CalendarHelper ch = CalendarHelper.getInstance(0);
         for (int dist = 0; dist < 13000; dist++) {
             for (int speed = 0; speed < 100; speed++) {
                 String res1 = Helper.calculateEta(ch, dist, speed);

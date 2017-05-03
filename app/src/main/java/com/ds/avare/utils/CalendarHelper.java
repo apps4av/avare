@@ -19,13 +19,15 @@ public class CalendarHelper {
         mCalendar = Calendar.getInstance();
     }
 
-    public static CalendarHelper getInstance() {
+    public static CalendarHelper getInstance(long timeInMillis) {
         if(null == mInstance) {
             mInstance = new CalendarHelper();
         }
+        mInstance.setTime(timeInMillis);
         return mInstance;
     }
 
+    private void setTime(long timeInMillis) { mCalendar.setTimeInMillis(timeInMillis);}
     public int getHour()
     {
         return mCalendar.get(HOUR_OF_DAY);
