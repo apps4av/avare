@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config;
 import static junit.framework.TestCase.assertEquals;
 
 /**
- * Created by Michal on 4/24/2017.
+ * Created by pasniak on 4/24/2017.
  */
 
 @RunWith(RobolectricTestRunner.class)
@@ -39,10 +39,27 @@ public class DestinationGpsTest {
         Destination d2 = DestinationFactory.build(mStorageService, "TEST@40.4747&-74.1844", Destination.GPS);
         assertLatLon(40.4747, -74.1844, d2);
     }
+    @Test
+    public void testGPSDestICAOLong() {
+        Destination d1 = DestinationFactory.build(mStorageService, "402829N0741104W", Destination.GPS);
+        assertLatLon(40.4747, -74.1844, d1);
+    }
+    @Test
+    public void testGPSDestICAOLongWithSlash() {
+        // format used by iFlightPlanner
+        Destination d1 = DestinationFactory.build(mStorageService, "402829N/0741104W", Destination.GPS);
+        assertLatLon(40.4747, -74.1844, d1);
+    }
+    @Test
+    public void testGPSDestICAOShort() {
+        Destination d1 = DestinationFactory.build(mStorageService, "4028N07411W", Destination.GPS);
+        assertLatLon(40.4667, -74.1833, d1);
+    }
+
     private static void assertLatLon(double expectedLat, double expectedLon, Destination d) {
         double lat = d.getLocation().getLatitude();
         double lon = d.getLocation().getLongitude();
-        assertEquals(expectedLat, lat);
-        assertEquals(expectedLon, lon);
+        assertEquals("Latitude test fails", expectedLat, lat);
+        assertEquals("Longitude test fails", expectedLon, lon);
     }
 }
