@@ -323,7 +323,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
     <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
-    <string name="TripSummary">&quot;Travel display.&quot;</string>
     <string name="PfdSummary">&quot;PFD display.&quot;</string>
 
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
@@ -335,7 +334,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
-    <string name="prefTabTrip">&quot;prefTabTrip&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
@@ -353,7 +351,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ScreenBrightness">Screen Brightness</string>
     <string name="InternalGpsStatus">Internal GPS Status</string>
     <string name="LatitudeLongitude">Latitude,Longitude</string>
-    <string name="Trip">Trip</string>
     <string name="Provider">Location Povider</string>
     <string name="Time">Current Time</string>
     <string name="AltitudeAccuracy">Altitude Accuracy</string>
@@ -361,7 +358,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AvailableMem">Available Memory</string>
     <string name="ScreenSize">Screen Size</string>
     <string name="MapSize">Map Size</string>
-    <string name="Hotels">Hotels</string>
     <string name="IncorrectDateFormat">Arrival/Departure date format is not correct</string>
     <string name="AddPlan">Add To Plan</string>
     <string name="AddPlanHelp">Enter a way point e.g. KLAX</string>
