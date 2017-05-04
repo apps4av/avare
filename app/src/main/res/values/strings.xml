@@ -533,6 +533,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ObstaclesSummary">Show obstacles on map</string>
     <string name="ObstaclesLabel">Show Obstacles</string>
 
+    <string name="NearestMETARRadius">&quot;NearestMETARRadius&quot;</string>
+    <string name="NearestMETARRadiusLabel">&quot;Nearest METAR Search Radius&quot;</string>
+    <string name="NearestMETARRadiusSummary">&quot;Select maximum METAR station distance if local METAR is unavailable.&quot;</string>
+
     <string name="WindsAloftCeiling">&quot;Show Winds Aloft Up To Altitude&quot;</string>
     <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
 
