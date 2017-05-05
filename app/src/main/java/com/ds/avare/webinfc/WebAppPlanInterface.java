@@ -878,9 +878,9 @@ public class WebAppPlanInterface implements Observer {
             }
 
             /*
-             * This is a geo coordinate with &?
+             * This is a geo coordinate?
              */
-            if(srch.contains("&")) {
+            if(srch.contains("&") || Helper.ICAO_GPS_PATTERN.matcher(srch).matches()) {
 
             	selection = new String[1];
             	selection[0] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch)).getHashedName();

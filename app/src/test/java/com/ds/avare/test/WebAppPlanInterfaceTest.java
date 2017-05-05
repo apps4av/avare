@@ -106,8 +106,19 @@ public class WebAppPlanInterfaceTest {
                 getLastLoadedUrl());
     }
     @Test
+    public void userWaypointIcaoSearch() throws Exception {
+        mWebAppPlanInterface.search("4028N07411W");
+        assertEquals("User waypoint not found", "javascript:search_add('4028N07411W','GPS','GPS','GPS')",
+                getLastLoadedUrl());
+    }
+    @Test
     public void userWaypointAdd() throws Exception {
         mWebAppPlanInterface.addToPlan("40.4747&-74.1844","GPS","GPS");
+        assertEquals(1, mStorageService.getPlan().getDestinationNumber());
+    }
+    @Test
+    public void userWaypointIcaoAdd() throws Exception {
+        mWebAppPlanInterface.addToPlan("4028N07411W","GPS","GPS");
         assertEquals(1, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
