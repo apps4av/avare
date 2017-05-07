@@ -225,6 +225,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
 
+    public LongTouchDestination getLongTouchDestination() {return mLongTouchDestination;}
+
     /**
      * @param context
      */
