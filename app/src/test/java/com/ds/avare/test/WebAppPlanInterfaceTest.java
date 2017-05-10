@@ -86,7 +86,7 @@ public class WebAppPlanInterfaceTest {
     @Test
     public void airportAdd() throws Exception {
         mWebAppPlanInterface.addToPlan("CDW","Base","AIRPORT");
-        assertEquals(mStorageService.getPlan().getDestinationNumber(),1);
+        assertEquals("Airport not added", 1, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
     public void navaidSearch() throws Exception {
@@ -97,7 +97,7 @@ public class WebAppPlanInterfaceTest {
     @Test
     public void navaidAdd() throws Exception {
         mWebAppPlanInterface.addToPlan("SBJ","Navaid","VOR/DME");
-        assertEquals(mStorageService.getPlan().getDestinationNumber(),1);
+        assertEquals("Navaid not added", 1, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
     public void userWaypointSearch() throws Exception {
@@ -106,19 +106,41 @@ public class WebAppPlanInterfaceTest {
                 getLastLoadedUrl());
     }
     @Test
+    public void userWaypointIcaoSearch() throws Exception {
+        mWebAppPlanInterface.search("4028N07411W");
+        assertEquals("User waypoint not found", "javascript:search_add('4028N07411W','GPS','GPS','GPS')",
+                getLastLoadedUrl());
+    }
+    @Test
+    public void userWaypointIcaoDecSecsSearch() throws Exception {
+        mWebAppPlanInterface.search("4028305N07411305W");
+        assertEquals("User waypoint not found", "javascript:search_add('4028305N07411305W','GPS','GPS','GPS')",
+                getLastLoadedUrl());
+    }
+    @Test
     public void userWaypointAdd() throws Exception {
         mWebAppPlanInterface.addToPlan("40.4747&-74.1844","GPS","GPS");
         assertEquals(1, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
+    public void userWaypointIcaoAdd() throws Exception {
+        mWebAppPlanInterface.addToPlan("4028N07411W","GPS","GPS");
+        assertEquals(1, mStorageService.getPlan().getDestinationNumber());
+    }
+
+    final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,Navaid,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN2_DATA = "::::1,0,0,0,0,--:--,TTN,Base,-.-,-::::0,0,0,0,0,--:--,N51,Base,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN3_DATA = "::::1,0,0,0,0,--:--,4000N07400W,GPS,-.-,-::::0,0,0,0,0,--:--,4100N07400W,GPS,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN4_DATA = "::::1,0,0,0,0,--:--,40.00&-74.00,GPS,-.-,-::::0,0,0,0,0,--:--,41.00&-74.00,GPS,-.-,-::::  0nm --:-- 360° -.-";
+    
+    @Test
     public void createAndLoadPlans() throws Exception {
         String data;
 
-        // create the simplest plan with 2 points
+        // create plan 1 with 2 points
         mWebAppPlanInterface.createPlan("KCDW SBJ");
         assertEquals(2, mStorageService.getPlan().getDestinationNumber());
         data = mWebAppPlanInterface.getPlanData();
-        final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,Navaid,-.-,-::::  0nm --:-- 360° -.-";
         assertEquals(PLAN1_DATA, data);
 
         //save it
@@ -132,6 +154,7 @@ public class WebAppPlanInterfaceTest {
         // clean up the current plan
         mWebAppPlanInterface.discardPlan();
 
+        
         // create plan 2
         mWebAppPlanInterface.createPlan("KTTN N51");
         assertEquals(2, mStorageService.getPlan().getDestinationNumber());
@@ -141,11 +164,43 @@ public class WebAppPlanInterfaceTest {
         mWebAppPlanInterface.savePlan("TEST2");
         assertUrl("javascript:set_plan_count('1 - 2 of 2')");
 
+        // clean up the current plan
+        mWebAppPlanInterface.discardPlan();
+
+        
+        // create plan 3 with ICAO style coordinates
+        mWebAppPlanInterface.createPlan("4000N07400W 4100N07400W");
+        assertEquals(2, mStorageService.getPlan().getDestinationNumber());
+        assertUrl("javascript:plan_add('4100N07400W','GPS','GPS')");
+
+        //save it to preferences
+        mWebAppPlanInterface.savePlan("TEST3");
+        assertUrl("javascript:set_plan_count('1 - 3 of 3')");
+
+        // clean up the current plan
+        mWebAppPlanInterface.discardPlan();
+
+
+        // create plan 4 with Google style coordinates
+        mWebAppPlanInterface.createPlan("40.00&-74.00 41.00&-74.00");
+        assertEquals(2, mStorageService.getPlan().getDestinationNumber());
+        assertUrl("javascript:plan_add('41.00&-74.00','GPS','GPS')");
+
+        //save it to preferences
+        mWebAppPlanInterface.savePlan("TEST4");
+        assertUrl("javascript:set_plan_count('1 - 4 of 4')");
+
+        // clean up the current plan
+        mWebAppPlanInterface.discardPlan();
+
+
         // refresh
         mWebAppPlanInterface.refreshPlanList();
         ArrayList<String> plans = mWebAppPlanInterface.getPlanNames(10);
         assertEquals("TEST",  plans.get(0));
         assertEquals("TEST2", plans.get(1));
+        assertEquals("TEST3", plans.get(2));
+        assertEquals("TEST4", plans.get(3));
 
         //now retrieve plan 1 to N51
         mWebAppPlanInterface.loadPlan("TEST");
@@ -155,11 +210,32 @@ public class WebAppPlanInterfaceTest {
 
         // refresh
         mWebAppPlanInterface.refreshPlanList();
-        assertUrl("javascript:set_plan_count('1 - 2 of 2')");
+        assertUrl("javascript:set_plan_count('1 - 4 of 4')");
 
         // filter out the second plan
         mWebAppPlanInterface.planFilter("2");
         assertUrl("javascript:set_plan_count('1 - 1 of 1')");
+
+        
+        //now retrieve plan 2 to N51
+        mWebAppPlanInterface.loadPlan("TEST2");
+        data = mWebAppPlanInterface.getPlanData();
+        assertEquals("TEST2" + PLAN2_DATA, data);
+        assertUrl("javascript:plan_add('N51','Base','SOLBERG-HUNTERDON')");
+
+
+        //now retrieve plan 3 to 4100N07400W
+        mWebAppPlanInterface.loadPlan("TEST3");
+        data = mWebAppPlanInterface.getPlanData();
+        assertEquals("TEST3" + PLAN3_DATA, data);
+        assertUrl("javascript:plan_add('4100N07400W','GPS','GPS')");
+        
+        
+        //now retrieve plan 4 to 41.00&-74.00
+        mWebAppPlanInterface.loadPlan("TEST4");
+        data = mWebAppPlanInterface.getPlanData();
+        assertEquals("TEST4" + PLAN4_DATA, data);
+        assertUrl("javascript:plan_add('41.00&-74.00','GPS','GPS')");
     }
 
     private void assertUrl(String expected) {
@@ -173,8 +249,8 @@ public class WebAppPlanInterfaceTest {
 
     @Test
     public void createPlanWithUserWpt() throws Exception {
-        mWebAppPlanInterface.createPlan("KCDW SBJ 40.4747&-74.1844");
-        assertEquals(3, mStorageService.getPlan().getDestinationNumber());
+        mWebAppPlanInterface.createPlan("KCDW SBJ 40.4747&-74.1844 4100N07400W");
+        assertEquals(4, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
     public void createPlanWithAirway() throws Exception {

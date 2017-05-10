@@ -416,9 +416,9 @@ public class SearchActivity extends Activity implements Observer {
                 }
                 
                 /*
-                 * This is a geo coordinate with &?
+                 * This is a geo coordinate?
                  */
-                if(s.toString().contains("&")) {
+                if(Helper.isGPSCoordinate(s.toString())) {
                     String [] vals = new String[1];
                     StringPreference sp = new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, s.toString());
                     vals[0] = sp.getHashedName();

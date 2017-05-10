@@ -44,6 +44,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -882,14 +884,53 @@ public class Helper {
     }
 
 
-    public static String decodeGpsAddress(String name, double coords[]) {
+    private static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
+            "(([^@]*)@)?"+
+            "(\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([NS])/?"+
+                    "(\\d\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([EW])");
 
+    public static boolean isGPSCoordinate(String coords) {
+        return coords.contains("&") || Helper.ICAO_GPS_PATTERN.matcher(coords).matches();
+    }
+    
+    public static String decodeGpsAddress(String name, double coords[]) {
         /*
-         * GPS
-         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
-         * get the x&y part, then parse them to lon=y lat=x
+         * This is SkyVector or iFlightPlanner GPS destination format (ICAO)
          */
-        if(name.contains("&")) {
+        Matcher m = ICAO_GPS_PATTERN.matcher(name);
+        if(m.matches()) {
+            String label;
+            try {
+                int i = 1;
+                label = m.group(1) == null ? "" : m.group(1); 
+                double  lat_deg = Double.parseDouble(m.group(3)),
+                        lat_min = Double.parseDouble(m.group(4)),
+                        lat_sec = m.group(5) != null ?
+                                Double.parseDouble(m.group(5)
+                                        + (m.group(6) != null ? ("."+m.group(6)) : "")) : 0,
+                        lat_south = m.group(7).equalsIgnoreCase("S") ? -1 : 1,
+                        lon_deg = Double.parseDouble(m.group(8)),
+                        lon_min = Double.parseDouble(m.group(9)),
+                        lon_sec = m.group(10) != null ?
+                                Double.parseDouble(m.group(10)
+                                        + (m.group(11) != null ? ("."+m.group(11)) : "")) : 0,
+                        lon_west = m.group(12).equalsIgnoreCase("W") ? -1 : 1
+                                ;
+                coords[0] = lon_west * truncGeo(lon_deg + lon_min/60.0 + lon_sec/(60.0*60.0));
+                coords[1] = lat_south * truncGeo(lat_deg + lat_min/60.0 + lat_sec/(60.0*60.0));
+            }
+            catch (Exception e) {
+                return null;
+            }
+            /*
+             * Sane input
+             */
+            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+                return null;
+            }
+            return label;
+        }
+        else if(name.contains("&")) {
             String token[] = new String[2];
             token[1] = token[0] = name;
             if(name.contains("@")) {

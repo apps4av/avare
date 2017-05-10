@@ -687,13 +687,10 @@ public class InfoLines {
             case ID_FLD_DST: {
                 if (mService != null) {
                     if (mService.getDestination() != null) {
-                        String name = mService
-                                .getDestination().getID();
-                        if (name.contains("&")) { // Change a direct coordinate to
-                                                  // GPS
+                        String name = mService.getDestination().getID();
+                        if (Helper.isGPSCoordinate(name)) { // Change a direct coordinate to GPS
                             name = Destination.GPS;
-                        } else if (name.length() > 5) { // Truncate name if larger
-                                                        // than 5 chars
+                        } else if (name.length() > 5) { // Truncate name if larger than 5 chars
                             name = name.substring(0, 4);
                         }
                         return Helper.centerString(name, MAX_FIELD_SIZE_IN_CHARS);

@@ -794,9 +794,9 @@ public class WebAppPlanInterface implements Observer {
 
             for(int num = 0; num < srch.length; num++) {
 	            /*
-	             * This is a geo coordinate with &?
+	             * This is a geo coordinate?
 	             */
-	            if(srch[num].contains("&")) {
+				if(Helper.isGPSCoordinate(srch[num])) {
 	            	String found = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
 	            	selection.add(found);
 	            	continue;
@@ -878,9 +878,9 @@ public class WebAppPlanInterface implements Observer {
             }
 
             /*
-             * This is a geo coordinate with &?
+             * This is a geo coordinate?
              */
-            if(srch.contains("&")) {
+            if(Helper.isGPSCoordinate(srch)) {
 
             	selection = new String[1];
             	selection[0] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch)).getHashedName();
