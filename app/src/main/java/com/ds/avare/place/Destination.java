@@ -431,7 +431,15 @@ public class Destination extends Observable {
     public String getType() {
         return mDestType;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public String getDbType() {
+        return mDbType;
+    }
+
     /**
      * 
      * @return

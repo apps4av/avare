@@ -704,7 +704,7 @@ public class WebAppPlanInterface implements Observer {
                     Math.round(d.getGroundSpeed()) + "," +
                     d.getEte() +  "," +
                     d.getID() + "," +
-                    d.getType() + "," +
+                    d.getDbType() + "," +
                     d.getFuel() + "," +
                     d.getWinds() +
                     "::::";
