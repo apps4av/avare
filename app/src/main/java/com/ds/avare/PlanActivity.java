@@ -29,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -211,14 +210,6 @@ public class PlanActivity extends Activity {
 				return false;
 			}
         });
-        // Do not let selecting text
-        mWebView.setOnLongClickListener(new OnLongClickListener() {
-        	@Override
-        	public boolean onLongClick(View v) {
-        	    return true;
-        	}
-        });
-        mWebView.setLongClickable(false);
         
         /*
          * Progress bar
