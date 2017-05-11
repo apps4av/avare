@@ -903,10 +903,6 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabTools;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTrip), true)) {
-            mTabs |= 1 << MainActivity.tabTrip;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
             mTabs |= 1 << MainActivity.tabPfd;
         }
@@ -919,82 +915,6 @@ public class Preferences {
     }
     public int getTipIndex() {
         return mPref.getInt(mContext.getString(R.string.tipIndex), 0);
-    }
-
-
-    /**
-     * Hotel settings save
-     */
-
-
-    /**
-     * @return
-     */
-    public int getHotelMaxPriceIndex() {
-        return mPref.getInt("HotelMaxPrice", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getHotelMinStarIndex() {
-        return mPref.getInt("HotelMinStar", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getHotelMaxDistanceIndex() {
-        return mPref.getInt("HotelMaxDistance", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getHotelAdultsIndex() {
-        return mPref.getInt("HotelAdults", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getHotelChildIndex(String id) {
-        return mPref.getInt("HotelChild" + id, 0);
-    }
-
-    /**
-     * @return
-     */
-    public void setHotelMaxPriceIndex(int index) {
-        mPref.edit().putInt("HotelMaxPrice", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setHotelMinStarIndex(int index) {
-        mPref.edit().putInt("HotelMinStar", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setHotelMaxDistanceIndex(int index) {
-        mPref.edit().putInt("HotelMaxDistance", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setHotelAdultsIndex(int index) {
-        mPref.edit().putInt("HotelAdults", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setHotelChildIndex(String id, int index) {
-        mPref.edit().putInt("HotelChild" + id, index).commit();
     }
 
     /**

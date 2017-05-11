@@ -70,7 +70,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".WeatherActivity" />
         <activity android:name=".ChecklistActivity"/>
         <activity android:name=".PfdActivity"/>
-        <activity android:name=".TripActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
         <activity android:name=".SyncActivity"/>

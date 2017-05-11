@@ -488,11 +488,6 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabTools"
                 android:summary="@string/GPSSummary"
                 android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabTrip"
-                android:summary="@string/TripSummary"
-                android:title="@string/Trip" />
         </PreferenceScreen>
 
     </PreferenceScreen>
