@@ -64,12 +64,6 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         assertEquals("User waypoint not found", "javascript:search_add('40.4747&-74.1844','GPS','GPS','GPS')",
                 getLastLoadedUrl());
     }
-    //@Test
-    public void userWaypointIcaoSearch() throws Exception {
-        mWebAppPlanInterface.search("4028N07411W");
-        assertEquals("User waypoint not found", "javascript:search_add('4028N07411W','GPS','GPS','GPS')",
-                getLastLoadedUrl());
-    }
     @Test
     public void userWaypointIcaoSearch() throws Exception {
         mWebAppPlanInterface.search("4028N07411W");
@@ -87,19 +81,14 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         mWebAppPlanInterface.addToPlan("40.4747&-74.1844","GPS","GPS");
         assertEquals(1, mStorageService.getPlan().getDestinationNumber());
     }
-    //@Test
-    public void userWaypointIcaoAdd() throws Exception {
-        mWebAppPlanInterface.addToPlan("4028N07411W","GPS","GPS");
-        assertEquals(1, mStorageService.getPlan().getDestinationNumber());
-    }
     @Test
     public void userWaypointIcaoAdd() throws Exception {
         mWebAppPlanInterface.addToPlan("4028N07411W","GPS","GPS");
         assertEquals(1, mStorageService.getPlan().getDestinationNumber());
     }
 
-    final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,Navaid,-.-,-::::  0nm --:-- 360° -.-";
-    final String PLAN2_DATA = "::::1,0,0,0,0,--:--,TTN,Base,-.-,-::::0,0,0,0,0,--:--,N51,Base,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,AIRPORT,-.-,-::::0,0,0,0,0,--:--,SBJ,VOR/DME,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN2_DATA = "::::1,0,0,0,0,--:--,TTN,AIRPORT,-.-,-::::0,0,0,0,0,--:--,N51,AIRPORT,-.-,-::::  0nm --:-- 360° -.-";
     final String PLAN3_DATA = "::::1,0,0,0,0,--:--,4000N07400W,GPS,-.-,-::::0,0,0,0,0,--:--,4100N07400W,GPS,-.-,-::::  0nm --:-- 360° -.-";
     final String PLAN4_DATA = "::::1,0,0,0,0,--:--,40.00&-74.00,GPS,-.-,-::::0,0,0,0,0,--:--,41.00&-74.00,GPS,-.-,-::::  0nm --:-- 360° -.-";
     
@@ -111,7 +100,7 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         mWebAppPlanInterface.createPlan("KCDW SBJ");
         assertEquals(2, mStorageService.getPlan().getDestinationNumber());
         data = mWebAppPlanInterface.getPlanData();
-        final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,Navaid,-.-,-::::  0nm --:-- 360° -.-";
+        final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,AIRPORT,-.-,-::::0,0,0,0,0,--:--,SBJ,VOR/DME,-.-,-::::  0nm --:-- 360° -.-";
         assertEquals(PLAN1_DATA, data);
 
         //save it
