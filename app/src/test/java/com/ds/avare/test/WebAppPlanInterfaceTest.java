@@ -118,7 +118,7 @@ public class WebAppPlanInterfaceTest {
         mWebAppPlanInterface.createPlan("KCDW SBJ");
         assertEquals(2, mStorageService.getPlan().getDestinationNumber());
         data = mWebAppPlanInterface.getPlanData();
-        final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,Navaid,-.-,-::::  0nm --:-- 360° -.-";
+        final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,Base,-.-,-::::0,0,0,0,0,--:--,SBJ,VOR/DME,-.-,-::::  0nm --:-- 360° -.-";
         assertEquals(PLAN1_DATA, data);
 
         //save it
