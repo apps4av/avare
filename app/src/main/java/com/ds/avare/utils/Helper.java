@@ -885,9 +885,11 @@ public class Helper {
 
 
     private static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
+            //[0-8][0-9][0-5][0-9][0-5][0-9][N | S]
+            // [0 | 1][0-9/7][0-9][0-5][0-9][0-5][0-9][E | W].
             "(([^@]*)@)?"+
-            "(\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([NS])/?"+
-                    "(\\d\\d\\d)(\\d\\d)(\\d\\d)?(\\d)?([EW])");
+              "([0-8]\\d)([0-5]\\d)([0-5]\\d)?(\\d)?([NS])/?"+ 
+            "([01]\\d\\d)([0-5]\\d)([0-5]\\d)?(\\d)?([EW])");
 
     public static boolean isGPSCoordinate(String coords) {
         return coords.contains("&") || Helper.ICAO_GPS_PATTERN.matcher(coords).matches();
