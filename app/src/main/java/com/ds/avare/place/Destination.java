@@ -213,7 +213,8 @@ public class Destination extends Observable {
                 double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
                 ws = winds[0];
                 wd = winds[1];
-                mWindString = String.format(Locale.getDefault(), "%03d@%03d", Math.round(wd) , Math.round(ws));
+                mWindString = String.format(Locale.getDefault(),
+                        ws >= 100 ? "%03d@%03d" : "%03d@%02d", Math.round(wd), Math.round(ws));
             }
 
             // in sim mode, do planning with winds
