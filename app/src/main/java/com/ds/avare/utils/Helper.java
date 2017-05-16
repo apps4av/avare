@@ -886,8 +886,8 @@ public class Helper {
 
     private static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
             "(([^@]*)@)?" +
-                    "([0-8][0-9])([0-5][0-9])([0-5][0-9])([NS])"+
-                    "([01][0-9][0-9])([0-5][0-9])([0-5][0-9])([EW])");
+                    "([0-8][0-9])([0-5][0-9])([0-5][0-9])([NSns])"+
+                    "([01][0-9][0-9])([0-5][0-9])([0-5][0-9])([EWew])");
 
     public static boolean isGPSCoordinate(String coords) {
         return coords.contains("&") || ICAO_GPS_PATTERN.matcher(coords).matches();
