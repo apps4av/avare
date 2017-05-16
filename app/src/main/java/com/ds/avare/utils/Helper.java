@@ -885,41 +885,33 @@ public class Helper {
 
 
     private static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
-            //[0-8][0-9][0-5][0-9][0-5][0-9][N | S]
-            // [0 | 1][0-9/7][0-9][0-5][0-9][0-5][0-9][E | W].
-            "(([^@]*)@)?"+
-              "([0-8]\\d)([0-5]\\d)([0-5]\\d)?(\\d)?([NS])/?"+ 
-            "([01]\\d\\d)([0-5]\\d)([0-5]\\d)?(\\d)?([EW])");
+            "(([^@]*)@)?" +
+                    "([0-8][0-9])([0-5][0-9])([0-5][0-9])([NS])"+
+                    "([01][0-9][0-9])([0-5][0-9])([0-5][0-9])([EW])");
 
     public static boolean isGPSCoordinate(String coords) {
-        return coords.contains("&") || Helper.ICAO_GPS_PATTERN.matcher(coords).matches();
+        return coords.contains("&") || ICAO_GPS_PATTERN.matcher(coords).matches();
     }
-    
+
     public static String decodeGpsAddress(String name, double coords[]) {
         /*
-         * This is SkyVector or iFlightPlanner GPS destination format (ICAO)
+         * Match predictable GPS pattern of DDMMSS[N|S]DDDMMSS[E|W]
          */
         Matcher m = ICAO_GPS_PATTERN.matcher(name);
         if(m.matches()) {
             String label;
             try {
-                int i = 1;
-                label = m.group(1) == null ? "" : m.group(1); 
+                label = m.group(1) == null ? "" : m.group(1);
                 double  lat_deg = Double.parseDouble(m.group(3)),
                         lat_min = Double.parseDouble(m.group(4)),
-                        lat_sec = m.group(5) != null ?
-                                Double.parseDouble(m.group(5)
-                                        + (m.group(6) != null ? ("."+m.group(6)) : "")) : 0,
-                        lat_south = m.group(7).equalsIgnoreCase("S") ? -1 : 1,
-                        lon_deg = Double.parseDouble(m.group(8)),
-                        lon_min = Double.parseDouble(m.group(9)),
-                        lon_sec = m.group(10) != null ?
-                                Double.parseDouble(m.group(10)
-                                        + (m.group(11) != null ? ("."+m.group(11)) : "")) : 0,
-                        lon_west = m.group(12).equalsIgnoreCase("W") ? -1 : 1
-                                ;
-                coords[0] = lon_west * truncGeo(lon_deg + lon_min/60.0 + lon_sec/(60.0*60.0));
-                coords[1] = lat_south * truncGeo(lat_deg + lat_min/60.0 + lat_sec/(60.0*60.0));
+                        lat_sec = Double.parseDouble(m.group(5)),
+                        lat_south = m.group(6).equalsIgnoreCase("S") ? -1 : 1,
+                        lon_deg = Double.parseDouble(m.group(7)),
+                        lon_min = Double.parseDouble(m.group(8)),
+                        lon_sec = Double.parseDouble(m.group(9)),
+                        lon_west = m.group(10).equalsIgnoreCase("W") ? -1 : 1;
+                coords[0] = lon_west * truncGeo(lon_deg + lon_min / 60.0 + lon_sec / (60.0 * 60.0));
+                coords[1] = lat_south * truncGeo(lat_deg + lat_min / 60.0 + lat_sec / (60.0 * 60.0));
             }
             catch (Exception e) {
                 return null;
@@ -927,7 +919,7 @@ public class Helper {
             /*
              * Sane input
              */
-            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+            if((!isLatitudeSane(coords[1])) || (!isLongitudeSane(coords[0]))) {
                 return null;
             }
             return label;
@@ -957,7 +949,7 @@ public class Helper {
             /*
              * Sane input
              */
-            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+            if((!isLatitudeSane(coords[1])) || (!isLongitudeSane(coords[0]))) {
                 return null;
             }
 
