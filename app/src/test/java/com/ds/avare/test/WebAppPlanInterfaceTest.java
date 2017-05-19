@@ -70,14 +70,8 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
     }
     @Test
     public void wptIcaoSearch() throws Exception {
-        mWebAppPlanInterface.search("4028N07411W");
-        assertEquals("User waypoint not found", "javascript:search_add('4028N07411W','GPS','GPS','GPS')",
-                getLastLoadedUrl());
-    }
-    @Test
-    public void wptIcaoDecSecsSearch() throws Exception {
-        mWebAppPlanInterface.search("4028305N07411305W");
-        assertEquals("User waypoint not found", "javascript:search_add('4028305N07411305W','GPS','GPS','GPS')",
+        mWebAppPlanInterface.search("402800N0741100W");
+        assertEquals("User waypoint not found", "javascript:search_add('402800N0741100W','GPS','GPS','GPS')",
                 getLastLoadedUrl());
     }
     @Test
@@ -87,33 +81,33 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
     }
     @Test
     public void wptIcaoAdd() throws Exception {
-        mWebAppPlanInterface.addToPlan("4028N07411W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("402800N0741100W","GPS","GPS");
         assertEquals(1, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
     public void wptIcaoBadLatAdd() throws Exception {
         // "9" cannot be in minutes/seconds  
-        mWebAppPlanInterface.addToPlan("9020N07410W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("900000N0741000W","GPS","GPS");
         assertEquals("Able to add bad latitude degrees", 0, mStorageService.getPlan().getDestinationNumber());
-        mWebAppPlanInterface.addToPlan("4090N07410W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("409000N0741000W","GPS","GPS");
         assertEquals("Able to add bad latitude minutes", 0, mStorageService.getPlan().getDestinationNumber());
-        mWebAppPlanInterface.addToPlan("409090N07410W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("400090N0741000W","GPS","GPS");
         assertEquals("Able to add bad latitude seconds", 0, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
     public void wptIcaoBadLonAdd() throws Exception {
         // "9" cannot be in minutes/seconds  
-        mWebAppPlanInterface.addToPlan("4020N97410W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("402000N1974100W","GPS","GPS");
         assertEquals("Able to add bad longitude degrees", 0, mStorageService.getPlan().getDestinationNumber());
-        mWebAppPlanInterface.addToPlan("4020N07490W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("402000N0749000W","GPS","GPS");
         assertEquals("Able to add bad longitude minutes", 0, mStorageService.getPlan().getDestinationNumber());
-        mWebAppPlanInterface.addToPlan("4020N0741090W","GPS","GPS");
+        mWebAppPlanInterface.addToPlan("402000N0741090W","GPS","GPS");
         assertEquals("Able to add bad longitude seconds", 0, mStorageService.getPlan().getDestinationNumber());
     }
     
     final String PLAN1_DATA = "::::1,0,0,0,0,--:--,CDW,AIRPORT,-.-,-::::0,0,0,0,0,--:--,SBJ,VOR/DME,-.-,-::::  0nm --:-- 360° -.-";
     final String PLAN2_DATA = "::::1,0,0,0,0,--:--,TTN,AIRPORT,-.-,-::::0,0,0,0,0,--:--,N51,AIRPORT,-.-,-::::  0nm --:-- 360° -.-";
-    final String PLAN3_DATA = "::::1,0,0,0,0,--:--,4000N07400W,GPS,-.-,-::::0,0,0,0,0,--:--,4100N07400W,GPS,-.-,-::::  0nm --:-- 360° -.-";
+    final String PLAN3_DATA = "::::1,0,0,0,0,--:--,400000N0740000W,GPS,-.-,-::::0,0,0,0,0,--:--,410000N0740000W,GPS,-.-,-::::  0nm --:-- 360° -.-";
     final String PLAN4_DATA = "::::1,0,0,0,0,--:--,40.00&-74.00,GPS,-.-,-::::0,0,0,0,0,--:--,41.00&-74.00,GPS,-.-,-::::  0nm --:-- 360° -.-";
     
     @Test
@@ -124,15 +118,6 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         assertEquals("Long SkyVector plan creation failed", 40, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
-    public void createLongCoast2CoastPlanFromIFlightPlanner() throws Exception
-    {
-        // this is a copy-paste of a long plan from iFlightPlanner, each point separated by is 1 space, 18 points total, DISTANCE
-        // http://www.iFlightPlanner.com/AviationCharts/?Map=sectional&GS=115&Route=KJFK-4042501N/07524365W-PS69-4028491N/08149342W-4029494N/08500438W-ZOPOP-4018469N/09239312W-4014453N/09444458W-395737N/09751582W-3956363N/10051159W-3923066N/1044318W-3951329N/1084036W-3933173N/1112921W-3916598N/11416472W-3920034N/11700158W-3913561N/11951389W-MAJUK-382336N/12258514W
-        mWebAppPlanInterface.createPlan("KJFK 4042501N/07524365W PS69 4028491N/08149342W 4029494N/08500438W ZOPOP 4018469N/09239312W 4014453N/09444458W 395737N/09751582W 3956363N/10051159W 3923066N/1044318W 3951329N/1084036W 3933173N/1112921W 3916598N/11416472W 3920034N/11700158W 3913561N/11951389W MAJUK 382336N/12258514W");
-        assertEquals("Long iFlightPlanner plan creation failed", 18, mStorageService.getPlan().getDestinationNumber());
-        assertMinMaxCoords(mStorageService.getPlan(), 41, 38, -123, -73);
-    }
-    @Test
     public void createLongMEtoFLPlanFromSkyVector() throws Exception
     {
         // this is a copy-paste of a long plan along the E coast from SkyVector, each point separated by is 1-3 spaces, 24 points total
@@ -140,15 +125,6 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         mWebAppPlanInterface.createPlan(" 444758N0730707W  BJA  441254N0731432W 435111N0732001W  432808N0734322W 424401N0735633W  421451N0740309W 413906N0741954W  404305N0743232W 394319N0750953W  384710N0754910W 372410N0764300W  362253N0764227W 354429N0770352W  342549N0784741W 332146N0795125W  322844N0811845W 305405N0814931W  295549N0814752W  KORL 272937N0810958W  263815N0805809W 260021N0804531W  251546N0805524W  ");
         assertEquals("Long SkyVector plan creation failed", 24, mStorageService.getPlan().getDestinationNumber());
         assertMinMaxCoords(mStorageService.getPlan(), 45, 25, -82, -73);
-    }
-    @Test
-    public void createLongWAtoCAPlanFromIFlightPlanner() throws Exception
-    {
-        // this is a copy-paste of a long plan along W coast from iFlightPlanner, each point separated by is 1 space, 18 points total
-        // http://www.iFlightPlanner.com/AviationCharts/?Map=sectional&GS=115&Route=485429N/12215209W-4752197N/12216401W-FIFDE-4508079N/1230924W-4349072N/12305269W-3S8-ENVIE-4013451N/12240239W-3851245N/12223156W-3744093N/1213548W-3612317N/1205615W-74CN-3455189N/1193947W-3423521N/11853385W-KLGB-3328545N/11736311W-3303086N/11711479W-KSAN
-        mWebAppPlanInterface.createPlan("485429N/12215209W 4752197N/12216401W FIFDE 4508079N/1230924W 4349072N/12305269W 3S8 ENVIE 4013451N/12240239W 3851245N/12223156W 3744093N/1213548W 3612317N/1205615W 74CN 3455189N/1193947W 3423521N/11853385W KLGB 3328545N/11736311W 3303086N/11711479W KSAN");
-        assertEquals("Long iFlightPlanner plan creation failed", 18, mStorageService.getPlan().getDestinationNumber());
-        assertMinMaxCoords(mStorageService.getPlan(), 49, 32, -124, -117);
     }
 
     @Test
@@ -188,9 +164,9 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
 
         
         // create plan 3 with ICAO style coordinates
-        mWebAppPlanInterface.createPlan("4000N07400W 4100N07400W");
+        mWebAppPlanInterface.createPlan("400000N0740000W 410000N0740000W");
         assertEquals(2, mStorageService.getPlan().getDestinationNumber());
-        assertUrl("javascript:plan_add('4100N07400W','GPS','GPS')");
+        assertUrl("javascript:plan_add('410000N0740000W','GPS','GPS')");
 
         //save it to preferences
         mWebAppPlanInterface.savePlan("TEST3");
@@ -243,11 +219,11 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         assertUrl("javascript:plan_add('N51','Base','SOLBERG-HUNTERDON')");
 
 
-        //now retrieve plan 3 to 4100N07400W
+        //now retrieve plan 3 to 410000N0740000W
         mWebAppPlanInterface.loadPlan("TEST3");
         data = mWebAppPlanInterface.getPlanData();
         assertEquals("TEST3" + PLAN3_DATA, data);
-        assertUrl("javascript:plan_add('4100N07400W','GPS','GPS')");
+        assertUrl("javascript:plan_add('410000N0740000W','GPS','GPS')");
         
         
         //now retrieve plan 4 to 41.00&-74.00
@@ -268,7 +244,7 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
 
     @Test
     public void createPlanWithUserWpt() throws Exception {
-        mWebAppPlanInterface.createPlan("KCDW SBJ 40.4747&-74.1844 4100N07400W");
+        mWebAppPlanInterface.createPlan("KCDW SBJ 40.4747&-74.1844 410000N0740000W");
         assertEquals(4, mStorageService.getPlan().getDestinationNumber());
     }
     @Test
