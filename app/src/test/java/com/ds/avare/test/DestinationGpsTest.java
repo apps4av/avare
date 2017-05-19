@@ -43,29 +43,10 @@ public class DestinationGpsTest {
     public void ICAOLong() {
         Destination d1 = DestinationFactory.build(mStorageService, "402829N0741104W", Destination.GPS);
         assertLatLon(40.4747, -74.1844, d1);
-    }
-    @Test
-    public void ICAOLongWithSlash() {
-        // format used by iFlightPlanner
-        Destination d1 = DestinationFactory.build(mStorageService, "402829N/0741104W", Destination.GPS);
-        assertLatLon(40.4747, -74.1844, d1);
-    }
-    @Test
-    public void ICAOShort() {
-        Destination d1 = DestinationFactory.build(mStorageService, "4028N07411W", Destination.GPS);
-        assertLatLon(40.4667, -74.1833, d1);
-    }
-    @Test
-    public void ICAOShortWithLabel() {
-        Destination d1 = DestinationFactory.build(mStorageService, "TEST@4028N07411W", Destination.GPS);
-        assertLatLon(40.4667, -74.1833, d1);
-    }    
-    @Test
-    public void ICAOWithDecimalSeconds() {
-        Destination d1 = DestinationFactory.build(mStorageService, "4028290N07411040W", Destination.GPS);
-        assertLatLon(40.4747, -74.1844, d1);
-        Destination d2 = DestinationFactory.build(mStorageService, "4028299N07411049W", Destination.GPS);
-        assertLatLon(40.475, -74.1847, d2); // decimal seconds are truncated
+        Destination d2 = DestinationFactory.build(mStorageService, "TEST@402829N0741104W", Destination.GPS);
+        assertLatLon(40.4747, -74.1844, d2);
+        Destination d3 = DestinationFactory.build(mStorageService, "402829S1741104E", Destination.GPS);
+        assertLatLon(-40.4747, 174.1844, d3);
     }
     private static void assertLatLon(double expectedLat, double expectedLon, Destination d) {
         double lat = d.getLocation().getLatitude();
