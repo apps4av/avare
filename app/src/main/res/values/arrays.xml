@@ -2264,7 +2264,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Emergency mode lets you declare emergency by sending an SMS to your designated phone number&quot;</item>
         <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes&quot;</item>
         <item>&quot;New flight plans are inactive by default. Click the Inactive button to activate them&quot;</item>
-        <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321 or add directly from the map&quot;</item>
+        <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321, or the format 422040N0723565W, or add directly from the map&quot;</item>
         <item>&quot;Choosing a field in the Near tab allows you to create a direct-to flight plan to it&quot;</item>
         <item>&quot;Choose minimal length for fields in the Near tab via Display->Near Runway Minimum Length&quot;</item>
         <item>&quot;Set how long weather and TFRs are displayed for via Weather->Data Expiry&quot;</item>

@@ -140,7 +140,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateTracks;
     private AnimateButton mAnimateSim;
     private AnimateButton mAnimateWeb;
-    private AnimateButton mAnimateTrack;
+    private AnimateButton mAnimateLayer;
     private AnimateButton mAnimateChart;
     private AnimateButton mAnimateHelp;
     private AnimateButton mAnimateDownload;
@@ -356,7 +356,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateTracks.animateBack();
         mAnimateWeb.animateBack();
         mAnimateSim.animateBack();
-        mAnimateTrack.animateBack();
+        mAnimateLayer.animateBack();
         mAnimateChart.animateBack();
         mAnimateHelp.animateBack();
         mAnimateDownload.animateBack();
@@ -370,7 +370,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateTracks.animate();
         mAnimateWeb.animate();
         mAnimateSim.animate();
-        mAnimateTrack.animate();
+        mAnimateLayer.animate();
         mAnimateChart.animate();
         mAnimateHelp.animate();
         mAnimateDownload.animate();
@@ -741,7 +741,9 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
 	            if(null != mService) {
-	                setTrackState(!mService.getTracks());
+                    boolean state = mService.getTracks();
+                    setTrackState(!state);
+                    mPref.setTrackingState(!state);
 	            }
             }
         });
@@ -860,7 +862,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
         mAnimateWeb = new AnimateButton(LocationActivity.this, mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(LocationActivity.this, mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
-        mAnimateTrack = new AnimateButton(LocationActivity.this, mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
+        mAnimateLayer = new AnimateButton(LocationActivity.this, mLayerOption, AnimateButton.DIRECTION_R_L, mPlanPause);
         mAnimateChart = new AnimateButton(LocationActivity.this, mChartOption, AnimateButton.DIRECTION_R_L, (View[])null);
         mAnimateHelp = new AnimateButton(LocationActivity.this, mHelpButton, AnimateButton.DIRECTION_L_R, mCenterButton, mDrawButton, mMenuButton);
         mAnimateDownload = new AnimateButton(LocationActivity.this, mDownloadButton, AnimateButton.DIRECTION_L_R, (View[])null);
@@ -995,8 +997,14 @@ public class LocationActivity extends Activity implements Observer {
     private void setTrackState(boolean bState)
     {
         URI fileURI = mService.setTracks(bState);
-                	/* The fileURI is returned when the tracks are closed off.
-                	 */
+        /* The fileURI is returned when the tracks are closed off.
+         */
+        if(bState) {
+            Toast.makeText(LocationActivity.this,
+                    getString(R.string.TracksOn),
+                    Toast.LENGTH_LONG).show();
+
+        }
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
             switch(mPref.autoPostTracks()) {
@@ -1156,6 +1164,18 @@ public class LocationActivity extends Activity implements Observer {
             mLocationView.setLayerType(mPref.getLayerType());
 
 
+            boolean enabled = mPref.isTrackingEnabled();
+            boolean on = mService.getTracks();
+            mTracksButton.setChecked(enabled);
+            // tracks start stop state machine
+            if((!on) && enabled) {
+                // not tracking and enabled
+                setTrackState(true);
+            }
+            else if(on && (!enabled)) {
+                // tracking and disabled
+                setTrackState(false);
+            }
         }
 
         /* (non-Javadoc)

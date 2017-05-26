@@ -336,6 +336,23 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean isTrackingEnabled() {
+        return (mPref.getBoolean(mContext.getString(R.string.TracksOn), false));
+    }
+
+    /**
+     * @return
+     */
+    public void setTrackingState(boolean state) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putBoolean(mContext.getString(R.string.TracksOn), state);
+        editor.commit();
+    }
+
+
+    /**
+     * @return
+     */
     public boolean isWeatherTranslated() {
         return (mPref.getBoolean(mContext.getString(R.string.XlateWeather), false));
     }
