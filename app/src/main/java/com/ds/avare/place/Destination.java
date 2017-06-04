@@ -22,11 +22,11 @@ import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.utils.CalendarHelper;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
 import com.ds.avare.weather.WindsAloft;
 
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -256,11 +256,10 @@ public class Destination extends Observable {
             mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
         }
 
-    	// Calculate the time of arrival at our destination. We SHOULD be taking in to account
-    	// the timezone at that location
-    	mEta = Helper.calculateEta(Calendar.getInstance().getTimeZone(), mDistance, mGroundSpeed);
+    	// Calculate the time of arrival at our destination based on the system time
+        // We SHOULD be taking in to account the timezone at that location
+    	mEta = Helper.calculateEta(CalendarHelper.getInstance(System.currentTimeMillis()), mDistance, mGroundSpeed);
 	}
-
 
 
 	/* (non-Javadoc)
@@ -432,7 +431,15 @@ public class Destination extends Observable {
     public String getType() {
         return mDestType;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public String getDbType() {
+        return mDbType;
+    }
+
     /**
      * 
      * @return

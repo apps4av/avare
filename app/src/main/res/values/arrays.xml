@@ -34,7 +34,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
-        <item>Plates Georeference Info.</item>
     </string-array>
      
     <string-array name="resNameWeather">
@@ -1423,7 +1422,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resFilesDatabase">
         <item>databases</item>
-        <item>geoplates</item>
     </string-array>
     
     <string-array name="resFilesWeather">
@@ -2145,7 +2143,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
         <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
         <item>&quot;If the app. is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
-        <item>&quot;To get geo-referenced plates, make sure to download them under Database->Plates Georeference Info&quot;</item>
         <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
         <item>&quot;You can hide non essential UI buttons and tabs from Preferences under UI Configuration&quot;</item>
         <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>
@@ -2156,7 +2153,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Emergency mode lets you declare emergency by sending an SMS to your designated phone number&quot;</item>
         <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes&quot;</item>
         <item>&quot;New flight plans are inactive by default. Click the Inactive button to activate them&quot;</item>
-        <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321 or add directly from the map&quot;</item>
+        <item>&quot;To enter LAT/LONG on a flight plan use the format 42.123456&amp;-72.654321, or the format 422040N0723565W, or add directly from the map&quot;</item>
         <item>&quot;Choosing a field in the Near tab allows you to create a direct-to flight plan to it&quot;</item>
         <item>&quot;Choose minimal length for fields in the Near tab via Display->Near Runway Minimum Length&quot;</item>
         <item>&quot;Set how long weather and TFRs are displayed for via Weather->Data Expiry&quot;</item>

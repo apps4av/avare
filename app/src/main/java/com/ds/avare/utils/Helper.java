@@ -44,6 +44,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -183,30 +185,22 @@ public class Helper {
         // If hours is non zero then return HH:MM
         if(eteHr > 0) {
 	        // Format the hours and minutes en router
-	        String hr = String.format(Locale.getDefault(), "%02d", eteHr);
-	        String min = String.format(Locale.getDefault(), "%02d", eteMin);
-	
-	        // Build the string for return
-	        return hr + ":" + min;
+            return String.format(Locale.getDefault(), "%02d:%02d", eteHr, eteMin);
         }
 
         // Hours is zero, so return MM.SS
-        String min = String.format(Locale.getDefault(), "%02d", eteMin);
-        String sec = String.format(Locale.getDefault(), "%02d", eteSecond);
+        return String.format(Locale.getDefault(), "%02d.%02d", eteMin, eteSecond);
 
-        // Build the string for return
-        return min + "." + sec;
-        
     }
 
     /***
 	 * Fetch the estimate current time of arrival at the destination
-	 * @param timeZone - The timezone at the destination
+	 * @param calendar - The calendar at the destination
 	 * @param distance - how far to the target
 	 * @param speed - how fast we are moving
 	 * @return String - "HH:MM" current time at the target
      */
-    public static String calculateEta(TimeZone timeZone, double distance, double speed) {
+    public static String calculateEta(CalendarHelper calendar, double distance, double speed) {
 
         // If no speed, then return an empty display string
         if(0 == speed ){
@@ -231,8 +225,8 @@ public class Helper {
         }
 
         // Get the current local time hours and minutes
-        int etaHr = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int etaMin = Calendar.getInstance().get(Calendar.MINUTE);
+        int etaHr = calendar.getHour();
+        int etaMin = calendar.getMinute();
 
         // Add in our ETE to the current time, accounting for rollovers
         etaMin += eteMin;	// Add the estimated minutes enroute to "now"
@@ -241,11 +235,7 @@ public class Helper {
         while(etaHr > 23) { etaHr -= 24; }	// account for midnight rollover
 
         // Format the hours and minutes
-        String strHr = String.format(Locale.getDefault(), "%02d", etaHr);
-        String strMn = String.format(Locale.getDefault(), "%02d", etaMin);
-
-        // Build string of return
-        return strHr + ":" + strMn;
+        return String.format(Locale.getDefault(), "%02d:%02d", etaHr, etaMin);
     }
 
     /**
@@ -898,14 +888,47 @@ public class Helper {
     }
 
 
-    public static String decodeGpsAddress(String name, double coords[]) {
+    private static final Pattern ICAO_GPS_PATTERN = Pattern.compile(
+            "(([^@]*)@)?" +
+                    "([0-8][0-9])([0-5][0-9])([0-5][0-9])([NSns])"+
+                    "([01][0-9][0-9])([0-5][0-9])([0-5][0-9])([EWew])");
 
+    public static boolean isGPSCoordinate(String coords) {
+        return coords.contains("&") || ICAO_GPS_PATTERN.matcher(coords).matches();
+    }
+
+    public static String decodeGpsAddress(String name, double coords[]) {
         /*
-         * GPS
-         * GPS coordinates are either x&y (user), or addr@x&y (google maps)
-         * get the x&y part, then parse them to lon=y lat=x
+         * Match predictable GPS pattern of DDMMSS[N|S]DDDMMSS[E|W]
          */
-        if(name.contains("&")) {
+        Matcher m = ICAO_GPS_PATTERN.matcher(name);
+        if(m.matches()) {
+            String label;
+            try {
+                label = m.group(1) == null ? "" : m.group(1);
+                double  lat_deg = Double.parseDouble(m.group(3)),
+                        lat_min = Double.parseDouble(m.group(4)),
+                        lat_sec = Double.parseDouble(m.group(5)),
+                        lat_south = m.group(6).equalsIgnoreCase("S") ? -1 : 1,
+                        lon_deg = Double.parseDouble(m.group(7)),
+                        lon_min = Double.parseDouble(m.group(8)),
+                        lon_sec = Double.parseDouble(m.group(9)),
+                        lon_west = m.group(10).equalsIgnoreCase("W") ? -1 : 1;
+                coords[0] = lon_west * truncGeo(lon_deg + lon_min / 60.0 + lon_sec / (60.0 * 60.0));
+                coords[1] = lat_south * truncGeo(lat_deg + lat_min / 60.0 + lat_sec / (60.0 * 60.0));
+            }
+            catch (Exception e) {
+                return null;
+            }
+            /*
+             * Sane input
+             */
+            if((!isLatitudeSane(coords[1])) || (!isLongitudeSane(coords[0]))) {
+                return null;
+            }
+            return label;
+        }
+        else if(name.contains("&")) {
             String token[] = new String[2];
             token[1] = token[0] = name;
             if(name.contains("@")) {
@@ -930,7 +953,7 @@ public class Helper {
             /*
              * Sane input
              */
-            if((!Helper.isLatitudeSane(coords[1])) || (!Helper.isLongitudeSane(coords[0]))) {
+            if((!isLatitudeSane(coords[1])) || (!isLongitudeSane(coords[0]))) {
                 return null;
             }
 

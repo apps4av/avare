@@ -218,6 +218,7 @@ public class LocationView extends View implements OnTouchListener {
 
     private ScaleGestureDetector mScaleDetector;
 
+    public LongTouchDestination getLongTouchDestination() {return mLongTouchDestination;}
 
     /**
      * @param context

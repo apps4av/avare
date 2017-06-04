@@ -43,17 +43,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_centerHorizontal="true" />
 
 	    <Button
-	        android:id="@+id/plates_button_tag"
-	        android:textStyle="bold"
-	        android:layout_centerVertical="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/Tag"
-            android:layout_margin="5dp"
-	        android:visibility="visible" />
-
-	    <Button
             android:id="@+id/plates_button_timer"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"

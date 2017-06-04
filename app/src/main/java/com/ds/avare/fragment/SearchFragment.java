@@ -38,6 +38,7 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.Helper;
 
 import java.util.LinkedHashMap;
 import java.util.Observable;
@@ -313,9 +314,9 @@ public class SearchFragment extends StorageServiceGpsListenerFragment implements
                 }
 
                 /*
-                 * This is a geo coordinate with &?
+                 * This is a geo coordinate?
                  */
-                if(s.toString().contains("&")) {
+                if(Helper.isGPSCoordinate(s.toString())) {
                     String [] vals = new String[1];
                     StringPreference sp = new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, s.toString());
                     vals[0] = sp.getHashedName();

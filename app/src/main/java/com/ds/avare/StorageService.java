@@ -46,6 +46,7 @@ import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.GameTFR;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
@@ -57,7 +58,6 @@ import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.storage.DataSource;
-import com.ds.avare.place.Obstacle;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
@@ -369,7 +369,7 @@ public class StorageService extends Service {
         
         mInfoLines = new InfoLines(this);
 
-        mShadowedText = new ShadowedText(getApplicationContext());
+        mShadowedText = null;
 
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
@@ -1254,6 +1254,9 @@ public class StorageService extends Service {
     }
     
     public ShadowedText getShadowedText() {
+        if (mShadowedText==null) {
+            mShadowedText = new ShadowedText(getApplicationContext());
+        }
     	return mShadowedText;
     }
     

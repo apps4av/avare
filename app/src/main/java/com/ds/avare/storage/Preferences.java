@@ -332,6 +332,23 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean isTrackingEnabled() {
+        return (mPref.getBoolean(mContext.getString(R.string.TracksOn), false));
+    }
+
+    /**
+     * @return
+     */
+    public void setTrackingState(boolean state) {
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.putBoolean(mContext.getString(R.string.TracksOn), state);
+        editor.commit();
+    }
+
+
+    /**
+     * @return
+     */
     public boolean isWeatherTranslated() {
         return (mPref.getBoolean(mContext.getString(R.string.XlateWeather), false));
     }
@@ -868,26 +885,6 @@ public class Preferences {
     }
 
 
-    /**
-     * @return
-     */
-    public String getGeotags() {
-        return mPref.getString(mContext.getString(R.string.Geotag), "");
-    }
-
-    /**
-     * @return
-     */
-    public String getGeoCode() {
-        return mPref.getString(mContext.getString(R.string.GeoCode), "");
-    }
-
-    /**
-     * @param tags
-     */
-    public void setGeotags(String tags) {
-        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
-    }
 
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {
@@ -941,82 +938,6 @@ public class Preferences {
     }
     public int getTipIndex() {
         return mPref.getInt(mContext.getString(R.string.tipIndex), 0);
-    }
-
-
-    /**
-     *  settings save
-     */
-
-
-    /**
-     * @return
-     */
-    public int getMaxPriceIndex() {
-        return mPref.getInt("MaxPrice", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getMinStarIndex() {
-        return mPref.getInt("MinStar", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getMaxDistanceIndex() {
-        return mPref.getInt("MaxDistance", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getAdultsIndex() {
-        return mPref.getInt("Adults", 0);
-    }
-
-    /**
-     * @return
-     */
-    public int getChildIndex(String id) {
-        return mPref.getInt("Child" + id, 0);
-    }
-
-    /**
-     * @return
-     */
-    public void setMaxPriceIndex(int index) {
-        mPref.edit().putInt("MaxPrice", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setMinStarIndex(int index) {
-        mPref.edit().putInt("MinStar", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setMaxDistanceIndex(int index) {
-        mPref.edit().putInt("MaxDistance", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setAdultsIndex(int index) {
-        mPref.edit().putInt("Adults", index).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setChildIndex(String id, int index) {
-        mPref.edit().putInt("Child" + id, index).commit();
     }
 
     /**
@@ -1235,9 +1156,6 @@ public class Preferences {
     }
     public boolean removeB2Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b2plate), false);
-    }
-    public boolean removeB3Plate() {
-        return mPref.getBoolean(mContext.getString(R.string.b3plate), false);
     }
     public boolean removeB1Map() {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);

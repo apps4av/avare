@@ -596,7 +596,7 @@ public class WebAppPlanInterface implements Observer {
     private void setFilteredSize() {
     	// re-calc the size of our plan list based upon the filter
     	mFilteredSize = 0;
-    	Iterator<String> it = (Iterator<String>) mSavedPlans.keySet().iterator();
+		Iterator<String> it = mSavedPlans.keySet().iterator();
     	while(true == it.hasNext()){
     		String planName = it.next();
     		if(true == containsIgnoreCase(planName, mPlanFilter)) {
@@ -705,7 +705,7 @@ public class WebAppPlanInterface implements Observer {
                     Math.round(d.getGroundSpeed()) + "," +
                     d.getEte() +  "," +
                     d.getID() + "," +
-                    d.getType() + "," +
+                    d.getDbType() + "," +
                     d.getFuel() + "," +
                     d.getWinds() +
                     "::::";
@@ -795,9 +795,9 @@ public class WebAppPlanInterface implements Observer {
 
             for(int num = 0; num < srch.length; num++) {
 	            /*
-	             * This is a geo coordinate with &?
+	             * This is a geo coordinate?
 	             */
-	            if(srch[num].contains("&")) {
+				if(Helper.isGPSCoordinate(srch[num])) {
 	            	String found = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch[num])).getHashedName();
 	            	selection.add(found);
 	            	continue;
@@ -879,9 +879,9 @@ public class WebAppPlanInterface implements Observer {
             }
 
             /*
-             * This is a geo coordinate with &?
+             * This is a geo coordinate?
              */
-            if(srch.contains("&")) {
+            if(Helper.isGPSCoordinate(srch)) {
 
             	selection = new String[1];
             	selection[0] = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS, srch)).getHashedName();
@@ -944,7 +944,6 @@ public class WebAppPlanInterface implements Observer {
 	private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Plan plan = mService.getPlan();
         	if(MSG_CLEAR_PLAN == msg.what) {
         		mWebView.loadUrl("javascript:plan_clear()");
         	}
@@ -957,6 +956,7 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if (MSG_TIMER == msg.what) {
+				Plan plan = mService.getPlan();
         		plan.simulate();
         	}
             else if (MSG_TIMER_LOAD == msg.what) {

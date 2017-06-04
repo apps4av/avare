@@ -60,7 +60,6 @@ Redistribution and use in source and binary forms, with or without modification,
         </service>
         <activity android:name=".PrefActivity" />
         <activity android:name=".WebActivity" />
-        <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".SyncActivity"/>

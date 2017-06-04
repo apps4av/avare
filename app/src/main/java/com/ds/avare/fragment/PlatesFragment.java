@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.fragment;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 
 import com.ds.avare.MainActivity;
-import com.ds.avare.PlatesTagActivity;
 import com.ds.avare.R;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
@@ -44,6 +42,7 @@ import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.PngCommentReader;
 import com.ds.avare.views.PlatesView;
 
 import java.io.File;
@@ -70,7 +69,6 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
-    private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
@@ -100,6 +98,21 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
     private float[] mMatrix;
 
     /**
+     *
+     */
+    private static String getNameFromPath(String name) {
+        if(null == name) {
+            return null;
+        }
+        String parts[] = name.split("/");
+        if(parts.length < 2) {
+            return null;
+        }
+        String aname = parts[parts.length - 2] + "/" + parts[parts.length - 1];
+        return aname;
+    }
+
+    /**
      * @return
      */
     public float[] getMatrix(String name) {
@@ -108,45 +121,21 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
         }
 
         if(mService != null && mService.getPlateDiagram() != null && mService.getPlateDiagram().getName() != null) {
-            
-            /*
-             * If the user has already tagged a plate, load its matrix
-             */
-            String aname = PlatesTagActivity.getNameFromPath(mService.getPlateDiagram().getName());
+
+
+            String aname = getNameFromPath(mService.getPlateDiagram().getName());
             if(aname != null) {
                 float ret[];
 
                 /*
-                 * First try to get plate info from local tags, if not found there, use downloaded plates
+                 * EXIF
                  */
-
-                /*
-                 * Local plates are useful for tagging new plates, and for tagging own maps
-                 * Local plates tag info is in preferences.
-                 */
-                String pname = PlatesTagActivity.getNameFromPath(aname);
-                if(pname != null) {
-                    LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
-                    for(String t : tags) {
-                        String toks[] = t.split(",");
-                        if(toks[0].equals(pname)) {
-                            /*
-                            * Found
-                            */
-                            float matrix[] = new float[4];
-                            matrix[0] = (float)Double.parseDouble(toks[1]);
-                            matrix[1] = (float)Double.parseDouble(toks[2]);
-                            matrix[2] = (float)Double.parseDouble(toks[3]);
-                            matrix[3] = (float)Double.parseDouble(toks[4]);
-                            return matrix;
-                        }
-                    }
+                if(name.startsWith(AREA)) {
+                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/area/" + aname);
                 }
-
-                /*
-                 * Downloaded one
-                 */
-                ret = mService.getDBResource().findGeoPlateMatrix(aname);
+                else {
+                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/plates/" + aname);
+                }
                 if(null != ret) {
                     return ret;
                 }
@@ -381,35 +370,6 @@ public class PlatesFragment extends StorageServiceGpsListenerFragment implements
             }
         });
 
-
-        mPlatesTagButton = (Button) view.findViewById(R.id.plates_button_tag);
-        mPlatesTagButton.getBackground().setAlpha(255);
-        // Only show tagging option when georef password is set
-        mPlatesTagButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mService != null && mService.getPlateDiagram() != null) {
-                    String name = mService.getPlateDiagram().getName();
-                    if(name != null) {
-                        String tokens[] = name.split("/");
-                        String aname = tokens[tokens.length - 1];
-                        /*
-                         * Limit geo tagging to taggable plates.
-                         */
-                        if(aname.startsWith("ILS-") || aname.startsWith("HI-ILS-") || aname.startsWith("HI-TACAN-") || aname.startsWith("HI-VOR-") || aname.startsWith("VOR-") || aname.startsWith("LDA-") || aname.startsWith("RNAV-")
-                                || aname.startsWith("NDB-") || aname.startsWith("LOC-") || aname.startsWith("HI-LOC-") || aname.startsWith("SDA-") || aname.startsWith("GPS-")
-                                || aname.startsWith("TACAN-") || aname.startsWith("COPTER-") || aname.startsWith("CUSTOM-")) {
-                            Intent intent = new Intent(getContext(), PlatesTagActivity.class);
-                            startActivity(intent);
-                        }
-                    }
-                }
-            }
-        });
-
-        if(mPref.removeB3Plate()) {
-            mPlatesTagButton.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void setPlateFromPos(int pos) {

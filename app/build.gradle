@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 25
     }
 
     dependencies {
@@ -20,14 +20,33 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false // for Travis CI
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    applicationVariants.all { variant ->
+        def productFlavor = variant.productFlavors[0] != null ? "${variant.productFlavors[0].name.capitalize()}" : ""
+        def buildType = "${variant.buildType.name.capitalize()}"
+        tasks["compile${productFlavor}${buildType}UnitTestSources"].dependsOn(tasks["merge${productFlavor}${buildType}Assets"])
+    }
 }
 
 dependencies {
     compile 'ch.acra:acra:4.7.0'
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:preference-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:preference-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
     compile 'org.xmlunit:xmlunit-core:2.3.0'
     compile 'org.xmlunit:xmlunit-matchers:2.3.0'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.4.0'
+    testCompile 'org.powermock:powermock-module-junit4:1.7.0RC2'
+    testCompile 'org.powermock:powermock-api-mockito2:1.7.0RC2'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
+    testCompile 'org.robolectric:robolectric:3.3.2'
 }
