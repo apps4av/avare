@@ -218,10 +218,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="CurrentlySetTo">&quot;\nCurrently: &quot;</string>
     <string name="ADSBWeather">ADSBWeather</string>
     <string name="ADSBWeatherLabel">&quot;Use ADSB Weather&quot;</string>
-    <string name="ADSBWeatherSummary">&quot;Select to use the weather from an ADSB receiver (requires the Avare External IO module app.), otherwise use the Internet weather&quot;</string>
+    <string name="ADSBWeatherSummary">&quot;Select to use the weather from an ADSB receiver (may require the Avare External I/O Plugin app), otherwise use the Internet weather&quot;</string>
     <string name="ADSBTrafficFilter">ADSBTrafficFilter</string>
     <string name="ADSBTrafficFilterLabel">&quot;Filter ADSB Traffic&quot;</string>
     <string name="ADSBTrafficFilterSummary">&quot;Show ADSB traffic within given feet of the aircraft&quot;</string>
+    <string name="prefShowAdsbCallSign">ShowAdsbCallSign</string>
+    <string name="ShowAdsbCallSignLabel">&quot;Show ADSB Callsigns&quot;</string>
+    <string name="ShowAdsbCallSignSummary">&quot;Select to show ADSB provided callsigns&quot;</string>
     <string name="prefUseDynamicFields">UseDynamicFields</string>
     <string name="UseDynamicFieldsLabel">&quot;Use Dynamic Fields&quot;</string>
     <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines to be configured dynamically&quot;</string>

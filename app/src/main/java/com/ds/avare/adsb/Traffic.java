@@ -152,7 +152,11 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
-            String text = t.mCallSign + ":";
+            String text = "";
+            // hide callsign if configured in prefs
+            if (ctx.pref.showAdsbCallSign() && !t.mCallSign.equals("")) {
+                text = t.mCallSign + ":";
+            }
 
             if(altitude <= IHelperService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
