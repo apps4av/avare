@@ -1146,6 +1146,8 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
     }
 
+    public boolean isPfdUsingPhoneMagneticHeading() { return mPref.getBoolean(mContext.getString(R.string.PfdUsesPhoneMagneticHeading), false); }
+
     public int getWindsAloftCeiling() {
         try {
            return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));

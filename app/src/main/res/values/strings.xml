@@ -528,6 +528,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="VerticalPfd">VerticalPfd</string>
     <string name="VerticalPfdLabel">PFD Vertical Mount</string>
     <string name="VerticalPfdSummary">&quot;Select to use PFD mounted vertically, otherwise horizontally&quot;</string>
+    <string name="PfdUsesPhoneMagneticHeading">PfdUsesPhoneMagneticHeading</string>
+    <string name="PfdUsesPhoneMagneticHeadingLabel">PFD Phone\'s Mag Sensor</string>
+    <string name="PfdUsesPhoneMagneticHeadingSummary">Select for PFD to use phone\'s magnetic heading sensor for yaw. Disabled by default as the sensor is often unstable.</string>
     <string name="SeeHelp">See Help.</string>
     <string name="Obstacles">Obstacles</string>
     <string name="ObstaclesSummary">Show obstacles on map</string>

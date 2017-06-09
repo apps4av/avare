@@ -15,17 +15,26 @@ package com.ds.avare.views;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.View;
 
+import com.ds.avare.IHelperService;
 import com.ds.avare.R;
+import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.VNAV;
+import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.position.Projection;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -60,10 +69,19 @@ public class PfdView extends View {
     private float            mVsi;
     private RectF            mRectf;
     private float            mYaw;
+    private boolean          mIsYawFromMagneticSensor;
+    private float            mGroundTrack;
     private float            mTurnTrend;
     private float            mTo;
     private float            mCdi;
+    private String           mDst;
+    private String           mDistance;
     private float            mVdi;
+    private float            mPressureAltitude;
+    private double           mLat, mLon;
+    private SparseArray<Traffic>     mTraffic;
+    private BitmapHolder     mAirplaneBitmap;
+    private static final ColorFilter colorFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
 
     private static final float SPEED_TEN = 1.5f;
@@ -94,11 +112,13 @@ public class PfdView extends View {
         mAltitudeChange = 0;
         mVsi = 0;
         mYaw = 0;
+        mGroundTrack = 0;
         mTurnTrend = 0;
         mInclinometer = 0;
         mCdi = 0;
         mVdi = 3;
         mPath = new Path();
+        mAirplaneBitmap = new BitmapHolder(context, R.drawable.plane);
     }
 
 
@@ -170,6 +190,11 @@ public class PfdView extends View {
      */
     @Override
     public void onDraw(Canvas canvas) {
+
+        final float scaledTextSize = mPaint.getTextSize()*0.80f,
+                normalTextSize = mPaint.getTextSize(),
+                scaledUpTextSize = mPaint.getTextSize()*1.15f;
+        
         /*
          * Now draw the target cross hair
          */
@@ -304,28 +329,43 @@ public class PfdView extends View {
         mPath.lineTo(x(-7), y(65));
         canvas.drawPath(mPath, mPaint);
         // inclinometer, displace +-20 of screen from +- 10 degrees
-        canvas.drawRect(x(-7 + mInclinometer * 2), y(64), x(7 + mInclinometer * 2), y(62), mPaint);
+        
+        // limit angle +-10 degrees, judging from actual instrument circle
+        float angle = (mInclinometer > 10) ? 10 : (mInclinometer < -10) ? -10 : mInclinometer;
+        canvas.drawRect(x(-7 + angle * 2), y(64), x(7 + angle * 2), y(62), mPaint);
 
 
         // draw airplane wings
-        mPaint.setColor(Color.YELLOW);
-        canvas.drawRect(x(-45), y(1), x(-20), y(-1), mPaint);
-        canvas.drawRect(x(20), y(1), x(45), y(-1), mPaint);
+        mPaint.setColor(Color.YELLOW);                          // wing
+        canvas.drawRect(x(-45), y(1), x(-20), y(0), mPaint); 
+        canvas.drawRect(x(20), y(1), x(45), y(0), mPaint);
+        mPaint.setColor(darker(Color.YELLOW, .7f));             // shade
+        canvas.drawRect(x(-45), y(0), x(-20), y(-1), mPaint); 
+        canvas.drawRect(x(20), y(0), x(45), y(-1), mPaint);
 
         // draw airplane triangle
+        mPaint.setColor(Color.YELLOW);                          // top
         mPath.reset();
-        mPath.moveTo(x(0) , y(0));
+        mPath.moveTo(x(0) , y(0));  
         mPath.lineTo(x(-15), y(-10));
-        mPath.lineTo(x(0), y(-5));
+        mPath.lineTo(x(0), y(-3));  
+        mPath.lineTo(x(15), y(-10));
+        canvas.drawPath(mPath, mPaint);
+        mPath.reset();
+        mPaint.setColor(darker(Color.YELLOW, .7f));             // bottom
+        mPath.moveTo(x(0) , y(-3));
+        mPath.lineTo(x(-15), y(-10));
+        mPath.lineTo(x(0), y(-6));
         mPath.lineTo(x(15), y(-10));
         canvas.drawPath(mPath, mPaint);
 
         /**
          * Speed tape
          */
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.LTGRAY);
         canvas.save();
-        canvas.clipRect(x(-80), y(35), x(-50), y(-35));
+        int right = mSpeed < 100 ? -60 : -55; // for v>1000 make space for 4 digits 
+        canvas.clipRect(x(-80), y(35), x(right), y(-35));
         canvas.translate(0, y(0) - y(mSpeed * SPEED_TEN));
 
         // lines, just draw + - 30
@@ -334,14 +374,15 @@ public class PfdView extends View {
             if(c < 0) {
                 continue; // no negative speed
             }
-            canvas.drawLine(x(-50), y(c * SPEED_TEN), x(-55), y(c * SPEED_TEN), mPaint);
-            canvas.drawText("" + Math.round(Math.abs(c)), x(-75), y(c * SPEED_TEN), mPaint);
+            canvas.drawLine(x(right), y(c * SPEED_TEN), x(right-5), y(c * SPEED_TEN), mPaint);
+            int speed = Math.round(Math.abs(c));
+            canvas.drawText(spaces(4 - numDigits(speed)) + speed, x(right-25), y(c * SPEED_TEN), mPaint);
         }
         for(float c = tens - 30; c <= tens + 30; c += 5) {
             if(c < 0) {
                 continue; // no negative speed
             }
-            canvas.drawLine(x(-50), y(c * SPEED_TEN), x(-53), y(c * SPEED_TEN), mPaint);
+            canvas.drawLine(x(right), y(c * SPEED_TEN), x(right-3), y(c * SPEED_TEN), mPaint);
         }
 
         canvas.restore();
@@ -349,10 +390,10 @@ public class PfdView extends View {
         // trend
         mPaint.setColor(Color.MAGENTA);
         if(mSpeedChange > 0) {
-            canvas.drawRect(x(-53), y(mSpeedChange * SPEED_TEN), x(-50), y(0), mPaint);
+            canvas.drawRect(x(-53), y(mSpeedChange * SPEED_TEN), x(right), y(0), mPaint);
         }
         else {
-            canvas.drawRect(x(-53), y(0), x(-50), y(mSpeedChange * SPEED_TEN), mPaint);
+            canvas.drawRect(x(-53), y(0), x(right), y(mSpeedChange * SPEED_TEN), mPaint);
         }
 
         // value
@@ -360,34 +401,56 @@ public class PfdView extends View {
 
         mPath.reset();
         mPath.moveTo(x(-80), y(3));
-        mPath.lineTo(x(-55), y(3));
-        mPath.lineTo(x(-50), y(0));
-        mPath.lineTo(x(-55), y(-3));
+        mPath.lineTo(x(right-5), y(3));
+        mPath.lineTo(x(right), y(0));
+        mPath.lineTo(x(right-5), y(-3));
         mPath.lineTo(x(-80), y(-3));
         canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(Color.WHITE);
-        canvas.drawText("" + Math.round(Math.abs(mSpeed)), x(-75), y(-2), mPaint);
+        mPaint.setTextSize(scaledUpTextSize);
+        final int speed = Math.round(Math.abs(mSpeed));
+        canvas.drawText(spaces(4 - numDigits(speed)) + speed, x(right-28), y(-2), mPaint);
+        mPaint.setTextSize(normalTextSize);
 
         // boundary
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        canvas.drawRect(x(-80), y(35), x(-50), y(-35), mPaint);
+        canvas.drawRect(x(-80), y(35), x(right), y(-35), mPaint);
         mPaint.setStyle(style);
 
         /**
          * Altitude tape
          */
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.LTGRAY);
         canvas.save();
         canvas.clipRect(x(35), y(35), x(85), y(-35));
         canvas.translate(0, y(0) - y(mAltitude * ALTITUDE_THOUSAND / 10f)); // alt is dealt in 10's of feet
 
         // lines, just draw + and - 300 ft.
-        float hundreds = Math.round(mAltitude / 100f) * 100f;
+        final float hundreds = Math.round(mAltitude / 100f) * 100f;
         for(float c = (hundreds - 300) / 10f; c <= (hundreds + 300) / 10f; c += 10) {
-            canvas.drawLine(x(50), y(c * ALTITUDE_THOUSAND), x(55), y(c * ALTITUDE_THOUSAND), mPaint);
-            canvas.drawText(Math.round(c) + "0", x(55), y(c * ALTITUDE_THOUSAND), mPaint);
+            float yOffset = y(c * ALTITUDE_THOUSAND);
+            canvas.drawLine(x(50), yOffset, x(55), yOffset, mPaint);
+            // altitude numbers; thousands and half thousands in larger font
+            yOffset = yOffset + normalTextSize/4; 
+            String altToPrint = Math.round(c) + "0";
+            if (altToPrint.length() > 3) {
+                if (altToPrint.endsWith("500") || altToPrint.endsWith("000")) {
+                    canvas.drawText(altToPrint, x(55), yOffset, mPaint);
+                } else {
+                    String thousandsDigits = altToPrint.substring(0, altToPrint.length() - 3);
+                    String hundredsDigits  = altToPrint.substring(altToPrint.length() - 3);
+                    canvas.drawText(thousandsDigits, x(55), yOffset, mPaint);
+                    mPaint.setTextSize(scaledTextSize);
+                    canvas.drawText(hundredsDigits, x(55 + 5 * thousandsDigits.length()), yOffset, mPaint);
+                    mPaint.setTextSize(normalTextSize);
+                }
+            } else {
+                mPaint.setTextSize(scaledTextSize);
+                canvas.drawText(altToPrint, x(55), yOffset, mPaint);
+                mPaint.setTextSize(normalTextSize);
+            }
         }
         for(float c = (hundreds - 300) / 10f; c <= (hundreds + 300) / 10f; c += 2) {
             canvas.drawLine(x(50), y(c * ALTITUDE_THOUSAND), x(53), y(c * ALTITUDE_THOUSAND), mPaint);
@@ -415,7 +478,9 @@ public class PfdView extends View {
         canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(Color.WHITE);
+        mPaint.setTextSize(scaledUpTextSize);
         canvas.drawText(Math.round(mAltitude) + "", x(55), y(-2), mPaint);
+        mPaint.setTextSize(normalTextSize);
 
         // boundary
         mPaint.setStyle(Paint.Style.STROKE);
@@ -423,13 +488,21 @@ public class PfdView extends View {
         canvas.drawRect(x(50), y(35), x(85), y(-35), mPaint);
         mPaint.setStyle(style);
 
+        // pressure altitude
+        if (mPressureAltitude > 0) {
+            mPaint.setColor(Color.BLACK);
+            canvas.drawRect(x(50), y(-35), x(85), y(-45), mPaint);
+            mPaint.setColor(Color.BLUE);
+            int pa = (int)altitudeToPressure(mPressureAltitude);
+            canvas.drawText(Integer.toString(pa), x(54), y(-42), mPaint);
+        }
 
         /**
          * VSI tape
          */
 
 
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.LTGRAY);
 
         //lines
         canvas.drawLine(x(90), y(5   * VSI_FIVE), x(85), y(5   * VSI_FIVE), mPaint);
@@ -457,6 +530,7 @@ public class PfdView extends View {
 
 
         // text on VSI
+        mPaint.setColor(Color.LTGRAY);
         canvas.drawText("1", x(90), y(11 * VSI_FIVE), mPaint);
         canvas.drawText("2", x(90), y(21 * VSI_FIVE), mPaint);
         canvas.drawText("1", x(90), y(-9 * VSI_FIVE), mPaint);
@@ -493,89 +567,191 @@ public class PfdView extends View {
         // arrow
         mPaint.setColor(Color.WHITE);
         mPath.reset();
-        mPath.moveTo(x(-5), y(-60));
+        mPath.moveTo(x(-2), y(-60));
         mPath.lineTo(x(0), y(-65));
-        mPath.lineTo(x(5), y(-60));
+        mPath.lineTo(x(2), y(-60));
         canvas.drawPath(mPath, mPaint);
 
         canvas.save();
 
+        mPaint.setColor(Color.LTGRAY);
+        
         // half standrad rate, 9 degrees in 6 seconds
         canvas.rotate(-18, x(0), y(-95));
-        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
+        canvas.drawLine(x(0), y(-60), x(0), y(-64), mPaint);
 
         // standrad rate, 18 degrees in 6 seconds
         canvas.rotate(9, x(0), y(-95));
-        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
+        canvas.drawLine(x(0), y(-60), x(0), y(-64), mPaint);
 
         // standrad rate, 18 degrees in 6 seconds
         canvas.rotate(18, x(0), y(-95));
-        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
+        canvas.drawLine(x(0), y(-60), x(0), y(-64), mPaint);
 
         // half standrad rate, 9 degrees in 6 seconds
         canvas.rotate(9, x(0), y(-95));
-        canvas.drawLine(x(0), y(-60), x(0), y(-65), mPaint);
+        canvas.drawLine(x(0), y(-60), x(0), y(-64), mPaint);
+
+        canvas.restore();
+        
+        // 45, 90, 135 deg marks on compass outer edge
+        canvas.save();
+        mPaint.setColor(Color.WHITE);
+        
+        canvas.rotate(-135, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+        
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
+
+        canvas.rotate(45, x(0), y(-95));
+        canvas.drawLine(x(0), y(-61), x(0), y(-64), mPaint);
 
         canvas.restore();
 
         //draw 12, 30 degree marks.
         canvas.save();
+        mPaint.setColor(Color.LTGRAY);
 
         canvas.rotate(-mYaw, x(0), y(-95));
 
         offset = (mPaint.descent() + mPaint.ascent()) / 2;
 
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("N", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("3", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("6", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("E", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("12", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("15", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("S", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("21", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("24", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("W", x(0) + offset, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("30", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        canvas.drawLine(x(0), y(-65), x(0), y(-70), mPaint);
-        canvas.drawText("33", x(0) + offset * 2, y(-75), mPaint);
-        canvas.rotate(30, x(0), y(-95));
-        
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("N", x(0) + offset, y(-73), mPaint);
+        mPaint.setTextSize(scaledTextSize);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("3", x(0) + offset, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("6", x(0) + offset, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        mPaint.setTextSize(normalTextSize);
+        canvas.drawText("E", x(0) + offset, y(-73), mPaint);
+        mPaint.setTextSize(scaledTextSize);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("12", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("15", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        mPaint.setTextSize(normalTextSize);
+        canvas.drawText("S", x(0) + offset, y(-73), mPaint);
+        mPaint.setTextSize(scaledTextSize);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("21", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("24", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        mPaint.setTextSize(normalTextSize);
+        canvas.drawText("W", x(0) + offset, y(-73), mPaint);
+        mPaint.setTextSize(scaledTextSize);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("30", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.drawText("33", x(0) + offset * 2, y(-72), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        canvas.rotate(10, x(0), y(-95));
+        canvas.drawLine(x(0), y(-65), x(0), y(-68), mPaint);
+        mPaint.setTextSize(normalTextSize);
+
         canvas.restore();
 
-        // airplane
-        mPaint.setColor(Color.WHITE);
-        canvas.drawLine(x(0), y(-105), x(0), y(-85), mPaint);
+        // current ground track indicator, indicated by a diamond
+        canvas.save();
+        mPaint.setColor(Color.MAGENTA);
+        canvas.rotate(-mYaw + mGroundTrack, x(0), y(-95));
+        mPaint.setStrokeWidth(2 * mDpi);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPath.reset();
+        mPath.moveTo(x(0), y(-65));
+        mPath.lineTo(x(2), y(-67));
+        mPath.lineTo(x(0), y(-69));
+        mPath.lineTo(x(-2), y(-67));
+        mPath.lineTo(x(0), y(-65));
+        canvas.drawPath(mPath, mPaint);
+        canvas.drawLine(x(0), y(-66), x(0), y(-69), mPaint);
+        canvas.restore();
 
         //draw heading
         mPaint.setColor(Color.BLACK);
-        canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
+        mPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(x(-13), y(-50), x(16), y(-58), mPaint);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        canvas.drawRect(x(-13), y(-50), x(13), y(-58), mPaint);
+        canvas.drawRect(x(-13), y(-50), x(16), y(-58), mPaint);
         mPaint.setStyle(style);
-        canvas.drawText(Math.round((mYaw + 360) % 360) + "\u00B0", x(-10), y(-56), mPaint);
+        mPaint.setTextSize(scaledUpTextSize);
+        canvas.drawText(degreesString(mYaw), x(-10), y(-56), mPaint);
+        mPaint.setTextSize(normalTextSize);
 
 
         // draw rate of turn arc.
@@ -592,37 +768,80 @@ public class PfdView extends View {
         canvas.save();
         canvas.rotate((mTo - mYaw + 360) % 360, x(0), y(-95));
         //draw dots for displacement.
-        mPaint.setColor(Color.WHITE);
-
+        mPaint.setColor(Color.LTGRAY);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(2 * mDpi);
         for(float i = 0; i < 25; i += 5) {
             canvas.drawCircle(x(-5 - i), y(-95), y(0) - y(1), mPaint);
             canvas.drawCircle(x( 5 + i), y(-95), y(0) - y(1), mPaint);
         }
-        mPaint.setColor(Color.MAGENTA);
-        canvas.drawLine(x(0), y(-115), x(0), y(-105), mPaint); // three to break up CDI
-        canvas.drawLine(x(0), y(-85), x(0), y(-80), mPaint);
-        mPath.reset();
-        mPath.moveTo(x(0), y(-75));
-        mPath.lineTo(x(-5), y(-80));
-        mPath.lineTo(x(5), y(-80));
+        mPaint.setStyle(style);
+        
+        mPaint.setColor(Color.MAGENTA);                        // three lines to break up CDI
+        canvas.drawLine(x(0), y(-117), x(0), y(-105), mPaint);               // bottom
+        canvas.drawLine(x(0), y(-85), x(0), y(-78), mPaint);                 // top
+        mPath.reset();                                         
+        mPath.moveTo(x(0), y(-73));                            // arrow
+        mPath.lineTo(x(-3), y(-78));
+        mPath.lineTo(x(3), y(-78));
         canvas.drawPath(mPath, mPaint);
         mPaint.setStrokeWidth(2 * mDpi);
-        canvas.drawLine(x(mCdi * 5), y(-105), x(mCdi * 5), y(-85), mPaint);
+        canvas.drawLine(x(mCdi * 5), y(-105), x(mCdi * 5), y(-85), mPaint); // middle
         canvas.restore();
 
+        //destination name, if set 
+        if (mDst != null && !mDst.isEmpty()) {
+            
+            //draw course
+            mPaint.setColor(Color.BLACK);
+            int rightCDI = 65; 
+            canvas.drawRect(x(rightCDI-26), y(-70), x(rightCDI), y(-78), mPaint);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setColor(Color.WHITE);
+            canvas.drawRect(x(rightCDI-26), y(-70), x(rightCDI), y(-78), mPaint);
+            mPaint.setStyle(style);
+            mPaint.setColor(Color.MAGENTA);
+            canvas.drawText(degreesString(mTo), x(rightCDI-23), y(-76), mPaint);
 
-        //draw course
-        mPaint.setColor(Color.BLACK);
-        canvas.drawRect(x(45), y(-70), x(71), y(-78), mPaint);
-        mPaint.setStyle(Paint.Style.STROKE);
+            // draw destination id
+            int dstTop = 68, dstLeft = -101;
+            final String destWithArrow = "\u21D2" /*->*/ + mDst; 
+            mPaint.setColor(Color.BLACK);
+            float measuredIdTextWidth = mPaint.measureText(destWithArrow);
+            canvas.drawRect(x(dstLeft), y(dstTop + 8), x(dstLeft + 4) + measuredIdTextWidth, y(dstTop), mPaint);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setColor(Color.WHITE);
+            canvas.drawRect(x(dstLeft), y(dstTop + 8), x(dstLeft + 4) + measuredIdTextWidth, y(dstTop), mPaint);
+            mPaint.setStyle(style);
+            mPaint.setColor(Color.MAGENTA);
+            canvas.drawText(destWithArrow, x(dstLeft + 1), y(dstTop + 2), mPaint);
+
+            // draw distance to destination
+            int distTop = 68, distLeft = -101 + 4;
+            float measuredDistTextWidth = mPaint.measureText(mDistance);
+            mPaint.setColor(Color.BLACK);
+            canvas.drawRect(x(distLeft) + measuredIdTextWidth, y(distTop + 8), x(distLeft + 4) + measuredIdTextWidth + measuredDistTextWidth, y(distTop), mPaint);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setColor(Color.WHITE);
+            canvas.drawRect(x(distLeft) + measuredIdTextWidth, y(distTop + 8), x(distLeft + 4) + measuredIdTextWidth + measuredDistTextWidth, y(distTop), mPaint);
+            mPaint.setStyle(style);
+            mPaint.setColor(Color.MAGENTA);
+            canvas.drawText(mDistance, x(distLeft + 2) + measuredIdTextWidth, y(distTop + 2), mPaint);
+        }
+
+        // airplane in compass
         mPaint.setColor(Color.WHITE);
-        canvas.drawRect(x(45), y(-70), x(71), y(-78), mPaint);
-        mPaint.setStyle(style);
-        canvas.drawText(Math.round((mTo + 360) % 360) + "\u00B0", x(48), y(-76), mPaint);
+        mPaint.setColorFilter(colorFilter);
+        float cx = x(0)   - mAirplaneBitmap.getWidth() / 2f;
+        float cy = y(-95) - mAirplaneBitmap.getHeight() / 2f;
+        canvas.drawBitmap(mAirplaneBitmap.getBitmap(), cx, cy, mPaint);
+        mPaint.setColorFilter(null);
 
-        // Warning.
-        mPaint.setColor(Color.YELLOW);
-        canvas.drawText(mContext.getString(R.string.SeeHelp), x(-95), y(-45), mPaint);
+        // Warning. Only when not moving
+        if (mSpeed==0) {
+            mPaint.setColor(Color.YELLOW);
+            canvas.drawText(mContext.getString(R.string.SeeHelp), x(-95), y(-45), mPaint);
+        }
 
         /*
          * draw VDI
@@ -635,6 +854,7 @@ public class PfdView extends View {
         mPaint.setStyle(style);
 
         //draw bars in 10s
+        mPaint.setColor(Color.LTGRAY);
         canvas.drawCircle(x(47.5f), y((float)VNAV.BAR_DEGREES * 4 * VDI_DEGREE), y(0) - y(1), mPaint);
         canvas.drawCircle(x(47.5f), y((float)VNAV.BAR_DEGREES * 2 * VDI_DEGREE), y(0) - y(1), mPaint);
         canvas.drawCircle(x(47.5f), y(-(float)VNAV.BAR_DEGREES * 2 * VDI_DEGREE), y(0) - y(1), mPaint);
@@ -652,9 +872,37 @@ public class PfdView extends View {
         }
         float val = 3f - mVdi;
         canvas.drawCircle(x(47.5f), y(val * VDI_DEGREE), y(0) - y(1), mPaint);
-        mPaint.setColor(Color.WHITE);
-
+        
+        mPaint.setColor(Color.LTGRAY);
         canvas.drawText("G", x(45), y(26), mPaint);
+
+        // draw traffic
+        if(mTraffic != null) {
+            int filterAltitude = 10000; // mPrefs.showAdsbTrafficWithin();
+            for (int i = 0; i < mTraffic.size(); ++i) {
+                Traffic tr = mTraffic.valueAt(i);
+                if(mAltitude < IHelperService.MIN_ALTITUDE) {
+                    // filter
+                    if(Math.abs(tr.mAltitude - mAltitude) > filterAltitude) {
+                        continue;
+                    }
+                }
+                canvas.save();
+                canvas.rotate(-mYaw, x(0), y(-95));
+                double trafficBearing = Projection.getStaticBearing(mLon, mLat, (double) tr.mLon, (double) tr.mLat);
+                double trafficDistance = Math.min(6, Projection.getStaticDistance(mLon, mLat, (double) tr.mLon, (double) tr.mLat));
+                canvas.rotate((float) trafficBearing, x(0), y(-95));
+                mPaint.setColor(tr.getColorFromAltitude(mAltitude, tr.mAltitude));
+                float radius = y(0) - y(1);
+                float yOff = y(-95) + ( y(-67) - y(-95) ) * (float)trafficDistance / 6;
+                canvas.drawCircle(x(0), yOff, radius, mPaint);
+                float speedLength = radius + tr.mHorizVelocity/10 ;
+                double xr = x(0) + PixelCoordinate.rotateX(speedLength, tr.mHeading - trafficBearing);
+                double yr = yOff + PixelCoordinate.rotateY(speedLength, tr.mHeading - trafficBearing);
+                canvas.drawLine(x(0), yOff, (float)xr, (float)yr, mPaint);
+                canvas.restore();
+            }
+        }
 
     }
 
@@ -666,9 +914,11 @@ public class PfdView extends View {
         mRoll = roll;
     }
 
-    public void setYaw(float yaw) {
-        //mYaw = yaw; //unstable, use GPS track instead
-    }
+    public void setYaw(float yaw) { mYaw = yaw; mIsYawFromMagneticSensor = true; }
+
+    public void setSlip(float slip) { mInclinometer = slip; }
+
+    public void setPressureAltitude(float pa) { mPressureAltitude = pa; }
 
     public void setAcceleration(double acceleration) {
         double a = acceleration;
@@ -681,25 +931,15 @@ public class PfdView extends View {
         // mgsin(0) pendulum displacement, find 0
         a = a / 9.8f;
         double angle = Math.toDegrees(Math.asin(a));
-        // limit angle +-10 degrees, judging from actual instrument circle
-        if(angle > 10) {
-            angle = 10;
-        }
-        if(angle < -10) {
-            angle = -10;
-        }
-
         mInclinometer = (float)angle;
     }
 
-    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi, double vdi) {
+    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi, double vdi, String dst, String distance) {
         /**
          * Assign and limit numbers
          */
         mSpeed = (float)params.getSpeed();
-        if(mSpeed > 500) {
-            mSpeed = 500;
-        }
+ 
         mSpeedChange = (float)eparams.getDiffSpeedTrend();
         if(mSpeedChange > 25) {
             mSpeedChange = 25;
@@ -740,9 +980,12 @@ public class PfdView extends View {
             mTurnTrend = -30;
         }
 
+        mGroundTrack = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
 
-        // ideally derive from gyro
-        mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
+        // ideally derive from gyro, use ground track otherwise
+        if (!mIsYawFromMagneticSensor) {
+            mYaw = mGroundTrack;
+        }
 
         mTo = (float)(bearing + params.getDeclinition() + 360) % 360f;
 
@@ -753,6 +996,9 @@ public class PfdView extends View {
         if(mCdi < -5) {
             mCdi = -5;
         }
+        
+        mDst = dst;
+        mDistance = distance;
 
         // degrees
         mVdi = (float)vdi;
@@ -762,6 +1008,90 @@ public class PfdView extends View {
         if(mVdi < 2.2f) {
             mVdi = 2.2f;
         }
+        mLat = params.getLatitude();
+        mLon = params.getLongitude();
+    }
+    
+    public void setTraffic(SparseArray<Traffic> traffic) {
+        mTraffic = traffic;
+    } 
+    
+    private static double altitudeToPressure(double altitude) {
+        return 29.92 * Math.pow(1.0 - (altitude / 145366.45), 1.0 / 0.190284); 
     }
 
+    // use string formatting functions because String.format takes much more CPU
+
+    private static String degreesString(float d) {
+        int intVal = (int)(d + 360) % 360;
+        return (intVal == 0 ?  "360" :
+                intVal < 10 ?  "00" + Integer.toString(intVal) :
+                        intVal < 100 ? "0" + Integer.toString(intVal) :
+                                Integer.toString(intVal)) + "\u00B0";
+    }
+
+    private static String spaces(int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) sb.append(" ");
+        return sb.toString();
+    }
+    
+    private static int numDigits(int n) {
+        if (n < 100000){
+            // 5 or less
+            if (n < 100){
+                // 1 or 2
+                if (n < 10)
+                    return 1;
+                else
+                    return 2;
+            }else{
+                // 3 or 4 or 5
+                if (n < 1000)
+                    return 3;
+                else{
+                    // 4 or 5
+                    if (n < 10000)
+                        return 4;
+                    else
+                        return 5;
+                }
+            }
+        } else {
+            // 6 or more
+            if (n < 10000000) {
+                // 6 or 7
+                if (n < 1000000)
+                    return 6;
+                else
+                    return 7;
+            } else {
+                // 8 to 10
+                if (n < 100000000)
+                    return 8;
+                else {
+                    // 9 or 10
+                    if (n < 1000000000)
+                        return 9;
+                    else
+                        return 10;
+                }
+            }
+        }        
+    }
+
+    /**
+     * Returns darker version of specified <code>color</code>.
+     */
+    public static int darker (int color, float factor) {
+        int a = Color.alpha( color );
+        int r = Color.red( color );
+        int g = Color.green( color );
+        int b = Color.blue( color );
+
+        return Color.argb( a,
+                Math.max( (int)(r * factor), 0 ),
+                Math.max( (int)(g * factor), 0 ),
+                Math.max( (int)(b * factor), 0 ) );
+    }
 }

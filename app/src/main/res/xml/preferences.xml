@@ -206,6 +206,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/VerticalPfd"
             android:summary="@string/VerticalPfdSummary"
             android:title="@string/VerticalPfdLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/PfdUsesPhoneMagneticHeading"
+            android:summary="@string/PfdUsesPhoneMagneticHeadingSummary"
+            android:title="@string/PfdUsesPhoneMagneticHeadingLabel" />            
     </PreferenceScreen>
         
     <PreferenceScreen 
