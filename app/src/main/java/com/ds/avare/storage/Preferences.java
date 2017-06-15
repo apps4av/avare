@@ -759,7 +759,7 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return  mPref.getBoolean(mContext.getString(R.string.register), false);
+        return  true;//mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
@@ -901,10 +901,6 @@ public class Preferences {
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabFind), true)) {
             mTabs |= 1 << MainActivity.tabFind;
-        }
-
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabThreeD), true)) {
-            mTabs |= 1 << MainActivity.tabThreeD;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPlan), true)) {

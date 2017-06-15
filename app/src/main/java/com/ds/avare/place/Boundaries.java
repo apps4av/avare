@@ -130,53 +130,20 @@ public class Boundaries {
     }
 
     private static String[] mChartType = {
-            "Sectional",
-            "TAC",
-            "WAC",
-            "IFR Low",
-            "IFR High",
-            "IFR Area",
-            "Terrain",
-            "Shaded Relief",
-            "Topographic",
-            "Heli/Other",
-            "ONC World",
-            "TPC World",
-            "Misc."
+            "VFR",
+            "IFR",
     };
 
 
     // Zooms are for 512x512 tiles on charts
     private static int[] mZooms = {
-            10,
             11,
-            9,
-            10,
-            9,
             11,
-            10,
-            9,
-            10,
-            12,
-            9,
-            10,
-            12
     };
 
     private static String[] mExtension = {
             ".jpg",
             ".jpg",
-            ".jpg",
-            ".png",
-            ".png",
-            ".png",
-            ".png",
-            ".jpg",
-            ".jpg",
-            ".png",
-            ".jpg",
-            ".jpg",
-            ".jpg"
     };
 
 

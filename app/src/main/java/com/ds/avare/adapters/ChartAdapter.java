@@ -57,23 +57,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     static final int blocksize = 128;
     
     private static final int GROUP_DATABASE = 0;
-    private static final int GROUP_WEATHER = 1;
-    private static final int GROUP_SECTIONAL = 2;
-    private static final int GROUP_TAC = 3;
-    private static final int GROUP_WAC = 4;
-    private static final int GROUP_IFRLE = 5;
-    private static final int GROUP_IFRHE = 6;
-    private static final int GROUP_IFRA = 7;
-    private static final int GROUP_PLATE = 8;
-    private static final int GROUP_VFRA = 9;
-    private static final int GROUP_AFD = 10;
-    private static final int GROUP_TERRAIN = 11;
-    private static final int GROUP_TOPO = 12;
-    private static final int GROUP_HELI = 13;
-    private static final int GROUP_ONC = 14;
-    private static final int GROUP_TPC = 15;
-    private static final int GROUP_MISC = 16;
-    private static final int GROUP_NUM = 17;
+    private static final int GROUP_SECTIONAL = 1;
+    private static final int GROUP_IFRLE = 2;
+    private static final int GROUP_NUM = 3;
     
     /**
      * @param context
@@ -91,44 +77,16 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resNameDatabase);
-        mChildren[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resNameWeather);
-        mChildren[GROUP_PLATE] = context.getResources().getStringArray(R.array.resNamePlate);
         mChildren[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resNameSectional);
-        mChildren[GROUP_TAC] = context.getResources().getStringArray(R.array.resNameTAC);
-        mChildren[GROUP_WAC] = context.getResources().getStringArray(R.array.resNameWAC);
         mChildren[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resNameIFRLE);
-        mChildren[GROUP_AFD] = context.getResources().getStringArray(R.array.resNameAFD);
-        mChildren[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resNameTerrain);
-        mChildren[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resNameIFRHE);
-        mChildren[GROUP_TOPO] = context.getResources().getStringArray(R.array.resNameTopo);
-        mChildren[GROUP_HELI] = context.getResources().getStringArray(R.array.resNameHeli);
-        mChildren[GROUP_ONC] = context.getResources().getStringArray(R.array.resNameONC);
-        mChildren[GROUP_TPC] = context.getResources().getStringArray(R.array.resNameTPC);
-        mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
-        mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
-        mChildren[GROUP_MISC] = context.getResources().getStringArray(R.array.resNameMisc);
 
         /*
          * Assign children file names
          */
         mChildrenFiles = new String[GROUP_NUM][];
         mChildrenFiles[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
-        mChildrenFiles[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
-        mChildrenFiles[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mChildrenFiles[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
-        mChildrenFiles[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
-        mChildrenFiles[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mChildrenFiles[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
-        mChildrenFiles[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
-        mChildrenFiles[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
-        mChildrenFiles[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
-        mChildrenFiles[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
-        mChildrenFiles[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
-        mChildrenFiles[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
-        mChildrenFiles[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
-        mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
-        mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
-        mChildrenFiles[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
 
         /*
          * Allocate space for versions
@@ -136,44 +94,16 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         mVers = new String[GROUP_NUM][];
         mVers[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
-        mVers[GROUP_WEATHER] = context.getResources().getStringArray(R.array.resFilesWeather);
-        mVers[GROUP_PLATE] = context.getResources().getStringArray(R.array.resFilesPlate);
         mVers[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
-        mVers[GROUP_TAC] = context.getResources().getStringArray(R.array.resFilesTAC);
-        mVers[GROUP_WAC] = context.getResources().getStringArray(R.array.resFilesWAC);
         mVers[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
-        mVers[GROUP_AFD] = context.getResources().getStringArray(R.array.resFilesAFD);
-        mVers[GROUP_TERRAIN] = context.getResources().getStringArray(R.array.resFilesTerrain);
-        mVers[GROUP_IFRHE] = context.getResources().getStringArray(R.array.resFilesIFRHE);
-        mVers[GROUP_TOPO] = context.getResources().getStringArray(R.array.resFilesTopo);
-        mVers[GROUP_HELI] = context.getResources().getStringArray(R.array.resFilesHeli);
-        mVers[GROUP_ONC] = context.getResources().getStringArray(R.array.resFilesONC);
-        mVers[GROUP_TPC] = context.getResources().getStringArray(R.array.resFilesTPC);
-        mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
-        mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
-        mVers[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
 
         /*
          * Allocate space for checked charts
          */
         mChecked = new int[GROUP_NUM][];
         mChecked[GROUP_DATABASE] = new int[mVers[GROUP_DATABASE].length];
-        mChecked[GROUP_WEATHER] = new int[mVers[GROUP_WEATHER].length];
-        mChecked[GROUP_PLATE] = new int[mVers[GROUP_PLATE].length];
         mChecked[GROUP_SECTIONAL] = new int[mVers[GROUP_SECTIONAL].length];
-        mChecked[GROUP_TAC] = new int[mVers[GROUP_TAC].length];
-        mChecked[GROUP_WAC] = new int[mVers[GROUP_WAC].length];
         mChecked[GROUP_IFRLE] = new int[mVers[GROUP_IFRLE].length];
-        mChecked[GROUP_AFD] = new int[mVers[GROUP_AFD].length];
-        mChecked[GROUP_TERRAIN] = new int[mVers[GROUP_TERRAIN].length];
-        mChecked[GROUP_IFRHE] = new int[mVers[GROUP_IFRHE].length];
-        mChecked[GROUP_TOPO] = new int[mVers[GROUP_TOPO].length];
-        mChecked[GROUP_HELI] = new int[mVers[GROUP_HELI].length];
-        mChecked[GROUP_ONC] = new int[mVers[GROUP_ONC].length];
-        mChecked[GROUP_TPC] = new int[mVers[GROUP_TPC].length];
-        mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
-        mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
-        mChecked[GROUP_MISC] = new int[mVers[GROUP_MISC].length];
 
         /*
          * Get various bitmaps
@@ -277,8 +207,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
     /**
      * Toggle the checked state of a chart
-     * @param group
-     * @param child
      */
     public String getDatabaseName() {
         return mChildrenFiles[GROUP_DATABASE][0];
@@ -304,14 +232,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @param name
      */
     public boolean isStatic(String name) {
-        for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
-            for(int child = 0; child < mVers[group].length; child++) {
-                if(mChildrenFiles[group][child].equals(name)) {
-                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
-                }
-            }
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -346,7 +267,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
     /**
      * Toggle the checked state of a chart
-     * @param name
      */
     public void toggleChecked(int group, int child) {
         if(mChecked[group][child] == STATE_CHECKED) {
@@ -419,7 +339,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
+        return false;
     }
 
     /**
