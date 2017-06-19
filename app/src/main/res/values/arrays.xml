@@ -2248,12 +2248,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;You can change which of the tabs are displayed on the bottom via UI Configuration->Tab Bar Content&quot;</item>
         <item>&quot;The fields in map mode can be modified by turning on Application State->Use Dynamic Fields&quot;</item>
         <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
-        <item>&quot;If the app. is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
+        <item>&quot;If the app is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
         <item>&quot;If pre-downloaded SUA or weather disappear in flight, check Weather->Data Expiry and Use ADSB Weather&quot;</item>
         <item>&quot;If you're not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
         <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
-        <item>&quot;If the app. is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
+        <item>&quot;If the app is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
         <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
         <item>&quot;You can hide non essential UI buttons and tabs from Preferences under UI Configuration&quot;</item>
         <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>
