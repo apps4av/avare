@@ -18,6 +18,8 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -253,6 +255,57 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         assertEquals(10, mStorageService.getPlan().getDestinationNumber()); // there is a kink in the route, so 10 points
     }
 
+    @Test
+    public void planOperations() throws Exception {
+        // create plan with points spaced 1 degree lattitude = 60mn/log
+        final String PLAN = "40.00&-74.00 41.00&-74.00 42.00&-74.00 43.00&-74.00 44.00&-74.00 45.00&-74.00";
+        final int nbWaypoints = 6;
+
+        mWebAppPlanInterface.createPlan(PLAN);
+        assertEquals(nbWaypoints, mStorageService.getPlan().getDestinationNumber());
+
+        final Plan p = mStorageService.getPlan();
+
+        assertEquals("Plan track shape", (nbWaypoints-1)*4, p.getTrackShape().getNumCoords());
+
+        for (int i = 0; i < nbWaypoints ; i++) {
+            assertFalse("Check for not passed destinations", p.isPassed(i));
+            assertEquals("Bearing calcs", 0, p.getBearing(i, i+1), 0.1);
+        }
+        assertNull("Access beyond last destination", p.getDestination(100));
+
+        p.simulate();
+        assertEquals(300, p.getDistance(), 1); // so roughly 300nm
+
+        mWebAppPlanInterface.activateToggle();
+        p.simulate();
+
+        int lastLeg = nbWaypoints-1;
+        assertEquals("Last leg fuel calculation", "6.0", p.getDestination(lastLeg).getFuel());  // at default 10 gal/hour
+
+        // add and remove waypoint
+        mWebAppPlanInterface.addToPlan("46.00&-74.00","GPS","GPS");
+        assertEquals("Waypoint add", nbWaypoints+1, mStorageService.getPlan().getDestinationNumber());
+        assertEquals("Plan track shape", (nbWaypoints-1)*4 + 4, p.getTrackShape().getNumCoords());
+
+        // check geosearch 
+        int found = p.findClosePointId(-74, 46, 2);
+        assertEquals("Finding by position", lastLeg+1, found);
+
+        p.remove(lastLeg+1);
+        p.simulate();
+        assertEquals("Leg add and remove", 300, p.getDistance(), 1);
+
+        p.advance();
+        assertTrue("Check for passed destinations", p.isPassed(0));
+        for (int i = 1; i < nbWaypoints ; i++) {
+            assertFalse("Check for not passed destinations failed", p.isPassed(i));
+        }
+
+        p.makeInactive();
+        assertFalse("Deactivation failed", p.isActive());
+    }    
+    
     public void setupInterface(Context ctx) {
         mWebAppPlanInterface = new WebAppPlanInterface(ctx, mWebView, new MyGenericCallback());
         mWebAppPlanInterface.connect(mStorageService);
