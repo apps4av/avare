@@ -314,6 +314,11 @@ public class IHelperService extends Service {
                     mService.getAdsbWeather().putImg(
                             time, block, empty, conus, data, cols, rows);
                 }
+                else if(type.equals("sua")) {
+                    mService.getAdsbWeather().putSua(
+                            Helper.getMillisGMT(),
+                            object.getString("text"));
+                }
                 else if(type.equals("METAR") || type.equals("SPECI")) {
                     /*
                      * Put METAR

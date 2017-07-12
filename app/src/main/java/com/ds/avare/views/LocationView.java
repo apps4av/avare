@@ -1363,6 +1363,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     aireps = mService.getAdsbWeather().getAireps(lon, lat);
                     wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
                     layer = mService.getAdsbWeather().getNexrad().getDate();
+                    sua = mService.getAdsbWeather().getSua();
                 }
                 else {
                     boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());

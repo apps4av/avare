@@ -27,6 +27,7 @@ import com.ds.avare.utils.RateLimitedBackgroundQueue;
 import com.ds.avare.utils.WeatherHelper;
 
 import java.sql.Date;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,6 +47,7 @@ public class AdsbWeatherCache {
     private HashMap<String, Metar> mMetar;
     private HashMap<String, Airep> mAirep;
     private HashMap<String, WindsAloft> mWinds;
+    private HashMap<String, Sua> mSua;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
     private Preferences mPref;
@@ -63,6 +65,7 @@ public class AdsbWeatherCache {
         mNexrad = new NexradImage();
         mMetarQueue = new RateLimitedBackgroundQueue(service);
         mNexradConus = new NexradImageConus();
+        mSua = new HashMap<String, Sua>();
     }
 
     /**
@@ -195,7 +198,64 @@ public class AdsbWeatherCache {
         f.timestamp = System.currentTimeMillis();
         mTaf.put(location, f);        
     }
-    
+
+    /**
+     *
+     * @param time
+     * @param id
+     * @param data
+     */
+    public void putSua(long time, String data) {
+        if(!mPref.useAdsbWeather() || null == data) {
+            return;
+        }
+
+        // parse SUA
+        String suaParts[] = data.split("\u0000"); // comes in with 0000 separation
+        if(suaParts.length < 7) {
+            return;
+        }
+        String schedule = suaParts[2]; // Only show hot (H)
+        String type = suaParts[3];
+        String name = suaParts[4];
+        String start = suaParts[5];
+        String end = suaParts[6];
+
+        if(type.equals("W") || type.equals("R") || type.equals("M") || type.equals("P") || type.equals("L")) {
+            // only accept these
+            if(!schedule.equals("H")) {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+        // convert date format
+        DateFormat df = new SimpleDateFormat("yyMMddHHmm");
+        DateFormat dfr = new SimpleDateFormat("ddHHmm");
+        try {
+            java.util.Date startDate =  df.parse(start);
+            java.util.Date endDate =  df.parse(end);
+            start = dfr.format(startDate);
+            end = dfr.format(endDate);
+        } catch (Exception e) {
+            return;
+        }
+
+        Sua s = mSua.get(name);
+        if(null == s) {
+            s = new Sua();
+        }
+        Date dt = new Date(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
+        s.time = sdf.format(dt) + "Z";
+        s.timestamp = System.currentTimeMillis();
+
+        s.text = name + "(" + type + ") " + start + "Z" + " till " + end + "Z";
+        mSua.put(name, s);
+    }
+
     /**
      * 
      * @param time
@@ -349,6 +409,20 @@ public class AdsbWeatherCache {
         return ret;
     }
 
+    public String getSua() {
+
+        String ret = "";
+
+        /*
+         * Concatenate all sua
+         */
+        for(Sua s : mSua.values()) {
+            ret += s.text + "\n";
+        }
+
+        return ret;
+    }
+
     /**
      * 
      * @param lon
@@ -459,7 +533,22 @@ public class AdsbWeatherCache {
         for(String key : keys) {
             mAirep.remove(key);
         }
-        
+
+        /*
+         * Sua
+         */
+        keys = new LinkedList<String>();
+        for (String key : mSua.keySet()) {
+            Sua s = mSua.get(key);
+            long diff = (now - s.timestamp) - expiry;
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mSua.remove(key);
+        }
+
         /*
          * Nexrad
          */
