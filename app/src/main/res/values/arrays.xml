@@ -1937,6 +1937,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>MTN OBSCN AIRMET</item>
         <item>CONVECTIVE SIGMET</item>
         <item>CONVECTIVE OUTLOOK</item>
+        <item>ALL ADS-B</item>
     </string-array>
 
     <integer-array name="AirSigColor">
@@ -1948,6 +1949,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0xFFFF70F0</item> <!-- magenta-->
         <item>0xFFA85056</item> <!-- brown-->
         <item>0xFFAAAAAA</item> <!-- grey-->
+        <item>0xFF00FF00</item> <!-- green-->
     </integer-array>
     
 	<string-array name="TimerRingSizeValues">

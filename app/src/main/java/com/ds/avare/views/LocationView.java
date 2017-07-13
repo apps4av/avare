@@ -639,7 +639,15 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param ctx
      */
     private void drawAirSigMet(Canvas canvas, DrawingContext ctx) {
-        MetShape.draw(ctx, mService.getInternetWeatherCache().getAirSigMet(), null == mPointProjection);
+        /*
+         * Draw Air/Sigmet
+         */
+        if(ctx.pref.useAdsbWeather()) {
+            MetShape.draw(ctx, mService.getAdsbWeather().getAirSigMet(), null == mPointProjection);
+        }
+        else {
+            MetShape.draw(ctx, mService.getInternetWeatherCache().getAirSigMet(), null == mPointProjection);
+        }
     }
 
     /**
@@ -1242,6 +1250,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 shapes = mService.getTFRShapes();
                 if(!mPref.useAdsbWeather()) {
                     mets = mService.getInternetWeatherCache().getAirSigMet();
+                }
+                else {
+                    mets = mService.getAdsbWeather().getAirSigMet();
                 }
             }
             if(null != shapes) {

@@ -319,6 +319,17 @@ public class IHelperService extends Service {
                             Helper.getMillisGMT(),
                             object.getString("text"));
                 }
+                else if(type.equals("airmet") || type.equals("sigmet")) {
+                    mService.getAdsbWeather().putAirSigMet(
+                            Helper.getMillisGMT(),
+                            object.getString("number"),
+                            object.getString("shape"),
+                            object.getString("data"),
+                            object.getString("text"),
+                            object.getString("startTime"),
+                            object.getString("endTime")
+                            );
+                }
                 else if(type.equals("METAR") || type.equals("SPECI")) {
                     /*
                      * Put METAR

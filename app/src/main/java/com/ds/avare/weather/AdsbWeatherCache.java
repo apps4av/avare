@@ -21,10 +21,13 @@ import com.ds.avare.adsb.NexradImageConus;
 import com.ds.avare.place.Destination;
 import com.ds.avare.position.Origin;
 import com.ds.avare.shapes.DrawingContext;
+import com.ds.avare.shapes.MetShape;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.RateLimitedBackgroundQueue;
 import com.ds.avare.utils.WeatherHelper;
+
+import org.json.JSONArray;
 
 import java.sql.Date;
 import java.text.DateFormat;
@@ -52,6 +55,7 @@ public class AdsbWeatherCache {
     private NexradImageConus mNexradConus;
     private Preferences mPref;
     private RateLimitedBackgroundQueue mMetarQueue;
+    private HashMap<String, AirSigMet> mAirSig;
 
     /**
      * 
@@ -66,6 +70,7 @@ public class AdsbWeatherCache {
         mMetarQueue = new RateLimitedBackgroundQueue(service);
         mNexradConus = new NexradImageConus();
         mSua = new HashMap<String, Sua>();
+        mAirSig = new HashMap<String, AirSigMet>();
     }
 
     /**
@@ -202,7 +207,6 @@ public class AdsbWeatherCache {
     /**
      *
      * @param time
-     * @param id
      * @param data
      */
     public void putSua(long time, String data) {
@@ -254,6 +258,103 @@ public class AdsbWeatherCache {
 
         s.text = name + "(" + type + ") " + start + "Z" + " till " + end + "Z";
         mSua.put(name, s);
+    }
+
+
+    /**
+     * Air/Sigmets
+     * @param time
+     * @param id
+     * @param shape
+     * @param points
+     * @param text
+     * @param from
+     * @param to
+     */
+    public void putAirSigMet(long time, String id, String shape, String points, String text, String from, String to) {
+        if(!mPref.useAdsbWeather() || null == id) {
+            return;
+        }
+
+        AirSigMet s = mAirSig.get(id);
+        if(null == s) {
+            s = new AirSigMet();
+        }
+        s.timestamp = System.currentTimeMillis();
+
+        if(text != null && (!text.equals(""))) {
+
+            s.hazard = "ALL"; // for unknown types
+            s.maxFt = "";
+            s.minFt = "";
+            s.reportType = "ADS-B";
+            s.severity = "";
+
+            if(text.contains("AIRMET TANGO")) {
+                s.reportType = "AIRMET";
+                s.hazard = "TURB";
+            }
+            else if(text.contains("AIRMET MTN OBSCN")) {
+                s.reportType = "AIRMET";
+                s.hazard = "MTN OBSCN";
+            }
+            else if(text.contains("AIRMET SIERRA")) {
+                s.reportType = "AIRMET";
+                s.hazard = "IFR";
+            }
+            else if(text.contains("AIRMET ZULU")) {
+                s.reportType = "AIRMET";
+                s.hazard = "ICE";
+            }
+            else if(text.contains("CONVECTIVE SIGMET")) {
+                s.reportType = "SIGMET";
+                s.hazard = "CONVECTIVE";
+            }
+            else if(text.contains("CONVECTIVE OUTLOOK")) {
+                s.reportType = "OUTLOOK";
+                s.hazard = "CONVECTIVE";
+            }
+
+            s.rawText = text;
+            if(s.shape != null) {
+                s.shape.updateText(text); //update text as it may arrive after shape is made
+            }
+        }
+
+        if(from != null && (!from.equals(""))) {
+            s.timeFrom = from;
+        }
+
+        if(to != null && (!to.equals(""))) {
+            s.timeTo = to;
+        }
+
+
+        // Make shapes
+        if(shape.equals("polygon") && points != null && (!points.equals(""))) {
+            s.points = points;
+            // Only draw polygons
+            s.shape = new MetShape(s.rawText == null ? "" : s.rawText, new Date(time));
+            String tokens[] = s.points.split("[;]");
+            for(int j = 0; j < tokens.length; j++) {
+                String point[] = tokens[j].split("[:]");
+                try {
+                    double lon = Double.parseDouble(point[0]);
+                    double lat = Double.parseDouble(point[1]);
+                    if(0 == lat || 0 == lon) {
+                        continue;
+                    }
+                    s.shape.add(lon, lat, false);
+                }
+                catch (Exception e) {
+                }
+            }
+            s.shape.makePolygon();
+        }
+
+
+        mAirSig.put(id, s);
+
     }
 
     /**
@@ -423,6 +524,16 @@ public class AdsbWeatherCache {
         return ret;
     }
 
+    public LinkedList<AirSigMet> getAirSigMet() {
+        LinkedList<AirSigMet> ret = new LinkedList<AirSigMet>();
+
+
+        for(AirSigMet s : mAirSig.values()) {
+            ret.add(s);
+        }
+        return ret;
+    }
+
     /**
      * 
      * @param lon
@@ -547,6 +658,21 @@ public class AdsbWeatherCache {
         }
         for(String key : keys) {
             mSua.remove(key);
+        }
+
+        /*
+         * AirSig
+         */
+        keys = new LinkedList<String>();
+        for (String key : mAirSig.keySet()) {
+            AirSigMet s = mAirSig.get(key);
+            long diff = (now - s.timestamp) - expiry;
+            if(diff > 0) {
+                keys.add(key);
+            }
+        }
+        for(String key : keys) {
+            mAirSig.remove(key);
         }
 
         /*

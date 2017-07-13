@@ -37,6 +37,10 @@ public class MetShape extends Shape {
         super(text, date);
     }
 
+    public void updateText(String text) {
+        super.mText = text;
+    }
+
     /**
      * If this shape is touched, get color
      * @param lon
@@ -79,13 +83,6 @@ public class MetShape extends Shape {
         }
 
         if(mets == null) {
-            return;
-        }
-
-        /*
-         * Draw Air/Sigmet
-         */
-        if(ctx.pref.useAdsbWeather()) {
             return;
         }
 
