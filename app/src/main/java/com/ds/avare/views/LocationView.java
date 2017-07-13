@@ -621,7 +621,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param ctx
      */
     private void drawTFR(Canvas canvas, DrawingContext ctx) {
-        TFRShape.draw(ctx, mService.getTFRShapes(), null == mPointProjection);
+        if(ctx.pref.useAdsbWeather()) {
+            TFRShape.draw(ctx, mService.getAdsbTFRShapes(), null == mPointProjection);
+        }
+        else {
+            TFRShape.draw(ctx, mService.getTFRShapes(), null == mPointProjection);
+        }
     }
 
     /**
@@ -898,7 +903,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawGameTFRs(DrawingContext ctx) {
         if(mPointProjection == null) {
-            mService.getmGameTFRs().draw(ctx);
+            mService.getGameTFRs().draw(ctx);
         }
 
     }
@@ -1247,12 +1252,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             LinkedList<TFRShape> shapes = null;
             List<AirSigMet> mets = null;
             if(null != mService) {
-                shapes = mService.getTFRShapes();
-                if(!mPref.useAdsbWeather()) {
-                    mets = mService.getInternetWeatherCache().getAirSigMet();
+                if(mPref.useAdsbWeather()) {
+                    shapes = mService.getAdsbTFRShapes();
+                    mets = mService.getAdsbWeather().getAirSigMet();
                 }
                 else {
-                    mets = mService.getAdsbWeather().getAirSigMet();
+                    shapes = mService.getTFRShapes();
+                    mets = mService.getInternetWeatherCache().getAirSigMet();
                 }
             }
             if(null != shapes) {
@@ -1275,7 +1281,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     MetShape cshape = mets.get(i).shape;
                     if(null != cshape) {
                         /*
-                         * Set MET tfr
+                         * Set MET
                          */
                         textMets += cshape.getHTMLMetOnTouch(mContext, mets.get(i), lon, lat);
                     }
@@ -1362,6 +1368,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  * Clear old weather
                  */
                 mService.getAdsbWeather().sweep();
+                mService.getAdsbTfrCache().sweep();
 
                 /*
                  * Do not background ADSB weather as its a RAM opertation and quick,

@@ -20,6 +20,7 @@ import android.media.MediaScannerConnection;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
@@ -114,6 +115,8 @@ public class StorageService extends Service {
     private InternetWeatherCache mInternetWeatherCache;
     
     private AdsbWeatherCache mAdsbWeatherCache;
+
+    private TfrCache mAdsbTfrCache;
     
     private TrafficCache mTrafficCache;
     
@@ -360,6 +363,7 @@ public class StorageService extends Service {
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
+        mAdsbTfrCache = new TfrCache(getApplicationContext());
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mCheckLists = null;
@@ -666,7 +670,7 @@ public class StorageService extends Service {
         return mTFRFetcher;
     }
 
-    public GameTFR getmGameTFRs() {
+    public GameTFR getGameTFRs() {
         return mGameTFRs;
     }
 
@@ -674,8 +678,8 @@ public class StorageService extends Service {
      *
      * @return
      */
-    public ShapeFetcher getShapeFetcher() {
-        return mShapeFetcher;
+    public TfrCache getAdsbTfrCache() {
+        return mAdsbTfrCache;
     }
 
     /**
@@ -690,6 +694,10 @@ public class StorageService extends Service {
      */
     public LinkedList<TFRShape> getTFRShapes() {
         return mTFRFetcher.getShapes();
+    }
+
+    public LinkedList<TFRShape> getAdsbTFRShapes() {
+        return mAdsbTfrCache.getShapes();
     }
 
     /**
