@@ -58,9 +58,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     
     private static final int GROUP_DATABASE = 0;
     private static final int GROUP_SECTIONAL = 1;
-    private static final int GROUP_IFRLE = 2;
-    private static final int GROUP_NUM = 3;
-    
+    private static final int GROUP_NUM = 2;
+
     /**
      * @param context
      */
@@ -78,7 +77,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren = new String[GROUP_NUM][];
         mChildren[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resNameDatabase);
         mChildren[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resNameSectional);
-        mChildren[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resNameIFRLE);
 
         /*
          * Assign children file names
@@ -86,7 +84,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles = new String[GROUP_NUM][];
         mChildrenFiles[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
         mChildrenFiles[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
-        mChildrenFiles[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
 
         /*
          * Allocate space for versions
@@ -95,7 +92,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers = new String[GROUP_NUM][];
         mVers[GROUP_DATABASE] = context.getResources().getStringArray(R.array.resFilesDatabase);
         mVers[GROUP_SECTIONAL] = context.getResources().getStringArray(R.array.resFilesSectional);
-        mVers[GROUP_IFRLE] = context.getResources().getStringArray(R.array.resFilesIFRLE);
 
         /*
          * Allocate space for checked charts
@@ -103,7 +99,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked = new int[GROUP_NUM][];
         mChecked[GROUP_DATABASE] = new int[mVers[GROUP_DATABASE].length];
         mChecked[GROUP_SECTIONAL] = new int[mVers[GROUP_SECTIONAL].length];
-        mChecked[GROUP_IFRLE] = new int[mVers[GROUP_IFRLE].length];
 
         /*
          * Get various bitmaps

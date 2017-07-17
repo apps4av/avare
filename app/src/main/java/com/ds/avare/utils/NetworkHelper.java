@@ -312,26 +312,7 @@ public class NetworkHelper {
      * @return
      */
     public static String getUrl(String file, String vers, String root, boolean isStatic, boolean is256) {
-        if(file.equals("TFRs.zip")) {
-            return(root + "/" + file);
-        }
-        if(file.equals("GameTFRs.zip")) {
-            return(root + "/" + file);
-        }
-        else if(file.equals("weather.zip")) {
-            return(root + "/" + file);
-        }
-        else if(file.equals("conus.zip")) {
-            return(root + "/" + file);
-        }
-
-        // See if it is a static chart (not updated every 28 days)
-        if(!isStatic) {
-            return (root + vers + "/" + (is256 ? "256/" : "") + file);
-        }
-        else {
-            return (root + "static" + "/" + (is256 ? "256/" : "") + file);
-        }
+        return(root + "/" + file);
     }
 
     /*

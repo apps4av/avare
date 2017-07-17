@@ -16,7 +16,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resGroups">
         <item>Databases</item>
         <item>VFR Charts</item>
-        <item>IFR Charts</item>
     </string-array>
 
     <string-array name="resNameDatabase">
@@ -36,7 +35,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
     
     <string-array name="resNameIFRLE">
-        <item>IFR</item>
     </string-array>
         
     <string-array name="resNameWAC">
@@ -82,7 +80,6 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesIFRLE">
-        <item>EU_IFR</item>
     </string-array>
 
     <string-array name="resFilesIFRHE">
