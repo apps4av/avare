@@ -1146,6 +1146,18 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.VerticalPfd), false);
     }
 
+    public int getClosestMetarSearchRadius() {
+        try {
+            return (Integer.parseInt(mPref.getString(mContext.getString(R.string.NearestMETARRadius), "0")));
+        } catch (Exception x) {
+            return 0;
+        }
+    }
+
+    public void setClosestMetarSearchRadius(int set) {
+        mPref.edit().putString(mContext.getString(R.string.NearestMETARRadius), Integer.toString(set)).commit();
+    }
+
     public int getWindsAloftCeiling() {
         try {
            return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));

@@ -206,7 +206,17 @@ public class DataSource {
     }
 
     /**
-     * 
+     *
+     * @param lat
+     * @param lon
+     * @return
+     */
+    public Metar getClosestMETAR(Double lat, Double lon) {
+        return dbHelper.getClosestMETAR(lat, lon);
+    }
+
+    /**
+     *
      * @return
      */
     public LinkedList<Airep> getAireps(double lon, double lat) {
