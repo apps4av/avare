@@ -130,15 +130,13 @@ Redistribution and use in source and binary forms, with or without modification,
         </string-array>       
     
     <string-array name="Server">
-        <item>Apps4av.org</item>
-        <item>Apps4av.org DNS</item>
-        <item>Kitepilot.net</item>
+        <item>Main Server</item>
+        <item>Private Server</item>
     </string-array>
 
     <string-array name="ServerValues">
         <item>0</item>
         <item>1</item>
-        <item>2</item>
     </string-array>
 
     <string-array name="AirSig">

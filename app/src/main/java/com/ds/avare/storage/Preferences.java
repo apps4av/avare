@@ -156,13 +156,10 @@ public class Preferences {
             val = "0";
         }
         if (val.equals("0")) {
-            return "http://69.163.195.165/new/";
+            return "http://85.93.89.78";
         }
         else if (val.equals("1")) {
-            return "http://www.apps4av.org/new/";
-        }
-        else if (val.equals("2")) {
-            return "http://avare.kitepilot.net/new/";
+            return mPref.getString(mContext.getString(R.string.PrivateServer), "");
         }
         return ("");
     }
@@ -749,7 +746,7 @@ public class Preferences {
     }
 
     /**
-     * @param value
+     * @param registered
      */
     public void setRegistered(boolean registered) {
         mPref.edit().putBoolean(mContext.getString(R.string.register), registered).commit();
