@@ -29,6 +29,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/Root"
             android:summary="@string/RootSummary"
             android:title="@string/RootLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="http://127.0.0.1/"
+            android:key="@string/PrivateServer"
+            android:summary="@string/PrivateServerSummary"
+            android:title="@string/PrivateServerLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/CyclePrompt"

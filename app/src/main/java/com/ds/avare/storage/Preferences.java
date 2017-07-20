@@ -164,6 +164,9 @@ public class Preferences {
         else if (val.equals("2")) {
             return "http://avare.kitepilot.net/new/";
         }
+        else if (val.equals("3")) {
+            return mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
+        }
         return ("");
     }
 

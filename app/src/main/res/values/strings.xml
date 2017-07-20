@@ -501,6 +501,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="TileSize">TileSize</string>
     <string name="TileSizeLabel">New Tile Size</string>
     <string name="TileSizeSummary">Use new map tile size for less run time resources - will need to re-download ALL charts</string>
+    <string name="PrivateServer">PrivateServerValue</string>
+    <string name="PrivateServerLabel">Private Server Address</string>
+    <string name="PrivateServerSummary">Specify IP address of the private server - Must choose Private Server in option Chart Download Server</string>
 
     <string name="Developer">Developer Settings</string>
     <string name="DeclareEmergency">Declare Emergency?</string>

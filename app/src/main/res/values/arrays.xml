@@ -1920,12 +1920,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Apps4av.org</item>
         <item>Apps4av.org DNS</item>
         <item>Kitepilot.net</item>
+        <item>Private Server</item>
     </string-array>
 
     <string-array name="ServerValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="AirSig">
