@@ -648,6 +648,13 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean showAdsbCallSign() {
+        return mPref.getBoolean(mContext.getString(R.string.prefShowAdsbCallSign), true);
+    }
+
+    /**
+     * @return
+     */
     public int getTimerRingSize() {
         try {
             return (Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));

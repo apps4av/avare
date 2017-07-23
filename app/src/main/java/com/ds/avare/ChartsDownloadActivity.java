@@ -492,7 +492,7 @@ public class ChartsDownloadActivity extends AppCompatActivity {
                     }
 
                     if(mName.equals("GameTFRs")) {
-                        mService.getmGameTFRs().loadGames(mService);
+                        mService.getGameTFRs().loadGames(mService);
                     }
 
                     if(mName.equals("weather")) {

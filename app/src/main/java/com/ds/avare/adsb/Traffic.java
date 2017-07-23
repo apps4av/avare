@@ -160,8 +160,12 @@ public class Traffic {
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
-            // JAJ: was ';'
-            String text = t.mCallSign;
+
+            String text = "";
+            // hide callsign if configured in prefs
+            if (ctx.pref.showAdsbCallSign() && !t.mCallSign.equals("")) {
+                text = t.mCallSign + ":";
+            }
             String text2 = "";
 
             if(altitude <= IHelperService.MIN_ALTITUDE) {

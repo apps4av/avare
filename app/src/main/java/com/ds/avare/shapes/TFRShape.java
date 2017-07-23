@@ -35,6 +35,10 @@ public class TFRShape extends Shape {
         super(text, date);
     }
 
+    public void updateText(String text) {
+        super.mText = text;
+    }
+
     /**
      *
      * @param ctx

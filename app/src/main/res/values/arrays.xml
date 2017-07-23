@@ -1607,60 +1607,60 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="resFilesPlate">
         <item>CAN_ADS</item>
         <item>alternates</item>
-        <item>AL</item>
-		<item>AK</item>
-		<item>AZ</item>
-		<item>AR</item>
-		<item>CA</item>
-		<item>CO</item>
-		<item>CT</item>
-        <item>DC</item>
-		<item>DE</item>
-		<item>FL</item>
-		<item>GA</item>
-		<item>HI</item>
-		<item>ID</item>
-		<item>IL</item>
-		<item>IN</item>
-		<item>IA</item>
-		<item>KS</item>
-		<item>KY</item>
-		<item>LA</item>
-		<item>ME</item>
-		<item>MD</item>
-		<item>MA</item>
-		<item>MI</item>
-		<item>MN</item>
-		<item>MS</item>
-		<item>MO</item>
-		<item>MT</item>
-		<item>NE</item>
-		<item>NV</item>
-		<item>NH</item>
-		<item>NJ</item>
-		<item>NM</item>
-		<item>NY</item>
-		<item>NC</item>
-		<item>ND</item>
-		<item>OH</item>
-		<item>OK</item>
-		<item>OR</item>
-		<item>PA</item>
-		<item>PR</item>
-		<item>RI</item>
-		<item>SC</item>
-		<item>SD</item>
-		<item>TN</item>
-		<item>TX</item>
-		<item>UT</item>
-		<item>VT</item>
-		<item>VA</item>
-		<item>VI</item>
-		<item>WA</item>
-		<item>WV</item>
-		<item>WI</item>
-		<item>WY</item>
-		<item>XX</item>
+        <item>AL_PLATES</item>
+		<item>AK_PLATES</item>
+		<item>AZ_PLATES</item>
+		<item>AR_PLATES</item>
+		<item>CA_PLATES</item>
+		<item>CO_PLATES</item>
+		<item>CT_PLATES</item>
+        <item>DC_PLATES</item>
+		<item>DE_PLATES</item>
+		<item>FL_PLATES</item>
+		<item>GA_PLATES</item>
+		<item>HI_PLATES</item>
+		<item>ID_PLATES</item>
+		<item>IL_PLATES</item>
+		<item>IN_PLATES</item>
+		<item>IA_PLATES</item>
+		<item>KS_PLATES</item>
+		<item>KY_PLATES</item>
+		<item>LA_PLATES</item>
+		<item>ME_PLATES</item>
+		<item>MD_PLATES</item>
+		<item>MA_PLATES</item>
+		<item>MI_PLATES</item>
+		<item>MN_PLATES</item>
+		<item>MS_PLATES</item>
+		<item>MO_PLATES</item>
+		<item>MT_PLATES</item>
+		<item>NE_PLATES</item>
+		<item>NV_PLATES</item>
+		<item>NH_PLATES</item>
+		<item>NJ_PLATES</item>
+		<item>NM_PLATES</item>
+		<item>NY_PLATES</item>
+		<item>NC_PLATES</item>
+		<item>ND_PLATES</item>
+		<item>OH_PLATES</item>
+		<item>OK_PLATES</item>
+		<item>OR_PLATES</item>
+		<item>PA_PLATES</item>
+		<item>PR_PLATES</item>
+		<item>RI_PLATES</item>
+		<item>SC_PLATES</item>
+		<item>SD_PLATES</item>
+		<item>TN_PLATES</item>
+		<item>TX_PLATES</item>
+		<item>UT_PLATES</item>
+		<item>VT_PLATES</item>
+		<item>VA_PLATES</item>
+		<item>VI_PLATES</item>
+		<item>WA_PLATES</item>
+		<item>WV_PLATES</item>
+		<item>WI_PLATES</item>
+		<item>WY_PLATES</item>
+		<item>XX_PLATES</item>
     </string-array>
     
     <string-array name="resFilesTerrain">
@@ -1825,6 +1825,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>MTN OBSCN AIRMET</item>
         <item>CONVECTIVE SIGMET</item>
         <item>CONVECTIVE OUTLOOK</item>
+        <item>ALL ADS-B</item>
     </string-array>
 
     <integer-array name="AirSigColor">
@@ -1836,6 +1837,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0xFFFF70F0</item> <!-- magenta-->
         <item>0xFFA85056</item> <!-- brown-->
         <item>0xFFAAAAAA</item> <!-- grey-->
+        <item>0xFF00FF00</item> <!-- green-->
     </integer-array>
     
 	<string-array name="TimerRingSizeValues">
@@ -2137,18 +2139,18 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;You can change which of the tabs are displayed on the bottom via UI Configuration->Tab Bar Content&quot;</item>
         <item>&quot;The fields in map mode can be modified by turning on Application State->Use Dynamic Fields&quot;</item>
         <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
-        <item>&quot;If the app. is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
+        <item>&quot;If the app is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
         <item>&quot;If pre-downloaded SUA or weather disappear in flight, check Weather->Data Expiry and Use ADSB Weather&quot;</item>
         <item>&quot;If you're not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
         <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
-        <item>&quot;If the app. is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
+        <item>&quot;If the app is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
         <item>&quot;Download Terrain->Elevation for AGL altitudes and 3D view&quot;</item>
         <item>&quot;You can hide non essential UI buttons and tabs from Preferences under UI Configuration&quot;</item>
         <item>&quot;In 3D view, long press on the Center button to switch between Satellite Camera and Pilot Camera&quot;</item>
         <item>&quot;Setting the correct Glide Ratio makes fields beyond glide range appear red in the Near tab&quot;</item>
         <item>&quot;Drawings on maps move and rescale with the map, but drawings on plates do not&quot;</item>
-        <item>&quot;If your phone does not have enough internal storage for charts, uninstall some other apps. to make space&quot;</item>
+        <item>&quot;If your phone does not have enough internal storage for charts, uninstall some other apps to make space&quot;</item>
         <item>&quot;Use the settings to change between North Up and Track Up - separately for maps and for plates&quot;</item>
         <item>&quot;Emergency mode lets you declare emergency by sending an SMS to your designated phone number&quot;</item>
         <item>&quot;Hobbs is decimal, as the one in your plane, not in minutes. 1.50 hours means 90 minutes&quot;</item>
@@ -2171,7 +2173,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Every time you find a bug and report it, you help make Avare a better product&quot;</item>
         <item>&quot;Avare's taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
         <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
-        <item>&quot;If you like this app. please leave a positive review on the play store, and/or donate&quot;</item>
+        <item>&quot;If you like this app, please leave a positive review on the play store, and/or donate&quot;</item>
         <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
         <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
         <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>

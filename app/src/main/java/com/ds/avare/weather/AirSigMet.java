@@ -33,6 +33,6 @@ public class AirSigMet {
     public String hazard;
     public String severity;
     public String reportType;
-    
+    public long   timestamp;
     public MetShape shape;
 }
