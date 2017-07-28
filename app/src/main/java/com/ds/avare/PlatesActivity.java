@@ -74,6 +74,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
+    private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
@@ -106,7 +107,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     /**
      *
      */
-    private static String getNameFromPath(String name) {
+    public static String getNameFromPath(String name) {
         if(null == name) {
             return null;
         }
@@ -133,6 +134,23 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             String aname = getNameFromPath(mService.getPlateDiagram().getName());
             if(aname != null) {
                 float ret[];
+
+                // find in user's own tags first
+                LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
+                for(String t : tags) {
+                    String toks[] = t.split(",");
+                    if(toks[0].equals(aname)) {
+                       /*
+                        * Found
+                        */
+                        float matrix[] = new float[4];
+                        matrix[0] = (float)Double.parseDouble(toks[1]);
+                        matrix[1] = (float)Double.parseDouble(toks[2]);
+                        matrix[2] = (float)Double.parseDouble(toks[3]);
+                        matrix[3] = (float)Double.parseDouble(toks[4]);
+                        return matrix;
+                    }
+                }
 
                 /*
                  * EXIF
@@ -433,6 +451,26 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 return true;
             }
         });
+
+
+        mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
+        mPlatesTagButton.getBackground().setAlpha(255);
+        mPlatesTagButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mService != null && mService.getPlateDiagram() != null) {
+                    String name = mService.getPlateDiagram().getName();
+                    if (name != null) {
+                        Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+
+        if(mPref.removeB3Plate()) {
+            mPlatesTagButton.setVisibility(View.INVISIBLE);
+        }
 
 
         /*

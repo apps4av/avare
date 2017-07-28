@@ -539,4 +539,20 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WindsAloftCeiling">&quot;Show Winds Aloft Up To Altitude&quot;</string>
     <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
 
+    <string name="Tag">Tag</string>
+    <string name="PointName">Name of point</string>
+    <string name="Geotag">Geotag</string>
+    <string name="Verify">Verify</string>
+    <string name="Tagged">The plate is now tagged and saved, and should be verified before using.</string>
+    <string name="Cleared">Cleared! Your Geo. tagging has been deleted for this plate.</string>
+    <string name="AlreadyTagged">his plate is already tagged and stored. Press clear to re-tag.</string>
+    <string name="InvalidPoint">Invalid Point specified.</string>
+    <string name="PointNotFound">The Point is not found, please verify that the point type and its name matches the point on the plate.</string>
+    <string name="AddedPoint">You have successfully tagged a point.</string>
+    <string name="SelectOtherPoint">The selected points are not sufficiently apart. Please select another point, or press clear to re-tag.</string>
+    <string name="NotTagged">he plate is not tagged. Please tag it first.</string>
+    <string name="VerifyMessage">f the cross hair appears over the point to verify, the plate is correctly tagged.</string>
+    <string name="ClearedPrompt">Are you sure you want to delete your Geo. tag information for this plate?</string>
+    <string name="ToTag">Plates are already tagged for users.\nTo geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.\nTo hide Tag button, use Preferences UI Configuration.</string>
+
 </resources>

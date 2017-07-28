@@ -1137,6 +1137,10 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
 
+    public boolean removeB3Plate() {
+        return mPref.getBoolean(mContext.getString(R.string.b3plate), false);
+    }
+
     public int getRateAskCount() {
         return mPref.getInt("rateAskLastCount", 0);
     }
@@ -1155,6 +1159,22 @@ public class Preferences {
         } catch (Exception x) {
             return 39;
         }
+    }
+
+
+    /**
+      * @return
+      */
+     public String getGeotags() {
+        return mPref.getString(mContext.getString(R.string.Geotag), "");
+     }
+
+
+    /**
+      * @param tags
+      */
+    public void setGeotags(String tags) {
+        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
     }
 }
 

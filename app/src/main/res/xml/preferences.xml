@@ -442,6 +442,11 @@ authors: zkhan, jlmcgraw
             android:title="@string/b2plate" />
 
         <CheckBoxPreference
+            android:key="@string/b3plate"
+            android:summary="@string/b3plate"
+            android:title="@string/b3plate" />
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefPlanControl"
             android:summary="@string/prefPlanControlSummary"
