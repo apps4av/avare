@@ -250,14 +250,20 @@ public class LmfsPlan {
 			noOfAircraft = icao.getString("numberOfAircraft");
 			wakeTurbulence = icao.getString("wakeTurbulence");
 			cruisingSpeed = icao.getJSONObject("speed").getString("speedKnots");
-			level = icao.getJSONObject("altitude").getString("altitudeTypeF");
+			level = icao.getJSONObject("altitude").getString("altitudeTypeA");
 			fuelEndurance = icao.getString("fuelOnBoard");
 			peopleOnBoard = icao.getString("peopleOnBoard");
+			if(peopleOnBoard.equals("null")) {
+				peopleOnBoard = "";
+			}
 			aircraftColor = icao.getString("aircraftColor");
 			pilotInfo = icao.getString("pilotData");
 			flightType = icao.getString("typeOfFlight");
             surveillanceEquipment = icao.getString("surveillanceEquipment");
 			supplementalRemarks = icao.getString("suppRemarks");
+			if(supplementalRemarks.equals("null")) {
+				supplementalRemarks = "";
+			}
 			pilotInCommand = icao.getString("pilotInCommand");
 
 			currentState = json.getString("currentState");
@@ -305,7 +311,7 @@ public class LmfsPlan {
         put(params, "numberOfAircraft", noOfAircraft);
 		put(params, "wakeTurbulence", wakeTurbulence);
 		put(params, "speedKnots", cruisingSpeed);
-		put(params, "altitudeTypeF", level);
+		put(params, "altitudeTypeA", level);
 		put(params, "fuelOnBoard", fuelEndurance);
         put(params, "peopleOnBoard", peopleOnBoard);
         put(params, "aircraftColor", aircraftColor);

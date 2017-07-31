@@ -35,8 +35,6 @@ public class Airway extends Observable {
 	/**
 	 * Test case BOS V16 V167 V44 CMK DXR
 	 * Find where two airways intersect.
-	 * @param aw1
-	 * @param aw2
 	 * @return
 	 */
 	public static Coordinate findIntersectionOfAirways(StorageService service, String name, LinkedList<Coordinate> coords0) {
@@ -166,14 +164,14 @@ public class Airway extends Observable {
 				}
 				lastcoord = c;
                 // find a fix/navaid here.
-                String navaid = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord).getHashedName();
+                StringPreference nav = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord);
 
-                if(navaid == null) {
+                if(nav == null) {
                     // not found, add GPS
-                    navaid = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
-                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
+                    nav = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
+                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude())));
                 }
-                ret.add(navaid);
+                ret.add(nav.getHashedName());
 			}
 		}
 		else {
@@ -188,14 +186,14 @@ public class Airway extends Observable {
 				lastcoord = c;
 
 				// find a fix/navaid here.
-                String navaid = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord).getHashedName();
-                if(navaid == null) {
+                StringPreference nav = service.getDBResource().getNavaidOrFixFromCoordinate(lastcoord);
+                if(nav == null) {
                     // not found, add GPS
-                    navaid = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
-                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude()))).getHashedName();
+                    nav = (new StringPreference(Destination.GPS, Destination.GPS, Destination.GPS,
+                            name + "@" + Helper.truncGeo(c.getLatitude()) + "&" + Helper.truncGeo(c.getLongitude())));
                 }
 
-				ret.add(navaid);
+				ret.add(nav.getHashedName());
 			}			
 		}
 

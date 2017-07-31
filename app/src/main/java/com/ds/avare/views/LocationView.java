@@ -900,15 +900,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /***
-     */
-    private void drawGameTFRs(DrawingContext ctx) {
-        if(mPointProjection == null) {
-            mService.getGameTFRs().draw(ctx);
-        }
-
-    }
-
-    /***
      * Draw the edge distance markers if configured to do so
      * @param canvas what to draw them on
      */
@@ -1001,7 +992,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTraffic(canvas, ctx);
         drawObstacles(canvas, ctx);
         drawTFR(canvas, ctx);
-        drawGameTFRs(ctx);
         drawShapes(canvas, ctx);
         drawAirSigMet(canvas, ctx);
         drawTracks(canvas, ctx);

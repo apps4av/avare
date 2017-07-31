@@ -1176,6 +1176,14 @@ public class Preferences {
     public void setGeotags(String tags) {
         mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean showGameTFRs() {
+        return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
+    }
 }
 
 

@@ -46,7 +46,6 @@ import com.ds.avare.orientation.Orientation;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.GameTFR;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.Movement;
@@ -140,8 +139,6 @@ public class StorageService extends Service {
     String mOverrideListName;
 
     private MetarLayer mMetarLayer;
-
-    private GameTFR mGameTFRs;
 
 
     /**
@@ -288,11 +285,6 @@ public class StorageService extends Service {
         mOverrideListName = overrideListName;
     }
 
-    public void deleteGameTFRs() {
-        mGameTFRs = new GameTFR();
-    }
-
-
     /**
      * @author zkhan
      *
@@ -347,8 +339,6 @@ public class StorageService extends Service {
         mTFRFetcher.parse();
         mShapeFetcher = new ShapeFetcher(getApplicationContext());
         mShapeFetcher.parse();
-        mGameTFRs = new GameTFR();
-        mGameTFRs.loadGames(this);
         mGpsParamsExtended = new ExtendedGpsParams();
 
         mTimer = new Timer();
@@ -670,9 +660,6 @@ public class StorageService extends Service {
         return mTFRFetcher;
     }
 
-    public GameTFR getGameTFRs() {
-        return mGameTFRs;
-    }
 
     /**
      *
