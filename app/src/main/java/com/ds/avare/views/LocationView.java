@@ -621,12 +621,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param ctx
      */
     private void drawTFR(Canvas canvas, DrawingContext ctx) {
-        if(ctx.pref.useAdsbWeather()) {
-            TFRShape.draw(ctx, mService.getAdsbTFRShapes(), null == mPointProjection);
-        }
-        else {
-            TFRShape.draw(ctx, mService.getTFRShapes(), null == mPointProjection);
-        }
+        TFRShape.draw(ctx, mService.getAdsbTFRShapes(), null == mPointProjection);
+        TFRShape.draw(ctx, mService.getTFRShapes(), null == mPointProjection);
     }
 
     /**
@@ -1200,6 +1196,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Double lon;
         private Double lat;
         private String tfr = "";
+        private String tfra = "";
         private String textMets = "";
         private String sua;
         private String layer;
@@ -1210,6 +1207,24 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         private Metar metar;
         private String elev;
         private Vector<NavAid> navaids;
+
+
+        private String getTfrTextOnTouch(LinkedList<TFRShape> shapes) {
+            String out = "";
+            if(null != shapes) {
+                for(int shape = 0; shape < shapes.size(); shape++) {
+                    TFRShape cshape = shapes.get(shape);
+                    /*
+                     * Get TFR text
+                     */
+                    String txt = cshape.getTextIfTouched(lon, lat);
+                    if(null != txt) {
+                        out += txt + "\n--\n";
+                    }
+                }
+            }
+            return out;
+        }
 
         /* (non-Javadoc)
          * @see android.os.AsyncTask#doInBackground(Params[])
@@ -1235,34 +1250,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             
             if(isCancelled())
                 return "";
-                       
-            /*
-             * Get TFR tfr if touched on its top
-             */
-            LinkedList<TFRShape> shapes = null;
+
             List<AirSigMet> mets = null;
             if(null != mService) {
                 if(mPref.useAdsbWeather()) {
-                    shapes = mService.getAdsbTFRShapes();
                     mets = mService.getAdsbWeather().getAirSigMet();
                 }
                 else {
-                    shapes = mService.getTFRShapes();
                     mets = mService.getInternetWeatherCache().getAirSigMet();
                 }
             }
-            if(null != shapes) {
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    TFRShape cshape = shapes.get(shape);
-                    /*
-                     * Set TFR tfr
-                     */
-                    String txt = cshape.getTextIfTouched(lon, lat);
-                    if(null != txt) {
-                        tfr += txt + "\n--\n";
-                    }
-                }
-            }
+
+
             /*
              * Air/sigmets
              */
@@ -1375,12 +1374,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 else {
                     boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
-                    if(inWeatherOld) { // expired weather and TFR text do not show
+                    if(inWeatherOld) { // expired weather does not show
                         taf = null;
                         metar = null;
                         aireps = null;
                         textMets = null;
-                        tfr = null;
                         wa = null;
                     }
                 }
@@ -1392,7 +1390,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 if(null != wa) {
                     wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
                 }
-                mLongTouchDestination.tfr = tfr;
+                tfr = getTfrTextOnTouch(mService.getTFRShapes());
+                tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());
+                mLongTouchDestination.tfr = tfr + "\n" + tfra;
                 mLongTouchDestination.taf = taf;
                 mLongTouchDestination.metar = metar;
                 mLongTouchDestination.airep = aireps;
