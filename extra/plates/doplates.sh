@@ -20,14 +20,14 @@ rm -rf plates
 cp -ard plates_$1 plates
 
 find plates -name "*.pdf" | 
-xargs -P ${NP} -n 1 python doplates.py
+xargs -P ${NP} -n 1 python ${MODULE_DIR}/doplates.py
 wait
 
 find plates -name "*.png"| sed s/plates/$1/g >>list.txt
 wait
 
 rm -f $1.zip 
-zip -r -i "*.png" -1 -T -q $1.zip plates
+zip -r -i "*.png" -1 -T -q $1_PLATES.zip plates
 find plates -name "*png" | xargs rm
 
 rm -fr plates
