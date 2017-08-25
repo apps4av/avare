@@ -383,7 +383,7 @@ public class AirportActivity extends Activity implements Observer {
                     if(mService.getAfdDiagram() == null ||
                             mService.getAfdDiagram().getName() == null ||
                             (!mService.getAfdDiagram().getName().equals(afd[pos - 1] + Preferences.IMAGE_EXTENSION))) {
-                        mService.loadAfdDiagram(afd[pos - 1] + Preferences.IMAGE_EXTENSION);
+                        mService.loadAfdDiagram(afd[pos - 1]);
                     }
 
                     mAfdView.setBitmap(mService.getAfdDiagram());

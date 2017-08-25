@@ -117,10 +117,6 @@ public class Boundaries {
     }
 
 
-    public static String getChartExtension(int index) {
-        return mExtension[index];
-    }
-
     public static String getChartType(int index) {
         return mChartType[index];
     }
@@ -161,22 +157,6 @@ public class Boundaries {
             9,
             10,
             12
-    };
-
-    private static String[] mExtension = {
-            ".jpg",
-            ".jpg",
-            ".jpg",
-            ".png",
-            ".png",
-            ".png",
-            ".png",
-            ".jpg",
-            ".jpg",
-            ".png",
-            ".jpg",
-            ".jpg",
-            ".jpg"
     };
 
 

@@ -184,33 +184,30 @@ public class BitmapHolder {
         return mCanvas;
     }
 
-    /**
-     * 
-     * @param pref
-     * @param name
-     * @param opts
-     */
-    public static void getTileOptions(String name, Preferences pref, int opts[]) {
-        
-        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
-            opts[0] = WIDTH;
-            opts[1] = HEIGHT;
-            return;
+
+    private String getName(Preferences pref, String name) {
+        return getName(pref.mapsFolder() + "/" + name);
+    }
+
+    private String getName(String name) {
+
+        String jpgname = name + ".jpg";
+        String pngname = name + ".png";
+
+        boolean jpg = (new File(jpgname)).exists();
+        boolean png = (new File(pngname)).exists();
+
+        if(jpg) {
+            return jpgname;
         }
-        
-        /*
-         * Bitmap dims without decoding
-         */
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, options);
-        opts[0] = options.outWidth;
-        opts[1] = options.outHeight;
-        if(opts[0] == 0) {
-            opts[0] = WIDTH;
+        else if(png) {
+            return pngname;
         }
-        if(opts[1] == 0) {
-            opts[1] = HEIGHT;
+        else {
+            mWidth = 0;
+            mHeight = 0;
+            mName = null;
+            return null;
         }
     }
 
@@ -223,12 +220,13 @@ public class BitmapHolder {
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inSampleSize = sampleSize;
 
-        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
-            mName = null;
+        name = getName(pref, name);
+        if(null == name) {
             return;
         }
+
         try {
-            mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, opt);
+            mBitmap = BitmapFactory.decodeFile(name, opt);
         }
         catch(OutOfMemoryError e) {
         }
@@ -251,12 +249,13 @@ public class BitmapHolder {
         opt.inPreferredConfig = type;
         opt.inSampleSize = sampleSize;
 
-        if(!(new File(pref.mapsFolder() + "/" + name)).exists()) {
-            mName = null;
+        name = getName(pref, name);
+        if(null == name) {
             return;
         }
+
         try {
-            mBitmap = BitmapFactory.decodeFile(pref.mapsFolder() + "/" + name, opt);
+            mBitmap = BitmapFactory.decodeFile(name, opt);
         }
         catch(OutOfMemoryError e) {
         }
@@ -278,11 +277,9 @@ public class BitmapHolder {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inSampleSize = 1;
-        
-        if(!(new File(name).exists())) {
-            mWidth = 0;
-            mHeight = 0;
-            mName = null;
+
+        name = getName(name);
+        if(null == name) {
             return;
         }
 
@@ -312,10 +309,8 @@ public class BitmapHolder {
         opt.inPreferredConfig = type;
         opt.inSampleSize = 1;
 
-        if(!(new File(name).exists())) {
-            mWidth = 0;
-            mHeight = 0;
-            mName = null;
+        name = getName(name);
+        if(null == name) {
             return;
         }
 
@@ -345,13 +340,10 @@ public class BitmapHolder {
         opt.inPreferredConfig = type;
         opt.inSampleSize = 1;
 
-        if(!(new File(name).exists())) {
-            mWidth = 0;
-            mHeight = 0;
-            mName = null;
+        name = getName(name);
+        if(null == name) {
             return;
         }
-
 
         try {
             BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(name, false);

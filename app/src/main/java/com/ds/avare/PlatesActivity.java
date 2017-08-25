@@ -494,7 +494,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
             if(mService.getPlateDiagram() == null
                     || mService.getPlateDiagram().getName() == null
                     || (!mService.getPlateDiagram().getName().equals(mPlateFound[pos] + Preferences.IMAGE_EXTENSION))) {
-                mService.loadPlateDiagram(mPlateFound[pos] + Preferences.IMAGE_EXTENSION);
+                mService.loadPlateDiagram(mPlateFound[pos]);
             }
             mPlatesView.setBitmap(mService.getPlateDiagram());
             String name = mListPlates.get(pos);
