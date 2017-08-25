@@ -86,7 +86,7 @@ public class WebActivity extends Activity  {
         mWebView = (WebView) view.findViewById(R.id.web_mainpage);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.loadUrl(getIntent().getStringExtra("url"));
-        
+        mWebView.getSettings().setJavaScriptEnabled(true);
         // This is need on some old phones to get focus back to webview.
         mWebView.setOnTouchListener(new View.OnTouchListener() {  
 			@Override

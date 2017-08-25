@@ -346,6 +346,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Shaded Relief AK</item>
         <item>Shaded Relief HI</item>
         <item>Shaded Relief PR</item>
+        <item>Shaded Relief Greenland</item>
     </string-array>
     <string-array name="resNameTopo">
         <item>Canada Grid 001</item>
@@ -1790,6 +1791,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>REL_AK</item>
         <item>REL_HI</item>
         <item>REL_PR</item>
+        <item>REL_GL</item>
     </string-array>
     <string-array name="resFilesTopo">
         <item>CAN_001</item>

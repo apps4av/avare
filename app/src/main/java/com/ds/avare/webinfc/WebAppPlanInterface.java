@@ -28,6 +28,7 @@ import android.webkit.WebView;
 import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.WebActivity;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
@@ -1136,20 +1137,14 @@ public class WebAppPlanInterface implements Observer {
             // Read weather template
             String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = getWeatherStoreFileName();
+            String fpath = getWeatherStoreFileName(mPref.mapsFolder());
             Helper.writeFile(html.replace("placeholder", weather), fpath);
             // Send to browser.
-    		Intent i = new Intent(Intent.ACTION_VIEW);
-    		File file = new File(fpath);
-    		Uri uri = Uri.fromFile(file);
-    		i.setDataAndType(uri, "*/*");
-    		try {
-    			mContext.startActivity(i);
-    		}
-    		catch(Exception e) {
-            	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.WeatherBrowser));
-            	mHandler.sendMessage(m);
-    		}
+
+			Intent intent = new Intent(mContext, WebActivity.class);
+			intent.putExtra("url", "file://" + fpath);
+			mContext.startActivity(intent);
+
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         	
         	running = false;
@@ -1160,13 +1155,8 @@ public class WebAppPlanInterface implements Observer {
      * Make a file where weather is put
      * @return
      */
-    private String getWeatherStoreFileName() {
-    	String file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/avare_weather_";
-
-    	// Get time in format usable as file.
-    	file += NetworkHelper.getVersion("", "weather", null).replace(":", "_");
-    	
-    	return file + ".html";
+    private String getWeatherStoreFileName(String path) {
+    	return path + "/briefing.html";
     }
 
 	/**
