@@ -17,11 +17,10 @@ import sys
 import os
 from subprocess import call
 
-
-filename,ext = sys.argv[1].split(".")
+filename,ext = sys.argv[1].split(".pdf")
 
 #warp
-if 0 == os.system("gdalwarp -r lanczos -t_srs epsg:3857 " + filename + ".pdf " + filename + ".tif"):
+if 0 == os.system("gdalwarp -q -r lanczos -t_srs epsg:3857 " + filename + ".pdf " + filename + ".tif 2> /dev/null"):
 
     # find coordinates for geo tag in avare
     src = gdal.Open(filename + ".tif")
@@ -39,12 +38,14 @@ if 0 == os.system("gdalwarp -r lanczos -t_srs epsg:3857 " + filename + ".pdf " +
     comment = str(w / (x0 - x)) + '|' + str(h / (y0 - y)) + '|' + str(x) + '|' + str(y)
 
     # convert to png and add geo tag to it under Comment
-    os.system("mogrify -dither none -antialias -depth 8 -quality 00 -background white -alpha remove -colors 15 -format png -set Comment '" + comment + "' " + filename + ".tif")
+    if 0 != os.system("mogrify -quiet -dither none -antialias -depth 8 -quality 00 -background white -alpha remove -colors 15 -format png -set Comment '" + comment + "' " + filename + ".tif") :
+        print "error in " + filename
 
 
 else:
     # no geotag info, do convert
-    os.system("mogrify -dither none -antialias -depth 8 -quality 00 -background white -alpha remove -colors 15 -density 150 -format png " + filename + ".pdf")
+    if 0 != os.system("mogrify -dither none -antialias -depth 8 -quality 00 -background white -alpha remove -colors 15 -density 150 -format png " + filename + ".pdf") :
+        print "error in " + filename
 
 # optimize png
 os.system("optipng -quiet " + filename + ".png")
