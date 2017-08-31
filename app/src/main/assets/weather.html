@@ -16,22 +16,23 @@ authors: zkhan
 
 
 <head>
-    <link rel="stylesheet" href="https://bootswatch.com/darkly/bootstrap.min.css">
+  <script src="file:///android_asset/jquery.min.js"></script>
+  <script src="file:///android_asset/bootstrap.min.js"></script>
+  <script src="file:///android_asset/bootstrap-select.min.js"></script>
+  <script src="file:///android_asset/bootbox.min.js"></script>
+  <script src="file:///android_asset/toastr.min.js"></script>
+  <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+  <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+  <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+  <style type="text/css">
+    button {color: black; height:40px;}
+    input {height:40px;}
+    .toast {opacity: 1 !important;}
+  </style>
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Latest compiled JavaScript -->
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.js"></script>
-    <style type="text/css">
-        button {color: black;  height:40px;}
-    </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <script type='text/javascript' >
+  <script type='text/javascript' >
 
 function zeroPad(num) {
 	var out = num.toString();
