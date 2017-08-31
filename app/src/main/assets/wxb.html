@@ -3,23 +3,23 @@
 <head>
 
 	<!-- Latest compiled and minified CSS -->
-	<script src="file:///android_asset/jquery.min.js"></script>
-	<script src="file:///android_asset/bootstrap.min.js"></script>
-	<script src="file:///android_asset/bootstrap-select.min.js"></script>
-	<script src="file:///android_asset/bootbox.min.js"></script>
-	<script src="file:///android_asset/toastr.min.js"></script>
-	<link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
-	<link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
-	<link rel="stylesheet" href="file:///android_asset/toastr.min.css">
-	<style type="text/css">
-		button {color: black; height:40px;}
-		input {height:40px;}
-		.toast {opacity: 1 !important;}
-	</style>
+  <script src="file:///android_asset/jquery.min.js"></script>
+  <script src="file:///android_asset/bootstrap.min.js"></script>
+  <script src="file:///android_asset/bootstrap-select.min.js"></script>
+  <script src="file:///android_asset/bootbox.min.js"></script>
+  <script src="file:///android_asset/toastr.min.js"></script>
+  <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+  <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+  <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+  <style type="text/css">
+    button {color: black; height:40px;}
+    input {height:40px;}
+    .toast {opacity: 1 !important;}
+  </style>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<script type='text/javascript' >
+  <script type='text/javascript' >
 
 	toastr.options.timeOut = 2000;
 
@@ -382,6 +382,12 @@ function setAircraftSurveillance() {
     id.value = text;
 }
 
+$(document).ready(function(){
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    });
+});
+
 </script>
 
 </head>
@@ -550,89 +556,6 @@ function setAircraftSurveillance() {
 					<button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
 				</div>
 
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="helpModal" role="dialog">
-	<div class="modal-dialog">
-
-		<!-- Modal content-->
-		<div class="modal-content">
-			<div class="modal-header alert-info">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">WXB Help</h4>
-			</div>
-			<div class="modal-body">
-				<div style="overflow: auto;">
-					<div>
-						<u>You may need to disable Predictive Typing in Android Settings!</u><br>The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
-						<br>
-						To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email <label  class="sublabel" id="email_id"></label>, then activate Avare on this website under Account->Service Providers.
-						<br>
-						<b>To Fill and File the Flight Plan Form</b>
-						<ul>
-							<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
-							<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
-								Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Altitude in x100 feet as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
-								Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738. Note, if a departure/destination ICAO code is not available, enter ZZZZ in requisite field, then enter DEP / DEST in the Other Information Sub-field.</li>
-							<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
-							<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
-						</ul>
-						<b>To Load a Plan</b>
-						<ul>
-							<li>Filed plans can be loaded in the filing form in any state.</li>
-							<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
-							<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
-							<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
-						</ul>
-						<b>To Amend a Plan</b>
-						<ul>
-							<li>Filed plans can be amended when in PROPOSED state.</li>
-							<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
-							<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
-							<li>Modify the form as needed.</li>
-							<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
-						</ul>
-						<b>To Cancel the Filed Plan</b>
-						<ul>
-							<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
-							<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
-							<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
-						</ul>
-						<b>To Activate a Filed Plan</b>
-						<ul>
-							<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
-							<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
-							<li>Select the time from now when you will take off from the drop down next to the "Activate Now" button.</li>
-							<li>Press the "Activate Now" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
-						</ul>
-						<b>To Close an Active Plan</b>
-						<ul>
-							<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
-							<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
-							<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
-							<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
-							<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
-						</ul>
-						<b>To Get Plan Briefing</b>
-						<ul>
-							<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-							<li>Press the "Get Email Briefing" button once.</li>
-							<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
-							<li>Note: Route corridor width of 50 NM is used.</li>
-						</ul>
-						<b>To Get Plan Navigation Log</b>
-						<ul>
-							<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
-							<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
-							<li>Press the "Get Log" button once.</li>
-							<li>The navigation log will appear at the bottom of the button.</li>
-							<li>To clear the navigation log, press the "Clear Log" button.</li>
-						</ul>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -940,145 +863,221 @@ function setAircraftSurveillance() {
 	</div>
 </div>
 
-<div class="table-responsive">
-	<table class = "table">
-		<th>Warning! You MUST read all information under <a onclick='$("#helpModal").modal()'><br><u>WXB Help</u></a> before proceeding.</th>
-	</table>
-	<table class="table">
-		<tr>
-			<td><h3 ><span class="label label-success">File an ICAO Plan</span></h3></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
-		</tr>
-		<tr>
-			<td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
-		</tr>
-		<tr>
-			<td>Flight Rule</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
-		</tr>
-		<tr>
-			<td>Flight Type</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
-		</tr>
-		<tr>
-			<td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
-		</tr>
-		<tr>
-			<td>Aircraft Type</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
-		</tr>
-		<tr>
-			<td>Wake Turbulence</td><td><select class="selectpicker" data-mobile="true"  id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
-		</tr>
-		<tr>
-			<td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
-		</tr>
-		<tr>
-			<td>Departure</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureInput"/></td>
-		</tr>
-		<tr>
-			<td>Departure Date&Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureDateInput"/></td>
-		</tr>
-		<tr>
-			<td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
-		</tr>
-		<tr>
-			<td>Altitude</td><td><input id="icaoLevelInput"/></td>
-		</tr>
-		<tr>
-			<td>Surveillance Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
-		</tr>
-		<tr>
-			<td>Route</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoRouteInput"/></td>
-		</tr>
-		<tr>
-			<td>Other Info</td><td><input spellcheck="false" id="icaoOtherInfoInput"/></td>
-		</tr>
-		<tr>
-			<td>Destination</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDestinationInput"/></td>
-		</tr>
-		<tr>
-			<td>Total Elapsed Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoTotalEstimatedElapsedTimeInput"/></td>
-		</tr>
-		<tr>
-			<td>Alternate 1</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate1Input"/></td>
-		</tr>
-		<tr>
-			<td>Alternate 2</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate2Input"/></td>
-		</tr>
-		<tr>
-			<td>Fuel Endurance</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoFuelEnduranceInput"/></td>
-		</tr>
-		<tr>
-			<td>People On Board</td><td><input id="icaoPeopleOnBoardInput"/></td>
-		</tr>
-		<tr>
-			<td>Aircraft Color</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftColorInput"/></td>
-		</tr>
-		<tr>
-			<td>Supplemental Remarks</td><td><input spellcheck="false" id="icaoSupplementalRemarksInput"/></td>
-		</tr>
-		<tr>
-			<td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
-		</tr>
-		<tr>
-			<td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="plan_file()">File Plan</button>
-			</td>
-		</tr>
-	</table>
-	<table class="table">
-		<tr>
-			<td><h3><span class="label label-success">Filed Plans</span></h3></td>
-		</tr>
-	</table>
-	<table id="save_table_faa" class="table">
-		<th>Plan</th><th>State</th>
-	</table>
-	<table class="table">
-		<tr>
-			<td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="load_plan()">Load</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
-			<td><select class="selectpicker" data-mobile="true" id="activate_time">
-				<option value="0">Departing Now</option>
-				<option value="5">Departing 5 minutes from now</option>
-				<option value="10">Departing 10 minutes from now</option>
-				<option value="15">Departing 15 minutes from now</option>
-				<option value="20">Departing 20 minutes from now</option>
-				<option value="25">Departing 25 minutes from now</option>
-				<option value="30">Departing 30 minutes from now</option>
-			</select>
-			</td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="get_navlog()">Get Log</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="clear_navlog()">Clear Log</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td>
-		</tr>
-		<tr>
-			<td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
-			<td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="At location, e.g. KBOS" /></td>
-		</tr>
-	</table>
-    <a id="nav_log"></a>
-    <br>
-</div>
+
+  <ul class="nav nav-tabs" style="display:inline-flex;">
+	<li class="active"><a href="#file">File</a></li>
+	<li><a href="#filedplans">Filed Plans</a></li>
+	<li><a href="#help">Help</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="file" class="tab-pane fade in active">
+        <div>Email used for filing: <label  class="sublabel" id="email_id"></label></div>
+        <table class="table"><th>File an ICAO Plan</th>
+            <tr>
+                <td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
+            </tr>
+            <tr>
+                <td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
+            </tr>
+            <tr>
+                <td>Flight Rule</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightRuleSelection"><option>VFR</option><option>IFR</option><option>YFR</option><option>ZFR</option></select></td>
+            </tr>
+            <tr>
+                <td>Flight Type</td><td><select class="selectpicker" data-mobile="true"  id="icaoFlightTypeSelection"><option value="S">Scheduled</option><option value="N">Non Scheduled</option><option value="G">General Aviation</option><option value="M">Military</option><option value="X">Other</option></select></td>
+            </tr>
+            <tr>
+                <td>No. of Aircraft</td><td><input id="icaoNoOfAircraftInput"/></td>
+            </tr>
+            <tr>
+                <td>Aircraft Type</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
+            </tr>
+            <tr>
+                <td>Wake Turbulence</td><td><select class="selectpicker" data-mobile="true"  id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
+            </tr>
+            <tr>
+                <td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+            </tr>
+            <tr>
+                <td>Departure</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureInput"/></td>
+            </tr>
+            <tr>
+                <td>Departure Date&Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDepartureDateInput"/></td>
+            </tr>
+            <tr>
+                <td>Cruising Speed</td><td><input id="icaoCruisingSpeedInput"/></td>
+            </tr>
+            <tr>
+                <td>Altitude</td><td><input id="icaoLevelInput"/></td>
+            </tr>
+            <tr>
+                <td>Surveillance Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+            </tr>
+            <tr>
+                <td>Route</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoRouteInput"/></td>
+            </tr>
+            <tr>
+                <td>Other Info</td><td><input spellcheck="false" id="icaoOtherInfoInput"/></td>
+            </tr>
+            <tr>
+                <td>Destination</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoDestinationInput"/></td>
+            </tr>
+            <tr>
+                <td>Total Elapsed Time</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoTotalEstimatedElapsedTimeInput"/></td>
+            </tr>
+            <tr>
+                <td>Alternate 1</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate1Input"/></td>
+            </tr>
+            <tr>
+                <td>Alternate 2</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAlternate2Input"/></td>
+            </tr>
+            <tr>
+                <td>Fuel Endurance</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoFuelEnduranceInput"/></td>
+            </tr>
+            <tr>
+                <td>People On Board</td><td><input id="icaoPeopleOnBoardInput"/></td>
+            </tr>
+            <tr>
+                <td>Aircraft Color</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftColorInput"/></td>
+            </tr>
+            <tr>
+                <td>Supplemental Remarks</td><td><input spellcheck="false" id="icaoSupplementalRemarksInput"/></td>
+            </tr>
+            <tr>
+                <td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
+            </tr>
+            <tr>
+                <td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="plan_file()">File Plan</button></td>
+            </tr>
+        </table>
+        <table class="table"><th>Warning!<br>You MUST read all information under Help before proceeding.</th></table>
+
+    </div>
+
+    <div id="filedplans" class="tab-pane fade">
+        <table class="table"><th>Filed Plans</th></table>
+        <table id="save_table_faa" class="table">
+            <th>Plan</th><th>State</th>
+        </table>
+        <table class="table">
+            <tr>
+                <td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="load_plan()">Load</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
+                <td><select class="selectpicker" data-mobile="true" id="activate_time">
+                    <option value="0">Departing Now</option>
+                    <option value="5">Departing 5 minutes from now</option>
+                    <option value="10">Departing 10 minutes from now</option>
+                    <option value="15">Departing 15 minutes from now</option>
+                    <option value="20">Departing 20 minutes from now</option>
+                    <option value="25">Departing 25 minutes from now</option>
+                    <option value="30">Departing 30 minutes from now</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="get_navlog()">Get Log</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="clear_navlog()">Clear Log</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
+                <td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="At location, e.g. KBOS" /></td>
+            </tr>
+        </table>
+        <a id="nav_log"></a>
+        <br>
+    </div>
+
+    <div id="help" class="tab-pane fade">
+		<table class="table"><th>Help</th></table>
+		<div style="overflow: auto;">
+			<div>
+				<u>You may need to disable Predictive Typing in Android Settings!</u><br>The WXB screen allows you to file, activate, close, cancel flight plans, and get weather briefings using the Lockheed Martin Flight Services (1-800-WX-BRIEF). All weather briefings are FAA certified, and are recorded in the FAA systems. Please enter accurate information to the best of your knowledge. The plans filed here get into the National Airspace Database under your account on behalf of Apps4Av Inc.
+				<br>
+				To proceed with plans and briefings, you must create an account with <label class="sublabel">http://www.1800wxbrief.com</label> using email shown on File page, then activate Avare on this website under Account->Service Providers.
+				<br>
+				<b>To Fill and File the Flight Plan Form</b>
+				<ul>
+					<li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Preferences for the form fields.</li>
+					<li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
+						Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Altitude in x100 feet as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
+						Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738. Note, if a departure/destination ICAO code is not available, enter ZZZZ in requisite field, then enter DEP / DEST in the Other Information Sub-field.</li>
+					<li>Verify all information, then press the "File Plan" button to file the plan as described by the form.</li>
+					<li>If the plan is filed, you will receive a success message. The freshly filed plan will appear under the "Filed Plans" list with state PROPOSED.</li>
+				</ul>
+				<b>To Load a Plan</b>
+				<ul>
+					<li>Filed plans can be loaded in the filing form in any state.</li>
+					<li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
+					<li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
+					<li>Note: At this time, loading a filed plan into Plan screen is not supported.</li>
+				</ul>
+				<b>To Amend a Plan</b>
+				<ul>
+					<li>Filed plans can be amended when in PROPOSED state.</li>
+					<li>Select the plan you want to amend in the Filed Plans list by touching on it. The green bar will move to it.</li>
+					<li>Load it in the form by following the "To Load a Plan" procedure in this help.</li>
+					<li>Modify the form as needed.</li>
+					<li>Press the "Amend" button, and if the operation is successful, the plan will be amended.</li>
+				</ul>
+				<b>To Cancel the Filed Plan</b>
+				<ul>
+					<li>After filing the plan, its state changes to PROPOSED. You can cancel a plan only in PROPOSED state, before it is active.</li>
+					<li>Select the plan you want to cancel in the Filed Plans list by touching on it. The green bar will move to it.</li>
+					<li>Press the "Cancel" button, and if the cancel operation is successful, the plan will disappear from the Filed Plans list.</li>
+				</ul>
+				<b>To Activate a Filed Plan</b>
+				<ul>
+					<li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
+					<li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
+					<li>Select the time from now when you will take off from the drop down next to the "Activate Now" button.</li>
+					<li>Press the "Activate Now" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+				</ul>
+				<b>To Close an Active Plan</b>
+				<ul>
+					<li>After activating the plan, its state changes to ACTIVE. You can close a plan only in ACTIVE state.</li>
+					<li>Select the plan you want to close in the Filed Plans list by touching on it. The green bar will move to it.</li>
+					<li>If you are overdue, enter the location you are at in the box next to the "Close" button.</li>
+					<li>Press the "Close" button, and if the close operation is successful, the plan will disappear from the Filed Plans list.</li>
+					<li><b>We recommend that you call 1-800-WX-BRIEF to confirm that the plan is closed. If you forget to close an active plan, search and rescue may commence after you are OVERDUE, and you cannot be located.</b></li>
+				</ul>
+				<b>To Get Plan Briefing</b>
+				<ul>
+					<li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+					<li>Press the "Get Email Briefing" button once.</li>
+					<li>The briefing will be emailed to you at the address used for registering with Avare.</li>
+					<li>Note: Route corridor width of 50 NM is used.</li>
+				</ul>
+				<b>To Get Plan Navigation Log</b>
+				<ul>
+					<li>You can get the navigation logs for an aircraft saved in the aircraft profiles at 1800wxbrief.com.</li>
+					<li>Select the plan you want to get log for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
+					<li>Press the "Get Log" button once.</li>
+					<li>The navigation log will appear at the bottom of the button.</li>
+					<li>To clear the navigation log, press the "Clear Log" button.</li>
+				</ul>
+			</div>
+        </div>
+    </div>
+  </div>
 
 
 </body>
