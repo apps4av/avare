@@ -38,7 +38,7 @@ public class MetarLayer extends Layer {
      */
     public void parse() {
         super.parse(
-                mPref.mapsFolder() + "/" + "latest_fcat.png",
+                mPref.mapsFolder() + "/" + "latest_fcat",
                 mPref.mapsFolder() + "/" + "latest_fcat.txt");
      }
 }

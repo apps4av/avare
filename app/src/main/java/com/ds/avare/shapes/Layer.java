@@ -150,7 +150,7 @@ public class Layer {
         mImage = imageName;
         mText = projName;
 
-        if(new File(mText).exists() && new File(mImage).exists()) {
+        if(new File(mText).exists()) {
 
             try {
                 BufferedReader br;

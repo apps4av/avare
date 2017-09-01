@@ -263,7 +263,7 @@ public class Tile {
     public String getTileNeighbor(int col, int row) {
     	int coll = getNeighborCol(col);
     	int rowl = getNeighborRow(row);
-    	// form /tiles/type/zoom/col/row.jpg
+    	// form /tiles/type/zoom/col/row
     	String name = "tiles/" + "/" + mChartIndex
     			+ "/" + (int)mZoom +  "/" + coll + "/" + rowl;
         return(name);

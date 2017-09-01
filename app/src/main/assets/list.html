@@ -153,9 +153,9 @@ function list_import() {
 		}
 		AndroidList.importFromFile(path.value);
 		document.getElementById("list_name").scrollIntoView();
-		$("#saveModal").modal('hide');
 	    toastr.info('Importing list from ' + path.value);
 		path.value = "";
+		$('[href="#list"]').tab('show');
 	});
 }
 
@@ -188,7 +188,7 @@ function save_load(row) {
 	var list_save = document.getElementById("save_table");
 	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
 	document.getElementById("list_name").scrollIntoView();
-	$("#saveModal").modal('hide');
+	$('[href="#list"]').tab('show');
 }
 
 // add the current list to saved list

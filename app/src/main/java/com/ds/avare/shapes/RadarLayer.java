@@ -38,7 +38,7 @@ public class RadarLayer extends Layer {
      */
     public void parse() {
         super.parse(
-                mPref.mapsFolder() + "/" + "latest_radaronly.png",
+                mPref.mapsFolder() + "/" + "latest_radaronly",
                 mPref.mapsFolder() + "/" + "latest.txt");
      }
 }
