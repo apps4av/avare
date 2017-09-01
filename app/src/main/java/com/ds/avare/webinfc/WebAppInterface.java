@@ -53,7 +53,6 @@ public class WebAppInterface {
     private static final int MSG_ERROR = 15;
     private static final int MSG_FAA_PLANS = 16;
     private static final int MSG_SET_EMAIL = 17;
-    private static final int MSG_SET_NAVLOG = 18;
 
     /** 
      * Instantiate the interface and set the context
@@ -194,48 +193,6 @@ public class WebAppInterface {
 
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
 
-    }
-
-    /**
-     * Get navlog.
-     */
-    @JavascriptInterface
-    public void getNavlog() {
-    	// refresh
-    	mHandler.sendEmptyMessage(MSG_BUSY);
-
-    	LmfsInterface infc = new LmfsInterface(mContext);
-    	if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
-        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-    		return;
-    	}
-    	
-		// Get plan, then request its navlog
-		LmfsPlan pl = infc.getFlightPlan(mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId());
-    	String err = infc.getError();
-    	if(null != err) {
-    		// failed to get plan
-        	mHandler.sendEmptyMessage(MSG_NOTBUSY);
-        	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
-        	mHandler.sendMessage(m);
-        	return;
-    	}
-
-        LmfsPlanLog log = infc.getNavlog(pl);
-    	err = infc.getError();
-    	if(null == err) {
-    		// success
-    		err = mContext.getString(R.string.Success);
-    	}
-    	Message m = mHandler.obtainMessage(MSG_ERROR, (Object)err);
-    	mHandler.sendMessage(m);
-
-    	if(null != log) {
-	    	m = mHandler.obtainMessage(MSG_SET_NAVLOG, (Object)(log.getLogInHTML()));
-	    	mHandler.sendMessage(m);
-    	}
-
-    	mHandler.sendEmptyMessage(MSG_NOTBUSY);    	
     }
 
     
@@ -603,10 +560,6 @@ public class WebAppInterface {
         	}
         	else if(MSG_SET_EMAIL == msg.what) {
 	    		String func = "javascript:set_email('" + PossibleEmail.get(mContext) + "')";
-	        	mWebView.loadUrl(func);
-        	}
-        	else if(MSG_SET_NAVLOG == msg.what) {
-	    		String func = "javascript:set_navlog('" + (String)msg.obj + "')";
 	        	mWebView.loadUrl(func);
         	}
         }

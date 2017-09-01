@@ -57,7 +57,9 @@ public class LmfsInterface {
 			JSONObject json = new JSONObject(ret);
 			boolean status = json.getBoolean("returnStatus");
 			if(!status) {
-				return json.getString("returnMessage");
+				String val = json.getString("returnMessage");
+				val = val.replace("\\", ""); // do not escape
+				return val;
 			}
 		} catch (JSONException e) {
 			return(mContext.getString(R.string.Failed));
@@ -84,6 +86,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 
 		return new LmfsPlanList(ret);
@@ -109,6 +112,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 
 		return new LmfsPlan(ret);
@@ -138,6 +142,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 
 		return ret;
@@ -166,6 +171,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 
 		return ret;
@@ -190,6 +196,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 
 		return ret;
@@ -214,6 +221,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 		
 		return ret;
@@ -240,6 +248,7 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 		
 		return ret;
@@ -272,35 +281,10 @@ public class LmfsInterface {
 			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
 			mError = parseError(ret);
 		} catch (Exception e) {
+			mError = "Network error";
 		}
 	}
 
-	
-	/**
-	 * Get nav log based on user's aircraft stored online
-	 * @param id
-	 */
-	public LmfsPlanLog getNavlog(LmfsPlan pl) {
-
-		String webUserName = PossibleEmail.get(mContext);
-		String avareMethod = "FP/navLog";
-		String httpMethod = "POST";
-		
-		Map<String, String> params = pl.makeHashMap();
-
-		params.put("webUserName", webUserName);
-		params.put("avareMethod", avareMethod);
-		params.put("httpMethod", httpMethod);
-		String ret = null;
-		try {
-			ret = NetworkHelper.post(AVARE_LMFS_URL, params);
-			mError = parseError(ret);
-		} catch (Exception e) {
-			return null;
-		}
-		
-		return new LmfsPlanLog(ret);
-	}
 
 	
 	/**

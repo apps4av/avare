@@ -270,14 +270,6 @@ function get_briefing() {
 	});
 }
 
-function get_navlog() {
-	bootbox.confirm("Get the navigation log for the selected plan?", function(result) {
-		if(result == false) {
-			return;
-		}
-		AndroidWeather.getNavlog();
-	});
-}
 
 function load_plan() {
 	bootbox.confirm("Load the selected plan in the form?", function(result) {
@@ -320,21 +312,6 @@ function amend_plan() {
 				document.getElementById("icaoPilotInfoInput").value
     		);
 	});
-}
-
-function clear_navlog(log) {
-	bootbox.confirm("Clear the navigation log?", function(result) {
-		if(result == false) {
-			return;
-		}
-		var navlog = document.getElementById("nav_log");
-		navlog.innerHTML = '';
-	});
-}
-
-function set_navlog(log) {
-	var navlog = document.getElementById("nav_log");
-	navlog.innerHTML = log;
 }
 
 
@@ -872,12 +849,11 @@ $(document).ready(function(){
 
   <div class="tab-content">
     <div id="file" class="tab-pane fade in active">
-        <div>Email used for filing: <label  class="sublabel" id="email_id"></label></div>
         <table class="table"><th>File an ICAO Plan</th>
             <tr>
-                <td><button class="btn btn-block" onclick="autofill()">Prepare</button></td>
-            </tr>
-            <tr>
+                <td><button class="btn btn-block" onclick="autofill()">Prepare</button></td><td>Press to fill this form using Plan and Preferences</td>
+			</tr>
+			<tr>
                 <td>Aircraft ID</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
             </tr>
             <tr>
@@ -950,10 +926,9 @@ $(document).ready(function(){
                 <td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" onclick="plan_file()">File Plan</button></td>
+                <td><button class="btn btn-block" onclick="plan_file()">File Plan</button></td><td>Press to file this form as <label id="email_id"></label></td>
             </tr>
         </table>
-        <table class="table"><th>Warning!<br>You MUST read all information under Help before proceeding.</th></table>
 
     </div>
 
@@ -964,16 +939,16 @@ $(document).ready(function(){
         </table>
         <table class="table">
             <tr>
-                <td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td>
+                <td><button class="btn btn-block" onclick="get_faa_plans()">Get Plans</button></td><td>Get filed plans from internet</td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" onclick="load_plan()">Load</button></td>
+                <td><button class="btn btn-block" onclick="load_plan()">Load</button></td><td>Load selected plan to File form</td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td>
+                <td><button class="btn btn-block" onclick="amend_plan()">Amend</button></td><td>Amend selected plan from the File form</td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td>
+                <td><button class="btn btn-block" onclick="cancel_plan()">Cancel</button></td><td>Cancel selected plan</td>
             </tr>
             <tr>
                 <td><button class="btn btn-block" onclick="activate_plan()">Activate</button></td>
@@ -989,21 +964,13 @@ $(document).ready(function(){
                 </td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" onclick="get_navlog()">Get Log</button></td>
-            </tr>
-            <tr>
-                <td><button class="btn btn-block" onclick="clear_navlog()">Clear Log</button></td>
-            </tr>
-            <tr>
-                <td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td>
+                <td><button class="btn btn-block" onclick="get_briefing()">Get Email Briefing</button></td><td>Get briefing in email for selected plan</td>
             </tr>
             <tr>
                 <td><button class="btn btn-block" onclick="close_plan()">Close</button></td>
-                <td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="At location, e.g. KBOS" /></td>
+                <td><input id="close_location" spellcheck="false" style="text-transform:uppercase" placeholder="e.g. KBOS" /></td>
             </tr>
         </table>
-        <a id="nav_log"></a>
-        <br>
     </div>
 
     <div id="help" class="tab-pane fade">
