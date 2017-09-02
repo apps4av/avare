@@ -493,15 +493,13 @@ public class ChartsDownloadActivity extends Activity {
 
                     if(mName.equals("weather")) {
                         mService.getInternetWeatherCache().parse(mService);
-                        if(mPref.getLayerType().equals("METAR")) {
-                            mService.getMetarLayer().parse();
-                        }
+                        mPref.setLayerType("METAR");
+                        mService.getMetarLayer().parse();
                     }
                     
                     if(mName.equals("conus")) {
-                        if(mPref.getLayerType().equals("NEXRAD")) {
-                            mService.getRadarLayer().parse();
-                        }
+                        mPref.setLayerType("NEXRAD");
+                        mService.getRadarLayer().parse();
                     }
                     
                     mChartAdapter.updateVersion(mName, mDownload.getVersion());
