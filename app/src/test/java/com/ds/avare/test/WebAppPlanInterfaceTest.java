@@ -251,8 +251,8 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
     }
     @Test
     public void createPlanWithAirway() throws Exception {
-        mWebAppPlanInterface.createPlan("N51 V6 EMPYR V6 LGA");
-        assertEquals(10, mStorageService.getPlan().getDestinationNumber()); // there is a kink in the route, so 10 points
+        mWebAppPlanInterface.createPlan("SLATT V6 EMPYR V6 LGA");
+        assertEquals(13, mStorageService.getPlan().getDestinationNumber());
     }
 
     @Test

@@ -492,8 +492,7 @@ $(document).ready(function(){
     <li class="active"><a href="#plan">Plan</a></li>
     <li><a href="#load">Load</a></li>
     <li><a href="#save">Save</a></li>
-    <li><a href="#modify">Modify</a></li>
-    <li><a href="#briefing">Briefing</a></li>
+    <li><a href="#new">New</a></li>
     <li><a href="#help">Help</a></li>
   </ul>
 
@@ -502,7 +501,7 @@ $(document).ready(function(){
     <div id="plan" class="tab-pane fade in active">
         <table class="table">
             <tr>
-                <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3></td>
+                <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3> <a onclick="plan_get_weather()">Get Briefing</a></td>
             </tr>
             <tr>
                 <td>@<select id="plan_altitude" onchange="plan_set_altitude()" data-mobile="true" class="selectpicker">
@@ -573,10 +572,6 @@ $(document).ready(function(){
             </tr>
         </table>
 
-    </div>
-
-    <div id="modify" class="tab-pane fade">
-
         <table class="table"><th>Add Waypoint to Plan</th>
             <tr>
                 <td><input id="search_input" style="text-transform:uppercase" spellcheck="false" placeholder="BOS"></td>
@@ -584,6 +579,11 @@ $(document).ready(function(){
             </tr>
         </table>
         <table class="table" id="search_table"><th>Waypoint</th><th>Action</th><th>Name</th><th>Type</th></table>
+
+
+    </div>
+
+    <div id="new" class="tab-pane fade">
 
         <table class="table"><th>Create New Plan</th>
             <tr>
@@ -595,7 +595,7 @@ $(document).ready(function(){
     </div>
 
     <div id="load" class="tab-pane fade">
-        <table class="table"><th>Load A Plan</th>
+        <table class="table"><th>Load a Plan</th>
         </table>
         <table class="table" id="save_table"><th>Plan</th><th></th><th></th><th></th></table>
         <table class="table">
@@ -636,14 +636,6 @@ $(document).ready(function(){
     </div>
 
 
-    <div id="briefing" class="tab-pane fade">
-        <table class="table"><th>Plan Briefing</th>
-            <tr>
-                <td><a onclick="plan_get_weather()"><b><u>Get Briefing</u></b></a></td>
-            </tr>
-        </table>
-    </div>
-
 
     <div id="help" class="tab-pane fade">
         <table class="table"><th>Plan Help</th>
@@ -653,7 +645,7 @@ $(document).ready(function(){
             <br>
             <b>To Create a Flight Plan with Single Line Input</b>
             <ul>
-                <li>Select the "Modify" tab.</li>
+                <li>Select the "New" tab.</li>
                 <li>Enter a sentence of way points, separated by a single space like "KJFK LWM KBOS" in the "Create New Plan" box.</li>
                 <li>Press the "Create" button to load the plan.</li>
                 <li>Any way points not recognized, will be omitted.</li>
@@ -662,7 +654,7 @@ $(document).ready(function(){
             <b>To Create a Flight Plan One Way Point at a Time</b>
             <ul>
                 <li>Clear the current plan by pressing "Clr"</li>
-                <li>Select the "Modify" tab.</li>
+                <li>Select the "Plan" tab.</li>
                 <li>Enter a way point name (e.g. BOS) in the "Add To Plan" box, then press Search. If the point is valid, several options will be presented.</li>
                 <li>Press Add button to the right of one of the presented options to add it to the end of the plan.</li>
                 <li>Touch the added point in the "Plan" tab to move the green bar to it.</li>
@@ -786,7 +778,7 @@ $(document).ready(function(){
                 <li>Once a plan is entered, you can get the latest briefing for that plan area.</li>
                 <li>Enter a plan with at least two points, at least one of which is an airport.</li>
                 <li>Make sure you are connected to the Internet.</li>
-                <li>From "Briefing" tab Press the "Get Briefing" button.</li>
+                <li>Press "Get Briefing" link next to the Plan name.</li>
                 <li>After a few seconds, the briefing will be shown.</li>
             </ul>
         </div>
