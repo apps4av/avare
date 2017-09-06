@@ -141,7 +141,7 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
         assertEquals(PLAN1_DATA, data);
 
         //save it
-        mWebAppPlanInterface.savePlan("TEST"); //to preferences
+        mWebAppPlanInterface.savePlan("TEST1"); //to preferences
         assertUrl("javascript:set_plan_count('1 - 1 of 1')");
 
         // refresh
@@ -192,28 +192,22 @@ public class WebAppPlanInterfaceTest extends InterfaceTest {
 
 
         // refresh
-        mWebAppPlanInterface.refreshPlanList();
         ArrayList<String> plans = mWebAppPlanInterface.getPlanNames(10);
-        assertEquals("TEST",  plans.get(0));
+        assertEquals("TEST1", plans.get(0));
         assertEquals("TEST2", plans.get(1));
         assertEquals("TEST3", plans.get(2));
         assertEquals("TEST4", plans.get(3));
 
         //now retrieve plan 1 to N51
-        mWebAppPlanInterface.loadPlan("TEST");
+        mWebAppPlanInterface.loadPlan("TEST1");
         data = mWebAppPlanInterface.getPlanData();
-        assertEquals("TEST" + PLAN1_DATA, data);
+        assertEquals("TEST1" + PLAN1_DATA, data);
         assertUrl("javascript:plan_add('SBJ','Navaid','SOLBERG 112.90')");
-
-        // refresh
-        mWebAppPlanInterface.refreshPlanList();
-        assertUrl("javascript:set_plan_count('1 - 4 of 4')");
 
         // filter out the second plan
         mWebAppPlanInterface.planFilter("2");
         assertUrl("javascript:set_plan_count('1 - 1 of 1')");
 
-        
         //now retrieve plan 2 to N51
         mWebAppPlanInterface.loadPlan("TEST2");
         data = mWebAppPlanInterface.getPlanData();
