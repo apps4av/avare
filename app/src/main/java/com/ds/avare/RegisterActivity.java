@@ -92,6 +92,15 @@ public class RegisterActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_register);
+        mEmailEditText = (EditText) findViewById(R.id.edittext_register);
+        mButtonRegister = (Button) findViewById(R.id.btn_register);
+        mButtonUnregister = (Button) findViewById(R.id.btn_unregister);
+        /*
+         * privacy policy load
+         */
+        mPrivacy = (WebView)findViewById(R.id.privacy_webview);
+        mPrivacy.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "privacy"));
+
 
         mPref = new Preferences(this);
 
@@ -103,19 +112,12 @@ public class RegisterActivity extends Activity {
             return;
         }
 
-        /*
-         * privacy policy load
-         */
-
-        mPrivacy = (WebView)findViewById(R.id.privacy_webview);
-        mPrivacy.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "privacy"));
 
 
         /*
          * Click event on Register button
          *
          */
-        mButtonRegister = (Button) findViewById(R.id.btn_register);   
         mButtonRegister.setText(getString(R.string.register));
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
              
@@ -216,7 +218,6 @@ public class RegisterActivity extends Activity {
         });
         
         
-        mButtonUnregister = (Button) findViewById(R.id.btn_unregister);        
         mButtonUnregister.setOnClickListener(new View.OnClickListener() {
              
             @Override
@@ -295,9 +296,7 @@ public class RegisterActivity extends Activity {
                 mRegisterTask.execute(null, null, null);
            }
         });        
-        
 
-        mEmailEditText = (EditText) findViewById(R.id.edittext_register);
     }
 
 
