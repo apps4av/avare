@@ -14,10 +14,12 @@ package com.ds.avare.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Environment;
 import android.preference.DialogPreference;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,15 +166,18 @@ public class FolderPreference extends DialogPreference {
         mButtonSDCard = (Button)view.findViewById(R.id.folder_button_sdcard);
         mButtonExternal = (Button)view.findViewById(R.id.folder_button_external);
 
+        /*
+         * Bring up permission
+         */
+        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+        }
+
         mButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                
-                /*
-                 * Bring up preferences
-                 */
-                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 init(mContext.getFilesDir().getAbsolutePath());
                 loadFileList();
                 mListView.setAdapter(mAdapter);
@@ -189,7 +194,6 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + "com.ds.avare";
                 new File(path).mkdirs();
                 init(path);
@@ -211,7 +215,6 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 String path = "/" + "sdcard" + "/Android/data/" + "com.ds.avare";
                 new File(path).mkdirs();
                 init(path);

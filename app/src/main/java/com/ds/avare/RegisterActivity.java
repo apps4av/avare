@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -53,7 +54,6 @@ public class RegisterActivity extends Activity {
 
     // Register button
     private Button mButtonRegister;
-    private Button mButtonUnregister;
     private EditText mEmailEditText;
     private WebView mPrivacy;
     private Preferences mPref;
@@ -62,14 +62,12 @@ public class RegisterActivity extends Activity {
         if(mPref.isRegistered()) {
             mEmailEditText.setEnabled(false);
             mEmailEditText.setText(mPref.getRegisteredEmail());
-            mButtonRegister.setEnabled(false);
-            mButtonUnregister.setEnabled(true);
+            mButtonRegister.setText(getString(R.string.unregister));
         }
         else {
             mEmailEditText.setEnabled(true);
-            mButtonRegister.setEnabled(true);
             mEmailEditText.setText(mPref.getRegisteredEmail());
-            mButtonUnregister.setEnabled(false);
+            mButtonRegister.setText(getString(R.string.register));
         }
     }
 
@@ -92,9 +90,13 @@ public class RegisterActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_register);
+
+
+        // do not compress buttons but pan
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         mEmailEditText = (EditText) findViewById(R.id.edittext_register);
         mButtonRegister = (Button) findViewById(R.id.btn_register);
-        mButtonUnregister = (Button) findViewById(R.id.btn_unregister);
         /*
          * privacy policy load
          */
@@ -126,47 +128,37 @@ public class RegisterActivity extends Activity {
 
                 if(mPref.isRegistered()) {
 
-                    Toast.makeText(RegisterActivity.this, getString(R.string.already_registered), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                final String email = mEmailEditText.getText().toString();
-                if(!isValidEmail(email)) {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.error_email), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(mRegisterTask != null) {
-                    if(mRegisterTask.getStatus() != AsyncTask.Status.FINISHED) {
-                        mRegisterTask.cancel(true);
+                    if(mRegisterTask != null) {
+                        if(mRegisterTask.getStatus() != AsyncTask.Status.FINISHED) {
+                            mRegisterTask.cancel(true);
+                        }
                     }
-                }
 
-                Toast.makeText(RegisterActivity.this, getString(R.string.registering_server), Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, getString(R.string.unregistering_server), Toast.LENGTH_LONG).show();
 
-                mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
+                    mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
 
-                    @Override
-                    protected Boolean doInBackground(Void... vals) {
-                        // Register on our server
-                        // On server creates a new user
-                        String serverUrl = NetworkHelper.getServer() + "register.php";
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("name", "anonymous");
-                        params.put("email", email);
-                        params.put("regId", "");
-                        Random random = new Random();
-                        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-                        // Once GCM returns a registration id, we need to register on our server
-                        // As the server might be down, we will retry it a couple
-                        // times.
-                        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                            try {
-                                NetworkHelper.post(serverUrl, params);
-                                return true;
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace();
+                        @Override
+                        protected Boolean doInBackground(Void... vals) {
+
+                            String serverUrl = NetworkHelper.getServer() + "unregister.php";
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("name", "anonymous");
+                            params.put("email", mPref.getRegisteredEmail());
+                            params.put("regId", "");
+                            Random random = new Random();
+                            long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+
+                            // Once GCM returns a registration id, we need to register on our server
+                            // As the server might be down, we will retry it a couple
+                            // times.
+                            for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                                try {
+                                    NetworkHelper.post(serverUrl, params);
+                                    return true;
+                                }
+                                catch (Exception e) {
+                                }
                                 // Here we are simplifying and retrying on any error; in a real
                                 // application, it should retry only on unrecoverable errors
                                 // (like HTTP error code 503).
@@ -181,121 +173,116 @@ public class RegisterActivity extends Activity {
                                     Thread.currentThread().interrupt();
                                     break;
                                 }
-                                // increase backoff exponentially
                                 backoff *= 2;
                             }
+                            return false;
                         }
-                        return false;
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            if(result) {
+                                mPref.setRegistered(false);
+                                mPref.setRegisteredEmail(null);
+                                Toast.makeText(RegisterActivity.this, getString(R.string.unregistered), Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                Toast.makeText(RegisterActivity.this, getString(R.string.failed_unregister), Toast.LENGTH_LONG).show();
+                            }
+                            setButtonStates();
+                        }
+
+                    };
+                    mRegisterTask.execute(null, null, null);
+                }
+                else {
+                    final String email = mEmailEditText.getText().toString();
+                    if(!isValidEmail(email)) {
+                        Toast.makeText(RegisterActivity.this, getString(R.string.error_email), Toast.LENGTH_LONG).show();
+                        return;
                     }
 
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        if(result) {
-                            mPref.setRegistered(true);
-                            mPref.setRegisteredEmail(email);
-
-
-                            DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(RegisterActivity.this);
-                            alertDialogBuilder
-                                    .setTitle(getString(R.string.register))
-                                    .setMessage(getString(R.string.registered))
-                                    .setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            alertDialogBuilder.create().show();
+                    if(mRegisterTask != null) {
+                        if(mRegisterTask.getStatus() != AsyncTask.Status.FINISHED) {
+                            mRegisterTask.cancel(true);
                         }
-                        else {
-                            Toast.makeText(RegisterActivity.this, getString(R.string.failed_register), Toast.LENGTH_LONG).show();
-                        }
-                        setButtonStates();
                     }
-                };
 
-                mRegisterTask.execute(null, null, null);
+                    Toast.makeText(RegisterActivity.this, getString(R.string.registering_server), Toast.LENGTH_LONG).show();
+
+                    mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... vals) {
+                            // Register on our server
+                            // On server creates a new user
+                            String serverUrl = NetworkHelper.getServer() + "register.php";
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("name", "anonymous");
+                            params.put("email", email);
+                            params.put("regId", "");
+                            Random random = new Random();
+                            long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+                            // Once GCM returns a registration id, we need to register on our server
+                            // As the server might be down, we will retry it a couple
+                            // times.
+                            for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+                                try {
+                                    NetworkHelper.post(serverUrl, params);
+                                    return true;
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                    // Here we are simplifying and retrying on any error; in a real
+                                    // application, it should retry only on unrecoverable errors
+                                    // (like HTTP error code 503).
+                                    if (i == MAX_ATTEMPTS) {
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(backoff);
+                                    }
+                                    catch (InterruptedException e1) {
+                                        // Activity finished before we complete - exit.
+                                        Thread.currentThread().interrupt();
+                                        break;
+                                    }
+                                    // increase backoff exponentially
+                                    backoff *= 2;
+                                }
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean result) {
+                            if(result) {
+                                mPref.setRegistered(true);
+                                mPref.setRegisteredEmail(email);
+
+
+                                DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(RegisterActivity.this);
+                                alertDialogBuilder
+                                        .setTitle(getString(R.string.register))
+                                        .setMessage(getString(R.string.registered))
+                                        .setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialogBuilder.create().show();
+                            }
+                            else {
+                                Toast.makeText(RegisterActivity.this, getString(R.string.failed_register), Toast.LENGTH_LONG).show();
+                            }
+                            setButtonStates();
+                        }
+                    };
+
+                    mRegisterTask.execute(null, null, null);
+                }
+
             }
         });
-        
-        
-        mButtonUnregister.setOnClickListener(new View.OnClickListener() {
-             
-            @Override
-            public void onClick(View arg0) {
-
-                if(!mPref.isRegistered()) {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.already_unregistered), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // Get GCM registration id
-                if(mRegisterTask != null) {
-                    if(mRegisterTask.getStatus() != AsyncTask.Status.FINISHED) {
-                        mRegisterTask.cancel(true);
-                    }
-                }
-
-                Toast.makeText(RegisterActivity.this, getString(R.string.unregistering_server), Toast.LENGTH_LONG).show();
-
-                mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
-
-                    @Override
-                    protected Boolean doInBackground(Void... vals) {
-
-                        String serverUrl = NetworkHelper.getServer() + "unregister.php";
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("name", "anonymous");
-                        params.put("email", mPref.getRegisteredEmail());
-                        params.put("regId", "");
-                        Random random = new Random();
-                        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
-
-                        // Once GCM returns a registration id, we need to register on our server
-                        // As the server might be down, we will retry it a couple
-                        // times.
-                        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-                            try {
-                                NetworkHelper.post(serverUrl, params);
-                                return true;
-                            }
-                            catch (Exception e) {
-                            }
-                            // Here we are simplifying and retrying on any error; in a real
-                            // application, it should retry only on unrecoverable errors
-                            // (like HTTP error code 503).
-                            if (i == MAX_ATTEMPTS) {
-                                break;
-                            }
-                            try {
-                                Thread.sleep(backoff);
-                            }
-                            catch (InterruptedException e1) {
-                                // Activity finished before we complete - exit.
-                                Thread.currentThread().interrupt();
-                                break;
-                            }
-                            backoff *= 2;
-                        }
-                        return false;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        if(result) {
-                            mPref.setRegistered(false);
-                            mPref.setRegisteredEmail(null);
-                            Toast.makeText(RegisterActivity.this, getString(R.string.unregistered), Toast.LENGTH_LONG).show();
-                        }
-                        else {
-                            Toast.makeText(RegisterActivity.this, getString(R.string.failed_unregister), Toast.LENGTH_LONG).show();
-                        }
-                        setButtonStates();
-                    }
-
-                };
-                mRegisterTask.execute(null, null, null);
-           }
-        });        
 
     }
 

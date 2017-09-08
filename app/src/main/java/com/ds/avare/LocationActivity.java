@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -28,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -403,8 +405,10 @@ public class LocationActivity extends Activity implements Observer {
         mLocationView = (LocationView)view.findViewById(R.id.location);
 
         // Need GPS permission right away
-        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
-
+        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+        }
 
         /*
          * To be notified of some action in the view
@@ -653,7 +657,6 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, 103); // tabhost needs parent for permissions
                         String ret = Emergency.declare(getApplicationContext(), mPref, mService);
                         hideMenu();
                         Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
@@ -670,7 +673,10 @@ public class LocationActivity extends Activity implements Observer {
                     }
                 });
                 mSosDialog.show();
-
+                if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.SEND_SMS)) {
+                    ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, 103); // tabhost needs parent for permissions
+                }
             }
 
         });
