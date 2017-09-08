@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import com.ds.avare.R;
 import com.ds.avare.message.NetworkHelper;
-import com.ds.avare.utils.PossibleEmail;
+import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
 
@@ -33,6 +33,7 @@ public class LmfsInterface {
 	private static final String AVARE_LMFS_URL = "https://apps4av.net/new/lmfs.php";
 	
 	private Context mContext;
+    private Preferences mPref;
 	private String mError; // null means no error (success), value means error message
 	
 	/**
@@ -46,6 +47,7 @@ public class LmfsInterface {
 	 */
 	public LmfsInterface(Context ctx) {
 		mContext = ctx;
+        mPref = new Preferences(ctx);
 	}
 
 	/**
@@ -71,8 +73,8 @@ public class LmfsInterface {
 	 * Get all flight plans
 	 */
 	public LmfsPlanList getFlightPlans() {
-		
-		String webUserName = PossibleEmail.get(mContext);
+
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + webUserName + "/retrieveFlightPlanSummaries";
 		String httpMethod = "GET";
 		
@@ -98,7 +100,7 @@ public class LmfsInterface {
 	 */
 	public LmfsPlan getFlightPlan(String id) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + id + "/retrieve";
 		String httpMethod = "GET";
 		
@@ -124,7 +126,7 @@ public class LmfsInterface {
 	 */
 	public String closeFlightPlan(String id, String loc) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + id + "/close";
 		String httpMethod = "POST";
 		
@@ -154,7 +156,7 @@ public class LmfsInterface {
 	 */
 	public String activateFlightPlan(String id, String version, String future) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + id + "/activate";
 		String httpMethod = "POST";
 		
@@ -182,7 +184,7 @@ public class LmfsInterface {
 	 */
 	public String cancelFlightPlan(String id) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + id + "/cancel";
 		String httpMethod = "POST";
 		
@@ -207,7 +209,7 @@ public class LmfsInterface {
 	 */
 	public String fileFlightPlan(LmfsPlan plan) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/file";
 		String httpMethod = "POST";
 		
@@ -233,7 +235,7 @@ public class LmfsInterface {
 	 */
 	public String amendFlightPlan(LmfsPlan plan) {
 		
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/" + plan.getId() + "/amend";
 		String httpMethod = "POST";
 		
@@ -260,7 +262,7 @@ public class LmfsInterface {
 	 */
 	public void getBriefing(LmfsPlan pl, boolean translated, String routeWidth) {
 
-		String webUserName = PossibleEmail.get(mContext);
+		String webUserName = mPref.getRegisteredEmail();
 		String avareMethod = "FP/emailBriefing";
 		String httpMethod = "POST";
 		
@@ -270,8 +272,8 @@ public class LmfsInterface {
 		params.put("avareMethod", avareMethod);
 		params.put("httpMethod", httpMethod);
 		params.put("briefingType", "EMAIL");
-		params.put("briefingEmailAddresses", PossibleEmail.get(mContext));
-		params.put("recipientEmailAddresses", PossibleEmail.get(mContext));
+		params.put("briefingEmailAddresses", mPref.getRegisteredEmail());
+		params.put("recipientEmailAddresses", mPref.getRegisteredEmail());
 		params.put("routeCorridorWidth", routeWidth);
 		if(translated) {
 			params.put("briefingPreferences", "{\"plainText\":true}");			

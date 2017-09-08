@@ -26,11 +26,9 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.LmfsInterface;
 import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.plan.LmfsPlanList;
-import com.ds.avare.plan.LmfsPlanLog;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.PossibleEmail;
 
 import java.util.Locale;
 
@@ -559,7 +557,7 @@ public class WebAppInterface {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_SET_EMAIL == msg.what) {
-	    		String func = "javascript:set_email('" + PossibleEmail.get(mContext) + "')";
+	    		String func = "javascript:set_email('" + mPref.getRegisteredEmail() + "')";
 	        	mWebView.loadUrl(func);
         	}
         }

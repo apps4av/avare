@@ -4,47 +4,50 @@ Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >   
+    android:layout_height="match_parent">
 
-	<com.ds.avare.utils.OptionButton
-        android:id="@+id/spinner_register"
-        android:layout_width="fill_parent"
-		android:background="@drawable/button_bg_option"
-		android:layout_margin="5dp"
-		android:layout_height="wrap_content"/>
-	
+    <WebView
+        android:id="@+id/privacy_webview"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_weight="6"
+        android:layout_height="0dp"/>
+
+    <EditText
+		android:id="@+id/edittext_register"
+        android:layout_below="@+id/privacy_webview"
+		android:layout_width="fill_parent"
+        android:layout_weight="1"
+		android:layout_height="0dp"
+		android:layout_margin="1dp"
+		android:hint="Your email address"
+		android:inputType="textEmailAddress" />
+
     <Button
         android:id="@+id/btn_register"
-        android:layout_below="@+id/spinner_register"
+        android:layout_below="@+id/edittext_register"
         android:layout_width="fill_parent"
 		android:background="@drawable/button_bg"
-		android:layout_margin="5dp"
+		android:layout_margin="1dp"
         android:text="@string/register"
-        android:layout_height="wrap_content"/>
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        />
      
     <Button 
         android:id="@+id/btn_unregister"
         android:layout_below="@+id/btn_register"
         android:layout_width="fill_parent"
 		android:background="@drawable/button_bg"
-		android:layout_margin="5dp"
+		android:layout_margin="1dp"
         android:text="@string/unregister"
-        android:layout_height="wrap_content"/>
-    <ScrollView
-        android:layout_below="@+id/btn_unregister"
-        android:layout_width="fill_parent"
-        android:text="@string/unregister"
-        android:layout_height="wrap_content">
-        
-	    <TextView 
-	        android:id="@+id/log_text"
-	        android:padding="20dp"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"/>
-    </ScrollView>
-     
-</RelativeLayout>
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        />
+
+</LinearLayout>
+

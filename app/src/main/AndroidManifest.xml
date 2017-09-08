@@ -12,13 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="307"
-    android:versionName="7.7.7"
+    android:versionCode="308"
+    android:versionName="7.7.8"
     android:installLocation="auto">
 
-    <!-- GCM requires a Google account. -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
- 
     <!-- Network State Permissions to detect Internet status -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     

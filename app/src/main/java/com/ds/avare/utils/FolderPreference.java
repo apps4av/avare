@@ -11,10 +11,13 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Environment;
 import android.preference.DialogPreference;
+import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,12 +99,14 @@ public class FolderPreference extends DialogPreference {
         // initial value from
         //
         // User defined Waypoints
-        if(getKey().equals(mContext.getString(R.string.UDWLocation)))
-        	init(mPref.getUDWLocation());
+        if(getKey().equals(mContext.getString(R.string.UDWLocation))) {
+            init(mPref.getUDWLocation());
+        }
         
         // The chart/map location
-        else if(getKey().equals(mContext.getString(R.string.Maps)))
-        	init(mPref.mapsFolder());
+        else if(getKey().equals(mContext.getString(R.string.Maps))) {
+            init(mPref.mapsFolder());
+        }
     }
 
     /**
@@ -167,6 +172,7 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
+                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 init(mContext.getFilesDir().getAbsolutePath());
                 loadFileList();
                 mListView.setAdapter(mAdapter);
@@ -183,7 +189,8 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + "com.ds.avare"; 
+                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + "com.ds.avare";
                 new File(path).mkdirs();
                 init(path);
                 loadFileList();
@@ -204,6 +211,7 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
+                ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 String path = "/" + "sdcard" + "/Android/data/" + "com.ds.avare";
                 new File(path).mkdirs();
                 init(path);

@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -26,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -400,6 +402,10 @@ public class LocationActivity extends Activity implements Observer {
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
 
+        // Need GPS permission right away
+        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+
+
         /*
          * To be notified of some action in the view
          */
@@ -647,6 +653,7 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, 103); // tabhost needs parent for permissions
                         String ret = Emergency.declare(getApplicationContext(), mPref, mService);
                         hideMenu();
                         Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
