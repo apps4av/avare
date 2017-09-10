@@ -21,15 +21,19 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
+import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.PfdView;
+
+import static com.ds.avare.place.Destination.GPS;
 
 /**
  * @author zkhan
@@ -73,6 +77,7 @@ public class PfdActivity extends Activity {
             double bearing = 0;
             double cdi = 0;
             double vdi = 0;
+            String dst = "", distance = "";
 
             if(mService.getVNAV() != null) {
                 vdi = mService.getVNAV().getGlideSlope();
@@ -85,8 +90,15 @@ public class PfdActivity extends Activity {
             }
             if(mService.getDestination() != null) {
                 bearing = mService.getDestination().getBearing();
+                dst = mService.getDestination().getDbType()==GPS ? "GPS" : mService.getDestination().getID();
+                distance = Math.round(mService.getDestination().getDistance()*10.0) / 10.0 + mPref.distanceConversionUnit;
             }
-            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi, vdi);
+            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi, vdi, dst, distance);
+
+            if(mService.getTrafficCache() != null) {
+                SparseArray<Traffic> traffic = mService.getTrafficCache().getTraffic();
+                mPfdView.setTraffic(traffic);
+            }
             mPfdView.postInvalidate();
         }
 
@@ -106,7 +118,9 @@ public class PfdActivity extends Activity {
         public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
             mPfdView.setPitch(-(float)pitch);
             mPfdView.setRoll(-(float)roll);
-            mPfdView.setYaw((float)yaw);
+            if (mPref.isPfdUsingPhoneMagneticHeading()) {
+                mPfdView.setYaw((float) yaw);
+            }
             mPfdView.setAcceleration(acceleration);
             mPfdView.postInvalidate();
         }
