@@ -26,6 +26,8 @@ wait
 find plates -name "*.png"| sed s/plates/$1/g >>list.txt
 wait
 
+python ${MODULE_DIR}/adtag.py
+
 rm -f $1.zip 
 zip -r -i "*.png" -1 -T -q $1_PLATES.zip plates
 find plates -name "*png" | xargs rm

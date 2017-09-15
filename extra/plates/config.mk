@@ -16,6 +16,7 @@ STATES=VI XX PR DC AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD M
 output:
 	#download
 	${DOWNLOAD} http://localhost/plates/d-TPP_Metafile.xml d-TPP_Metafile.xml
+	${DOWNLOAD} https://www.outerworldapps.com/WairToNowWork/avare_aptdiags.php aps.csv
 	# Do it
 	${CHDIR} ${BUILD_DIR} && \
 		${REMOVE} list.txt; \

@@ -13,7 +13,6 @@
 
 # List of module to make (note that order is important) 
 export MODULES	=	\
-	aptdiags \
 	data \
 	afd \
 	plates \
