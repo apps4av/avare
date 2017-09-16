@@ -1,6 +1,6 @@
 <html>
 <!--
-Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+Copyright (c) 2017, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,6 +95,8 @@ function wnb_set(data) {
     document.getElementById("min_w").value = obj.min_w;
     document.getElementById("max_a").value = obj.max_a;
     document.getElementById("min_a").value = obj.min_a;
+
+    document.getElementById("points").value = obj.points;
 }
 
 
@@ -142,6 +144,8 @@ function wnb_get(name) {
     obj.min_w = document.getElementById("min_w").value;
     obj.max_a = document.getElementById("max_a").value;
     obj.min_a = document.getElementById("min_a").value;
+
+    obj.points = document.getElementById("points").value;
 
     return JSON.stringify(obj);
 
@@ -235,9 +239,31 @@ function wnb_calculate() {
 
     var x = (a_total - min_a) * ratio_x;
     var y = (w_total - min_w) * ratio_y;
-    ctx.fillRect(x, height - y, 5, 5);
 
+    // add min text
     ctx.fillText(min_w + "~" + min_a, 2, height - 2);
+
+    // draw envelope from points entered as w0,a0 w1,a1 ...
+    points = document.getElementById("points").value;
+    var pairs = points.split(" ");
+    ctx.fillStyle="#007700";
+    ctx.beginPath();
+    for (var i = 0; i < pairs.length; i++) {
+        var xy = pairs[i].split(",");
+        var x_p = (xy[0] - min_a) * ratio_x;
+        var y_p = (xy[1] - min_w) * ratio_y;
+        if(0 == i) {
+            ctx.moveTo(x_p, height - y_p);
+        }
+        else {
+            ctx.lineTo(x_p, height - y_p);
+        }
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle="#FFFFFF";
+    ctx.fillRect(x, height - y, 5, 5);
 
 }
 
@@ -381,6 +407,7 @@ $(document).ready(function(){
                     <input id="min_w" type="number" style="margin: 2px;" placeholder="Min Weight"><br>
                     <input id="max_a" type="number" style="margin: 2px;" placeholder="Max Arm"><br>
                     <input id="min_a" type="number" style="margin: 2px;" placeholder="Min Arm"><br>
+                    <input id="points" style="margin: 2px;" placeholder="Envelope Points (See Help)"><br>
                 </td>
             </tr>
           </table>
@@ -412,6 +439,9 @@ $(document).ready(function(){
               <ul>
                   <li>Enter Type, Weight, and ARM for as many rows as needed.</li>
                   <li>Press Calculate button to update the W&B values of total weight, C.G. total moment, and per type moment values.</li>
+                  <li>To show W&B limits graph, enter Max weight, Min weight, Max arm, and Min arm. These will set limits of the graph shown. Use POH to get these values.</li>
+                  <li>Enter graph 2D coordinates for the envelope in clockwise or counter-clockwise direction. Use POH to get these values. Coordinates are separated by white space and in order of arm,weight e.g. 43,1650 43,2450 45,2450 45,1650</li>
+                  <li>Press Calculate button again to show the W&B inside/outside the green envelope.</li>
               </ul>
 
               <b>To Save a W&B</b>

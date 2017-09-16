@@ -94,6 +94,10 @@ public class WebAppWnbInterface {
         if(wnbs == null) {
             return;
         }
+        if(wnbs.size() == 0) {
+            wnbs.add(new WeightAndBalance());
+
+        }
 
         for (WeightAndBalance wnb : wnbs) {
             Message m = mHandler.obtainMessage(MSG_ADD_WNB_SAVE, (Object)("'" + Helper.formatJsArgs(wnb.getName()) + "'"));
@@ -124,7 +128,9 @@ public class WebAppWnbInterface {
         if(wnbs == null) {
             return;
         }
-
+        if(wnbs.size() == 0) {
+            wnbs.add(new WeightAndBalance());
+        }
 
         wnbs.add(mService.getWnb());
 
@@ -151,6 +157,9 @@ public class WebAppWnbInterface {
         if(wnbs == null) {
             return;
         }
+        if(wnbs.size() == 0) {
+            wnbs.add(new WeightAndBalance());
+        }
 
 
         for (WeightAndBalance wnb : wnbs) {
@@ -173,6 +182,9 @@ public class WebAppWnbInterface {
         LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
         if(wnbs == null) {
             return;
+        }
+        if(wnbs.size() == 0) {
+            wnbs.add(new WeightAndBalance());
         }
 
 
