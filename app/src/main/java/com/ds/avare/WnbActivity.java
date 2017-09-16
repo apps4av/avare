@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, Apps4Av Inc. (apps4av.com) 
+Copyright (c) 2017, Apps4Av Inc. (apps4av.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,37 +27,34 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppListInterface;
+import com.ds.avare.webinfc.WebAppWnbInterface;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 /**
  * @author zkhan
- * An activity that deals with lists - loading, creating, deleting and using
+ * An activity that deals with W&B
  */
-public class ChecklistActivity extends Activity {
+public class WnbActivity extends Activity {
 
     /**
      * This view display location on the map.
      */
     private WebView mWebView;
-    private Button mBackButton;
-    private Button mForwardButton;
-    private ProgressBar mProgressBarSearch;
-    private WebAppListInterface mInfc;
+    private Button mCalculateButton;
+    private WebAppWnbInterface mInfc;
     private boolean mInited;
 
     // A timer object to handle things when GPS goes away
@@ -135,12 +132,12 @@ public class ChecklistActivity extends Activity {
         mInited = false;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.checklist, null);
+        View view = layoutInflater.inflate(R.layout.wnb, null);
         setContentView(view);
-        mWebView = (WebView)view.findViewById(R.id.list_mainpage);
+        mWebView = (WebView)view.findViewById(R.id.wnb_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppListInterface(mContext, mWebView, new GenericCallback() {
+        mInfc = new WebAppWnbInterface(mContext, mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
@@ -152,11 +149,11 @@ public class ChecklistActivity extends Activity {
         		return null;
         	}
         });
-        mWebView.addJavascriptInterface(mInfc, "AndroidList");
+        mWebView.addJavascriptInterface(mInfc, "AndroidWnb");
         mWebView.setWebChromeClient(new WebChromeClient() {
 	     	public void onProgressChanged(WebView view, int progress) {
                 /*
-                 * Now update HTML with latest list stuff, do this every time we start the List screen as 
+                 * Now update HTML with latest wnb stuff, do this every time we start the WNB screen as
                  * things might have changed.
                  * When both service and page loaded then proceed.
                  */
@@ -164,17 +161,17 @@ public class ChecklistActivity extends Activity {
 		     		mIsPageLoaded = true;
 	     		}
      	    }
-	     	
+
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new DecoratedAlertDialogBuilder(ChecklistActivity.this)
+	            new DecoratedAlertDialogBuilder(WnbActivity.this)
 	            	.setTitle("")
 	            	.setCancelable(true)
 	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
 						@Override
 						public void onCancel(DialogInterface arg0) {
-	            			result.cancel();							
+	            			result.cancel();
 						}
 	            	})
 	            	.setMessage(message)
@@ -196,7 +193,7 @@ public class ChecklistActivity extends Activity {
 	    });
 
         // This is need on some old phones to get focus back to webview.
-        mWebView.setOnTouchListener(new View.OnTouchListener() {  
+        mWebView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				arg0.performClick();
@@ -204,7 +201,7 @@ public class ChecklistActivity extends Activity {
 				return false;
 			}
         });
-        
+
         mWebView.setOnLongClickListener(new OnLongClickListener() {
         	@Override
         	public boolean onLongClick(View v) {
@@ -213,31 +210,18 @@ public class ChecklistActivity extends Activity {
         });
         mWebView.setLongClickable(false);
 
-        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "list"));
-        /*
-         * Progress bar
-         */
-        mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.list_load_progress));
-        mProgressBarSearch.setVisibility(View.VISIBLE);
-        
-        mBackButton = (Button)view.findViewById(R.id.list_button_back);
-        mBackButton.setOnClickListener(new OnClickListener() {
+        mWebView.loadUrl(Helper.getWebViewFile(getApplicationContext(), "wnb"));
+
+        mCalculateButton = (Button)view.findViewById(R.id.wnb_button_calculate);
+        mCalculateButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mInfc.moveBack();
+                mInfc.calculate();
             }
         });
 
-        mForwardButton = (Button)view.findViewById(R.id.list_button_forward);
-        mForwardButton.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                mInfc.moveForward();
-            }
-            
-        });
 
     }
 
@@ -264,24 +248,13 @@ public class ChecklistActivity extends Activity {
             mInfc.connect(binder.getService());
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
-            
             /*
              * When both service and page loaded then proceed.
-             * The list will be loaded either from here or from page load end event
+             * The wnb will be loaded either from here or from page load end event
              */
             mTimer = new Timer();
             TimerTask sim = new UpdateTask();
             mTimer.scheduleAtFixedRate(sim, 0, 1000);
-
-
-            /*
-             * To load a list from other activities
-             */
-            String overList = mService.getOverrideListName();
-            if(overList != null) {
-                mInfc.loadList(overList);
-                mService.setOverrideListName(null);
-            }
         }
 
         /*
@@ -404,10 +377,8 @@ public class ChecklistActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
     		if(msg.what == SHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.VISIBLE);
     		}
     		else if(msg.what == UNSHOW_BUSY) {
-    			mProgressBarSearch.setVisibility(View.INVISIBLE);
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
@@ -423,9 +394,8 @@ public class ChecklistActivity extends Activity {
     			alert.show();
     		}
     		else if(msg.what == INIT) {
-                mProgressBarSearch.setVisibility(View.INVISIBLE);
-  				mInfc.newList();
-   				mInfc.newSaveList();
+  				mInfc.newWnb();
+   				mInfc.newSaveWnb();
     		}
         }
     };

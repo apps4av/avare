@@ -26,6 +26,7 @@ import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
@@ -134,8 +135,9 @@ public class StorageService extends Service {
     private Location mLocation;
     
     private boolean mDownloading;
-    
+
     private LinkedList<Checklist> mCheckLists;
+    private LinkedList<WeightAndBalance> mWnbs;
     String mOverrideListName;
 
     private MetarLayer mMetarLayer;
@@ -263,7 +265,8 @@ public class StorageService extends Service {
      * Current checklist
      */
     private Checklist mChecklist;
-    
+    private WeightAndBalance mWnb;
+
     // The edge distance tape instrument
     private EdgeDistanceTape mEdgeDistanceTape;
 
@@ -357,6 +360,7 @@ public class StorageService extends Service {
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mCheckLists = null;
+        mWnbs = null;
         mLastLocationUpdate = 0;
 
         mCap = new DrawCapLines(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
@@ -1242,12 +1246,28 @@ public class StorageService extends Service {
     
     /**
      * 
+     * @param wnb
+     */
+    public void setWnbs(LinkedList<WeightAndBalance> wnb) {
+        mWnbs = wnb;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public LinkedList<WeightAndBalance> getWnbs() {
+        return mWnbs;
+    }
+
+    /**
+     *
      * @param list
      */
     public void setCheckLists(LinkedList<Checklist> list) {
         mCheckLists = list;
     }
-    
+
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
             mShadowedText = new ShadowedText(getApplicationContext());
@@ -1275,9 +1295,18 @@ public class StorageService extends Service {
     	return mChecklist;
     }
     
-    public void setChecklist(Checklist cl) {
-    	mChecklist = cl;
+    public void setWnb(WeightAndBalance wnb) {
+    	mWnb = wnb;
     }
+
+    public WeightAndBalance getWnb() {
+        return mWnb;
+    }
+
+    public void setChecklist(Checklist cl) {
+        mChecklist = cl;
+    }
+
 
     public EdgeDistanceTape getEdgeTape() {
     	return mEdgeDistanceTape;

@@ -934,6 +934,10 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabPfd;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabWnb), true)) {
+            mTabs |= 1 << MainActivity.tabWnb;
+        }
+
         return mTabs;
     }
 
@@ -1183,6 +1187,20 @@ public class Preferences {
      */
     public boolean showGameTFRs() {
         return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
+    }
+
+    /**
+     * @return
+     */
+    public String getWnbs() {
+        return mPref.getString(mContext.getString(R.string.Wnb), "");
+    }
+
+    /**
+     * @return
+     */
+    public void putWnbs(String name) {
+        mPref.edit().putString(mContext.getString(R.string.Wnb), name).commit();
     }
 }
 

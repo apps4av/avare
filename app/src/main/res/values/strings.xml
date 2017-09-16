@@ -337,6 +337,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
+    <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -548,4 +549,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
+    <string name="WnbSummary">Weight and Balance</string>
+    <string name="Wnb"><![CDATA[W&B]]></string>
+    <string name="Calculate">Calculate</string>
 </resources>

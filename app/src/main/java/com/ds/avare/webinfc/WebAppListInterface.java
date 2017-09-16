@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
+import com.ds.avare.ChecklistActivity;
 import com.ds.avare.PlanActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
@@ -142,7 +143,7 @@ public class WebAppListInterface {
     }
     
     /**
-     * Move back and forth in the list. Unlike plans which are short, this is a frequent action 
+     * Move back and forth in the list. Unlike plans which are short, this is a frequent action
      * on long list. Hence do from Android widgets 
      */
     public void moveBack() {
@@ -454,7 +455,7 @@ public class WebAppListInterface {
         public void handleMessage(Message msg) {
         	if(MSG_UPDATE_LIST == msg.what) {
                 /*
-                 * Now update HTML with latest plan stuff, do this every time we start the Plan screen as 
+                 * Now update HTML with latest list stuff, do this every time we start the List screen as
                  * things might have changed.
                  */
         		String[] steps = mService.getChecklist().getStepsArray();
@@ -485,10 +486,10 @@ public class WebAppListInterface {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
+        		mCallback.callback((Object) ChecklistActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)PlanActivity.SHOW_BUSY, null);
+        		mCallback.callback((Object)ChecklistActivity.SHOW_BUSY, null);
         	}
         }
     };

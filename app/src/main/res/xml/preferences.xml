@@ -508,6 +508,11 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabTools"
                 android:summary="@string/GPSSummary"
                 android:title="@string/Tools" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabWnb"
+                android:summary="@string/WnbSummary"
+                android:title="@string/Wnb" />
         </PreferenceScreen>
 
     </PreferenceScreen>
