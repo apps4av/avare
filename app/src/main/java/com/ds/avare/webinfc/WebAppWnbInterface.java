@@ -101,11 +101,6 @@ public class WebAppWnbInterface {
         }
     }
 
-
-    public void newWnb() {
-        mService.setWnb(new WeightAndBalance(""));
-    }
-
     /**
      * 
      * @param name
@@ -141,11 +136,7 @@ public class WebAppWnbInterface {
         /*
          * Make a new working list since last one stored already 
          */
-        mService.setWnb(new WeightAndBalance(mService.getWnb().getName(),
-                mService.getWnb().getTypesArray(),
-                mService.getWnb().getWeightsArray(),
-                mService.getWnb().getArmsArray()
-                ));
+        mService.setWnb(new WeightAndBalance(mService.getWnb().getJSON()));
 
         newSaveWnb();
     }
@@ -164,10 +155,7 @@ public class WebAppWnbInterface {
 
         for (WeightAndBalance wnb : wnbs) {
         	if(wnb.getName().equals(name)) {
-        		mService.setWnb(new WeightAndBalance(wnb.getName(),
-                        wnb.getTypesArray(),
-                        wnb.getWeightsArray(),
-                        wnb.getArmsArray()));
+        		mService.setWnb(new WeightAndBalance(wnb.getJSON()));
         	}
         }
 
@@ -222,10 +210,12 @@ public class WebAppWnbInterface {
                  * Now update HTML with latest wnb stuff, do this every time we start the List screen as
                  * things might have changed.
                  */
-                String data = mService.getWnb().getJSON().toString();
+                if(null != mService.getWnb()) {
+                    String data = mService.getWnb().getJSON().toString();
 
-                if(null != data) {
-                    mWebView.loadUrl("javascript:wnb_set('" + data + "')");
+                    if (null != data) {
+                        mWebView.loadUrl("javascript:wnb_set('" + data + "')");
+                    }
                 }
             }
             else if(MSG_ADD_WNB_SAVE == msg.what) {

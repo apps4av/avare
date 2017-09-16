@@ -36,7 +36,6 @@ authors: zkhan
 
 	toastr.options.timeOut = 2000;
 
-
 // put data in W&B sheet
 function wnb_set(data) {
 
@@ -92,6 +91,10 @@ function wnb_set(data) {
     document.getElementById("m_total").textContent = "";
     document.getElementById("a_total").textContent = "";
 
+    document.getElementById("max_w").value = obj.max_w;
+    document.getElementById("min_w").value = obj.min_w;
+    document.getElementById("max_a").value = obj.max_a;
+    document.getElementById("min_a").value = obj.min_a;
 }
 
 
@@ -135,7 +138,12 @@ function wnb_get(name) {
     obj.a_8 = document.getElementById("a8").value;
     obj.a_9 = document.getElementById("a9").value;
 
-   return JSON.stringify(obj);
+    obj.max_w = document.getElementById("max_w").value;
+    obj.min_w = document.getElementById("min_w").value;
+    obj.max_a = document.getElementById("max_a").value;
+    obj.min_a = document.getElementById("min_a").value;
+
+    return JSON.stringify(obj);
 
 }
 
@@ -202,8 +210,34 @@ function wnb_calculate() {
     document.getElementById("m_total").textContent = m_total;
     document.getElementById("a_total").textContent = a_total; // cg
 
+    // now draw on canvas
+    max_w = process_input(document.getElementById("max_w").value);
+    min_w = process_input(document.getElementById("min_w").value);
+    max_a = process_input(document.getElementById("max_a").value);
+    min_a = process_input(document.getElementById("min_a").value);
 
 
+    // draw rectangle
+    diff_w = max_w - min_w;
+    diff_a = max_a - min_a;
+
+    var canvas = document.getElementById('wnb_canvas');
+    var width = canvas.width;
+    var height = canvas.height;
+
+    var ratio_x = width / diff_a;
+    var ratio_y = height / diff_w;
+
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle="#000000";
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle="#FFFFFF";
+
+    var x = (a_total - min_a) * ratio_x;
+    var y = (w_total - min_w) * ratio_y;
+    ctx.fillRect(x, height - y, 5, 5);
+
+    ctx.fillText(min_w + "~" + min_a, 2, height - 2);
 
 }
 
@@ -297,6 +331,7 @@ $(document).ready(function(){
     $(".nav-tabs a").click(function(){
         $(this).tab('show');
     });
+
 });
 
 
@@ -323,17 +358,31 @@ $(document).ready(function(){
               </tr>
           </table>
           <table class="table" id="wnb_table" ><th>Type</th><th>Weight</th><th>Arm</th><th>Moment</th>
-              <tr><td><input id="t0"></td><td><input id="w0"></td><td><input id="a0"></td><td><label id="m0"/></td></tr>
-              <tr><td><input id="t1"></td><td><input id="w1"></td><td><input id="a1"></td><td><label id="m1"/></td></tr>
-              <tr><td><input id="t2"></td><td><input id="w2"></td><td><input id="a2"></td><td><label id="m2"/></td></tr>
-              <tr><td><input id="t3"></td><td><input id="w3"></td><td><input id="a3"></td><td><label id="m3"/></td></tr>
-              <tr><td><input id="t4"></td><td><input id="w4"></td><td><input id="a4"></td><td><label id="m4"/></td></tr>
-              <tr><td><input id="t5"></td><td><input id="w5"></td><td><input id="a5"></td><td><label id="m5"/></td></tr>
-              <tr><td><input id="t6"></td><td><input id="w6"></td><td><input id="a6"></td><td><label id="m6"/></td></tr>
-              <tr><td><input id="t7"></td><td><input id="w7"></td><td><input id="a7"></td><td><label id="m7"/></td></tr>
-              <tr><td><input id="t8"></td><td><input id="w8"></td><td><input id="a8"></td><td><label id="m8"/></td></tr>
-              <tr><td><input id="t9"></td><td><input id="w9"></td><td><input id="a9"></td><td><label id="m9"/></td></tr>
+              <tr><td><input id="t0"></td><td><input type="number" id="w0"></td><td><input type="number" id="a0"></td><td><label id="m0"/></td></tr>
+              <tr><td><input id="t1"></td><td><input type="number" id="w1"></td><td><input type="number" id="a1"></td><td><label id="m1"/></td></tr>
+              <tr><td><input id="t2"></td><td><input type="number" id="w2"></td><td><input type="number" id="a2"></td><td><label id="m2"/></td></tr>
+              <tr><td><input id="t3"></td><td><input type="number" id="w3"></td><td><input type="number" id="a3"></td><td><label id="m3"/></td></tr>
+              <tr><td><input id="t4"></td><td><input type="number" id="w4"></td><td><input type="number" id="a4"></td><td><label id="m4"/></td></tr>
+              <tr><td><input id="t5"></td><td><input type="number" id="w5"></td><td><input type="number" id="a5"></td><td><label id="m5"/></td></tr>
+              <tr><td><input id="t6"></td><td><input type="number" id="w6"></td><td><input type="number" id="a6"></td><td><label id="m6"/></td></tr>
+              <tr><td><input id="t7"></td><td><input type="number" id="w7"></td><td><input type="number" id="a7"></td><td><label id="m7"/></td></tr>
+              <tr><td><input id="t8"></td><td><input type="number" id="w8"></td><td><input type="number" id="a8"></td><td><label id="m8"/></td></tr>
+              <tr><td><input id="t9"></td><td><input type="number" id="w9"></td><td><input type="number" id="a9"></td><td><label id="m9"/></td></tr>
               <tr><td><label>Weight - CG - Moment</label></td><td><label id="w_total"/></td><td><label id="a_total"/></td><td><label id="m_total"/></td></tr>
+          </table>
+
+          <table class="table"><th>Graph</th>
+            <tr>
+                <td>
+                    <canvas id="wnb_canvas" width="480" height="320" style="border:1px solid #FFFFFF;"/>
+                </td>
+                <td>
+                    <input id="max_w" type="number" style="margin: 2px;" placeholder="Max Weight"><br>
+                    <input id="min_w" type="number" style="margin: 2px;" placeholder="Min Weight"><br>
+                    <input id="max_a" type="number" style="margin: 2px;" placeholder="Max Arm"><br>
+                    <input id="min_a" type="number" style="margin: 2px;" placeholder="Min Arm"><br>
+                </td>
+            </tr>
           </table>
 
       </div>
@@ -361,7 +410,8 @@ $(document).ready(function(){
               <br>
               <b>To Create a W&B</b>
               <ul>
-                  <li></li>
+                  <li>Enter Type, Weight, and ARM for as many rows as needed.</li>
+                  <li>Press Calculate button to update the W&B values of total weight, C.G. total moment, and per type moment values.</li>
               </ul>
 
               <b>To Save a W&B</b>

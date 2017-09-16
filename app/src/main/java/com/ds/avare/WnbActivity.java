@@ -394,7 +394,6 @@ public class WnbActivity extends Activity {
     			alert.show();
     		}
     		else if(msg.what == INIT) {
-  				mInfc.newWnb();
    				mInfc.newSaveWnb();
     		}
         }

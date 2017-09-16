@@ -25,91 +25,15 @@ import java.util.LinkedList;
  */
 public class WeightAndBalance {
 
-    private static final int SIZE = 10;
 
-    private String mType[];
-    private String mWeight[];
-    private String mArm[];
-    private String mName;
-
-
-    /**
-     * New W&B
-     */
-    private void init() {
-        mType = new String[SIZE];
-        mWeight = new String[SIZE];
-        mArm = new String[SIZE];
-        for(int item = 0; item < SIZE; item++) {
-            mType[item] = "";
-            mWeight[item] = "";
-            mArm[item] = "";
-        }
-    }
-
-    /**
-     *
-     * @param name
-     */
-    public WeightAndBalance(String name) {
-        mName = name;
-        init();
-    }
-
-
-    /**
-     * Complete from string
-     * @param name
-     */
-    public WeightAndBalance(String name, String[] type, String[] weight, String[] arm) {
-        mName = name;
-        mArm = arm;
-        mWeight = weight;
-        mType = type;
-    }
+    JSONObject mWnb;
 
     /**
      * From JSON
      * @param json
      */
     public WeightAndBalance(JSONObject json) {
-        init();
-        try {
-            mName = json.getString("name");
-            for(int item = 0; item < SIZE; item++) {
-                mType[item] = json.getString("t_" + item);
-                mWeight[item] = json.getString("w_" + item);
-                mArm[item] = json.getString("a_" + item);
-            }
-
-        } catch (JSONException e) {
-            mName = "";
-        }
-    }
-
-    /**
-     * 
-     * @param name
-     */
-    public void changeName(String name) {
-        mName = name;
-    }
-
-
-    /**
-     * Get all the types
-     * @return
-     */
-    public String[] getTypesArray() {
-        return mType;
-    }
-
-    public String[] getWeightsArray() {
-        return mWeight;
-    }
-
-    public String[] getArmsArray() {
-        return mArm;
+        mWnb = json;
     }
 
     /**
@@ -117,19 +41,7 @@ public class WeightAndBalance {
      * @return
      */
     public JSONObject getJSON() {
-        JSONObject jsonAdd = new JSONObject();
-        try {
-            jsonAdd.put("name", mName);
-            for(int item = 0; item < SIZE; item++) {
-                jsonAdd.put("t_" + item, mType[item]);
-                jsonAdd.put("w_" + item, mWeight[item]);
-                jsonAdd.put("a_" + item, mArm[item]);
-            }
-        } catch (JSONException e) {
-            return null;
-        }
-        
-        return jsonAdd;
+        return mWnb;
     }
     
     /**
@@ -137,7 +49,11 @@ public class WeightAndBalance {
      * @return
      */
     public String getName() {
-        return mName;
+        try {
+            return mWnb.getString("name");
+        } catch (JSONException e) {
+        }
+        return "";
     }
 
     /**
