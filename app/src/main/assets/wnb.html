@@ -160,6 +160,10 @@ function process_input(inp) {
     return fl;
 }
 
+function round100(num) {
+    return (Math.round(num * 100.0) / 100.0);
+}
+
 function wnb_calculate() {
 
     var w_0 = process_input(document.getElementById("w0").value);
@@ -195,24 +199,24 @@ function wnb_calculate() {
     var m_8 = w_8 * a_8;
     var m_9 = w_9 * a_9;
 
-    document.getElementById("m0").textContent = m_0;
-    document.getElementById("m1").textContent = m_1;
-    document.getElementById("m2").textContent = m_2;
-    document.getElementById("m3").textContent = m_3;
-    document.getElementById("m4").textContent = m_4;
-    document.getElementById("m5").textContent = m_5;
-    document.getElementById("m6").textContent = m_6;
-    document.getElementById("m7").textContent = m_7;
-    document.getElementById("m8").textContent = m_8;
-    document.getElementById("m9").textContent = m_9;
+    document.getElementById("m0").textContent = round100(m_0);
+    document.getElementById("m1").textContent = round100(m_1);
+    document.getElementById("m2").textContent = round100(m_2);
+    document.getElementById("m3").textContent = round100(m_3);
+    document.getElementById("m4").textContent = round100(m_4);
+    document.getElementById("m5").textContent = round100(m_5);
+    document.getElementById("m6").textContent = round100(m_6);
+    document.getElementById("m7").textContent = round100(m_7);
+    document.getElementById("m8").textContent = round100(m_8);
+    document.getElementById("m9").textContent = round100(m_9);
 
     var w_total = w_0 + w_1 + w_2 + w_3 + w_4 + w_5 + w_6 + w_7 + w_8 + w_9;
     var m_total = m_0 + m_1 + m_2 + m_3 + m_4 + m_5 + m_6 + m_7 + m_8 + m_9;
     var a_total = m_total / w_total;
 
-    document.getElementById("w_total").textContent = w_total;
-    document.getElementById("m_total").textContent = m_total;
-    document.getElementById("a_total").textContent = a_total; // cg
+    document.getElementById("w_total").textContent = round100(w_total);
+    document.getElementById("m_total").textContent = round100(m_total);
+    document.getElementById("a_total").textContent = round100(a_total); // cg
 
     // now draw on canvas
     max_w = process_input(document.getElementById("max_w").value);
@@ -240,13 +244,12 @@ function wnb_calculate() {
     var x = (a_total - min_a) * ratio_x;
     var y = (w_total - min_w) * ratio_y;
 
-    // add min text
-    ctx.fillText(min_w + "~" + min_a, 2, height - 2);
-
     // draw envelope from points entered as w0,a0 w1,a1 ...
     points = document.getElementById("points").value;
     var pairs = points.split(" ");
-    ctx.fillStyle="#007700";
+    ctx.fillStyle="#AA0000";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle="#00AA00";
     ctx.beginPath();
     for (var i = 0; i < pairs.length; i++) {
         var xy = pairs[i].split(",");
@@ -263,7 +266,12 @@ function wnb_calculate() {
     ctx.fill();
 
     ctx.fillStyle="#FFFFFF";
-    ctx.fillRect(x, height - y, 5, 5);
+    ctx.fillRect(x - 3, height - y - 3, 6, 6);
+
+    ctx.beginPath();
+    ctx.arc(x, height - y, 9, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.closePath();
 
 }
 
@@ -383,18 +391,18 @@ $(document).ready(function(){
                   <td><h3 ><span id="wnb_name" class="label label-success">W&B[]</span></h3></td>
               </tr>
           </table>
-          <table class="table" id="wnb_table" ><th>Type</th><th>Weight</th><th>Arm</th><th>Moment</th>
-              <tr><td><input id="t0"></td><td><input type="number" id="w0"></td><td><input type="number" id="a0"></td><td><label id="m0"/></td></tr>
-              <tr><td><input id="t1"></td><td><input type="number" id="w1"></td><td><input type="number" id="a1"></td><td><label id="m1"/></td></tr>
-              <tr><td><input id="t2"></td><td><input type="number" id="w2"></td><td><input type="number" id="a2"></td><td><label id="m2"/></td></tr>
-              <tr><td><input id="t3"></td><td><input type="number" id="w3"></td><td><input type="number" id="a3"></td><td><label id="m3"/></td></tr>
-              <tr><td><input id="t4"></td><td><input type="number" id="w4"></td><td><input type="number" id="a4"></td><td><label id="m4"/></td></tr>
-              <tr><td><input id="t5"></td><td><input type="number" id="w5"></td><td><input type="number" id="a5"></td><td><label id="m5"/></td></tr>
-              <tr><td><input id="t6"></td><td><input type="number" id="w6"></td><td><input type="number" id="a6"></td><td><label id="m6"/></td></tr>
-              <tr><td><input id="t7"></td><td><input type="number" id="w7"></td><td><input type="number" id="a7"></td><td><label id="m7"/></td></tr>
-              <tr><td><input id="t8"></td><td><input type="number" id="w8"></td><td><input type="number" id="a8"></td><td><label id="m8"/></td></tr>
-              <tr><td><input id="t9"></td><td><input type="number" id="w9"></td><td><input type="number" id="a9"></td><td><label id="m9"/></td></tr>
-              <tr><td><label>Weight - CG - Moment</label></td><td><label id="w_total"/></td><td><label id="a_total"/></td><td><label id="m_total"/></td></tr>
+          <table class="table" id="wnb_table" ><th>Type</th><th>Weight</th><th>Arm/CG</th><th>Moment</th>
+              <tr><td><input id="t0"></td><td><input id="w0"></td><td><input id="a0"></td><td><label id="m0"/></td></tr>
+              <tr><td><input id="t1"></td><td><input id="w1"></td><td><input id="a1"></td><td><label id="m1"/></td></tr>
+              <tr><td><input id="t2"></td><td><input id="w2"></td><td><input id="a2"></td><td><label id="m2"/></td></tr>
+              <tr><td><input id="t3"></td><td><input id="w3"></td><td><input id="a3"></td><td><label id="m3"/></td></tr>
+              <tr><td><input id="t4"></td><td><input id="w4"></td><td><input id="a4"></td><td><label id="m4"/></td></tr>
+              <tr><td><input id="t5"></td><td><input id="w5"></td><td><input id="a5"></td><td><label id="m5"/></td></tr>
+              <tr><td><input id="t6"></td><td><input id="w6"></td><td><input id="a6"></td><td><label id="m6"/></td></tr>
+              <tr><td><input id="t7"></td><td><input id="w7"></td><td><input id="a7"></td><td><label id="m7"/></td></tr>
+              <tr><td><input id="t8"></td><td><input id="w8"></td><td><input id="a8"></td><td><label id="m8"/></td></tr>
+              <tr><td><input id="t9"></td><td><input id="w9"></td><td><input id="a9"></td><td><label id="m9"/></td></tr>
+              <tr><td><label>Total</label></td><td><label id="w_total"/></td><td><label id="a_total"/></td><td><label id="m_total"/></td></tr>
           </table>
 
           <table class="table"><th>Graph</th>
@@ -403,10 +411,10 @@ $(document).ready(function(){
                     <canvas id="wnb_canvas" width="480" height="320" style="border:1px solid #FFFFFF;"/>
                 </td>
                 <td>
-                    <input id="max_w" type="number" style="margin: 2px;" placeholder="Max Weight"><br>
-                    <input id="min_w" type="number" style="margin: 2px;" placeholder="Min Weight"><br>
-                    <input id="max_a" type="number" style="margin: 2px;" placeholder="Max Arm"><br>
-                    <input id="min_a" type="number" style="margin: 2px;" placeholder="Min Arm"><br>
+                    <input id="max_w" style="margin: 2px;" placeholder="Max Weight"><br>
+                    <input id="min_w" style="margin: 2px;" placeholder="Min Weight"><br>
+                    <input id="max_a" style="margin: 2px;" placeholder="Max Arm"><br>
+                    <input id="min_a" style="margin: 2px;" placeholder="Min Arm"><br>
                     <input id="points" style="margin: 2px;" placeholder="Envelope Points (See Help)"><br>
                 </td>
             </tr>
