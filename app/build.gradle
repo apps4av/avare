@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "com.ds.avare"
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 23
     }
 

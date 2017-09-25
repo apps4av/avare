@@ -39,6 +39,15 @@ Redistribution and use in source and binary forms, with or without modification,
         android:name="AvareApplication"
         android:allowBackup="true">
 
+
+        <provider
+            android:name=".content.ObstaclesProvider"
+            android:authorities="com.ds.avare.provider.obstacles" />
+
+        <provider
+            android:name=".content.ProceduresProvider"
+            android:authorities="com.ds.avare.provider.procedures" />
+
         <activity android:name="org.acra.CrashReportDialog"
             android:theme="@style/Theme.Dialog"
             android:process=":error_report"

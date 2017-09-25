@@ -23,6 +23,7 @@ import android.os.IBinder;
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
@@ -949,7 +950,7 @@ public class StorageService extends Service {
                     mGps.stop();
                 }
                 if(null != mGpsParams) {
-                    mObstacles = mImageDataSource.findObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), (int) mGpsParams.getAltitude());
+                    mObstacles = ContentProviderHelper.getObstacles(StorageService.this, mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
                 }
             }
 

@@ -17,11 +17,8 @@ import android.content.Context;
 
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
-import com.ds.avare.place.Destination;
 import com.ds.avare.place.NavAid;
-import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
-import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.weather.AirSigMet;
@@ -142,17 +139,6 @@ public class DataSource {
     }
 
     /**
-     * 
-     * @param lon
-     * @param lat
-     * @param height
-     * @return Obstacles list that are dangerous
-     */
-    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
-        return dbHelper.findObstacles(lon, lat, height);
-    }
-
-    /**
      *
      * @return All Game TFRs
      */
@@ -177,14 +163,6 @@ public class DataSource {
      */
     public void findLonLatMetar(HashMap<String, Metar> metars) {
         dbHelper.findLonLatMetar(metars);
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public String findObstacle(String height, Destination dest) {
-        return dbHelper.findObstacle(height, dest);          
     }
 
     /**
@@ -264,14 +242,6 @@ public class DataSource {
         return dbHelper.findElev(name);
     }
 
-    
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<Cifp> findProcedure(String name, String approach) {
-        return  dbHelper.findProcedure(name, approach);
-    }
     
     /**
      * 

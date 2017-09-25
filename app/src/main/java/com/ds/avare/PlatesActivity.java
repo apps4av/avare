@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
@@ -524,7 +525,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         // Get flight procedures set up for this plate
         // Note: Move to BG task
         mListApproaches = new ArrayList<>();
-        mCifp = mService.getDBResource().findProcedure(mAirportButton.getText().toString(), mPlatesButton.getText().toString());
+        mCifp = ContentProviderHelper.findProcedure(this, mAirportButton.getText().toString(), mPlatesButton.getText().toString());
         if(mCifp.size() != 0) {
             // Show which plates have approaches
             mApproachButton.setTextColor(0xFF007F00);
@@ -966,6 +967,5 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
          */
         mPlatesTimerButton.setText(chronometer.getText());
     }
-    
 
 }

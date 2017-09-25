@@ -24,7 +24,6 @@ import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.NavAid;
-import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
@@ -61,8 +60,6 @@ public class DataBaseHelper  {
      * Cache this class to sqlite
      */
     private SQLiteDatabase mDataBase;
-    private SQLiteDatabase mDataBaseProcedures;
-    private SQLiteDatabase mDataBaseObstacles;
     private SQLiteDatabase mDataBaseWeather;
     private SQLiteDatabase mDataBaseGameTFRs;
 
@@ -83,7 +80,6 @@ public class DataBaseHelper  {
     private Integer mUsers;
     private Integer mUsersWeather;
     private Integer mUsersProcedures;
-    private Integer mUsersObstacles;
     private Integer mUsersGameTFRs;
 
     
@@ -141,7 +137,6 @@ public class DataBaseHelper  {
     private static final String TABLE_TO = "takeoff";
     private static final String TABLE_ALT = "alternate";
     private static final String TABLE_AFD = "afd";
-    private static final String TABLE_OBSTACLES = "obs";
     private static final String TABLE_SUA = "saa";
     private static final String TABLE_PROCEDURE = "procedures";
     private static final String TABLE_GEOPLATES = "geoplates";
@@ -162,7 +157,7 @@ public class DataBaseHelper  {
      */
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
-        mUsers = mUsersWeather = mUsersProcedures = mUsersObstacles = mUsersGameTFRs = 0;
+        mUsers = mUsersWeather = mUsersProcedures = mUsersGameTFRs = 0;
         mContext = context;
     }
 
@@ -1574,122 +1569,6 @@ public class DataBaseHelper  {
     }
 
 
-    /**
-     *
-     * @param statement
-     * @return
-     */
-    private Cursor doQueryObstacles(String statement, String name) {
-        Cursor c = null;
-
-        String path = mPref.mapsFolder() + "/" + name;
-        if(!(new File(path).exists())) {
-            return null;
-        }
-
-        /*
-         *
-         */
-        synchronized(mUsersObstacles) {
-            if(mDataBaseObstacles == null) {
-                mUsersObstacles = 0;
-                try {
-
-                    mDataBaseObstacles = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
-                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-                }
-                catch(RuntimeException e) {
-                    mDataBaseObstacles = null;
-                }
-            }
-            if(mDataBaseObstacles == null) {
-                return c;
-            }
-            mUsersObstacles++;
-        }
-
-        /*
-         * In case we fail
-         */
-
-        if(mDataBaseObstacles == null) {
-            return c;
-        }
-
-        if(!mDataBaseObstacles.isOpen()) {
-            return c;
-        }
-
-        /*
-         * Find with sqlite query
-         */
-        try {
-            c = mDataBaseObstacles.rawQuery(statement, null);
-        }
-        catch (Exception e) {
-            c = null;
-        }
-
-        return c;
-    }
-
-    /**
-     * Close database
-     */
-    private void closesObstacles(Cursor c) {
-        try {
-            if(null != c) {
-                c.close();
-            }
-        }
-        catch (Exception e) {
-
-        }
-
-        synchronized(mUsersObstacles) {
-            mUsersObstacles--;
-            if((mDataBaseObstacles != null) && (mUsersObstacles <= 0)) {
-                try {
-                    mDataBaseObstacles.close();
-                }
-                catch (Exception e) {
-                }
-                mDataBaseObstacles = null;
-                mUsersObstacles = 0;
-            }
-        }
-    }
-
-
-    public String findObstacle(String height, Destination dest) {
-
-        String ret = null;
-        if(null == dest) {
-            return ret;
-        }
-        double lon = dest.getLocation().getLongitude();
-        double lat = dest.getLocation().getLatitude();
-        
-        /*
-         * Find with sqlite query
-         */
-        String qry = "select * from " + TABLE_OBSTACLES + " where Height =='" + height + "' and " + 
-                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
-                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
-        Cursor cursor = doQueryObstacles(qry, "obs.db");
-
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    ret = new String(cursor.getString(1) + "," + cursor.getString(0));
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closesObstacles(cursor);
-        return ret;
-    }
 
     /**
      * Find the lat/lon of an airport
@@ -1866,41 +1745,6 @@ public class DataBaseHelper  {
 
         return ret;
     }
-
-    /**
-     *
-     * @param lon
-     * @param lat
-     * @param height
-     * @return
-     */
-    public LinkedList<Obstacle> findObstacles(double lon, double lat, int height) {
-        
-        LinkedList<Obstacle> list = new LinkedList<Obstacle>();
-        
-        String qry = "select * from " + TABLE_OBSTACLES + " where (Height > " + (height - (int)Obstacle.HEIGHT_BELOW) + ") and " +
-                "(" + LATITUDE_DB  + " > " + (lat - Obstacle.RADIUS) + ") and (" + LATITUDE_DB  + " < " + (lat + Obstacle.RADIUS) + ") and " +
-                "(" + LONGITUDE_DB + " > " + (lon - Obstacle.RADIUS) + ") and (" + LONGITUDE_DB + " < " + (lon + Obstacle.RADIUS) + ");";
-        /*
-         * Find obstacles at below or higher in lon/lat radius
-         * We ignore all obstacles 500 AGL below in our script
-         */
-        Cursor cursor = doQueryObstacles(qry, "obs.db");
-        
-        try {
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    list.add(new Obstacle(cursor.getFloat(1), cursor.getFloat(0), (int)cursor.getFloat(2)));
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesObstacles(cursor);
-        return list;
-    }
-
 
     /**
      * 
@@ -2189,140 +2033,6 @@ public class DataBaseHelper  {
     }
     
     
-
-    /**
-     * 
-     * @param statement
-     * @return
-     */
-    private Cursor doQueryProcedures(String statement, String name) {
-        Cursor c = null;
-        
-        String path = mPref.mapsFolder() + "/" + name;
-        if(!(new File(path).exists())) {
-            return null;
-        }
-
-        /*
-         * 
-         */
-        synchronized(mUsersProcedures) {
-            if(mDataBaseProcedures == null) {
-                mUsersProcedures = 0;
-                try {
-                    
-                    mDataBaseProcedures = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
-                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-                }
-                catch(RuntimeException e) {
-                    mDataBaseProcedures = null;
-                }
-            }
-            if(mDataBaseProcedures == null) {
-                return c;
-            }
-            mUsersProcedures++;
-        }
-        
-        /*
-         * In case we fail
-         */
-        
-        if(mDataBaseProcedures == null) {
-            return c;
-        }
-        
-        if(!mDataBaseProcedures.isOpen()) {
-            return c;
-        }
-        
-        /*
-         * Find with sqlite query
-         */
-        try {
-               c = mDataBaseProcedures.rawQuery(statement, null);
-        }
-        catch (Exception e) {
-            c = null;
-        }
-
-        return c;
-    }
-
-    /**
-     * Close database
-     */
-    private void closesProcedures(Cursor c) {
-        try {
-            if(null != c) {
-                c.close();
-            }
-        }
-        catch (Exception e) {
-            
-        }
-
-        synchronized(mUsersProcedures) {
-            mUsersProcedures--;
-            if((mDataBaseProcedures != null) && (mUsersProcedures <= 0)) {
-                try {
-                    mDataBaseProcedures.close();
-                }
-                catch (Exception e) {
-                }
-                mDataBaseProcedures = null;
-                mUsersProcedures = 0;
-            }
-        }
-    }
-
-
-    /**
-     * 
-     * @param name
-     * @param approach
-     * @return
-     */
-    public LinkedList<Cifp> findProcedure(String name, String approach) {
-
-        TreeMap<String, Cifp> map = new TreeMap<String, Cifp>();
-        String params[] = Cifp.getParams(approach);
-        if(params[0] == null || params[1] == null) {
-            return new LinkedList<Cifp>();
-        }
-
-        // get runway matched to CIFP database
-
-        String qry =
-                "select * from " + TABLE_PROCEDURE + " where (Airport='" + name + "' or Airport='K" + name +
-                "') and AppType='" + params[0] + "' and runway like'%"  + params[1]  + "%';";
-
-        Cursor cursor = doQueryProcedures(qry, "procedures.db");
-
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    do {
-
-                        /*
-                         * Add as inital course, initial alts, final course, final alts, missed course, missed alts
-                         */
-                        Cifp cifp = new Cifp(name, cursor.getString(4), cursor.getString(5), cursor.getString(6),
-                                cursor.getString(7), cursor.getString(8), cursor.getString(9));
-                        map.put(cifp.getInitialCourse(), cifp);
-                    } while(cursor.moveToNext());
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesProcedures(cursor);
-        
-        return new LinkedList<Cifp>(map.values());
-    }
-
-
     /**
      * 
      * @param lat
