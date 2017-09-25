@@ -3,6 +3,7 @@ package com.ds.avare.place;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -159,7 +160,7 @@ public class DatabaseDestination extends Destination {
                 // Find winds
                 mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
                 mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
-                mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                mWinds = ContentProviderHelper.getWindsAloft(mService.getApplicationContext(), mLond, mLatd);
             }
             catch (Exception e) {
                 return false;

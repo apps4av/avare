@@ -16,7 +16,7 @@ import com.ds.avare.storage.Preferences;
  * Created by zkhan on 3/10/17.
  */
 
-public class ProceduresProvider extends ContentProvider {
+public class ProceduresProvider extends MainProvider {
 
 
     public static final int PROCEDURES = 400;
@@ -33,10 +33,6 @@ public class ProceduresProvider extends ContentProvider {
         mURIMatcher.addURI(ProceduresContract.AUTHORITY, ProceduresContract.BASE + "/#", PROCEDURES_ID);
     }
 
-    private ProceduresDatabaseHelper mProceduresDatabaseHelper;
-
-    private Preferences mPref;
-
     @Override
     public String getType(Uri uri) {
         int uriType = mURIMatcher.match(uri);
@@ -52,7 +48,10 @@ public class ProceduresProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        checkChange();
+        if(!checkDatabaseFolderSame()) {
+            mDatabaseHelper.close();
+            onCreate();
+        }
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(ProceduresContract.TABLE);
@@ -67,42 +66,24 @@ public class ProceduresProvider extends ContentProvider {
         }
 
 
-        Cursor cursor = queryBuilder.query(mProceduresDatabaseHelper.getReadableDatabase(),
-                projection, selection, selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return cursor;
-    }
-
-
-    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        try {
+            Cursor cursor = queryBuilder.query(mDatabaseHelper.getReadableDatabase(),
+                    projection, selection, selectionArgs, null, null, sortOrder);
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            return cursor;
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            mDatabaseHelper.close();
+            onCreate();
+        }
         return null;
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
-    }
-
-    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
-    }
-
-    private synchronized void checkChange() {
-        // allow changing folder
-        if (!mPref.mapsFolder().equals(mProceduresDatabaseHelper.getFolder())) {
-            mProceduresDatabaseHelper.close();
-            mProceduresDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
-        }
-    }
-
-
-    @Override
     public boolean onCreate() {
-        mPref = new Preferences(getContext());
-        mProceduresDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
+        super.onCreate();
+        mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
         return true;
     }
 

@@ -48,6 +48,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name=".content.ProceduresProvider"
             android:authorities="com.ds.avare.provider.procedures" />
 
+        <provider
+            android:name=".content.WeatherProvider"
+            android:authorities="com.ds.avare.provider.weather" />
+
         <activity android:name="org.acra.CrashReportDialog"
             android:theme="@style/Theme.Dialog"
             android:process=":error_report"

@@ -25,17 +25,12 @@ import com.ds.avare.place.Awos;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
-import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.weather.AirSigMet;
-import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -47,7 +42,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.TreeMap;
 import java.util.Vector;
 
 /**
@@ -60,7 +54,6 @@ public class DataBaseHelper  {
      * Cache this class to sqlite
      */
     private SQLiteDatabase mDataBase;
-    private SQLiteDatabase mDataBaseWeather;
     private SQLiteDatabase mDataBaseGameTFRs;
 
     /*
@@ -78,8 +71,6 @@ public class DataBaseHelper  {
      * Will serve as a non blocking sem with synchronized statement
      */
     private Integer mUsers;
-    private Integer mUsersWeather;
-    private Integer mUsersProcedures;
     private Integer mUsersGameTFRs;
 
     
@@ -88,7 +79,6 @@ public class DataBaseHelper  {
     private static final int    FACILITY_NAME_COL = 4;
     public  static final String  LOCATION_ID = "Location ID";
     private static final String  LOCATION_ID_DB = "LocationID";
-    private static final String  INFO_DB = "info";
     private static final int    LOCATION_ID_COL = 0;
     public  static final String  MAGNETIC_VARIATION = "Magnetic Variation";
     private static final int    MAGNETIC_VARIATION_COL = 10;
@@ -101,14 +91,8 @@ public class DataBaseHelper  {
     public  static final String  LONGITUDE = "Longitude";
     private static final String  LONGITUDE_DB = "ARPLongitude";
     private static final int    LONGITUDE_COL = 2;
-    public  static final String  NAVAID_MAGNETIC_VARIATION = "Magnetic Variation";
-    private static final String  NAVAID_MAGNETIC_VARIATION_DB = "Variation";
     private static final int    NAVAID_MAGNETIC_VARIATION_COL = 5;
-    public  static final String  NAVAID_CLASS = "Class";
-    private static final String  NAVAID_CLASS_DB = "Class";
     private static final int    NAVAID_CLASS_COL = 6;
-    public  static final String  NAVAID_HIWAS = "HIWAS";
-    private static final String  NAVAID_HIWAS_DB = "HIWAS";
     private static final int    NAVAID_HIWAS_COL = 7;
     private static final int    NAVAID_ELEVATION_COL = 8;
     public  static final String  FUEL_TYPES = "Fuel Types";
@@ -122,7 +106,6 @@ public class DataBaseHelper  {
     private static final int    SEGCIRCLE_COL = 16;
     private static final String SEGCIRCLE = "Segmented Circle";
     public static final String MANAGER_PHONE = "Manager Phone";
-    public static final String PROC = "proc";
 
     public static final String ELEVATION = "Elevation";
     
@@ -131,15 +114,12 @@ public class DataBaseHelper  {
     private static final String TABLE_AIRPORT_FREQ = "airportfreq";
     private static final String TABLE_AIRPORT_AWOS = "awos";
     private static final String TABLE_AIRPORT_RUNWAYS = "airportrunways";
-    private static final String TABLE_FILES = "files";
     private static final String TABLE_FIX = "fix";
     private static final String TABLE_NAV = "nav";
     private static final String TABLE_TO = "takeoff";
     private static final String TABLE_ALT = "alternate";
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_SUA = "saa";
-    private static final String TABLE_PROCEDURE = "procedures";
-    private static final String TABLE_GEOPLATES = "geoplates";
     private static final String TABLE_AIRWAYS = "airways";
     private static final String TABLE_GAME = "gametfr";
 
@@ -157,7 +137,7 @@ public class DataBaseHelper  {
      */
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
-        mUsers = mUsersWeather = mUsersProcedures = mUsersGameTFRs = 0;
+        mUsers = mUsersGameTFRs = 0;
         mContext = context;
     }
 
@@ -365,38 +345,6 @@ public class DataBaseHelper  {
         return airports;
     }
 
-    /**
-     * Find coordinate of center tile.
-     */
-    public Coordinate getCoordinate(String name) {
-            
-        Cursor cursor;
-        
-        String types = TABLE_AIRPORTS;
-        Coordinate c = null;
-
-        String qry = "select * from " + types + " where " + LOCATION_ID_DB + "=='" + name + "';";
-        cursor = doQuery(qry, getMainDb());
-
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                        
-                        /*
-                         * Put ID and name first
-                         */
-                    c = new Coordinate(
-                            cursor.getDouble(LONGITUDE_COL),
-                            cursor.getDouble(LATITUDE_COL));
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closes(cursor);
-        return c;
-    }
-    
     /**
      * 
      */
@@ -1746,293 +1694,6 @@ public class DataBaseHelper  {
         return ret;
     }
 
-    /**
-     * 
-     * @return
-     */
-    private String getWeatherDb() {
-        return "weather.db";
-    }
-
-    /**
-     * 
-     * @param statement
-     * @return
-     */
-    private Cursor doQueryWeather(String statement, String name) {
-        Cursor c = null;
-        
-        String path = mPref.mapsFolder() + "/" + name;
-        if(!(new File(path).exists())) {
-            return null;
-        }
-
-        /*
-         * 
-         */
-        synchronized(mUsersWeather) {
-            if(mDataBaseWeather == null) {
-                mUsersWeather = 0;
-                try {
-                    
-                    mDataBaseWeather = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY | 
-                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-                }
-                catch(RuntimeException e) {
-                    mDataBaseWeather = null;
-                }
-            }
-            if(mDataBaseWeather == null) {
-                return c;
-            }
-            mUsersWeather++;
-        }
-        
-        /*
-         * In case we fail
-         */
-        
-        if(mDataBaseWeather == null) {
-            return c;
-        }
-        
-        if(!mDataBaseWeather.isOpen()) {
-            return c;
-        }
-        
-        /*
-         * Find with sqlite query
-         */
-        try {
-               c = mDataBaseWeather.rawQuery(statement, null);
-        }
-        catch (Exception e) {
-            c = null;
-        }
-
-        return c;
-    }
-
-    /**
-     * Close database
-     */
-    private void closesWeather(Cursor c) {
-
-        try {
-            if(null != c) {
-                c.close();
-            }
-        }
-        catch (Exception e) {
-            
-        }
-
-        synchronized(mUsersWeather) {
-            mUsersWeather--;
-            if((mDataBaseWeather != null) && (mUsersWeather <= 0)) {
-                try {
-                    mDataBaseWeather.close();
-                }
-                catch (Exception e) {
-                }
-                mDataBaseWeather = null;
-                mUsersWeather = 0;
-            }
-        }
-    }
-
-
-    /**
-     * 
-     * @param station
-     * @return
-     */
-    public Taf getTAF(String station) {
-      
-        Taf taf = null;
-        String qry =
-                "select * from tafs where station_id='K" + station + "';";
-        
-        Cursor cursor = doQueryWeather(qry, getWeatherDb());
-        
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-
-                    taf = new Taf();
-                    taf.rawText = cursor.getString(0);
-                    taf.time = cursor.getString(1);
-                    taf.stationId = cursor.getString(2);
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesWeather(cursor);
-        return taf;        
-    }
-
-    /**
-     * 
-     * @param station
-     * @return
-     */
-    public Metar getMETAR(String station) {
-      
-        Metar metar = null;
-        String qry =
-                "select * from metars where station_id='K" + station + "';";
-        
-        Cursor cursor = doQueryWeather(qry, getWeatherDb());
-        
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-
-                    metar = new Metar();
-                    metar.rawText = cursor.getString(0);
-                    metar.time = cursor.getString(1);
-                    metar.stationId = cursor.getString(2);
-                    metar.flightCategory = cursor.getString(3);
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesWeather(cursor);
-        return metar;        
-    }
-
-    
-    /**
-     * 
-     * @param lon
-     * @param lat
-     * @return
-     */
-    public WindsAloft getWindsAloft(double lon, double lat) {
-      
-        WindsAloft wa = null;
-        String qry =
-                "select * from wa order by " +
-                "((longitude - " + lon + ")*" + "(longitude - " + lon + ") + " +    
-                "(latitude - " + lat + ")*" + "(latitude - " + lat + ")) limit 1;";
-
-        Cursor cursor = doQueryWeather(qry, getWeatherDb());
-        
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-
-                    wa = new WindsAloft();
-                    wa.station = cursor.getString(0);
-                    wa.time = cursor.getString(1);
-                    wa.lon = cursor.getFloat(2);
-                    wa.lat = cursor.getFloat(3);
-                    wa.w3k = cursor.getString(4).replaceAll("[ ]", "");
-                    wa.w6k = cursor.getString(5).replaceAll("[ ]", "");
-                    wa.w9k = cursor.getString(6).replaceAll("[ ]", "");
-                    wa.w12k = cursor.getString(7).replaceAll("[ ]", "");
-                    wa.w18k = cursor.getString(8).replaceAll("[ ]", "");
-                    wa.w24k = cursor.getString(9).replaceAll("[ ]", "");
-                    wa.w30k = cursor.getString(10).replaceAll("[ ]", "");
-                    wa.w34k = cursor.getString(11).replaceAll("[ ]", "");
-                    wa.w39k = cursor.getString(12).replaceAll("[ ]", "");
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesWeather(cursor);
-        return wa;        
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<Airep> getAireps(double lon, double lat) {
-
-        LinkedList<Airep> airep = new LinkedList<Airep>();
-
-        /*
-         * All aireps/pireps sep by \n
-         */
-        
-        String qry =
-                "select * from apirep where " +                
-                "(" + "latitude"  + " > " + (lat - Airep.RADIUS) + ") and (" + "latitude"  + " < " + (lat + Airep.RADIUS) + ") and " +
-                "(" + "longitude" + " > " + (lon - Airep.RADIUS) + ") and (" + "longitude" + " < " + (lon + Airep.RADIUS) + ");";
-     
-        Cursor cursor = doQueryWeather(qry, getWeatherDb());
-        
-        try {
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    Airep a = new Airep();
-                    a.rawText = cursor.getString(0);
-                    a.time = cursor.getString(1);
-                    a.lon = cursor.getFloat(2);
-                    a.lat = cursor.getFloat(3);
-                    a.reportType = cursor.getString(4);
-                    airep.add(a);
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesWeather(cursor);
-        return airep;
-    }
-
-    
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<AirSigMet> getAirSigMets() {
-
-        LinkedList<AirSigMet> airsig = new LinkedList<AirSigMet>();
-        
-        /*
-         * Get all
-         */
-        String qry =
-                "select * from airsig"; 
-     
-        Cursor cursor = doQueryWeather(qry, getWeatherDb());
-        
-        try {
-            if(cursor != null) {
-                while(cursor.moveToNext()) {
-                    AirSigMet a = new AirSigMet();
-                    a.rawText = cursor.getString(0);
-                    a.timeFrom = cursor.getString(1);
-                    a.timeTo = cursor.getString(2);
-                    a.points = cursor.getString(3);
-                    a.minFt = cursor.getString(4);
-                    a.maxFt = cursor.getString(5);
-                    a.movementDeg = cursor.getString(6);
-                    a.movementKt = cursor.getString(7);
-                    a.hazard = cursor.getString(8);
-                    a.severity = cursor.getString(9);
-                    a.reportType = cursor.getString(10);
-                    airsig.add(a);
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        
-        closesWeather(cursor);
-        return airsig;
-    }
-    
-    
     /**
      * 
      * @param lat

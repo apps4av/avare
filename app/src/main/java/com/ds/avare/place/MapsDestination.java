@@ -5,6 +5,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.utils.Helper;
 
@@ -130,7 +131,7 @@ public class MapsDestination extends Destination {
                 mFound = true;
             }
 
-            mWinds = mService.getDBResource().getWindsAloft(mLond, mLatd);
+            mWinds = ContentProviderHelper.getWindsAloft(mService.getApplicationContext(), mLond, mLatd);
             return null;
         }
 

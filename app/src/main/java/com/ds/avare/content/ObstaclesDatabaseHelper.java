@@ -14,14 +14,12 @@ import java.io.File;
  * Created by zkhan on 3/13/17.
  */
 
-public class ObstaclesDatabaseHelper extends SQLiteOpenHelper {
+public class ObstaclesDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "obs.db";
-    private String mFolder; // save this as users can change
 
     public ObstaclesDatabaseHelper(Context context, String folder) {
-        super(context, folder + File.separator + DBNAME, null, 1);
-        mFolder = folder;
+        super(context, folder, DBNAME);
     }
 
     @Override
@@ -31,10 +29,6 @@ public class ObstaclesDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onCreate(db);
-    }
-
-    public String getFolder() {
-        return mFolder;
     }
 
 }

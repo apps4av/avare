@@ -10,11 +10,11 @@ import java.io.File;
  * Created by zkhan on 3/13/17.
  */
 
-public class ProceduresDatabaseHelper extends MainDatabaseHelper {
+public class WeatherDatabaseHelper extends MainDatabaseHelper {
 
-    private static final String DBNAME = "procedures.db";
+    private static final String DBNAME = "weather.db";
 
-    public ProceduresDatabaseHelper(Context context, String folder) {
+    public WeatherDatabaseHelper(Context context, String folder) {
         super(context, folder, DBNAME);
     }
 
@@ -26,5 +26,4 @@ public class ProceduresDatabaseHelper extends MainDatabaseHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onCreate(db);
     }
-
 }

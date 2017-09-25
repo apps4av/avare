@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.weather;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.shapes.MetShape;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -104,7 +105,7 @@ public class InternetWeatherCache {
                 /*
                  * Create a list of air/sigmets
                  */
-                mAirSig = mService.getDBResource().getAirSigMets();
+                mAirSig = ContentProviderHelper.getAirSigMets(mService.getApplicationContext());
 
                 String filenameManifest = new Preferences(mService).mapsFolder() + "/weather";
                 String dataManifest = Helper.readTimestampFromFile(filenameManifest);

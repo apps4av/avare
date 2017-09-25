@@ -21,11 +21,7 @@ import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
-import com.ds.avare.weather.AirSigMet;
-import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
-import com.ds.avare.weather.Taf;
-import com.ds.avare.weather.WindsAloft;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,12 +61,6 @@ public class DataSource {
      */
     public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
         dbHelper.findDestination(name, type, dbType, params, runways, freq, awos);
-    }
-    
-    /**
-     */
-    public Coordinate getCoordinate(String name) {
-        return dbHelper.getCoordinate(name);  
     }
     
     /**
@@ -163,48 +153,6 @@ public class DataSource {
      */
     public void findLonLatMetar(HashMap<String, Metar> metars) {
         dbHelper.findLonLatMetar(metars);
-    }
-
-    /**
-     * 
-     * @param station
-     * @return
-     */
-    public Taf getTAF(String station) {
-        return dbHelper.getTAF(station);          
-    }
-
-    /**
-     * 
-     * @param station
-     * @return
-     */
-    public Metar getMETAR(String station) {
-        return dbHelper.getMETAR(station);          
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<Airep> getAireps(double lon, double lat) {
-        return dbHelper.getAireps(lon, lat);          
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public WindsAloft getWindsAloft(double lon, double lat) {
-        return dbHelper.getWindsAloft(lon, lat);          
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<AirSigMet> getAirSigMets() {
-        return dbHelper.getAirSigMets();
     }
 
     /**
