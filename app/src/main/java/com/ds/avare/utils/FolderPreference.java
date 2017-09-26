@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ds.avare.R;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.storage.Preferences;
 
 import java.io.File;
@@ -118,8 +119,11 @@ public class FolderPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
         if(positiveResult) {
-        	
-        	// Create a default toast message that assumes failure
+
+            // reset all databases on new folder
+            ContentProviderHelper.reset(mContext);
+
+            // Create a default toast message that assumes failure
             Toast t = Toast.makeText(mContext, 
                     mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);;
 

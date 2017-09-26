@@ -59,8 +59,4 @@ public class MainProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;
     }
-
-    protected boolean checkDatabaseFolderSame() {
-        return mPref.mapsFolder().equals(mDatabaseHelper.getFolder());
-    }
 }

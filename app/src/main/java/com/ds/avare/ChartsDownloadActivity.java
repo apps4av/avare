@@ -34,6 +34,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.ChartAdapter;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
@@ -430,8 +431,10 @@ public class ChartsDownloadActivity extends Activity {
                 }                
                 return;
             }
-            
-            
+
+            // reset all databases on new downloads/deletes
+            ContentProviderHelper.reset(getApplicationContext());
+
             if(msg.obj instanceof Download) {
                 if(Download.FAILED == result) {
                     try {

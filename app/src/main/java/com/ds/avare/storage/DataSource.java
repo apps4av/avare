@@ -129,14 +129,6 @@ public class DataSource {
     }
 
     /**
-     *
-     * @return All Game TFRs
-     */
-    public LinkedList<LabelCoordinate> findGameTFRs() {
-        return dbHelper.findGameTFRs();
-    }
-
-    /**
      * 
      * @param name
      * @param type

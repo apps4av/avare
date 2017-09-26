@@ -68,11 +68,6 @@ public class WeatherProvider extends MainProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        if(!checkDatabaseFolderSame()) {
-            mDatabaseHelper.close();
-            onCreate();
-        }
-
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
         int uriType = mURIMatcher.match(uri);
@@ -104,8 +99,7 @@ public class WeatherProvider extends MainProvider {
         }
         catch (Exception e) {
             // Something wrong, missing or deleted database from download
-            mDatabaseHelper.close();
-            onCreate();
+            resetDatabase();
         }
         return null;
     }
@@ -118,4 +112,11 @@ public class WeatherProvider extends MainProvider {
         return true;
     }
 
+    /**
+     * Sync database on folder change, deleted database, new database, and other conditions
+     */
+    public void resetDatabase() {
+        mDatabaseHelper.close();
+        onCreate();
+    }
 }

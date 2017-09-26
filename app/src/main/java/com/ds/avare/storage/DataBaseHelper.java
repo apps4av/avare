@@ -54,7 +54,6 @@ public class DataBaseHelper  {
      * Cache this class to sqlite
      */
     private SQLiteDatabase mDataBase;
-    private SQLiteDatabase mDataBaseGameTFRs;
 
     /*
      * Preferences
@@ -71,7 +70,6 @@ public class DataBaseHelper  {
      * Will serve as a non blocking sem with synchronized statement
      */
     private Integer mUsers;
-    private Integer mUsersGameTFRs;
 
     
     public  static final String  FACILITY_NAME = "Facility Name";
@@ -121,7 +119,6 @@ public class DataBaseHelper  {
     private static final String TABLE_AFD = "afd";
     private static final String TABLE_SUA = "saa";
     private static final String TABLE_AIRWAYS = "airways";
-    private static final String TABLE_GAME = "gametfr";
 
 
     /**
@@ -137,7 +134,7 @@ public class DataBaseHelper  {
      */
     public DataBaseHelper(Context context) {
         mPref = new Preferences(context);
-        mUsers = mUsersGameTFRs = 0;
+        mUsers = 0;
         mContext = context;
     }
 
@@ -1841,96 +1838,8 @@ public class DataBaseHelper  {
 	}
 
     
-    /**
-     *
-     * @param statement
-     * @return
-     */
-    private Cursor doQueryGameTFRs(String statement, String name) {
-        Cursor c = null;
 
-        String path = mPref.mapsFolder() + "/" + name;
-        if(!(new File(path).exists())) {
-            return null;
-        }
-
-        /*
-         *
-         */
-        synchronized(mUsersGameTFRs) {
-            if(mDataBaseGameTFRs == null) {
-                mUsersGameTFRs = 0;
-                try {
-
-                    mDataBaseGameTFRs = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY |
-                            SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-                }
-                catch(RuntimeException e) {
-                    mDataBaseGameTFRs = null;
-                }
-            }
-            if(mDataBaseGameTFRs == null) {
-                return c;
-            }
-            mUsersGameTFRs++;
-        }
-
-        /*
-         * In case we fail
-         */
-
-        if(mDataBaseGameTFRs == null) {
-            return c;
-        }
-
-        if(!mDataBaseGameTFRs.isOpen()) {
-            return c;
-        }
-
-        /*
-         * Find with sqlite query
-         */
-        try {
-            c = mDataBaseGameTFRs.rawQuery(statement, null);
-        }
-        catch (Exception e) {
-            c = null;
-        }
-
-        return c;
-    }
-
-
-    /**
-     * Close database
-     */
-    private void closesGameTFRs(Cursor c) {
-        try {
-            if(null != c) {
-                c.close();
-            }
-        }
-        catch (Exception e) {
-
-        }
-
-        synchronized(mUsersGameTFRs) {
-            mUsersGameTFRs--;
-            if((mDataBaseGameTFRs != null) && (mUsersGameTFRs <= 0)) {
-                try {
-                    mDataBaseGameTFRs.close();
-                }
-
-
-                catch (Exception e) {
-                }
-                mDataBaseGameTFRs = null;
-                mUsersGameTFRs = 0;
-            }
-        }
-    }
-
-
+	/**
     public LinkedList<LabelCoordinate> findGameTFRs() {
         LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
 
@@ -1977,6 +1886,6 @@ public class DataBaseHelper  {
         }
         closesGameTFRs(cursor);
         return ret;
-    }
+    }*/
 
 }

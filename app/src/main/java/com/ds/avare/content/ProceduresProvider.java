@@ -48,11 +48,6 @@ public class ProceduresProvider extends MainProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        if(!checkDatabaseFolderSame()) {
-            mDatabaseHelper.close();
-            onCreate();
-        }
-
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(ProceduresContract.TABLE);
 
@@ -74,9 +69,7 @@ public class ProceduresProvider extends MainProvider {
         }
         catch (Exception e) {
             // Something wrong, missing or deleted database from download
-            mDatabaseHelper.close();
-            onCreate();
-        }
+            resetDatabase();        }
         return null;
     }
 
@@ -85,6 +78,14 @@ public class ProceduresProvider extends MainProvider {
         super.onCreate();
         mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
         return true;
+    }
+
+    /**
+     * Sync database on folder change, deleted database, new database, and other conditions
+     */
+    public void resetDatabase() {
+        mDatabaseHelper.close();
+        onCreate();
     }
 
 }
