@@ -26,22 +26,17 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Runway;
 import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.position.Radial;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.Metar;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.Vector;
 
 /**
@@ -1836,56 +1831,4 @@ public class DataBaseHelper  {
         
         return points;
 	}
-
-    
-
-	/**
-    public LinkedList<LabelCoordinate> findGameTFRs() {
-        LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
-
-        // Find -6 hours to +12 hours
-        Calendar begin = Calendar.getInstance();
-        Calendar end = Calendar.getInstance();
-        begin.add(Calendar.HOUR_OF_DAY, -6);
-        end.add(Calendar.HOUR_OF_DAY, 12);
-
-
-        // Game TFRs in EST
-        SimpleDateFormat formatterIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        formatterIso.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-        String bS = formatterIso.format(begin.getTime());
-        String eS = formatterIso.format(end.getTime());
-
-        SimpleDateFormat formatterZulu = new SimpleDateFormat("ddHH:mm'Z'");
-        formatterZulu.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-
-        String qry = "select * from " + TABLE_GAME + " where effective between '" + bS +  "' and '"  + eS + "'";
-
-
-
-        Cursor cursor = doQueryGameTFRs(qry, "gametfr.db");
-
-        try {
-            if(cursor != null) {
-                if(cursor.moveToFirst()) {
-                    do {
-                        String date = cursor.getString(0);
-                        Date effective = formatterIso.parse(date);
-                        // print in zulu
-                        String toprint = formatterZulu.format(effective);
-
-                        LabelCoordinate c = new LabelCoordinate(cursor.getFloat(3), cursor.getFloat(2), toprint + " " + cursor.getString(1));
-                        ret.add(c);
-                    }
-                    while(cursor.moveToNext());
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        closesGameTFRs(cursor);
-        return ret;
-    }*/
-
 }

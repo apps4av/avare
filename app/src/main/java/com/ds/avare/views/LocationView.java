@@ -624,6 +624,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawTFR(Canvas canvas, DrawingContext ctx) {
         TFRShape.draw(ctx, mService.getAdsbTFRShapes(), null == mPointProjection);
         TFRShape.draw(ctx, mService.getTFRShapes(), null == mPointProjection);
+        TFRShape.drawGame(ctx, mService.getGameTfrLabels(), null == mPointProjection);
     }
 
     /**

@@ -494,6 +494,10 @@ public class ChartsDownloadActivity extends Activity {
                         mService.getTFRFetcher().parse();
                     }
 
+                    if(mName.equals("GameTFRs")) {
+                        mPref.enableGameTFRs();
+                    }
+
                     if(mName.equals("weather")) {
                         mService.getInternetWeatherCache().parse(mService);
                         mPref.setLayerType("METAR");

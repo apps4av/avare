@@ -52,6 +52,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name=".content.WeatherProvider"
             android:authorities="com.ds.avare.provider.weather" />
 
+        <provider
+            android:name=".content.GameTfrProvider"
+            android:authorities="com.ds.avare.provider.gametfr" />
+
         <activity android:name="org.acra.CrashReportDialog"
             android:theme="@style/Theme.Dialog"
             android:process=":error_report"

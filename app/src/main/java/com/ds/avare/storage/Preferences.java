@@ -752,7 +752,7 @@ public class Preferences {
     }
 
     /**
-     * @param value
+     * @param registered
      */
     public void setRegistered(boolean registered) {
         mPref.edit().putBoolean(mContext.getString(R.string.register), registered).commit();
@@ -1187,6 +1187,10 @@ public class Preferences {
      */
     public boolean showGameTFRs() {
         return mPref.getBoolean(mContext.getString(R.string.GameTFR), false);
+    }
+
+    public void enableGameTFRs() {
+        mPref.edit().putBoolean(mContext.getString(R.string.GameTFR), true).commit();
     }
 
     /**

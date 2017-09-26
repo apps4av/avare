@@ -50,6 +50,7 @@ import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Plan;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.position.Movement;
 import com.ds.avare.position.Pan;
 import com.ds.avare.shapes.Draw;
@@ -277,6 +278,7 @@ public class StorageService extends Service {
     // Timer for count up
     private UpTimer mUpTimer;
 
+    LinkedList<LabelCoordinate> mGameTfrLabels;
 
     // Last time location was updated
     private long mLastLocationUpdate;
@@ -692,6 +694,10 @@ public class StorageService extends Service {
         return mAdsbTfrCache.getShapes();
     }
 
+    public LinkedList<LabelCoordinate> getGameTfrLabels() {
+        return mGameTfrLabels;
+    }
+
     /**
      * @return
      */
@@ -945,13 +951,21 @@ public class StorageService extends Service {
              * to it for 1 to 2 minutes.
              */
             synchronized(this) {
-                mCounter++;
                 if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2 * 60)) {
                     mGps.stop();
                 }
-                if(null != mGpsParams) {
-                    mObstacles = ContentProviderHelper.getObstacles(StorageService.this, mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+                if(0 == mCounter % 5) {
+                    if(null != mGpsParams) {
+                        mObstacles = ContentProviderHelper.getObstacles(StorageService.this,
+                                mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+                    }
                 }
+                if(0 == mCounter % 60) {
+                    if(null != mGpsParams) {
+                        mGameTfrLabels = ContentProviderHelper.findGameTFRs(StorageService.this);
+                    }
+                }
+                mCounter++;
             }
 
         }

@@ -7,13 +7,18 @@ import android.database.Cursor;
 
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.plan.Cifp;
+import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 
@@ -40,6 +45,11 @@ public class ContentProviderHelper {
         client = resolver.acquireContentProviderClient(WeatherContract.AUTHORITY_URI);
         WeatherProvider wprovider = (WeatherProvider) client.getLocalContentProvider();
         wprovider.resetDatabase();
+        client.release();
+
+        client = resolver.acquireContentProviderClient(GameTfrContract.AUTHORITY_URI);
+        GameTfrProvider gprovider = (GameTfrProvider) client.getLocalContentProvider();
+        gprovider.resetDatabase();
         client.release();
     }
 
@@ -321,6 +331,52 @@ public class ContentProviderHelper {
         return wa;
     }
 
+    /**
+     *
+     * @return
+     */
+    public static LinkedList<LabelCoordinate> findGameTFRs(Context ctx) {
+
+        LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
+
+        // Find -6 hours to +12 hours
+        Calendar begin = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        begin.add(Calendar.HOUR_OF_DAY, -6);
+        end.add(Calendar.HOUR_OF_DAY, 12);
+
+        long mb = begin.getTimeInMillis();
+        long me = end.getTimeInMillis();
+
+        SimpleDateFormat formatterZulu = new SimpleDateFormat("ddHH:mm'Z'");
+        formatterZulu.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        String qry = GameTfrContract.TIME + " between ? and ?";
+
+        String arguments[] = new String[] {String.valueOf(mb), String.valueOf(me)};
+
+
+        try {
+            Cursor c = ctx.getContentResolver().query(GameTfrContract.CONTENT_URI, null, qry, arguments, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+                    long time = c.getLong(c.getColumnIndex(GameTfrContract.TIME));
+                    // print in zulu
+                    String toprint = formatterZulu.format(new Date(time));
+
+                    LabelCoordinate lc = new LabelCoordinate(
+                            c.getFloat(c.getColumnIndex(GameTfrContract.LONGITUDE)),
+                            c.getFloat(c.getColumnIndex(GameTfrContract.LATITUDE)),
+                            toprint + " " + c.getString(c.getColumnIndex(GameTfrContract.STADIUM)));
+                    ret.add(lc);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        return ret;
+    }
 
 }
 
