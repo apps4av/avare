@@ -75,9 +75,6 @@ public class Preferences {
     public static final long MEM_32 = 32 * 1024 * 1024;
 
 
-    public static final int MEM_256_X = 11;
-    public static final int MEM_256_Y = 9;
-    public static final int MEM_256_OH = 19;
     public static final int MEM_192_X = 9;
     public static final int MEM_192_Y = 7;
     public static final int MEM_192_OH = 13;
@@ -284,11 +281,6 @@ public class Preferences {
          */
         long mem = Runtime.getRuntime().maxMemory();
 
-        if (mem >= MEM_256) {
-            ret[0] = MEM_256_X;
-            ret[1] = MEM_256_Y;
-            ret[2] = MEM_256_OH;
-        }
         if (mem >= MEM_192) {
             ret[0] = MEM_192_X;
             ret[1] = MEM_192_Y;
