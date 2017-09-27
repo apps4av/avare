@@ -52,7 +52,7 @@ import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.Tile;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.shapes.TrackShape;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;

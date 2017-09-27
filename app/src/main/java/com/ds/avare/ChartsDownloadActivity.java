@@ -34,11 +34,10 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.ChartAdapter;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;

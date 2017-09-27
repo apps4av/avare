@@ -35,8 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ds.avare.R;
-import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 
 import java.io.File;

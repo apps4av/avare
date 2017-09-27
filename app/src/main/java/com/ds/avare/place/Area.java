@@ -13,7 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.place;
 
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;

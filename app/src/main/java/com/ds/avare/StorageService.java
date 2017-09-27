@@ -23,7 +23,6 @@ import android.os.IBinder;
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
@@ -60,7 +59,7 @@ import com.ds.avare.shapes.RadarLayer;
 import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.InfoLines;
@@ -92,7 +91,7 @@ public class StorageService extends Service {
     /**
      * The Sqlite database
      */
-    private DataSource mImageDataSource;
+    private DataSource mDataSource;
     /**
      * Store this
      */
@@ -328,9 +327,9 @@ public class StorageService extends Service {
           
         super.onCreate();
 
-        mImageDataSource = new DataSource(getApplicationContext());
+        mDataSource = new DataSource(getApplicationContext());
         
-        mArea = new Area(mImageDataSource, this);
+        mArea = new Area(mDataSource, this);
         mPlan = new Plan(this, this);
         mDownloading = false;
         
@@ -702,7 +701,7 @@ public class StorageService extends Service {
      * @return
      */
     public DataSource getDBResource() {
-        return mImageDataSource;
+        return mDataSource;
     }
     
     /**
@@ -956,12 +955,12 @@ public class StorageService extends Service {
                 }
                 if(0 == mCounter % 5) {
                     if(null != mGpsParams) {
-                        mObstacles = mImageDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+                        mObstacles = mDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
                     }
                 }
                 if(0 == mCounter % 60) {
                     if(null != mGpsParams) {
-                        mGameTfrLabels = mImageDataSource.findGameTFRs();
+                        mGameTfrLabels = mDataSource.findGameTFRs();
                     }
                 }
                 mCounter++;

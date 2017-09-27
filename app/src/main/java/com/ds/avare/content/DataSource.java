@@ -11,7 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.ds.avare.storage;
+package com.ds.avare.content;
 
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -37,6 +37,8 @@ import com.ds.avare.place.Runway;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -69,9 +71,8 @@ public class DataSource {
     }
 
     public boolean isPresent() {
-        String path = mPref.mapsFolder() + "/" + "main.db";
-        File f = new File(path);
-        return(f.exists());
+        // see if databases are downloaded
+        return null != LocationContentProviderHelper.findNavaid(mContext, "BOS");
     }
 
     public static void reset(Context context) {
@@ -104,6 +105,8 @@ public class DataSource {
         client.release();
 
     }
+
+    // location helper
 
     public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
         LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
@@ -178,7 +181,7 @@ public class DataSource {
     }
 
 
-    //
+    // other helper
 
     public LinkedList<Obstacle> getObstacles(double lon, double lat, double height) {
         return ContentProviderHelper.getObstacles(mContext, lon, lat, height);

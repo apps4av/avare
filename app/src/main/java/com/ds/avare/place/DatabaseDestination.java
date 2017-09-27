@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import com.ds.avare.StorageService;
 import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.content.LocationContentProviderHelper;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 

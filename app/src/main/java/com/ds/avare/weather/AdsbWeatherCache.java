@@ -22,12 +22,10 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.position.Origin;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.shapes.MetShape;
-import com.ds.avare.storage.DataSource;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.RateLimitedBackgroundQueue;
 import com.ds.avare.utils.WeatherHelper;
-
-import org.json.JSONArray;
 
 import java.sql.Date;
 import java.text.DateFormat;

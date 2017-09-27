@@ -105,7 +105,7 @@ public class InternetWeatherCache {
                 /*
                  * Create a list of air/sigmets
                  */
-                mAirSig = ContentProviderHelper.getAirSigMets(mService.getApplicationContext());
+                mAirSig = mService.getDBResource().getAirSigMets();
 
                 String filenameManifest = new Preferences(mService).mapsFolder() + "/weather";
                 String dataManifest = Helper.readTimestampFromFile(filenameManifest);
