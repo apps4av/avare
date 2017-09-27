@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.utils.Helper;
 
 
@@ -36,9 +36,9 @@ public class GpsDestination extends Destination {
                 mInited = true;
             }
 
-            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-            mParams.put(DataBaseHelper.FACILITY_NAME, GPS);
+            mParams.put(LocationContentProviderHelper.LONGITUDE, "" + mLond);
+            mParams.put(LocationContentProviderHelper.LATITUDE, "" + mLatd);
+            mParams.put(LocationContentProviderHelper.FACILITY_NAME, GPS);
             mFound = true;
         }
     }

@@ -34,6 +34,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.TypeValueAdapter;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
@@ -41,7 +42,6 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
 import com.ds.avare.place.Runway;
-import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
@@ -218,23 +218,23 @@ public class AirportActivity extends Activity implements Observer {
         /*
          * Add header. Check below if this is not added twice
          */
-        String s = map.get(DataBaseHelper.LOCATION_ID);
+        String s = map.get(LocationContentProviderHelper.LOCATION_ID);
         if(s != null) {
-            views[iterator] = DataBaseHelper.LOCATION_ID;
+            views[iterator] = LocationContentProviderHelper.LOCATION_ID;
             values[iterator] = s;
             categories[iterator] = TypeValueAdapter.CATEGORY_LABEL;
             iterator++;
         }
-        s = map.get(DataBaseHelper.FACILITY_NAME);
+        s = map.get(LocationContentProviderHelper.FACILITY_NAME);
         if(s != null) {
-            views[iterator] = DataBaseHelper.FACILITY_NAME;
+            views[iterator] = LocationContentProviderHelper.FACILITY_NAME;
             categories[iterator] = TypeValueAdapter.CATEGORY_LABEL;
             values[iterator] = s;
             iterator++;
         }
-        s = map.get(DataBaseHelper.FUEL_TYPES);
+        s = map.get(LocationContentProviderHelper.FUEL_TYPES);
         if(s != null) {
-            views[iterator] = DataBaseHelper.FUEL_TYPES;
+            views[iterator] = LocationContentProviderHelper.FUEL_TYPES;
             categories[iterator] = TypeValueAdapter.CATEGORY_FUEL;
             values[iterator] = s;
             iterator++;
@@ -318,8 +318,8 @@ public class AirportActivity extends Activity implements Observer {
          * Add the rest
          */
         for(String key : map.keySet()){
-            if(key.equals(DataBaseHelper.LOCATION_ID) || key.equals(DataBaseHelper.FACILITY_NAME) ||
-                    key.equals(DataBaseHelper.FUEL_TYPES)) {
+            if(key.equals(LocationContentProviderHelper.LOCATION_ID) || key.equals(LocationContentProviderHelper.FACILITY_NAME) ||
+                    key.equals(LocationContentProviderHelper.FUEL_TYPES)) {
                 continue;
             }
             views[iterator] = key;

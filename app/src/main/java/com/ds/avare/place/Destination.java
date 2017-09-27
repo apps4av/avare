@@ -16,10 +16,11 @@ package com.ds.avare.place;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.content.ContentProviderHelper;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
-import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.CalendarHelper;
@@ -368,7 +369,7 @@ public class Destination extends Observable {
      * @return
      */
     public String getFacilityName() {
-    	return(mParams.get(DataBaseHelper.FACILITY_NAME));
+    	return(mParams.get(LocationContentProviderHelper.FACILITY_NAME));
     }
 
     /**
@@ -470,7 +471,7 @@ public class Destination extends Observable {
 	 */
 	public double getElevation(){
         try {
-            double elev = (Double.parseDouble(mParams.get(DataBaseHelper.ELEVATION)));
+            double elev = (Double.parseDouble(mParams.get(LocationContentProviderHelper.ELEVATION)));
             return elev;
         }
         catch (Exception e) { }

@@ -14,8 +14,8 @@ package com.ds.avare.place;
 
 import java.util.LinkedHashMap;
 
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.DataBaseHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
@@ -47,13 +47,13 @@ public class Airport {
      * @param cLat
      */
     public Airport(LinkedHashMap<String, String> params, double cLon, double cLat) {
-        mLon = Double.parseDouble(params.get(DataBaseHelper.LONGITUDE));
-        mLat = Double.parseDouble(params.get(DataBaseHelper.LATITUDE));;
-        mId = params.get(DataBaseHelper.LOCATION_ID);
-        mName = params.get(DataBaseHelper.FACILITY_NAME);
-        mFuel = params.get(DataBaseHelper.FUEL_TYPES);
+        mLon = Double.parseDouble(params.get(LocationContentProviderHelper.LONGITUDE));
+        mLat = Double.parseDouble(params.get(LocationContentProviderHelper.LATITUDE));;
+        mId = params.get(LocationContentProviderHelper.LOCATION_ID);
+        mName = params.get(LocationContentProviderHelper.FACILITY_NAME);
+        mFuel = params.get(LocationContentProviderHelper.FUEL_TYPES);
         mElevation = params.get("Elevation");
-        mVariation = Helper.parseVariation(params.get(DataBaseHelper.MAGNETIC_VARIATION));
+        mVariation = Helper.parseVariation(params.get(LocationContentProviderHelper.MAGNETIC_VARIATION));
         mLongestRunway = "";
         mHeight = 0;
         

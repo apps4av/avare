@@ -134,7 +134,7 @@ public class LocationContract {
     public static final String AIRPORT_RUNWAYS_HE_LONGITUDE = "LELongitude";
     public static final String AIRPORT_RUNWAYS_LE_ELEVATION = "LEElevation";
     public static final String AIRPORT_RUNWAYS_HE_ELEVATION = "HEElevation";
-    public static final String AIRPORT_RUNWAYS_LE_HEADING = "LEHeading";
+    public static final String AIRPORT_RUNWAYS_LE_HEADING = "LEHeadingT"; // fix db
     public static final String AIRPORT_RUNWAYS_HE_HEADING = "HEHeading";
     public static final String AIRPORT_RUNWAYS_LE_DT = "LEDT";
     public static final String AIRPORT_RUNWAYS_HE_DT = "HEDT";

@@ -15,6 +15,7 @@ package com.ds.avare.storage;
 
 import android.content.Context;
 
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.NavAid;
@@ -23,203 +24,106 @@ import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.weather.Metar;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 
 /**
- * @author zkhan, jlmcgraw
- * Gets entries from database
- * The class that actually does something is DataBaseHelper
+ * @author zkhan
  */
 public class DataSource {
 
     /**
      * 
      */
-    private DataBaseHelper dbHelper;
+    private Context mContext;
+    private Preferences mPref;
 
     /**
      * @param context
      */
     public DataSource(Context context) {
-        dbHelper = new DataBaseHelper(context);
+        mContext = context;
+        mPref = new Preferences(context);
     }
 
-    /**
-     * 
-     * @return
-     */
     public boolean isPresent() {
-        return(dbHelper.isPresent());
+        String path = mPref.mapsFolder() + "/" + "main.db";
+        File f = new File(path);
+        return(f.exists());
     }
     
-    /**
-     * @param name
-     * @param params
-     */
     public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
-        dbHelper.findDestination(name, type, dbType, params, runways, freq, awos);
+        LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
     }
-    
-    /**
-     * 
-     * @param lon
-     * @param lat
-     */
+
     public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
-        return dbHelper.findClosestAirports(lon, lat, minRunwayLength);        
+        return LocationContentProviderHelper.findClosestAirports(mContext, lon, lat, minRunwayLength, mPref.isShowAllFacilities());
     }
-    
-    /**
-     * 
-     * @param lon
-     * @param lat
-     * @return
-     */
+
     public String findClosestAirportID(double lon, double lat) {
-        return(dbHelper.findClosestAirportID(lon, lat));
+        return(LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
     }
-    
-    /**
-     * 
-     * @param name
-     * @return
-     */
+
     public float[] findDiagramMatrix(String name) {
-        return dbHelper.findDiagramMatrix(name);
+        return LocationContentProviderHelper.findDiagramMatrix(mContext, name);
     }
 
-    /**
-     * 
-     * @param name
-     * @param params
-     * @return
-     */
     public void search(String name, LinkedHashMap<String, String> params, boolean exact) {
-        dbHelper.search(name, params, exact);    
+        LocationContentProviderHelper.search(mContext, name, params, exact, mPref.isShowAllFacilities());
     }
 
-    /**
-     * 
-     * @param name
-     * @return
-     */
     public StringPreference searchOne(String name) {
-        return dbHelper.searchOne(name);    
+        return LocationContentProviderHelper.searchOne(mContext, name);
     }
 
-    /**
-     * 
-     * @param airportId
-     * @return Name of Minimums file
-     */
     public String[] findMinimums(String airportId) {
-        return dbHelper.findMinimums(airportId);
+        return LocationContentProviderHelper.findMinimums(mContext, airportId);
     }
 
-    /**
-     * 
-     * @param airportId
-     * @return Name of AFD file
-     */
     public LinkedList<String> findAFD(String airportId) {
-        return dbHelper.findAFD(airportId);
+        return LocationContentProviderHelper.findAFD(mContext, airportId);
     }
 
-    /**
-     * 
-     * @param name
-     * @param type
-     * @return
-     */
     public String findLonLat(String name, String type) {
-        return dbHelper.findLonLat(name, type);          
+        return LocationContentProviderHelper.findLonLat(mContext, name, type);
     }
 
-    /**
-     *
-     * @param metars
-     * @return
-     */
     public void findLonLatMetar(HashMap<String, Metar> metars) {
-        dbHelper.findLonLatMetar(metars);
+        LocationContentProviderHelper.findLonLatMetar(mContext, metars);
     }
 
-    /**
-     * 
-     * @return
-     */
     public String getSua(double lon, double lat) {
-        return dbHelper.getSua(lon, lat);
+        return LocationContentProviderHelper.getSua(mContext, lon, lat);
     }
 
-    /**
-     * 
-     * @param name
-     * @return
-     */
     public LinkedList<String> findRunways(String name) {
-        return  dbHelper.findRunways(name);
+        return LocationContentProviderHelper.findRunways(mContext, name);
     }
 
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    public LinkedList<String> findFrequencies(String name) {
-        return  dbHelper.findFrequencies(name);
-    }
-
-    /**
-     * 
-     * @param name
-     * @return
-     */
     public String findElev(String name) {
-        return dbHelper.findElev(name);
+        return LocationContentProviderHelper.findElev(mContext, name);
     }
 
-    
-    /**
-     * 
-     * @return
-     */
     public LinkedList<Coordinate> findAirway(String name) {
-        return  dbHelper.findAirway(name);
+        return  LocationContentProviderHelper.findAirway(mContext, name);
     }
-    
-    /**
-     * 
-     * @param name
-     * @return
-     */
+
     public Coordinate findNavaid(String name) {
-        return  dbHelper.findNavaid(name);    	
+        return  LocationContentProviderHelper.findNavaid(mContext, name);
     }
 
-    /**
-     *
-     * @param lat
-     * @param  lon
-     * @return vector of the closest navaids (excluding NDBs); the closest first
-     */
-    public Vector<NavAid> findNavaidsNearby(Double lat, Double lon) {
-        return  dbHelper.findNavaidsNearby(lat, lon);
+    public Vector<NavAid> findNavaidsNearby(double lat, double lon) {
+        return  LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
     }
 
-    /**
-     *
-     * @param name
-     * @param airport
-     */
     public Coordinate findRunwayCoordinates(String name, String airport) {
-        return dbHelper.findRunwayCoordinates(name, airport);
+        return LocationContentProviderHelper.findRunwayCoordinates(mContext, name, airport);
     }
 
     public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
-        return dbHelper.getNavaidOrFixFromCoordinate(c);
+        return LocationContentProviderHelper.getNavaidOrFixFromCoordinate(mContext, c);
     }
 }

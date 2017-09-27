@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -158,8 +158,8 @@ public class DatabaseDestination extends Destination {
 
             try {
                 // Find winds
-                mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
-                mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                mLond = Double.parseDouble(mParams.get(LocationContentProviderHelper.LONGITUDE));
+                mLatd = Double.parseDouble(mParams.get(LocationContentProviderHelper.LATITUDE));
                 mWinds = ContentProviderHelper.getWindsAloft(mService.getApplicationContext(), mLond, mLatd);
             }
             catch (Exception e) {
@@ -181,10 +181,10 @@ public class DatabaseDestination extends Destination {
         	 */
             mFound = result;
             if(mFound) {
-                mDbType = mParams.get(DataBaseHelper.TYPE);
+                mDbType = mParams.get(LocationContentProviderHelper.TYPE);
                 try {
-                    mLond = Double.parseDouble(mParams.get(DataBaseHelper.LONGITUDE));
-                    mLatd = Double.parseDouble(mParams.get(DataBaseHelper.LATITUDE));
+                    mLond = Double.parseDouble(mParams.get(LocationContentProviderHelper.LONGITUDE));
+                    mLatd = Double.parseDouble(mParams.get(LocationContentProviderHelper.LATITUDE));
                 }
                 catch(Exception e) {
                     mFound = false;

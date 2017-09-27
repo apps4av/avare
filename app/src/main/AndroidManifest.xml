@@ -56,6 +56,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name=".content.GameTfrProvider"
             android:authorities="com.ds.avare.provider.gametfr" />
 
+        <provider
+            android:name=".content.LocationProvider"
+            android:authorities="com.ds.avare.provider.location" />
+
         <activity android:name="org.acra.CrashReportDialog"
             android:theme="@style/Theme.Dialog"
             android:process=":error_report"

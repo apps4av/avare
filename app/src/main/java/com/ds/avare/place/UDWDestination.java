@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.storage.DataBaseHelper;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.userDefinedWaypoints.Waypoint;
 
@@ -33,9 +33,9 @@ public class UDWDestination extends Destination {
                 mInited = true;
             }
             mCmt  = p.getCmt();
-            mParams.put(DataBaseHelper.LONGITUDE, "" + mLond);
-            mParams.put(DataBaseHelper.LATITUDE, "" + mLatd);
-            mParams.put(DataBaseHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
+            mParams.put(LocationContentProviderHelper.LONGITUDE, "" + mLond);
+            mParams.put(LocationContentProviderHelper.LATITUDE, "" + mLatd);
+            mParams.put(LocationContentProviderHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
             mFound = true;
         }
         else {

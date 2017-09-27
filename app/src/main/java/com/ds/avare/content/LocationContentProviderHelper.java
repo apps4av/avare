@@ -3,8 +3,6 @@ package com.ds.avare.content;
 import android.content.Context;
 import android.database.Cursor;
 import android.hardware.GeomagneticField;
-import android.location.Location;
-import android.view.animation.LayoutAnimationController;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -27,8 +25,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
-import static com.ds.avare.content.LocationContract.TABLE_AIRPORTS;
-
 
 /**
  * Created by zkhan on 2/8/17.
@@ -37,26 +33,26 @@ import static com.ds.avare.content.LocationContract.TABLE_AIRPORTS;
 public class LocationContentProviderHelper {
 
 
-    private static final String LOCATION_ID = "Location ID";
-    private static final String CUSTOMS = "Customs";
-    private static final String BEACON = "Beacon";
-    private static final String FUEL_TYPES = "Fuel Types";
-    private static final String FSSPHONE = "FSS Phone";
-    private static final String SEGCIRCLE = "Segmented Circle";
-    private static final String MANAGER_PHONE = "Manager Phone";
-    private static final String MANAGER = "Manager";
-    private static final String ELEVATION = "Elevation";
-    private static final String FACILITY_NAME = "Facility Name";
-    private static final String LATITUDE = "Latitude";
-    private static final String LONGITUDE = "Longitude";
-    private static final String TYPE = "Type";
-    private static final String MAGNETIC_VARIATION = "Magnetic Variation";
-    private static final String USE = "Use";
-    private static final String CONTROL_TOWER = "Control Tower";
-    private static final String CTAF = "CTAF";
-    private static final String LANDING_FEE = "Landing Fee";
-    private static final String UNICOM = "UNICOM";
-    private static final String TPA = "Pattern Altitude";
+    public static final String LOCATION_ID = "Location ID";
+    public static final String CUSTOMS = "Customs";
+    public static final String BEACON = "Beacon";
+    public static final String FUEL_TYPES = "Fuel Types";
+    public static final String FSSPHONE = "FSS Phone";
+    public static final String SEGCIRCLE = "Segmented Circle";
+    public static final String MANAGER_PHONE = "Manager Phone";
+    public static final String MANAGER = "Manager";
+    public static final String ELEVATION = "Elevation";
+    public static final String FACILITY_NAME = "Facility Name";
+    public static final String LATITUDE = "Latitude";
+    public static final String LONGITUDE = "Longitude";
+    public static final String TYPE = "Type";
+    public static final String MAGNETIC_VARIATION = "Magnetic Variation";
+    public static final String USE = "Use";
+    public static final String CONTROL_TOWER = "Control Tower";
+    public static final String CTAF = "CTAF";
+    public static final String LANDING_FEE = "Landing Fee";
+    public static final String UNICOM = "UNICOM";
+    public static final String TPA = "Pattern Altitude";
 
 
     /**
@@ -64,7 +60,7 @@ public class LocationContentProviderHelper {
      * @param name
      * @param params
      */
-    public void search(Context ctx, String name, LinkedHashMap<String, String> params, boolean exact, boolean showAll) {
+    public static void search(Context ctx, String name, LinkedHashMap<String, String> params, boolean exact, boolean showAll) {
 
         String order;
         String arguments[];
@@ -100,7 +96,7 @@ public class LocationContentProviderHelper {
                 qry = LocationContract.AIRPORTS_LOCATION_ID + " like ? ";
                 arguments = new String[] {name.substring(1) + "%"};
             }
-            if(showAll) {
+            if(!showAll) {
                 qry += " and " + LocationContract.AIRPORTS_TYPE + "=='AIRPORT'";
             }
             try {
@@ -207,7 +203,7 @@ public class LocationContentProviderHelper {
     /**
      * Find airports in an particular area
      */
-    public Airport[] findClosestAirports(Context ctx, double lon, double lat, String minRunwayLength, boolean showAll) {
+    public static Airport[] findClosestAirports(Context ctx, double lon, double lat, String minRunwayLength, boolean showAll) {
 
         HashMap<String, Airport> airports = new LinkedHashMap<String, Airport>();
 
@@ -220,16 +216,16 @@ public class LocationContentProviderHelper {
                 LocationContract.AIRPORT_RUNWAYS_HE_LATITUDE  + " - " + lat + ") * (" +
                 LocationContract.AIRPORT_RUNWAYS_HE_LATITUDE  + " - " + lat + "))";
 
-        String qry = LocationContract.AIRPORT_RUNWAYS_LENGTH + " >= ? ";
-        String projection[] = new String[] {asdistance + " as distance"};
+        String qry = LocationContract.AIRPORT_RUNWAYS_LENGTH + " >= " + String.valueOf(minRunwayLength);
+        String projection[] = new String[] {LocationContract.AIRPORT_RUNWAYS_LOCATION_ID, LocationContract.AIRPORT_RUNWAYS_LENGTH,
+                LocationContract.AIRPORT_RUNWAYS_WIDTH, LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION, asdistance + " as distance"};
         String order = "distance ASC ";
-        String arguments[] = new String[] {String.valueOf(minRunwayLength)};
 
         try {
-            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORT_RUNWAYS, null, qry, arguments, order);
+            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORT_RUNWAYS, projection, qry, null, order);
             if(c != null) {
                 while(c.moveToNext()) {
-                    String id = c.getString(c.getColumnIndex(LocationContract.AIRPORT_RUNWAYS_LOCATION_ID));
+                    String id = c.getString(0); // LocationContract.AIRPORT_RUNWAYS_LOCATION_ID
                     if(airports.containsKey(id)) {
                         // eliminate duplicate airports and show longest runway
                         continue;
@@ -242,10 +238,12 @@ public class LocationContentProviderHelper {
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                     // find airport
                     findDestination(ctx, id, Destination.BASE, showAll ? null : "AIRPORT", params, null, null, null);
+                    String parts[] = c.getString(3).trim().split("[.]"); //LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION
+                    params.put(ELEVATION, parts[0] + "ft");
+
                     Airport a = new Airport(params, lon, lat);
                     // runway length / width in combined table
-                    String runway = c.getString(c.getColumnIndex(LocationContract.AIRPORT_RUNWAYS_LENGTH)) + "X" +
-                            c.getString(c.getColumnIndex(LocationContract.AIRPORT_RUNWAYS_WIDTH));
+                    String runway = c.getString(1) + "X" + c.getString(2); //LocationContract.AIRPORT_RUNWAYS_HE_LENGTH X LocationContract.AIRPORT_RUNWAYS_HE_WIDTH
                     a.setLongestRunway(runway);
                     airports.put(id, a);
                 }
@@ -254,18 +252,18 @@ public class LocationContentProviderHelper {
         catch (Exception e) {
         }
 
-        return (Airport[])airports.values().toArray();
+        return (Airport[])airports.values().toArray(new Airport[0]);
     }
 
 
 
     private static StringPreference stringQuery(Context ctx, String name, String type) {
-        String order = "limit 1";
 
 
         if(type.equals(Destination.NAVAID)) {
-            String qry = LocationContract.NAV_LOCATION_ID + " = ? and " + LocationContract.NAV_TYPE + " != ? ";
+            String qry = LocationContract.NAV_LOCATION_ID + " = ? and " + LocationContract.NAV_TYPE + " != ?";
             String arguments[] = new String[] {name, "VOT"};
+            String order = LocationContract.NAV_LOCATION_ID + " limit 1";
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, order);
             try {
                 if(c != null) {
@@ -279,8 +277,9 @@ public class LocationContentProviderHelper {
             }
         }
         if(type.equals(Destination.FIX)) {
-            String qry = LocationContract.FIX_LOCATION_ID + " = ? ";
+            String qry = LocationContract.FIX_LOCATION_ID + " = ?";
             String arguments[] = new String[] {name};
+            String order = LocationContract.FIX_LOCATION_ID + " limit 1";
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, null, qry, arguments, order);
             try {
                 if(c != null) {
@@ -294,8 +293,9 @@ public class LocationContentProviderHelper {
             }
         }
         if(type.equals(Destination.BASE)) {
-            String qry = LocationContract.AIRPORTS_LOCATION_ID + " = ? ";
+            String qry = LocationContract.AIRPORTS_LOCATION_ID + " = ?";
             String arguments[] = new String[] {name};
+            String order = LocationContract.AIRPORTS_LOCATION_ID + " limit 1";
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, null, qry, arguments, order);
             try {
                 if(c != null) {
@@ -673,13 +673,12 @@ public class LocationContentProviderHelper {
         return null;
     }
 
-    public Coordinate findNavaid(Context ctx, String name) {
+    public static Coordinate findNavaid(Context ctx, String name) {
         Coordinate coord = null;
 
         String qry = LocationContract.NAV_LOCATION_ID + " = ? and " + LocationContract.NAV_TYPE + " != ?";
         String arguments[] = new String[] {name, "VOT"};
-        String order = "limit 1";
-
+        String order = LocationContract.NAV_LOCATION_ID +  " limit 1";
 
         try {
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, order);
@@ -700,10 +699,11 @@ public class LocationContentProviderHelper {
         // Not found, find it in fix
 
         qry = LocationContract.FIX_LOCATION_ID + " = ?";
-        String arguments2[] = new String[] {name};
+        arguments = new String[] {name};
+        order = LocationContract.FIX_LOCATION_ID +  " limit 1";
 
         try {
-            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, null, qry, arguments2, order);
+            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, null, qry, arguments, order);
             if(c != null) {
                 if(c.moveToFirst()) {
                     coord = new Coordinate(c.getFloat(c.getColumnIndex(LocationContract.FIX_LONGITUDE)),
@@ -915,20 +915,19 @@ public class LocationContentProviderHelper {
 
         String projection[] = new String[] {LocationContract.AIRPORTS_LOCATION_ID, asdistance + " as distance"};
         String order = "distance limit 1";
-        String arguments[] = new String[] {String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE)};
 
         String qry;
 
         if(!showAll) {
-            qry =  LocationContract.AIRPORTS_TYPE + "= 'AIRPORT' and (distance < ?)";
+            qry =  LocationContract.AIRPORTS_TYPE + "= 'AIRPORT' and distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE);
         }
         else {
-            qry =  "(distance < ?)";
+            qry =  "distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE);
         }
 
 
         try {
-            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, projection, qry, arguments, order);
+            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, projection, qry, null, order);
             if(c != null) {
                 if(c.moveToFirst()) {
                     ret = new String(c.getString(0)); // LocationContract.AIRPORTS_LOCATION_ID
@@ -942,7 +941,7 @@ public class LocationContentProviderHelper {
     }
 
 
-    public Vector<NavAid> findNavaidsNearby(Context ctx, double lat, double lon) {
+    public static Vector<NavAid> findNavaidsNearby(Context ctx, double lat, double lon) {
         Vector result = null;
 
         final double NAVAID_SEARCH_RADIUS = 150.; // 150 seems reasonable, it is VOR Line Of Sight at 18000
@@ -974,7 +973,7 @@ public class LocationContentProviderHelper {
                 LocationContract.NAV_LONGITUDE + " > ?";
 
         try {
-            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, null, qry, arguments, order);
+            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, order);
             if (c != null) {
                 // proper display of navaid radials requires historical magnetic variation
                 result = new Vector<>();
@@ -1003,7 +1002,7 @@ public class LocationContentProviderHelper {
         return result;
     }
 
-    public float[] findDiagramMatrix(Context ctx, String name) {
+    public static float[] findDiagramMatrix(Context ctx, String name) {
         float ret[] = new float[12];
         int it;
 
@@ -1051,7 +1050,7 @@ public class LocationContentProviderHelper {
 
 
             try {
-                String qry = LocationContract.NAV_LOCATION_ID + " = ? and" + LocationContract.NAV_TYPE + " != ?";
+                String qry = LocationContract.NAV_LOCATION_ID + " = ? and " + LocationContract.NAV_TYPE + " != ?";
                 String arguments[] = new String[] {chopname, "VOT"};
 
                 Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
@@ -1243,7 +1242,7 @@ public class LocationContentProviderHelper {
                         String paout = "";
                         if(pa.equals("")) {
                             try {
-                                paout = "" + (Double.parseDouble(params.get(ELEVATION)) + 1000);
+                                paout = "" + Math.round(Double.parseDouble(params.get(ELEVATION)) + 1000);
                             }
                             catch (Exception e) {
 
@@ -1251,8 +1250,8 @@ public class LocationContentProviderHelper {
                         }
                         else {
                             try {
-                                paout = "" + (Double.parseDouble(params.get(ELEVATION)) +
-                                        (Double.parseDouble(pa)));
+                                paout = "" + Math.round((Double.parseDouble(params.get(ELEVATION)) +
+                                        (Double.parseDouble(pa))));
                             }
                             catch (Exception e) {
 
@@ -1528,9 +1527,6 @@ public class LocationContentProviderHelper {
         }
 
     }
-
-
-
 
 }
 
