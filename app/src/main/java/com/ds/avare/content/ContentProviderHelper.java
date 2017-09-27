@@ -51,6 +51,12 @@ public class ContentProviderHelper {
         GameTfrProvider gprovider = (GameTfrProvider) client.getLocalContentProvider();
         gprovider.resetDatabase();
         client.release();
+
+        client = resolver.acquireContentProviderClient(LocationContract.AUTHORITY_URI);
+        LocationProvider lprovider = (LocationProvider) client.getLocalContentProvider();
+        lprovider.resetDatabase();
+        client.release();
+
     }
 
     public static LinkedList<Obstacle> getObstacles(final Context ctx, double longitude, double latitude, double height) {
