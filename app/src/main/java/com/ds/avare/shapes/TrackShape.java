@@ -31,7 +31,7 @@ public class TrackShape extends Shape {
 
     private static final int LEG_PREV = Color.GRAY;
     private static final int LEG_CURRENT = Color.MAGENTA;
-    private static final int LEG_NEXT = Color.WHITE;
+    private static final int LEG_NEXT = Color.CYAN;
 
     public static int getLegColor(int dstNxt, int segNum) {
         if (dstNxt <= segNum) {
