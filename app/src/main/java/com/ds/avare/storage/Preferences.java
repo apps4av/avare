@@ -21,9 +21,13 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
+import com.ds.avare.utils.BitmapHolder;
 
 import java.io.File;
 import java.util.Arrays;
@@ -273,7 +277,7 @@ public class Preferences {
     /**
      * @return
      */
-    public static int[] getTilesNumber() {
+    public static int[] getTilesNumber(Context ctx) {
         int[] ret = new int[3];
         
         /*
@@ -301,6 +305,42 @@ public class Preferences {
             ret[0] = MEM_16_X;
             ret[1] = MEM_16_Y;
             ret[2] = MEM_16_OH;
+        }
+
+
+        // find screen size
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        Display defaultDisplay = windowManager.getDefaultDisplay();
+        defaultDisplay.getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+        int tilesx = (width / BitmapHolder.WIDTH) + 2; // add 1 for round up, and 1 for zoom
+        int tilesy = (height / BitmapHolder.HEIGHT) + 2;
+
+        // odd tiles only
+        if(tilesx % 2 == 0) {
+            tilesx++;
+        }
+        if(tilesy % 2 == 0) {
+            tilesy++;
+        }
+
+        // no going above memory limit
+        if(tilesx > ret[0]) {
+            tilesx = ret[0];
+        }
+        if(tilesy > ret[1]) {
+            tilesy = ret[1];
+        }
+        ret[0] = tilesx;
+        ret[1] = tilesy;
+
+        if(ret[0] <= 0) {
+            ret[0] = MEM_16_X;
+        }
+        if(ret[1] <= 0) {
+            ret[1] = MEM_16_Y;
         }
 
         return ret;

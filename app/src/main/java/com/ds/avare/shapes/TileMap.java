@@ -39,7 +39,7 @@ public class TileMap extends MapBase {
      * @param context
      */
     public TileMap(Context context) {
-        super(context, SIZE, (new Preferences(context)).getTilesNumber());
+        super(context, SIZE, (new Preferences(context)).getTilesNumber(context));
         mNumShowing = 0;
         mTileTask = null;
     }
