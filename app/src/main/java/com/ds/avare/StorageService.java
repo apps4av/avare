@@ -956,13 +956,12 @@ public class StorageService extends Service {
                 }
                 if(0 == mCounter % 5) {
                     if(null != mGpsParams) {
-                        mObstacles = ContentProviderHelper.getObstacles(StorageService.this,
-                                mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
+                        mObstacles = mImageDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
                     }
                 }
                 if(0 == mCounter % 60) {
                     if(null != mGpsParams) {
-                        mGameTfrLabels = ContentProviderHelper.findGameTFRs(StorageService.this);
+                        mGameTfrLabels = mImageDataSource.findGameTFRs();
                     }
                 }
                 mCounter++;

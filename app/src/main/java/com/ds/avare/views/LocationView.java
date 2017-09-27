@@ -33,7 +33,6 @@ import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
@@ -1288,12 +1287,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
             }
             else {
-                taf = ContentProviderHelper.getTaf(mContext, airport);
+                taf = mService.getDBResource().getTaf(airport);
                 if(isCancelled()) {
                     return "";
                 }
                 
-                metar = ContentProviderHelper.getMetar(mContext, airport);
+                metar = mService.getDBResource().getMetar(airport);
                 if(isCancelled()) {
                     return "";
                 }
@@ -1314,12 +1313,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
              * ADSB gets this info from weather cache
              */
             if(!mPref.useAdsbWeather()) {              
-                aireps = ContentProviderHelper.getAireps(mContext, lon, lat);
+                aireps = mService.getDBResource().getAireps(lon, lat);
                 if(isCancelled()) {
                     return "";
                 }
                 
-                wa = ContentProviderHelper.getWindsAloft(mContext, lon, lat);
+                wa = mService.getDBResource().getWindsAloft(lon, lat);
                 if(isCancelled()) {
                     return "";
                 }

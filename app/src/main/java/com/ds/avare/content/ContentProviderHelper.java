@@ -28,36 +28,6 @@ import java.util.TreeMap;
 
 public class ContentProviderHelper {
 
-    public static void reset(Context context) {
-        ContentProviderClient client;
-        ContentResolver resolver = context.getContentResolver();
-
-        client = resolver.acquireContentProviderClient(ObstaclesContract.AUTHORITY_URI);
-        ObstaclesProvider oprovider = (ObstaclesProvider) client.getLocalContentProvider();
-        oprovider.resetDatabase();
-        client.release();
-
-        client = resolver.acquireContentProviderClient(ProceduresContract.AUTHORITY_URI);
-        ProceduresProvider pprovider = (ProceduresProvider) client.getLocalContentProvider();
-        pprovider.resetDatabase();
-        client.release();
-
-        client = resolver.acquireContentProviderClient(WeatherContract.AUTHORITY_URI);
-        WeatherProvider wprovider = (WeatherProvider) client.getLocalContentProvider();
-        wprovider.resetDatabase();
-        client.release();
-
-        client = resolver.acquireContentProviderClient(GameTfrContract.AUTHORITY_URI);
-        GameTfrProvider gprovider = (GameTfrProvider) client.getLocalContentProvider();
-        gprovider.resetDatabase();
-        client.release();
-
-        client = resolver.acquireContentProviderClient(LocationContract.AUTHORITY_URI);
-        LocationProvider lprovider = (LocationProvider) client.getLocalContentProvider();
-        lprovider.resetDatabase();
-        client.release();
-
-    }
 
     public static LinkedList<Obstacle> getObstacles(final Context ctx, double longitude, double latitude, double height) {
 

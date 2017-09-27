@@ -13,16 +13,35 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.storage;
 
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
 
+import com.ds.avare.content.ContentProviderHelper;
+import com.ds.avare.content.GameTfrContract;
+import com.ds.avare.content.GameTfrProvider;
 import com.ds.avare.content.LocationContentProviderHelper;
+import com.ds.avare.content.LocationContract;
+import com.ds.avare.content.LocationProvider;
+import com.ds.avare.content.ObstaclesContract;
+import com.ds.avare.content.ObstaclesProvider;
+import com.ds.avare.content.ProceduresContract;
+import com.ds.avare.content.ProceduresProvider;
+import com.ds.avare.content.WeatherContract;
+import com.ds.avare.content.WeatherProvider;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.NavAid;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
+import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.weather.AirSigMet;
+import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
+import com.ds.avare.weather.WindsAloft;
 
 import java.io.File;
 import java.util.HashMap;
@@ -54,7 +73,38 @@ public class DataSource {
         File f = new File(path);
         return(f.exists());
     }
-    
+
+    public static void reset(Context context) {
+        ContentProviderClient client;
+        ContentResolver resolver = context.getContentResolver();
+
+        client = resolver.acquireContentProviderClient(ObstaclesContract.AUTHORITY_URI);
+        ObstaclesProvider oprovider = (ObstaclesProvider) client.getLocalContentProvider();
+        oprovider.resetDatabase();
+        client.release();
+
+        client = resolver.acquireContentProviderClient(ProceduresContract.AUTHORITY_URI);
+        ProceduresProvider pprovider = (ProceduresProvider) client.getLocalContentProvider();
+        pprovider.resetDatabase();
+        client.release();
+
+        client = resolver.acquireContentProviderClient(WeatherContract.AUTHORITY_URI);
+        WeatherProvider wprovider = (WeatherProvider) client.getLocalContentProvider();
+        wprovider.resetDatabase();
+        client.release();
+
+        client = resolver.acquireContentProviderClient(GameTfrContract.AUTHORITY_URI);
+        GameTfrProvider gprovider = (GameTfrProvider) client.getLocalContentProvider();
+        gprovider.resetDatabase();
+        client.release();
+
+        client = resolver.acquireContentProviderClient(LocationContract.AUTHORITY_URI);
+        LocationProvider lprovider = (LocationProvider) client.getLocalContentProvider();
+        lprovider.resetDatabase();
+        client.release();
+
+    }
+
     public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
         LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
     }
@@ -126,4 +176,42 @@ public class DataSource {
     public StringPreference getNavaidOrFixFromCoordinate(Coordinate c) {
         return LocationContentProviderHelper.getNavaidOrFixFromCoordinate(mContext, c);
     }
+
+
+    //
+
+    public LinkedList<Obstacle> getObstacles(double lon, double lat, double height) {
+        return ContentProviderHelper.getObstacles(mContext, lon, lat, height);
+    }
+
+    public LinkedList<LabelCoordinate> findGameTFRs() {
+        return ContentProviderHelper.findGameTFRs(mContext);
+    }
+
+    public Taf getTaf(String station) {
+        return ContentProviderHelper.getTaf(mContext, station);
+    }
+
+    public Metar getMetar(String station) {
+        return ContentProviderHelper.getMetar(mContext, station);
+    }
+
+    public LinkedList<Airep> getAireps(double lon, double lat) {
+        return ContentProviderHelper.getAireps(mContext, lon, lat);
+    }
+
+    public WindsAloft getWindsAloft(double lon, double lat) {
+        return ContentProviderHelper.getWindsAloft(mContext, lon, lat);
+    }
+
+    public LinkedList<AirSigMet> getAirSigMets() {
+        return ContentProviderHelper.getAirSigMets(mContext);
+    }
+
+    public LinkedList<Cifp> findProcedure(String name, String approach) {
+        return  ContentProviderHelper.findProcedure(mContext, name, approach);
+    }
+
+
+
 }

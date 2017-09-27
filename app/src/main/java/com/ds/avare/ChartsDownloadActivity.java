@@ -38,6 +38,7 @@ import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
+import com.ds.avare.storage.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
@@ -433,7 +434,7 @@ public class ChartsDownloadActivity extends Activity {
             }
 
             // reset all databases on new downloads/deletes
-            ContentProviderHelper.reset(getApplicationContext());
+            DataSource.reset(getApplicationContext());
 
             if(msg.obj instanceof Download) {
                 if(Download.FAILED == result) {

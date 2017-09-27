@@ -525,7 +525,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         // Get flight procedures set up for this plate
         // Note: Move to BG task
         mListApproaches = new ArrayList<>();
-        mCifp = ContentProviderHelper.findProcedure(this, mAirportButton.getText().toString(), mPlatesButton.getText().toString());
+        mCifp = mService.getDBResource().findProcedure(mAirportButton.getText().toString(), mPlatesButton.getText().toString());
         if(mCifp.size() != 0) {
             // Show which plates have approaches
             mApproachButton.setTextColor(0xFF007F00);
