@@ -112,8 +112,8 @@ public class DataSource {
         LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
     }
 
-    public Airport[] findClosestAirports(double lon, double lat, String minRunwayLength) {
-        return LocationContentProviderHelper.findClosestAirports(mContext, lon, lat, minRunwayLength, mPref.isShowAllFacilities());
+    public HashMap<String, Airport> findClosestAirports(double lon, double lat, HashMap<String, Airport> airports, String minRunwayLength) {
+        return LocationContentProviderHelper.findClosestAirports(mContext, lon, lat, airports, minRunwayLength, mPref.isShowAllFacilities());
     }
 
     public String findClosestAirportID(double lon, double lat) {

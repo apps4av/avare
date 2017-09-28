@@ -20,6 +20,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 /**
  * 
  * @author zkhan
@@ -29,6 +32,7 @@ public class Area {
 
     private DataSource mDataSource;
     private Airport[] mAirports = new Airport[Preferences.MAX_AREA_AIRPORTS];
+    private HashMap<String, Airport> mAirportCache;
     private DataBaseAreaTask mDt;
     private double mLon;
     private double mLat;
@@ -50,6 +54,7 @@ public class Area {
         mLastTime = SystemClock.elapsedRealtime();
         mFound = false;
         mPref = new Preferences(ctx);
+        mAirportCache = new LinkedHashMap<String, Airport>();
     }
 
     /**
@@ -85,8 +90,6 @@ public class Area {
 
     /**
      * 
-     * @param lon
-     * @param lat
      */
     public void updateLocation(GpsParams params) {
         
@@ -140,7 +143,8 @@ public class Area {
                 return null;
             }
             
-            airports = mDataSource.findClosestAirports(mLon, mLat, mPref.getLongestRunway());
+            mAirportCache = mDataSource.findClosestAirports(mLon, mLat, mAirportCache, mPref.getLongestRunway());
+            airports = mAirportCache.values().toArray(new Airport[0]);
             /*
              * Sort on distance because distance found from sqlite is less than perfect
              */

@@ -203,9 +203,10 @@ public class LocationContentProviderHelper {
     /**
      * Find airports in an particular area
      */
-    public static Airport[] findClosestAirports(Context ctx, double lon, double lat, String minRunwayLength, boolean showAll) {
+    public static HashMap<String, Airport> findClosestAirports(Context ctx, double lon, double lat, HashMap<String, Airport> airports, String minRunwayLength, boolean showAll) {
 
-        HashMap<String, Airport> airports = new LinkedHashMap<String, Airport>();
+        // Make a new hashmap and reuse values out of it that are still in the area
+        HashMap<String, Airport> airportsnew = new LinkedHashMap<String, Airport>();
 
         // Query runways for distance
 
@@ -226,13 +227,14 @@ public class LocationContentProviderHelper {
             if(c != null) {
                 while(c.moveToNext()) {
                     String id = c.getString(0); // LocationContract.AIRPORT_RUNWAYS_LOCATION_ID
-                    if(airports.containsKey(id)) {
-                        // eliminate duplicate airports and show longest runway
-                        continue;
-                    }
-                    if(airports.size() >= Preferences.MAX_AREA_AIRPORTS) {
+                    if(airportsnew.size() >= Preferences.MAX_AREA_AIRPORTS) {
                         // got how many were needed
                         break;
+                    }
+                    if(airports.containsKey(id)) {
+                        // eliminate duplicate airports and show longest runway
+                        airportsnew.put(id, airports.get(id));
+                        continue;
                     }
 
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
@@ -245,14 +247,14 @@ public class LocationContentProviderHelper {
                     // runway length / width in combined table
                     String runway = c.getString(1) + "X" + c.getString(2); //LocationContract.AIRPORT_RUNWAYS_HE_LENGTH X LocationContract.AIRPORT_RUNWAYS_HE_WIDTH
                     a.setLongestRunway(runway);
-                    airports.put(id, a);
+                    airportsnew.put(id, a);
                 }
             }
         }
         catch (Exception e) {
         }
 
-        return (Airport[])airports.values().toArray(new Airport[0]);
+        return airportsnew;
     }
 
 
@@ -578,7 +580,7 @@ public class LocationContentProviderHelper {
          */
         String qry =
                 LocationContract.ALTERNATE_LOCATION_ID + " = ?" + " or " +
-                LocationContract.ALTERNATE_LOCATION_ID + " = ?" + " or" +
+                LocationContract.ALTERNATE_LOCATION_ID + " = ?" + " or " +
                 LocationContract.ALTERNATE_LOCATION_ID + " = ?";
 
         String arguments[] = new String[] {airportId, "K" + airportId, "P" + airportId};
@@ -597,9 +599,8 @@ public class LocationContentProviderHelper {
 
         qry =
                 LocationContract.TAKEOFF_LOCATION_ID + " = ?" + " or " +
-                LocationContract.TAKEOFF_LOCATION_ID + " = ?" + " or" +
+                LocationContract.TAKEOFF_LOCATION_ID + " = ?" + " or " +
                 LocationContract.TAKEOFF_LOCATION_ID + " = ?";
-
 
         try {
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_TAKEOFF, null, qry, arguments, null);
@@ -736,7 +737,7 @@ public class LocationContentProviderHelper {
         qry += LocationContract.AIRPORTS_LOCATION_ID + " = ?) and "; // last index without or
         qry += LocationContract.AIRPORTS_TYPE + " = 'AIRPORT'";
 
-        String arguments[] = (String[]) keys.toArray();
+        String arguments[] = keys.toArray(new String[0]);
 
         try {
             Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, null, qry, arguments, null);
@@ -850,9 +851,9 @@ public class LocationContentProviderHelper {
         Coordinate coordinate = null;
 
         String qry =  "(" +
-                LocationContract.AIRPORT_RUNWAYS_LOCATION_ID + " = ? or" +
+                LocationContract.AIRPORT_RUNWAYS_LOCATION_ID + " = ? or " +
                 LocationContract.AIRPORT_RUNWAYS_LOCATION_ID + " = ? ) and (" +
-                LocationContract.AIRPORT_RUNWAYS_LE_IDENT + " = ? or" +
+                LocationContract.AIRPORT_RUNWAYS_LE_IDENT + " = ? or " +
                 LocationContract.AIRPORT_RUNWAYS_HE_IDENT + " = ? )";
 
         String arguments[] = new String[] {airport, "K" + airport, name, name};
