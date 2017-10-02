@@ -311,7 +311,7 @@ public class NetworkHelper {
      * @param root
      * @return
      */
-    public static String getUrl(String file, String vers, String root, boolean isStatic, boolean is256) {
+    public static String getUrl(String file, String vers, String root, boolean isStatic) {
         if(file.equals("TFRs.zip")) {
             return(root + "/" + file);
         }
@@ -327,10 +327,10 @@ public class NetworkHelper {
 
         // See if it is a static chart (not updated every 28 days)
         if(!isStatic) {
-            return (root + vers + "/" + (is256 ? "256/" : "") + file);
+            return (root + vers + "/" + file);
         }
         else {
-            return (root + "static" + "/" + (is256 ? "256/" : "") + file);
+            return (root + "static" + "/" + file);
         }
     }
 
@@ -361,7 +361,6 @@ public class NetworkHelper {
     
     /**
      * Find the date in January when first cycle begins 
-     * @param year
      */
     private static String getCycle() {
         /*
@@ -566,7 +565,6 @@ public class NetworkHelper {
     
     /**
      * Find cycle + or - offset
-     * @param date
      * @return
      */
     public static String findCycleOffset(String cycleName, int offset) {        

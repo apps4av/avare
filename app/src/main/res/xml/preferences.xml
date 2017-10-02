@@ -517,17 +517,4 @@ authors: zkhan, jlmcgraw
 
     </PreferenceScreen>
 
-
-    <PreferenceScreen
-        android:title="@string/Developer"
-        android:icon="@android:drawable/ic_menu_zoom" >
-
-        <CheckBoxPreference
-            android:key="@string/TileSize"
-            android:summary="@string/TileSizeSummary"
-            android:title="@string/TileSizeLabel" />
-
-    </PreferenceScreen>
-
-
     </PreferenceScreen>

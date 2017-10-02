@@ -1151,10 +1151,6 @@ public class Preferences {
         return intervalInt;
     }
 
-    public boolean isTileSize256() {
-        return mPref.getBoolean(mContext.getString(R.string.TileSize), false);
-    }
-
     public float getFuelBurn() {
         try {
             return (Float.parseFloat(mPref.getString(mContext.getString(R.string.FuelRateLabel), "10")));

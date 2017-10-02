@@ -73,19 +73,11 @@ public class BitmapHolder {
     /**
      * 
      */
-    public static int WIDTH;
+    public static final int WIDTH = 512;
     /**
      * 
      */
-    public static int HEIGHT;
-
-    /*
-     * Call this to set tile dims from where the app starts
-     */
-    public static void setDims(int dim) {
-        WIDTH = dim;
-        HEIGHT = dim;
-    }
+    public static final int HEIGHT = 512;
 
     /**
      * @param

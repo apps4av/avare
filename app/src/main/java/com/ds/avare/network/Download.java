@@ -50,8 +50,7 @@ public class Download {
     private Thread mThread;
     private String mCode;
     private int mCycleAdjust;
-    private boolean mIs256;
-   
+
     public static final int FAILED = -2;
     public static final int SUCCESS = -1;
     public static final int NONEED = -3;
@@ -61,10 +60,9 @@ public class Download {
     /**
      * 
      */
-    public Download(String root, Handler handler, int cycleAdjust, boolean is256) {
+    public Download(String root, Handler handler, int cycleAdjust) {
         mStop = false;
         mDt = null;
-        mIs256 = is256;
         mVersion = null;
         mRoot = root;
         mCode = "";
@@ -199,7 +197,7 @@ public class Download {
                 mCode = "code unable to get zipped file name";
                 String zipfile = path + "/" + mName + ".zip";
                 mCode = "code unable to get network file name ";
-                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot, mStatic, mIs256);
+                String netfile = NetworkHelper.getUrl(mName + ".zip", mVersion, mRoot, mStatic);
 
                 /* 
                  * Download the file
