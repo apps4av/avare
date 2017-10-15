@@ -353,7 +353,7 @@ public class StorageService extends Service {
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
         mPlateDiagramBitmap = null;
-        mAfdIndex = 0;
+        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
@@ -716,7 +716,7 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mAfdIndex = 0;
+        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
 
         // A direct destination implies a new plan. Ensure to turn off
         // the plan
@@ -730,7 +730,7 @@ public class StorageService extends Service {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mAfdIndex = 0;
+        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
         
         // Update the right side of the nav comments from the destination
         // TODO: I don't like this here, it should be pushed into the PLAN itself

@@ -320,6 +320,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/GameTFR"
             android:summary="@string/GameTFRSummary"
             android:title="@string/GameTFRLabel" />
+        <CheckBoxPreference
+            android:key="@string/DefaultAFD"
+            android:summary="@string/DefaultAFDSummary"
+            android:title="@string/DefaultAFDLabel" />
     </PreferenceScreen>
 
 	<PreferenceScreen 

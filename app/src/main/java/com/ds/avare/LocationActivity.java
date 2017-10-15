@@ -156,6 +156,7 @@ public class LocationActivity extends Activity implements Observer {
     private Button mPlanPrev;
     private ImageButton mPlanPause;
     private Button mPlanNext;
+    private boolean mMenuOut;
 
 
     private TankObserver mTankObserver;
@@ -317,6 +318,11 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onBackPressed() {
 
+        if(mMenuOut) {
+            hideMenu(); // hide menu on back first
+            return;
+        }
+
         /*
          * And may exit
          */
@@ -365,6 +371,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateHelp.animateBack();
         mAnimateDownload.animateBack();
         mAnimatePref.animateBack();
+        mMenuOut = false;
     }
 
     /**
@@ -379,6 +386,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimateHelp.animate();
         mAnimateDownload.animate();
         mAnimatePref.animate();
+        mMenuOut = true;
     }
 
 
@@ -409,6 +417,8 @@ public class LocationActivity extends Activity implements Observer {
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
             ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
         }
+
+        mMenuOut = false;
 
         /*
          * To be notified of some action in the view

@@ -17,18 +17,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 
-import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.content.GameTfrContract;
-import com.ds.avare.content.GameTfrProvider;
-import com.ds.avare.content.LocationContentProviderHelper;
-import com.ds.avare.content.LocationContract;
-import com.ds.avare.content.LocationProvider;
-import com.ds.avare.content.ObstaclesContract;
-import com.ds.avare.content.ObstaclesProvider;
-import com.ds.avare.content.ProceduresContract;
-import com.ds.avare.content.ProceduresProvider;
-import com.ds.avare.content.WeatherContract;
-import com.ds.avare.content.WeatherProvider;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.NavAid;
@@ -45,7 +33,6 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -68,6 +55,10 @@ public class DataSource {
     public DataSource(Context context) {
         mContext = context;
         mPref = new Preferences(context);
+    }
+
+    public Preferences getPreferences() {
+        return mPref;
     }
 
     public boolean isPresent() {

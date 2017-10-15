@@ -548,4 +548,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WnbSummary">Weight and Balance</string>
     <string name="Wnb"><![CDATA[W&B]]></string>
     <string name="Calculate">Calculate</string>
+
+    <string name="DefaultAFD">DefaultAFD</string>
+    <string name="DefaultAFDLabel">Default A/FD</string>
+    <string name="DefaultAFDSummary">Select to show downloaded A/FD images by default on A/FD screen</string>
 </resources>

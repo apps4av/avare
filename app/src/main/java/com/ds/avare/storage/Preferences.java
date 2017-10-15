@@ -1234,6 +1234,10 @@ public class Preferences {
     public void putWnbs(String name) {
         mPref.edit().putString(mContext.getString(R.string.Wnb), name).commit();
     }
+
+    public boolean isDefaultAFDImage() {
+        return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
+    }
 }
 
 

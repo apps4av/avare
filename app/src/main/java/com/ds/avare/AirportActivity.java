@@ -403,6 +403,11 @@ public class AirportActivity extends Activity implements Observer {
                 }
                 mService.setAfdIndex(pos);
             }
+            //if afd is null, avare is going to fall back to Avare A/FD data
+            //we need to set the view button to A/F
+            else {
+                mViewButton.setText(mListViews.get(0));
+            }
         }
     }
 
@@ -467,7 +472,7 @@ public class AirportActivity extends Activity implements Observer {
             else if(curDest != null && curDest.getID().equals(airport) && curDest.getType().equals(Destination.BASE)) {
                 mDestination = curDest;
                 setupViewInfo();
-                viewPos = 0;
+                viewPos = mPref.isDefaultAFDImage() ? 1 : 0;
             }
             else {
                 viewPos = 0;
@@ -647,7 +652,7 @@ public class AirportActivity extends Activity implements Observer {
                 }
 
                 setupViewInfo();
-                setViewFromPos(0);
+                setViewFromPos(mPref.isDefaultAFDImage() ? 1 : 0);
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));
