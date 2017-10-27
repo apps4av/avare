@@ -12,17 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adapters;
 
 
-import com.ds.avare.R;
-import com.ds.avare.R.id;
-import com.ds.avare.R.layout;
-import com.ds.avare.R.string;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.ds.avare.R;
 
 /**
  * @author zkhan
@@ -41,7 +38,6 @@ public class NearestAdapter extends ArrayAdapter<String> {
         
     /**
      * @param context
-     * @param textViewResourceId
      */
     public NearestAdapter(Context context, String[] distance, String name[], 
             String bearing[], String[] fuel, String[] elev, String[] runway, boolean[] glide) {
@@ -152,7 +148,7 @@ public class NearestAdapter extends ArrayAdapter<String> {
          * Fuel shows as Fuel or none
          */
         textView = (TextView)rowView.findViewById(R.id.nearest_list_elevation);
-        textView.setText(mLongestRunway[position] + "ft @" + mElevation[position]);
+        textView.setText(mLongestRunway[position].equals("") ? "" : (mLongestRunway[position] + "ft @" + mElevation[position]));
         
         return rowView;
     }

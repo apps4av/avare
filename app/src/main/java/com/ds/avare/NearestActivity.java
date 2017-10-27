@@ -305,14 +305,14 @@ public class NearestActivity extends Activity  implements Observer {
             return false;
         }
         
-        final String [] airport = new String[airportnum];
-        final String [] airportname = new String[airportnum];
-        final String [] dist = new String[airportnum];
-        final String [] bearing = new String[airportnum];
-        final String [] fuel = new String[airportnum];
-        final String [] runlen = new String[airportnum];
-        final String[] elevation = new String[airportnum];
-        final boolean[] glide = new boolean[airportnum];
+        final String [] airport = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String [] airportname = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String [] dist = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String [] bearing = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String [] fuel = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String [] runlen = new String[Preferences.MAX_AREA_AIRPORTS];
+        final String[] elevation = new String[Preferences.MAX_AREA_AIRPORTS];
+        final boolean[] glide = new boolean[Preferences.MAX_AREA_AIRPORTS];
 
         for(int id = 0; id < airportnum; id++) {
             Airport a = mService.getArea().getAirport(id);
@@ -326,6 +326,20 @@ public class NearestActivity extends Activity  implements Observer {
             runlen[id] = a.getLongestRunway();
             glide[id] = a.canGlide(mPref);
         }
+
+        for(int id = airportnum; id < Preferences.MAX_AREA_AIRPORTS; id++) {
+            // fill up the adapter
+            airport[id] = "";
+            airportname[id] = "";
+            fuel[id] = "";
+            dist[id] = "";
+            bearing[id] = "";
+            elevation[id] = "";
+            runlen[id] = "";
+            glide[id] = false;
+        }
+
+
         if(null == mNearestAdapter) {
             mNearestAdapter = new NearestAdapter(NearestActivity.this, dist, airportname, bearing, fuel, elevation, runlen, glide);
         }
@@ -383,8 +397,11 @@ public class NearestActivity extends Activity  implements Observer {
                             return;
                         }
                     }              
-                    
+
                     Airport a = mService.getArea().getAirport(position);
+                    if(null == a) {
+                        return;
+                    }
                     mSelectedAirportId = a.getId();
                     mDestButton.setText(a.getId());
                     

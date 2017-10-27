@@ -12,13 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-import com.ds.avare.gps.GpsParams;
-import com.ds.avare.content.DataSource;
-import com.ds.avare.storage.Preferences;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.SystemClock;
+
+import com.ds.avare.content.DataSource;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.storage.Preferences;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -145,9 +145,8 @@ public class Area {
             
             mAirportCache = mDataSource.findClosestAirports(mLon, mLat, mAirportCache, mPref.getLongestRunway());
             airports = mAirportCache.values().toArray(new Airport[0]);
-            /*
-             * Sort on distance because distance found from sqlite is less than perfect
-             */
+
+
             return null;
         }
         
@@ -157,34 +156,44 @@ public class Area {
             	mFound = false;
                 return;
             }
-            
+
+            /*
+             * Sort on distance because distance found from sqlite is less than perfect
+             */
             int n = airports.length;
+
+            for(int i = 0; i < n; i++) {
+                if(airports[i] != null) {
+                    airports[i].updateLocation(mLon, mLat);
+                }
+            }
+
             // Bubble sort
-            // Removed Collections.sort() because this function has issues with some OS versions 
+            // Removed Collections.sort() because this function has issues with some OS versions
             for (int c = 0; c < (n - 1); c++) {
                 for (int d = 0; d < (n - c - 1); d++) {
-                	if(airports[d + 1] == null || airports[d] == null) {
-                		break;
-                	}
-				    if (airports[d].getDistance() > airports[d + 1].getDistance()) { /* For ascending order use < */
-					    Airport swap = airports[d];
-					    airports[d] = airports[d + 1];
-					    airports[d + 1] = swap;
-				    }
-                 }
+                    if(airports[d + 1] == null || airports[d] == null) {
+                        break;
+                    }
+                    if (airports[d].getDistance() > airports[d + 1].getDistance()) { /* For ascending order use < */
+                        Airport swap = airports[d];
+                        airports[d] = airports[d + 1];
+                        airports[d + 1] = swap;
+                    }
+                }
             }
 
             /*
              * Now test if all airports are at glide-able distance.
              */
-            for(int i = 0; i < airports.length; i++) {
+            for(int i = 0; i < n; i++) {
                 if(airports[i] != null) {
                     airports[i].setHeight(mAltitude);
                 }
             }
 
             mAirports = airports;
-            mFound = true;                    
+            mFound = true;
         }
 
     }
