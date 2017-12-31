@@ -257,11 +257,7 @@ public class LocationContentProviderHelper {
                     params.put(FACILITY_NAME, c.getString(6));
                     params.put(LATITUDE, Double.toString(Helper.truncGeo(c.getDouble(4))));
                     params.put(LONGITUDE, Double.toString(Helper.truncGeo(c.getDouble(5))));
-                    String fuel = c.getString(7).trim();
-                    if(fuel.equals("")) {
-                        fuel = ctx.getString(R.string.No);
-                    }
-                    params.put(FUEL_TYPES, fuel);
+                    params.put(FUEL_TYPES, c.getString(7).trim());
 
                     Airport a = new Airport(params, lon, lat);
                     // runway length / width in combined table

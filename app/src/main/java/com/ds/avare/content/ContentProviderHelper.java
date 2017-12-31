@@ -1,7 +1,5 @@
 package com.ds.avare.content;
 
-import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -83,10 +81,10 @@ public class ContentProviderHelper {
 
         String qry =
                 "((" + ProceduresContract.AIRPORT + " = ?) or (" + ProceduresContract.AIRPORT + " = ?)) and " +
-                        "(" + ProceduresContract.APPROACH_TYPE + " = ?) and " +
+                        "(" + ProceduresContract.APPROACH_TYPE + " like ?) and " +
                         "(" + ProceduresContract.RUNWAY + " like ?)";
 
-        String arguments[] = new String[] {name, "K" + name, params[0], "%" + params[1] + "%"};
+        String arguments[] = new String[] {name, "K" + name, params[0] + "%", "%" + params[1] + "%"};
 
         try {
             Cursor c = ctx.getContentResolver().query(ProceduresContract.CONTENT_URI, null, qry, arguments, null);
