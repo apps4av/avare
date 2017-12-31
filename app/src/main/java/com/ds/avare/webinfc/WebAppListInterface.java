@@ -30,6 +30,7 @@ import com.ds.avare.utils.Helper;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -450,7 +451,7 @@ public class WebAppListInterface {
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
      */
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
         	if(MSG_UPDATE_LIST == msg.what) {

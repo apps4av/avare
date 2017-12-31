@@ -25,6 +25,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -414,7 +415,7 @@ public class ChartsDownloadActivity extends Activity {
     /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
-	private Handler mHandler = new Handler() {
+	private Handler mHandler = new Handler(Looper.getMainLooper()) {
 		@Override
         public void handleMessage(Message msg) {
             int result = msg.what;

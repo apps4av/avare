@@ -37,6 +37,8 @@ public class LocationProvider extends MainProvider {
     public static final int SUA_ID = 230;
     public static final int AIRWAYS = 211;
     public static final int AIRWAYS_ID = 231;
+    public static final int NEAR = 212;
+    public static final int NEAR_ID = 232;
 
     public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
             + "/rv-location";
@@ -69,6 +71,8 @@ public class LocationProvider extends MainProvider {
         mURIMatcher.addURI(LocationContract.AUTHORITY, LocationContract.BASE_SUA + "/#", SUA_ID);
         mURIMatcher.addURI(LocationContract.AUTHORITY, LocationContract.BASE_AIRWAYS, AIRWAYS);
         mURIMatcher.addURI(LocationContract.AUTHORITY, LocationContract.BASE_AIRWAYS + "/#", AIRWAYS_ID);
+        mURIMatcher.addURI(LocationContract.AUTHORITY, LocationContract.BASE_NEAR, NEAR);
+        mURIMatcher.addURI(LocationContract.AUTHORITY, LocationContract.BASE_NEAR + "/#", NEAR_ID);
     }
 
     @Override
@@ -136,6 +140,13 @@ public class LocationProvider extends MainProvider {
                 break;
             case AIRWAYS:
                 queryBuilder.setTables(LocationContract.TABLE_AIRWAYS);
+                break;
+            case NEAR:
+                // join two tables for near airports
+                queryBuilder.setTables(LocationContract.TABLE_AIRPORTS + " LEFT JOIN " +
+                        LocationContract.TABLE_AIRPORT_RUNWAYS + " ON " +
+                        LocationContract.TABLE_AIRPORTS + "." + LocationContract.AIRPORTS_LOCATION_ID +
+                        " = " + LocationContract.TABLE_AIRPORT_RUNWAYS + "." + LocationContract.AIRPORT_RUNWAYS_LOCATION_ID);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");

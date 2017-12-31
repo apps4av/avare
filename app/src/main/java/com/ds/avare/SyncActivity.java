@@ -24,6 +24,7 @@ import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -361,7 +362,7 @@ public class SyncActivity extends Activity implements ConnectionCallbacks,  OnCo
         mHandler.sendMessage(msg);
     }
 
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if(msg.what == CODE_LOG) {

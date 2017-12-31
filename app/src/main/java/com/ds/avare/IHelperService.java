@@ -21,6 +21,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 
 import com.ds.avare.instruments.CDI;
@@ -183,7 +184,7 @@ public class IHelperService extends Service {
     /**
      * Posting a location hence do from UI thread
      */
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {            
 

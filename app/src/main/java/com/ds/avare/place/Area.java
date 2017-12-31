@@ -36,7 +36,6 @@ public class Area {
     private DataBaseAreaTask mDt;
     private double mLon;
     private double mLat;
-    private boolean mFound;
     private long mLastTime;
     private double mAltitude;
     private Preferences mPref;
@@ -51,8 +50,7 @@ public class Area {
         mDataSource = dataSource;
         mLon = mLat = 0;
         mAltitude = 0;
-        mLastTime = SystemClock.elapsedRealtime();
-        mFound = false;
+        mLastTime = SystemClock.elapsedRealtime() - UPDATE_TIME;
         mPref = new Preferences(ctx);
         mAirportCache = new LinkedHashMap<String, Airport>();
     }
@@ -96,15 +94,13 @@ public class Area {
         double lon = params.getLongitude();
         double lat = params.getLatitude();
 
-        if(mFound) {
-            long ctime = SystemClock.elapsedRealtime();
-            ctime -= mLastTime;
-            if(Math.abs(ctime) < UPDATE_TIME) {
-                /*
-                 * Slow down on creating async tasks.
-                 */
-                return;
-            }
+        long ctime = SystemClock.elapsedRealtime();
+        ctime -= mLastTime;
+        if(ctime < UPDATE_TIME) {
+            /*
+             * Slow down on creating async tasks.
+             */
+            return;
         }
         mLastTime = SystemClock.elapsedRealtime();
         
@@ -116,8 +112,8 @@ public class Area {
             /*
              * Do not overwhelm
              */
-            if(mDt.getStatus() != AsyncTask.Status.FINISHED) {
-                return;
+            if(mDt.getStatus() == AsyncTask.Status.RUNNING) {
+                mDt.cancel(true);
             }
         }
         mDt = new DataBaseAreaTask();
@@ -153,7 +149,6 @@ public class Area {
         @Override
         protected void onPostExecute(Object res) {
             if(airports == null) {
-            	mFound = false;
                 return;
             }
 
@@ -193,7 +188,6 @@ public class Area {
             }
 
             mAirports = airports;
-            mFound = true;
         }
 
     }

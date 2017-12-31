@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -941,7 +942,7 @@ public class WebAppPlanInterface implements Observer {
      * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
      */
     @SuppressLint("HandlerLeak")
-	private Handler mHandler = new Handler() {
+	private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
         	if(MSG_CLEAR_PLAN == msg.what) {

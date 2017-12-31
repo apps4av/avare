@@ -212,18 +212,30 @@ public class LocationContentProviderHelper {
 
         double corrFactor = Math.pow(Math.cos(Math.toRadians(lat)), 2);
         String asdistance = "((" +
-                LocationContract.AIRPORT_RUNWAYS_HE_LONGITUDE + " - " + lon + ") * (" +
-                LocationContract.AIRPORT_RUNWAYS_HE_LONGITUDE + " - " + lon + ") * " + corrFactor + " + " + "(" +
-                LocationContract.AIRPORT_RUNWAYS_HE_LATITUDE  + " - " + lat + ") * (" +
-                LocationContract.AIRPORT_RUNWAYS_HE_LATITUDE  + " - " + lat + "))";
+                LocationContract.AIRPORTS_LONGITUDE + " - " + lon + ") * (" +
+                LocationContract.AIRPORTS_LONGITUDE + " - " + lon + ") * " + corrFactor + " + " + "(" +
+                LocationContract.AIRPORTS_LATITUDE  + " - " + lat + ") * (" +
+                LocationContract.AIRPORTS_LATITUDE  + " - " + lat + "))";
 
-        String qry = LocationContract.AIRPORT_RUNWAYS_LENGTH + " >= " + String.valueOf(minRunwayLength);
-        String projection[] = new String[] {LocationContract.AIRPORT_RUNWAYS_LOCATION_ID, LocationContract.AIRPORT_RUNWAYS_LENGTH,
-                LocationContract.AIRPORT_RUNWAYS_WIDTH, LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION, asdistance + " as distance"};
-        String order = "distance ASC ";
+        String qry = "cast(" + LocationContract.AIRPORT_RUNWAYS_LENGTH + " as decimal) >= " + String.valueOf(minRunwayLength);
+        if(!showAll) {
+            qry += " and " + LocationContract.AIRPORTS_TYPE + "='AIRPORT'";
+        }
+        // LocationID is ambiguous hence add table name with it
+        String projection[] = new String[] {
+                LocationContract.TABLE_AIRPORTS + "." + LocationContract.AIRPORTS_LOCATION_ID,
+                LocationContract.AIRPORT_RUNWAYS_LENGTH,
+                LocationContract.AIRPORT_RUNWAYS_WIDTH,
+                LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION,
+                LocationContract.AIRPORTS_LATITUDE,
+                LocationContract.AIRPORTS_LONGITUDE,
+                LocationContract.AIRPORTS_FACILITY_NAME,
+                LocationContract.AIRPORTS_FUEL_TYPES,
+                asdistance + " as distance"};
+        String order = "distance ASC";
 
         try {
-            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORT_RUNWAYS, projection, qry, null, order);
+            Cursor c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NEAR, projection, qry, null, order);
             if(c != null) {
                 while(c.moveToNext()) {
                     String id = c.getString(0); // LocationContract.AIRPORT_RUNWAYS_LOCATION_ID
@@ -239,9 +251,17 @@ public class LocationContentProviderHelper {
 
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                     // find airport
-                    findDestination(ctx, id, Destination.BASE, showAll ? null : "AIRPORT", params, null, null, null);
                     String parts[] = c.getString(3).trim().split("[.]"); //LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION
                     params.put(ELEVATION, parts[0] + "ft");
+                    params.put(LOCATION_ID, c.getString(0));
+                    params.put(FACILITY_NAME, c.getString(6));
+                    params.put(LATITUDE, Double.toString(Helper.truncGeo(c.getDouble(4))));
+                    params.put(LONGITUDE, Double.toString(Helper.truncGeo(c.getDouble(5))));
+                    String fuel = c.getString(7).trim();
+                    if(fuel.equals("")) {
+                        fuel = ctx.getString(R.string.No);
+                    }
+                    params.put(FUEL_TYPES, fuel);
 
                     Airport a = new Airport(params, lon, lat);
                     // runway length / width in combined table
@@ -252,6 +272,7 @@ public class LocationContentProviderHelper {
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
         }
 
         return airportsnew;

@@ -24,6 +24,7 @@ public class LocationContract {
     public static final String BASE_AFD = "afd";
     public static final String BASE_SUA = "saa";
     public static final String BASE_AIRWAYS = "airways";
+    public static final String BASE_NEAR = "near";
 
     public static final Uri CONTENT_URI_AIRPORTS = Uri.withAppendedPath(AUTHORITY_URI, BASE_AIRPORTS);
     public static final Uri CONTENT_URI_AIRPORT_DIAGS = Uri.withAppendedPath(AUTHORITY_URI, BASE_AIRPORT_DIAGS);
@@ -37,6 +38,7 @@ public class LocationContract {
     public static final Uri CONTENT_URI_AFD = Uri.withAppendedPath(AUTHORITY_URI, BASE_AFD);
     public static final Uri CONTENT_URI_SUA = Uri.withAppendedPath(AUTHORITY_URI, BASE_SUA);
     public static final Uri CONTENT_URI_AIRWAYS = Uri.withAppendedPath(AUTHORITY_URI, BASE_AIRWAYS);
+    public static final Uri CONTENT_URI_NEAR = Uri.withAppendedPath(AUTHORITY_URI, BASE_NEAR);
 
     public static final String TABLE_AIRPORTS = "airports";
     public static final String TABLE_AIRPORT_DIAGS = "airportdiags";

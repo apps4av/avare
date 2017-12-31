@@ -23,6 +23,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -400,7 +401,7 @@ public class ChecklistActivity extends Activity {
     /**
      * 
      */
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
     		if(msg.what == SHOW_BUSY) {

@@ -14,6 +14,7 @@ package com.ds.avare.webinfc;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -522,7 +523,7 @@ public class WebAppInterface {
     /**
      * 
      */
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             

@@ -15,6 +15,7 @@ package com.ds.avare.webinfc;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -77,7 +78,7 @@ public class WebAppMapInterface {
      * Must use handler for functions called from JS, but for uniformity, call all JS from this handler
      */
     @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (MSG_SET_DATA == msg.what) {
