@@ -67,7 +67,7 @@ public class NetworkHelper {
         //http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=KALX
         
         try {
-            URL url = new URL("http://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=K" + airport);
+            URL url = new URL("https://www.nws.noaa.gov/cgi-bin/mos/getmet.pl?sta=K" + airport);
             Scanner s = new Scanner(url.openStream());
             int state = 0;
             String sb = "";
@@ -112,7 +112,7 @@ public class NetworkHelper {
         /*
          * Get TAF
          */
-        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" + 
+        String xml = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" +
                 airport + "&hoursBeforeNow=2";
         XMLReader xmlReader;
         try {
@@ -126,7 +126,6 @@ public class NetworkHelper {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
         }
         return "";
     }
@@ -141,7 +140,7 @@ public class NetworkHelper {
         /*
          * Get TAF
          */
-        String xml = "http://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
+        String xml = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
                  + airport + "&hoursBeforeNow=2";
         
         XMLReader xmlReader;
@@ -238,7 +237,7 @@ public class NetworkHelper {
     public static String getTAFPlan(String plan, String miles) {
         
         String xml = 
-                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
+                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
                 + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
@@ -272,7 +271,7 @@ public class NetworkHelper {
     public static String getPIREPSPlan(String plan, String miles) {
         
         String xml = 
-                "http://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
+                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
                 + "&requestType=retrieve&format=xml&hoursBeforeNow=12" 
                 + "&flightPath=" + miles + ";" + plan;
         /*
