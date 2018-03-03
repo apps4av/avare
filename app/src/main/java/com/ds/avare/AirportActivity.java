@@ -153,7 +153,9 @@ public class AirportActivity extends Activity implements Observer {
                     index = 0;
                 }
                 mViewPopup = builder.setSingleChoiceItems(mListViews.toArray(new String[mListViews.size()]), index, onClickListener).create();
-                mViewPopup.show();
+                if(!isFinishing()) {
+                    mViewPopup.show();
+                }
             }
         });         
         
@@ -177,7 +179,9 @@ public class AirportActivity extends Activity implements Observer {
                 DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AirportActivity.this);
                 int index = mListAirports.indexOf(mService.getLastAfdAirport());
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
-                mAirportPopup.show();
+                if(!isFinishing()) {
+                    mAirportPopup.show();
+                }
 
             }
         });              

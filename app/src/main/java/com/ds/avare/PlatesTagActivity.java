@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -153,7 +152,9 @@ public class PlatesTagActivity extends Activity implements Observer {
                 dialog.dismiss();
             }
         });
-        mAlertDialog.show();
+        if(!isFinishing()) {
+            mAlertDialog.show();
+        }
 
         mPref.setGeotags(putTagsToStorageFormat(mTags));
         mTagged = true;
@@ -483,7 +484,9 @@ public class PlatesTagActivity extends Activity implements Observer {
                         dialog.dismiss();
                     }
                 });
-                mAlertDialog.show();
+                if(!isFinishing()) {
+                    mAlertDialog.show();
+                }
 
             }
         });
@@ -576,7 +579,9 @@ public class PlatesTagActivity extends Activity implements Observer {
                         dialog.dismiss();
                     }
                 });
-                mAlertDialog.show();
+                if(!isFinishing()) {
+                    mAlertDialog.show();
+                }
             }
             else {
                 mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
@@ -591,7 +596,9 @@ public class PlatesTagActivity extends Activity implements Observer {
                         dialog.dismiss();
                     }
                 });
-                mAlertDialog.show();
+                if(!isFinishing()) {
+                    mAlertDialog.show();
+                }
             }
 
         }

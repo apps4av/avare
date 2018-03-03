@@ -291,19 +291,12 @@ public class ChartsDownloadActivity extends Activity {
              */
             public void onClick(DialogInterface dialog, int which) {
                 mDownload.cancel();
-                try {
-                    dialog.dismiss();
-                }
-                catch (Exception e) {
-                    
-                }
+                dialog.dismiss();
             }
         });
-        try {
+        if(!isFinishing()) {
             mProgressDialog.show();
         }
-        catch(Exception e) {
-        };
         return true;
     }
 
@@ -344,19 +337,12 @@ public class ChartsDownloadActivity extends Activity {
              */
             public void onClick(DialogInterface dialog, int which) {
                 mDelete.cancel();
-                try {
-                    dialog.dismiss();
-                }
-                catch (Exception e) {
-                    
-                }
+                dialog.dismiss();
             }
         });
-        try {
+        if(!isFinishing()) {
             mProgressDialog.show();
         }
-        catch(Exception e) {
-        };
         return true;
     }
 
@@ -380,19 +366,11 @@ public class ChartsDownloadActivity extends Activity {
         getApplicationContext().unbindService(mConnection);
         
         if(mAlertDialog != null) {
-            try {
-                mAlertDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
+            mAlertDialog.dismiss();
         }
                 
         if(mProgressDialog != null) {
-            try {
-                mProgressDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
+            mProgressDialog.dismiss();
         }
 
         /*
@@ -425,11 +403,7 @@ public class ChartsDownloadActivity extends Activity {
              * download sends a message as it was a BG task.  
              */
             if(null == mName) {
-                try {
-                    mProgressDialog.dismiss();
-                }
-                catch (Exception e) {
-                }                
+                mProgressDialog.dismiss();
                 return;
             }
 
@@ -438,13 +412,8 @@ public class ChartsDownloadActivity extends Activity {
 
             if(msg.obj instanceof Download) {
                 if(Download.FAILED == result) {
-                    try {
-                        mProgressDialog.dismiss();
-                    }
-                    catch (Exception e) {
-                        
-                    }
-                    
+                    mProgressDialog.dismiss();
+
                     /*
                      * Throw a confirm dialog
                      */
@@ -461,31 +430,20 @@ public class ChartsDownloadActivity extends Activity {
                             dialog.dismiss();
                         }
                     });
-        
-                    try {
+
+                    if(!isFinishing()) {
                         mAlertDialog.show();
-                    }
-                    catch (Exception e) {
                     }
                 }
                 
                 
                 
                 if(Download.NONEED == result) {
-                    try {
-                        mProgressDialog.dismiss();
-                    }
-                    catch (Exception e) {
-                    }
+                    mProgressDialog.dismiss();
                 }
                 else if (Download.SUCCESS == result) {
-                    try {
-                        mProgressDialog.dismiss();
-                    }
-                    catch (Exception e) {
-                        
-                    }
-                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " " 
+                    mProgressDialog.dismiss();
+                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
                     /*
@@ -516,22 +474,15 @@ public class ChartsDownloadActivity extends Activity {
                     download();
                 }
                 else {
-                    try {
+                    if(!isFinishing()) {
                         mProgressDialog.setProgress(result);
                     }
-                    catch (Exception e) {                    
-                    }
-                }           
+                }
             }
             else if(msg.obj instanceof Delete) {
                 if(Delete.FAILED == result) {
-                    try {
-                        mProgressDialog.dismiss();
-                    }
-                    catch (Exception e) {
-                        
-                    }
-                    
+                    mProgressDialog.dismiss();
+
                     /*
                      * Throw a confirm dialog
                      */
@@ -548,22 +499,15 @@ public class ChartsDownloadActivity extends Activity {
                             dialog.dismiss();
                         }
                     });
-        
-                    try {
+
+                    if(!isFinishing()) {
                         mAlertDialog.show();
-                    }
-                    catch (Exception e) {
                     }
                 }
                 
                 if (Delete.SUCCESS == result) {
-                    try {
-                        mProgressDialog.dismiss();
-                    }
-                    catch (Exception e) {
-                        
-                    }
-                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " " 
+                    mProgressDialog.dismiss();
+                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
                     if(mName.equals(getString(R.string.TFRs))) {
@@ -583,12 +527,10 @@ public class ChartsDownloadActivity extends Activity {
                     delete();
                 }
                 else {
-                    try {
+                    if(!isFinishing()) {
                         mProgressDialog.setProgress(result);
                     }
-                    catch (Exception e) {                    
-                    }
-                }                
+                }
             }
 		}
     };

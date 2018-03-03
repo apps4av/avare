@@ -355,7 +355,9 @@ public class LocationActivity extends Activity implements Observer {
             }
         });
 
-        mAlertDialogExit.show();
+        if(!isFinishing()) {
+            mAlertDialogExit.show();
+        }
 
     }
 
@@ -487,7 +489,9 @@ public class LocationActivity extends Activity implements Observer {
 
                     // Create and show the dialog now
                     AlertDialog dialog = builder.create();
-                    dialog.show();
+                    if(!isFinishing()) {
+                        dialog.show();
+                    }
                 }
             }
 
@@ -507,7 +511,9 @@ public class LocationActivity extends Activity implements Observer {
                     if(mInfc != null) {
                         mInfc.setData(data);
                     }
-                    mAlertDialogDestination.show();
+                    if(!isFinishing()) {
+                        mAlertDialogDestination.show();
+                    }
 
                     /*
                      * Show the popout
@@ -682,7 +688,9 @@ public class LocationActivity extends Activity implements Observer {
                         hideMenu();
                     }
                 });
-                mSosDialog.show();
+                if(!isFinishing()) {
+                    mSosDialog.show();
+                }
                 if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
                         Manifest.permission.SEND_SMS)) {
                     ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, 103); // tabhost needs parent for permissions
@@ -797,7 +805,9 @@ public class LocationActivity extends Activity implements Observer {
                     dialog.dismiss();
                 }
             });
-            mGpsWarnDialog.show();
+            if(!isFinishing()) {
+                mGpsWarnDialog.show();
+            }
         }
 
                 /*
@@ -817,7 +827,9 @@ public class LocationActivity extends Activity implements Observer {
                     dialog.dismiss();
                 }
             });
-            mWarnDialog.show();
+            if(!isFinishing()) {
+                mWarnDialog.show();
+            }
         }
 
         /*
@@ -1128,7 +1140,9 @@ public class LocationActivity extends Activity implements Observer {
                         dialog.dismiss();
                     }
                 });
-                mAlertDialogDatabase.show();
+                if(!isFinishing()) {
+                    mAlertDialogDatabase.show();
+                }
                 return;
             }
 
@@ -1236,7 +1250,9 @@ public class LocationActivity extends Activity implements Observer {
 		                    dialog.dismiss();
 		                }
 		            });
-					alertDialog.show();
+                    if(!isFinishing()) {
+                        alertDialog.show();
+                    }
 					break;
 			}
 		}

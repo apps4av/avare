@@ -13,17 +13,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,9 +29,6 @@ import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -108,9 +101,20 @@ public class RegisterActivity extends Activity {
 
         // Check if Internet present
         if (!Helper.isNetworkAvailable(this)) {
-            Helper.showAlert(RegisterActivity.this,
-                    getString(R.string.error),
-                    getString(R.string.error_internet));
+
+            DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(RegisterActivity.this);
+            alertDialogBuilder
+                    .setTitle(getString(R.string.error))
+                    .setMessage(getString(R.string.error_internet))
+                    .setNeutralButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            if(!isFinishing()) {
+                alertDialogBuilder.create().show();
+            }
+
             return;
         }
 
@@ -269,7 +273,9 @@ public class RegisterActivity extends Activity {
                                                 dialog.dismiss();
                                             }
                                         });
-                                alertDialogBuilder.create().show();
+                                if(!isFinishing()) {
+                                    alertDialogBuilder.create().show();
+                                }
                             }
                             else {
                                 Toast.makeText(RegisterActivity.this, getString(R.string.failed_register), Toast.LENGTH_LONG).show();

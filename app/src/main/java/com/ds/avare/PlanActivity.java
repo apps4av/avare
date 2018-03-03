@@ -173,29 +173,32 @@ public class PlanActivity extends Activity {
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new DecoratedAlertDialogBuilder(PlanActivity.this)
-	            	.setTitle("")
-	            	.setMessage(message)
-	            	// on cancel is needed for without it JS may hang
-	            	.setCancelable(true)
-	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface arg0) {
-	            			result.cancel();							
-						}
-	            	})
-	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.confirm();
-	            		}
-	            	})
-	            	.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.cancel();
-	            		}
-	            	})
-	            	.create()
-	            	.show();
+                if(!isFinishing()) {
+
+                    new DecoratedAlertDialogBuilder(PlanActivity.this)
+                            .setTitle("")
+                            .setMessage(message)
+                            // on cancel is needed for without it JS may hang
+                            .setCancelable(true)
+                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface arg0) {
+                                    result.cancel();
+                                }
+                            })
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.confirm();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.cancel();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
 	            return true;
 	        }
 	    });
@@ -423,7 +426,9 @@ public class PlanActivity extends Activity {
     			           }
     			});
     			AlertDialog alert = builder.create();
-    			alert.show();
+                if(!isFinishing()) {
+                    alert.show();
+                }
     		}
     		else if(msg.what == INIT) {
                 mProgressBarSearch.setVisibility(View.INVISIBLE);

@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.FuelTimer;
@@ -48,8 +47,8 @@ import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
-import com.ds.avare.utils.PngCommentReader;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.PngCommentReader;
 import com.ds.avare.views.PlatesView;
 
 import java.io.File;
@@ -291,7 +290,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 }
                 builder.setTitle(getString(R.string.SelectPlateToShow));
                 mPlatesPopup = builder.setSingleChoiceItems(mListPlates.toArray(new String[mListPlates.size()]), index, onClickListener).create();
-                mPlatesPopup.show();
+                if(!isFinishing()) {
+                    mPlatesPopup.show();
+                }
             }
         });
 
@@ -326,7 +327,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlatesActivity.this);
                 builder.setTitle(getString(R.string.SelectApproachToShow));
                 mApproachPopup = builder.setSingleChoiceItems(mListApproaches.toArray(new String[mListApproaches.size()]), 0, onClickListener).create();
-                mApproachPopup.show();
+                if(!isFinishing()) {
+                    mApproachPopup.show();
+                }
             }
         });
 
@@ -346,6 +349,7 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                      * Show when counting, dont show when stopped
                      */
                     mCounting = true;
+                    mPlatesTimerButton.setText("");
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
                     mChronometer.setOnChronometerTickListener(PlatesActivity.this);
@@ -423,7 +427,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
                 int index = mListAirports.indexOf(mService.getLastPlateAirport());
                 builder.setTitle(getString(R.string.SelectAirportToShow));
                 mAirportPopup = builder.setSingleChoiceItems(mListAirports.toArray(new String[mListAirports.size()]), index, onClickListener).create();
-                mAirportPopup.show();
+                if(!isFinishing()) {
+                    mAirportPopup.show();
+                }
             }
         });      
                
@@ -796,7 +802,9 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
 		                    dialog.dismiss();
 		                }
 		            });
-					alertDialog.show();
+                    if(!isFinishing()) {
+                        alertDialog.show();
+                    }
 					break;
 			}
 		}

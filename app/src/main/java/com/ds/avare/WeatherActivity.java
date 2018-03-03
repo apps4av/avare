@@ -151,28 +151,31 @@ public class WeatherActivity extends Activity {
 	     	// This is needed to remove title from Confirm dialog
 	        @Override
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
-	            new DecoratedAlertDialogBuilder(WeatherActivity.this)
-	            	.setTitle("")
-	            	.setCancelable(true)
-	            	.setOnCancelListener(new DialogInterface.OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface arg0) {
-	            			result.cancel();							
-						}
-	            	})
-	            	.setMessage(message)
-	            	.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.confirm();
-	            		}
-	            	})
-	            	.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-	            		public void onClick(DialogInterface dialog, int which) {
-	            			result.cancel();
-	            		}
-	            	})
-	            	.create()
-	            	.show();
+                if(!isFinishing()) {
+
+                    new DecoratedAlertDialogBuilder(WeatherActivity.this)
+                            .setTitle("")
+                            .setCancelable(true)
+                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface arg0) {
+                                    result.cancel();
+                                }
+                            })
+                            .setMessage(message)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.confirm();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.cancel();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
 	            return true;
 	        }
 
@@ -349,7 +352,9 @@ public class WeatherActivity extends Activity {
     			           }
     			});
     			AlertDialog alert = builder.create();
-    			alert.show();
+                if(!isFinishing()) {
+                    alert.show();
+                }
     		}
         }
     };

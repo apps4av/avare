@@ -262,8 +262,9 @@ public class SearchActivity extends Activity implements Observer {
                             dialog.dismiss();
                         }            
                     });
-
-                    mAlertDialogEdit.show();
+                    if(!isFinishing()) {
+                        mAlertDialogEdit.show();
+                    }
                 }
             }
             
