@@ -934,7 +934,11 @@ public class LocationActivity extends Activity implements Observer {
                     String param = (String) o;
                     String airport = (String) o;
 
-                    mAlertDialogDestination.dismiss();
+                    try {
+                        mAlertDialogDestination.dismiss();
+                    }
+                    catch (Exception e){}
+
 
                     if (null == mAirportPressed) {
                         return null;

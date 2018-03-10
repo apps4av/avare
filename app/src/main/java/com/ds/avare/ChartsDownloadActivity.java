@@ -366,11 +366,19 @@ public class ChartsDownloadActivity extends Activity {
         getApplicationContext().unbindService(mConnection);
         
         if(mAlertDialog != null) {
-            mAlertDialog.dismiss();
+            try {
+                mAlertDialog.dismiss();
+            }
+            catch (Exception e){}
+
         }
                 
         if(mProgressDialog != null) {
-            mProgressDialog.dismiss();
+            try {
+                mProgressDialog.dismiss();
+            }
+            catch (Exception e){}
+
         }
 
         /*
@@ -403,7 +411,10 @@ public class ChartsDownloadActivity extends Activity {
              * download sends a message as it was a BG task.  
              */
             if(null == mName) {
-                mProgressDialog.dismiss();
+                try {
+                    mProgressDialog.dismiss();
+                }
+                catch (Exception e){}
                 return;
             }
 
@@ -412,7 +423,10 @@ public class ChartsDownloadActivity extends Activity {
 
             if(msg.obj instanceof Download) {
                 if(Download.FAILED == result) {
-                    mProgressDialog.dismiss();
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e){}
 
                     /*
                      * Throw a confirm dialog
@@ -439,10 +453,18 @@ public class ChartsDownloadActivity extends Activity {
                 
                 
                 if(Download.NONEED == result) {
-                    mProgressDialog.dismiss();
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e){}
+
                 }
                 else if (Download.SUCCESS == result) {
-                    mProgressDialog.dismiss();
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e){}
+
                     Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
@@ -481,7 +503,11 @@ public class ChartsDownloadActivity extends Activity {
             }
             else if(msg.obj instanceof Delete) {
                 if(Delete.FAILED == result) {
-                    mProgressDialog.dismiss();
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e){}
+
 
                     /*
                      * Throw a confirm dialog
@@ -506,7 +532,11 @@ public class ChartsDownloadActivity extends Activity {
                 }
                 
                 if (Delete.SUCCESS == result) {
-                    mProgressDialog.dismiss();
+                    try {
+                        mProgressDialog.dismiss();
+                    }
+                    catch (Exception e){}
+
                     Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
