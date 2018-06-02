@@ -81,7 +81,9 @@ public class GameTfrProvider extends MainProvider {
      * Sync database on folder change, deleted database, new database, and other conditions
      */
     public void resetDatabase() {
-        mDatabaseHelper.close();
+        if(mDatabaseHelper != null) {
+            mDatabaseHelper.close();
+        }
         onCreate();
     }
 

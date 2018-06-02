@@ -29,7 +29,7 @@ public class ContentProviderHelper {
 
     public static LinkedList<Obstacle> getObstacles(final Context ctx, double longitude, double latitude, double height) {
 
-
+        Cursor c = null;
         LinkedList<Obstacle> ret = new LinkedList<Obstacle>();
 
         String qry =
@@ -49,7 +49,7 @@ public class ContentProviderHelper {
         String arguments[] = new String[] {v0, v1, v2, v3, v4};
 
         try {
-            Cursor c = ctx.getContentResolver().query(ObstaclesContract.CONTENT_URI, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(ObstaclesContract.CONTENT_URI, null, qry, arguments, null);
             if (c != null) {
                 while (c.moveToNext()) {
                     ret.add(new Obstacle(
@@ -63,6 +63,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
 
         }
+        CursorManager.close(c);
         return ret;
     }
 
@@ -73,6 +74,7 @@ public class ContentProviderHelper {
      */
     public static LinkedList<Cifp> findProcedure(final Context ctx, String name, String approach) {
 
+        Cursor c = null;
         TreeMap<String, Cifp> map = new TreeMap<String, Cifp>();
         String params[] = Cifp.getParams(approach);
         if(params[0] == null || params[1] == null) {
@@ -87,7 +89,7 @@ public class ContentProviderHelper {
         String arguments[] = new String[] {name, "K" + name, params[0] + "%", "%" + params[1] + "%"};
 
         try {
-            Cursor c = ctx.getContentResolver().query(ProceduresContract.CONTENT_URI, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(ProceduresContract.CONTENT_URI, null, qry, arguments, null);
             if (c != null) {
                 while (c.moveToNext()) {
                     Cifp cifp = new Cifp(
@@ -107,6 +109,7 @@ public class ContentProviderHelper {
 
         }
 
+        CursorManager.close(c);
         return new LinkedList<Cifp>(map.values());
     }
 
@@ -119,6 +122,7 @@ public class ContentProviderHelper {
      */
     public static Taf getTaf(Context ctx, String station) {
 
+        Cursor c = null;
         Taf taf = null;
 
         String qry = WeatherContract.TAF_STATION + " = ?";
@@ -126,7 +130,7 @@ public class ContentProviderHelper {
         String arguments[] = new String[] {"K" + station};
 
         try {
-            Cursor c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_TAF, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_TAF, null, qry, arguments, null);
             if(c != null) {
                 if(c.moveToFirst()) {
 
@@ -140,6 +144,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return taf;
     }
 
@@ -150,6 +155,7 @@ public class ContentProviderHelper {
      */
     public static Metar getMetar(Context ctx, String station) {
 
+        Cursor c = null;
         Metar metar = null;
 
         String qry = WeatherContract.METAR_STATION + " = ?";
@@ -157,7 +163,7 @@ public class ContentProviderHelper {
         String arguments[] = new String[] {"K" + station};
 
         try {
-            Cursor c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_METAR, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_METAR, null, qry, arguments, null);
             if(c != null) {
                 if(c.moveToFirst()) {
 
@@ -172,6 +178,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return metar;
     }
 
@@ -182,13 +189,14 @@ public class ContentProviderHelper {
      */
     public static LinkedList<AirSigMet> getAirSigMets(Context ctx) {
 
+        Cursor c = null;
         LinkedList<AirSigMet> airsig = new LinkedList<AirSigMet>();
 
         /*
          * Get all
          */
         try {
-            Cursor c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_AIRMET, null, null, null, null);
+            c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_AIRMET, null, null, null, null);
             if(c != null) {
                 while(c.moveToNext()) {
                     AirSigMet a = new AirSigMet();
@@ -210,6 +218,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return airsig;
     }
 
@@ -219,6 +228,7 @@ public class ContentProviderHelper {
      */
     public static LinkedList<Airep> getAireps(Context ctx, double longitude, double latitude) {
 
+        Cursor c = null;
         LinkedList<Airep> airep = new LinkedList<Airep>();
 
         /*
@@ -239,7 +249,7 @@ public class ContentProviderHelper {
 
 
         try {
-            Cursor c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_PIREP, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_PIREP, null, qry, arguments, null);
             if(c != null) {
                 while(c.moveToNext()) {
                     Airep a = new Airep();
@@ -255,6 +265,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return airep;
     }
 
@@ -267,6 +278,7 @@ public class ContentProviderHelper {
      */
     public static WindsAloft getWindsAloft(Context ctx, double lon, double lat) {
 
+        Cursor c = null;
         WindsAloft wa = null;
 
         // crude distance formula
@@ -278,7 +290,7 @@ public class ContentProviderHelper {
 
 
         try {
-            Cursor c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_WIND, null, null, null, order);
+            c = ctx.getContentResolver().query(WeatherContract.CONTENT_URI_WIND, null, null, null, order);
             if(c != null) {
                 if(c.moveToFirst()) {
 
@@ -302,6 +314,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return wa;
     }
 
@@ -311,6 +324,7 @@ public class ContentProviderHelper {
      */
     public static LinkedList<LabelCoordinate> findGameTFRs(Context ctx) {
 
+        Cursor c = null;
         LinkedList<LabelCoordinate> ret = new LinkedList<LabelCoordinate>();
 
         // Find -6 hours to +12 hours
@@ -331,7 +345,7 @@ public class ContentProviderHelper {
 
 
         try {
-            Cursor c = ctx.getContentResolver().query(GameTfrContract.CONTENT_URI, null, qry, arguments, null);
+            c = ctx.getContentResolver().query(GameTfrContract.CONTENT_URI, null, qry, arguments, null);
             if(c != null) {
                 while(c.moveToNext()) {
                     long time = c.getLong(c.getColumnIndex(GameTfrContract.TIME));
@@ -349,6 +363,7 @@ public class ContentProviderHelper {
         catch (Exception e) {
         }
 
+        CursorManager.close(c);
         return ret;
     }
 
