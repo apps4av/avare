@@ -67,6 +67,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/externalGps"
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/UseNmeaAltitude"
+            android:summary="@string/UseNmeaAltitudeSummary"
+            android:title="@string/UseNmeaAltitudeLabel" />
     </PreferenceScreen>
     
     <PreferenceScreen 
@@ -312,9 +317,9 @@ authors: zkhan, jlmcgraw
             android:defaultValue="255"
             android:entries="@array/Opacity"
             android:entryValues="@array/OpacityValues"
-            android:key="@string/Layer"
-            android:summary="@string/LayerSummary"
-            android:title="@string/LayerLabel" />
+            android:key="@string/LayerTransparency"
+            android:summary="@string/LayerTransparencySummary"
+            android:title="@string/LayerTransparencyLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/GameTFR"

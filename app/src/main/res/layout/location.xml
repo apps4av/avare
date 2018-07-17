@@ -138,7 +138,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:background="@drawable/button_bg_option"
             android:layout_margin="5dp"
             android:visibility="invisible"
-            android:labelFor="@string/LayerSelect"
+            android:labelFor="@string/LayerLabel"
             android:entries="@array/LayerType"/>
 
         <com.ds.avare.animation.TwoButton

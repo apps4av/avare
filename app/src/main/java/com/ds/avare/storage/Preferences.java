@@ -654,8 +654,15 @@ public class Preferences {
     /**
      * @return
      */
+    public boolean useNmeaAltitude() {
+        return (mPref.getBoolean(mContext.getString(R.string.UseNmeaAltitude), false));
+    }
+
+    /**
+     * @return
+     */
     public int showLayer() {
-        String val = mPref.getString(mContext.getString(R.string.Layer), "255");
+        String val = mPref.getString(mContext.getString(R.string.LayerTransparency), "255");
         try {
             return (Integer.parseInt(val));
         } catch (Exception e) {

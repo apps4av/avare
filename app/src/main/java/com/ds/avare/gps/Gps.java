@@ -74,7 +74,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         mContext = ctx;
         mLocationManager = null;
         mTimer = null;
-        mAltitude = Double.MIN_VALUE;
+        mAltitude = 0;
         mGpsCallback = callback;
         if(mPref.isGpsUpdatePeriodShort()) {
             mGpsPeriod = 0;
@@ -244,7 +244,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             updateTimeout();
 
             // MSL from NMEA is more correct as its not corrected by LocationManager
-            if(mAltitude != Double.MIN_VALUE) {
+            if(mPref.useNmeaAltitude()) {
                 location.setAltitude(mAltitude);
             }
             
@@ -353,7 +353,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                     mAltitude = Double.parseDouble(val[9]);
                 }
                 catch (Exception e) {
-                    mAltitude = Double.MIN_VALUE;
+                    mAltitude = 0;
                 }
             }
         }
