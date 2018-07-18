@@ -326,6 +326,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
     <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
     <string name="PfdSummary">&quot;PFD display.&quot;</string>
+    <string name="IOSummary">&quot;External GPS/ADSB sources and autopilot output.&quot;</string>
 
 	<string name="prefTabPlates">&quot;prefTabPlates&quot;</string>
     <string name="prefTabAFD">&quot;prefTabAFD&quot;</string>
@@ -338,6 +339,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
+    <string name="prefTabIO">&quot;prefTabIO&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -556,5 +558,14 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>
     <string name="UseNmeaAltitudeSummary">Select to use NMEA altitude from the internal GPS, when internal GPS is used as source</string>
+    <string name="IO">I/O</string>
+    <string name="ConnectHelp">
+        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then click on the Connect WiFi checkbox below.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
+    </string>
+    <string name="WIFI">WiFi</string>
+    <string name="ConnectWIFI">Connect WiFi</string>
+    <string name="WIFIPort">WIFIPort</string>
+    <string name="WIFIPortLabel">External WiFi Port</string>
+    <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>
 
 </resources>

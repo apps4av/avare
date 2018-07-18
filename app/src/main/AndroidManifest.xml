@@ -12,13 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="320"
-    android:versionName="7.9.0"
+    android:versionCode="321"
+    android:versionName="8.0.1"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -88,6 +89,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".WeatherActivity" />
         <activity android:name=".ChecklistActivity"/>
+        <activity android:name=".IOActivity"/>
         <activity android:name=".PfdActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>

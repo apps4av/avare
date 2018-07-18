@@ -60,6 +60,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/GpsOffWarn"
             android:summary="@string/GpsOffWarnSummary"
             android:title="@string/GpsOffWarnLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/UseNmeaAltitude"
+            android:summary="@string/UseNmeaAltitudeSummary"
+            android:title="@string/UseNmeaAltitudeLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/GpsPosition"
@@ -67,11 +72,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/externalGps"
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/UseNmeaAltitude"
-            android:summary="@string/UseNmeaAltitudeSummary"
-            android:title="@string/UseNmeaAltitudeLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/WIFIPortLabel"
+            android:summary="@string/WIFIPortSummary"
+            android:key="@string/WIFIPort"/>
     </PreferenceScreen>
     
     <PreferenceScreen 
@@ -522,6 +526,11 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabIO"
+                android:summary="@string/IOSummary"
+                android:title="@string/IO" />
         </PreferenceScreen>
 
     </PreferenceScreen>

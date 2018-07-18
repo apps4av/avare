@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
     buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 11
-        targetSdkVersion 23
+        targetSdkVersion 28
     }
 
     dependencies {
@@ -38,6 +38,7 @@ android {
 dependencies {
     compile 'ch.acra:acra:4.7.0'
     compile 'org.xmlunit:xmlunit-core:2.3.0'
+    compile 'oro:oro:2.0.8'
     compile 'org.xmlunit:xmlunit-matchers:2.3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.4.0'

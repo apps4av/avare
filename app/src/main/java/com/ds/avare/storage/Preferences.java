@@ -977,6 +977,10 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabWnb;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabIO), true)) {
+            mTabs |= 1 << MainActivity.tabIO;
+        }
+
         return mTabs;
     }
 
@@ -1244,6 +1248,10 @@ public class Preferences {
 
     public boolean isDefaultAFDImage() {
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
+    }
+
+    public String getWiFiPort() {
+        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
     }
 }
 
