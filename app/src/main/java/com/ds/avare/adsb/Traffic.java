@@ -3,7 +3,6 @@ package com.ds.avare.adsb;
 import android.graphics.Color;
 import android.util.SparseArray;
 
-import com.ds.avare.IHelperService;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Origin;
@@ -158,7 +157,7 @@ public class Traffic {
                 text = t.mCallSign + ":";
             }
 
-            if(altitude <= IHelperService.MIN_ALTITUDE) {
+            if(altitude <= StorageService.MIN_ALTITUDE) {
                 // This is when we do not have our own altitude set with ownship
                 diff = (int)t.mAltitude;
                 text += diff + "PrA'"; // show that this is pressure altitude

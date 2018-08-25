@@ -89,11 +89,12 @@ public class IOActivity extends Activity {
 
 
         // Send data on avare open aidl interface to keep compatibility with external IO and with Hiz app.
-        Intent intent = new Intent(this, IHelperService.class);
-        getApplicationContext().bindService(intent, mHelperConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, StorageService.class);
+        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private ServiceConnection mHelperConnection = new ServiceConnection() {
+
+    private ServiceConnection mConnection = new ServiceConnection() {
 
         /* (non-Javadoc)
          * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
@@ -101,14 +102,14 @@ public class IOActivity extends Activity {
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
-            mWifi.setHelper(IHelper.Stub.asInterface(service));
+
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mWifi.setHelper(binder.getService());
         }
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
+        public void onServiceDisconnected(ComponentName componentName) {
+
         }
     };
 

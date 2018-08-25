@@ -60,8 +60,10 @@ import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.shapes.TileMap;
 import com.ds.avare.content.DataSource;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.InfoLines;
 import com.ds.avare.utils.Mutex;
 import com.ds.avare.utils.NavComments;
@@ -69,6 +71,10 @@ import com.ds.avare.utils.ShadowedText;
 import com.ds.avare.utils.TimeConstants;
 import com.ds.avare.weather.AdsbWeatherCache;
 import com.ds.avare.weather.InternetWeatherCache;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.util.Iterator;
@@ -106,6 +112,10 @@ public class StorageService extends Service {
      * Store this
      */
     private Movement mMovement;
+
+    private JSONObject mGeoAltitude = null;
+
+    public static final int MIN_ALTITUDE = -1000;
 
     // Draw for Map
     private Draw mDraw;
@@ -1338,5 +1348,257 @@ public class StorageService extends Service {
 
     public LinkedList<Obstacle> getObstacles() {
         return mObstacles;
+    }
+
+
+    /**
+     * Receive data for weather / traffic etc
+     * @return
+     */
+    public void getDataFromIO(String text) {
+
+        if(text == null) {
+            return;
+        }
+
+            /*
+             * Get JSON
+             */
+        try {
+            JSONObject object = new JSONObject(text);
+
+            String type = object.getString("type");
+            if(type == null) {
+                return;
+            }
+            else if(type.equals("traffic")) {
+                getTrafficCache().putTraffic(
+                        object.getString("callsign"),
+                        object.getInt("address"),
+                        (float)object.getDouble("latitude"),
+                        (float)object.getDouble("longitude"),
+                        object.getInt("altitude"),
+                        (float)object.getDouble("bearing"),
+                        (int)object.getInt("speed"),
+                        Helper.getMillisGMT()
+                            /*XXX:object.getLong("time")*/);
+            }
+            else if(type.equals("geoaltitude")) {
+                mGeoAltitude = object;
+            }
+            else if(type.equals("ownship")) {
+                Location l = new Location(LocationManager.GPS_PROVIDER);
+                l.setLongitude(object.getDouble("longitude"));
+                l.setLatitude(object.getDouble("latitude"));
+                l.setSpeed((float) object.getDouble("speed"));
+                l.setBearing((float) object.getDouble("bearing"));
+                l.setTime(object.getLong("time"));
+
+                // Choose most appropriate altitude. This is because people fly all sorts
+                // of equipment with or without altitudes
+                // convert all altitudes in feet
+                double pressureAltitude = object.getDouble("altitude") * Preferences.heightConversion;
+                double deviceAltitude = MIN_ALTITUDE;
+                double geoAltitude = MIN_ALTITUDE;
+                // If geo altitude from adsb available, use it if not too old
+                if(mGeoAltitude != null) {
+                    long t1 = object.getLong("time");
+                    long t2 = mGeoAltitude.getLong("time");
+                    if((t1 - t2) < 10000) { // 10 seconds
+                        geoAltitude = mGeoAltitude.getDouble("altitude") * Preferences.heightConversion;
+                        if(geoAltitude < MIN_ALTITUDE) {
+                            geoAltitude = MIN_ALTITUDE;
+                        }
+                    }
+                }
+                // If geo altitude from device available, use it if not too old
+                if(getGpsParams() != null) {
+                    long t1 = System.currentTimeMillis();
+                    long t2 = getGpsParams().getTime();
+                    if ((t1 - t2) < 10000) { // 10 seconds
+                        deviceAltitude = getGpsParams().getAltitude();
+                        if(deviceAltitude < MIN_ALTITUDE) {
+                            deviceAltitude = MIN_ALTITUDE;
+                        }
+                    }
+                }
+
+                // choose best altitude. give preference to pressure altitude because that is
+                // the most correct for traffic purpose.
+                double alt = pressureAltitude;
+                if(alt <= MIN_ALTITUDE) {
+                    alt = geoAltitude;
+                }
+                if(alt <= MIN_ALTITUDE) {
+                    alt = deviceAltitude;
+                }
+                if(alt <= MIN_ALTITUDE) {
+                    alt = MIN_ALTITUDE;
+                }
+
+                // set pressure altitude for traffic alerts
+                getTrafficCache().setOwnAltitude((int) alt);
+
+                // For own height prefer geo altitude, do not use deviceAltitude here because
+                // we could get into rising altitude condition through feedback
+                alt = geoAltitude;
+                if(alt <= MIN_ALTITUDE) {
+                    alt = pressureAltitude;
+                }
+                if(alt <= MIN_ALTITUDE) {
+                    alt = MIN_ALTITUDE;
+                }
+                l.setAltitude(alt / Preferences.heightConversion);
+                getGps().onLocationChanged(l, type);
+            }
+            else if(type.equals("nexrad")) {
+
+                    /*
+                     * XXX: If we are getting this from station, it must be current, fix this.
+                     */
+                long time = Helper.getMillisGMT();//object.getLong("time");
+                int cols = object.getInt("x");
+                int rows = object.getInt("y");
+                int block = object.getInt("blocknumber");
+                boolean conus = object.getBoolean("conus");
+                JSONArray emptyArray = object.getJSONArray("empty");
+                JSONArray dataArray = object.getJSONArray("data");
+
+                if(emptyArray == null || dataArray == null) {
+                    return;
+                }
+                int empty[] = new int[emptyArray.length()];
+                for(int i = 0; i < empty.length; i++) {
+                    empty[i] = emptyArray.getInt(i);
+                }
+                int data[] = new int[dataArray.length()];
+                for(int i = 0; i < data.length; i++) {
+                    data[i] = dataArray.getInt(i);
+                }
+
+                    /*
+                     * Put in nexrad.
+                     */
+                getAdsbWeather().putImg(
+                        time, block, empty, conus, data, cols, rows);
+            }
+            else if(type.equals("sua")) {
+                getAdsbWeather().putSua(
+                        Helper.getMillisGMT(),
+                        object.getString("text"));
+            }
+            else if(type.equals("airmet") || type.equals("sigmet")) {
+                getAdsbWeather().putAirSigMet(
+                        Helper.getMillisGMT(),
+                        object.getString("number"),
+                        object.getString("shape"),
+                        object.getString("data"),
+                        object.getString("text"),
+                        object.getString("startTime"),
+                        object.getString("endTime")
+                );
+            }
+            else if(type.equals("notam")) {
+                getAdsbTfrCache().putTfr(
+                        Helper.getMillisGMT(),
+                        object.getString("number"),
+                        object.getString("shape"),
+                        object.getString("data"),
+                        object.getString("text"),
+                        object.getString("startTime"),
+                        object.getString("endTime"));
+            }
+            else if(type.equals("METAR") || type.equals("SPECI")) {
+                    /*
+                     * Put METAR
+                     */
+                getAdsbWeather().putMetar(object.getLong("time"),
+                        object.getString("location"), object.getString("data"), object.getString("flight_category"));
+            }
+            else if(type.equals("TAF") || type.equals("TAF.AMD")) {
+                getAdsbWeather().putTaf(object.getLong("time"),
+                        object.getString("location"), object.getString("data"));
+            }
+            else if(type.equals("WINDS")) {
+                getAdsbWeather().putWinds(object.getLong("time"),
+                        object.getString("location"), object.getString("data"));
+            }
+            else if(type.equals("PIREP")) {
+                getAdsbWeather().putAirep(object.getLong("time"),
+                        object.getString("location"), object.getString("data"),
+                        getDBResource());
+            }
+
+        } catch (JSONException e) {
+            return;
+        }
+
+    }
+
+
+    /**
+     * data for autopilot
+     * @return
+     */
+    public String makeDataForIO() {
+        Location l = getLocationBlocking();
+        JSONObject object = new JSONObject();
+        try {
+            object.put("type", "ownship");
+            object.put("longitude", (double)l.getLongitude());
+            object.put("latitude", (double)l.getLatitude());
+            object.put("speed", (double)l.getSpeed());
+            object.put("bearing", (double)l.getBearing());
+            object.put("altitude", (double)l.getAltitude());
+            object.put("time", l.getTime());
+
+            Destination d = getDestination();
+            Plan p = getPlan();
+            CDI c = getCDI();
+            double distance = 0;
+            double bearing = 0;
+            double lon = 0;
+            double lat = 0;
+            double elev = 0;
+            double idNext = -1;
+            double idOrig = -1;
+            double deviation = 0;
+            double bearingTrue = 0;
+            double bearingMagnetic = 0;
+
+            // If destination set, send how to get there (for autopilots).
+            if(d != null) {
+                distance = d.getDistance();
+                bearing = d.getBearing();
+                lon = d.getLocation().getLongitude();
+                lat = d.getLocation().getLatitude();
+                elev = d.getElevation();
+                if(p != null) {
+                    idNext = p.findNextNotPassed();
+                    idOrig = idNext - 1;
+                    bearingTrue = p.getBearing((int)idOrig, (int)idNext);
+                    bearingMagnetic = Helper.getMagneticHeading(bearingTrue, d.getDeclination());
+                }
+                if(c != null) {
+                    deviation = c.getDeviation();
+                    if(!c.isLeft()) {
+                        deviation = -deviation;
+                    }
+                }
+            }
+            object.put("destDistance", distance);
+            object.put("destBearing", bearing);
+            object.put("destLongitude", lon);
+            object.put("destLatitude", lat);
+            object.put("destId", idNext);
+            object.put("destOriginId", idOrig);
+            object.put("destDeviation", deviation);
+            object.put("destElev", elev);
+            object.put("bearingTrue", bearingTrue);
+            object.put("bearingMagnetic", bearingMagnetic);
+        } catch (JSONException e1) {
+            return null;
+        }
+        return object.toString();
     }
 }

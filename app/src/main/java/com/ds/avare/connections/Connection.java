@@ -11,10 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.connections;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Logger;
-import com.ds.avare.IHelper;
 
 import java.io.FileOutputStream;
 import java.util.List;
@@ -36,7 +40,7 @@ public abstract class Connection {
 
     private boolean mRunning;
 
-    private IHelper mHelper;
+    private StorageService mService;
 
     private Thread mThread;
 
@@ -45,7 +49,7 @@ public abstract class Connection {
     private GenericCallback mCb;
 
     /**
-     * 
+     *
      */
     public Connection(String name) {
         mState = DISCONNECTED;
@@ -58,32 +62,32 @@ public abstract class Connection {
     }
 
     /**
-     *
      * @param file
      */
     public void setFileSave(String file) {
-        synchronized(this) {
+        synchronized (this) {
             mFileSave = file;
         }
     }
 
     /**
      * Save data from connection to file
+     *
      * @param red
      * @param buffer
      */
     protected void saveToFile(int red, byte[] buffer) {
-        if(red > 0) {
+        if (red > 0) {
             String file = null;
-            synchronized(this) {
+            synchronized (this) {
                 file = mFileSave;
             }
-            if(file != null) {
+            if (file != null) {
                 try {
                     FileOutputStream output = new FileOutputStream(file, true);
                     output.write(buffer, 0, red);
                     output.close();
-                } catch(Exception e) {
+                } catch (Exception e) {
                 }
             }
         }
@@ -91,23 +95,20 @@ public abstract class Connection {
 
 
     /**
-     * 
      * @return
      */
     protected int getState() {
         return mState;
     }
-    
+
     /**
-     * 
      * @param state
      */
     protected void setState(int state) {
         mState = state;
     }
-    
+
     /**
-     *
      * @return
      */
     public boolean isConnected() {
@@ -116,11 +117,10 @@ public abstract class Connection {
 
 
     /**
-     *
-     * @param helper
+     * @param service
      */
-    public void setHelper(IHelper helper) {
-        mHelper = helper;
+    public void setHelper(StorageService service) {
+        mService = service;
     }
 
 
@@ -129,12 +129,12 @@ public abstract class Connection {
      */
     public void stop() {
         Logger.Logit("Stopping " + mName);
-        if(getState() != Connection.CONNECTED) {
+        if (getState() != Connection.CONNECTED) {
             Logger.Logit(mName + ": Stop failed because already stopped");
             return;
         }
         mRunning = false;
-        if(null != mThread) {
+        if (null != mThread) {
             mThread.interrupt();
         }
         Logger.Logit("Stopped!");
@@ -158,7 +158,7 @@ public abstract class Connection {
             @Override
             public void run() {
                 mRunning = true;
-                mCb.callback((Object)pref, null);
+                mCb.callback((Object) pref, null);
             }
         };
         mThread.start();
@@ -174,17 +174,13 @@ public abstract class Connection {
     }
 
     /**
-     *
      * @param s
      */
     protected void sendDataToHelper(String s) {
-        if (mHelper != null) {
-            try {
-                mHelper.sendDataText(s);
-                Logger.Logit(s);
-            }
-            catch (Exception e) {
-            }
+        if (mService != null) {
+            Message m = mHandler.obtainMessage();
+            m.obj = s;
+            mHandler.sendMessage(m);
         }
 
     }
@@ -194,16 +190,14 @@ public abstract class Connection {
      */
     protected String getDataFromHelper() {
         String data = null;
-        if (mHelper != null) {
+        if (mService != null) {
             try {
-                data = mHelper.recvDataText();
+                data = mService.makeDataForIO();
                 Logger.Logit(data);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 try {
                     Thread.sleep(1000);
-                }
-                catch (Exception e1) {
+                } catch (Exception e1) {
 
                 }
             }
@@ -225,7 +219,33 @@ public abstract class Connection {
 
 
     public abstract List<String> getDevices();
+
     public abstract String getConnDevice();
+
     public abstract void disconnect();
+
     public abstract boolean connect(String param, boolean securely);
+
+
+    /**
+     * Posting a location hence do from UI thread
+     */
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+
+            String text = (String) msg.obj;
+
+            if (text == null || mService == null) {
+                return;
+            }
+
+            try {
+                mService.getDataFromIO(text);
+            }
+            catch (Exception e) {
+
+            }
+        }
+    };
 }
