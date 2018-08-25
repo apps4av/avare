@@ -14,7 +14,10 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -229,7 +232,7 @@ public class ContentProviderHelper {
     public static LinkedList<Airep> getAireps(Context ctx, double longitude, double latitude) {
 
         Cursor c = null;
-        LinkedList<Airep> airep = new LinkedList<Airep>();
+        HashMap<String, Airep> aireps = new HashMap<>();
 
         /*
          * All aireps/pireps sep by \n
@@ -258,7 +261,7 @@ public class ContentProviderHelper {
                     a.lon = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LONGITUDE));
                     a.lat = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LATITUDE));
                     a.reportType = c.getString(c.getColumnIndex(WeatherContract.PIREP_TYPE));
-                    airep.add(a);
+                    aireps.put(a.rawText, a);
                 }
             }
         }
@@ -266,7 +269,16 @@ public class ContentProviderHelper {
         }
 
         CursorManager.close(c);
-        return airep;
+
+        // PIREPs can be duplicate. Make unique, and sort
+        LinkedList<Airep> list = new LinkedList<Airep>(aireps.values());
+        Collections.sort(list, new Comparator<Airep>() {
+            @Override
+            public int compare(Airep a1, Airep a2) {
+                return a1.rawText.compareTo(a2.rawText);
+            }
+        });
+        return list;
     }
 
 
