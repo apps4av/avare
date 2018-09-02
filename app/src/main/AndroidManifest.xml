@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="321"
-    android:versionName="8.0.1"
+    android:versionCode="322"
+    android:versionName="8.0.2"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -37,6 +37,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:icon="@drawable/aircraft"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:usesCleartextTraffic="true"
         android:name="AvareApplication"
         android:allowBackup="true">
 

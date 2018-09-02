@@ -185,15 +185,20 @@ public class BitmapHolder {
 
         String jpgname = name + ".jpg";
         String pngname = name + ".png";
+        String webname = name + ".webp";
 
         boolean jpg = (new File(jpgname)).exists();
         boolean png = (new File(pngname)).exists();
+        boolean web = (new File(webname)).exists();
 
         if(jpg) {
             return jpgname;
         }
         else if(png) {
             return pngname;
+        }
+        else if(web) {
+            return webname;
         }
         else {
             mWidth = 0;
