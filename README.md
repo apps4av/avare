@@ -1,11 +1,11 @@
 avare
 =====
 
-Avare Aviation GPS for Android.
+Avare Aviation GPS for Android. Avare is pronounced "Ah-vAir" - like "aware" with a "v" and can be manually installed from our servers (see our website).
 
 Download from the Google Play Store: https://play.google.com/store/apps/details?id=com.ds.avare&hl=en
 
-Avare provides offline moving map on all FAA charts (VFR Sectional, IFR lo/hi enroute, Approach Plate, WAC & TAC); plus A/FD info, Airport Diagrams w/GPS Taxi, and Terminal Procedures. 
+Avare provides offline moving map on all current FAA charts (VFR Sectional, IFR lo/hi enroute, Approach Plate, WAC & TAC); plus A/FD info, Airport Diagrams w/GPS Taxi, and Terminal Procedures. 
 
 Also included: GPS status, Terrain/Elevation Maps, 50 Nearest airports, Obstacles, and more. Some FAA Charts cover Puerto Rico, plus parts of Canada, Mexico and the Caribbean. 
 
