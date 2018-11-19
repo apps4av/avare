@@ -1251,9 +1251,24 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
     }
 
-    public String getWiFiPort() {
-        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
+    public boolean getIOenabled() {
+        return mPref.getBoolean(mContext.getString(R.string.IO), false);
     }
+
+    public void setIOenabled(boolean ioStatus) {
+        mPref.edit().putBoolean(mContext.getString(R.string.IO), ioStatus).apply();
+    }
+
+    public String getWiFiPort() {
+        String port = mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
+        if (port != null && port.equals("")) {
+            // default in case someone saves an empty string
+            return "4000";
+        } else {
+            return port;
+        }
+    }
+
 }
 
 

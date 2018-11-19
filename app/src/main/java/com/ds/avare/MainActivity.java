@@ -27,7 +27,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
-
+import com.ds.avare.connections.Connection;
+import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
  
@@ -151,6 +152,13 @@ public class MainActivity extends TabActivity {
             }
         });
 
+        // remember wifi connection state
+        if (mPref.getIOenabled()) {
+            Connection mWifi = WifiConnection.getInstance(this);
+            if (mWifi.connect(mPref.getWiFiPort(), false)) {
+                mWifi.start(mPref);
+            } // intentionally not handling connection failure at this point (edge-case)
+        }
     }
     
     /**

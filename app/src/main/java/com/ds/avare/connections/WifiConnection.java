@@ -125,13 +125,14 @@ public class WifiConnection extends Connection {
             mPort = Integer.parseInt(to);
         }
         catch (Exception e) {
+            Logger.Logit("Invalid WiFi port (" + to + ") configured, check preferences");
             return false;
         }
         
         /*
          * Make socket
          */
-        Logger.Logit("Creating socket to listen");
+        Logger.Logit("Creating socket to listen (port: " + mPort + ")");
 
         try {
             mSocket = new DatagramSocket(mPort);

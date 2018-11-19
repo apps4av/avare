@@ -75,6 +75,7 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/WIFIPortLabel"
             android:summary="@string/WIFIPortSummary"
+            android:defaultValue="4000"
             android:key="@string/WIFIPort"/>
     </PreferenceScreen>
     

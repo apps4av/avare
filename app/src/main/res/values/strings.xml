@@ -564,6 +564,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string>
     <string name="WIFI">WiFi</string>
     <string name="ConnectWIFI">Connect WiFi</string>
+    <string name="WIFIListening">Listening&#8230;</string>
     <string name="WIFIPort">WIFIPort</string>
     <string name="WIFIPortLabel">External WiFi Port</string>
     <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>

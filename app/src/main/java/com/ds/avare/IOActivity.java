@@ -17,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -32,13 +33,12 @@ import com.ds.avare.utils.Logger;
 
 /**
  * @author zkhan
- * An activity that deals with plates
+ * An activity that deals with external devices providing data
  */
 public class IOActivity extends Activity {
 
     private Connection mWifi;
     private Preferences mPref;
-
 
     /*
      * For being on tab this activity discards back to main activity
@@ -50,9 +50,6 @@ public class IOActivity extends Activity {
         ((MainActivity)this.getParent()).showMapTab();
     }
 
-    /**
-     * 
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         
@@ -71,28 +68,48 @@ public class IOActivity extends Activity {
         Logger.setContext(this);
         Logger.setTextView((TextView)view.findViewById(R.id.io_textview_logger));
 
-        CheckBox cbwifi = (CheckBox) view.findViewById(R.id.io_checkbox_connect_wifi);
+        final CheckBox cbwifi = view.findViewById(R.id.io_checkbox_connect_wifi);
         cbwifi.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Connect on check box checked
-                if(((CheckBox)view).isChecked()) {
-                    mWifi.connect(mPref.getWiFiPort(),false);
-                    mWifi.start(mPref);
-                }
-                else {
+                // connect on check box checked
+                TextView text = findViewById(R.id.io_textview_logger);
+                if (((CheckBox)view).isChecked()) {
+                    // connect
+                    if (mWifi.connect(mPref.getWiFiPort(), false)) {
+                        mPref.setIOenabled(true);
+                        text.setTextColor(Color.WHITE);
+                        mWifi.start(mPref);
+                    } else {
+                        cbwifi.setChecked(false);
+                        text.setTextColor(Color.GRAY);
+                    }
+                } else {
+                    mPref.setIOenabled(false);
+                    text.setTextColor(Color.GRAY);
                     mWifi.stop();
                     mWifi.disconnect();
                 }
             }
         });
 
-
-        // Send data on avare open aidl interface to keep compatibility with external IO and with Hiz app.
+        // Send data on avare open aidl interface to keep compatibility with external IO and with HIZ app.
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
 
+        // remember last state
+        if (mPref.getIOenabled()) {
+            cbwifi.setChecked(true);
+            if (!mWifi.isConnected()) {
+                if (mWifi.connect(mPref.getWiFiPort(), false)) {
+                    mWifi.start(mPref);
+                }
+            }
+            TextView text = findViewById(R.id.io_textview_logger);
+            text.setTextColor(Color.WHITE);
+            text.setText(getString(R.string.WIFIListening));
+        }
+    }
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -113,8 +130,6 @@ public class IOActivity extends Activity {
         }
     };
 
-
-
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -123,19 +138,14 @@ public class IOActivity extends Activity {
         super.onPause();
     }
 
-    /**
-     * 
-     */
     @Override
     public void onResume() {
+
         super.onResume();
         Helper.setOrientationAndOn(this);
         
     }
 
-    /**
-     * 
-     */
     @Override
     public void onDestroy() {
         super.onDestroy();
