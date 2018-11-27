@@ -75,7 +75,6 @@ public class IOActivity extends Activity {
                 // connect on check box checked
                 TextView text = findViewById(R.id.io_textview_logger);
                 if (((CheckBox)view).isChecked()) {
-                    // connect
                     if (mWifi.connect(mPref.getWiFiPort(), false)) {
                         mPref.setIOenabled(true);
                         text.setTextColor(Color.WHITE);

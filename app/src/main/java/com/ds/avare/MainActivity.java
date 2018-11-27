@@ -14,9 +14,12 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.TabActivity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -45,6 +48,7 @@ public class MainActivity extends TabActivity {
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
     Preferences mPref;
+    Connection mWifi = WifiConnection.getInstance(this);
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -154,13 +158,29 @@ public class MainActivity extends TabActivity {
 
         // remember wifi connection state
         if (mPref.getIOenabled()) {
-            Connection mWifi = WifiConnection.getInstance(this);
             if (mWifi.connect(mPref.getWiFiPort(), false)) {
                 mWifi.start(mPref);
+                // Send data on avare open aidl interface to keep compatibility with external IO and with HIZ app.
+                Intent oaIntent = new Intent(this, StorageService.class);
+                getApplicationContext().bindService(oaIntent, mConnection, Context.BIND_AUTO_CREATE);
             } // intentionally not handling connection failure at this point (edge-case)
         }
     }
-    
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        /* (non-Javadoc)
+         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
+         */
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            mWifi.setHelper(binder.getService());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {}
+    };
+
     /**
      * 
      * @param view
