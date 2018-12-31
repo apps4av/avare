@@ -691,10 +691,6 @@ public class LocationActivity extends Activity implements Observer {
                 if(!isFinishing()) {
                     mSosDialog.show();
                 }
-                if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.SEND_SMS)) {
-                    ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.SEND_SMS}, 103); // tabhost needs parent for permissions
-                }
             }
 
         });
