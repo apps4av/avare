@@ -427,12 +427,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/FuelRateLabel"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/EmergencyContact"
-            android:summary="@string/EmergencyContactSummary"
-            android:defaultValue=""
-            android:key="@string/EmergencyContact"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/EmergencyChecklist"
             android:summary="@string/EmergencyChecklistSummary"
             android:defaultValue=""

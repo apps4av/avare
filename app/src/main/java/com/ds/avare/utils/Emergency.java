@@ -32,46 +32,6 @@ public class Emergency {
     public static String declare(Context ctx, final Preferences pref, final StorageService service) {
         String ret = ctx.getString(R.string.Done);
 
-        final GpsParams params = service.getGpsParams();
-        if(params == null) {
-            return ctx.getString(R.string.SMSFailed);
-        }
-
-        /*
-         * Send this message on SMS:
-         * I Need Help!
-         * My current flight on N172EF has an emergency which may force me to land off airport.
-         * My GPS coordinates are 42.3939,-71.4272, current altitude is 6300 feet MSL, current time is 1830 Zulu
-         * Bill
-         */
-
-        String number = pref.getEmergencyNumber();
-        if(!number.equals("")) {
-
-            String pilotName = pref.getPilotContact();
-            String tailNumber = pref.getAircraftTailNumber();
-            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd HH:mm:ss");
-            String time = formatter.format(Helper.getMillisGMT());
-
-            String message =
-                    "I Need Help! " +
-                            "My current flight on aircraft " + tailNumber + " has an emergency which may force me to land off airport. " +
-                            "My GPS coordinates are " + params.getLatitude() + "," +  params.getLongitude() +
-                            ", current altitude (ft MSL) is " + Math.round(params.getAltitude()) +
-                            ", current time is " + time + "Zulu. " +
-                            pilotName;
-
-            try {
-                SmsManager smsManager = SmsManager.getDefault();
-                ArrayList<String> parts = smsManager.divideMessage(message);
-                smsManager.sendMultipartTextMessage(number, null, parts, null, null);
-            }
-            catch (Exception e) {
-                ret = ctx.getString(R.string.SMSFailed);
-            }
-
-        }
-
         // Turn on distance guidance
         pref.showDistanceRingStatic();
 

@@ -59,9 +59,7 @@ public class SatelliteActivity extends Activity  {
     private TextView mMapAreaText;
     
     private StorageService mService;
-    
-    private SeekBar mBrightnessBar;
-    
+
     private TextView mGpsText;
     
     /*
@@ -179,57 +177,7 @@ public class SatelliteActivity extends Activity  {
         mMemText = (TextView)view.findViewById(R.id.satellite_text_mem_details);
         mMapAreaText = (TextView)view.findViewById(R.id.satellite_text_map_details);
 
-        /*
-         * Set brightness bar
-         */        
-        mBrightnessBar = (SeekBar)view.findViewById(R.id.satellite_slider);
-        mBrightnessBar.setMax(255);
-        mBrightnessBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-
-			@Override
-			public void onStartTrackingTouch(SeekBar arg0) {
-				// TODO Auto-generated method stub
-                if (Build.VERSION.SDK_INT >= 23) {
-                    // Need special permission
-                    if (!Settings.System.canWrite(SatelliteActivity.this)) {
-                        Intent i = new Intent();
-                        i.setAction(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                        startActivity(i);
-                        return;
-                    }
-                }
-
-            }
-
-			@Override
-			public void onStopTrackingTouch(SeekBar arg0) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-				boolean fromUser) {
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (!Settings.System.canWrite(SatelliteActivity.this)) {
-                        return;
-                    }
-                }
-
-                if(fromUser) {
-
-					/*
-					 * Manually set brightness
-					 */
-					android.provider.Settings.System.putInt(getContentResolver(), 
-							android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE,
-							android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-				    android.provider.Settings.System.putInt(getContentResolver(),
-				    	    android.provider.Settings.System.SCREEN_BRIGHTNESS,
-				    	    progress);				
-				}
-			}
-        });
-        mService = null;      
+        mService = null;
         
     }
 
@@ -279,18 +227,6 @@ public class SatelliteActivity extends Activity  {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        
-        /*
-         * Set brightness bar to current value
-         */
-        try {
-        	float curBrightnessValue = android.provider.Settings.System.getInt(
-        	     getContentResolver(),
-        	     android.provider.Settings.System.SCREEN_BRIGHTNESS);
-            mBrightnessBar.setProgress((int)curBrightnessValue);        	
-        } 
-        catch (Exception e) {
-        }
 
     }
     

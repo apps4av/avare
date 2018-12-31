@@ -353,6 +353,10 @@ public class NetworkHelper {
     			return 3;
     		case 2020:
     			return 2;
+            case 2021:
+                return 7;
+            case 2022:
+                return 6;
     		default:
     			return 0;
     	}

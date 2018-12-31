@@ -1121,10 +1121,6 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
     }
 
-    public String getEmergencyNumber() {
-        return mPref.getString(mContext.getString(R.string.EmergencyContact), "");
-    }
-
     public String getEmergencyChecklist() {
         return mPref.getString(mContext.getString(R.string.EmergencyChecklist), "");
     }
