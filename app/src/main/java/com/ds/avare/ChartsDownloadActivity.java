@@ -35,6 +35,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.ChartAdapter;
+import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.network.Delete;
 import com.ds.avare.network.Download;
@@ -202,10 +203,11 @@ public class ChartsDownloadActivity extends Activity {
             mService.getTiles().clear();
             
             /**
-             * Download database if it does not exists.
+             * Download database if it does not exists. Download sectional at current position as well.
              */
             File dbase = new File(mPref.mapsFolder() + "/" + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
+                mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
                 mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
                 mChartAdapter.notifyDataSetChanged();            
                 download();

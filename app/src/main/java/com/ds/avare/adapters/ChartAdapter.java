@@ -13,6 +13,7 @@ package com.ds.avare.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ds.avare.R;
+import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.NetworkHelper;
@@ -198,7 +200,29 @@ public class ChartAdapter extends BaseExpandableListAdapter {
          */
         new ViewTask().execute();        
     }
-    
+
+    /**
+     * Find a sectional that lies in this location to download it.
+     * @param l
+     * @return
+     */
+    public String getSectional(Location l) {
+        if(null == l) {
+            return "";
+        }
+        double lat = l.getLatitude();
+        double lon = l.getLongitude();
+        // sectional index in boundries is 0
+        String chart = Boundaries.getInstance().findChartOn("0", lon, lat);
+
+        for(int child = 0; child < mChildrenFiles[GROUP_SECTIONAL].length; child++) {
+            if(chart.equals(mChildrenFiles[GROUP_SECTIONAL][child])) {
+                return mChildrenFiles[GROUP_SECTIONAL][child];
+            }
+        }
+        return "";
+    }
+
     /**
      * 
      * @author zkhan

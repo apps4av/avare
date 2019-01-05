@@ -116,7 +116,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             return null;
         }
 
-        List<String> providers = lm.getProviders(true);
+        List<String> providers = lm.getProviders(false);
 
         Location l = null;
         for (int i = providers.size() - 1; i >= 0; i--) {
