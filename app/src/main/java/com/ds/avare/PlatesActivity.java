@@ -23,13 +23,14 @@ import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -65,7 +66,7 @@ import java.util.TreeMap;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity implements Observer, Chronometer.OnChronometerTickListener  {
+public class PlatesActivity extends Activity implements Observer  {
     private Preferences mPref;
     private PlatesView mPlatesView;
     private StorageService mService;
@@ -76,7 +77,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private Button mApproachButton;
     private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
-    private Chronometer mChronometer;
     private AlertDialog mPlatesPopup;
     private AlertDialog mApproachPopup;
     private AlertDialog mAirportPopup;
@@ -90,7 +90,8 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
-    private boolean mCounting;
+    private boolean mIsTimerOn;
+    private long mTimerInit;
     private LinkedList<Cifp> mCifp;
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
@@ -102,6 +103,21 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
      * For GPS taxi
      */
     private float[] mMatrix;
+
+    private Handler mTimerHandler;
+
+
+    public void startTimer() {
+        mIsTimerOn = true;
+        mTimerInit = System.currentTimeMillis();
+        mTimerHandler.sendEmptyMessage(0);
+    }
+
+    public void stopTimer() {
+        mTimerHandler.removeMessages(0);
+        mIsTimerOn = false;
+        mPlatesTimerButton.setText(getString(R.string.Timer));
+    }
 
 
     /**
@@ -334,30 +350,36 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         });
 
 
+
+        mIsTimerOn = false;
         /*
-         * Timer, make chronometer invisible. Just use button to show time
+         * Timer, update on UI thread
          */
-        mChronometer = (Chronometer)view.findViewById(R.id.plates_chronometer);
-        mCounting = false;
+        mTimerHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                // use real time, not handler ticks
+                int seconds = (int)((System.currentTimeMillis() - mTimerInit) / 1000L);
+                int mins = seconds / 60;
+                seconds -= mins * 60;
+                mPlatesTimerButton.setText(String.format("%02d:%02d", mins, seconds));
+                sendEmptyMessageDelayed(0,1000);
+            }
+        };
+
         mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
         mPlatesTimerButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if(!mCounting) {
+                if(!mIsTimerOn) {
                     /*
                      * Show when counting, dont show when stopped
                      */
-                    mCounting = true;
-                    mPlatesTimerButton.setText("");
-                    mChronometer.setBase(SystemClock.elapsedRealtime());
-                    mChronometer.start();
-                    mChronometer.setOnChronometerTickListener(PlatesActivity.this);
+                    startTimer();
                 }
                 else {
-                    mCounting = false;
-                    mChronometer.setOnChronometerTickListener(null);
-                    mPlatesTimerButton.setText(getString(R.string.Timer));
+                    stopTimer();
                 }
             }
         });
@@ -966,14 +988,6 @@ public class PlatesActivity extends Activity implements Observer, Chronometer.On
         if(mDest.isFound()) {
             mPlatesView.setAirport(mDest.getID(), mDest.getLocation().getLongitude(), mDest.getLocation().getLatitude());
         }
-    }
-
-    @Override
-    public void onChronometerTick(Chronometer chronometer) {
-        /*
-         * Set the label of timer button to time
-         */
-        mPlatesTimerButton.setText(chronometer.getText());
     }
 
 }
