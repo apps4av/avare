@@ -30,6 +30,11 @@ public class PixelDraw {
     private float mLastYDraw;
     private static final int MAX_DRAW_POINTS = 2048;
     private static final int DRAW_POINT_THRESHOLD = 4;
+
+    private float mMinX;
+    private float mMaxX;
+    private float mMinY;
+    private float mMaxY;
     
     /*
      * A list of draw points
@@ -49,7 +54,6 @@ public class PixelDraw {
      * 
      * @param x
      * @param y
-     * @param origin
      */
     public void addPoint(float x, float y) {
         /*
@@ -120,6 +124,29 @@ public class PixelDraw {
             }
         }
 
+    }
+
+    public void setMapPoints(float minx, float miny, float maxx, float maxy){
+        if(this.mMinX != minx ||
+                this.mMaxX != maxx ||
+                this.mMinY != miny ||
+                this.mMaxY != maxy){
+            for(int i =0; i < mDrawPoints.size(); i++){
+                float existingX = (float)mDrawPoints.get(i).getX() - this.mMinX;
+                float existingY = (float)mDrawPoints.get(i).getY() - this.mMinY;
+                float newX = existingX/(this.mMaxX - this.mMinX) * (maxx-minx) + minx;
+                float newY = existingY/(this.mMaxY - this.mMinY) * (maxy-miny) + miny;
+                PixelCoordinate updated = new PixelCoordinate(newX,newY);
+                if(mDrawPoints.get(i).isSeparate()){
+                    updated.makeSeparate();
+                }
+                mDrawPoints.set(i,updated);
+            }
+            this.mMinX = minx;
+            this.mMaxX = maxx;
+            this.mMinY = miny;
+            this.mMaxY = maxy;
+        }
     }
     
 }

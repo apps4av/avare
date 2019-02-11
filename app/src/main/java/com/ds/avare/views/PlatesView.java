@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -405,10 +406,18 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             mBitmap.getTransform().setScale(scale, scale);
             mBitmap.getTransform().postTranslate(x, y);
 
+            float endX = mBitmap.getWidth() * scale;
+            float endY = mBitmap.getHeight()* scale;
+
+            if(null != mService){
+                mService.getPixelDraw().setMapPoints(x,y,endX+x,endY + y);
+                Log.i(x+" pixx","DELTA");
+                Log.i(y+" pixy","DELTA");
+            }
+
             // Add plates tag PG's website
             mPaint.setColor(0x007F00);
             mPaint.setAlpha(255);
-            canvas.drawText(mContext.getString(R.string.VerifyPlates), x, mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + getWidth() / 4, mPaint);
 
             if(mPref.isNightMode()) {
                 Helper.invertCanvasColors(mPaint);
