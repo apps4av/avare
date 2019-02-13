@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.ds.avare"
@@ -10,7 +10,7 @@ android {
     }
 
     dependencies {
-        compile 'com.google.android.gms:play-services-drive:7.8.0'
+        implementation 'com.google.android.gms:play-services-drive:7.8.0'
     }
 
 
@@ -36,15 +36,15 @@ android {
 }
 
 dependencies {
-    compile 'ch.acra:acra:4.7.0'
-    compile 'org.xmlunit:xmlunit-core:2.3.0'
-    compile 'oro:oro:2.0.8'
-    compile 'org.xmlunit:xmlunit-matchers:2.3.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.4.0'
-    testCompile 'org.powermock:powermock-module-junit4:1.7.0RC2'
-    testCompile 'org.powermock:powermock-api-mockito2:1.7.0RC2'
-    testCompile 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
-    testCompile 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
-    testCompile 'org.robolectric:robolectric:3.3.2'
+    implementation 'ch.acra:acra:4.7.0'
+    implementation 'org.xmlunit:xmlunit-core:2.3.0'
+    implementation 'oro:oro:2.0.8'
+    implementation 'org.xmlunit:xmlunit-matchers:2.3.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.4.0'
+    testImplementation 'org.powermock:powermock-module-junit4:1.7.0RC2'
+    testImplementation 'org.powermock:powermock-api-mockito2:1.7.0RC2'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
+    testImplementation 'org.robolectric:robolectric:3.3.2'
 }

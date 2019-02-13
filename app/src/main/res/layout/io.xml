@@ -32,7 +32,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_weight="0.1"
         android:layout_margin="5dp"
         android:text="@string/ConnectWIFI"
-        android:textColor="@color/common_signin_btn_light_text_default"
+        android:textColor="#ffffff"
         android:id="@+id/io_checkbox_connect_wifi"
         android:layout_height="0dp" />
 
