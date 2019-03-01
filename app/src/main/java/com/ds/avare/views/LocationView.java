@@ -36,6 +36,7 @@ import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Favorites;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -821,6 +822,16 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
+     *
+     * @param canvas
+     * @param ctx
+     */
+    private void drawFavorites(Canvas canvas, DrawingContext ctx) {
+        // draw favorites from labeled recent searches
+        Favorites.draw(ctx, mPointProjection == null);
+    }
+
+    /**
      * Draws concentric circles around the current aircraft position showing distance.
      * author: rwalker
      * 
@@ -995,6 +1006,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         drawTrack(canvas, ctx);
         drawRunways(canvas, ctx);
         drawAircraft(canvas, ctx);
+        drawFavorites(canvas, ctx);
       	drawUserDefinedWaypoints(canvas, ctx);
         
       	// Restore the canvas to be upright again
