@@ -61,7 +61,7 @@ public class MetShape extends Shape {
                     break;
                 }
             }
-            ret = "<font color='" + String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color)) + "'>" + txt + "</font>\n--\n";
+            ret = "<p style='border: 2px solid " + String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color)) + ";padding: 5px;'>" + txt + "</p>\n";
         }
 
 

@@ -1950,7 +1950,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0xFFFB851D</item> <!-- orange-->
         <item>0xFFFF70F0</item> <!-- magenta-->
         <item>0xFFA85056</item> <!-- brown-->
-        <item>0xFFCCCCCC</item> <!-- grey-->
+        <item>0xFFAAAAAA</item> <!-- grey-->
         <item>0xFF00FF00</item> <!-- green-->
     </integer-array>
     
