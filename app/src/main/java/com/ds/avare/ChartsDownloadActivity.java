@@ -252,7 +252,7 @@ public class ChartsDownloadActivity extends Activity {
         Helper.setOrientationAndOn(this);
 
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent, mConnection, 0);
     }
 
     /**

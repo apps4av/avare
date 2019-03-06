@@ -18,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,6 +54,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private PointInfo                    mCurrTouchPoint;
     private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
+    private BitmapHolder               mLineHeadingBitmap;
     private GpsParams                    mGpsParams;
     private String                       mErrorStatus;
     private Preferences                  mPref;
@@ -107,6 +107,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
+        mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mDipToPix = Helper.getDpiToPix(context);
 
     }
@@ -411,8 +412,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
             if(null != mService){
                 mService.getPixelDraw().setMapPoints(x,y,endX+x,endY + y);
-                Log.i(x+" pixx","DELTA");
-                Log.i(y+" pixy","DELTA");
             }
 
             // Add plates tag PG's website
@@ -446,10 +445,30 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 
                 
                 /*
-                 * Draw airplane at that location
+                 * Draw airplane at that location plus a track line
                  */
                 if(null != mAirplaneBitmap) {
-	                mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
+
+
+                    mLineHeadingBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle - 180,
+                            mLineHeadingBitmap.getWidth() / 2,
+                            0);
+
+                    mLineHeadingBitmap.getTransform().postTranslate(
+                            pixx * scale
+                                    + getWidth() / 2
+                                    - mLineHeadingBitmap.getWidth() / 2
+                                    + mPan.getMoveX() * scale
+                                    - mBitmap.getWidth() / 2 * scale,
+                            pixy * scale
+                                    + getHeight() / 2
+                                    + 0
+                                    + mPan.getMoveY() * scale
+                                    - mBitmap.getHeight() / 2 * scale);
+                    canvas.drawBitmap(mLineHeadingBitmap.getBitmap(), mLineHeadingBitmap.getTransform(), mPaint);
+
+
+                    mAirplaneBitmap.getTransform().setRotate((float)mGpsParams.getBearing() + angle,
 	                        mAirplaneBitmap.getWidth() / 2,
 	                        mAirplaneBitmap.getHeight() / 2);
 	                

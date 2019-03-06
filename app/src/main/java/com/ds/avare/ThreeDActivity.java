@@ -564,7 +564,7 @@ public class ThreeDActivity extends Activity {
          * Bind now.
          */
         Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        getApplicationContext().bindService(intent, mConnection, 0);
 
         if (mRenderer != null) {
             mGlSurfaceView.onResume();

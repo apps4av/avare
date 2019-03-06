@@ -85,13 +85,8 @@ public class MainActivity extends TabActivity {
                         - getWindowManager().getDefaultDisplay().getWidth();
 
             }
-        });        
-        
-        /*
-         * Start service now, bind later. This will be no-op if service is already running
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        startService(intent);
+        });
+
 
         /*
          * Make a tab host
@@ -192,6 +187,10 @@ public class MainActivity extends TabActivity {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+
+        // On
+        Intent intent = new Intent(MainActivity.this, StorageService.class);
+        startService(intent);
     }
 
     @Override 
