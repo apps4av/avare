@@ -137,7 +137,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Draw">&quot;Draw&quot;</string>
     <string name="Pan">&quot;Pan&quot;</string>
     <string name="Clear">&quot;Clear&quot;</string>
-    <string name="WXB">&quot;WXB&quot;</string>
+    <string name="WXB">FAA</string>
     <string name="Left">&quot;Left&quot;</string>
     <string name="Right">&quot;Right&quot;</string>
     <string name="Next">&quot;Next&quot;</string>

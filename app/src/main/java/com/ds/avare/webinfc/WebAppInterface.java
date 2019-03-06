@@ -21,7 +21,7 @@ import android.webkit.WebView;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
-import com.ds.avare.WeatherActivity;
+import com.ds.avare.FaaFileActivity;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.Plan;
 import com.ds.avare.plan.LmfsInterface;
@@ -528,17 +528,17 @@ public class WebAppInterface {
         public void handleMessage(Message msg) {
             
         	if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object)WeatherActivity.UNSHOW_BUSY, null);
+        		mCallback.callback((Object)FaaFileActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)WeatherActivity.SHOW_BUSY, null);
+        		mCallback.callback((Object)FaaFileActivity.SHOW_BUSY, null);
         	}
            	else if(MSG_FILL_FORM == msg.what) {	
             	String func = "javascript:plan_fill(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_ERROR == msg.what) {	
-        		mCallback.callback((Object)WeatherActivity.MESSAGE, msg.obj);
+        		mCallback.callback((Object)FaaFileActivity.MESSAGE, msg.obj);
         	}
         	else if(MSG_FAA_PLANS == msg.what) {
         		/*

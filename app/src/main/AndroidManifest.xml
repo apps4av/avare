@@ -86,7 +86,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".PlatesActivity" />
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
-        <activity android:name=".WeatherActivity" />
+        <activity android:name=".FaaFileActivity" />
         <activity android:name=".ChecklistActivity"/>
         <activity android:name=".IOActivity"/>
         <activity android:name=".PfdActivity"/>

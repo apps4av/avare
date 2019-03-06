@@ -16,7 +16,9 @@ package com.ds.avare;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -88,6 +90,21 @@ public class MainActivity extends TabActivity {
         });
 
 
+        final Intent intent = new Intent(MainActivity.this, StorageService.class);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Hack. Oreo does not allow background service when activity is not yet showing. Delay. Better solution is to find if app is in foreground.
+            (new Handler()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startService(intent);
+                }
+            }, 1000);
+        }
+        else {
+            startService(intent);
+        }
+
         /*
          * Make a tab host
          */
@@ -123,7 +140,7 @@ public class MainActivity extends TabActivity {
         }
 
         if(0 != (tabItems & (1 << tabWXB))) {
-            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, WeatherActivity.class), getIntent());
+            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
         }
 
         if(0 != (tabItems & (1 << tabTools))) {
@@ -187,10 +204,6 @@ public class MainActivity extends TabActivity {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
-
-        // On
-        Intent intent = new Intent(MainActivity.this, StorageService.class);
-        startService(intent);
     }
 
     @Override 
