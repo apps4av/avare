@@ -21,6 +21,8 @@ import com.ds.avare.utils.Logger;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,12 +47,12 @@ public class WifiConnection extends Connection {
      */
     private WifiConnection() {
         super("WIFI Input");
+        final byte[] buffer = new byte[8192];
         setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
                 BufferProcessor bp = new BufferProcessor();
 
-                byte[] buffer = new byte[8192];
 
                 /*
                  * This state machine will keep trying to connect to
@@ -131,11 +133,10 @@ public class WifiConnection extends Connection {
         /*
          * Make socket
          */
-        Logger.Logit("Creating socket to listen");
+        Logger.Logit("Creating socket to listen on port " + mPort);
 
         try {
             mSocket = new DatagramSocket(mPort);
-            mSocket.setBroadcast(true);
         }
         catch(Exception e) {
             Logger.Logit("Failed! Connecting socket " + e.getMessage());

@@ -88,7 +88,7 @@ public class IOActivity extends Activity {
         });
 
 
-        // Send data on avare open aidl interface to keep compatibility with external IO and with Hiz app.
+        // Send data to storage service
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, 0);
     }

@@ -23,5 +23,6 @@ public class MessageType {
     public static final int TRAFFIC_REPORT = 0x14;
     public static final int BASIC_REPORT = 0x1E;
     public static final int LONG_REPORT = 0x1F;
+    public static final int AHRS_REPORT = 0x4C;
     public static final int DEVICE_REPORT = 0x7A;
 }

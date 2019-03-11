@@ -152,7 +152,7 @@ public abstract class Connection {
         }
 
         /*
-         * Thread that reads BT
+         * Thread that reads Wifi/BT etc.
          */
         mThread = new Thread() {
             @Override

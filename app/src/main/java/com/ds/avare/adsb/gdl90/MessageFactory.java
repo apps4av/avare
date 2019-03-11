@@ -84,6 +84,10 @@ public class MessageFactory {
                 m = new LongReportMessage();
                 break;
 
+            case MessageType.AHRS_REPORT:
+                m = new AhrsReportMessage();
+                break;
+
             case MessageType.DEVICE_REPORT:
                 m = new DeviceReportMessage();
                 break;

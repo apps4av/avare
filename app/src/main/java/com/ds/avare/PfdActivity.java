@@ -103,12 +103,15 @@ public class PfdActivity extends Activity {
     private OrientationInterface mOrientationInfc = new OrientationInterface() {
 
         @Override
-        public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
+        public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate) {
             mPfdView.setPitch(-(float)pitch);
             mPfdView.setRoll(-(float)roll);
             mPfdView.setYaw((float)yaw);
+            mPfdView.setSlip((float)slip);
+            mPfdView.setYawRate((float)yawrate);
             mPfdView.setAcceleration(acceleration);
             mPfdView.postInvalidate();
+
         }
     };
 

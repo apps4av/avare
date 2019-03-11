@@ -14,6 +14,7 @@ package com.ds.avare.connections;
 
 
 
+import com.ds.avare.adsb.gdl90.AhrsReportMessage;
 import com.ds.avare.adsb.gdl90.BasicReportMessage;
 import com.ds.avare.adsb.gdl90.Constants;
 import com.ds.avare.adsb.gdl90.FisBuffer;
@@ -187,6 +188,32 @@ public class BufferProcessor {
                 }
                 
                 objs.add(object.toString());
+            }
+
+            else if(m instanceof AhrsReportMessage) {
+                /*
+                 * Make a AHRS message
+                 */
+                JSONObject object = new JSONObject();
+                AhrsReportMessage tm = (AhrsReportMessage)m;
+                try {
+                    if(!tm.mValid) {
+                        continue;
+                    }
+                    object.put("type", "ahrs");
+                    object.put("pitch", tm.mPitch);
+                    object.put("yaw", tm.mYaw);
+                    object.put("roll", tm.mRoll);
+                    object.put("slip", tm.mSlip);
+                    object.put("yawrate", tm.mYawRate);
+                    object.put("acceleration", tm.mAccl);
+                    object.put("time", (long)tm.getTime());
+                } catch (JSONException e1) {
+                    continue;
+                }
+
+                objs.add(object.toString());
+
             }
 
             else if(m instanceof LongReportMessage) {

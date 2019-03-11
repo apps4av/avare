@@ -120,19 +120,15 @@ public class Orientation implements SensorEventListener {
                 if (Sensor.TYPE_ROTATION_VECTOR == event.sensor.getType()) {
                     SensorManager.getRotationMatrixFromVector(q, event.values);
 
-                    if(mPref.isVerticalPfd()) {
-                        SensorManager.remapCoordinateSystem(q,
-                                SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                                q);
-                    }
-
                     SensorManager.getOrientation(q, mOrientationTmps);
                     if (mOrientationCallback != null) {
                         mOrientationCallback.onSensorChanged(
                                 Math.toDegrees(mOrientationTmps[0]),
                                 Math.toDegrees(mOrientationTmps[1]),
                                 Math.toDegrees(mOrientationTmps[2]),
-                                mMovingAverageA.get());
+                                0,
+                                mMovingAverageA.get(),
+                                0);
                     }
                 }
             }

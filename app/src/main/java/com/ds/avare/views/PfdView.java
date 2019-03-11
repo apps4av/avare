@@ -49,6 +49,7 @@ public class PfdView extends View {
     private float            mDpi;
     private float            mPitch;
     private float            mRoll;
+    private float            mSlip;
     private float            mInclinometer;
     private Path             mPath;
     private float            mWidth;
@@ -667,7 +668,15 @@ public class PfdView extends View {
     }
 
     public void setYaw(float yaw) {
-        //mYaw = yaw; //unstable, use GPS track instead
+        mYaw = yaw;
+    }
+
+    public void setSlip(float slip) {
+        mSlip = slip;
+    }
+
+    public void setYawRate(float trend) {
+        mTurnTrend = trend;
     }
 
     public void setAcceleration(double acceleration) {
@@ -732,17 +741,18 @@ public class PfdView extends View {
             mAltitudeChange = -200;
         }
 
+
+        // ideally derive from gyro
+        /*mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
         mTurnTrend = (float)eparams.getDiffBearingTrend();
         if(mTurnTrend > 30) {
             mTurnTrend = 30;
         }
         if(mTurnTrend < -30) {
             mTurnTrend = -30;
-        }
+        }*/
 
 
-        // ideally derive from gyro
-        mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
 
         mTo = (float)(bearing + params.getDeclinition() + 360) % 360f;
 

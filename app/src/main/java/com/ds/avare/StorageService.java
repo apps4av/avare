@@ -158,7 +158,6 @@ public class StorageService extends Service {
      * GPS
      */
     private Gps mGps;
-    Orientation mOrientation;
 
     /**
      * Store this
@@ -233,7 +232,8 @@ public class StorageService extends Service {
     
     // Handler for drawing text with an oval shadow
     private ShadowedText mShadowedText;
-    
+    OrientationInterface mOrientationInterface;
+
     /*
      * Hobbs time
      */
@@ -584,10 +584,10 @@ public class StorageService extends Service {
         };
         mGps = new Gps(this, intf);
 
-                /*
-         * Start GPS, and call all activities registered to listen to GPS
+        /*
+         * Start orientation
          */
-        OrientationInterface ointf = new OrientationInterface() {
+        mOrientationInterface = new OrientationInterface() {
 
             /**
              *
@@ -598,16 +598,15 @@ public class StorageService extends Service {
             }
 
             @Override
-            public void onSensorChanged(double yaw, double pitch, double roll, double acceleration) {
+            public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate) {
                 LinkedList<OrientationInterface> list = extracted();
                 Iterator<OrientationInterface> it = list.iterator();
                 while (it.hasNext()) {
                     OrientationInterface infc = it.next();
-                    infc.onSensorChanged(yaw, pitch, roll, acceleration);
+                    infc.onSensorChanged(yaw, pitch, roll, slip, acceleration, yawrate);
                 }
             }
         };
-        mOrientation = new Orientation(this, ointf);
     }
         
     /* (non-Javadoc)
@@ -637,10 +636,6 @@ public class StorageService extends Service {
         }
         if(mGps != null) {
             mGps.stop();
-        }
-
-        if(mOrientation != null) {
-            mOrientation.stop();
         }
 
         super.onDestroy();
@@ -1028,13 +1023,10 @@ public class StorageService extends Service {
         /*
          * If first listener, start orientation
          */
-        if(mOrientationCallbacks.isEmpty()) {
-            mOrientation.start();
-        }
         synchronized(mOrientationCallbacks) {
             mOrientationCallbacks.add(o);
         }
-        return mOrientation.isSensorAvailable();
+        return true;
     }
 
     /**
@@ -1043,21 +1035,10 @@ public class StorageService extends Service {
      */
     public void unregisterOrientationListener(OrientationInterface o) {
 
-        boolean isempty = false;
-
         synchronized(mOrientationCallbacks) {
             mOrientationCallbacks.remove(o);
-            isempty = mOrientationCallbacks.isEmpty();
         }
 
-        /*
-         * If no listener, relinquish orientation control
-         */
-        if(isempty) {
-            synchronized(this) {
-                mOrientation.stop();
-            }
-        }
     }
 
     /**
@@ -1385,6 +1366,15 @@ public class StorageService extends Service {
             }
             else if(type.equals("geoaltitude")) {
                 mGeoAltitude = object;
+            }
+            else if(type.equals("ahrs")) {
+                double yaw = object.getDouble("yaw");
+                double pitch = object.getDouble("pitch");
+                double roll = object.getDouble("roll");
+                double slip = object.getDouble("slip");
+                double yrate = object.getDouble("yawrate");
+                double acceleration = object.getDouble("acceleration");
+                mOrientationInterface.onSensorChanged(yaw, pitch, roll, slip, acceleration, yrate);
             }
             else if(type.equals("ownship")) {
                 Location l = new Location(LocationManager.GPS_PROVIDER);
