@@ -755,7 +755,7 @@ public class PfdView extends View {
     }
 
     public void setPitch(float pitch) {
-        mPitch = pitch;
+        mPitch = -pitch;
     }
 
     public void setRoll(float roll) {
