@@ -19,13 +19,15 @@ import com.ds.avare.utils.Logger;
 public class AhrsReportMessage extends Message {
 
 
-    public float mYaw;
-    public float mYawRate;
-    public float mPitch;
-    public float mRoll;
-    public float mSlip;
-    public float mAccl;
-    public boolean mValid;
+    // all static because this info comes from various messages and it is important to keep old values for untouched variables
+    static public float mYaw;
+    static public float mYawRate;
+    static public float mPitch;
+    static public float mRoll;
+    static public float mSlip;
+    static public float mAccl;
+    static public float mAoa;
+    public boolean mValid = false;
 
     public AhrsReportMessage() {
         super(MessageType.AHRS_REPORT);
@@ -56,7 +58,21 @@ public class AhrsReportMessage extends Message {
         mValid = false;
         if (0x45 == msg[0]) {// iLevil
 
-            if(0x1 == msg[1]) { // AHRS
+            if(0x2 == msg[1]) { // Aoa
+                // 1.0 is critical aoa
+                // 0.68 is start of red range
+                // 0.0 is neutral Aoa
+                int id = 3;
+                byte m0  = msg[id++];
+                mValid = true;
+                if(m0 == 0xFF) {
+                    mAoa = -1;
+                }
+                else {
+                    mAoa = ((float)m0) / 100.0f;
+                }
+            }
+            else if(0x1 == msg[1]) { // AHRS
 
                 int id = 3;
                 byte m0  = msg[id++];
@@ -79,8 +95,7 @@ public class AhrsReportMessage extends Message {
                 mSlip     = combineBytesForFloat(m6, m7);
                 mYawRate  = combineBytesForFloat(m8, m9);
                 mAccl     = combineBytesForFloat(m10, m11);
-                mValid = true;
-
+                mValid    = true;
                 // PFD takes in reverse pitch
                 // Accl on iLevil is G-force, not inclinometer displacement
                 mPitch = -mPitch;

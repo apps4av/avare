@@ -207,6 +207,8 @@ public class BufferProcessor {
                     object.put("slip", tm.mSlip);
                     object.put("yawrate", tm.mYawRate);
                     object.put("acceleration", tm.mAccl);
+                    object.put("aoa", tm.mAoa);
+                    object.put("acceleration", tm.mAccl);
                     object.put("time", (long)tm.getTime());
                 } catch (JSONException e1) {
                     continue;

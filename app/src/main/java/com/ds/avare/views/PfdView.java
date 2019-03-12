@@ -50,6 +50,7 @@ public class PfdView extends View {
     private float            mPitch;
     private float            mRoll;
     private float            mSlip;
+    private float            mAoa;
     private float            mInclinometer;
     private Path             mPath;
     private float            mWidth;
@@ -94,6 +95,7 @@ public class PfdView extends View {
         mAltitude = 0;
         mAltitudeChange = 0;
         mVsi = 0;
+        mAoa = 0;
         mYaw = 0;
         mTurnTrend = 0;
         mInclinometer = 0;
@@ -233,6 +235,99 @@ public class PfdView extends View {
 
 
         canvas.restore();
+
+
+        /*
+         * draw AOA
+         */
+        canvas.save();
+
+        int c1, c2, c3, c4, c5, c6, c7, c8, c9;
+
+        c1 = Color.GRAY;
+        c2 = Color.GRAY;
+        c3 = Color.GRAY;
+        c4 = Color.GRAY;
+        c5 = Color.GRAY;
+        c6 = Color.GRAY;
+        c7 = Color.GRAY;
+        c8 = Color.GRAY;
+        c9 = Color.GRAY;
+
+        if(mAoa > (1f - 1f/6f)) {
+            c9 = Color.RED;
+        }
+        if(mAoa > (1f - 2f/6f)) {
+            c8 = Color.RED;
+        }
+        if (mAoa > (1f - 2.5f/6f)) {
+            c7 = Color.YELLOW;
+        }
+        if (mAoa > (1f - 3f/6f)) {
+            c6 = Color.YELLOW;
+        }
+        if (mAoa > (1f - 3.5f/6f)) {
+            c5 = Color.YELLOW;
+        }
+        if (mAoa > (1f - 4f/6f)) {
+            c4 = Color.YELLOW;
+        }
+        if (mAoa > (1f - 4.5f/6f)) {
+            c3 = Color.GREEN;
+        }
+        if (mAoa > (1f - 5.0f/6f)) {
+            c2 = Color.GREEN;
+        }
+        if (mAoa >= (0)) {
+            c1 = Color.GREEN;
+        }
+
+        mPaint.setColor(Color.BLACK);
+        mPath.reset();
+        mPath.moveTo(x(-45) , y(31));
+        mPath.lineTo(x(-45), y(5));
+        mPath.lineTo(x(-25), y(5));
+        mPath.lineTo(x(-25), y(31));
+
+        canvas.drawPath(mPath, mPaint);
+
+        mPaint.setColor(c1);
+        canvas.drawLine(x(-44), y(6), x(-26), y(6), mPaint);
+
+        mPaint.setColor(c2);
+        canvas.drawLine(x(-44), y(9), x(-26), y(9), mPaint);
+
+        mPaint.setColor(c3);
+        canvas.drawLine(x(-44), y(12), x(-38), y(12), mPaint);
+        canvas.drawLine(x(-32), y(12), x(-26), y(12), mPaint);
+        canvas.drawCircle(x(-35), y(12), 4, mPaint);
+
+        mPaint.setColor(c4);
+        canvas.drawLine(x(-44), y(15), x(-26), y(15), mPaint);
+
+        mPaint.setColor(c5);
+        canvas.drawLine(x(-44), y(18), x(-38), y(18), mPaint);
+        canvas.drawLine(x(-32), y(18), x(-26), y(18), mPaint);
+
+        //chevrons
+        mPaint.setColor(c6);
+        canvas.drawLine(x(-44), y(21), x(-35), y(18), mPaint);
+        canvas.drawLine(x(-35), y(18), x(-26), y(21), mPaint);
+
+        mPaint.setColor(c7);
+        canvas.drawLine(x(-44), y(24), x(-35), y(21), mPaint);
+        canvas.drawLine(x(-35), y(21), x(-26), y(24), mPaint);
+
+        mPaint.setColor(c8);
+        canvas.drawLine(x(-44), y(27), x(-35), y(24), mPaint);
+        canvas.drawLine(x(-35), y(24), x(-26), y(27), mPaint);
+
+        mPaint.setColor(c9);
+        canvas.drawLine(x(-44), y(30), x(-35), y(27), mPaint);
+        canvas.drawLine(x(-35), y(27), x(-26), y(30), mPaint);
+
+        canvas.restore();
+
         canvas.save();
 
         canvas.rotate(mRoll, x(0), y(0));
@@ -679,6 +774,10 @@ public class PfdView extends View {
         mTurnTrend = trend;
     }
 
+    public void setAoa(float aoa) {
+        mAoa = aoa;
+    }
+
     public void setAcceleration(double acceleration) {
         double a = acceleration;
         if(a > 9.8) {
@@ -773,5 +872,4 @@ public class PfdView extends View {
             mVdi = 2.2f;
         }
     }
-
 }
