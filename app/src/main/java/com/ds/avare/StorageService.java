@@ -598,12 +598,12 @@ public class StorageService extends Service {
             }
 
             @Override
-            public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate, double aoa) {
+            public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate, double aoa, double airspeed, double altitude, double vsi) {
                 LinkedList<OrientationInterface> list = extracted();
                 Iterator<OrientationInterface> it = list.iterator();
                 while (it.hasNext()) {
                     OrientationInterface infc = it.next();
-                    infc.onSensorChanged(yaw, pitch, roll, slip, acceleration, yawrate, aoa);
+                    infc.onSensorChanged(yaw, pitch, roll, slip, acceleration, yawrate, aoa, airspeed, altitude, vsi);
                 }
             }
         };
@@ -1375,7 +1375,10 @@ public class StorageService extends Service {
                 double yawrate = object.getDouble("yawrate");
                 double acceleration = object.getDouble("acceleration");
                 double aoa = object.getDouble("aoa");
-                mOrientationInterface.onSensorChanged(yaw, pitch, roll, slip, acceleration, yawrate, aoa);
+                double airspeed = object.getDouble("airspeed");
+                double altitude = object.getDouble("altitude");
+                double vsi = object.getDouble("vsi");
+                mOrientationInterface.onSensorChanged(yaw, pitch, roll, slip, acceleration, yawrate, aoa, airspeed, altitude, vsi);
             }
             else if(type.equals("ownship")) {
                 Location l = new Location(LocationManager.GPS_PROVIDER);

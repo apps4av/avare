@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
+import com.ds.avare.flight.PitotStaticRates;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.storage.Preferences;
@@ -50,6 +51,7 @@ public class PfdActivity extends Activity {
 
     private PfdView mPfdView;
 
+    private PitotStaticRates mPitotStaticRates;
 
 
     /**
@@ -86,7 +88,7 @@ public class PfdActivity extends Activity {
             if(mService.getDestination() != null) {
                 bearing = mService.getDestination().getBearing();
             }
-            mPfdView.setParams(mService.getGpsParams(), mService.getExtendedGpsParams(), bearing, cdi, vdi);
+            mPfdView.setParams(mService.getGpsParams(), bearing, cdi, vdi);
             mPfdView.postInvalidate();
         }
 
@@ -103,7 +105,8 @@ public class PfdActivity extends Activity {
     private OrientationInterface mOrientationInfc = new OrientationInterface() {
 
         @Override
-        public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate, double aoa) {
+        public void onSensorChanged(double yaw, double pitch, double roll, double slip, double acceleration, double yawrate, double aoa, double airspeed, double altitude, double vsi) {
+            mPitotStaticRates.setParams(altitude, airspeed);
             mPfdView.setYaw((float)yaw);
             mPfdView.setPitch((float)pitch);
             mPfdView.setRoll((float)roll);
@@ -111,7 +114,14 @@ public class PfdActivity extends Activity {
             mPfdView.setAcceleration((float)acceleration);
             mPfdView.setYawRate((float)yawrate);
             mPfdView.setAoa((float)aoa);
+            mPfdView.setAirspeed(airspeed);
+            mPfdView.setAltitude(altitude);
+            mPfdView.setVsi(vsi);
+            mPfdView.setVsi(vsi);
+            mPfdView.setSpeedTrend(mPitotStaticRates.getDiffSpeedTrend());
+            mPfdView.setAltitudeChange(mPitotStaticRates.getDiffAltitudeTrend());
             mPfdView.postInvalidate();
+
         }
     };
 
@@ -142,6 +152,7 @@ public class PfdActivity extends Activity {
         View view = layoutInflater.inflate(R.layout.pfd, null);
         setContentView(view);
 
+        mPitotStaticRates = new PitotStaticRates();
         mPfdView = (PfdView) view.findViewById(R.id.pfd_view);
 
     }

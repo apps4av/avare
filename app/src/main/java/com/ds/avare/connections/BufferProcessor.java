@@ -209,6 +209,9 @@ public class BufferProcessor {
                     object.put("acceleration", tm.mAccl);
                     object.put("aoa", tm.mAoa);
                     object.put("acceleration", tm.mAccl);
+                    object.put("airspeed", tm.mAirspeed);
+                    object.put("altitude", tm.mAltitude);
+                    object.put("vsi", tm.mVsi);
                     object.put("time", (long)tm.getTime());
                 } catch (JSONException e1) {
                     continue;

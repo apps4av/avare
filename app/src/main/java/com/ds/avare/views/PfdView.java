@@ -20,6 +20,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.ds.avare.R;
@@ -49,7 +50,6 @@ public class PfdView extends View {
     private float            mDpi;
     private float            mPitch;
     private float            mRoll;
-    private float            mSlip;
     private float            mAoa;
     private float            mInclinometer;
     private Path             mPath;
@@ -755,7 +755,7 @@ public class PfdView extends View {
     }
 
     public void setPitch(float pitch) {
-        mPitch = -pitch;
+        mPitch = pitch;
     }
 
     public void setRoll(float roll) {
@@ -767,7 +767,16 @@ public class PfdView extends View {
     }
 
     public void setSlip(float slip) {
-        mSlip = slip;
+        // limit angle +-10 degrees, judging from actual instrument circle
+        slip /= 18;
+        if(slip > 10) {
+            slip = 10;
+        }
+        if(slip < -10) {
+            slip = -10;
+        }
+
+        mInclinometer = (float)slip;
     }
 
     public void setYawRate(float trend) {
@@ -779,79 +788,29 @@ public class PfdView extends View {
     }
 
     public void setAcceleration(double acceleration) {
-        double a = acceleration;
-        if(a > 9.8) {
-            a = 9.8;
-        }
-        if(a < -9.8) {
-            a = -9.8;
-        }
-        // mgsin(0) pendulum displacement, find 0
-        a = a / 9.8f;
-        double angle = Math.toDegrees(Math.asin(a));
-        // limit angle +-10 degrees, judging from actual instrument circle
-        if(angle > 10) {
-            angle = 10;
-        }
-        if(angle < -10) {
-            angle = -10;
-        }
-
-        mInclinometer = (float)angle;
     }
 
-    public void setParams(GpsParams params, ExtendedGpsParams eparams, double bearing, double cdi, double vdi) {
-        /**
-         * Assign and limit numbers
-         */
-        mSpeed = (float)params.getSpeed();
-        if(mSpeed > 500) {
-            mSpeed = 500;
-        }
-        mSpeedChange = (float)eparams.getDiffSpeedTrend();
+    public void setSpeedTrend(double trend) {
+        mSpeedChange = (float)trend;
         if(mSpeedChange > 25) {
             mSpeedChange = 25;
         }
         if(mSpeedChange < -25) {
             mSpeedChange = -25;
         }
+    }
 
-        mVsi = (float)eparams.getAltitudeRateOfChange() * 60; //for per minute calculations
-        if(mVsi > 2000) {
-            mVsi = 2000;
-        }
-        if(mVsi < -2000) {
-            mVsi = -2000;
-        }
-
-        mAltitude = (float)params.getAltitude();
-        if(mAltitude > 50000) {
-            mAltitude = 50000;
-        }
-        if(mAltitude < -200) {
-            mAltitude = -200;
-        }
-
-        mAltitudeChange = (float)eparams.getDiffAltitudeTrend();
+    public void setAltitudeChange(double ac) {
+        mAltitudeChange = (float)ac;
         if(mAltitudeChange > 200) {
             mAltitudeChange = 200;
         }
         if(mAltitudeChange < -200) {
             mAltitudeChange = -200;
         }
+    }
 
-
-        // ideally derive from gyro
-        /*mYaw = (float)(params.getBearing() + params.getDeclinition() + 360) % 360f;
-        mTurnTrend = (float)eparams.getDiffBearingTrend();
-        if(mTurnTrend > 30) {
-            mTurnTrend = 30;
-        }
-        if(mTurnTrend < -30) {
-            mTurnTrend = -30;
-        }*/
-
-
+    public void setParams(GpsParams params, double bearing, double cdi, double vdi) {
 
         mTo = (float)(bearing + params.getDeclinition() + 360) % 360f;
 
@@ -871,5 +830,35 @@ public class PfdView extends View {
         if(mVdi < 2.2f) {
             mVdi = 2.2f;
         }
+    }
+
+    public void setAltitude(double altitude) {
+        mAltitude = (float)altitude;
+        if(mAltitude > 50000) {
+            mAltitude = 50000;
+        }
+        if(mAltitude < -9000) {
+            mAltitude = -9000;
+        }
+
+    }
+
+    public void setAirspeed(double airspeed) {
+        mSpeed = (float)airspeed;
+        if(mSpeed > 500) {
+            mSpeed = 500;
+        }
+
+    }
+
+    public void setVsi(double vsi) {
+        mVsi = (float)vsi;
+        if(mVsi > 2000) {
+            mVsi = 2000;
+        }
+        if(mVsi < -2000) {
+            mVsi = -2000;
+        }
+
     }
 }

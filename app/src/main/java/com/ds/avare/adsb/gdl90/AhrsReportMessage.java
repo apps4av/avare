@@ -27,6 +27,9 @@ public class AhrsReportMessage extends Message {
     static public float mSlip;
     static public float mAccl;
     static public float mAoa;
+    static public float mAirspeed;
+    static public float mAltitude;
+    static public float mVsi;
     public boolean mValid = false;
 
     public AhrsReportMessage() {
@@ -87,6 +90,12 @@ public class AhrsReportMessage extends Message {
                 byte m9  = msg[id++];
                 byte m10 = msg[id++];
                 byte m11 = msg[id++];
+                byte m12 = msg[id++];
+                byte m13 = msg[id++];
+                byte m14 = msg[id++];
+                byte m15 = msg[id++];
+                byte m16 = msg[id++];
+                byte m17 = msg[id++];
 
 
                 mRoll     = combineBytesForFloat(m0, m1);
@@ -95,11 +104,18 @@ public class AhrsReportMessage extends Message {
                 mSlip     = combineBytesForFloat(m6, m7);
                 mYawRate  = combineBytesForFloat(m8, m9);
                 mAccl     = combineBytesForFloat(m10, m11);
+                float as  = combineBytesForFloat(m12, m13);
+                float alt = combineBytesForFloat(m14, m15);
+                float vsi = combineBytesForFloat(m16, m17);
+
+
+                if((as != 0x7FFF) && (alt != -1) && (vsi != -1)) {
+                    mAltitude = alt - 5000;
+                    mAirspeed = as / 10;
+                    mVsi = vsi;
+                }
+
                 mValid    = true;
-                // PFD takes in reverse pitch
-                // Accl on iLevil is G-force, not inclinometer displacement
-                mPitch = -mPitch;
-                mAccl = 0;
             }
         }
     }

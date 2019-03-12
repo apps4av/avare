@@ -127,7 +127,7 @@ public class Orientation implements SensorEventListener {
                                 Math.toDegrees(mOrientationTmps[1]),
                                 Math.toDegrees(mOrientationTmps[2]),
                                 0,
-                                mMovingAverageA.get(), 0, 0);
+                                mMovingAverageA.get(), 0, 0, 0, 0, 0);
                     }
                 }
             }
