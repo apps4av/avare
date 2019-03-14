@@ -768,7 +768,6 @@ public class PfdView extends View {
 
     public void setSlip(float slip) {
         // limit angle +-10 degrees, judging from actual instrument circle
-        slip /= 18;
         if(slip > 10) {
             slip = 10;
         }
@@ -780,28 +779,28 @@ public class PfdView extends View {
     }
 
     public void setYawRate(float trend) {
-        mTurnTrend = trend;
+        mTurnTrend = trend * 6; // degree per second
     }
 
     public void setAoa(float aoa) {
         mAoa = aoa;
     }
 
-    public void setAcceleration(double acceleration) {
+    public void setAcceleration(float acceleration) {
     }
 
-    public void setSpeedTrend(double trend) {
-        mSpeedChange = (float)trend;
-        if(mSpeedChange > 25) {
-            mSpeedChange = 25;
+    public void setSpeedTrend(float trend) {
+        mSpeedChange = trend;
+        if(mSpeedChange > 20) {
+            mSpeedChange = 20;
         }
-        if(mSpeedChange < -25) {
-            mSpeedChange = -25;
+        if(mSpeedChange < -20) {
+            mSpeedChange = -20;
         }
     }
 
-    public void setAltitudeChange(double ac) {
-        mAltitudeChange = (float)ac;
+    public void setAltitudeChange(float ac) {
+        mAltitudeChange = ac;
         if(mAltitudeChange > 200) {
             mAltitudeChange = 200;
         }
@@ -832,8 +831,8 @@ public class PfdView extends View {
         }
     }
 
-    public void setAltitude(double altitude) {
-        mAltitude = (float)altitude;
+    public void setAltitude(float altitude) {
+        mAltitude = altitude;
         if(mAltitude > 50000) {
             mAltitude = 50000;
         }
@@ -843,16 +842,15 @@ public class PfdView extends View {
 
     }
 
-    public void setAirspeed(double airspeed) {
-        mSpeed = (float)airspeed;
+    public void setAirspeed(float airspeed) {
+        mSpeed = airspeed;
         if(mSpeed > 500) {
             mSpeed = 500;
         }
-
     }
 
-    public void setVsi(double vsi) {
-        mVsi = (float)vsi;
+    public void setVsi(float vsi) {
+        mVsi = vsi;
         if(mVsi > 2000) {
             mVsi = 2000;
         }

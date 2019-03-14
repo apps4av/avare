@@ -45,11 +45,22 @@ public class AhrsReportMessage extends Message {
 
         if(sum > 32767) {
             // negative number
-            return (-(float)(65536 - sum)) / 10f;
+            return (-(float)(65536 - sum));
         }
         else {
-            return ((float)sum) / 10f;
+            return ((float)sum);
         }
+
+    }
+
+    private float combineBytesForFloatUnsigned(byte hi, byte lo) {
+
+        int ih = ((int)hi) & 0xFF;
+        int il = ((int)lo) & 0xFF;
+        int sum = (ih << 8) + il;
+
+        return ((float)sum);
+
 
     }
 
@@ -98,21 +109,43 @@ public class AhrsReportMessage extends Message {
                 byte m17 = msg[id++];
 
 
-                mRoll     = combineBytesForFloat(m0, m1);
-                mPitch    = combineBytesForFloat(m2, m3);
-                mYaw      = combineBytesForFloat(m4, m5);
-                mSlip     = combineBytesForFloat(m6, m7);
-                mYawRate  = combineBytesForFloat(m8, m9);
-                mAccl     = combineBytesForFloat(m10, m11);
-                float as  = combineBytesForFloat(m12, m13);
-                float alt = combineBytesForFloat(m14, m15);
-                float vsi = combineBytesForFloat(m16, m17);
 
-
-                if((as != 0x7FFF) && (alt != -1) && (vsi != -1)) {
-                    mAltitude = alt - 5000;
-                    mAirspeed = as / 10;
-                    mVsi = vsi;
+                float num;
+                num = combineBytesForFloat(m0, m1);
+                if(num != 0x7FFF) {
+                    mRoll = num / 10f;
+                }
+                num = combineBytesForFloat(m2, m3);
+                if(num != 0x7FFF) {
+                    mPitch = num / 10f;
+                }
+                num = combineBytesForFloat(m4, m5);
+                if(num != 0x7FFF) {
+                    mYaw = num / 10f;
+                }
+                num = combineBytesForFloat(m6, m7);
+                if(num != 0x7FFF) {
+                    mSlip = num / 10f;
+                }
+                num = combineBytesForFloat(m8, m9);
+                if(num != 0x7FFF) {
+                    mYawRate = num / 10f; // degrees per second
+                }
+                num = combineBytesForFloat(m10, m11);
+                if(num != 0x7FFF) {
+                    mAccl = num / 10f;
+                }
+                num = combineBytesForFloat(m12, m13);
+                if(num != 0x7FFF) {
+                    mAirspeed = num / 10f;
+                }
+                num = combineBytesForFloatUnsigned(m14, m15);
+                if(num != 0xFFFF) {
+                    mAltitude = num - 5000; // 5000 is SL
+                }
+                num = combineBytesForFloat(m16, m17);
+                if(num != 0x7FFF) {
+                    mVsi = num;
                 }
 
                 mValid    = true;

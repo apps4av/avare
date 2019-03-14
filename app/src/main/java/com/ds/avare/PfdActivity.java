@@ -114,12 +114,11 @@ public class PfdActivity extends Activity {
             mPfdView.setAcceleration((float)acceleration);
             mPfdView.setYawRate((float)yawrate);
             mPfdView.setAoa((float)aoa);
-            mPfdView.setAirspeed(airspeed);
-            mPfdView.setAltitude(altitude);
-            mPfdView.setVsi(vsi);
-            mPfdView.setVsi(vsi);
-            mPfdView.setSpeedTrend(mPitotStaticRates.getDiffSpeedTrend());
-            mPfdView.setAltitudeChange(mPitotStaticRates.getDiffAltitudeTrend());
+            mPfdView.setAirspeed((float)airspeed);
+            mPfdView.setAltitude((float)altitude);
+            mPfdView.setVsi((float)vsi);
+            mPfdView.setSpeedTrend((float)mPitotStaticRates.getDiffSpeedTrend());
+            mPfdView.setAltitudeChange((float)mPitotStaticRates.getDiffAltitudeTrend());
             mPfdView.postInvalidate();
 
         }

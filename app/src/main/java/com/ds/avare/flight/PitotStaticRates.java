@@ -42,8 +42,8 @@ public class PitotStaticRates {
         mLastTime = Long.MAX_VALUE;
         mDiffAltitude = 0;
         mDiffSpeed = 0;
-        mMovingAverageAltitudeChange = new MovingAverage(3);
-        mMovingAverageSpeedChange = new MovingAverage(3);
+        mMovingAverageAltitudeChange = new MovingAverage(30);
+        mMovingAverageSpeedChange = new MovingAverage(30);
     }
 
     public void setParams(double altitude, double airspeed) {
@@ -72,7 +72,7 @@ public class PitotStaticRates {
          * Do calculations
          */
         long TimeDiff = (System.currentTimeMillis() - mLastTime);
-        if(TimeDiff < 1000) {
+        if(TimeDiff == 0) {
             return;
         }
         mDiffAltitude = ((altitude - mLastAltitude) * 1000) / TimeDiff;
