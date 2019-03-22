@@ -11,14 +11,21 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
@@ -329,6 +336,48 @@ public class StorageService extends Service {
         return true;
     }
 
+
+    private void stopForegroundService() {
+
+        // Stop foreground service and remove the notification.
+        stopForeground(true);
+
+        // Stop the foreground service.
+        stopSelf();
+    }
+
+    private void startInForeground() {
+        int icon = R.drawable.plane;
+
+        Notification notification;
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, 0);
+        if(Build.VERSION.SDK_INT >= 26) {
+            String NOTIFICATION_Service_CHANNEL_ID = "service_channel";
+
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_Service_CHANNEL_ID, "Storage Service", NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+
+            notification = new Notification.Builder(this, NOTIFICATION_Service_CHANNEL_ID)
+                    .setSmallIcon(icon)
+                    .setContentTitle("Avare")
+                    .setContentText("Touch to start")
+                    .setContentIntent(pendingIntent)
+                    .setTimeoutAfter(1)
+                    .build();
+        }
+        else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(icon)
+                    .setContentTitle("Avare")
+                    .setContentText("Touch to start")
+                    .setContentIntent(pendingIntent);
+            notification = builder.build();
+        }
+        startForeground(121, notification);
+    }
+
     /* (non-Javadoc)
      * @see android.app.Service#onCreate()
      */
@@ -337,6 +386,7 @@ public class StorageService extends Service {
           
         super.onCreate();
 
+        startInForeground();
         mDataSource = new DataSource(getApplicationContext());
         
         mArea = new Area(mDataSource, this);
@@ -639,6 +689,7 @@ public class StorageService extends Service {
         }
 
         super.onDestroy();
+        stopForegroundService();
         
         System.runFinalizersOnExit(true);
         System.exit(0);

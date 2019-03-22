@@ -101,6 +101,7 @@ Redistribution and use in source and binary forms, with or without modification,
         </activity>
         <activity
             android:name="com.ds.avare.MainActivity"
+            android:launchMode="singleTask"
             android:label="@string/title_activity_main" >
             <!-- Intent for mock gps built into app -->
             <intent-filter>

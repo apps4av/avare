@@ -91,19 +91,7 @@ public class MainActivity extends TabActivity {
 
 
         final Intent intent = new Intent(MainActivity.this, StorageService.class);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Hack. Oreo does not allow background service when activity is not yet showing. Delay. Better solution is to find if app is in foreground.
-            (new Handler()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startService(intent);
-                }
-            }, 1000);
-        }
-        else {
-            startService(intent);
-        }
+        startService(intent);
 
         /*
          * Make a tab host
