@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.nmea.GGAPacket;
 import com.ds.avare.storage.Preferences;
 
 import android.content.Context;
+import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.GpsStatus.NmeaListener;
 import android.location.Location;
@@ -66,6 +68,22 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         
     private static final int GPS_PERIOD_LONG_MS = 8000;
 
+    // Some global properties of the GPS itself that are required
+    // when driving an autopilot
+    private static int mSatCount;
+    private static double mGeoid;
+    private static double mHorDil;
+
+    static int getSatCount() {
+        return mSatCount;
+    }
+    static double getGeoid() {
+        return mGeoid;
+    }
+    static double getHorDil() {
+        return mHorDil;
+    }
+
     /**
      * 
      */
@@ -86,7 +104,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
 
     /**
      * 
-     * @return
+     * @return void
      */
     public static boolean isGpsAvailable(Context ctx) {
         
@@ -107,7 +125,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     
     /**
      * 
-     * @return
+     * @return void
      */
     public static Location getLastLocation(Context ctx) {
         LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
@@ -204,7 +222,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
 
     /**
      * 
-     * @return
+     * @return boolean
      */
     public static boolean isGpsDisabled(Context ctx, Preferences pref) {
         LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
@@ -225,7 +243,13 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
             return;
         }
         GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
-        mGpsCallback.statusCallback(gpsStatus);           
+        mGpsCallback.statusCallback(gpsStatus);
+        mSatCount = 0;
+        for (GpsSatellite sat : gpsStatus.getSatellites()) {
+            if(sat.usedInFix()) {
+                mSatCount++;
+            }
+        }
     }
 
     /**
@@ -344,16 +368,37 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     @Override
     public void onNmeaReceived(long timestamp, String nmea) {
         /*
-         * Use this for altitude.
+         * Use this for altitude and some GPS status values
          */
-        if(nmea.startsWith("$GPGGA")) {
+        if(nmea.startsWith(GGAPacket.TAG)) {
+            // Horozontal dilution
             String val[] = nmea.split(",");
-            if(val.length > 9) {
+            if(val.length > GGAPacket.HD) {
                 try {
-                    mAltitude = Double.parseDouble(val[9]);
+                    mHorDil = Double.parseDouble(val[GGAPacket.HD]);
+                }
+                catch (Exception e) {
+                    mHorDil = 0;
+                }
+            }
+
+            // Altitude
+            if(val.length > GGAPacket.ALT) {
+                try {
+                    mAltitude = Double.parseDouble(val[GGAPacket.ALT]);
                 }
                 catch (Exception e) {
                     mAltitude = 0;
+                }
+            }
+
+            //Height above the WGS-84 Ellipsoid
+            if(val.length > GGAPacket.GEOID) {
+                try {
+                    mGeoid = Double.parseDouble(val[GGAPacket.GEOID]);
+                }
+                catch (Exception e) {
+                    mGeoid = 0;
                 }
             }
         }

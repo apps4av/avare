@@ -912,17 +912,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      * @param canvas what to draw them on
      */
     private void drawEdgeMarkers(Canvas canvas) {
-    	if(mPref.isShowEdgeTape()) {
-	        if(mPointProjection == null) {
-		        int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
-		        int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
-		        float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
-		      	mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y, 
-		      			(int) mService.getInfoLines().getHeight(), getWidth(), getHeight());
-	        }
-    	}
+        if(mPref.isShowEdgeTape()) {
+            if(mPointProjection == null) {
+                int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
+                int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
+                float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
+                mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y,
+                        (int) mService.getInfoLines().getHeight(), getWidth(), getHeight(),
+                        mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
+            }
+        }
     }
-    
+
     // Display all of the user defined waypoints if configured to do so
     private void drawUserDefinedWaypoints(Canvas canvas, DrawingContext ctx) {
         if(mPointProjection == null) {
@@ -940,10 +941,10 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
         mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
-                TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
+                TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
                 getWidth(), getHeight(), mErrorStatus, getPriorityMessage());
     }
-    
+
     // Display the nav comments
     private void drawNavComments(Canvas canvas) {
         NavComments navComments = mService.getNavComments();

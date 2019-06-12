@@ -27,6 +27,7 @@ import android.view.WindowManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
+import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
 
 import java.io.File;
@@ -101,9 +102,11 @@ public class Preferences {
     private SharedPreferences mPref;
     private Context mContext;
 
-    public static double NM_TO_MI = 1.15078;
-    public static double NM_TO_KM = 1.852;
-    public static double MS_TO_KT = 1.94384;
+    public static final double NM_TO_MI = 1.15078;
+    public static final double NM_TO_KM = 1.852;
+    public static final double MS_TO_KT = 1.94384;
+    public static final double MI_TO_NM = 0.868976;
+    public static final double KM_TO_NM = 0.539957;
 
     /**
      * @param ctx
@@ -143,6 +146,10 @@ public class Preferences {
             vsConversionUnit = mContext.getString(R.string.VsFpm);
         }
     }
+
+    public static boolean isKnots() { return distanceConversionUnit.equals("nm"); }
+    public static boolean isMPH()   { return distanceConversionUnit.equals("mi"); }
+    public static boolean isKPH()   { return distanceConversionUnit.equals("km"); }
 
     /**
      * @return
@@ -1245,6 +1252,10 @@ public class Preferences {
 
     public String getWiFiPort() {
         return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
+    }
+
+    public String getAutopilotBluetoothDevice() {
+        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
     }
 }
 

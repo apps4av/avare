@@ -76,6 +76,10 @@ authors: zkhan, jlmcgraw
             android:title="@string/WIFIPortLabel"
             android:summary="@string/WIFIPortSummary"
             android:key="@string/WIFIPort"/>
+        <com.ds.avare.utils.BTListPreferenceWithSummary
+            android:key="@string/AutopilotBTDevice"
+            android:summary="@string/AutopilotBTDeviceSummary"
+            android:title="@string/AutopilotBTDeviceLabel" />
     </PreferenceScreen>
     
     <PreferenceScreen 

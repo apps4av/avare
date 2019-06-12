@@ -36,4 +36,8 @@ public class CalendarHelper {
     {
         return mCalendar.get(MINUTE);
     }
+    public int getSecond()
+    {
+        return mCalendar.get(Calendar.SECOND);
+    }
 }

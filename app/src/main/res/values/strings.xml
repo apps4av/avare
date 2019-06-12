@@ -560,4 +560,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WIFIPortLabel">External WiFi Port</string>
     <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>
 
+    <string name="BTOut">BTOut</string>
+    <string name="AutopilotBTDevice">APBTDevice</string>
+    <string name="AutopilotBTDeviceLabel">Autopilot Bluetooth Device</string>
+    <string name="AutopilotBTDeviceSummary">Select a bluetooth device to receive NMEA autopilot data</string>
+
+
 </resources>

@@ -11,12 +11,12 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
+import com.ds.avare.connections.BTOutConnection;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -119,7 +119,7 @@ public class PrefActivity extends PreferenceActivity {
         /*
          * This should update preferences in static memory
          */
-        new Preferences(this);
+        Preferences pref = new Preferences(this);
 
         getApplicationContext().unbindService(mConnection);
         
@@ -132,6 +132,8 @@ public class PrefActivity extends PreferenceActivity {
             mService.getTiles().forceReload();
             mService.getUDWMgr().forceReload();	// Tell the UDWs to reload as well
             mService.getExternalPlanMgr().forceReload(); // Reload plans too
+            BTOutConnection.getInstance(this).disconnect();
+            BTOutConnection.getInstance(this).connect(pref.getAutopilotBluetoothDevice(), false);
         }
     }
 }

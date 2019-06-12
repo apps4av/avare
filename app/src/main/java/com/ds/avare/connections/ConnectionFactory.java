@@ -21,24 +21,30 @@ import com.ds.avare.R;
  * Created by zkhan on 9/22/16.
  */
 public class ConnectionFactory {
+    public static final String CF_BlueToothConnectionIn  = "BlueToothConnectionIn";
+    public static final String CF_BlueToothConnectionOut = "BlueToothConnectionOut";
+    public static final String CF_WifiConnection         = "WifiConnection";
+    public static final String CF_FileConnectionIn       = "FileConnectionIn";
+    public static final String CF_GPSSimulatorConnection = "GPSSimulatorConnection";
+    public static final String CF_MsfsConnection         = "MsfsConnection";
+    public static final String CF_USBConnectionIn        = "USBConnectionIn";
+    public static final String CF_XplaneConnection       = "XplaneConnection";
 
     public static Connection getConnection(String type, Context ctx) {
-        if(type.equals("BlueToothConnectionIn")) {
-        }
-        if(type.equals("BlueToothConnectionOut")) {
-        }
-        if(type.equals("FileConnectionIn")) {
-        }
-        if(type.equals("GPSSimulatorConnection")) {
-        }
-        if(type.equals("MsfsConnection")) {
-        }
-        if(type.equals("USBConnectionIn")) {
-        }
-        if(type.equals("WifiConnection")) {
-            return WifiConnection.getInstance(ctx);
-        }
-        if(type.equals("XplaneConnection")) {
+        switch(type) {
+            case CF_BlueToothConnectionOut:
+                return BTOutConnection.getInstance(ctx);
+
+            case CF_WifiConnection:
+                return WifiConnection.getInstance(ctx);
+
+            case CF_BlueToothConnectionIn:
+            case CF_FileConnectionIn:
+            case CF_GPSSimulatorConnection:
+            case CF_MsfsConnection:
+            case CF_USBConnectionIn:
+            case CF_XplaneConnection:
+                break;
         }
         return null;
     }
@@ -49,7 +55,8 @@ public class ConnectionFactory {
  */
     public static String getActiveConnections(Context ctx) {
         String s = "";
-        s += getConnection("WifiConnection", ctx).isConnected() ?  "," + ctx.getString(R.string.WIFI) : "";
+        s += getConnection(CF_WifiConnection, ctx).isConnected() ?  "," + ctx.getString(R.string.WIFI) : "";
+        s += getConnection(CF_BlueToothConnectionOut, ctx).isConnected() ?  "," + ctx.getString(R.string.BTOut) : "";
         if(s.startsWith(",")) {
             s = s.substring(1);
         }

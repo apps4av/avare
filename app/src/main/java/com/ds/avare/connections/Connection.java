@@ -33,6 +33,7 @@ public abstract class Connection {
     protected static final int CONNECTED = 1;
     protected static final int CONNECTING = 2;
     protected static final int DISCONNECTED = 0;
+    protected static final int DEAD = -1;
 
     private String mName = "";
 
@@ -113,6 +114,13 @@ public abstract class Connection {
      */
     public boolean isConnected() {
         return getState() == Connection.CONNECTED;
+    }
+    public boolean isConnecting() {
+        return getState() == Connection.CONNECTING;
+    }
+
+    public boolean isDead() {
+        return getState() == Connection.DEAD;
     }
 
 
@@ -226,6 +234,7 @@ public abstract class Connection {
 
     public abstract boolean connect(String param, boolean securely);
 
+    public abstract void write(byte[] aData);
 
     /**
      * Posting a location hence do from UI thread

@@ -25,16 +25,8 @@ import android.hardware.GeomagneticField;
  */
 public class RMCPacket extends Packet {
     
-    public RMCPacket(long time, double latitude, double longitude, double speed, double bearing) {
+    public RMCPacket(long time, double latitude, double longitude, double speed, double bearing, double dec) {
         mPacket = "$GPRMC,";
-        
-        
-        /*
-         * Variation
-         */
-        GeomagneticField gmf = new GeomagneticField((float)latitude, 
-                (float)longitude, 0, time);
-        double dec = -gmf.getDeclination();
 
         /*
          * Convert to UTC system time, and format to hhmmss as in NMEA
@@ -43,7 +35,7 @@ public class RMCPacket extends Packet {
         SimpleDateFormat sdf = new SimpleDateFormat("HHmmss", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         mPacket += sdf.format(date) + ",";
-        
+
         mPacket += "A,";
 
         /*
@@ -55,9 +47,9 @@ public class RMCPacket extends Packet {
             
             lat = (int)latitude;
             deg = (latitude - (double)lat) * 60.0;
-            
-            mPacket += String.format("%02d", lat);
-            mPacket += String.format("%06.3f", deg);
+
+            mPacket += String.format(Locale.getDefault(),"%02d", lat);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
             mPacket += ",N,";
         }
         else {
@@ -66,10 +58,10 @@ public class RMCPacket extends Packet {
             latitude = -latitude;
             lat = (int)latitude;
             deg = (latitude - (double)lat) * 60.0;
-            
-            mPacket += String.format("%02d", lat);
-            mPacket += String.format("%06.3f", deg);
-            mPacket += ",S,";            
+
+            mPacket += String.format(Locale.getDefault(),"%02d", lat);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
+            mPacket += ",S,";
         }
 
         /*
@@ -81,9 +73,9 @@ public class RMCPacket extends Packet {
             
             lon = (int)longitude;
             deg = (longitude - (double)lon) * 60.0;
-            
-            mPacket += String.format("%03d", lon);
-            mPacket += String.format("%06.3f", deg);
+
+            mPacket += String.format(Locale.getDefault(),"%03d", lon);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
             mPacket += ",E,";
         }
         else {
@@ -92,22 +84,22 @@ public class RMCPacket extends Packet {
             longitude = -longitude;
             lon = (int)longitude;
             deg = (longitude - (double)lon) * 60.0;
-            
-            mPacket += String.format("%03d", lon);
-            mPacket += String.format("%06.3f", deg);
-            mPacket += ",W,";            
+
+            mPacket += String.format(Locale.getDefault(),"%03d", lon);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
+            mPacket += ",W,";
         }
 
         /*
-         * Put speed in m/s, convert to knots (this is because NMEA speed is in knots)
+         * Put speed knots
          */
-        mPacket += String.format("%05.1f", speed / 0.514444);
+        mPacket += String.format(Locale.getDefault(),"%05.1f", speed);
         mPacket += ",";
 
         /*
          * Put bearing
          */
-        mPacket += String.format("%05.1f", bearing);
+        mPacket += String.format(Locale.getDefault(),"%05.1f", bearing);
         mPacket += ",";
 
         /*
@@ -123,16 +115,14 @@ public class RMCPacket extends Packet {
          */
         if(dec < 0) {
             dec = -dec;
-            mPacket += String.format("%05.1f", dec);
+            mPacket += String.format(Locale.getDefault(),"%05.1f", dec);
             mPacket += ",E";
         }
         else {
-            mPacket += String.format("%05.1f", dec);
-            mPacket += ",W";            
+            mPacket += String.format(Locale.getDefault(),"%05.1f", dec);
+            mPacket += ",W";
         }
       
         assemble();
-        
     }
-
 }

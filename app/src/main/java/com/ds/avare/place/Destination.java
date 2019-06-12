@@ -121,9 +121,9 @@ public class Destination extends Observable {
         mPref = new Preferences(service.getApplicationContext());
         mService = service;
         mTrackShape = new TrackShape();
-        mEte = new String("--:--");
-        mEta = new String("--:--");
-        mFuel = new String("-.-");
+        mEte = "--:--";
+        mEta = "--:--";
+        mFuel = "-.-";
         mParams = new LinkedHashMap<String, String>();
 
         mEteSec = Long.MAX_VALUE;
@@ -413,6 +413,12 @@ public class Destination extends Observable {
      */
     public double getDistance() {
         return mDistance;
+    }
+
+    public double getDistanceInNM() {
+        if (Preferences.isKnots())  return mDistance;              // Already in nautical miles
+        if (Preferences.isMPH())    return mDistance * Preferences.MI_TO_NM;   // miles to nautical
+        return mDistance * Preferences.KM_TO_NM;                               // kilometers to nautical
     }
 
     /**

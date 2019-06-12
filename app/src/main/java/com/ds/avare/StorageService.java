@@ -30,6 +30,7 @@ import android.support.v4.app.NotificationCompat;
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
+import com.ds.avare.connections.BTOutConnection;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
@@ -39,6 +40,7 @@ import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.instruments.AutoPilot;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.DistanceRings;
 import com.ds.avare.instruments.EdgeDistanceTape;
@@ -50,7 +52,6 @@ import com.ds.avare.instruments.VNAV;
 import com.ds.avare.instruments.VSI;
 import com.ds.avare.network.ShapeFetcher;
 import com.ds.avare.network.TFRFetcher;
-import com.ds.avare.orientation.Orientation;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
@@ -270,10 +271,11 @@ public class StorageService extends Service {
     private DistanceRings mDistanceRings;
     
     private DrawCapLines mCap;
-    
 
     private ExternalPlanMgr mExternalPlanMgr;
-    
+
+    private AutoPilot mAutoPilot;
+
     /*
      * Watches GPS to notify of phases of flight
      */
@@ -491,6 +493,11 @@ public class StorageService extends Service {
         mFuelTimer = new FuelTimer(getApplicationContext());
         mUpTimer = new UpTimer();
 
+        // Create a BlueTooth Output connection and give it to the autopilot
+        BTOutConnection btOut = BTOutConnection.getInstance(this);
+        btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
+        mAutoPilot = new AutoPilot(btOut);
+
         mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
         
         /*
@@ -594,10 +601,13 @@ public class StorageService extends Service {
                     if(mDestination != null) {
                         mDestination.updateTo(getGpsParams());
                     }
-                    
+
+                    // Tell the autopilot where we are and where we intend to go
+                    mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
+
                     // Calculate course line deviation - this must be AFTER the destination update
                     // since the CDI uses the destination in its calculations
-                    getCDI().calcDeviation(mDestination, getPlan());
+                    getCDI().calcDeviation(mDestination, mPlan);
 
                     mLastLocationUpdate = System.currentTimeMillis();
                 }
@@ -687,6 +697,9 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
+
+        // Tell the autopilot we are shutting down
+        mAutoPilot.shutdown();
 
         super.onDestroy();
         stopForegroundService();
@@ -1362,6 +1375,7 @@ public class StorageService extends Service {
         mChecklist = cl;
     }
 
+    public AutoPilot getAutoPilot() { return mAutoPilot; }
 
     public EdgeDistanceTape getEdgeTape() {
     	return mEdgeDistanceTape;

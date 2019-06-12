@@ -32,14 +32,28 @@ public class TrackShape extends Shape {
     private static final int LEG_PREV = Color.GRAY;
     private static final int LEG_CURRENT = Color.MAGENTA;
     private static final int LEG_NEXT = Color.CYAN;
+    private static final int LEG_PAUSED = Color.YELLOW;
 
-    public static int getLegColor(int dstNxt, int segNum) {
+    // Get the color of the leg segment to draw.
+    public static int getLegColor(Plan plan, int segNum) {
+
+        // Is this plan paused ?
+        boolean bPlanIsPaused = plan.isPaused();
+
+        // get the "current" leg segment hat is active
+        int dstNxt = plan.findNextNotPassed();
+
+        //  Check for a future segment
         if (dstNxt <= segNum) {
-            return LEG_NEXT;
+            return bPlanIsPaused ? LEG_PAUSED :LEG_NEXT;
+
+        // Check for the current segment, always drawn in its color
         } else if (dstNxt - 1 == segNum) {
             return LEG_CURRENT;
+
+        // Otherwise, it's a previously completed segment
         } else {
-            return LEG_PREV;
+            return bPlanIsPaused ? LEG_PAUSED :LEG_PREV;
         }
     }
 

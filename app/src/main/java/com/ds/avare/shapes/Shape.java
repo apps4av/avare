@@ -162,7 +162,7 @@ public abstract class Shape {
 	                if(null == plan) {
 	                	paint.setColor(color);
 	                } else {
-	                	paint.setColor(TrackShape.getLegColor(plan.findNextNotPassed(), mCoords.get(coord).getLeg()));
+	                	paint.setColor(TrackShape.getLegColor(plan, mCoords.get(coord).getLeg()));
 	                }
 
 	                c.drawLine(x1, y1, x2, y2, paint);
