@@ -452,7 +452,36 @@
  Recently introduced features include:<br>
  <br>
 
- • <span style="font-weight: bold;">Geo Referenced Approach Plates</span><br>
+ o <span style="font-weight: bold;">Integrated Bluetooth Autopilot</span><br>
+ Avare can now interface directly to a bluetooth connection to send NMEA position and
+ navigation sentences for autopilot operation. Previously, this required the External I/O app, but no longer.<br>
+ <br>
+ To activate:<br>
+ 1) Your tablet/device must be paired with the desired bluetooth device.<br>
+ 2) Start Avare.<br>
+ 3) Select: Preferences/GPS/Autopilot Bluetooth Device.<br>
+ 4) All paired devices are listed, make your selection.<br>
+ 5) Click OK.<br>
+ <br>
+ Avare will remember this preference when next starting up. The software constantly attempts
+ to make the connection to this device. When successful, the top two status lines, as well
+ as the edge tape if enabled, will change to a LIGHT BLUE background. This is your indication that the tablet
+ is communicating with the bluetooth device. When a valid GPS lock is obtained, Avare
+ will relay this data in the proper NMEA format for autopilots to the bluetooth device.<br>
+ <br>
+ If there is any interruption in the connection, the top status lines background will return to their
+ LIGHT GRAY color and Avare will attempt to re-connect. No user action is required. When successful,
+ these lines will again turn LIGHT BLUE.<br>
+ <BR>
+ When a flight plan or DirectTo is active, navigation as well as position data is transmitted, otherwise
+ only position data is relayed.<br>
+ <br>
+ This feature was developed and tested against a Bolutek BC-04 Bluetooth to Serial converter (Approx 10 USD) driving a Dynon EFIS system.<br>
+ <br>
+ NOTE: Bluetooth uses quite a bit of the devices power, so a constant recharging connection of the proper current
+ will be required for prolonged operation.<br>
+ <br>
+ o <span style="font-weight: bold;">Geo Referenced Approach Plates</span><br>
  Avare has 13000+ geo referenced approach plates for the US. Users may
  choose to geo reference the plates on their
  own. See <br>
