@@ -19,6 +19,8 @@ import android.location.Location;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 
+import java.util.Locale;
+
 /**
  * @author zkhan
  * A class to hold GPS params in the format we need
@@ -33,11 +35,13 @@ public class GpsParams {
     private Scale  mScale;
     private float  mDeclination;
     private long   mTime;
-    
+    private int    mSatCount;
+    private double mGeoid;
+    private double mHorDil;
 
 
     /**
-     * @param location
+     * @param location a location object
      */
     public GpsParams(Location location) {
         
@@ -50,6 +54,9 @@ public class GpsParams {
             mScale = new Scale();
             mDeclination = 0;
             mTime = 0;
+            mSatCount = 0;
+            mGeoid = 0;
+            mHorDil = 1;
             return;
         }
         
@@ -70,11 +77,17 @@ public class GpsParams {
         mScale = new Scale();
         
         mTime = location.getTime();
+
+        // These items come from the base GPS object since they are not part
+        // of the position information, but rather properties of the gps receiver itself
+        mSatCount = Gps.getSatCount();
+        mHorDil   = Gps.getHorDil();
+        mGeoid    = Gps.getGeoid();
     }
 
     /***
      * Make an exact copy from the RightHandSide into a newly allocated LeftHandSide object
-     * @param rhs
+     * @param rhs source of the object to deep copy
      * @return Duplicate copy of the right hand side
      */
     public static GpsParams copy(GpsParams rhs) {
@@ -87,13 +100,16 @@ public class GpsParams {
         lhs.mScale       = rhs.mScale;
         lhs.mDeclination = rhs.mDeclination;
         lhs.mTime        = rhs.mTime;
+        lhs.mSatCount    = rhs.mSatCount;
+        lhs.mGeoid       = rhs.mGeoid;
+        lhs.mHorDil      = rhs.mHorDil;
         return lhs;
     }
 
     /**
      * Speed in location to speed in params
-     * @param locationSpeed
-     * @return
+     * @param locationSpeed speed
+     * @return double
      */
     public static double speedConvert(double locationSpeed) {
     	return locationSpeed / Preferences.speedConversion;
@@ -101,8 +117,8 @@ public class GpsParams {
 
     /**
      * Altitude in location to altitude in params
-     * @param locationAltitude
-     * @return
+     * @param locationAltitude altitude
+     * @return double
      */
     public static double altitudeConvert(double locationAltitude) {
         return locationAltitude / Preferences.heightConversion;
@@ -115,6 +131,13 @@ public class GpsParams {
     public double getSpeed() {
         return mSpeed;
     }
+
+    public double getSpeedInKnots() {
+        if (Preferences.isKnots())  return mSpeed;              // Already in KNOTS
+        if (Preferences.isMPH())    return mSpeed * Preferences.MI_TO_NM;   // MPH to KNOTS
+        return mSpeed * Preferences.KM_TO_NM;                               // KPH to KNOTS
+    }
+
     /**
      * @return 
      * double Current longitude
@@ -131,21 +154,25 @@ public class GpsParams {
     }
     /**
      * @return
-     * double Current altitude preferred distance unit (e.g. feet or meters)
+     * double Current altitude in feet
      */
     public double getAltitude() {
         return mAltitude;
     }
-    
+
+    public double getAltitudeInMeters() {
+        return mAltitude / Preferences.heightConversion;
+    }
+
     /**
-     * @return
+     * @return double
      */
     public double getBearing() {
         return mBearing;
     }
 
     /**
-     * @return
+     * @return Scale
      */
     public Scale getScale() {
         return mScale;
@@ -153,7 +180,7 @@ public class GpsParams {
 
     /**
      * 
-     * @return
+     * @return double
      */
     public double getDeclinition() {
         return mDeclination;
@@ -169,7 +196,7 @@ public class GpsParams {
     
     /***
      * Convert the latitude into string format of Deg Min Sec
-     * @return
+     * @return String
      */
     public String getLatStringDMS() {
     	return (mLatitude >= 0 ? "N" : "S") + getDMS(Math.abs(mLatitude));
@@ -177,7 +204,7 @@ public class GpsParams {
     
     /***
      * Convert the longitude into string format of Deg Min Sec
-     * @return
+     * @return String
      */
     public String getLonStringDMS() {
     	return (mLongitude >= 0 ? "E" : "W") + getDMS(Math.abs(mLongitude));
@@ -185,7 +212,7 @@ public class GpsParams {
 
     /***
      * Convert the indicated double value into a deg/min/sec string representation 
-     * @param frac
+     * @param frac fractional position value
      * @return DD MM SS.SS format
      */
 	private String getDMS(double frac) {
@@ -203,12 +230,12 @@ public class GpsParams {
 		double sec = frac * 60;
 
 		// Place all those values into a string and return
-		return String.format("%02.0f\u00B0 %02.0f\' %02.2f\"", deg, min, sec);
+		return String.format(Locale.getDefault(),"%02.0f\u00B0 %02.0f\' %02.2f\"", deg, min, sec);
     }
 
     /**
      *
-     * @param speed
+     * @param speed how fast
      */
     public void setSpeed(int speed) {
          mSpeed = speed;
@@ -216,7 +243,7 @@ public class GpsParams {
 
     /**
      *
-     * @param altitude
+     * @param altitude how high
      */
     public void setAltitude(int altitude) {
         mAltitude = altitude;
@@ -229,4 +256,10 @@ public class GpsParams {
     public void setLatitude(double lat) {
         mLatitude = lat;
     }
+
+    public int getSatCount() { return mSatCount; }
+
+    public double getHorDil() { return mHorDil; }
+
+    public double getGeoid() { return mGeoid; };
 }

@@ -17,6 +17,9 @@ public class Packet {
         
         int xor = MessageFactory.checkSum(mPacket.getBytes());
         String ma = Integer.toHexString(xor).toUpperCase(Locale.getDefault());
+        if(ma.length() < 2) {   // The checksum needs to be 2 ascii digits
+            mPacket += "0";
+        }
         mPacket += ma;
         mPacket += "\r\n";
     }

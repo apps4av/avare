@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.nmea;
 
+import java.util.Locale;
+
 /**
  * 
  * @author zkhan
@@ -18,36 +20,28 @@ package com.ds.avare.nmea;
  */
 public class BODPacket extends Packet {
     
-    public BODPacket(double idDest, double idStart, double bearingTrue, double bearingMag) {
-        
-        if(idDest < 0 || idStart < 0) {
-            mPacket = "";
-            return;
-        }
-        
+    public BODPacket(String idDest, String idStart, double bearingTrue, double bearingMag) {
         mPacket = "$GPBOD,";
         
         /*
          * Put bearingTrue
          */
-        mPacket += String.format("%05.1f", bearingTrue);
+        mPacket += String.format(Locale.getDefault(),"%05.1f", bearingTrue);
         mPacket += ",T,";
 
         /*
          * Put bearingMag
          */
-        mPacket += String.format("%05.1f", bearingMag);
+        mPacket += String.format(Locale.getDefault(),"%05.1f", bearingMag);
         mPacket += ",M,";
 
-        int idi = (int)idDest;
-        mPacket += String.format("%03d", idi);
+        // Destination
+        mPacket += idDest;
         mPacket += ",";
-        idi = (int)idStart;
-        mPacket += String.format("%03d", idi);
-        
-      
-        assemble();
-        
-    }
 
+        // Start
+        mPacket += idStart;
+        
+        assemble();
+    }
 }

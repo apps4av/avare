@@ -11,6 +11,8 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.nmea;
 
+import java.util.Locale;
+
 /**
  * 
  * @author zkhan
@@ -18,37 +20,30 @@ package com.ds.avare.nmea;
  */
 public class RMBPacket extends Packet {
     
-    public RMBPacket(long time, double distance, double bearing, double longitude, double latitude, double idNext, double idOrig, double deviation, double speed) {
-        
-        if(idOrig < 0 || idNext < 0) {
-            mPacket = "";
-            return;
-        }
-        
+    public RMBPacket(double distance, double bearing, double longitude, double latitude, String idNext, String idOrig, double deviation, double speed, boolean planComplete) {
         mPacket = "$GPRMB,";
         
         //valid
         mPacket += "A,";
 
         // deviation
-        String dir = "R";
+        String dir = "L";
         if(deviation < 0) {
-            dir = "L";
+            dir = "R";
             deviation = -deviation;
         }
         if(deviation > 9.99) {
             deviation = 9.99;
         }
-        mPacket += String.format("%04.2f", deviation);
+        mPacket += String.format(Locale.getDefault(),"%04.2f", deviation);
         mPacket += ",";
         mPacket += dir;
         mPacket += ",";
-        
-        int idi = (int)idOrig;
-        mPacket += String.format("%03d", idi);
+
+        mPacket += idOrig;
         mPacket += ",";
-        idi = (int)idNext;
-        mPacket += String.format("%03d", idi);
+
+        mPacket += idNext;
         mPacket += ",";
         
         /*
@@ -60,9 +55,9 @@ public class RMBPacket extends Packet {
             
             lat = (int)latitude;
             deg = (latitude - (double)lat) * 60.0;
-            
-            mPacket += String.format("%02d", lat);
-            mPacket += String.format("%06.3f", deg);
+
+            mPacket += String.format(Locale.getDefault(),"%02d", lat);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
             mPacket += ",N,";
         }
         else {
@@ -71,10 +66,10 @@ public class RMBPacket extends Packet {
             latitude = -latitude;
             lat = (int)latitude;
             deg = (latitude - (double)lat) * 60.0;
-            
-            mPacket += String.format("%02d", lat);
-            mPacket += String.format("%06.3f", deg);
-            mPacket += ",S,";            
+
+            mPacket += String.format(Locale.getDefault(),"%02d", lat);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
+            mPacket += ",S,";
         }
 
         /*
@@ -86,9 +81,9 @@ public class RMBPacket extends Packet {
             
             lon = (int)longitude;
             deg = (longitude - (double)lon) * 60.0;
-            
-            mPacket += String.format("%03d", lon);
-            mPacket += String.format("%06.3f", deg);
+
+            mPacket += String.format(Locale.getDefault(),"%03d", lon);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
             mPacket += ",E,";
         }
         else {
@@ -97,32 +92,37 @@ public class RMBPacket extends Packet {
             longitude = -longitude;
             lon = (int)longitude;
             deg = (longitude - (double)lon) * 60.0;
-            
-            mPacket += String.format("%03d", lon);
-            mPacket += String.format("%06.3f", deg);
-            mPacket += ",W,";            
+
+            mPacket +=  String.format(Locale.getDefault(),"%03d", lon);
+            mPacket += String.format(Locale.getDefault(),"%06.3f", deg);
+            mPacket += ",W,";
         }
 
         /*
          * Put range
          */
-        mPacket += String.format("%05.1f", distance);
+        if(distance >= 1000) {
+            distance = 999.9;
+        }
+        mPacket += String.format(Locale.getDefault(),"%05.1f", distance);
         mPacket += ",";
 
         /*
          * Put bearing
          */
-        mPacket += String.format("%05.1f", bearing);
+        mPacket += String.format(Locale.getDefault(),"%05.1f", bearing);
         mPacket += ",";
 
         /*
-         * Put speed in m/s, convert to knots (this is because NMEA speed is in knots)
+         * Put speed
          */
-        mPacket += String.format("%05.1f", speed / 0.514444);
-        mPacket += ",V";
+        mPacket += String.format(Locale.getDefault(),"%05.1f,", speed);
+
+        /*
+         * Final item is whether or not we have arrived at our final destination
+         */
+        mPacket += planComplete ? "A" : "V";
       
         assemble();
-        
     }
-
 }

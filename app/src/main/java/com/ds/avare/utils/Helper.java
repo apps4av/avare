@@ -216,6 +216,7 @@ public class Helper {
         // Break the hours and minutes out
         int eteHr  = eteRaw.hour;
         int eteMin = eteRaw.minute;
+        int eteSec = eteRaw.second;
 
         // Hours greater than 99 are not displayable
         if(eteHr > 99) {
@@ -223,13 +224,18 @@ public class Helper {
         }
 
         // Get the current local time hours and minutes
-        int etaHr = calendar.getHour();
+        int etaHr  = calendar.getHour();
         int etaMin = calendar.getMinute();
+        int etaSec = calendar.getSecond();
 
         // Add in our ETE to the current time, accounting for rollovers
+        etaSec += eteSec;   // Add the estimated seconds enroute to "now"
+        if(etaSec > 59) { etaSec -= 60; etaMin++; }	// account for seconds rollover
+
         etaMin += eteMin;	// Add the estimated minutes enroute to "now"
         if(etaMin > 59) { etaMin -= 60; etaHr++; }	// account for minute rollover
-        etaHr += eteHr;	// Now add the hours enroute
+
+        etaHr += eteHr;	    // Now add the hours enroute
         while(etaHr > 23) { etaHr -= 24; }	// account for midnight rollover
 
         // Format the hours and minutes
@@ -665,21 +671,17 @@ public class Helper {
 
     /***
      * Is the brgTrue to the left of the brgCourse line (extended).
-     * @param brgTrue true bearing to destination from current location
-     * @param brgCourse bearing to dest on COURSE line
+     * @param bT true bearing to destination from current location
+     * @param bC bearing on current COURSE line
      * @return true if it is LEFT, false if RIGHT
      */
-    public static boolean leftOfCourseLine(double brgTrue, double brgCourse) {
-    	if(brgCourse <= 180) {
-    		if(brgTrue >= brgCourse && brgTrue <= brgCourse + 180)
-    			return true;
-    		return false;
-    	}
+    public static boolean leftOfCourseLine(double bT, double bC) {
+        if(bC <= 180) {
+            return (bT >= bC && bT <= bC + 180);
+        }
 
-    	// brgCourse will be > 180 at this point
-    	if(brgTrue > brgCourse || brgTrue < brgCourse - 180)
-    		return true;
-    	return false;
+        // brgCourse will be > 180 at this point
+        return (bT > bC || bT < bC - 180);
     }
     
     /**

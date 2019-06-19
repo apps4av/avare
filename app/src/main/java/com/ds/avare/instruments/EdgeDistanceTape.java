@@ -112,11 +112,11 @@ public class EdgeDistanceTape {
 	 */
 	@SuppressLint("DefaultLocale")
 	public void draw(Canvas canvas, Scale scale, float pixPerUnit, 
-			int homeX, int homeY, int top, int width, int height) {
+			int homeX, int homeY, int top, int width, int height, int backColor) {
 		
 		// Set color and transparency for the shadow
-	    mPaint.setColor(Color.BLACK);// shadow color is black
-	    mPaint.setAlpha(0x7F);		// Make it see-thru
+	    mPaint.setColor(backColor);// shadow color is black
+	    mPaint.setAlpha(0x4F);		// Make it see-thru
 
 		// the vertical shadow down the left of the display
 	    mPaint.setStrokeWidth(mBgndWidth);		// Line width

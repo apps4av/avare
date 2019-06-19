@@ -460,7 +460,7 @@ public class InfoLines {
         if (mPref.isShowBackground()) {
             aPaint.setShadowLayer(0, 0, 0, 0);
             aPaint.setColor(aTextColorOpposite);
-            aPaint.setAlpha(0x7f);
+            aPaint.setAlpha(0x4f);
             canvas.drawRect(0, 0, mDisplayWidth, mShadowY, aPaint);
             aPaint.setAlpha(0xff);
         }

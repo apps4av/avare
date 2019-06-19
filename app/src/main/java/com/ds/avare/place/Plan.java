@@ -132,7 +132,7 @@ public class Plan implements Observer {
 
     /**
      * 
-     * @return
+     * @return The number of waypoints in this plan
      */
     public int getDestinationNumber() {
 
@@ -269,6 +269,18 @@ public class Plan implements Observer {
             }
         }
         return 0;
+    }
+
+    /*
+     * Have all the waypoints been passed ? In other words, is this plan complete ?
+     */
+    public boolean allWaypointsPassed() {
+        for (int id = 0; id < getDestinationNumber(); id++) {
+            if (!mPassed[id]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /*
@@ -847,6 +859,11 @@ public class Plan implements Observer {
     public boolean suspendResume() {
     	mSuspend = !mSuspend;
     	return mSuspend;
+    }
+
+    // Is the plan paused ?
+    public boolean isPaused() {
+        return mSuspend;
     }
 
     /**
