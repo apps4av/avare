@@ -339,7 +339,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
-    <string name="prefTabIO">&quot;prefTabIO&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -550,9 +549,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>
     <string name="UseNmeaAltitudeSummary">Select to use NMEA altitude from the internal GPS, when internal GPS is used as source</string>
-    <string name="IO">I/O</string>
     <string name="ConnectHelp">
-        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then click on the Connect WiFi checkbox below.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
+        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then restart the app.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
     </string>
     <string name="WIFI">WiFi</string>
     <string name="ConnectWIFI">Connect WiFi</string>

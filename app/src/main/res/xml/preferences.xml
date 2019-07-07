@@ -519,11 +519,6 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabIO"
-                android:summary="@string/IOSummary"
-                android:title="@string/IO" />
         </PreferenceScreen>
 
     </PreferenceScreen>

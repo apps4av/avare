@@ -985,10 +985,6 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabWnb;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabIO), true)) {
-            mTabs |= 1 << MainActivity.tabIO;
-        }
-
         return mTabs;
     }
 

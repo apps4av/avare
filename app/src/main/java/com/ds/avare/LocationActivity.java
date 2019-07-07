@@ -44,6 +44,7 @@ import android.widget.Toast;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
+import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -152,6 +153,7 @@ public class LocationActivity extends Activity implements Observer {
     private String mAirportPressed;
     private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
+    private WifiConnection mWifi;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -403,6 +405,10 @@ public class LocationActivity extends Activity implements Observer {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
+
+        mWifi = WifiConnection.getInstance(this);
+        mWifi.connect(mPref.getWiFiPort(),false);
+        mWifi.start(mPref);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -1216,6 +1222,9 @@ public class LocationActivity extends Activity implements Observer {
                 // tracking and disabled
                 setTrackState(false);
             }
+
+            mWifi.setHelper(mService);
+
         }
 
         /* (non-Javadoc)
@@ -1441,6 +1450,9 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mWifi.stop();
+        mWifi.disconnect();
     }
 
     /**
