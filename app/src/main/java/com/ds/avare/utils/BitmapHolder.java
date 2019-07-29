@@ -183,22 +183,22 @@ public class BitmapHolder {
 
     private String getName(String name) {
 
-        String jpgname = name + ".jpg";
         String pngname = name + ".png";
         String webname = name + ".webp";
+        String jpgname = name + ".jpg";
 
-        boolean jpg = (new File(jpgname)).exists();
-        boolean png = (new File(pngname)).exists();
-        boolean web = (new File(webname)).exists();
-
-        if(jpg) {
-            return jpgname;
+	// Check if a bitmap file exists preferring webp, then png.
+	// jpg is deprecated. For tiles there are many calls. (Limit
+	// the number of filesystem calls which are relatively
+	// expensive.)
+        if( (new File(webname)).exists() ) {
+            return webname;
         }
-        else if(png) {
+        else if( (new File(pngname)).exists() ) {
             return pngname;
         }
-        else if(web) {
-            return webname;
+        else if( (new File(jpgname)).exists() ) {
+            return jpgname;
         }
         else {
             mWidth = 0;
