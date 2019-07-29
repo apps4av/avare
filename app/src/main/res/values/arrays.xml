@@ -31,6 +31,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>ONC Large Files</item>
         <item>TPC Large Files</item>
         <item>Misc. Charts</item>
+        <item>Flyway Charts</item>
     </string-array>
 
     <string-array name="resNameDatabase">
@@ -159,6 +160,30 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>St Louis TAC</item>
         <item>Tampa TAC</item>
     </string-array>
+
+    <string-array name="resNameFLY">
+      <item>Atlanta Flyway</item>
+      <item>Baltimore-Washington Flyway</item>
+      <item>Charlotte Flyway</item>
+      <item>Chicago Flyway</item>
+      <item>Cincinnati Flyway</item>
+      <item>Dallas-FtWorth Flyway</item>
+      <item>Denver Flyway</item>
+      <item>Detroit Flyway</item>
+      <item>Houston Flyway</item>
+      <item>LasVegas Flyway</item>
+      <item>LosAngeles Flyway</item>
+      <item>Miami Flyway</item>
+      <item>NewOrleans Flyway</item>
+      <item>Orlando Flyway</item>
+      <item>SaltLakeCity Flyway</item>
+      <item>SanDiego Flyway</item>
+      <item>SanFrancisco Flyway</item>
+      <item>Seattle Flyway</item>
+      <item>StLouis Flyway</item>
+      <item>Tampa Flyway</item>
+    </string-array>
+
     <string-array name="resNameSectional">
         <item>Albuquerque</item>
 		<item>Anchorage</item>
@@ -1898,6 +1923,29 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>NewYorkHeli</item>
         <item>USGulfCoastHeli</item>
         <item>WashingtonHeli</item>
+    </string-array>
+
+    <string-array name="resFilesFLY">
+      <item>AtlantaFLY</item>
+      <item>Baltimore-WashingtonFLY</item>
+      <item>CharlotteFLY</item>
+      <item>ChicagoFLY</item>
+      <item>CincinnatiFLY</item>
+      <item>Dallas-FtWorthFLY</item>
+      <item>DenverFLY</item>
+      <item>DetroitFLY</item>
+      <item>HoustonFLY</item>
+      <item>LasVegasFLY</item>
+      <item>LosAngelesFLY</item>
+      <item>MiamiFLY</item>
+      <item>NewOrleansFLY</item>
+      <item>OrlandoFLY</item>
+      <item>SaltLakeCityFLY</item>
+      <item>SanDiegoFLY</item>
+      <item>SanFranciscoFLY</item>
+      <item>SeattleFLY</item>
+      <item>StLouisFLY</item>
+      <item>TampaFLY</item>
     </string-array>
 
     <string-array name="resFilesMisc">
