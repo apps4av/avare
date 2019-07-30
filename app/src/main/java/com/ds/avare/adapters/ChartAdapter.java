@@ -75,7 +75,8 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     private static final int GROUP_ONC = 14;
     private static final int GROUP_TPC = 15;
     private static final int GROUP_MISC = 16;
-    private static final int GROUP_NUM = 17;
+    private static final int GROUP_FLY = 17;
+    private static final int GROUP_NUM = 18;
     
     /**
      * @param context
@@ -109,6 +110,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildren[GROUP_IFRA] = context.getResources().getStringArray(R.array.resNameIFRArea);
         mChildren[GROUP_VFRA] = context.getResources().getStringArray(R.array.resNameVFRAreaPlate);
         mChildren[GROUP_MISC] = context.getResources().getStringArray(R.array.resNameMisc);
+        mChildren[GROUP_FLY] = context.getResources().getStringArray(R.array.resNameFLY);
 
         /*
          * Assign children file names
@@ -131,6 +133,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChildrenFiles[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mChildrenFiles[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         mChildrenFiles[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
+        mChildrenFiles[GROUP_FLY] = context.getResources().getStringArray(R.array.resFilesFLY);
 
         /*
          * Allocate space for versions
@@ -154,6 +157,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mVers[GROUP_IFRA] = context.getResources().getStringArray(R.array.resFilesIFRArea);
         mVers[GROUP_VFRA] = context.getResources().getStringArray(R.array.resFilesVFRAreaPlate);
         mVers[GROUP_MISC] = context.getResources().getStringArray(R.array.resFilesMisc);
+        mVers[GROUP_FLY] = context.getResources().getStringArray(R.array.resFilesFLY);
 
         /*
          * Allocate space for checked charts
@@ -176,6 +180,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         mChecked[GROUP_IFRA] = new int[mVers[GROUP_IFRA].length];
         mChecked[GROUP_VFRA] = new int[mVers[GROUP_VFRA].length];
         mChecked[GROUP_MISC] = new int[mVers[GROUP_MISC].length];
+        mChecked[GROUP_FLY] = new int[mVers[GROUP_FLY].length];
 
         /*
          * Get various bitmaps
