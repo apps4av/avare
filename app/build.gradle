@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "com.ds.avare"
-        minSdkVersion 11
+        minSdkVersion 18 // Required for lossless and transparent webp
         targetSdkVersion 28
     }
 
