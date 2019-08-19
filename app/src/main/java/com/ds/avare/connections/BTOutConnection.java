@@ -16,6 +16,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 
+import com.ds.avare.utils.BTListPreferenceWithSummary;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,7 @@ public class BTOutConnection extends Connection {
     private static BTOutConnection mConnection;
     private static BluetoothSocket mBTSocket;
     private static BluetoothAdapter mBTAdapter;
-    private static String mName;
+    private static String mName = BTListPreferenceWithSummary.NONE;
     private static boolean mAutoReconnect;
     private static boolean mConnectInProgress;
     private static OutputStream mOutStream = null;
@@ -65,6 +67,13 @@ public class BTOutConnection extends Connection {
     public boolean connect(String to, boolean secure) {
         // If there is no bluetooth, there is nothing we can do
         if(null == mBTAdapter) {
+            setState(DEAD); // Set to dead since there is no chance of re-opening
+            return false;
+        }
+
+        // If the name we are to connect to is null or empty, then there is nothing
+        // we can do
+        if(null == to || to.length() == 0) {
             setState(DEAD); // Set to dead since there is no chance of re-opening
             return false;
         }
@@ -122,7 +131,9 @@ public class BTOutConnection extends Connection {
     private void reconnect() {
 
         // A couple flags to check before we blindly start this process
-        if(mConnectInProgress || isConnected()) {
+        if(mConnectInProgress || isConnected() ||
+            null == mBTAdapter || null == mName ||
+            mName.length() == 0) {
             return;
         }
 
