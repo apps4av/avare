@@ -569,9 +569,10 @@ public class InfoLines {
         }
 
         // There might be leftover space. Divide it so that it pads between
-        // the fields
+        // the fields.
         int nLeftoverSpace = mDisplayWidth - maxFieldsPerLine * mFieldWidth;
-        int nPadding = nLeftoverSpace / (maxFieldsPerLine - 1);
+        int nPadding = (maxFieldsPerLine > 1) ?
+                (nLeftoverSpace / (maxFieldsPerLine - 1)) : nLeftoverSpace;
 
         // Now calculate the horizontal position of each field
         int nRightShift = nPadding;
