@@ -146,8 +146,11 @@ public class BTOutConnection extends Connection {
 
         // Search for a device with the desired name.
         for(BluetoothDevice btd : setDevices) {
-            if(btd.getName().equalsIgnoreCase(mName)) {
-                btDevice = btd;
+            String btName = btd.getName();
+            if(null != btName) {
+                if (btName.equalsIgnoreCase(mName)) {
+                    btDevice = btd;
+                }
             }
         }
 
