@@ -42,7 +42,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
         <item>TFRs</item>
-        <item>Game TFRs</item>
+        <item>Stadiums (Contact FSS)</item>
     </string-array>
 
     <string-array name="resNameAFD">
