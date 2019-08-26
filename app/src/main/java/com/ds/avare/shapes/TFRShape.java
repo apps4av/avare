@@ -54,7 +54,7 @@ public class TFRShape extends Shape {
         }
 
         /*
-         * Possible game TFRs, Orange
+         * Possible stadiums, Orange
          */
         if (ctx.pref.showGameTFRs()) {
             ctx.paint.setColor(0xFFFF4500);
@@ -74,7 +74,7 @@ public class TFRShape extends Shape {
 
 
             /*
-             * Label Game TFRs
+             * Label stadiums
              */
             if (null != gameTfrLabels) {
                 for (LabelCoordinate c : gameTfrLabels) {

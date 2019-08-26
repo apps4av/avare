@@ -535,9 +535,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ClearedPrompt">Are you sure you want to delete your Geo. tag information for this plate?</string>
     <string name="ToTag">Plates are already tagged for users.\nTo geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.\nTo hide Tag button, use Preferences UI Configuration.</string>
 
-    <string name="GameTFRLabel">&quot;Show Game TFRs&quot;</string>
+    <string name="GameTFRLabel">&quot;Show Stadiums&quot;</string>
     <string name="GameTFR">&quot;GameTFR&quot;</string>
-    <string name="GameTFRSummary">&quot;Select to show the location of possible game TFRs&quot;</string>
+    <string name="GameTFRSummary">&quot;Select to show the location of known stadiums&quot;</string>
     <string name="WnbSummary">Weight and Balance</string>
     <string name="Wnb"><![CDATA[W&B]]></string>
     <string name="Calculate">Calculate</string>

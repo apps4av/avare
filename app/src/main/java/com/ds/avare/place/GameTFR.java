@@ -5,7 +5,7 @@ package com.ds.avare.place;
 
 /**
  * @author zkhan
- * Game TFR areas
+ * Stadium areas
  *
  */
 public class GameTFR {
