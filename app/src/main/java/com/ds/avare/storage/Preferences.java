@@ -1253,6 +1253,10 @@ public class Preferences {
     public String getAutopilotBluetoothDevice() {
         return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
     }
+
+    public boolean useSysFont() {
+        return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
+    }
 }
 
 

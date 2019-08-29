@@ -252,8 +252,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mDraw = false;
 
         mPref = new Preferences(context);
-        
-        mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
+
+        if(mPref.useSysFont()) {
+            mFace = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+        } else{
+            mFace = Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf");
+        }
+
         mPaint.setTypeface(mFace);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
         

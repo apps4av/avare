@@ -398,6 +398,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
     <string name="prefTipSummary">&quot;Select to display tips when the application starts&quot;</string>
 
+    <string name="useSysFont">&quot;useSysFont&quot;</string>
+    <string name="useSysFontLabel">&quot;Use System Font&quot;</string>
+    <string name="useSysFontSummary">&quot;Select to use the default system font vs custom (requires restart)&quot;</string>
+
     <string name="sync">Sync Data</string>
     <string name="syncSummary">Save/Load Avare data on Google Drive</string>
     <string name="Backup">Backup</string>
