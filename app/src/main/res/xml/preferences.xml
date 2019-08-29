@@ -159,11 +159,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTip"
             android:summary="@string/prefTipSummary"
             android:title="@string/prefTipLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/useSysFont"
-            android:summary="@string/useSysFontSummary"
-            android:title="@string/useSysFontLabel" />
     </PreferenceScreen>
 
     <PreferenceScreen 
@@ -525,6 +520,12 @@ authors: zkhan, jlmcgraw
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
         </PreferenceScreen>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/useSysFont"
+            android:summary="@string/useSysFontSummary"
+            android:title="@string/useSysFontLabel" />
 
     </PreferenceScreen>
 
