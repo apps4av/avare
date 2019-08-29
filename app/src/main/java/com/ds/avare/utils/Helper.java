@@ -21,6 +21,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
@@ -452,7 +453,15 @@ public class Helper {
             act.setTheme(android.R.style.Theme_Light);            
         }
     }
-    
+
+    public static Typeface getTypeFace(Context ctx) {
+        if(new Preferences(ctx).useSysFont()) {
+            return Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
+        } else{
+            return Typeface.createFromAsset(ctx.getAssets(), "LiberationMono-Bold.ttf");
+        }
+    }
+
     /**
      * Set common features of all activities in the framework
      * @param act

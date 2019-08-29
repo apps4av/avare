@@ -39,7 +39,7 @@ public class ShadowedText {
     // phase
 	public ShadowedText(Context context) {
         mShadowPaint = new Paint();
-        mShadowPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
+        mShadowPaint.setTypeface(Helper.getTypeFace(context));
         mShadowPaint.setShadowLayer(0, 0, 0, 0);
         mShadowPaint.setAlpha(0x7f);
         mShadowPaint.setStyle(Style.FILL);

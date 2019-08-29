@@ -51,7 +51,7 @@ public class SatelliteView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.WHITE);
-        mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setTypeface(Helper.getTypeFace(mContext));
 
         mDipToPix = Helper.getDpiToPix(context);
         mPaint.setStrokeWidth(1 * mDipToPix);
