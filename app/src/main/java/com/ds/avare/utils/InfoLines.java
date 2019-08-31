@@ -263,7 +263,7 @@ public class InfoLines {
         mService = service;
 
         // separate lines for portrait vs landscape
-        mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX]; 
+        mFieldLines = new int[MAX_INFO_ROWS * 2][ID_FLD_MAX * 2];
 
         // One config string for all lines
         String rowFormats = mPref.getRowFormats(); 

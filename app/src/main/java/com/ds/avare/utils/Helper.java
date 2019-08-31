@@ -458,7 +458,7 @@ public class Helper {
         if(new Preferences(ctx).useSysFont()) {
             return Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
         } else{
-            return Typeface.createFromAsset(ctx.getAssets(), "LiberationMono-Bold.ttf");
+            return Typeface.createFromAsset(ctx.getAssets(), "RobotoMono-Bold.ttf");
         }
     }
 
