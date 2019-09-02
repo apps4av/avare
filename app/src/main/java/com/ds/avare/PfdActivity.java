@@ -51,6 +51,8 @@ public class PfdActivity extends Activity {
 
     private PfdView mPfdView;
 
+    private boolean mRollReverse;
+
     private PitotStaticRates mPitotStaticRates;
 
 
@@ -109,7 +111,7 @@ public class PfdActivity extends Activity {
             mPitotStaticRates.setParams(altitude, airspeed);
             mPfdView.setYaw((float)yaw);
             mPfdView.setPitch((float)pitch);
-            mPfdView.setRoll((float)roll);
+            mPfdView.setRoll(mRollReverse ? -(float)roll : (float)roll);
             mPfdView.setSlip((float)slip);
             mPfdView.setAcceleration((float)acceleration);
             mPfdView.setYawRate((float)yawrate);
@@ -202,6 +204,7 @@ public class PfdActivity extends Activity {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, 0);
+        mRollReverse = mPref.reverseRollInAhrs();
 
     }
 

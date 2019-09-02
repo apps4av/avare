@@ -80,6 +80,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/AutopilotBTDevice"
             android:summary="@string/AutopilotBTDeviceSummary"
             android:title="@string/AutopilotBTDeviceLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/ReverseAhrsRoll"
+            android:summary="@string/ReverseAhrsRollSummary"
+            android:title="@string/ReverseAhrsRollLabel" />
     </PreferenceScreen>
     
     <PreferenceScreen 
