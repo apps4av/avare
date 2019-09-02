@@ -88,27 +88,31 @@ public class AhrsReportMessage extends Message {
             }
             else if(0x1 == msg[1]) { // AHRS
 
-                int id = 3;
-                byte m0  = msg[id++];
-                byte m1  = msg[id++];
-                byte m2  = msg[id++];
-                byte m3  = msg[id++];
-                byte m4  = msg[id++];
-                byte m5  = msg[id++];
-                byte m6  = msg[id++];
-                byte m7  = msg[id++];
-                byte m8  = msg[id++];
-                byte m9  = msg[id++];
-                byte m10 = msg[id++];
-                byte m11 = msg[id++];
-                byte m12 = msg[id++];
-                byte m13 = msg[id++];
-                byte m14 = msg[id++];
-                byte m15 = msg[id++];
-                byte m16 = msg[id++];
-                byte m17 = msg[id++];
-
-
+                byte m0 = 0, m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0, m7 = 0, m8 = 0, m9 = 0, m10 = 0, m11 = 0, m12 = 0, m13 = 0, m14 = 0, m15 = 0, m16 = 0, m17 = 0;
+                try {
+                    int id = 3;
+                    m0 = msg[id++];
+                    m1 = msg[id++];
+                    m2 = msg[id++];
+                    m3 = msg[id++];
+                    m4 = msg[id++];
+                    m5 = msg[id++];
+                    m6 = msg[id++];
+                    m7 = msg[id++];
+                    m8 = msg[id++];
+                    m9 = msg[id++];
+                    m10 = msg[id++];
+                    m11 = msg[id++];
+                    m12 = msg[id++];
+                    m13 = msg[id++];
+                    m14 = msg[id++];
+                    m15 = msg[id++];
+                    m16 = msg[id++];
+                    m17 = msg[id++];
+                }
+                catch (Exception e){
+                    // to accomodate various ADSB devices as this is not well defined array.
+                }
 
                 float num;
                 num = combineBytesForFloat(m0, m1);

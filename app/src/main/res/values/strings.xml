@@ -567,5 +567,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutopilotBTDeviceLabel">Autopilot Bluetooth Device</string>
     <string name="AutopilotBTDeviceSummary">Select a bluetooth device to receive NMEA autopilot data</string>
 
+    <string name="ReverseAhrsRoll">ReverseAhrsRoll</string>
+    <string name="ReverseAhrsRollLabel">AHRS Roll Reverse</string>
+    <string name="ReverseAhrsRollSummary">Reverse the AHRS roll for device compatibility</string>
+
 
 </resources>

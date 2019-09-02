@@ -1264,6 +1264,10 @@ public class Preferences {
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
     }
+  
+    public boolean reverseRollInAhrs() {
+        return mPref.getBoolean(mContext.getString(R.string.ReverseAhrsRoll), false);
+    }
 }
 
 

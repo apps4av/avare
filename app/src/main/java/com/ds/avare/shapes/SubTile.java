@@ -83,6 +83,9 @@ public class SubTile extends Tile {
     }
 
     public static Rect whatAreMyDims(int location) {
+        if(location < 0) {
+            return null;
+        }
         Rect ret = new Rect();
         ret.top = dims[location][0];
         ret.left = dims[location][1];
@@ -159,6 +162,9 @@ public class SubTile extends Tile {
 //      | | | | |
 //      | | | | |
         Rect s = whatAreMyDims(mLocation);
+        if(s == null) {
+            return;
+        }
 
 
         // find center lat/lon of subtile
