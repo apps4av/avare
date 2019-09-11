@@ -84,6 +84,7 @@ public class DistanceRings {
     	mPaint = new Paint();
     	mPaint.setAntiAlias(true);
     	mPaint.setTextSize(textSize);
+    	mPaint.setTypeface(Helper.getTypeFace(context));
     }
     
     /***

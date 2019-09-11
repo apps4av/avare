@@ -88,7 +88,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      */
     private void  setup(Context context) {
         mPaint = new Paint();
-        mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setTypeface(Helper.getTypeFace(context));
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 

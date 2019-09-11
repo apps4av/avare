@@ -20,6 +20,8 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.ds.avare.utils.Helper;
+
 /**
  * 
  * @author zkhan
@@ -43,7 +45,7 @@ public class MemView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.WHITE);
-        mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setTypeface(Helper.getTypeFace(mContext));
 
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         mFraction = 0.f;

@@ -23,6 +23,7 @@ import android.view.View;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -54,7 +55,7 @@ public class GlassView extends View {
         mPref = new Preferences(context);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setTypeface(Helper.getTypeFace(mContext));
         mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
         mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
 

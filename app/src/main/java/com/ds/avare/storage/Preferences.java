@@ -777,7 +777,14 @@ public class Preferences {
      * @return
      */
     public String getRowFormats() {
-        return mPref.getString(mContext.getString(R.string.prefGetRowFormats), "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4");
+        return getRowFormats(false);
+    }
+
+    public String getRowFormats(boolean getDefault) {
+        final String defRowFormats = "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4";
+        if(getDefault)
+            return defRowFormats;
+        return mPref.getString(mContext.getString(R.string.prefGetRowFormats), defRowFormats);
     }
 
     /**
@@ -1254,6 +1261,10 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
     }
 
+    public boolean useSysFont() {
+        return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
+    }
+  
     public boolean reverseRollInAhrs() {
         return mPref.getBoolean(mContext.getString(R.string.ReverseAhrsRoll), false);
     }

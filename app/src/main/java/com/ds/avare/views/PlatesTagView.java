@@ -30,6 +30,7 @@ import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCa
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 /**
  * 
@@ -61,7 +62,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
      */
     private void  setup(Context context) {
         mPaint = new Paint();
-        mPaint.setTypeface(Typeface.createFromAsset(context.getAssets(), "LiberationMono-Bold.ttf"));
+        mPaint.setTypeface(Helper.getTypeFace(context));
         mPaint.setAntiAlias(true);
         mPan = new Pan();
         setOnTouchListener(this);
@@ -110,7 +111,7 @@ public class PlatesTagView extends View implements MultiTouchObjectCanvas<Object
     }
 
     /**
-     * @param name
+     * @param holder
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;

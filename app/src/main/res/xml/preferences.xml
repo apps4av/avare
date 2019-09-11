@@ -526,6 +526,12 @@ authors: zkhan, jlmcgraw
                 android:title="@string/Wnb" />
         </PreferenceScreen>
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/useSysFont"
+            android:summary="@string/useSysFontSummary"
+            android:title="@string/useSysFontLabel" />
+
     </PreferenceScreen>
 
     </PreferenceScreen>
