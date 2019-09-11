@@ -177,12 +177,17 @@ public class AutoPilot {
                         // Write this block of NMEA data to the output connection
                         mConnection.write(apText.getBytes());
 
-                        // A single workitem has just been processed. Sleep for a bit
-                        // then go look for the next one
+                        // A single workitem has just been processed, sleep for a bit then go
+                        // look for the next one
                         try {
-                            sleep(100);
+                            sleep(500);
                         } catch (Exception ignore) {  }
+
                     }
+                    // There was nothing in the queue. Sleep for a bit then go look again
+                    try {
+                        sleep(500);
+                    } catch (Exception ignore) {  }
                 }
             }
         });
