@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class BTListPreferenceWithSummary extends ListPreference {
     public static final String NONE="OFF";
-    private String mOriginalSummary;
+    private String mOriginalSummary = "";
     private CharSequence[] mSelections;
 
     public BTListPreferenceWithSummary(Context context, AttributeSet attrs) {
@@ -78,7 +78,10 @@ public class BTListPreferenceWithSummary extends ListPreference {
             entries[idx++] = NONE;
 
             for (BluetoothDevice btd : setDevices) {
-                entries[idx++] = btd.getName();
+                String btName = btd.getName();
+                if(null != btName) {
+                    entries[idx++] = btName ;
+                }
             }
 
             // tell bluetooth to stop scanning. it's a power issue
