@@ -237,6 +237,7 @@ public class LocationContentProviderHelper {
                 LocationContract.AIRPORTS_LONGITUDE,
                 LocationContract.AIRPORTS_FACILITY_NAME,
                 LocationContract.AIRPORTS_FUEL_TYPES,
+                LocationContract.AIRPORTS_ELEVATION,
                 asdistance + " as distance"};
         String order = "distance ASC";
 
@@ -258,6 +259,9 @@ public class LocationContentProviderHelper {
                     LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
                     // find airport
                     String parts[] = c.getString(3).trim().split("[.]"); //LocationContract.AIRPORT_RUNWAYS_HE_ELEVATION
+                    if(parts[0].equals("")) {
+                        parts = c.getString(8).trim().split("[.]");
+                    }
                     params.put(ELEVATION, parts[0] + "ft");
                     params.put(LOCATION_ID, c.getString(0));
                     params.put(FACILITY_NAME, c.getString(6));
