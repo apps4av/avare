@@ -56,7 +56,7 @@ import java.util.Observer;
 
 /**
  * @author zkhan,rasii
- * An activity that deals with A/FD information
+ * An activity that deals with Chart Supplement information
  */
 public class AirportActivity extends Activity implements Observer {   
     private StorageService mService;
@@ -209,7 +209,7 @@ public class AirportActivity extends Activity implements Observer {
         mListViews.add(getString(R.string.AFD));
         
         /*
-         * Get Text A/FD
+         * Get Text Chart Supplement
          */
         LinkedHashMap <String, String>map = mDestination.getParams();
         LinkedList<Awos> awos = mDestination.getAwos();
@@ -357,7 +357,7 @@ public class AirportActivity extends Activity implements Observer {
         }
         
         /*
-         * Now add all A/FD pages to the list
+         * Now add all Chart Supplement pages to the list
          */
         String[] afd = mDestination.getAfd();            
         for(int plate = 0; plate < afd.length; plate++) {
@@ -407,7 +407,7 @@ public class AirportActivity extends Activity implements Observer {
                 }
                 mService.setAfdIndex(pos);
             }
-            //if afd is null, avare is going to fall back to Avare A/FD data
+            //if afd is null, avare is going to fall back to Avare Chart Supplement data
             //we need to set the view button to A/F
             else {
                 mViewButton.setText(mListViews.get(0));

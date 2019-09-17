@@ -194,7 +194,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
         float scale = mScale.getScaleFactorRaw();
 
     	/*
-    	 * A/FD
+    	 * Chart Supplement
     	 */
         mBitmap.getTransform().setScale(scale, scale);
         mBitmap.getTransform().postTranslate(
