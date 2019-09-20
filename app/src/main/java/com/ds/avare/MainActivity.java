@@ -16,9 +16,11 @@ package com.ds.avare;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -176,6 +178,8 @@ public class MainActivity extends TabActivity {
     private View createTabView(Context context, String text) {
         View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
         TextView tv = (TextView) view.findViewById(R.id.tabs_text);
+        tv.setTypeface(Helper.getTypeFace(context), Typeface.NORMAL);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, Helper.adjustTextSize(context, R.dimen.TextSize));
         tv.setText(text);
         return view;
     }

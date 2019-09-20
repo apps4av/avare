@@ -57,7 +57,7 @@ public class GlassView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setTypeface(Helper.getTypeFace(mContext));
         mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-        mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
+        mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
     }
 

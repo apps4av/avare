@@ -471,8 +471,7 @@ public class InfoLines {
         aPaint.setColor(aTextColor);
 
         // Lines 0/1 are for landscape, 2/3 for portrait
-        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0
-                : MAX_INFO_ROWS;
+        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
 
         // The top row can be either the priority message or
         // the configured display values
@@ -480,20 +479,17 @@ public class InfoLines {
             canvas.drawText(priorityMessage, 0, lineY - 1, aPaint);
         } else {
             for (int idx = 0, max = mFieldPosX.length; idx < max; idx++) {
-                canvas.drawText(
-                        getDisplayFieldValue(mFieldLines[nStartLine][idx],
-                                false), mFieldPosX[idx], lineY - 1, aPaint);
-
                 aPaint.setTextSize(titleY);
-                String title = getDisplayFieldValue(
-                        mFieldLines[nStartLine][idx], true);
-                canvas.drawText(
-                        title,
-                        mFieldPosX[idx]
-                                + (mFieldWidth - mCharWidth - (int) aPaint
-                                        .measureText(title)) / 2, lineY - dataY
+                String title = getDisplayFieldValue(mFieldLines[nStartLine][idx], true);
+                canvas.drawText(title,
+                                mFieldPosX[idx]
+                                + (mFieldWidth - mCharWidth
+                                - (int) aPaint.measureText(title)) / 2, lineY - dataY
                                 + 2, aPaint);
+
                 aPaint.setTextSize(dataY);
+                canvas.drawText(getDisplayFieldValue(mFieldLines[nStartLine][idx],
+                                false), mFieldPosX[idx], lineY - 1, aPaint);
             }
         }
 
@@ -505,20 +501,17 @@ public class InfoLines {
             canvas.drawText(errorMessage, mDisplayWidth, lineY * 2 - 1, aPaint);
         } else {
             for (int idx = 0, max = mFieldPosX.length; idx < max; idx++) {
-                canvas.drawText(
-                        getDisplayFieldValue(mFieldLines[nStartLine + 1][idx],
-                                false), mFieldPosX[idx], lineY * 2 - 1, aPaint);
-
                 aPaint.setTextSize(titleY);
-                String title = getDisplayFieldValue(
-                        mFieldLines[nStartLine + 1][idx], true);
-                canvas.drawText(
-                        title,
-                        mFieldPosX[idx]
-                                + (mFieldWidth - mCharWidth - (int) aPaint
-                                        .measureText(title)) / 2, lineY * 2
+                String title = getDisplayFieldValue(mFieldLines[nStartLine + 1][idx], true);
+                canvas.drawText(title,
+                                mFieldPosX[idx]
+                                + (mFieldWidth - mCharWidth
+                                - (int) aPaint.measureText(title)) / 2, lineY * 2
                                 - dataY + 2, aPaint);
+
                 aPaint.setTextSize(dataY);
+                canvas.drawText(getDisplayFieldValue(mFieldLines[nStartLine + 1][idx],
+                                false), mFieldPosX[idx], lineY * 2 - 1, aPaint);
             }
         }
     }
@@ -531,23 +524,29 @@ public class InfoLines {
      * @param aDisplayWidth
      */
     private void resizeFields(Paint aPaint, int aDisplayWidth, int aDisplayHeight) {
-        // If the size did not change, then we don't need to do any work
-        if (mDisplayWidth == aDisplayWidth)
-            return;
-
-        // Set our copy of what the display width is.
-        mDisplayWidth = aDisplayWidth;
-
-        // In what direction is the display used  ?
-    	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
-    						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
 
         // Fetch the NULL field to figure out how large it is
         String strField = getDisplayFieldValue(ID_FLD_NUL, false) + " ";
         float charWidths[] = new float[strField.length()];
         aPaint.getTextWidths(strField, charWidths);
-        mCharWidth = (int) charWidths[0];
-        mFieldWidth = mCharWidth * strField.length();
+        int charWidth  = (int) charWidths[0];
+        int fieldWidth = charWidth * strField.length();
+
+        // If the important sizes did not change, then we don't need to do any work
+        if ((mDisplayWidth == aDisplayWidth) &&
+            (mCharWidth    == charWidth) &&
+            (mFieldWidth   == fieldWidth)) {
+            return;
+        }
+
+        // Set our copy of what the display width is.
+        mDisplayWidth = aDisplayWidth;
+        mCharWidth    = charWidth;
+        mFieldWidth   = fieldWidth;
+
+        // In what direction is the display used  ?
+    	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
+    						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
 
         // Now we can determine the max fields per line we can display
         int maxFieldsPerLine = mDisplayWidth / mFieldWidth;

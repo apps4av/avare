@@ -87,12 +87,13 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * @param context
      */
     private void  setup(Context context) {
+        mContext = context;
+
         mPaint = new Paint();
         mPaint.setTypeface(Helper.getTypeFace(context));
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
+        mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
-        mContext = context;
         mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
