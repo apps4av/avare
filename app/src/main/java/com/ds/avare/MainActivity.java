@@ -178,8 +178,7 @@ public class MainActivity extends TabActivity {
     private View createTabView(Context context, String text) {
         View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
         TextView tv = (TextView) view.findViewById(R.id.tabs_text);
-        tv.setTypeface(Helper.getTypeFace(context), Typeface.NORMAL);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, Helper.adjustTextSize(context, R.dimen.TextSize));
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, Helper.adjustTextSize(context, R.dimen.TextSize) * 0.9f);
         tv.setText(text);
         return view;
     }
