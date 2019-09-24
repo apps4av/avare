@@ -467,11 +467,10 @@ public class Helper {
     }
 
     public static float adjustTextSize(Context ctx, int textSizeID, String mValue) {
-        try {
-            return ctx.getResources().getDimension(textSizeID) * Float.parseFloat(mValue);
-        } catch (Exception ignore) {
-            return textSizeID;
-        }
+        float scale = 1f;
+        try { scale = Float.parseFloat(mValue); }
+        catch (Exception ignore) { }
+        return ctx.getResources().getDimension(textSizeID) * scale;
     }
 
     /**
