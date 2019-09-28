@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -35,7 +34,7 @@ import java.util.TimeZone;
  * Object to handle all of the text on the top two lines of the screen along
  * with their configured content
  * 
- * @author Ron
+ * @author Ron Walker
  * 
  */
 public class InfoLines {
@@ -71,12 +70,11 @@ public class InfoLines {
     private int mFieldWidth; // width of each field
     private int mCharWidth; // width of one character
     private int mDisplayOrientation; // portrait or landscape
-    private int mFieldPosX[]; // X positions of the fields left edges
-    private int mFieldLines[][]; // Configuration/content of the status lines
+    private int[] mFieldPosX; // X positions of the fields left edges
+    private int[][] mFieldLines; // Configuration/content of the status lines
     private int mRowCount; // How many status rows are in use
     private float mAltitude;
 
-    private Context mContext;
     private Preferences mPref;
     private StorageService mService;
 
@@ -84,43 +82,46 @@ public class InfoLines {
     private String[] mFieldTitles;	// Cache field titles too
 
     // Constants to indicate the display orientation
-    static final int ID_DO_LANDSCAPE = 0;
-    static final int ID_DO_PORTRAIT  = 1;
+    private static final int ID_DO_LANDSCAPE = 0;
+    private static final int ID_DO_PORTRAIT  = 1;
 
     // To add new display fields, take the ID_FLD_MAX value, and adjust MAX up
     // by 1.
     // ID_FLD_MAX must always be the highest, and ID_FLD_NUL the lowest
     // Ensure that the string-array "TextFieldOptions" is update with the new
     // entry in the proper order
-    static final int ID_FLD_NUL = 0;
-    static final int ID_FLD_GMT = 1;
-    static final int ID_FLD_LT  = 2;
-    static final int ID_FLD_SPD = 3;
-    static final int ID_FLD_HDG = 4;
-    static final int ID_FLD_BRG = 5;
-    static final int ID_FLD_DST = 6;
-    static final int ID_FLD_DIS = 7;
-    static final int ID_FLD_ETE = 8;
-    static final int ID_FLD_ETA = 9;
-    static final int ID_FLD_MSL = 10;
-    static final int ID_FLD_HOB = 11;
-    static final int ID_FLD_VSI = 12;
-    static final int ID_FLD_VSR = 13;
-    static final int ID_FLD_ODO = 14;
-    static final int ID_FLD_CDI = 15;
-    static final int ID_FLD_FPR = 16;
-    static final int ID_FLD_FUL = 17;
-    static final int ID_FLD_TMR = 18;
-    static final int ID_FLD_SPP = 19;
-    static final int ID_FLD_HDP = 20;
-    static final int ID_FLD_MSP = 21;
-    static final int ID_FLD_MAX = 22;
-    static final String NOVALUE = "     ";
+    private static final int ID_FLD_NUL = 0;
+    private static final int ID_FLD_GMT = 1;
+    private static final int ID_FLD_LT  = 2;
+    private static final int ID_FLD_SPD = 3;
+    private static final int ID_FLD_HDG = 4;
+    private static final int ID_FLD_BRG = 5;
+    private static final int ID_FLD_DST = 6;
+    private static final int ID_FLD_DIS = 7;
+    private static final int ID_FLD_ETE = 8;
+    private static final int ID_FLD_ETA = 9;
+    private static final int ID_FLD_MSL = 10;
+    private static final int ID_FLD_HOB = 11;
+    private static final int ID_FLD_VSI = 12;
+    private static final int ID_FLD_VSR = 13;
+    private static final int ID_FLD_ODO = 14;
+    private static final int ID_FLD_CDI = 15;
+    private static final int ID_FLD_FPR = 16;
+    private static final int ID_FLD_FUL = 17;
+    private static final int ID_FLD_TMR = 18;
+    private static final int ID_FLD_SPP = 19;
+    private static final int ID_FLD_HDP = 20;
+    private static final int ID_FLD_MSP = 21;
+    private static final int ID_FLD_MAX = 22;
+    private static final String NOVALUE = "     ";
 
-    static final double TITLE_TO_TEXT_RATIO = 2.5;
+    private static final double TITLE_TO_TEXT_RATIO = 2.5;
 
-    static final int MAX_INFO_ROWS = 2;
-    static final int MAX_FIELD_SIZE_IN_CHARS = 5;
+    private static final int MAX_INFO_ROWS = 2;
+    private static final int MAX_FIELD_SIZE_IN_CHARS = 5;
+
+    private static final String mNullField = NOVALUE + " ";
+    private static final float[]  mCharWidths = new float[mNullField.length()];
 
     // Return how much in the Y direction we take up
     public float getHeight() {
@@ -132,9 +133,9 @@ public class InfoLines {
      * we need the X/Y of the location along with the paint object (which
      * determines text size)
      * 
-     * @param aPaint
-     * @param posX
-     * @param posY
+     * @param aPaint the paint we are using
+     * @param posX X of the spot of interest
+     * @param posY Y of the spot of interest
      * @return an InfoLineFieldLoc object which identifies the field, its
      *         choices and current selection OR null
      */
@@ -169,7 +170,7 @@ public class InfoLines {
         int nSelected = mFieldLines[nRowIdx][nFieldIdx];
 
         // Build up the available options list
-        List<String> optionAvail = new ArrayList<String>();
+        List<String> optionAvail = new ArrayList<>();
 
         // Loop through the master list and include the item only under certain
         // conditions
@@ -195,7 +196,7 @@ public class InfoLines {
         // OK, the new option list is built and we have what should currently be
         // selected in there. Return this info to the caller
         return new InfoLineFieldLoc(nRowIdx, nFieldIdx,
-                optionAvail.toArray(new String[optionAvail.size()]), nSelected);
+                optionAvail.toArray(new String[0]), nSelected);
     }
 
     /***
@@ -231,7 +232,7 @@ public class InfoLines {
      *            selection index of the new field content
      */
     public void setFieldType(InfoLineFieldLoc infoLineFieldLoc, int nSelected) {
-        if (rangeCheck(infoLineFieldLoc, nSelected) == true) { // Make sure field in range
+        if (rangeCheck(infoLineFieldLoc, nSelected)) { // Make sure field in range
 
             // Fetch the string from the index passed in
             String option = infoLineFieldLoc.mOptions[nSelected];
@@ -241,7 +242,7 @@ public class InfoLines {
 
                 // If we find the exact match, then set the index, save and
                 // re-calc a few things
-                if (mOptionList[idx].contentEquals(option) == true) {
+                if (mOptionList[idx].contentEquals(option)) {
                     mFieldLines[infoLineFieldLoc.mRowIdx][infoLineFieldLoc.mFieldIdx] = idx;
                     mPref.setRowFormats(buildConfigString()); // Save to storage
                     setRowCount(); // A row may have been totally turned off
@@ -255,11 +256,10 @@ public class InfoLines {
      * Construct this object passing in the LocationView that did the creation.
      * The fields are defaulted to what is read from the shared preferences
      * 
-     * @param service
+     * @param service used to read preferences
      */
     public InfoLines(StorageService service) {
-        mContext = service;
-        mPref = new Preferences(mContext);
+        mPref = new Preferences(service);
         mService = service;
 
         // separate lines for portrait vs landscape
@@ -269,24 +269,24 @@ public class InfoLines {
         String rowFormats = mPref.getRowFormats(); 
 
         // Split the string to get each row
-        String strRows[] = rowFormats.split(" "); 
+        String[] strRows = rowFormats.split(" ");
 
         for (int rowIdx = 0; rowIdx < strRows.length; rowIdx++) {
         	// Split the row string to get each field
-            String arFields[] = strRows[rowIdx].split(","); 
+            String[] arFields = strRows[rowIdx].split(",");
 
             // Now parse the line for the values. Handle the case of invalid array
             // bounds just in case the config setting is corrupt due to version/feature change
             for (int idx = 0; idx < arFields.length; idx++) {
             	try { mFieldLines[rowIdx][idx] = Integer.parseInt(arFields[idx]);
-            	} catch(Exception e) { }
+            	} catch(Exception ignore) { }
             }
         }
         setRowCount(); // Determine how many rows to use
 
         // Read some string array values out of the resource list that we examine
-        mOptionList  = mContext.getResources().getStringArray(R.array.TextFieldOptions);
-        mFieldTitles = mContext.getResources().getStringArray(R.array.TextFieldOptionTitles);
+        mOptionList  = service.getResources().getStringArray(R.array.TextFieldOptions);
+        mFieldTitles = service.getResources().getStringArray(R.array.TextFieldOptionTitles);
     }
 
 
@@ -383,15 +383,13 @@ public class InfoLines {
             default:
                 break;
         }
-        return;
     }
 
     private void setRowCount() {
         // Determine how many status rows are being displayed
         mRowCount = 0;
-        int baseRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0
-                : MAX_INFO_ROWS;
-        for (int rowIdx = 0, rowMax = MAX_INFO_ROWS; rowIdx < rowMax; rowIdx++) {
+        int baseRowIdx = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
+        for (int rowIdx = 0; rowIdx < MAX_INFO_ROWS; rowIdx++) {
             for (int fldIdx = 0, fldMax = mFieldLines[baseRowIdx + rowIdx].length; fldIdx < fldMax; fldIdx++) {
                 if (mFieldLines[baseRowIdx + rowIdx][fldIdx] != ID_FLD_NUL) {
                     mRowCount = (rowIdx + 1);
@@ -407,7 +405,7 @@ public class InfoLines {
      * @param nSelected the index of the selected item
      * @return true/false
      */
-    boolean rangeCheck(InfoLineFieldLoc iLFL, int nSelected) {
+    private boolean rangeCheck(InfoLineFieldLoc iLFL, int nSelected) {
     	// Check that the row index is valid
         if ((iLFL.mRowIdx < 0) || (iLFL.mRowIdx >= mFieldLines.length))
             return false;
@@ -418,32 +416,24 @@ public class InfoLines {
             return false;
 
         // If the selected index is larger than our collection of
-        // possibles, then fail
-        if (nSelected >= iLFL.mOptions.length) {
-        	return false;
-        }
-        return true;
+        // possibles, then fail, otherwise we are fine
+        return !(nSelected >= iLFL.mOptions.length);
     }
 
     /***
      * This method draws the top two lines of the display.
      *
-     * @param canvas
-     * @param aPaint
-     *            for what text to use
-     * @param aTextColor
-     *            text color
-     * @param aTextColorOpposite
-     *            opposite
-     * @param aShadow
-     *            shadow radius
+     * @param canvas where to draw
+     * @param aPaint for what text to use
+     * @param aTextColor text color
+     * @param aTextColorOpposite opposite
+     * @param aShadow shadow radius
      */
     public void drawCornerTextsDynamic(Canvas canvas, Paint aPaint,
             int aTextColor, int aTextColorOpposite, int aShadow, int width, int height,
             String errorMessage, String priorityMessage) {
-        // If the screen width has changed since the last time, we need to
-        // recalc
-        // the positions of the fields
+
+        // Resize the fields
         resizeFields(aPaint, width, height);
 
         float dataY = aPaint.getTextSize();
@@ -471,29 +461,25 @@ public class InfoLines {
         aPaint.setColor(aTextColor);
 
         // Lines 0/1 are for landscape, 2/3 for portrait
-        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0
-                : MAX_INFO_ROWS;
+        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
 
         // The top row can be either the priority message or
         // the configured display values
         if (priorityMessage != null) {
             canvas.drawText(priorityMessage, 0, lineY - 1, aPaint);
         } else {
-            for (int idx = 0, max = mFieldPosX.length; idx < max; idx++) {
-                canvas.drawText(
-                        getDisplayFieldValue(mFieldLines[nStartLine][idx],
-                                false), mFieldPosX[idx], lineY - 1, aPaint);
-
+            for (int idx = 0; idx < mFieldPosX.length; idx++) {
                 aPaint.setTextSize(titleY);
-                String title = getDisplayFieldValue(
-                        mFieldLines[nStartLine][idx], true);
-                canvas.drawText(
-                        title,
-                        mFieldPosX[idx]
-                                + (mFieldWidth - mCharWidth - (int) aPaint
-                                        .measureText(title)) / 2, lineY - dataY
+                String title = getDisplayFieldValue(mFieldLines[nStartLine][idx], true);
+                canvas.drawText(title,
+                                mFieldPosX[idx]
+                                + (mFieldWidth - mCharWidth
+                                - (int) aPaint.measureText(title)) / 2, lineY - dataY
                                 + 2, aPaint);
+
                 aPaint.setTextSize(dataY);
+                canvas.drawText(getDisplayFieldValue(mFieldLines[nStartLine][idx],
+                                false), mFieldPosX[idx], lineY - 1, aPaint);
             }
         }
 
@@ -504,21 +490,18 @@ public class InfoLines {
             aPaint.setColor(Color.RED);
             canvas.drawText(errorMessage, mDisplayWidth, lineY * 2 - 1, aPaint);
         } else {
-            for (int idx = 0, max = mFieldPosX.length; idx < max; idx++) {
-                canvas.drawText(
-                        getDisplayFieldValue(mFieldLines[nStartLine + 1][idx],
-                                false), mFieldPosX[idx], lineY * 2 - 1, aPaint);
-
+            for (int idx = 0; idx < mFieldPosX.length; idx++) {
                 aPaint.setTextSize(titleY);
-                String title = getDisplayFieldValue(
-                        mFieldLines[nStartLine + 1][idx], true);
-                canvas.drawText(
-                        title,
-                        mFieldPosX[idx]
-                                + (mFieldWidth - mCharWidth - (int) aPaint
-                                        .measureText(title)) / 2, lineY * 2
+                String title = getDisplayFieldValue(mFieldLines[nStartLine + 1][idx], true);
+                canvas.drawText(title,
+                                mFieldPosX[idx]
+                                + (mFieldWidth - mCharWidth
+                                - (int) aPaint.measureText(title)) / 2, lineY * 2
                                 - dataY + 2, aPaint);
+
                 aPaint.setTextSize(dataY);
+                canvas.drawText(getDisplayFieldValue(mFieldLines[nStartLine + 1][idx],
+                                false), mFieldPosX[idx], lineY * 2 - 1, aPaint);
             }
         }
     }
@@ -527,27 +510,31 @@ public class InfoLines {
      * Calculate the quantity and size of that we can display with the given
      * display width and paint.
      *
-     * @param aPaint
-     * @param aDisplayWidth
+     * @param aPaint Paint to use
+     * @param aDisplayWidth How wide is the display
+     * @param aDisplayHeight How high is the display
      */
     private void resizeFields(Paint aPaint, int aDisplayWidth, int aDisplayHeight) {
-        // If the size did not change, then we don't need to do any work
-        if (mDisplayWidth == aDisplayWidth)
-            return;
 
-        // Set our copy of what the display width is.
+        // Using the provided paint, figure out how wide a field would be
+        aPaint.getTextWidths(mNullField, mCharWidths);
+        int charWidth  = (int) mCharWidths[0];
+        int fieldWidth = charWidth * mNullField.length();
+
+        // If the important sizes did not change, then we don't need to do any work
+        if ((mDisplayWidth == aDisplayWidth) &&
+            (mFieldWidth   == fieldWidth)) {
+            return;
+        }
+
+        // Set our copy of the pertinent fields.
         mDisplayWidth = aDisplayWidth;
+        mCharWidth    = charWidth;
+        mFieldWidth   = fieldWidth;
 
         // In what direction is the display used  ?
-    	mDisplayOrientation = (aDisplayWidth > aDisplayHeight)
-    						  ? ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
-
-        // Fetch the NULL field to figure out how large it is
-        String strField = getDisplayFieldValue(ID_FLD_NUL, false) + " ";
-        float charWidths[] = new float[strField.length()];
-        aPaint.getTextWidths(strField, charWidths);
-        mCharWidth = (int) charWidths[0];
-        mFieldWidth = mCharWidth * strField.length();
+    	mDisplayOrientation = (aDisplayWidth > aDisplayHeight) ?
+                                ID_DO_LANDSCAPE : ID_DO_PORTRAIT;
 
         // Now we can determine the max fields per line we can display
         int maxFieldsPerLine = mDisplayWidth / mFieldWidth;
@@ -555,12 +542,9 @@ public class InfoLines {
         // This bit of code ensures there is nothing configured to display
         // in fields that might appear off the right side of the screen. This
         // only is a problem at startup, if the default settings contain more
-        // fields
-        // that we can show. We do this calc now since we need to know the paint
-        // specifics
-        // to figure out how many fields can fit.
-        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0
-                : MAX_INFO_ROWS;
+        // fields that we can show. We do this calc now since we need to know the paint
+        // specifics to figure out how many fields can fit.
+        int nStartLine = (mDisplayOrientation == ID_DO_LANDSCAPE) ? 0 : MAX_INFO_ROWS;
         for (int rowIdx = 0; rowIdx < MAX_INFO_ROWS; rowIdx++) {
             for (int idx = maxFieldsPerLine; idx < mFieldLines[nStartLine
                     + rowIdx].length; idx++) {
@@ -583,8 +567,7 @@ public class InfoLines {
 
             // If this is the last field then make it right justified
             if (idx == max - 1) {
-                mFieldPosX[idx] = mDisplayWidth - mFieldWidth
-                        + (int) charWidths[0];
+                mFieldPosX[idx] = mDisplayWidth - mFieldWidth + mCharWidth;
             }
 
             // Adjust the padding between this and the next field
@@ -611,7 +594,7 @@ public class InfoLines {
 
     	// If we are being requested to return the title, then look
     	// it up in the resource string array
-        if (aTitle == true) {
+        if (aTitle) {
 
         	// Local time is special, get the identifier of the local
         	// timezone
@@ -859,22 +842,19 @@ public class InfoLines {
     /***
      * Return a format string for the value passed in
      *
-     * @param value
-     * @return
+     * @param value the number to format
+     * @return A string a formatter for the proper number of digits to represent the value
      */
     private String getFmtString(double value) {
-        String fmtString = "";
         if (value >= 9999)
-            fmtString = "%05.0f";
+            return "%05.0f";
         else if (value >= 1000)
-            fmtString = " %04.0f";
+            return " %04.0f";
         else if (value >= 100)
-            fmtString = " %03.0f ";
+            return " %03.0f ";
         else if (value >= 10)
-            fmtString = " %04.1f";
-        else
-            fmtString = " %03.2f";
-        return fmtString;
+            return " %04.1f";
+        return " %03.2f";
     }
 
     /***
@@ -883,18 +863,18 @@ public class InfoLines {
      * @return string that represents the current format of the fields
      */
     private String buildConfigString() {
-        String rowFormats = "";
+        StringBuilder rowFormats = new StringBuilder();
         for (int rowIdx = 0, rowMax = mFieldLines.length; rowIdx < rowMax; rowIdx++) {
             for (int fldIdx = 0, fldMax = mFieldLines[rowIdx].length; fldIdx < fldMax; fldIdx++) {
-                rowFormats += mFieldLines[rowIdx][fldIdx];
+                rowFormats.append(mFieldLines[rowIdx][fldIdx]);
                 if (fldIdx < fldMax - 1) {
-                    rowFormats += ',';
+                    rowFormats.append(',');
                 }
             }
             if (rowIdx < rowMax - 1) {
-                rowFormats += ' ';
+                rowFormats.append (' ');
             }
         }
-        return rowFormats;
+        return rowFormats.toString();
     }
 }

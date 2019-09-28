@@ -1268,6 +1268,13 @@ public class Preferences {
     public boolean reverseRollInAhrs() {
         return mPref.getBoolean(mContext.getString(R.string.ReverseAhrsRoll), false);
     }
+
+    public float adjustFontSize() {
+        try {
+            return (Float.parseFloat(mPref.getString(mContext.getString(R.string.AdjustFontSize), "1")));
+        } catch (Exception x) {
+            return 1;
+        }
+
+    }
 }
-
-

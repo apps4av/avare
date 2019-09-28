@@ -19,6 +19,7 @@ import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -70,27 +71,32 @@ public class BTListPreferenceWithSummary extends ListPreference {
 
     // Build and return an array of all available Bluetooth paired names
     private CharSequence[] getSelections() {
+
+        // Allocate a new arraylist to hold the names
+        ArrayList<CharSequence> entries = new ArrayList<>();
+        entries.add(NONE);
+
+        // fetch the bt interface adapter
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (null != btAdapter) {
-            int idx = 0;
-            Set<BluetoothDevice> setDevices = btAdapter.getBondedDevices();
-            CharSequence[] entries = new CharSequence[setDevices.size() + 1];
-            entries[idx++] = NONE;
 
+            // Fetch collection of bluetooth devices
+            Set<BluetoothDevice> setDevices = btAdapter.getBondedDevices();
+
+            // For each device we found, get the name. It's possible for the getName()
+            // to fail and return a null
             for (BluetoothDevice btd : setDevices) {
                 String btName = btd.getName();
                 if(null != btName) {
-                    entries[idx++] = btName ;
+                    entries.add(btName);
                 }
             }
 
             // tell bluetooth to stop scanning. it's a power issue
             btAdapter.cancelDiscovery();
-            return entries;
         }
 
-        CharSequence[] entries = new CharSequence[1];
-        entries[0] = NONE;
-        return entries;
+        // Return with an array of what we just built
+        return entries.toArray(new CharSequence[0]);
     }
 }

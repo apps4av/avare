@@ -442,6 +442,47 @@ authors: zkhan, jlmcgraw
         android:title="@string/UIConfiguration"
         android:icon="@android:drawable/ic_menu_crop" >
 
+        <PreferenceScreen
+            android:title="@string/TabBarTitle"
+            android:summary="@string/TabBarSummary"
+            android:icon="@android:drawable/ic_menu_manage" >
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabNear"
+                android:summary="@string/NearSummary"
+                android:title="@string/Near" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabPfd"
+                android:summary="@string/PfdSummary"
+                android:title="@string/PFD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabThreeD"
+                android:summary="@string/ThreeDSummary"
+                android:title="@string/ThreeD" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabChecklist"
+                android:summary="@string/ChecklistSummary"
+                android:title="@string/List" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabWX"
+                android:summary="@string/WXSummary"
+                android:title="@string/WXB" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabTools"
+                android:summary="@string/GPSSummary"
+                android:title="@string/Tools" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabWnb"
+                android:summary="@string/WnbSummary"
+                android:title="@string/Wnb" />
+        </PreferenceScreen>
+
         <CheckBoxPreference
             android:key="@string/b1map"
             android:summary="@string/b1map"
@@ -485,53 +526,21 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ExtendInfoLines3DSummary"
             android:title="@string/ExtendInfoLines3DLabel" />
 
-        <PreferenceScreen
-            android:title="@string/TabBarTitle"
-            android:summary="@string/TabBarSummary"
-            android:icon="@android:drawable/ic_menu_manage" >
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabNear"
-                android:summary="@string/NearSummary"
-                android:title="@string/Near" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabPfd"
-                android:summary="@string/PfdSummary"
-                android:title="@string/PFD" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabThreeD"
-                android:summary="@string/ThreeDSummary"
-                android:title="@string/ThreeD" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabChecklist"
-                android:summary="@string/ChecklistSummary"
-                android:title="@string/List" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabWX"
-                android:summary="@string/WXSummary"
-                android:title="@string/WXB" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabTools"
-                android:summary="@string/GPSSummary"
-                android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabWnb"
-                android:summary="@string/WnbSummary"
-                android:title="@string/Wnb" />
-        </PreferenceScreen>
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/useSysFont"
             android:summary="@string/useSysFontSummary"
             android:title="@string/useSysFontLabel" />
 
+        <com.ds.avare.utils.SeekBarListPreferenceWithSummary
+            android:defaultValue="1"
+            android:dialogMessage="@string/AdjustFontSizeMessage"
+            android:entries="@array/adjustFontSize"
+            android:entryValues="@array/adjustFontSizeValue"
+            android:key="@string/AdjustFontSize"
+            android:summary="@string/AdjustFontSizeSummary"
+            android:title="@string/AdjustFontSizeLabel"
+            />
     </PreferenceScreen>
 
-    </PreferenceScreen>
+</PreferenceScreen>

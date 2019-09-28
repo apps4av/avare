@@ -427,7 +427,7 @@ public class StorageService extends Service {
         mWnbs = null;
         mLastLocationUpdate = 0;
 
-        mCap = new DrawCapLines(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
+        mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
         
         mInfoLines = new InfoLines(this);
 
@@ -476,7 +476,8 @@ public class StorageService extends Service {
         mUDWMgr = new UDWMgr(this, getApplicationContext()); 
       
         // Allocate a new DistanceRing instrument
-        mDistanceRings = new DistanceRings(this, getApplicationContext(), getResources().getDimension(R.dimen.distanceRingNumberTextSize));
+        mDistanceRings = new DistanceRings(this, getApplicationContext(),
+                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         

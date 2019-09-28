@@ -255,27 +255,27 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
         mFace = Helper.getTypeFace(context);
         mPaint.setTypeface(mFace);
-        mPaint.setTextSize(getResources().getDimension(R.dimen.TextSize));
+        mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
         
         
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(mFace);
-        mTextPaint.setTextSize(R.dimen.TextSize);
+        mTextPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
         
         /*
          * Set up the paint for misc messages to display
          */
         mMsgPaint = new Paint();
         mMsgPaint.setAntiAlias(true);
-        mMsgPaint.setTextSize(getResources().getDimension(R.dimen.distanceRingNumberTextSize));
+        mMsgPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         /*
          * Set up the paint for the runways as much as possible here
          */
         mRunwayPaint = new Paint(mPaint);
-        mRunwayPaint.setTextSize(getResources().getDimension(R.dimen.runwayNumberTextSize));
+        mRunwayPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.runwayNumberTextSize));
 
 
         setOnTouchListener(this);
