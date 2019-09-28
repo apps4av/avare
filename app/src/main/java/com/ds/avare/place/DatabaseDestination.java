@@ -120,7 +120,7 @@ public class DatabaseDestination extends Destination {
             if(mDestType.equals(BASE)) {
 
                 /*
-                 * Find A/FD
+                 * Find Chart Supplement
                  */
                 mAfdFound = null;
                 final LinkedList<String> afdName = mDataSource.findAFD(mName);
@@ -143,7 +143,7 @@ public class DatabaseDestination extends Destination {
                         String tmp1[] = new String[len1];
                         for(int count = 0; count < len1; count++) {
                             /*
-                             * Add A/FD
+                             * Add Chart Supplement
                              */
                             String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
                             tmp1[count] = mPref.mapsFolder() + "/afd/" +

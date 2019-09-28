@@ -943,9 +943,9 @@ public class LocationActivity extends Activity implements Observer {
                         return null;
                     }
 
-                    if (param.equals("A/FD")) {
+                    if (param.equals("ChartSup")) {
                         /*
-                         * A/FD
+                         * Chart Supplement
                          */
                         if (!mAirportPressed.contains("&")) {
                             mService.setLastAfdAirport(mAirportPressed);

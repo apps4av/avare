@@ -340,10 +340,10 @@ public class Download {
                             }
 
                             /*
-                             * Delete older A/FD
+                             * Delete older Chart Supplement
                              */
                             else if(folder.equals("afd") && dir.exists()) {
-                                mCode = "code unable to delete/replace A/FD";
+                                mCode = "code unable to delete/replace Chart Supplement";
                                 String newRegion = (tokens[1].split("_"))[0];
                                 String[] info = dir.list();
                                 for(int i = 0; i < info.length; i++) {

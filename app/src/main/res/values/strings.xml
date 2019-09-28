@@ -75,7 +75,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Done">&quot;Done&quot;</string>
     <string name="Main">&quot;Map&quot;</string>
     <string name="Plates">&quot;Plate&quot;</string>
-    <string name="AFD">&quot;A/FD&quot;</string>
+    <string name="AFD">&quot;ChartSup&quot;</string>
     <string name="ThreeD">&quot;3D&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
     <string name="Lat">&quot;Lat&quot;</string>
@@ -547,8 +547,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Calculate">Calculate</string>
 
     <string name="DefaultAFD">DefaultAFD</string>
-    <string name="DefaultAFDLabel">Default A/FD</string>
-    <string name="DefaultAFDSummary">Select to show downloaded A/FD images by default on A/FD screen</string>
+    <string name="DefaultAFDLabel">Default Chart Supplement</string>
+    <string name="DefaultAFDSummary">Select to show downloaded chart supplement images by default on ChartSup screen</string>
 
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>

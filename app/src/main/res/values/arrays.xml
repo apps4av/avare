@@ -24,7 +24,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>IFR Area Charts</item>
         <item>Plates/d-TPP/ADs</item>
         <item>VFR Area Plates</item>
-        <item>A/FD Images</item>
+        <item>Chart Supplement Images</item>
         <item>Terrain</item>
         <item>Topographic Maps</item>
         <item>Heli/Other Charts</item>
@@ -46,15 +46,15 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resNameAFD">
-        <item>A/FD NE</item>
-        <item>A/FD NC</item>
-        <item>A/FD NW</item>
-        <item>A/FD SE</item>
-        <item>A/FD SC</item>
-        <item>A/FD SW</item>
-        <item>A/FD EC</item>
-        <item>A/FD AK</item>
-        <item>A/FD Pacific</item>
+        <item>Chart Supplement NE</item>
+        <item>Chart Supplement NC</item>
+        <item>Chart Supplement NW</item>
+        <item>Chart Supplement SE</item>
+        <item>Chart Supplement SC</item>
+        <item>Chart Supplement SW</item>
+        <item>Chart Supplement EC</item>
+        <item>Chart Supplement AK</item>
+        <item>Chart Supplement Pacific</item>
     </string-array>
 
     <string-array name="resNameIFRArea">

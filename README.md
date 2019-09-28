@@ -5,7 +5,7 @@ Avare Aviation GPS for Android. Avare is pronounced "Ah-vAir" - like "aware" wit
 
 Download from the Google Play Store: https://play.google.com/store/apps/details?id=com.ds.avare&hl=en
 
-Avare provides offline moving map on all current FAA charts (VFR Sectional, IFR lo/hi enroute, Approach Plate, WAC & TAC); plus A/FD info, Airport Diagrams w/GPS Taxi, and Terminal Procedures. 
+Avare provides offline moving map on all current FAA charts (VFR Sectional, IFR lo/hi enroute, Approach Plate, WAC & TAC); plus Chart Supplement info, Airport Diagrams w/GPS Taxi, and Terminal Procedures. 
 
 Also included: GPS status, Terrain/Elevation Maps, 50 Nearest airports, Obstacles, and more. Some FAA Charts cover Puerto Rico, plus parts of Canada, Mexico and the Caribbean. 
 
@@ -27,7 +27,7 @@ More Features:
 * Terrain maps & Canada topo, MSL & AGL display.
 * External GPS, autopilot and flite sim (free AddOn apps).
 * Obstacles: Any over 500' AGL within 200' of GPS altitude.
-* Frequencies, runways, fuel availability, & other A/FD info.
+* Frequencies, runways, fuel availability, & other Chart Supplement info.
 * 13000+ Geo. referenced approach plates and taxi diagrams
 * Landscape or Portrait display Preference, North Up or Track Up (NU/TU).
 * Draw notes directly on-screen, or Pan freely around charts (Draw/Pan).
@@ -65,13 +65,13 @@ Check 2: Databases
 
 4. Find BOS
 
-5. See text A/FD is correct (runways appear, freqencies appear, all fields look filled properly)
+5. See text Chart Supplement is correct (runways appear, freqencies appear, all fields look filled properly)
 
 6. Go to Map and verify runways extensions are drawn correctly
 
 7. Go to Plan and create a plan KBOS BOS V16 CMK, verify V16 is converetd to fixes and all are identified
 
-8. Verify that OPLA airport is found and its A/FD from OUR-AP is correct
+8. Verify that OPLA airport is found and its Chart Supplement from OUR-AP is correct
 
 9. Go to Map, see charts (Sectional, TAC, WAC, IFR low, IFR high, IFR area) show in fully zoomed out, note no cut-off edges, no missing areas, no lines
 
@@ -80,7 +80,7 @@ Check 2: Databases
 Check 3: Full data
 ------------------
 
-1. Download following: Plates Georeference Info, NewYork sectional, Boston TAC, CF-19 WAC, IFR Low NE, IFR Hi NE, IFR area ANC, Canada ADs, Minimums T/A, Plates MA, VFR area Canada, VFR area MA, A/FD NE, Elevation NE, Boston Heli, Grand Canyon
+1. Download following: Plates Georeference Info, NewYork sectional, Boston TAC, CF-19 WAC, IFR Low NE, IFR Hi NE, IFR area ANC, Canada ADs, Minimums T/A, Plates MA, VFR area Canada, VFR area MA, Chart Supplement NE, Elevation NE, Boston Heli, Grand Canyon
 
 2. Find airport BOS
 
@@ -100,7 +100,7 @@ Check 3: Full data
 
 10. Find airport BVY
 
-11. Go to A/FD, and see graphical A/FD has correct date and is correctly showing BVY on it
+11. Go to Chart Supplement, and see graphical Chart Supplement has correct date and is correctly showing BVY on it
 
 12. Go to Plate, and see Airport Diagram with georef and correct date, Area plate with georef, t/o and dep minimums with correct date and airport, and see some approach plates with correct date and georef info
 

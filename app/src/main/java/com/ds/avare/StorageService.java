@@ -173,7 +173,7 @@ public class StorageService extends Service {
     private Pan mPan;
     
     /*
-     * A/FD showing
+     * Chart Supplement showing
      */
     private String mLastAfdAirport;
     private Destination mLastAfdDestination;
