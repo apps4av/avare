@@ -87,7 +87,7 @@ public class PfdView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTypeface(Helper.getTypeFace(mContext));
-        mPaint.setTextSize(getResources().getDimension(R.dimen.pfdTextSize));
+        mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.pfdTextSize));
         mDpi = Helper.getDpiToPix(context);
         mPitch = 0;
         mSpeed = 0;

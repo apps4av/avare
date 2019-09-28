@@ -111,8 +111,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="LeaveRunningSummary">&quot;Select to pause the application on Exit (instead of a complete exit)&quot;</string>
     <string name="TFRs">&quot;TFRs&quot;</string>
     <string name="NightMode">&quot;Night Mode&quot;</string>
-    <string name="NightModeLabel">&quot;Night Mode&quot;</string>
-    <string name="NightModeSummary">&quot;Select to reduce white light during night operation (requires restart)&quot;</string>
+    <string name="NightModeLabel">&quot;Night Mode (requires restart)&quot;</string>
+    <string name="NightModeSummary">&quot;Select to reduce white light during night operation&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
@@ -293,8 +293,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
     <string name="ETABearingSummary">&quot;Select to calculate ETA/ETE considering the relative bearing to the destination&quot;</string>
     <string name="DisplayIcon">&quot;DisplayIcon&quot;</string>
-    <string name="DisplayIconLabel">&quot;Location Display Icon&quot;</string>
-    <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location (requires restart).&quot;</string>
+    <string name="DisplayIconLabel">&quot;Location Display Icon (requires restart)&quot;</string>
+    <string name="DisplayIconSummary">&quot;Select the type of icon used to show your location.&quot;</string>
     <string name="EarlyPassTimer">&quot;EarlyPassTimer&quot;</string>
     <string name="EarlyPassTimerLabel">&quot;Early Pass Timer Value&quot;</string>
     <string name="EarlyPassTimerSummary">&quot;Select the number of seconds before the waypoint to advance to next leg.&quot;</string>
@@ -314,8 +314,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
 
-    <string name="TabBarTitle">&quot;Tab Bar Content&quot;</string>
-    <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar. (requires restart)&quot;</string>
+    <string name="TabBarTitle">&quot;Tab Bar Content (requires restart)&quot;</string>
+    <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar.&quot;</string>
     <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>
 	<string name="AFDSummary">&quot;Airport Facilitiy Directory information.&quot;</string>
     <string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
@@ -399,8 +399,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTipSummary">&quot;Select to display tips when the application starts&quot;</string>
 
     <string name="useSysFont">&quot;useSysFont&quot;</string>
-    <string name="useSysFontLabel">&quot;Use System Font&quot;</string>
-    <string name="useSysFontSummary">&quot;Select to use the default system font vs custom (requires restart)&quot;</string>
+    <string name="useSysFontLabel">&quot;Use System Font (requires restart)&quot;</string>
+    <string name="useSysFontSummary">&quot;Select to use the default system font vs custom&quot;</string>
 
     <string name="sync">Sync Data</string>
     <string name="syncSummary">Save/Load Avare data on Google Drive</string>
@@ -498,10 +498,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n</string>
     <string name="Menu">Menu</string>
 
-    <string name="b1map">Remove Button 1 in Map (Restart Required)</string>
-    <string name="b1plate">Remove Button 1 in Plate (Restart Required)</string>
-    <string name="b2plate">Remove Button 2 in Plate (Restart Required)</string>
-    <string name="b3plate">Remove Button 3 in Plate (Restart Required)</string>
+    <string name="b1map">Remove Button 1 in Map (requires restart)</string>
+    <string name="b1plate">Remove Button 1 in Plate (requires restart)</string>
+    <string name="b2plate">Remove Button 2 in Plate (requires restart)</string>
+    <string name="b3plate">Remove Button 3 in Plate (requires restart)</string>
     <string name="UIConfiguration">UI Configuration</string>
 
     <string name="ShowLabelMETARS">&quot;Label for ADSB METARs&quot;</string>
@@ -571,5 +571,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ReverseAhrsRollLabel">AHRS Roll Reverse</string>
     <string name="ReverseAhrsRollSummary">Reverse the AHRS roll for device compatibility</string>
 
+    <string name="AdjustFontSize">AdjustFontSize</string>
+    <string name="AdjustFontSizeLabel">Adjust Font Size (requires restart)</string>
+    <string name="AdjustFontSizeSummary">Adjust the relative font size that Avare uses</string>
+    <string name="AdjustFontSizeMessage">Select the scaling size to apply</string>
 
 </resources>

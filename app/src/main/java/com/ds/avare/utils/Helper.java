@@ -462,6 +462,17 @@ public class Helper {
         }
     }
 
+    public static float adjustTextSize(Context ctx, int textSizeID) {
+        return ctx.getResources().getDimension(textSizeID) * new Preferences(ctx).adjustFontSize();
+    }
+
+    public static float adjustTextSize(Context ctx, int textSizeID, String mValue) {
+        float scale = 1f;
+        try { scale = Float.parseFloat(mValue); }
+        catch (Exception ignore) { }
+        return ctx.getResources().getDimension(textSizeID) * scale;
+    }
+
     /**
      * Set common features of all activities in the framework
      * @param act

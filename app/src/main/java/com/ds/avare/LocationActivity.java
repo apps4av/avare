@@ -473,18 +473,12 @@ public class LocationActivity extends Activity implements Observer {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     _nNewSelection = which;
+                                    if (mService != null) {
+                                        mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
+                                        dialog.dismiss();
+                                    }
                                 }
                             });
-
-                    // OK button, copy the new selection to the true array so it will be displayed
-                    builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            if (mService != null) {
-                                mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
-                            }
-                        }
-                    });
 
                     // Cancel, nothing to do here, let the dialog self-destruct
                     builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
