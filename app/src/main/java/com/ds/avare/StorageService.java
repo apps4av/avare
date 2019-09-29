@@ -25,7 +25,7 @@ import android.media.MediaScannerConnection;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;

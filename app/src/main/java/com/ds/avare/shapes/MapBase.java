@@ -13,9 +13,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.shapes;
 
 import android.content.Context;
-import android.support.v4.util.LruCache;
 import android.view.Display;
 import android.view.WindowManager;
+import androidx.collection.LruCache;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
