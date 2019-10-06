@@ -943,7 +943,7 @@ public class LocationActivity extends Activity implements Observer {
                         return null;
                     }
 
-                    if (param.equals("ChartSup")) {
+                    if (param.equals("CSup")) {
                         /*
                          * Chart Supplement
                          */
