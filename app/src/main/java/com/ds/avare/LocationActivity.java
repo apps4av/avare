@@ -110,11 +110,6 @@ public class LocationActivity extends Activity implements Observer {
     private AlertDialog mAlertDialogDatabase;
 
     /**
-     * Shows exit dialog
-     */
-    private AlertDialog mAlertDialogExit;
-
-    /**
      * Shows warning about GPS
      */
     private AlertDialog mGpsWarnDialog;
@@ -319,7 +314,6 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-
         if(mMenuOut) {
             hideMenu(); // hide menu on back first
             return;
@@ -328,39 +322,38 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * And may exit
          */
-        mAlertDialogExit = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
-        mAlertDialogExit.setTitle(getString(R.string.Exit));
-        mAlertDialogExit.setCanceledOnTouchOutside(true);
-        mAlertDialogExit.setCancelable(true);
-        mAlertDialogExit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
-            /* (non-Javadoc)
-             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-             */
-            public void onClick(DialogInterface dialog, int which) {
-                /*
-                 * Go to background
-                 */
-                setTrackState(false);   // ensure tracks are turned off
-                LocationActivity.super.onBackPressed();
-                dialog.dismiss();
-            }
-        });
-        mAlertDialogExit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.No), new DialogInterface.OnClickListener() {
-            /* (non-Javadoc)
-             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-             */
-            public void onClick(DialogInterface dialog, int which) {
-                /*
-                 * Go to background
-                 */
-                dialog.dismiss();
-            }
-        });
-
-        if(!isFinishing()) {
-            mAlertDialogExit.show();
+        final AlertDialog.Builder exitDialog = new AlertDialog.Builder(this);
+        View exitView = this.getLayoutInflater().inflate(R.layout.exitdialog, null);
+        exitDialog.setView(exitView);
+        final AlertDialog exitAlert = exitDialog.create();
+        if (mPref.isLeaveRunning()) {
+            exitAlert.setTitle("Close and send to background?");
+        } else {
+            exitAlert.setTitle("Exit?");
         }
+        Button exitOk = exitView.findViewById(R.id.ok_action);
+        exitOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                 * Go to background
+                 */
+                setTrackState(false); // ensure tracks are turned off
+                LocationActivity.super.onBackPressed();
+                exitAlert.dismiss();
+            }
+        });
+        Button exitCancel = exitView.findViewById(R.id.cancel_action);
+        exitCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitAlert.dismiss();
+            }
+        });
 
+        if (!isFinishing()) {
+            exitAlert.show();
+        }
     }
 
     /**
@@ -1395,14 +1388,6 @@ public class LocationActivity extends Activity implements Observer {
         if(null != mWarnDialog) {
             try {
                 mWarnDialog.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
-        if(null != mAlertDialogExit) {
-            try {
-                mAlertDialogExit.dismiss();
             }
             catch (Exception e) {
             }
