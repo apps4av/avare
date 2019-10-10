@@ -98,7 +98,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoShowAirportDiagramLabel">&quot;Auto Show Airport Diagram&quot;</string>
     <string name="AutoShowAirportDiagramSummary">&quot;Select to automatically show airport diagrams on rollout&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
-    <string name="Exit">&quot;Exit&quot;</string>
+    <string name="Exit">"Exit?"</string>
+    <string name="SendToBackground">"Close and send to background?"</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
