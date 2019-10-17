@@ -329,7 +329,11 @@ public class LocationActivity extends Activity implements Observer {
          * And may exit
          */
         mAlertDialogExit = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
-        mAlertDialogExit.setTitle(getString(R.string.Exit));
+        if (mPref.isLeaveRunning()) {
+            mAlertDialogExit.setTitle(getString(R.string.SendToBackground));
+        } else {
+            mAlertDialogExit.setTitle(getString(R.string.Exit));
+        }
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
         mAlertDialogExit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {

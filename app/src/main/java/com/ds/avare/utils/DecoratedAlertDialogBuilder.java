@@ -15,12 +15,13 @@ package com.ds.avare.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * Created by zkhan on 9/1/16.
  */
 public class DecoratedAlertDialogBuilder extends AlertDialog.Builder {
-
 
     public DecoratedAlertDialogBuilder(Context context) {
         super(context);
@@ -29,13 +30,24 @@ public class DecoratedAlertDialogBuilder extends AlertDialog.Builder {
     @Override
     public AlertDialog create() {
         final AlertDialog dialog = super.create();
-        //2. now setup to change color of the button
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
-                /*
-                 * Customize here
-                 */
+                // ensure button sizes match parent
+                Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                ViewGroup.LayoutParams positiveParams = positiveButton.getLayoutParams();
+                positiveParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                positiveButton.setLayoutParams(positiveParams);
+
+                Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                ViewGroup.LayoutParams negativeParams = negativeButton.getLayoutParams();
+                negativeParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                negativeButton.setLayoutParams(negativeParams);
+
+                Button neutralButton = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+                ViewGroup.LayoutParams neutralParams = neutralButton.getLayoutParams();
+                neutralParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                neutralButton.setLayoutParams(neutralParams);
             }
         });
 
