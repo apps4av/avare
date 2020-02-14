@@ -431,7 +431,25 @@ public class WebAppPlanInterface implements Observer {
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
-    /**
+
+	/**
+	 *
+	 */
+	@JavascriptInterface
+	public String nextWaypointID() {
+		mHandler.sendEmptyMessage(MSG_BUSY);
+
+		// Return the identifier of the active waypoint
+		Plan plan = mService.getPlan();
+		Destination nextDest = plan.getDestination(plan.findNextNotPassed());
+
+		mHandler.sendEmptyMessage(MSG_NOTBUSY);
+
+		return nextDest.getID();
+	}
+
+
+	/**
      * 
      */
     @JavascriptInterface
