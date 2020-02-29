@@ -42,7 +42,7 @@ public class FisGraphics {
     LinkedList<Coordinate> mCoordinates;
     int mGeometryOverlayOptions;
 
-    private String parseDate(byte b0, byte b1, byte b2, byte b3, int format) {
+    private static String parseDate(byte b0, byte b1, byte b2, byte b3, int format) {
         switch (format) {
             case 0: // No date/time used.
                 return "";
