@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, application = AvareApplication.class)
+@Config(application = AvareApplication.class)
 @PowerMockIgnore({"org.mockito.", "org.robolectric."})
 public class LocationViewTest extends InterfaceTest {
 
