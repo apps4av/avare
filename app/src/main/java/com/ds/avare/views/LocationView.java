@@ -248,6 +248,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+        mPaint.setFilterBitmap(true);
         mPointProjection = null;
         mDraw = false;
 
