@@ -41,7 +41,7 @@ public class WeatherHelper {
         	// magenta
             return(0xffff54f9);                       
         }
-        return(0xffffffff);
+        return(0xff333333);
     }
     
     /**

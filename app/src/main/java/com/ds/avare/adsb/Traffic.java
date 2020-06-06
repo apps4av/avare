@@ -135,9 +135,12 @@ public class Traffic {
                 continue;
             }
 
-            if(!isOnScreen(ctx.origin, t.mLat, t.mLon)) {
-                continue;
-            }
+            /*
+             * Draw all traffic as its not reported for far of places.
+             *   if(!isOnScreen(ctx.origin, t.mLat, t.mLon)) {
+             *       continue;
+             *   }
+             */
 
             /*
              * Make traffic line and info
