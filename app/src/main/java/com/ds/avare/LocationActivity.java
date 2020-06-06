@@ -534,8 +534,10 @@ public class LocationActivity extends Activity implements Observer {
         mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
-                mPref.setChartType("" + (int) o1);
-                mLocationView.forceReload();
+                String oldC = mPref.getChartType();
+                String newC = Integer.toString((int)o1);
+                mPref.setChartType(newC);
+                mLocationView.forceReloadAfterChartChange(oldC, newC);
                 return null;
             }
         });

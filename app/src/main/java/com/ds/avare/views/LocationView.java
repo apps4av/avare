@@ -1053,7 +1053,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void forceReload() {
         loadTiles();
     }
-        
+
+    /**
+     *
+     */
+    public void forceReloadAfterChartChange(String oldChart, String newChart) {
+        // get old vs new chart pan, scale
+        // mPan will change since charts are of different sizes
+        float ratio = Boundaries.getInstance().zoomRatio(oldChart, newChart);
+        float x = mPan.getMoveX();
+        float y = mPan.getMoveY();
+        mPan.setMove(x * ratio, y * ratio);
+        loadTiles();
+    }
+
     /**
      * @param params
      */

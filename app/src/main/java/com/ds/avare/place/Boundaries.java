@@ -1270,4 +1270,14 @@ public class Boundaries {
 	"13","TampaFLY","-81.8278","28.5978"
     };
 
+
+    public float zoomRatio(String id1, String id2) {
+        int idi1 = Integer.valueOf(id1);
+        int idi2 = Integer.valueOf(id2);
+
+        return (float)Math.pow(2, mZooms[idi2] - mZooms[idi1]);
+    }
+
+
+
 }
