@@ -892,7 +892,8 @@ public class WebAppPlanInterface implements Observer {
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 
             mService.getDBResource().search(srch, params, true);
-            mService.getUDWMgr().search(srch, params);			// From user defined points of interest
+			mService.getUDWMgr().search(srch, params);			// From user defined points of interest
+			mPref.searchARecent(srch, params);			// From recently used locations (named GPS points)
             if(params.size() > 0) {
                 selection = new String[params.size()];
                 int iterator = 0;

@@ -648,7 +648,8 @@ public class SearchActivity extends Activity implements Observer {
                  * This is not to be done repeatedly with new text input so sync.
                  */
                 mService.getDBResource().search(srch, params, false);
-                mService.getUDWMgr().search(srch, params);			// From user defined points of interest
+                mService.getUDWMgr().search(srch, params);	// From user defined points of interest
+                mPref.searchARecent(srch, params);			// From recently used locations (named GPS points)
                 if(params.size() > 0) {
                     selection = new String[params.size()];
                     int iterator = 0;
