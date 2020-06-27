@@ -37,38 +37,36 @@ public class NexradBitmap {
      * @param blockNumber
      */
     private static void convertBlockNumberToLatLon(int blockNumber, double lonlat[]) {
+        double lon;
+        double lat;
 
-        /*
-         *  Determine lat/lon for block number
-         */
-        int numberOfBlocksInRing = 0;
-        char blockLongitudeWidth = 0;
-        char blockLatitudeHeight = 4;
-        int completeRings = 0;
-        float blocksInPartialRing = 0;
-        float fracRings, fracLat, fracLon;
-        
         if (blockNumber < 405000) {
-            numberOfBlocksInRing = 450;
-            blockLongitudeWidth = 48;
+            int col = blockNumber % 450;
+            int row = blockNumber / 450;
+
+            lat = ((double)row + 1.0) *  4.0 / 60.0; // row + 1 as need top left lat
+            lon = ((double)col + 0.0) * 48.0 / 60.0;
+
         }
         else {
-            numberOfBlocksInRing = 225;
-            blockLongitudeWidth = 96;
+
+            blockNumber -= 405000;
+            blockNumber /= 2; // blocks inc by 2
+
+            int col = blockNumber % 225;
+            int row = blockNumber / 225;
+
+            lat = 60.0 + ((double)row + 1.0) *  4.0 / 60.0; // row + 1 as need top left lat
+            lon =  0.0 + ((double)col + 0.0) * 96.0 / 60.0;
+
         }
-        
-        fracRings = (float)blockNumber / (float)numberOfBlocksInRing;
-        completeRings = (int)Math.floor(fracRings);
-        blocksInPartialRing = (fracRings - completeRings) * numberOfBlocksInRing;
-        
-        fracLat = (float)completeRings * (float)blockLatitudeHeight / 60.0f;
-        lonlat[1] = fracLat;
-        
-        fracLon = blocksInPartialRing * (float)blockLongitudeWidth / 60.0f;
-        if (fracLon > 180) {
-            fracLon = 360.0f - fracLon;
+
+        if (lon > 180) {
+            lon = lon - 360;
         }
-        lonlat[0] = -fracLon; // XXX: -ve sign?
+        lonlat[0] = lon;
+        lonlat[1] = lat;
+
     }
 
     /**
