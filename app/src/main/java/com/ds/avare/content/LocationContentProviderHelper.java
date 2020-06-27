@@ -3,6 +3,7 @@ package com.ds.avare.content;
 import android.content.Context;
 import android.database.Cursor;
 import android.hardware.GeomagneticField;
+import android.preference.PreferenceManager;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;
@@ -363,6 +364,7 @@ public class LocationContentProviderHelper {
 
         int len = name.length();
 
+        // Check if this is an explicit GPS coordinate
         if(name.contains("&")) {
             /*
              * GPS
@@ -380,6 +382,12 @@ public class LocationContentProviderHelper {
                 }
             }
             return null;
+        }
+
+        // Search for this as a named GPS waypoint in our most recent used list
+        StringPreference sp = new Preferences(ctx).searchARecent(name);
+        if(null != sp) {
+            return sp;
         }
 
         /*

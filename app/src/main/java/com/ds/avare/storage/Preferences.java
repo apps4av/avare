@@ -27,11 +27,14 @@ import android.view.WindowManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
+import com.ds.avare.place.Destination;
+import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -239,6 +242,36 @@ public class Preferences {
         SharedPreferences.Editor editor = mPref.edit();
         editor.putString(mContext.getString(R.string.Recent), recent);
         editor.commit();
+    }
+
+    public void searchARecent(String name, LinkedHashMap<String, String> params) {
+        String[] tokens = getRecent();
+        for(String t : tokens) {
+            if (t.toUpperCase().startsWith(name.toUpperCase())) {
+                String[] wpd = t.split(";");
+                if(wpd[0].endsWith("::GPS")) {
+                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
+                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
+                    StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                    s.putInHash(params);
+                }
+            }
+        }
+    }
+
+    public StringPreference searchARecent(String name) {
+        String[] tokens = getRecent();
+        for(String t : tokens) {
+            if (t.toUpperCase().startsWith(name.toUpperCase())) {
+                String[] wpd = t.split(";");
+                if (wpd[0].endsWith("::GPS")) {
+                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
+                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
+                    return new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                }
+            }
+        }
+        return null;
     }
 
     /**
