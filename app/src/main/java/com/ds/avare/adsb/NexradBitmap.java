@@ -36,9 +36,10 @@ public class NexradBitmap {
      * 
      * @param blockNumber
      */
-    private static void convertBlockNumberToLatLon(int blockNumber, double lonlat[]) {
+    private static double convertBlockNumberToLatLon(int blockNumber, double lonlat[]) {
         double lon;
         double lat;
+        double scale;
 
         if (blockNumber < 405000) {
             int col = blockNumber % 450;
@@ -46,7 +47,7 @@ public class NexradBitmap {
 
             lat = ((double)row + 1.0) *  4.0 / 60.0; // row + 1 as need top left lat
             lon = ((double)col + 0.0) * 48.0 / 60.0;
-
+            scale = 1.5; // each lon bin is 1.5 min below 60 deg
         }
         else {
 
@@ -58,7 +59,7 @@ public class NexradBitmap {
 
             lat = 60.0 + ((double)row + 1.0) *  4.0 / 60.0; // row + 1 as need top left lat
             lon =  0.0 + ((double)col + 0.0) * 96.0 / 60.0;
-
+            scale = 3.0; // each lon bin is 3 min above 60 deg
         }
 
         if (lon > 180) {
@@ -66,6 +67,7 @@ public class NexradBitmap {
         }
         lonlat[0] = lon;
         lonlat[1] = lat;
+        return scale;
 
     }
 
@@ -79,19 +81,20 @@ public class NexradBitmap {
         timestamp = System.currentTimeMillis();
         mCoords = new double[2];
         
+        double scale = convertBlockNumberToLatLon(block, mCoords);
+
         /*
-         * Scales are in minutes as well.
+         * CONUS times 5
          */
         if(conus) {
-            mScaleX = 7.5;
+            mScaleX = scale * 5;
             mScaleY = 5;
         }
         else {
-            mScaleX = 1.5;
+            mScaleX = scale;
             mScaleY = 1;
         }
-        convertBlockNumberToLatLon(block, mCoords);
-        
+
         /*
          * If empty block, do not waste bitmap memory
          */
@@ -206,21 +209,17 @@ public class NexradBitmap {
         /*
          * Get nexrad bitmaps to draw.
          */
-        if(ctx.scale.getMacroFactor() > 4) {
-            if (!conus.isOld()) {
-                /*
-                 * CONUS for larger scales.
-                 */
-                drawImage(conus.getImages(), ctx);
-            }
+        if (!conus.isOld()) {
+            /*
+             * CONUS for larger scales.
+             */
+            drawImage(conus.getImages(), ctx);
         }
-        else {
-            if (!nexrad.isOld()) {
-                /*
-                 * Draw high res over low res
-                 */
-                drawImage(nexrad.getImages(), ctx);
-            }
+        if (!nexrad.isOld()) {
+            /*
+             * Draw high res over low res
+             */
+            drawImage(nexrad.getImages(), ctx);
         }
     }
 
@@ -231,12 +230,15 @@ public class NexradBitmap {
      */
     private static void drawImage(SparseArray<NexradBitmap> bitmaps, DrawingContext ctx) {
         if (null != bitmaps) {
-            // Draw all nexrad blocks
+            // Draw all nexrad blocks, do not smooth for nexrad, it looks odd
+            boolean fl = ctx.paint.isFilterBitmap();
+            ctx.paint.setFilterBitmap(false);
             for (int i = 0; i < bitmaps.size(); i++) {
                 int key = bitmaps.keyAt(i);
                 NexradBitmap b = bitmaps.get(key);
                 b.drawOne(ctx.canvas, ctx.paint, ctx.origin, ctx.pref);
             }
+            ctx.paint.setFilterBitmap(fl);
         }
     }
 }
