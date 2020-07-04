@@ -208,13 +208,8 @@ public class NexradBitmap {
 
         /*
          * Get nexrad bitmaps to draw.
+         * XXX: Fix CONUS image and do not draw for now.
          */
-        if (!conus.isOld()) {
-            /*
-             * CONUS for larger scales.
-             */
-            drawImage(conus.getImages(), ctx);
-        }
         if (!nexrad.isOld()) {
             /*
              * Draw high res over low res
