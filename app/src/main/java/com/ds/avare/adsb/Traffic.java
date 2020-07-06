@@ -5,8 +5,10 @@ import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.PixelCoordinate;
+import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
@@ -188,15 +190,14 @@ public class Traffic {
             ctx.canvas.drawCircle(x, y, radius, ctx.paint);
             /*
              * Show a barb for heading with length based on speed
-             * Vel can be 0 to 4096 knots (practically it can be 0 to 500 knots), so set from length 0 to 100 pixels (1/5)
+             * Find distance target will travel in 1 min
              */
-            float speedLength = radius + (float)t.mHorizVelocity * (float)ctx.dip2pix / 5.f;
-            /*
-             * Rotation of points to show direction
-             */
-            double xr = x + PixelCoordinate.rotateX(speedLength, t.mHeading);
-            double yr = y + PixelCoordinate.rotateY(speedLength, t.mHeading);
-            ctx.canvas.drawLine(x, y, (float)xr, (float)yr, ctx.paint);
+            float distance2 = (float)t.mHorizVelocity / 60.f;
+            Coordinate c = Projection.findStaticPoint(t.mLon, t.mLat, t.mHeading, distance2);
+            float xr = (float)ctx.origin.getOffsetX(c.getLongitude());
+            float yr = (float)ctx.origin.getOffsetY(c.getLatitude());
+
+            ctx.canvas.drawLine(x, y, xr, yr, ctx.paint);
 
             /*
              * If in track-up mode, rotate canvas around screen x/y of

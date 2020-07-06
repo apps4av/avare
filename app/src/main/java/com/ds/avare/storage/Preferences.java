@@ -250,10 +250,12 @@ public class Preferences {
             if (t.toUpperCase().startsWith(name.toUpperCase())) {
                 String[] wpd = t.split(";");
                 if(wpd[0].endsWith("::GPS")) {
-                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                    StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
-                    s.putInHash(params);
+                    if(wpd[0].contains("@")) {
+                        String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
+                        String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
+                        StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                        s.putInHash(params);
+                    }
                 }
             }
         }
@@ -265,9 +267,11 @@ public class Preferences {
             if (t.toUpperCase().startsWith(name.toUpperCase())) {
                 String[] wpd = t.split(";");
                 if (wpd[0].endsWith("::GPS")) {
-                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                    return new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                    if(wpd[0].contains("@")) {
+                        String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
+                        String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
+                        return new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                    }
                 }
             }
         }
