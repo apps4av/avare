@@ -476,19 +476,44 @@ public class LocationContentProviderHelper {
 
     public static StringPreference getNavaidOrFixFromCoordinate(Context ctx, Coordinate coordinate) {
 
-        // Find Fix here first
-        String qry =
-                "(" + LocationContract.FIX_LONGITUDE + " - ? )*" +
-                "(" + LocationContract.FIX_LONGITUDE + " - ? )+" +
-                "(" + LocationContract.FIX_LATITUDE +  " - ? )*" +
-                "(" + LocationContract.FIX_LATITUDE +  " - ? )"  + " < 0.0000000001";
+        Cursor c = null;
+        String qry = null;
 
         String v0 = String.valueOf(coordinate.getLongitude());
         String v1 = String.valueOf(coordinate.getLatitude());
 
         String arguments[] = new String[] {v0, v0, v1, v1};
 
-        Cursor c = null;
+        // Find Navaid
+        qry =
+                "(" + LocationContract.NAV_LONGITUDE + " - ? )*" +
+                        "(" + LocationContract.NAV_LONGITUDE + " - ? )+" +
+                        "(" + LocationContract.NAV_LATITUDE +  " - ? )*" +
+                        "(" + LocationContract.NAV_LATITUDE +  " - ? )"  + " < 0.0000000001 and (Type != 'VOT')"; // no VOT
+
+        try {
+            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
+            if (c != null) {
+                if(c.moveToFirst()) {
+                    StringPreference s = new StringPreference(Destination.NAVAID,
+                            c.getString(c.getColumnIndex(LocationContract.NAV_TYPE)),
+                            c.getString(c.getColumnIndex(LocationContract.NAV_FACILITY_NAME)),
+                            c.getString(c.getColumnIndex(LocationContract.NAV_LOCATION_ID)));
+                    return s;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        CursorManager.close(c);
+
+
+        // Find Fix if navaid not found
+        qry =
+                "(" + LocationContract.FIX_LONGITUDE + " - ? )*" +
+                "(" + LocationContract.FIX_LONGITUDE + " - ? )+" +
+                "(" + LocationContract.FIX_LATITUDE +  " - ? )*" +
+                "(" + LocationContract.FIX_LATITUDE +  " - ? )"  + " < 0.0000000001";
 
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, null, qry, arguments, null);
@@ -506,29 +531,6 @@ public class LocationContentProviderHelper {
         }
         CursorManager.close(c);
 
-
-        // Find Navaid
-        qry =
-                "(" + LocationContract.NAV_LONGITUDE + " - ? )*" +
-                "(" + LocationContract.NAV_LONGITUDE + " - ? )+" +
-                "(" + LocationContract.NAV_LATITUDE +  " - ? )*" +
-                "(" + LocationContract.NAV_LATITUDE +  " - ? )"  + " < 0.0000000001 and (Type != 'VOT')"; // no VOT
-
-        try {
-            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
-            if (c != null) {
-                if(c.moveToFirst()) {
-                    StringPreference s = new StringPreference(Destination.NAVAID,
-                            c.getString(c.getColumnIndex(LocationContract.NAV_TYPE)),
-                            c.getString(c.getColumnIndex(LocationContract.NAV_FACILITY_NAME)),
-                            c.getString(c.getColumnIndex(LocationContract.NAV_LOCATION_ID)));
-                    return s;
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        CursorManager.close(c);
 
         return null;
     }
