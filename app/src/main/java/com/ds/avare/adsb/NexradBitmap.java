@@ -183,7 +183,7 @@ public class NexradBitmap {
         float scaley = (y1 - y0) / mBitmap.getHeight();
 
         mBitmap.getTransform().setScale(scalex, scaley);
-        mBitmap.getTransform().postTranslate(x0, y1);
+        mBitmap.getTransform().postTranslate(x0, y0);
         if(mBitmap.getBitmap() != null) {
             paint.setAlpha(pref.showLayer());
             canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
