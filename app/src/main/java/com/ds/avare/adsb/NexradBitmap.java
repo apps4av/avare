@@ -207,16 +207,23 @@ public class NexradBitmap {
         }
 
         /*
-         * Get nexrad bitmaps to draw.
-         * XXX: Fix CONUS image and do not draw for now.
+         * CONUS for large zoom out scales
          */
-        if (!nexrad.isOld()) {
-            /*
-             * Draw high res over low res
-             */
-            drawImage(nexrad.getImages(), ctx);
+        if(ctx.scale.getMacroFactor() > 4) {
+             if (!conus.isOld()) {
+                 drawImage(conus.getImages(), ctx);
+             }
+        }
+        /*
+         * NEXRAD when zoomed in
+         */
+        else {
+            if (!nexrad.isOld()) {
+                drawImage(nexrad.getImages(), ctx);
+            }
         }
     }
+
 
     /**
      * Draw block by block

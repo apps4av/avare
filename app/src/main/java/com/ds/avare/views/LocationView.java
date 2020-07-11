@@ -205,7 +205,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Tile mGpsTile;
 
     private String mOnChart = "";
-    
+
+    private BitmapHolder mTrafficRed;
+    private BitmapHolder mTrafficGreen;
+    private BitmapHolder mTrafficBlue;
+    private BitmapHolder mTrafficMagenta;
+
     /*
      * Text on screen color
      */
@@ -286,7 +291,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
-        
+
+        mTrafficRed = new BitmapHolder(context, R.drawable.tr_red);
+        mTrafficGreen = new BitmapHolder(context, R.drawable.tr_green);
+        mTrafficBlue = new BitmapHolder(context, R.drawable.tr_blue);
+        mTrafficMagenta = new BitmapHolder(context, R.drawable.tr_magenta);
+
+
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         // We're going to give the user twice the slop as normal
@@ -743,7 +754,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawTraffic(Canvas canvas, DrawingContext ctx) {
         Traffic.draw(ctx, mService.getTrafficCache().getTraffic(),
-                mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection);
+                mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection,
+                mTrafficRed, mTrafficGreen, mTrafficBlue, mTrafficMagenta);
     }
 
     /**

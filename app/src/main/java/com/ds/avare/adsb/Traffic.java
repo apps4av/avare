@@ -1,6 +1,8 @@
 package com.ds.avare.adsb;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -13,6 +15,7 @@ import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.threed.AreaMapper;
 import com.ds.avare.threed.TerrainRenderer;
 import com.ds.avare.threed.data.Vector4d;
+import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
 public class Traffic {
@@ -25,7 +28,8 @@ public class Traffic {
     public float mHeading;
     public String mCallSign;
     private long mLastUpdate;
-    
+    private static Matrix mMatrix = new Matrix();
+
 
     public static final double TRAFFIC_ALTITUDE_DIFF_DANGEROUS = 1000; //ft 300m required minimum
     
@@ -54,7 +58,7 @@ public class Traffic {
         mHeading = heading;
         mHorizVelocity = speed;
         mLastUpdate = time;
-        
+
         /*
          * Limit
          */
@@ -112,7 +116,8 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw) {
+    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
+                            BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
 
@@ -154,6 +159,19 @@ public class Traffic {
              * Find color from altitude
              */
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
+            BitmapHolder b = null;
+            if (color == Color.RED) {
+                b = bRed;
+            }
+            else if (color == Color.GREEN) {
+                b = bGreen;
+            }
+            else if (color == Color.BLUE) {
+                b = bBlue;
+            }
+            else {
+                b = bMagenta;
+            }
 
             int diff;
             String text = "";
@@ -178,20 +196,15 @@ public class Traffic {
                 }
             }
 
+            mMatrix.setRotate(t.mHeading, b.getWidth() / 2, b.getHeight() / 2);
+            mMatrix.postTranslate(x - b.getWidth() / 2, y - b.getHeight() / 2);
 
-            float radius = ctx.dip2pix * 8;
-            /*
-             * Draw outline to show it clearly
-             */
-            ctx.paint.setColor((~color) | 0xFF000000);
-            ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
-
-            ctx.paint.setColor(color);
-            ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+            ctx.canvas.drawBitmap(b.getBitmap(), mMatrix, ctx.paint);
             /*
              * Show a barb for heading with length based on speed
              * Find distance target will travel in 1 min
              */
+            ctx.paint.setColor(color);
             float distance2 = (float)t.mHorizVelocity / 60.f;
             Coordinate c = Projection.findStaticPoint(t.mLon, t.mLat, t.mHeading, distance2);
             float xr = (float)ctx.origin.getOffsetX(c.getLongitude());
@@ -212,7 +225,7 @@ public class Traffic {
 
 
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    text, Color.BLACK, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
+                    text, Color.BLACK, (float)x, (float)y + b.getBitmap().getWidth() + ctx.textPaint.getTextSize());
 
 
             if (true == bRotated) {
