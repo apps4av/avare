@@ -36,7 +36,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, application = AvareApplication.class)
+@Config(application = AvareApplication.class)
 @PowerMockIgnore({"org.mockito.", "org.robolectric."})
 public class WebAppPlanInterfaceTest extends InterfaceTest {
 

@@ -26,6 +26,11 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+
+        unitTests {
+                includeAndroidResources = true
+        }
+
     }
 
     applicationVariants.all { variant ->
@@ -46,5 +51,5 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-mockito2:1.7.0RC2'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
-    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.robolectric:robolectric:4.3'
 }

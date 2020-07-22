@@ -22,7 +22,7 @@ import static junit.framework.TestCase.assertEquals;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, application = AvareApplication.class)
+@Config(application = AvareApplication.class)
 @PowerMockIgnore({"org.mockito.", "org.robolectric."})
 @PrepareForTest({StorageService.class})
 public class DestinationGpsTest {
