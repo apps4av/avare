@@ -1077,6 +1077,77 @@ public class LocationContentProviderHelper {
         return result;
     }
 
+
+    public static String findClosestNavaidID(Context ctx, double lon, double lat) {
+        String ret = null;
+
+        Cursor c = null;
+        double corrFactor = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+
+        String asdistance = "((" +
+                LocationContract.NAV_LONGITUDE + " - " + lon + ") * (" +
+                LocationContract.NAV_LONGITUDE + " - " + lon + ") * " + corrFactor + " + " + "(" +
+                LocationContract.NAV_LATITUDE  + " - " + lat + ") * (" +
+                LocationContract.NAV_LATITUDE  + " - " + lat + "))";
+
+        String projection[] = new String[] {LocationContract.NAV_LOCATION_ID, asdistance + " as distance"};
+        String order = "distance limit 1";
+
+        String qry;
+
+        qry =  "distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE);
+
+        try {
+            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, projection, qry, null, order);
+            if(c != null) {
+                if(c.moveToFirst()) {
+                    ret = new String(c.getString(0)); // LocationContract.AIRPORTS_LOCATION_ID
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        CursorManager.close(c);
+
+        return ret;
+    }
+
+    public static String findClosestFixID(Context ctx, double lon, double lat) {
+        String ret = null;
+
+        Cursor c = null;
+        double corrFactor = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        String asdistance = "((" +
+                LocationContract.FIX_LONGITUDE + " - " + lon + ") * (" +
+                LocationContract.FIX_LONGITUDE + " - " + lon + ") * " + corrFactor + " + " + "(" +
+                LocationContract.FIX_LATITUDE  + " - " + lat + ") * (" +
+                LocationContract.FIX_LATITUDE  + " - " + lat + "))";
+
+        String projection[] = new String[] {LocationContract.FIX_LOCATION_ID, asdistance + " as distance"};
+        String order = "distance limit 1";
+
+        String qry;
+
+        qry =  "distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE) +
+                " and " + LocationContract.FIX_TYPE + "= ?";
+
+        String arguments[] = new String[] {"YREP-PT"};
+
+        try {
+            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, projection, qry, arguments, order);
+            if(c != null) {
+                if(c.moveToFirst()) {
+                    ret = new String(c.getString(0)); // LocationContract.AIRPORTS_LOCATION_ID
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        CursorManager.close(c);
+
+        return ret;
+    }
+
     public static float[] findDiagramMatrix(Context ctx, String name) {
         Cursor c = null;
         float ret[] = new float[12];

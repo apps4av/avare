@@ -893,7 +893,7 @@ public class LocationActivity extends Activity implements Observer {
 				}
 			}
 
-        });
+              });
 
         mService = null;
         mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
