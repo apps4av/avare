@@ -108,6 +108,20 @@ function plan_fill(
 				pilotInCommand,
 				pilotInfo) {
 
+				// non-ICAO destinations and departures need to be replaced with ZZZZ, and the
+				// actual identifier moved to the Other Information field prefixed with either
+				// DEP/ or DEST/
+				if (departure.startsWith('K') && departure.search(/\d/) != -1) {
+					if (otherInfo) { otherInfo += ' '; }
+					otherInfo += 'DEP/' + departure.substring(1, 4);
+					departure = 'ZZZZ';
+				}
+				if (destination.startsWith('K') && destination.search(/\d/) != -1) {
+					if (otherInfo) { otherInfo += ' '; }
+					otherInfo += 'DEST/' + destination.substring(1,4);
+					destination = 'ZZZZ';
+				}
+
 				document.getElementById("icaoAircraftIdInput").value = aircraftId;
 
 				var sel1 = document.getElementById("icaoFlightTypeSelection");
