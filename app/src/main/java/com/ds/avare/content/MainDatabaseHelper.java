@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.File;
-import java.io.NotActiveException;
 
 /**
  * Created by zkhan on 3/13/17.

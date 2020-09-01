@@ -15,7 +15,6 @@ package com.ds.avare.position;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.Tile;
-import com.ds.avare.storage.Preferences;
 
 /**
  * A class that keeps lon/lat pair of what is shown.

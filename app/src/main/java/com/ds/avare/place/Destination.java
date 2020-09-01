@@ -16,7 +16,6 @@ package com.ds.avare.place;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;

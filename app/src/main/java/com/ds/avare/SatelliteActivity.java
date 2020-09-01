@@ -19,17 +19,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.ds.avare.gps.GpsInterface;

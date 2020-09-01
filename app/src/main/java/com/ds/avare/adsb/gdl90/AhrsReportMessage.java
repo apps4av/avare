@@ -11,8 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.adsb.gdl90;
 
-import com.ds.avare.utils.Logger;
-
 /**
  * @author zkhan
  */

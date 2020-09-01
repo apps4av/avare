@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 import com.ds.avare.ChecklistActivity;
-import com.ds.avare.PlanActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.storage.Preferences;

@@ -16,7 +16,6 @@ package com.ds.avare.flight;
  * Created by zkhan on 12/19/16.
  */
 
-import com.ds.avare.gps.GpsParams;
 import com.ds.avare.utils.MovingAverage;
 
 /**

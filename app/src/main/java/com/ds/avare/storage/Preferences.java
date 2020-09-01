@@ -28,7 +28,6 @@ import android.view.WindowManager;
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
 import com.ds.avare.place.Destination;
-import com.ds.avare.userDefinedWaypoints.UDWMgr;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
 

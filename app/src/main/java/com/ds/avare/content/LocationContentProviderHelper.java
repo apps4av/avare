@@ -3,7 +3,6 @@ package com.ds.avare.content;
 import android.content.Context;
 import android.database.Cursor;
 import android.hardware.GeomagneticField;
-import android.preference.PreferenceManager;
 
 import com.ds.avare.R;
 import com.ds.avare.place.Airport;

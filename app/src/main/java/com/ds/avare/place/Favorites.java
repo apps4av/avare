@@ -12,16 +12,10 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.place;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 
-import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.StringPreference;
-import com.ds.avare.utils.BitmapHolder;
-import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.ShadowedText;
-
-import java.util.LinkedList;
 
 /**
  * 
