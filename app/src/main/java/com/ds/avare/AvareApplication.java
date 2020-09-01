@@ -14,9 +14,6 @@ package com.ds.avare;
 
 import android.app.Application;
 
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;

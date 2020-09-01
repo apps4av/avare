@@ -18,13 +18,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.ds.avare.R;
-import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.VNAV;
 import com.ds.avare.utils.Helper;

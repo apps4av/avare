@@ -1,6 +1,5 @@
 package com.ds.avare.adsb;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.SparseArray;
@@ -9,7 +8,6 @@ import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
-import com.ds.avare.position.PixelCoordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.threed.AreaMapper;

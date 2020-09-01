@@ -12,18 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 import android.content.Context;
-import android.telephony.SmsManager;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
-import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 /**
  * Created by zkhan on 7/25/16.

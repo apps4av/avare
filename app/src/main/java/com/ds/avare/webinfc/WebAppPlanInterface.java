@@ -17,9 +17,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -43,7 +41,6 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

@@ -2,9 +2,6 @@ package com.ds.avare.content;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import java.io.File;
 
 /**
  * Created by zkhan on 3/13/17.
