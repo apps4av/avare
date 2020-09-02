@@ -36,7 +36,7 @@ public class RateLimitedBackgroundQueue {
 
     public RateLimitedBackgroundQueue(final StorageService service) {
 
-        mQueueMetar = new HashMap<String, Metar>();
+        mQueueMetar = new HashMap<>();
 
         TimerTask timer= new TimerTask() {
             @Override
@@ -77,7 +77,7 @@ public class RateLimitedBackgroundQueue {
     private HashMap<String, Metar> removeMetarsFromQueue() {
         HashMap<String, Metar> metars;
         synchronized (mQueueMetar) {
-            metars = (HashMap<String, Metar>)mQueueMetar.clone();
+            metars = new HashMap<String, Metar>(mQueueMetar);
             // Done, queue cleared
             mQueueMetar.clear();
         }

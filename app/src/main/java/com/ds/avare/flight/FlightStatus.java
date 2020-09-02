@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.flight;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.LinkedList;
 
 import com.ds.avare.gps.GpsParams;
@@ -26,11 +27,11 @@ public class FlightStatus {
     private static final double SPEED_FOR_FLIGHT = 50;
     
     private boolean mFlying;
-    private LinkedList<FlightStatusInterface> mCallbacks;
+    private List<FlightStatusInterface> mCallbacks;
     
     public FlightStatus(GpsParams params) {
         mFlying = false;
-        mCallbacks = new LinkedList<FlightStatusInterface>();
+        mCallbacks = new LinkedList<>();
         
         if(null != params) {
             updateLocation(params);
@@ -54,7 +55,7 @@ public class FlightStatus {
             if(currentSpeed < SPEED_FOR_ROLLOUT) {
                 mFlying = false;
                 
-                LinkedList<FlightStatusInterface> callbacks = (LinkedList<FlightStatusInterface>) mCallbacks.clone();
+                List<FlightStatusInterface> callbacks = new LinkedList<>(mCallbacks);
                 Iterator<FlightStatusInterface> it = callbacks.iterator();
                 while (it.hasNext()) {
                     FlightStatusInterface fsi = it.next();

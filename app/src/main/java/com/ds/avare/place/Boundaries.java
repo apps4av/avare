@@ -19,6 +19,7 @@ import com.ds.avare.utils.BitmapHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -28,7 +29,7 @@ import java.util.Iterator;
  */
 public class Boundaries {
 
-    private HashMap<String, Shape> mPolygons;
+    private Map<String, ChartShape> mPolygons;
     private static Boundaries mInstance = null;
 
     private Boundaries() {
@@ -44,9 +45,9 @@ public class Boundaries {
      * @return
      */
     public String findChartOn(String chartIndex, double lon, double lat) {
-        Iterator it = mPolygons.entrySet().iterator();
+        Iterator<Map.Entry<String, ChartShape>> it = mPolygons.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, ChartShape> pair = (HashMap.Entry<String, ChartShape>)it.next();
+            Map.Entry<String, ChartShape> pair = it.next();
             ChartShape s = pair.getValue();
             String name = pair.getKey();
             String type = s.getName();
@@ -75,7 +76,7 @@ public class Boundaries {
 
     // Make chart boundary shapes
     private void makePolygons() {
-        mPolygons = new HashMap<String, Shape>();
+        mPolygons = new HashMap<>();
 
         // loop and add shapes
         for (int i = 0; i < mData.length; i += 4) {
@@ -85,7 +86,7 @@ public class Boundaries {
             double lat = Double.parseDouble(mData[i + 3]);
 
             // add to hash, but check if it exists first
-            Shape s = mPolygons.get(name);
+            ChartShape s = mPolygons.get(name);
             if (s == null) {
                 // hashmap will save name, shape will save type
                 s = new ChartShape(type);
@@ -96,9 +97,9 @@ public class Boundaries {
         }
 
         // Make all shapes
-        Iterator it = mPolygons.entrySet().iterator();
+        Iterator<Map.Entry<String, ChartShape>> it = mPolygons.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, ChartShape> pair = (HashMap.Entry<String, ChartShape>)it.next();
+            Map.Entry<String, ChartShape> pair = it.next();
             ChartShape s = pair.getValue();
             s.makePolygon();
         }

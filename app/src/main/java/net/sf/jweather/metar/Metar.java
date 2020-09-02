@@ -20,6 +20,7 @@ For more information, please email arimus@users.sourceforge.net
 */
 package net.sf.jweather.metar;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -57,10 +58,10 @@ public class Metar {
 	Float temperaturePrecise = null;
 	Float dewPoint = null;
 	Float dewPointPrecise = null;
-	ArrayList weatherConditions = new ArrayList();
-	ArrayList skyConditions = new ArrayList();
-	ArrayList runwayVisualRanges = new ArrayList();
-	ArrayList obscurations = new ArrayList();
+	List<WeatherCondition> weatherConditions = new ArrayList<>();
+	List<SkyCondition> skyConditions = new ArrayList<>();
+	List<RunwayVisualRange> runwayVisualRanges = new ArrayList<>();
+	List<Obscuration> obscurations = new ArrayList<>();
 	private boolean isNoSignificantChange = false;
 
 	public Metar() {
@@ -657,7 +658,7 @@ public class Metar {
      * @return an ArrayList of WeatherCondition objects
      * @see WeatherCondition
      */
-	public ArrayList getWeatherConditions() {
+	public List<WeatherCondition> getWeatherConditions() {
 		return weatherConditions;
 	}
 
@@ -685,10 +686,10 @@ public class Metar {
 
     /**
      *
-     * @return an ArrayList of SkyCondition objects
+     * @return an List of SkyCondition objects
      * @see SkyCondition
      */
-	public ArrayList getSkyConditions() {
+	public List<SkyCondition> getSkyConditions() {
 		return skyConditions;
 	}
 
@@ -716,10 +717,10 @@ public class Metar {
 
     /**
      *
-     * @return an ArrayList of RunwayVisualRange objects
+     * @return a List of RunwayVisualRange objects
      * @see RunwayVisualRange
      */
-	public ArrayList getRunwayVisualRanges() {
+	public List<RunwayVisualRange> getRunwayVisualRanges() {
 		return runwayVisualRanges;
 	}
 
@@ -747,10 +748,10 @@ public class Metar {
 
     /**
      *
-     * @return an ArrayList of Obscuration objects
+     * @return a List of Obscuration objects
      * @see Obscuration
      */
-	public ArrayList getObscurations() {
+	public List<Obscuration> getObscurations() {
 		return obscurations;
 	}
 	

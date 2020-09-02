@@ -194,11 +194,11 @@ public class WeatherHelper {
      * @param s
      * @return pair of strings split
      */
-    private static Pair splitOnSecondSpace(String s) {
+    private static Pair<String, String> splitOnSecondSpace(String s) {
         int i = s.indexOf(' ', 1 + s.indexOf(' '));
         String firstPart = s.substring(0, i);
         String secondPart = s.substring(i+1);
-        return Pair.create(firstPart, secondPart);
+        return Pair.<String, String>create(firstPart, secondPart);
     }
 
     /**

@@ -4,7 +4,7 @@ import net.sf.jweather.metar.Metar;
 import net.sf.jweather.metar.MetarParser;
 import net.sf.jweather.metar.SkyCondition;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zkhan on 12/12/15.
@@ -23,7 +23,7 @@ public class MetarFlightCategory {
             int ovc = Integer.MAX_VALUE;
             boolean isCeiling = false;
             boolean visLessThan = metar.getVisibilityLessThan();
-            ArrayList<SkyCondition> sky = metar.getSkyConditions();
+            List<SkyCondition> sky = metar.getSkyConditions();
             for (SkyCondition cond : sky) {
                 if(cond.isBrokenClouds() || cond.isOvercast() || cond.isVerticalVisibility()) {
                     ovc = cond.getHeight();

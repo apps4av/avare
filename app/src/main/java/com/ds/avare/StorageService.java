@@ -511,7 +511,7 @@ public class StorageService extends Service {
              * @return
              */
             private LinkedList<GpsInterface> extracted() {
-                return (LinkedList<GpsInterface>)mGpsCallbacks.clone();
+                return new LinkedList<GpsInterface>(mGpsCallbacks);
             }
 
             /*
@@ -655,7 +655,7 @@ public class StorageService extends Service {
              * @return
              */
             private LinkedList<OrientationInterface> extracted() {
-                return (LinkedList<OrientationInterface>)mOrientationCallbacks.clone();
+                return new LinkedList<OrientationInterface>(mOrientationCallbacks);
             }
 
             @Override

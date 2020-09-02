@@ -1015,7 +1015,7 @@ public class LocationContentProviderHelper {
 
 
     public static Vector<NavAid> findNavaidsNearby(Context ctx, double lat, double lon) {
-        Vector result = null;
+        Vector<NavAid> result = null;
         Cursor c = null;
 
         final double NAVAID_SEARCH_RADIUS = 150.; // 150 seems reasonable, it is VOR Line Of Sight at 18000
