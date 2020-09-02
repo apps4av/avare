@@ -99,7 +99,7 @@ public class SubTile extends Tile {
         ret.top = row * 128;
         ret.left = col * 128;
         ret.bottom = ret.top + 128;
-        ret.right = ret.left + 128;;
+        ret.right = ret.left + 128;
         return ret;
     }
 

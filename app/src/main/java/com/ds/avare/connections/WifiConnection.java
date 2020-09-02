@@ -174,7 +174,7 @@ public class WifiConnection extends Connection {
     }
 
     @Override
-    public void write(byte[] aData) { return; };
+    public void write(byte[] aData) { return; }
 
     /**
      * 
