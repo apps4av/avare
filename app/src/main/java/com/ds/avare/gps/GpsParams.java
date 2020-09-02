@@ -261,5 +261,5 @@ public class GpsParams {
 
     public double getHorDil() { return mHorDil; }
 
-    public double getGeoid() { return mGeoid; };
+    public double getGeoid() { return mGeoid; }
 }

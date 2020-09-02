@@ -568,7 +568,7 @@ public class LocationActivity extends Activity implements Observer {
                 mPref.setLayerType(mLayerOption.getCurrentValue());
                 mLocationView.setLayerType(mPref.getLayerType());
                 return null;
-            };
+            }
         });
 
         mCenterButton = (ImageButton)view.findViewById(R.id.location_button_center);

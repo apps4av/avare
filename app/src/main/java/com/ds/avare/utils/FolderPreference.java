@@ -125,9 +125,9 @@ public class FolderPreference extends DialogPreference {
 
             // Create a default toast message that assumes failure
             Toast t = Toast.makeText(mContext, 
-                    mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);;
+                    mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);
 
-             // Dir should be read/write to be a valid android folder.
+            // Dir should be read/write to be a valid android folder.
             if(mPath.isDirectory() && mPath.canWrite() && mPath.canRead()) {
             	String absPath = mPath.getAbsolutePath();
 

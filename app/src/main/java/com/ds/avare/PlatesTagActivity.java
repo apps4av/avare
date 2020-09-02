@@ -545,7 +545,7 @@ public class PlatesTagActivity extends Activity implements Observer {
              * Find who this plate is for, so we can verify its sane.
              * By the time user is ready to tag, this should be found
              */
-            mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);;
+            mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);
             mDest.addObserver(PlatesTagActivity.this);
             mDest.find();
 
