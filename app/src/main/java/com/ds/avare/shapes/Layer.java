@@ -84,10 +84,8 @@ public class Layer {
     public boolean isOld(int expiry) {
         long diff = Helper.getMillisGMT();
         diff -= mDate;
-        if(diff > expiry * 60 * 1000) {
-            return true;
-        }
-        return false;
+
+        return diff > expiry * 60 * 1000;
     }
 
     /**

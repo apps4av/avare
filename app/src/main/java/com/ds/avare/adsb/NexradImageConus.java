@@ -108,11 +108,9 @@ public class NexradImageConus {
      */
     public boolean isOld() {
         long diff = Helper.getMillisGMT();
-        diff -= mUpdated; 
-        if(diff > EXPIRES) {
-            return true;
-        }
-        return false;
+        diff -= mUpdated;
+
+        return diff > EXPIRES;
     }
     
     /**

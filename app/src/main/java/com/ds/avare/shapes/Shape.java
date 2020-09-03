@@ -76,10 +76,8 @@ public abstract class Shape {
         }
         long diff = Helper.getMillisGMT();
         diff -= mDate.getTime();
-        if(diff > expiry * 60 * 1000) {
-            return true;
-        }
-        return false;
+
+        return diff > (expiry * 60 * 1000);
     }
 
     /**

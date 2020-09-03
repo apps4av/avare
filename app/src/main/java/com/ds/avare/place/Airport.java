@@ -161,14 +161,11 @@ public class Airport {
          * Height * glide ratio (distance feet / height feet) = distance
          */
         double radius = mHeight * mPref.getGlideRatio() / Preferences.feetConversion;
-        if(radius > getDistance()) {
-            /*
-             * This is in glide distance
-             */
-            return true;
-        }
         
-        return false;
+        /*
+         * This is in glide distance
+         */
+        return radius > getDistance();
     }
 
 }

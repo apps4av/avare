@@ -73,12 +73,9 @@ public class FolderPreference extends DialogPreference {
     	if(path.length() == 0) {
     		path = "/";
     	}
-        if(path.equals("/")) {
-            mFirstLevel = true;
-        }
-        else {
-            mFirstLevel = false;
-        }
+
+        mFirstLevel = path.equals("/");
+
         mPath = new File(path);
         String tokens[] = path.split("/");
         mStr = new ArrayList<String>(tokens.length);
