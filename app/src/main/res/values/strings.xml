@@ -441,7 +441,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftTypeSummary">Aircraft type for filing</string>
 
     <string name="AircraftICAOCode">Aircraft ICAO Code</string>
-    <string name="AircraftICAOCodeSummary">Aircraft ICAO code 24-bit decimal</string>
+    <string name="AircraftICAOCodeSummary">Aircraft ICAO code in hexidecimal</string>
 
     <string name="AircraftColorPrimary">Aircraft Color - First</string>
     <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>

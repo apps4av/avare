@@ -364,27 +364,27 @@ authors: zkhan, jlmcgraw
         android:title="@string/userData"
         android:icon="@android:drawable/ic_menu_manage" >
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/PilotContact"
             android:summary="@string/PilotContactSummary"
             android:key="@string/PilotContact"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftHomeBase"
             android:summary="@string/AircraftHomeBaseSummary"
             android:key="@string/AircraftHomeBase"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftTailNumber"
             android:summary="@string/AircraftTailNumberSummary"
             android:key="@string/AircraftTailNumber"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftType"
             android:summary="@string/AircraftTypeSummary"
             android:key="@string/AircraftType"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftICAOCode"
             android:summary="@string/AircraftICAOCodeSummary"
             android:key="@string/AircraftICAOCode"/>
@@ -403,17 +403,17 @@ authors: zkhan, jlmcgraw
             android:summary="@string/AircraftColorSecondarySummary"
             android:title="@string/AircraftColorSecondary" />
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:key="@string/AircraftEquipment"
             android:summary="@string/AircraftEquipmentSummary"
             android:title="@string/AircraftEquipment" />
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:key="@string/AircraftSurveillance"
             android:summary="@string/AircraftSurveillanceSummary"
             android:title="@string/AircraftSurveillance" />
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftTAS"
             android:summary="@string/AircraftTASSummary"
             android:key="@string/AircraftTAS"/>
