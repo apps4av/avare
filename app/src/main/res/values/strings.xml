@@ -499,10 +499,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n</string>
     <string name="Menu">Menu</string>
 
-    <string name="b1map">Remove Button 1 in Map (requires restart)</string>
-    <string name="b1plate">Remove Button 1 in Plate (requires restart)</string>
-    <string name="b2plate">Remove Button 2 in Plate (requires restart)</string>
-    <string name="b3plate">Remove Button 3 in Plate (requires restart)</string>
+    <string name="b1map">Remove Pan/Draw Button in Map (requires restart)</string>
+    <string name="b1plate">Remove Pan/Draw Button in Plate (requires restart)</string>
+    <string name="b2plate">Remove Timer Button in Plate (requires restart)</string>
+    <string name="b3plate">Remove Tag Button in Plate (requires restart)</string>
     <string name="UIConfiguration">UI Configuration</string>
 
     <string name="ShowLabelMETARS">&quot;Label for ADSB METARs&quot;</string>
