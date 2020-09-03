@@ -455,6 +455,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftSurveillance">Aircraft Surveillance</string>
     <string name="AircraftSurveillanceSummary">Aircraft surveillance equipment code for filing</string>
 
+    <string name="AircraftOtherInfo">Aircraft Other Info</string>
+    <string name="AircraftOtherInfoSummary">Aircraft other info for filing</string>
+
     <string name="AircraftTAS">Aircraft TAS</string>
     <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
 
