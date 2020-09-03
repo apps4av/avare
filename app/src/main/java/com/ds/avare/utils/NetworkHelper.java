@@ -456,17 +456,14 @@ public class NetworkHelper {
              */
             expires.set(year, month, day, hour, min);
             expires.add(Calendar.MINUTE, timeout);
-            if(now.after(expires)) {
-                return true;
-            }
-            
-            return false;
+
+            return now.after(expires);
         }
-        
+
         if(!getCycle().equals(date)) {
         	return true;
         }
-        
+
         return false;
     }
 

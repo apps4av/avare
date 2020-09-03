@@ -177,6 +177,7 @@ public class PlatesActivity extends Activity implements Observer  {
                 else {
                     ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/plates/" + aname);
                 }
+
                 if(null != ret) {
                     return ret;
                 }

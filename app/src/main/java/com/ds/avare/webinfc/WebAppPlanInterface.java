@@ -298,11 +298,9 @@ public class WebAppPlanInterface implements Observer {
      */
     private boolean isSame(Location l0, Location l1) {
     	double dist = Projection.getStaticDistance(l0.getLongitude(), l0.getLatitude(), l1.getLongitude(), l1.getLatitude());
-    	if(dist < 0.01) {
-    		return true;
-    	}
-    	return false;
-    }
+
+    	return dist < 0.01;
+	}
     
     /**
      * New dest

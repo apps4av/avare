@@ -72,11 +72,9 @@ public class Traffic {
     public boolean isOld() {
 
         long diff = Helper.getMillisGMT();
-        diff -= mLastUpdate; 
-        if(diff > EXPIRES) {
-            return true;
-        }
-        return false;
+        diff -= mLastUpdate;
+
+        return diff > EXPIRES;
     }
     
     /**
