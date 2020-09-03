@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <!--
 Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
 All rights reserved.
@@ -14,7 +15,6 @@ authors: zkhan
 -->
 
 <head>
-
 
     <!-- Latest compiled and minified CSS -->
     <script src="file:///android_asset/jquery.min.js"></script>
@@ -488,15 +488,15 @@ $(document).ready(function(){
 </head>
 <body>
 
-  <ul class="nav nav-tabs" style="display:inline-flex;">
+<ul class="nav nav-tabs" style="display:inline-flex;">
     <li class="active"><a href="#plan">Plan</a></li>
     <li><a href="#load">Load</a></li>
     <li><a href="#save">Save</a></li>
     <li><a href="#new">New</a></li>
     <li><a href="#help">Help</a></li>
-  </ul>
+</ul>
 
-  <div class="tab-content">
+<div class="tab-content">
 
     <div id="plan" class="tab-pane fade in active">
         <table class="table">
@@ -603,10 +603,10 @@ $(document).ready(function(){
                 <td id="plan_count"></td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" id="list_first" onclick="first()"><<</button></td>
-                <td><button class="btn btn-block" id="list_prev" onclick="prev()"><</button></td>
-                <td><button class="btn btn-block" id="list_next" onclick="next()">></button></td>
-                <td><button class="btn btn-block" id="list_last" onclick="last()">>></button></td>
+                <td><button class="btn btn-block" id="list_first" onclick="first()"></button></td>
+                <td><button class="btn btn-block" id="list_prev" onclick="prev()"></button></td>
+                <td><button class="btn btn-block" id="list_next" onclick="next()"></button></td>
+                <td><button class="btn btn-block" id="list_last" onclick="last()"></button></td>
             </tr>
         </table>
         <table class="table">
@@ -625,7 +625,6 @@ $(document).ready(function(){
         </table>
     </div>
 
-
     <div id="save" class="tab-pane fade">
         <table class="table"><th>Save Current Plan</th>
             <tr>
@@ -634,8 +633,6 @@ $(document).ready(function(){
             </tr>
         </table>
     </div>
-
-
 
     <div id="help" class="tab-pane fade">
         <table class="table"><th>Plan Help</th>
@@ -783,11 +780,6 @@ $(document).ready(function(){
             </ul>
         </div>
     </div>
-
-
-
-
-
-
+</div>
 </body>
 </html>
