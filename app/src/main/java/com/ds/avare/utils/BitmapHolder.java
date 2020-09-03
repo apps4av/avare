@@ -378,8 +378,6 @@ public class BitmapHolder {
             mWidth = mBitmap.getWidth();
             mHeight = mBitmap.getHeight();
         }
-        else {
-        }
     }
 
     // Create a bitmapholder from an already loaded bitmap

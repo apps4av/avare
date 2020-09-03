@@ -157,8 +157,6 @@ public class SkyCondition {
 			return "Vertical Visibility of " + height + "feet";
 		} else if (isClear) {
 			return "Clear skies";
-		} else if (isClear) {
-			return "Clear skies";
 		} else if (isFewClouds) {
 			temp += "Few clouds";
 		} else if (isScatteredClouds) {
