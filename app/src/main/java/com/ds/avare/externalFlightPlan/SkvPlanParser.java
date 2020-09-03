@@ -87,7 +87,7 @@ public class SkvPlanParser extends PlanParser {
 
                         // If this is a GPS point, then we parse things a bit differently
                         // G.30.781840081788935,-97.21321105444247
-                        if(Destination.GPS == type) {
+                        if(Destination.GPS.equals(type)) {
 
                             // Re-split this field based upon the alternate field separator
                             wpf = w.split(ALTFIELDSEP);

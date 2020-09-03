@@ -62,7 +62,7 @@ public class NavComments {
 	
 	/***
 	 * Set the text of what is displayed on the right side
-	 * @param leftComment string to display at right bottom
+	 * @param rightComment string to display at right bottom
 	 */
 	public void setRight(String rightComment) {
 		mRightComment = rightComment;

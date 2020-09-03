@@ -61,10 +61,8 @@ public class Delete extends Observable {
 
     /**
      * 
-     * @param url
      * @param path
-     * @param dataSource 
-     * @param filename
+     * @param name
      */
     public void start(String path, String name) {
         mDt = new DeleteTask();

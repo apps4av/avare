@@ -80,7 +80,7 @@ public class MemView extends View {
 
     /**
      * 
-     * @param status
+     * @param fraction
      */
     public void updateMemStatus(float fraction) {
     	mFraction = fraction;
