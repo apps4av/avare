@@ -44,7 +44,7 @@ public class Delete extends Observable {
        
     /**
      * 
-     * @param act
+     * @param handler
      */
     public Delete(Handler handler) {
         mStop = false;

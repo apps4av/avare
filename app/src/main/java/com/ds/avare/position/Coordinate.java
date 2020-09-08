@@ -53,8 +53,6 @@ public class Coordinate {
     
     /**
      * 
-     * @param lon
-     * @param lat
      */
     public double getLongitude() {
         return mLon;
@@ -62,8 +60,6 @@ public class Coordinate {
     
     /**
      * 
-     * @param lon
-     * @param lat
      */
     public double getLatitude() {
         return mLat;

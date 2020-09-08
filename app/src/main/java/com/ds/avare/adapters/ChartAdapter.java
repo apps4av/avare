@@ -306,8 +306,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
     /**
      * Toggle the checked state of a chart
-     * @param group
-     * @param child
      */
     public String getDatabaseName() {
         return mChildrenFiles[GROUP_DATABASE][0];
