@@ -464,8 +464,7 @@ public class AdsbWeatherCache {
      * @return
      */
     public Taf getTaf(String airport) {
-        Taf taf = mTaf.get("K" + airport);
-        return taf;
+        return mTaf.get("K" + airport);
     }
 
     /**
@@ -565,8 +564,7 @@ public class AdsbWeatherCache {
         if(null == toret) {
             return null;
         }
-        WindsAloft w1 = new WindsAloft(toret);
-        return w1;
+        return new WindsAloft(toret);
 
     }
 

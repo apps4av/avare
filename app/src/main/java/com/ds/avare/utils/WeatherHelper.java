@@ -535,8 +535,7 @@ public class WeatherHelper {
                 speed += 100;
             }
 
-            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed);
-            return(out);
+            return(String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed));
         }
 
         if(wind.length() == 7) {
@@ -553,8 +552,7 @@ public class WeatherHelper {
                 speed += 100;
             }
 
-            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
-            return(out);
+            return(String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C");
             
         }
 
@@ -572,8 +570,7 @@ public class WeatherHelper {
                 speed += 100;
             }
 
-            String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
-            return(out);
+            return(String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C");
         }
 
         return "";

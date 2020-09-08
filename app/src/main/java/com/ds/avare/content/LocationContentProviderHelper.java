@@ -494,11 +494,10 @@ public class LocationContentProviderHelper {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
             if (c != null) {
                 if(c.moveToFirst()) {
-                    StringPreference s = new StringPreference(Destination.NAVAID,
+                    return new StringPreference(Destination.NAVAID,
                             c.getString(c.getColumnIndex(LocationContract.NAV_TYPE)),
                             c.getString(c.getColumnIndex(LocationContract.NAV_FACILITY_NAME)),
                             c.getString(c.getColumnIndex(LocationContract.NAV_LOCATION_ID)));
-                    return s;
                 }
             }
         }

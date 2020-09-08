@@ -105,25 +105,25 @@ public class RTMPacket extends Packet {
         /*
          * Put altitude
          */
-        mPacket += String.format("%.1f", altitude);
+        mPacket += String.format("%.1f", (float)altitude);
         mPacket += ",";
 
         /*
          * Put heading
          */
-        mPacket += String.format("%05.1f", heading);
+        mPacket += String.format("%05.1f", (float)heading);
         mPacket += ",";
 
         /*
          * Put speed in knots
          */
-        mPacket += String.format("%05.1f", horizVelocity);
+        mPacket += String.format("%05.1f", (float)horizVelocity);
         mPacket += ",";
 
         /*
          * Put vert velocity in ft/min
          */
-        mPacket += String.format("%05.1f", vertVelocity);
+        mPacket += String.format("%05.1f", (float)vertVelocity);
         mPacket += ",";
 
         /*

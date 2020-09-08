@@ -479,9 +479,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             sumX += e.getX(i);
             sumY += e.getY(i);
         }
-        final int div = count;
-        final float focusX = sumX / div;
-        final float focusY = sumY / div;
+        final float focusX = sumX / count;
+        final float focusY = sumY / count;
         
         Point p = new Point();
         p.set((int)focusX, (int)focusY);
@@ -1648,7 +1647,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private String getPriorityMessage() {
         if(mPointProjection != null) {
-        	String priorityMessage = 
+        	String priorityMessage =
         			Helper.makeLine2(mPointProjection.getDistance(),
                     Preferences.distanceConversionUnit, mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()),
                     mPointProjection.getBearing(), mGpsParams.getDeclinition());

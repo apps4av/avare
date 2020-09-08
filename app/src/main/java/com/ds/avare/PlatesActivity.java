@@ -131,8 +131,7 @@ public class PlatesActivity extends Activity implements Observer  {
         if(parts.length < 2) {
             return null;
         }
-        String aname = parts[parts.length - 2] + "/" + parts[parts.length - 1];
-        return aname;
+        return parts[parts.length - 2] + "/" + parts[parts.length - 1];
     }
 
 

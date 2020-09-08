@@ -508,9 +508,8 @@ public class Destination extends Observable {
 	public String getVerticalSpeedTo(GpsParams params) {
 	    long vs = Math.min(getVerticalSpeedToNoFmt(params), 9999);
 	    vs = Math.max(vs, -9999);
-	    String retVS = String.format(Locale.getDefault(), "%+05d", vs);
 
-	    return retVS;
+        return String.format(Locale.getDefault(), "%+05d", vs);
 	}
 	
 	/**

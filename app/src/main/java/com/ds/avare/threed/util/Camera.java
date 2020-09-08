@@ -100,14 +100,12 @@ public class Camera {
         // camera is where ownship is
         GpsParams params = map.getGpsParams();
         Vector3d vec = map.gpsToAxis(params.getLongitude(), params.getLatitude(), params.getAltitude(), 0);
-        Vector3d cameraVectorPosition = new Vector3d(vec.getX(), vec.getY(), vec.getZ());
-        return cameraVectorPosition;
+        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
     }
 
     public static Vector3d getCameraVectorLookAt() {
         // Bird eye camera
-        Vector3d cameraVectorLookAt = new Vector3d(0, 1f, 0);
-        return cameraVectorLookAt;
+        return new Vector3d(0, 1f, 0);
     }
 
     public static Vector3d getCameraVectorPosition() {

@@ -79,19 +79,17 @@ public class Orientation {
         if(!fp) {
             return 0;
         }
-        float degrees = (mDisplacementX * 15);
 
-        return degrees;
+        return (mDisplacementX * 15);
     }
 
     public float getRotationX(boolean fp) {
         if(!fp) {
             return 0;
         }
-        // convert displacement y to angle
-        float degrees = (-mDisplacementY * 15);
 
-        return degrees;
+        // convert displacement y to angle
+        return (-mDisplacementY * 15);
     }
 
 }
