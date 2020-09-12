@@ -617,7 +617,7 @@ public class Plan implements Observer {
     }
 
     /**
-     * insert destination in a plan at closests distance
+     * insert destination in a plan at closest distance
      */
     public boolean insertDestination(Destination dest) {
         int n = getDestinationNumber();
@@ -626,12 +626,44 @@ public class Plan implements Observer {
             return false;
         }
 
-        if (n < 2) {
-            /*
-             * If none exist already, add it to the end, otherwise insert in
-             * between
-             */
-            mDestination[n] = dest;
+        /*
+         * If none exist already, add it to the end
+         * if one exists, determine order based on current position
+         * otherwise insert in between closest points
+         */
+        if (n == 0) {
+
+            mDestination[0] = dest;
+            mService.setDestinationPlanNoChange(dest);
+
+        } else if (n == 1) {
+
+            mDestination[1] = dest;
+            mPassed[1] = false;
+
+            if(null != mService.getGpsParams()) {
+                int idx = -1;
+                double curLon = mService.getGpsParams().getLongitude();
+                double curLat = mService.getGpsParams().getLatitude();
+                double newLon = dest.getLocation().getLongitude();
+                double newLat = dest.getLocation().getLatitude();
+                double oldLon = mDestination[0].getLocation().getLongitude();
+                double oldLat = mDestination[0].getLocation().getLatitude();
+
+                double oldDist = (curLon - oldLon) * (curLon - oldLon) + (curLat - oldLat)
+                        * (curLat - oldLat);
+
+                double newDist = (curLon - newLon) * (curLon - newLon) + (curLat - newLat)
+                        * (curLat - newLat);
+
+                if(newDist < oldDist) {
+                    move(1,0);
+                    mService.setDestinationPlanNoChange(dest);
+                }
+            }
+
+            mTrackShape.updateShapeFromPlan(getCoordinates());
+
         } else {
 
             /*
@@ -639,14 +671,24 @@ public class Plan implements Observer {
              */
             double dist1 = Double.MAX_VALUE;
             int indexc = 0;
+            double curLon = Double.MAX_VALUE;
+            double curLat = Double.MAX_VALUE;
+            Coordinate[] coord = null;
+            coord = getCoordinates();
+            double lon1 = dest.getLocation().getLongitude();
+            double lat1 = dest.getLocation().getLatitude();
 
-            Coordinate[] coord = getCoordinates();
+            if(null != mService.getGpsParams()) {
+                curLon = mService.getGpsParams().getLongitude();
+                curLat = mService.getGpsParams().getLatitude();
+            }
+
+            dist1 = (curLon - lon1) * (curLon - lon1) + (curLat - lat1)
+                    * (curLat - lat1);
 
             for (int id = 0; id < coord.length; id++) {
                 double lon = coord[id].getLongitude();
                 double lat = coord[id].getLatitude();
-                double lon1 = dest.getLocation().getLongitude();
-                double lat1 = dest.getLocation().getLatitude();
                 double dist = (lon - lon1) * (lon - lon1) + (lat - lat1)
                         * (lat - lat1);
 
@@ -654,14 +696,18 @@ public class Plan implements Observer {
                     indexc++;
                 }
 
-                // first point
                 if (dist < dist1) {
                     dist1 = dist;
                     index = indexc;
                 }
             }
 
-            if (index < 0 || index >= MAX_DESTINATIONS) {
+            // closest point is current position
+            if (index < 0) {
+                index = 0;
+            }
+
+            if (index >= MAX_DESTINATIONS) {
                 return false;
             }
 
@@ -672,6 +718,14 @@ public class Plan implements Observer {
 
             // insert
             move(n, index);
+
+            // make the current point the destination if it is first unpassed
+            if(findNextNotPassed()==index) {
+                mService.setDestinationPlanNoChange(dest);
+            }
+
+            mTrackShape.updateShapeFromPlan(getCoordinates());
+
 
         }
 
