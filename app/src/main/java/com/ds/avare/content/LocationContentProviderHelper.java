@@ -223,7 +223,7 @@ public class LocationContentProviderHelper {
                 LocationContract.AIRPORTS_LATITUDE  + " - " + lat + ") * (" +
                 LocationContract.AIRPORTS_LATITUDE  + " - " + lat + "))";
 
-        String qry = "cast(" + LocationContract.AIRPORT_RUNWAYS_LENGTH + " as decimal) >= " + String.valueOf(minRunwayLength);
+        String qry = "cast(" + LocationContract.AIRPORT_RUNWAYS_LENGTH + " as decimal) >= " + minRunwayLength;
         if(!showAll) {
             qry += " and " + LocationContract.AIRPORTS_TYPE + "='AIRPORT'";
         }
@@ -992,10 +992,10 @@ public class LocationContentProviderHelper {
         String qry;
 
         if(!showAll) {
-            qry =  LocationContract.AIRPORTS_TYPE + "= 'AIRPORT' and distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE);
+            qry =  LocationContract.AIRPORTS_TYPE + "= 'AIRPORT' and distance < " + Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE;
         }
         else {
-            qry =  "distance < " + String.valueOf(Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE);
+            qry =  "distance < " + Preferences.MIN_TOUCH_MOVEMENT_SQ_DISTANCE;
         }
 
 
