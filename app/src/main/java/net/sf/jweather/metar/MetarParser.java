@@ -187,9 +187,9 @@ public class MetarParser {
 				String minute = ((String)tokens.get(index)).substring(4,6);
 
 
-				dayInt = new Integer(day).intValue();
-				hourInt = new Integer(hour).intValue();
-				minuteInt = new Integer(minute).intValue();
+				dayInt = Integer.parseInt(day);
+				hourInt = Integer.parseInt(hour);
+				minuteInt = Integer.parseInt(minute);
 
 				// case where the month may have rolled. In this case, the
 				// calendar should be rolled back one day
@@ -461,7 +461,7 @@ public class MetarParser {
 						throw new MetarParseException("error spliting fraction on /: "+e);
 					}
 
-					visibility = new Float(visibility.floatValue() + new Float((String)frac.get(0)).floatValue() / new Float((String)frac.get(1)).floatValue());
+					visibility = new Float(visibility.floatValue() + Float.parseFloat((String) frac.get(0)) / Float.parseFloat((String) frac.get(1)));
 				}
 
 				if (visibilityInStatuteMiles) {
@@ -537,7 +537,7 @@ public class MetarParser {
 			runwayVisualRange = new RunwayVisualRange();
 
 			// get our runway number
-			runwayVisualRange.setRunwayNumber(new Integer(((String)tokens.get(index)).substring(1,3)).intValue());
+			runwayVisualRange.setRunwayNumber(Integer.parseInt(((String) tokens.get(index)).substring(1, 3)));
 
 
 			int pos = 3;
@@ -557,13 +557,13 @@ public class MetarParser {
 
 					pos++;
 			}
-			runwayVisualRange.setLowestReportable(new Integer(((String)tokens.get(index)).substring(pos,pos+4)).intValue());
+			runwayVisualRange.setLowestReportable(Integer.parseInt(((String) tokens.get(index)).substring(pos, pos + 4)));
 
 			pos += 4;
 			// if we are using the format with highest reportable
 			if (((String)tokens.get(index)).charAt(pos) == 'V') {
 				pos++; // increment past V
-				runwayVisualRange.setHighestReportable(new Integer(((String)tokens.get(index)).substring(pos,pos+4)).intValue());
+				runwayVisualRange.setHighestReportable(Integer.parseInt(((String) tokens.get(index)).substring(pos, pos + 4)));
 
 			}
 
@@ -735,7 +735,7 @@ public class MetarParser {
 			{
 				skyCondition.setContraction(((String)tokens.get(index)).substring(0,3));
 
-				skyCondition.setHeight(new Integer(((String)tokens.get(index)).substring(3,6)).intValue());
+				skyCondition.setHeight(Integer.parseInt(((String) tokens.get(index)).substring(3, 6)));
 
 				if (((String)tokens.get(index)).length() > 6) {
 					// we have a modifier
@@ -750,7 +750,7 @@ public class MetarParser {
 			} else if (((String)tokens.get(index)).startsWith(MetarConstants.METAR_VERTICAL_VISIBILITY)) {
 				skyCondition.setContraction(((String)tokens.get(index)).substring(0,2));
 
-				skyCondition.setHeight(new Integer(((String)tokens.get(index)).substring(2,5)).intValue());
+				skyCondition.setHeight(Integer.parseInt(((String) tokens.get(index)).substring(2, 5)));
 
 			} else if (((String)tokens.get(index)).startsWith(MetarConstants.METAR_NO_SIGNIFICANT_CLOUDS)) {
 				skyCondition.setContraction(((String)tokens.get(index)).substring(0,3));
@@ -968,7 +968,7 @@ public class MetarParser {
 						((String)tokens.get(index)).startsWith(MetarConstants.METAR_OVERCAST))
 					{
 						obscuration.setContraction(((String)tokens.get(index)).substring(0,3));
-						obscuration.setHeight(new Integer(((String)tokens.get(index)).substring(3,6)).intValue());
+						obscuration.setHeight(Integer.parseInt(((String) tokens.get(index)).substring(3, 6)));
 
 						metar.addObscuration(obscuration);
 

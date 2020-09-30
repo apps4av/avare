@@ -190,9 +190,7 @@ public class MapBase {
      * Call this from UI thread so that tiles can be flipped without tear
      */
     public void flip() {
-        for (int tilen = 0; tilen < mNumTiles; tilen++) {
-            mapA[tilen] = mapB[tilen];
-        }
+        if (mNumTiles >= 0) System.arraycopy(mapB, 0, mapA, 0, mNumTiles);
     }
 
     /**

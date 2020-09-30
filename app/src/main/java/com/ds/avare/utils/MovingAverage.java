@@ -38,9 +38,7 @@ public class MovingAverage {
         if(mSize <= 0) {
             return;
         }
-        for(int count = (mSize - 1); count > 0; count--) {
-            mNumbers[count] = mNumbers[count - 1];
-        }
+        System.arraycopy(mNumbers, 0, mNumbers, 1, mSize - 1);
         // put
         mNumbers[0] = num;
     }

@@ -87,7 +87,7 @@ public class RunwayVisualRange {
      * @return a string that represents the runway visual range in natural language
      */
 	public String getNaturalLanguageString() {
-		String temp = new Integer(runwayNumber).toString();
+		String temp = Integer.toString(runwayNumber);
 
 		temp += approachDirection;
 

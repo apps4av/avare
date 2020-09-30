@@ -525,10 +525,8 @@ public class AdsbWeatherCache {
     public LinkedList<AirSigMet> getAirSigMet() {
         LinkedList<AirSigMet> ret = new LinkedList<AirSigMet>();
 
+        ret.addAll(mAirSig.values());
 
-        for(AirSigMet s : mAirSig.values()) {
-            ret.add(s);
-        }
         return ret;
     }
 

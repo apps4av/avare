@@ -186,18 +186,14 @@ public class Plan implements Observer {
              * Move everything down
              */
             Destination tmp = mDestination[from];
-            for (int i = from; i > to; i--) {
-                mDestination[i] = mDestination[i - 1];
-            }
+            if (from - to >= 0) System.arraycopy(mDestination, to, mDestination, to + 1, from - to);
             mDestination[to] = tmp;
         } else if (from < to) {
             /*
              * Move everything up
              */
             Destination tmp = mDestination[from];
-            for (int i = from; i < to; i++) {
-                mDestination[i] = mDestination[i + 1];
-            }
+            System.arraycopy(mDestination, from + 1, mDestination, from, to - from);
             mDestination[to] = tmp;
         }
 

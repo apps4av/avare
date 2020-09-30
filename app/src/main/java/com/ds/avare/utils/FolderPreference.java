@@ -36,6 +36,7 @@ import com.ds.avare.storage.Preferences;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -73,9 +74,8 @@ public class FolderPreference extends DialogPreference {
         mPath = new File(path);
         String tokens[] = path.split("/");
         mStr = new ArrayList<String>(tokens.length);
-        for (String s : tokens) {  
-            mStr.add(s);
-        }
+
+        mStr.addAll(Arrays.asList(tokens));
     }
     
     /**
@@ -308,9 +308,7 @@ public class FolderPreference extends DialogPreference {
 
             if (!mFirstLevel) {
                 Item temp[] = new Item[mFileList.length + 1];
-                for (int i = 0; i < mFileList.length; i++) {
-                    temp[i + 1] = mFileList[i];
-                }
+                System.arraycopy(mFileList, 0, temp, 1, mFileList.length);
                 temp[0] = new Item(mContext.getString(R.string.Up), android.R.drawable.ic_menu_revert);
                 mFileList = temp;
             }
