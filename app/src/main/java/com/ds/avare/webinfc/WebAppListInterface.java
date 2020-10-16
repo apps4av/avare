@@ -136,7 +136,6 @@ public class WebAppListInterface {
 
     /**
      * Update the passed point on the List page
-     * @param passed
      */
     public void updateList() {
         mHandler.sendEmptyMessage(MSG_UPDATE_LIST);
@@ -210,7 +209,6 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param num
      */
     @JavascriptInterface
     public void deleteItem() {
@@ -224,8 +222,7 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param id
-     * @param type
+     * @param item
      */	
     @JavascriptInterface
     public void addToList(String item) {
@@ -274,7 +271,7 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param index
+     * @param name
      */
     @JavascriptInterface
     public void loadList(String name) {
@@ -296,7 +293,7 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param num
+     * @param name
      */
     @JavascriptInterface
     public void saveDelete(String name) {

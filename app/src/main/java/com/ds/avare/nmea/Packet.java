@@ -26,7 +26,6 @@ public class Packet {
 
     /**
      * 
-     * @param msg
      */
     public String getPacket() {
         return mPacket;

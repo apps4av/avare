@@ -82,12 +82,21 @@ public abstract class Shape {
 
     /**
      * 
-     * @param coords
+     * @param lon
+     * @param lat
+     * @param issep
      */
     public void add(double lon, double lat, boolean issep) {
     	add(lon,lat,issep, 0);
     }
-    
+
+    /**
+     *
+     * @param lon
+     * @param lat
+     * @param issep
+     * @param segment
+     */
     public void add(double lon, double lat, boolean issep, int segment) {
         Coordinate c = new Coordinate(lon, lat);
         if(issep) {

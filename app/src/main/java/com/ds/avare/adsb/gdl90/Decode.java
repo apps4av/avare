@@ -20,7 +20,6 @@ public class Decode {
      * The main decode function.
      *
      * @param bufin Input from receiver
-     * @param lens  length of data
      */
     public Message decode(byte[] bufin) {
 

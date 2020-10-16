@@ -48,7 +48,6 @@ public class Route {
     
     /**
      * 
-     * @param d
      */
     public void clear() {
         mDestinations.clear();

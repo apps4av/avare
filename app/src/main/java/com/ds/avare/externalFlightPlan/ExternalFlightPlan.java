@@ -48,7 +48,6 @@ public class ExternalFlightPlan {
 	/***
 	 * Construct a complete flight plan with the given parameters
 	 * @param name Name of the plan, must be unique
-	 * @param desc A description
 	 * @param cmt Comment about the flight plan
 	 * @param type GPX/CSV/KML etc
 	 * @param waypoints Collection of waypoints that make up the plan
